@@ -1,0 +1,182 @@
+"""Checksum service for telegram protocol validation and generation.
+
+This service provides business logic for checksum operations,
+following the layered architecture pattern.
+"""
+
+from typing import Dict, Any, Union
+from ..utils.checksum import calculate_checksum, calculate_checksum32, de_nibble
+from ..models.response import Response
+
+
+class ChecksumService:
+    """Service class for checksum operations."""
+
+    def __init__(self):
+        """Initialize the checksum service."""
+        pass
+
+    def calculate_simple_checksum(self, data: str) -> Response:
+        """Calculate simple XOR checksum for string data.
+        
+        Args:
+            data: String data to calculate checksum for
+            
+        Returns:
+            Response object with checksum result
+        """
+        try:
+            if not isinstance(data, str):
+                return Response(
+                    success=False,
+                    data=None,
+                    error="Data must be a string"
+                )
+            
+            checksum = calculate_checksum(data)
+            
+            return Response(
+                success=True,
+                data={
+                    "input": data,
+                    "checksum": checksum,
+                    "algorithm": "simple_xor"
+                },
+                error=None
+            )
+        except Exception as e:
+            return Response(
+                success=False,
+                data=None,
+                error=f"Checksum calculation failed: {str(e)}"
+            )
+
+    def calculate_crc32_checksum(self, data: Union[str, bytes]) -> Response:
+        """Calculate CRC32 checksum for data.
+        
+        Args:
+            data: String or bytes data to calculate checksum for
+            
+        Returns:
+            Response object with checksum result
+        """
+        try:
+            # Convert string to bytes if needed
+            if isinstance(data, str):
+                byte_data = data.encode('utf-8')
+            elif isinstance(data, bytes):
+                byte_data = data
+            else:
+                return Response(
+                    success=False,
+                    data=None,
+                    error="Data must be string or bytes"
+                )
+            
+            checksum = calculate_checksum32(byte_data)
+            
+            return Response(
+                success=True,
+                data={
+                    "input_type": "string" if isinstance(data, str) else "bytes",
+                    "input_length": len(byte_data),
+                    "checksum": checksum,
+                    "algorithm": "crc32"
+                },
+                error=None
+            )
+        except Exception as e:
+            return Response(
+                success=False,
+                data=None,
+                error=f"CRC32 checksum calculation failed: {str(e)}"
+            )
+
+    def validate_checksum(self, data: str, expected_checksum: str) -> Response:
+        """Validate data against expected simple checksum.
+        
+        Args:
+            data: Original data
+            expected_checksum: Expected checksum value
+            
+        Returns:
+            Response object with validation result
+        """
+        try:
+            if not isinstance(data, str) or not isinstance(expected_checksum, str):
+                return Response(
+                    success=False,
+                    data=None,
+                    error="Data and expected checksum must be strings"
+                )
+            
+            calculated_checksum = calculate_checksum(data)
+            is_valid = calculated_checksum == expected_checksum
+            
+            return Response(
+                success=True,
+                data={
+                    "input": data,
+                    "calculated_checksum": calculated_checksum,
+                    "expected_checksum": expected_checksum,
+                    "is_valid": is_valid
+                },
+                error=None
+            )
+        except Exception as e:
+            return Response(
+                success=False,
+                data=None,
+                error=f"Checksum validation failed: {str(e)}"
+            )
+
+    def validate_crc32_checksum(self, data: Union[str, bytes], expected_checksum: str) -> Response:
+        """Validate data against expected CRC32 checksum.
+        
+        Args:
+            data: Original data (string or bytes)
+            expected_checksum: Expected CRC32 checksum value
+            
+        Returns:
+            Response object with validation result
+        """
+        try:
+            # Convert string to bytes if needed
+            if isinstance(data, str):
+                byte_data = data.encode('utf-8')
+            elif isinstance(data, bytes):
+                byte_data = data
+            else:
+                return Response(
+                    success=False,
+                    data=None,
+                    error="Data must be string or bytes"
+                )
+            
+            if not isinstance(expected_checksum, str):
+                return Response(
+                    success=False,
+                    data=None,
+                    error="Expected checksum must be a string"
+                )
+            
+            calculated_checksum = calculate_checksum32(byte_data)
+            is_valid = calculated_checksum == expected_checksum
+            
+            return Response(
+                success=True,
+                data={
+                    "input_type": "string" if isinstance(data, str) else "bytes",
+                    "input_length": len(byte_data),
+                    "calculated_checksum": calculated_checksum,
+                    "expected_checksum": expected_checksum,
+                    "is_valid": is_valid
+                },
+                error=None
+            )
+        except Exception as e:
+            return Response(
+                success=False,
+                data=None,
+                error=f"CRC32 checksum validation failed: {str(e)}"
+            )

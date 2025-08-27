@@ -1,32 +1,188 @@
-# XP CLI Tool - Architecture Document
-## Overview
-xp is a Python command-line interface tool designed to interact with remote devices via TCP socket connection. The tool provides comprehensive access to remote console bus operations with full Test-Driven Development (TDD) implementation.
+# XP CLI Tool - LLM Agent Architecture Guide
 
-This architecture provides a robust, testable, and maintainable foundation for the xp CLI tool while ensuring comprehensive test coverage through TDD methodology.
-## System Architecture
-### Connection Layer
+## 🤖 AGENT OVERVIEW
+**System Name:** XP CLI Tool  
+**Purpose:** Python CLI for TCP communication with remote console bus devices  
+**Target:** 192.168.0.1:1000  
+**Agent Role:** Development assistant for modular, testable, maintainable code
 
-TCP socket client connecting to 192.168.0.1:1000
-Connection pooling and retry mechanisms
-Protocol handler for remote console bus communication
+## 🎯 CORE AGENT DIRECTIVES
 
-### Command Interface Layer
+### PRIMARY RULES (Always Follow)
+1. **NEVER** bypass the layered architecture - respect connection → command → business → data flow
+2. **ALWAYS** write tests BEFORE implementation (TDD approach)
+3. **MUST** achieve 90%+ test coverage for any new code
+4. **FORBIDDEN** to put business logic in CLI layer
+5. **REQUIRED** to validate all inputs before processing
+6. **MANDATORY** to handle all exceptions from exceptions.py
 
-CLI argument parser and command routing
-Input validation and sanitization
-Response formatting and display
+### CRITICAL CONSTRAINTS
+- **XP24 Device:** Exactly 4 input channels (1-4), validate range strictly
+- **XP20 Device:** Default action is "status" when no action specified
+- **TCP Connection:** Always use tcp_client.py, never create direct sockets
+- **Sensitive Data:** NEVER log serial numbers or device credentials
+- **Output Format:** Always provide both human-readable AND JSON formats
 
-### Business Logic Layer
+## 🏗️ ARCHITECTURE LAYERS (Agent Implementation Guide)
 
-Module management operations
-Device-specific command handlers (XP24/XP20)
-Serial number operations
+### Layer 1: Connection Management
+**Files:** `connection/tcp_client.py`, `connection/protocol.py`, `connection/exceptions.py`
 
-### Data Layer
+**Agent Tasks:**
+```python
+# ALWAYS use this pattern for connections
+def agent_connection_pattern():
+    client = TCPClient("192.168.0.1", 1000)
+    try:
+        if client.connect():
+            # Validate connection BEFORE sending commands
+            response = client.send_command(command)
+            return protocol.decode_response(response)
+    except ConnectionError as e:
+        # Handle from exceptions.py
+        logger.error(f"Connection failed: {e}")
+    finally:
+        client.disconnect()
+```
 
-Response parsing and data structures
-Error handling and logging
-Configuration management
+**FORBIDDEN Actions:**
+- Creating raw sockets
+- Bypassing connection validation
+- Ignoring connection exceptions
+
+### Layer 2: Command Interface 
+**Files:** `cli/main.py`, `cli/commands.py`, `cli/validators.py`
+
+**Agent Tasks:**
+```python
+# ALWAYS use this pattern for new commands
+@cli.command()
+@click.argument('param')
+@validate_input  # REQUIRED decorator
+def new_command(param):
+    """ALWAYS include docstring"""
+    # 1. Validate input (REQUIRED)
+    # 2. Call business layer (NEVER implement logic here)
+    # 3. Format output (human + JSON)
+    
+# REQUIRED output format
+def format_response(data):
+    return {
+        "human": "Human readable text",
+        "json": structured_data,
+        "success": boolean
+    }
+```
+
+**FORBIDDEN Actions:**
+- Implementing business logic in CLI commands
+- Skipping input validation
+- Single-format output (must provide both human + JSON)
+
+### Layer 3: Business Logic
+**Files:** `services/module_service.py`, `services/xp24_service.py`, `services/xp20_service.py`
+
+**Agent Tasks:**
+```python
+# ALWAYS implement core logic here
+class ModuleService:
+    def __init__(self, tcp_client):
+        self.client = tcp_client  # Inject, don't create
+    
+    def process_command(self, params):
+        # 1. Validate business rules
+        # 2. Call connection layer
+        # 3. Process response
+        # 4. Return structured data
+        
+# Device-specific constraints (ENFORCE STRICTLY)
+class XP24Service:
+    MAX_INPUTS = 4  # NEVER exceed
+    
+    def validate_input_channel(self, channel):
+        if not (1 <= channel <= self.MAX_INPUTS):
+            raise ValidationError(f"Invalid input: {channel}")
+
+class XP20Service:
+    DEFAULT_ACTION = "status"  # Use when no action specified
+```
+
+**REQUIRED Patterns:**
+- Dependency injection (don't create connections in services)
+- Input validation at service level
+- Structured error responses
+- Device-specific constraint enforcement
+
+### Layer 4: Data Models
+**Files:** `models/module.py`, `models/response.py`
+
+**Agent Tasks:**
+```python
+# ALWAYS use structured models
+@dataclass
+class Module:
+    id: str
+    name: str
+    type: str
+    status: str
+    # NO sensitive data in logs
+    
+    def to_dict(self) -> dict:
+        """REQUIRED for JSON serialization"""
+        
+class Response:
+    def __init__(self, success: bool, data: Any, error: str = None):
+        self.success = success
+        self.data = data
+        self.error = error
+        # ALWAYS include timestamp
+        self.timestamp = datetime.now()
+```
+
+## 🧪 TESTING REQUIREMENTS (Mandatory for Agents)
+
+### Test-First Development Pattern
+```python
+# ALWAYS write test first
+def test_new_feature():
+    # Arrange
+    mock_client = MockTCPClient(expected_responses)
+    service = ModuleService(mock_client)
+    
+    # Act
+    result = service.new_method(test_params)
+    
+    # Assert
+    assert result.success == True
+    assert "expected_value" in result.data
+
+# THEN implement the actual method
+def new_method(self, params):
+    # Implementation here
+```
+
+### Coverage Requirements
+- **Minimum:** 90% line coverage
+- **Required:** Test all error paths
+- **Mandatory:** Mock all external dependencies
+- **Essential:** Integration tests for end-to-end flows
+
+### Mock Strategy (Agent Must Follow)
+```python
+# ALWAYS mock external dependencies
+class MockTCPClient:
+    def __init__(self, responses: dict):
+        self.responses = responses
+        self.call_log = []  # Track calls for verification
+    
+    def send_command(self, command: str) -> bytes:
+        self.call_log.append(command)
+        return self.responses.get(command, b'error')
+```
+
+## 📁 PROJECT STRUCTURE (Agent Navigation Guide)
+
+
 
 ### Project Structure
 ```
