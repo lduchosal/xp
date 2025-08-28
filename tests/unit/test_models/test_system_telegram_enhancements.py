@@ -163,7 +163,7 @@ class TestSystemTelegramEnhancements:
     def test_all_system_functions_from_code(self):
         """Test that all system functions can be retrieved by code"""
         test_cases = [
-            ("01", SystemFunction.WRITE_CONFIG),
+            ("01", SystemFunction.DISCOVERY),
             ("02", SystemFunction.RETURN_DATA),
             ("03", SystemFunction.READ_CONFIG),
             ("04", SystemFunction.WRITE_CONFIG),

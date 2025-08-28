@@ -8,10 +8,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Union
 from .system_telegram import SystemFunction, DataPointType
+from .telegram import Telegram
 
 
 @dataclass
-class ReplyTelegram:
+class ReplyTelegram(Telegram):
     """
     Represents a parsed reply telegram from the console bus.
     
@@ -23,9 +24,9 @@ class ReplyTelegram:
     data_point_id: DataPointType
     data_value: str
     checksum: str
-    raw_telegram: str
     timestamp: Optional[datetime] = None
     checksum_validated: Optional[bool] = None
+    raw_telegram: str
     
     def __post_init__(self):
         if self.timestamp is None:
@@ -36,7 +37,7 @@ class ReplyTelegram:
         """Get human-readable function description"""
         descriptions = {
             SystemFunction.RETURN_DATA: "Data Response",
-            SystemFunction.UPDATE_FIRMWARE: "Firmware Update Response", 
+            SystemFunction.DISCOVERY: "Discover Response",
             SystemFunction.READ_CONFIG: "Configuration Response",
             SystemFunction.WRITE_CONFIG: "Write Configuration Response",
             SystemFunction.SYSTEM_RESET: "System Reset Response"

@@ -3,6 +3,7 @@ from enum import Enum
 from datetime import datetime
 from typing import Optional
 from .module_type import ModuleType
+from .telegram import Telegram
 
 
 class EventType(Enum):
@@ -17,9 +18,8 @@ class InputType(Enum):
     IR_REMOTE = "ir_remote"      # Input 10-89
     PROXIMITY_SENSOR = "proximity_sensor"  # Input 90
 
-
 @dataclass
-class EventTelegram:
+class EventTelegram(Telegram):
     """
     Represents a parsed event telegram from the console bus.
     
@@ -31,7 +31,6 @@ class EventTelegram:
     input_number: int
     event_type: EventType
     checksum: str
-    raw_telegram: str
     timestamp: Optional[datetime] = None
     checksum_validated: Optional[bool] = None
     

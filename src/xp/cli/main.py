@@ -84,7 +84,7 @@ def parse_system_telegram(telegram_string: str, json_output: bool, validate_chec
         # Validate checksum if requested
         checksum_valid = True
         if validate_checksum:
-            checksum_valid = service.validate_system_checksum(parsed)
+            checksum_valid = service.validate_checksum(parsed)
         
         if json_output:
             output = parsed.to_dict()
@@ -129,7 +129,7 @@ def parse_reply_telegram(telegram_string: str, json_output: bool, validate_check
         # Validate checksum if requested
         checksum_valid = True
         if validate_checksum:
-            checksum_valid = service.validate_reply_checksum(parsed)
+            checksum_valid = service.validate_checksum(parsed)
         
         if json_output:
             output = parsed.to_dict()

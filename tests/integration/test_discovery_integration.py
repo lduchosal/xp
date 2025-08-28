@@ -104,7 +104,7 @@ class TestDiscoveryIntegration:
         assert parsed_request.checksum_validated is True
         
         # Verify checksum manually
-        is_valid = telegram_service.validate_system_checksum(parsed_request)
+        is_valid = telegram_service.validate_checksum(parsed_request)
         assert is_valid is True
         
         # Test discovery responses
@@ -121,7 +121,7 @@ class TestDiscoveryIntegration:
             assert parsed_response.checksum_validated is True
             
             # Verify checksum manually
-            is_valid = telegram_service.validate_reply_checksum(parsed_response)
+            is_valid = telegram_service.validate_checksum(parsed_response)
             assert is_valid is True
     
     def test_error_handling_integration(self):

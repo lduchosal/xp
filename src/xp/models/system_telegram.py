@@ -9,6 +9,8 @@ from datetime import datetime
 from typing import Optional
 from enum import Enum
 
+from src.xp.models.telegram import Telegram
+
 
 class SystemFunction(Enum):
     """System function codes for system telegrams"""
@@ -48,7 +50,7 @@ class DataPointType(Enum):
 
 
 @dataclass
-class SystemTelegram:
+class SystemTelegram(Telegram):
     """
     Represents a parsed system telegram from the console bus.
     
@@ -59,7 +61,6 @@ class SystemTelegram:
     system_function: SystemFunction
     data_point_id: DataPointType
     checksum: str
-    raw_telegram: str
     timestamp: Optional[datetime] = None
     checksum_validated: Optional[bool] = None
     

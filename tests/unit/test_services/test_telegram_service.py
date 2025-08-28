@@ -243,7 +243,7 @@ class TestSystemTelegramParsing:
         # Update firmware function
         raw = "<S0020012521F01D18FN>"
         result = self.service.parse_system_telegram(raw)
-        assert result.system_function == SystemFunction.WRITE_CONFIG
+        assert result.system_function == SystemFunction.DISCOVERY
         
         # Read config function
         raw = "<S0020012521F03D18FN>"

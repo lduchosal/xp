@@ -129,59 +129,7 @@ class TelegramService:
         expected_checksum = calculate_checksum(data_part)
         
         return telegram.checksum == expected_checksum
-    
-    def validate_system_checksum(self, telegram: SystemTelegram) -> bool:
-        """
-        Validate the checksum of a parsed system telegram.
-        
-        Args:
-            telegram: The parsed system telegram
-            
-        Returns:
-            True if checksum is valid, False otherwise
-        """
-        if not telegram.checksum or len(telegram.checksum) != 2:
-            return False
-        
-        # Extract the data part (everything between < and checksum)
-        raw = telegram.raw_telegram
-        if not raw.startswith('<') or not raw.endswith('>'):
-            return False
-        
-        # Get the data part without brackets and checksum
-        data_part = raw[1:-3]  # Remove '<' and last 2 chars (checksum) + '>'
-        
-        # Calculate expected checksum
-        expected_checksum = calculate_checksum(data_part)
-        
-        return telegram.checksum == expected_checksum
-    
-    def validate_reply_checksum(self, telegram: ReplyTelegram) -> bool:
-        """
-        Validate the checksum of a parsed reply telegram.
-        
-        Args:
-            telegram: The parsed reply telegram
-            
-        Returns:
-            True if checksum is valid, False otherwise
-        """
-        if not telegram.checksum or len(telegram.checksum) != 2:
-            return False
-        
-        # Extract the data part (everything between < and checksum)
-        raw = telegram.raw_telegram
-        if not raw.startswith('<') or not raw.endswith('>'):
-            return False
-        
-        # Get the data part without brackets and checksum
-        data_part = raw[1:-3]  # Remove '<' and last 2 chars (checksum) + '>'
-        
-        # Calculate expected checksum
-        expected_checksum = calculate_checksum(data_part)
-        
-        return telegram.checksum == expected_checksum
-    
+
     def parse_multiple_telegrams(self, data: str) -> List[EventTelegram]:
         """
         Parse multiple telegrams from a data stream.
@@ -278,7 +226,7 @@ class TelegramService:
             )
             
             # Automatically validate checksum
-            telegram.checksum_validated = self.validate_system_checksum(telegram)
+            telegram.checksum_validated = self.validate_checksum(telegram)
             
             return telegram
             
@@ -346,7 +294,7 @@ class TelegramService:
             )
             
             # Automatically validate checksum
-            telegram.checksum_validated = self.validate_reply_checksum(telegram)
+            telegram.checksum_validated = self.validate_checksum(telegram)
             
             return telegram
             

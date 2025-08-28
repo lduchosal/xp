@@ -12,7 +12,7 @@ from enum import Enum
 
 class DiscoveryFunction(Enum):
     """Discovery function codes"""
-    DISCOVERY_REQUEST = "01"  # F01D00 - Discovery broadcast request
+    DISCOVERY_REQUEST = "01D00"  # F01D00 - Discovery broadcast request
     DISCOVERY_RESPONSE = "01"  # F01D + checksum suffix - Discovery response
     
     @classmethod
