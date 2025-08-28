@@ -16,8 +16,8 @@ class TestSystemFunction:
     
     def test_from_code_valid(self):
         """Test from_code with valid codes."""
+        assert SystemFunction.from_code("01") == SystemFunction.DISCOVERY
         assert SystemFunction.from_code("02") == SystemFunction.RETURN_DATA
-        assert SystemFunction.from_code("01") == SystemFunction.UPDATE_FIRMWARE
         assert SystemFunction.from_code("03") == SystemFunction.READ_CONFIG
         assert SystemFunction.from_code("04") == SystemFunction.WRITE_CONFIG
         assert SystemFunction.from_code("05") == SystemFunction.SYSTEM_RESET
@@ -30,8 +30,8 @@ class TestSystemFunction:
     
     def test_enum_values(self):
         """Test enum values are correct."""
+        assert SystemFunction.DISCOVERY.value == "01"
         assert SystemFunction.RETURN_DATA.value == "02"
-        assert SystemFunction.UPDATE_FIRMWARE.value == "01"
         assert SystemFunction.READ_CONFIG.value == "03"
         assert SystemFunction.WRITE_CONFIG.value == "04"
         assert SystemFunction.SYSTEM_RESET.value == "05"
@@ -111,8 +111,8 @@ class TestSystemTelegram:
         assert telegram.function_description == "Return Data"
         
         # Test other functions
-        telegram.system_function = SystemFunction.UPDATE_FIRMWARE
-        assert telegram.function_description == "Update Firmware"
+        telegram.system_function = SystemFunction.WRITE_CONFIG
+        assert telegram.function_description == "Write Configuration"
         
         telegram.system_function = SystemFunction.READ_CONFIG
         assert telegram.function_description == "Read Configuration"
@@ -184,8 +184,8 @@ class TestSystemTelegram:
         assert "0020012521" in str_repr
     
     @pytest.mark.parametrize("function,description", [
+        (SystemFunction.DISCOVERY, "Discovery"),
         (SystemFunction.RETURN_DATA, "Return Data"),
-        (SystemFunction.UPDATE_FIRMWARE, "Update Firmware"),
         (SystemFunction.READ_CONFIG, "Read Configuration"),
         (SystemFunction.WRITE_CONFIG, "Write Configuration"),
         (SystemFunction.SYSTEM_RESET, "System Reset")

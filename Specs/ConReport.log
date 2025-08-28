@@ -1,0 +1,21 @@
+Conson Concept 2000XP System report
+Generated: 2025.08.24 15:57:39
+
+     SUMMARY:
+       XP130: 0
+       XP24: 6
+       XP31: 0
+       XP33: 0
+       Bus switches: 0
+     TOTAL: 6
+
+
+SYSTEM MODULES:
+    (null) [0020030837]  M=  1  L= 1  Temp=50.50  SW=XP230_V1.00.04
+    (null) [0020042796]  M=  2  L= 0  Temp=-20.00  SW=XP33LR_V0.04.02
+      XP24 [0020044964]  M=  2  L= 0  Temp=38.50  SW=XP24_V0.34.03
+      XP24 [0020044966]  M=  2  L= 0  Temp=36.00  SW=XP24_V0.34.03
+      XP24 [0020044974]  M=  2  L= 0  Temp=35.50  SW=XP24_V0.34.03
+      XP24 [0020044986]  M=  2  L= 0  Temp=36.50  SW=XP24_V0.34.03
+      XP24 [0020044989]  M=  2  L= 0  Temp=36.50  SW=XP24_V0.34.03
+      XP24 [0020044991]  M=  1  L= 0  Temp=40.00  SW=XP24_V0.34.03

@@ -1,0 +1,260 @@
+"""Service for device discovery telegram operations.
+
+This service handles generation and parsing of device discovery system telegrams
+used for enumerating all connected devices on the console bus.
+"""
+
+from typing import List, Optional, Set, Union
+from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
+from ..models.reply_telegram import ReplyTelegram
+from ..utils.checksum import calculate_checksum
+
+
+class DiscoveryError(Exception):
+    """Raised when discovery operations fail"""
+    pass
+
+
+class DeviceInfo:
+    """Information about a discovered device"""
+    
+    def __init__(self, serial_number: str, checksum_valid: bool = True, raw_telegram: str = ""):
+        self.serial_number = serial_number
+        self.checksum_valid = checksum_valid
+        self.raw_telegram = raw_telegram
+    
+    def __str__(self) -> str:
+        status = "✓" if self.checksum_valid else "✗"
+        return f"Device {self.serial_number} ({status})"
+    
+    def __repr__(self) -> str:
+        return f"DeviceInfo(serial='{self.serial_number}', checksum_valid={self.checksum_valid})"
+    
+    def to_dict(self) -> dict:
+        """Convert to dictionary for JSON serialization"""
+        return {
+            "serial_number": self.serial_number,
+            "checksum_valid": self.checksum_valid,
+            "raw_telegram": self.raw_telegram
+        }
+
+
+class DiscoveryService:
+    """
+    Service for generating and handling device discovery telegrams.
+    
+    Handles discovery broadcasting and response parsing:
+    - Discovery request: <S0000000000F01D00{checksum}>
+    - Discovery responses: <R{serial}F01D{checksum}>
+    """
+    
+    def __init__(self):
+        """Initialize the discovery service"""
+        pass
+    
+    def generate_discovery_telegram(self) -> str:
+        """
+        Generate a broadcast discovery telegram to enumerate all devices.
+        
+        Returns:
+            Formatted discovery telegram string: "<S0000000000F01D00FA>"
+        """
+        # Build the data part of the telegram
+        # S0000000000F01D00 - Broadcast (all zeros) discovery command
+        data_part = "S0000000000F01D00"
+        
+        # Calculate checksum
+        checksum = calculate_checksum(data_part)
+        
+        # Build complete telegram
+        telegram = f"<{data_part}{checksum}>"
+        
+        return telegram
+    
+    def create_discovery_telegram_object(self) -> SystemTelegram:
+        """
+        Create a SystemTelegram object for discovery broadcast.
+        
+        Returns:
+            SystemTelegram object representing the discovery command
+        """
+        raw_telegram = self.generate_discovery_telegram()
+        
+        # Extract checksum from the generated telegram
+        checksum = raw_telegram[-3:-1]  # Get checksum before closing >
+        
+        telegram = SystemTelegram(
+            serial_number="0000000000",  # Broadcast address
+            system_function=SystemFunction.DISCOVERY,
+            data_point_id=DataPointType.STATUS,  # D00 = Status
+            checksum=checksum,
+            raw_telegram=raw_telegram
+        )
+        
+        return telegram
+    
+    def parse_discovery_response(self, reply_telegram: ReplyTelegram) -> Optional[DeviceInfo]:
+        """
+        Parse a discovery reply telegram to extract device information.
+        
+        Args:
+            reply_telegram: Reply telegram from a discovered device
+            
+        Returns:
+            DeviceInfo object if this is a valid discovery response, None otherwise
+        """
+        # Check if this is a discovery response (F01D)
+        if reply_telegram.system_function != SystemFunction.DISCOVERY:
+            return None
+        
+        # For discovery responses, the data_value should be empty or minimal
+        # The key information is the serial number
+        device_info = DeviceInfo(
+            serial_number=reply_telegram.serial_number,
+            checksum_valid=reply_telegram.checksum_validated or False,
+            raw_telegram=reply_telegram.raw_telegram
+        )
+        
+        return device_info
+    
+    def is_discovery_response(self, reply_telegram: ReplyTelegram) -> bool:
+        """
+        Check if a reply telegram is a discovery response.
+        
+        Args:
+            reply_telegram: Reply telegram to check
+            
+        Returns:
+            True if this is a discovery response, False otherwise
+        """
+        return reply_telegram.system_function == SystemFunction.DISCOVERY
+    
+    def parse_multiple_discovery_responses(self, reply_telegrams: List[ReplyTelegram]) -> List[DeviceInfo]:
+        """
+        Parse multiple reply telegrams to extract all discovered devices.
+        
+        Args:
+            reply_telegrams: List of reply telegrams to analyze
+            
+        Returns:
+            List of DeviceInfo objects for discovered devices
+        """
+        devices = []
+        
+        for reply in reply_telegrams:
+            device_info = self.parse_discovery_response(reply)
+            if device_info:
+                devices.append(device_info)
+        
+        return devices
+    
+    def get_unique_devices(self, devices: List[DeviceInfo]) -> List[DeviceInfo]:
+        """
+        Filter out duplicate devices based on serial number.
+        
+        Args:
+            devices: List of discovered devices
+            
+        Returns:
+            List of unique devices (first occurrence of each serial number)
+        """
+        seen_serials: Set[str] = set()
+        unique_devices = []
+        
+        for device in devices:
+            if device.serial_number not in seen_serials:
+                seen_serials.add(device.serial_number)
+                unique_devices.append(device)
+        
+        return unique_devices
+    
+    def validate_discovery_response_format(self, raw_telegram: str) -> bool:
+        """
+        Validate if a raw telegram matches discovery response format.
+        
+        Args:
+            raw_telegram: Raw telegram string to validate
+            
+        Returns:
+            True if format matches discovery response pattern
+        """
+        # Discovery response format: <R{10-digit-serial}F01D{2-char-checksum}>
+        import re
+        
+        pattern = re.compile(r'^<R(\d{10})F01D([A-Z0-9]{2})>$')
+        match = pattern.match(raw_telegram.strip())
+        
+        return match is not None
+    
+    def generate_discovery_summary(self, devices: List[DeviceInfo]) -> dict:
+        """
+        Generate a summary of discovery results.
+        
+        Args:
+            devices: List of discovered devices
+            
+        Returns:
+            Dictionary with discovery statistics
+        """
+        unique_devices = self.get_unique_devices(devices)
+        valid_devices = [d for d in unique_devices if d.checksum_valid]
+        invalid_devices = [d for d in unique_devices if not d.checksum_valid]
+        
+        # Group by serial number prefixes for pattern analysis
+        serial_prefixes = {}
+        for device in unique_devices:
+            prefix = device.serial_number[:4]  # First 4 digits
+            if prefix not in serial_prefixes:
+                serial_prefixes[prefix] = 0
+            serial_prefixes[prefix] += 1
+        
+        return {
+            "total_responses": len(devices),
+            "unique_devices": len(unique_devices),
+            "valid_checksums": len(valid_devices),
+            "invalid_checksums": len(invalid_devices),
+            "success_rate": (len(valid_devices) / len(unique_devices) * 100) if unique_devices else 0,
+            "duplicate_responses": len(devices) - len(unique_devices),
+            "serial_prefixes": serial_prefixes,
+            "device_list": [device.serial_number for device in valid_devices]
+        }
+    
+    def format_discovery_results(self, devices: List[DeviceInfo]) -> str:
+        """
+        Format discovery results for human-readable output.
+        
+        Args:
+            devices: List of discovered devices
+            
+        Returns:
+            Formatted string summary
+        """
+        if not devices:
+            return "No devices discovered"
+        
+        summary = self.generate_discovery_summary(devices)
+        unique_devices = self.get_unique_devices(devices)
+        
+        lines = [
+            f"=== Device Discovery Results ===",
+            f"Total Responses: {summary['total_responses']}",
+            f"Unique Devices: {summary['unique_devices']}",
+            f"Valid Checksums: {summary['valid_checksums']}/{summary['unique_devices']} ({summary['success_rate']:.1f}%)",
+        ]
+        
+        if summary['duplicate_responses'] > 0:
+            lines.append(f"Duplicate Responses: {summary['duplicate_responses']}")
+        
+        lines.append(f"\nDiscovered Devices:")
+        lines.append("-" * 40)
+        
+        for device in unique_devices:
+            status_icon = "✓" if device.checksum_valid else "✗"
+            lines.append(f"{status_icon} {device.serial_number}")
+        
+        if summary['serial_prefixes']:
+            lines.append(f"\nSerial Number Distribution:")
+            for prefix, count in sorted(summary['serial_prefixes'].items()):
+                lines.append(f"  {prefix}xxxx: {count} device(s)")
+        
+        return "\n".join(lines)

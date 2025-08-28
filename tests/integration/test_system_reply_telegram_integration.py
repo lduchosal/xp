@@ -59,7 +59,7 @@ class TestSystemTelegramCLI:
         
         assert result.exit_code == 0
         output_data = json.loads(result.output)
-        assert output_data["system_function"]["description"] == "Update Firmware"
+        assert output_data["system_function"]["description"] == "Discovery"
         
         # Read config
         result = self.runner.invoke(cli, [

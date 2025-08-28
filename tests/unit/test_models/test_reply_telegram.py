@@ -62,7 +62,7 @@ class TestReplyTelegram:
         assert telegram.function_description == "Data Response"
         
         # Test other functions
-        telegram.system_function = SystemFunction.UPDATE_FIRMWARE
+        telegram.system_function = SystemFunction.WRITE_CONFIG
         assert telegram.function_description == "Firmware Update Response"
         
         telegram.system_function = SystemFunction.READ_CONFIG

@@ -12,11 +12,13 @@ from enum import Enum
 
 class SystemFunction(Enum):
     """System function codes for system telegrams"""
+    DISCOVERY = "01"  # Discovery function
     RETURN_DATA = "02"  # Return data function
-    UPDATE_FIRMWARE = "01"  # Update firmware function
     READ_CONFIG = "03"  # Read configuration
     WRITE_CONFIG = "04"  # Write configuration
     SYSTEM_RESET = "05"  # System reset
+    ACK = "18"  # Acknowledge response
+    NAK = "19"  # Not acknowledge response
     
     @classmethod
     def from_code(cls, code: str) -> Optional['SystemFunction']:
@@ -29,11 +31,12 @@ class SystemFunction(Enum):
 
 class DataPointType(Enum):
     """Data point types for system telegrams"""
+    STATUS = "00"       # General status
+    LINK_NUMBER = "04"  # Link number data point
     TEMPERATURE = "18"  # Temperature data point
     HUMIDITY = "19"     # Humidity data point
     VOLTAGE = "20"      # Voltage data point
     CURRENT = "21"      # Current data point
-    STATUS = "00"       # General status
     
     @classmethod
     def from_code(cls, code: str) -> Optional['DataPointType']:
@@ -68,11 +71,13 @@ class SystemTelegram:
     def function_description(self) -> str:
         """Get human-readable function description"""
         descriptions = {
+            SystemFunction.DISCOVERY: "Discovery",
             SystemFunction.RETURN_DATA: "Return Data",
-            SystemFunction.UPDATE_FIRMWARE: "Update Firmware", 
             SystemFunction.READ_CONFIG: "Read Configuration",
             SystemFunction.WRITE_CONFIG: "Write Configuration",
-            SystemFunction.SYSTEM_RESET: "System Reset"
+            SystemFunction.SYSTEM_RESET: "System Reset",
+            SystemFunction.ACK: "Acknowledge",
+            SystemFunction.NAK: "Not Acknowledge"
         }
         return descriptions.get(self.system_function, "Unknown Function")
     
@@ -80,11 +85,12 @@ class SystemTelegram:
     def data_point_description(self) -> str:
         """Get human-readable data point description"""
         descriptions = {
+            DataPointType.STATUS: "Status",
+            DataPointType.LINK_NUMBER: "Link Number",
             DataPointType.TEMPERATURE: "Temperature",
             DataPointType.HUMIDITY: "Humidity",
             DataPointType.VOLTAGE: "Voltage", 
-            DataPointType.CURRENT: "Current",
-            DataPointType.STATUS: "Status"
+            DataPointType.CURRENT: "Current"
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
     
