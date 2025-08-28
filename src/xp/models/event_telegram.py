@@ -26,14 +26,11 @@ class EventTelegram(Telegram):
     Format: <E{module_type}L{link_number}I{input_number}{event_type}{checksum}>
     Example: <E14L00I02MAK>
     """
-    module_type: int
-    link_number: int
-    input_number: int
-    event_type: EventType
-    checksum: str
-    timestamp: Optional[datetime] = None
-    checksum_validated: Optional[bool] = None
-    
+    module_type: int = 0
+    link_number: int = 0
+    input_number: int = 0
+    event_type: Optional[EventType] = None
+
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = datetime.now()

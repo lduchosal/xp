@@ -19,15 +19,11 @@ class ReplyTelegram(Telegram):
     Format: <R{serial_number}F{function_code}D{data_point_id}{data_value}{checksum}>
     Example: <R0020012521F02D18+26,0§CIL>
     """
-    serial_number: str
-    system_function: SystemFunction
-    data_point_id: DataPointType
-    data_value: str
-    checksum: str
-    timestamp: Optional[datetime] = None
-    checksum_validated: Optional[bool] = None
-    raw_telegram: str
-    
+    serial_number: str = ""
+    system_function: Optional[SystemFunction] = None
+    data_point_id: Optional[DataPointType] = None
+    data_value: str = ""
+
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = datetime.now()

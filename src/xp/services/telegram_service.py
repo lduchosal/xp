@@ -32,15 +32,7 @@ class TelegramService:
     REPLY_TELEGRAM_PATTERN = re.compile(
         r'^<R(\d{10})F(\d{2})(.+?)([A-Z0-9]{2})>$'
     )
-    
-    DISCOVERY_REQUEST_PATTERN = re.compile(
-        r'^<S(\d{10})F01D00([A-Z0-9]{2})>$'
-    )
-    
-    DISCOVERY_RESPONSE_PATTERN = re.compile(
-        r'^<R(\d{10})F01D([A-Z0-9]{1})>$'
-    )
-    
+
     def __init__(self):
         """Initialize the telegram service"""
         pass
@@ -300,150 +292,6 @@ class TelegramService:
             
         except ValueError as e:
             raise TelegramParsingError(f"Invalid values in reply telegram: {e}")
-    
-    def parse_discovery_request(self, raw_telegram: str) -> DiscoveryRequest:
-        """
-        Parse a raw discovery request telegram string.
-        
-        Args:
-            raw_telegram: The raw telegram string (e.g., "<S0000000000F01D00FA>")
-            
-        Returns:
-            DiscoveryRequest object with parsed data
-            
-        Raises:
-            TelegramParsingError: If the telegram format is invalid
-        """
-        if not raw_telegram:
-            raise TelegramParsingError("Empty telegram string")
-        
-        # Validate and parse using regex
-        match = self.DISCOVERY_REQUEST_PATTERN.match(raw_telegram.strip())
-        if not match:
-            raise TelegramParsingError(f"Invalid discovery request format: {raw_telegram}")
-        
-        try:
-            source_address = match.group(1)
-            checksum = match.group(2)
-            command = "F01D00"  # Fixed command for discovery
-            
-            # Create the telegram object
-            telegram = DiscoveryRequest(
-                source_address=source_address,
-                command=command,
-                checksum=checksum,
-                raw_telegram=raw_telegram
-            )
-            
-            # Automatically validate checksum
-            telegram.checksum_validated = self.validate_discovery_request_checksum(telegram)
-            
-            return telegram
-            
-        except ValueError as e:
-            raise TelegramParsingError(f"Invalid values in discovery request: {e}")
-    
-    def parse_discovery_response(self, raw_telegram: str) -> DiscoveryResponse:
-        """
-        Parse a raw discovery response telegram string.
-        
-        Args:
-            raw_telegram: The raw telegram string (e.g., "<R0020030837F01DFM>")
-            
-        Returns:
-            DiscoveryResponse object with parsed data
-            
-        Raises:
-            TelegramParsingError: If the telegram format is invalid
-        """
-        if not raw_telegram:
-            raise TelegramParsingError("Empty telegram string")
-        
-        # Validate and parse using regex
-        match = self.DISCOVERY_RESPONSE_PATTERN.match(raw_telegram.strip())
-        if not match:
-            raise TelegramParsingError(f"Invalid discovery response format: {raw_telegram}")
-        
-        try:
-            serial_number = match.group(1)
-            checksum = match.group(2)
-            command_base = "F01D"  # Fixed command base for discovery responses
-            
-            # Validate serial number format (should be exactly 10 digits)
-            if len(serial_number) != 10 or not serial_number.isdigit():
-                raise TelegramParsingError(f"Invalid serial number format: {serial_number}")
-            
-            # Create the telegram object
-            telegram = DiscoveryResponse(
-                serial_number=serial_number,
-                command_base=command_base,
-                checksum=checksum,
-                raw_telegram=raw_telegram
-            )
-            
-            # Automatically validate checksum
-            telegram.checksum_validated = self.validate_discovery_response_checksum(telegram)
-            
-            return telegram
-            
-        except ValueError as e:
-            raise TelegramParsingError(f"Invalid values in discovery response: {e}")
-    
-    def validate_discovery_request_checksum(self, telegram: DiscoveryRequest) -> bool:
-        """
-        Validate the checksum of a discovery request telegram.
-        
-        Args:
-            telegram: The parsed discovery request telegram
-            
-        Returns:
-            True if checksum is valid, False otherwise
-        """
-        if not telegram.checksum or len(telegram.checksum) != 2:
-            return False
-        
-        # Extract the data part (everything between < and checksum)
-        raw = telegram.raw_telegram
-        if not raw.startswith('<') or not raw.endswith('>'):
-            return False
-        
-        # Get the data part without brackets and checksum
-        data_part = raw[1:-3]  # Remove '<' and last 2 chars (checksum) + '>'
-        
-        # Calculate expected checksum
-        expected_checksum = calculate_checksum(data_part)
-        
-        return telegram.checksum == expected_checksum
-    
-    def validate_discovery_response_checksum(self, telegram: DiscoveryResponse) -> bool:
-        """
-        Validate the checksum of a discovery response telegram.
-        
-        Args:
-            telegram: The parsed discovery response telegram
-            
-        Returns:
-            True if checksum is valid, False otherwise
-        """
-        if not telegram.checksum or len(telegram.checksum) != 1:
-            return False
-        
-        # Extract the data part (everything between < and checksum)
-        raw = telegram.raw_telegram
-        if not raw.startswith('<') or not raw.endswith('>'):
-            return False
-        
-        # Get the data part without brackets and checksum
-        data_part = raw[1:-2]  # Remove '<' and last 1 char (checksum) + '>'
-        
-        # Calculate expected checksum (single character)
-        expected_checksum = calculate_checksum(data_part)
-        
-        # For discovery responses, we expect a single character checksum
-        # The calculate_checksum might return 2 chars, so take the last one
-        expected_single_char = expected_checksum[-1] if len(expected_checksum) > 1 else expected_checksum
-        
-        return telegram.checksum == expected_single_char
 
     def parse_any_telegram(self, raw_telegram: str) -> Union[EventTelegram, SystemTelegram, ReplyTelegram, DiscoveryRequest, DiscoveryResponse]:
         """
@@ -460,13 +308,7 @@ class TelegramService:
         """
         if not raw_telegram:
             raise TelegramParsingError("Empty telegram string")
-        
-        # First check for discovery telegram patterns
-        if self.DISCOVERY_REQUEST_PATTERN.match(raw_telegram.strip()):
-            return self.parse_discovery_request(raw_telegram)
-        elif self.DISCOVERY_RESPONSE_PATTERN.match(raw_telegram.strip()):
-            return self.parse_discovery_response(raw_telegram)
-        
+
         # Then check general telegram types
         telegram_type = raw_telegram.strip()[1] if len(raw_telegram.strip()) > 1 else ""
         

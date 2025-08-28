@@ -88,7 +88,7 @@ class DiscoveryService:
             system_function=SystemFunction.DISCOVERY,
             data_point_id=DataPointType.STATUS,  # D00 = Status
             checksum=checksum,
-            raw_telegram=raw_telegram
+            raw_telegram=raw_telegram,
         )
         
         return telegram

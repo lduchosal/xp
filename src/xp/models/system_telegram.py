@@ -57,13 +57,10 @@ class SystemTelegram(Telegram):
     Format: <S{serial_number}F{function_code}D{data_point_id}{checksum}>
     Example: <S0020012521F02D18FN>
     """
-    serial_number: str
-    system_function: SystemFunction
-    data_point_id: DataPointType
-    checksum: str
-    timestamp: Optional[datetime] = None
-    checksum_validated: Optional[bool] = None
-    
+    serial_number: str = ""
+    system_function: Optional[SystemFunction] = None
+    data_point_id: DataPointType = 0
+
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = datetime.now()
