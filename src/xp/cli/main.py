@@ -6,6 +6,7 @@ from ..services.module_type_service import ModuleTypeService, ModuleTypeNotFound
 from ..services.checksum_service import ChecksumService
 from ..services.link_number_service import LinkNumberService, LinkNumberError
 from ..services.discovery_service import DiscoveryService, DiscoveryError, DeviceInfo
+from ..services.version_service import VersionService, VersionParsingError
 
 
 @click.group()
@@ -877,6 +878,125 @@ def parse_link_number_telegrams(telegram_list: tuple, json_output: bool):
                         click.echo(f"   → Function: {func_desc} for {data_desc}")
             
             click.echo()
+
+
+@cli.group()
+def version():
+    """Version information operations for device firmware"""
+    pass
+
+
+@version.command("request")
+@click.argument('serial_number')
+@click.option('--json-output', '-j', is_flag=True, help='Output in JSON format')
+def generate_version_request(serial_number: str, json_output: bool):
+    """
+    Generate a telegram to request version information from a device.
+    
+    Example: xp version request 0020030837
+    """
+    service = VersionService()
+    
+    try:
+        result = service.generate_version_request_telegram(serial_number)
+        
+        if not result.success:
+            if json_output:
+                click.echo(json.dumps(result.to_dict(), indent=2))
+                raise SystemExit(1)
+            else:
+                click.echo(f"Error: {result.error}", err=True)
+                raise click.ClickException("Version request generation failed")
+        
+        if json_output:
+            click.echo(json.dumps(result.to_dict(), indent=2))
+        else:
+            click.echo(f"Version Request Telegram:")
+            click.echo(f"Serial: {result.data['serial_number']}")
+            click.echo(f"Telegram: {result.data['telegram']}")
+            click.echo(f"Function: {result.data['function_code']} (Return Data)")
+            click.echo(f"Data Point: {result.data['data_point_code']} (Version)")
+            click.echo(f"Checksum: {result.data['checksum']}")
+            
+    except VersionParsingError as e:
+        if json_output:
+            error_response = {
+                "success": False,
+                "error": str(e),
+                "serial_number": serial_number
+            }
+            click.echo(json.dumps(error_response, indent=2))
+            raise SystemExit(1)
+        else:
+            click.echo(f"Error generating version request: {e}", err=True)
+            raise click.ClickException("Version request generation failed")
+
+
+@version.command("parse")
+@click.argument('telegram_string')
+@click.option('--json-output', '-j', is_flag=True, help='Output in JSON format')
+def parse_version_telegram(telegram_string: str, json_output: bool):
+    """
+    Parse version information from reply telegram.
+    
+    Example: xp version parse "<R0020030837F02D02XP230_V1.00.04FI>"
+    """
+    telegram_service = TelegramService()
+    version_service = VersionService()
+    
+    try:
+        # First parse the telegram
+        parsed = telegram_service.parse_telegram(telegram_string)
+        
+        # Check if it's a version-related telegram
+        if hasattr(parsed, 'data_value'):  # ReplyTelegram
+            result = version_service.parse_version_reply(parsed)
+            
+            if json_output:
+                click.echo(json.dumps(result.to_dict(), indent=2))
+            else:
+                if result.success:
+                    click.echo(version_service.format_version_summary(result.data))
+                else:
+                    click.echo(f"Error: {result.error}")
+                    
+        elif hasattr(parsed, 'system_function'):  # SystemTelegram  
+            result = version_service.validate_version_telegram(parsed)
+            
+            if json_output:
+                click.echo(json.dumps(result.to_dict(), indent=2))
+            else:
+                if result.success and result.data['is_version_request']:
+                    click.echo(f"Version Request Telegram:")
+                    click.echo(f"Serial: {result.data['serial_number']}")
+                    click.echo(f"Function: {result.data['function_description']}")
+                    click.echo(f"Data Point: {result.data['data_point_description']}")
+                else:
+                    click.echo(f"Not a version request telegram")
+        else:
+            if json_output:
+                error_response = {
+                    "success": False,
+                    "error": "Not a version-related telegram",
+                    "raw_input": telegram_string
+                }
+                click.echo(json.dumps(error_response, indent=2))
+                raise SystemExit(1)
+            else:
+                click.echo("Error: Not a version-related telegram", err=True)
+                
+    except (TelegramParsingError, VersionParsingError) as e:
+        if json_output:
+            error_response = {
+                "success": False,
+                "error": str(e),
+                "raw_input": telegram_string
+            }
+            click.echo(json.dumps(error_response, indent=2))
+            raise SystemExit(1)
+        else:
+            click.echo(f"Error parsing telegram: {e}", err=True)
+            raise click.ClickException("Telegram parsing failed")
 
 
 @cli.group()

@@ -27,6 +27,7 @@ src/xp/services/link_number_service.py
 src/xp/services/log_file_service.py
 src/xp/services/module_type_service.py
 src/xp/services/telegram_service.py
+src/xp/services/version_service.py
 src/xp/utils/__init__.py
 src/xp/utils/checksum.py
 src/xp/utils/time_utils.py

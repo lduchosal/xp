@@ -34,6 +34,7 @@ class SystemFunction(Enum):
 class DataPointType(Enum):
     """Data point types for system telegrams"""
     STATUS = "00"       # General status
+    VERSION = "02"       # General status
     LINK_NUMBER = "04"  # Link number data point
     CURRENT = "17"      # Current data point
     TEMPERATURE = "18"  # Temperature data point
@@ -84,6 +85,7 @@ class SystemTelegram(Telegram):
         """Get human-readable data point description"""
         descriptions = {
             DataPointType.STATUS: "Status",
+            DataPointType.VERSION: "Version",
             DataPointType.LINK_NUMBER: "Link Number",
             DataPointType.TEMPERATURE: "Temperature",
             DataPointType.HUMIDITY: "Humidity",

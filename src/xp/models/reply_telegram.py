@@ -48,7 +48,8 @@ class ReplyTelegram(Telegram):
             DataPointType.HUMIDITY: "Humidity",
             DataPointType.VOLTAGE: "Voltage", 
             DataPointType.CURRENT: "Current",
-            DataPointType.STATUS: "Status"
+            DataPointType.STATUS: "Status",
+            DataPointType.VERSION: "Version"
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
     
@@ -65,6 +66,8 @@ class ReplyTelegram(Telegram):
             return self._parse_current_value()
         elif self.data_point_id == DataPointType.STATUS:
             return self._parse_status_value()
+        elif self.data_point_id == DataPointType.VERSION:
+            return self._parse_version_value()
         else:
             return {"raw_value": self.data_value, "parsed": False}
     
@@ -168,6 +171,42 @@ class ReplyTelegram(Telegram):
             "raw_value": self.data_value,
             "parsed": True
         }
+    
+    def _parse_version_value(self) -> dict:
+        """Parse version value like 'XP230_V1.00.04'"""
+        try:
+            # Version format: {PRODUCT}_{VERSION}
+            # Examples: XP230_V1.00.04, XP20_V0.01.05, XP33LR_V0.04.02, XP24_V0.34.03
+            if "_V" in self.data_value:
+                parts = self.data_value.split("_V", 1)
+                if len(parts) == 2:
+                    product = parts[0]
+                    version = parts[1]
+                    
+                    return {
+                        "product": product,
+                        "version": version,
+                        "full_version": self.data_value,
+                        "formatted": f"{product} v{version}",
+                        "raw_value": self.data_value,
+                        "parsed": True
+                    }
+            
+            # If format doesn't match expected pattern, treat as raw
+            return {
+                "full_version": self.data_value,
+                "formatted": self.data_value,
+                "raw_value": self.data_value,
+                "parsed": False,
+                "error": "Version format not recognized"
+            }
+            
+        except (ValueError, AttributeError):
+            return {
+                "raw_value": self.data_value,
+                "parsed": False,
+                "error": "Failed to parse version"
+            }
     
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization"""
