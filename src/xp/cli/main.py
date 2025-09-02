@@ -262,7 +262,7 @@ def parse_discovery_response_telegram(telegram_string: str, json_output: bool, v
 @telegram.command("parse")
 @click.argument('telegram_string')
 @click.option('--json-output', '-j', is_flag=True, help='Output in JSON format')
-def parse_any_telegram(telegram_string: str, json_output: bool):
+def parse_telegram(telegram_string: str, json_output: bool):
     """
     Auto-detect and parse any type of telegram (event, system, reply, or discovery).
     
@@ -275,7 +275,7 @@ def parse_any_telegram(telegram_string: str, json_output: bool):
     service = TelegramService()
     
     try:
-        parsed = service.parse_any_telegram(telegram_string)
+        parsed = service.parse_telegram(telegram_string)
         
         if json_output:
             output = parsed.to_dict()
@@ -811,7 +811,7 @@ def parse_link_number_telegrams(telegram_list: tuple, json_output: bool):
     for telegram_str in telegram_list:
         try:
             # Parse the telegram
-            parsed = telegram_service.parse_any_telegram(telegram_str)
+            parsed = telegram_service.parse_telegram(telegram_str)
             
             result = {
                 "raw_telegram": telegram_str,

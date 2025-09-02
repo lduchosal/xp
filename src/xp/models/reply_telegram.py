@@ -95,7 +95,7 @@ class ReplyTelegram(Telegram):
         """Parse humidity value like '+65,5§H'"""
         try:
             # Remove unit indicator (§H)
-            value_part = self.data_value.replace("§H", "")
+            value_part = self.data_value.replace("§RH", "")
             # Replace comma with dot for decimal
             value_str = value_part.replace(",", ".")
             humidity = float(value_str)

@@ -291,3 +291,22 @@ class TestChecksumService:
         assert simple_validation.data["is_valid"] is True
         assert crc32_validation.success is True
         assert crc32_validation.data["is_valid"] is True
+
+    def test_telegram_crash1(self):
+        """Test with actual telegram format example."""
+        telegram_data = "R0020044974F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]"
+        # <R0020044974F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]HA>
+
+        # Calculate both types of checksums
+        simple_result = self.service.calculate_simple_checksum(telegram_data)
+
+        assert simple_result.success is True
+
+        # Validate the calculated checksums
+        simple_validation = self.service.validate_checksum(
+            telegram_data, simple_result.data["checksum"]
+        )
+
+        assert simple_validation.success is True
+        assert simple_validation.data["is_valid"] is True
+        assert simple_result.data["checksum"] == "HA"

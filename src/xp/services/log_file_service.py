@@ -138,7 +138,7 @@ class LogFileService:
         
         # Try to parse the telegram
         try:
-            parsed_telegram = self.telegram_service.parse_any_telegram(telegram_str)
+            parsed_telegram = self.telegram_service.parse_telegram(telegram_str)
             entry.parsed_telegram = parsed_telegram
         except TelegramParsingError as e:
             entry.parse_error = str(e)

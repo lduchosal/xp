@@ -8,6 +8,7 @@ import json
 import pytest
 from click.testing import CliRunner
 from src.xp.cli.main import cli
+from src.xp.models.system_telegram import DataPointType
 
 
 class TestSystemTelegramCLI:
@@ -168,7 +169,7 @@ class TestReplyTelegramCLI:
         assert output_data["serial_number"] == "0020012521"
         assert output_data["system_function"]["code"] == "02"
         assert output_data["system_function"]["description"] == "Data Response"
-        assert output_data["data_point_id"]["code"] == "18"
+        assert output_data["data_point_id"]["code"] == DataPointType.TEMPERATURE.value
         assert output_data["data_point_id"]["description"] == "Temperature"
         assert output_data["data_value"]["raw"] == "+26,0§C"
         assert output_data["data_value"]["parsed"]["parsed"] is True
@@ -181,9 +182,8 @@ class TestReplyTelegramCLI:
         """Test parsing different reply data types."""
         # Humidity
         result = self.runner.invoke(cli, [
-            'telegram', 'parse-reply', '<R0020012521F02D19+65,5§HIL>', '--json-output'
+            'telegram', 'parse-reply', '<R0020012521F02D19+65,5§RHIL>', '--json-output'
         ])
-        
         assert result.exit_code == 0
         output_data = json.loads(result.output)
         assert output_data["data_value"]["parsed"]["value"] == 65.5
@@ -198,16 +198,6 @@ class TestReplyTelegramCLI:
         output_data = json.loads(result.output)
         assert output_data["data_value"]["parsed"]["value"] == 12.5
         assert output_data["data_value"]["parsed"]["unit"] == "V"
-        
-        # Current
-        result = self.runner.invoke(cli, [
-            'telegram', 'parse-reply', '<R0020012521F02D21+0,25§AIL>', '--json-output'
-        ])
-        
-        assert result.exit_code == 0
-        output_data = json.loads(result.output)
-        assert output_data["data_value"]["parsed"]["value"] == 0.25
-        assert output_data["data_value"]["parsed"]["unit"] == "A"
 
     def test_parse_reply_telegram_status_data(self):
         """Test parsing reply telegram with status data."""
@@ -269,7 +259,7 @@ class TestAutoDetectTelegramCLI:
         """Set up test runner."""
         self.runner = CliRunner()
 
-    def test_parse_any_telegram_event(self):
+    def test_parse_telegram_event(self):
         """Test parse command with event telegram."""
         result = self.runner.invoke(cli, [
             'telegram', 'parse', '<E14L00I02MAK>'
@@ -283,7 +273,7 @@ class TestAutoDetectTelegramCLI:
         assert "XP2606 (Type 14)" in output
         assert "pressed" in output
 
-    def test_parse_any_telegram_system(self):
+    def test_parse_telegram_system(self):
         """Test parse command with system telegram."""
         result = self.runner.invoke(cli, [
             'telegram', 'parse', '<S0020012521F02D18FN>'
@@ -296,7 +286,7 @@ class TestAutoDetectTelegramCLI:
         assert "System:" in output
         assert "Return Data for Temperature" in output
 
-    def test_parse_any_telegram_reply(self):
+    def test_parse_telegram_reply(self):
         """Test parse command with reply telegram."""
         result = self.runner.invoke(cli, [
             'telegram', 'parse', '<R0020012521F02D18+26,0§CIL>'
@@ -309,7 +299,7 @@ class TestAutoDetectTelegramCLI:
         assert "Reply:" in output
         assert "Data: 26.0°C" in output
 
-    def test_parse_any_telegram_json_output(self):
+    def test_parse_telegram_json_output(self):
         """Test parse command with JSON output for different types."""
         # Event telegram
         result = self.runner.invoke(cli, [
@@ -341,7 +331,7 @@ class TestAutoDetectTelegramCLI:
         assert output_data["telegram_type"] == "reply"
         assert "data_value" in output_data
 
-    def test_parse_any_telegram_unknown_type(self):
+    def test_parse_telegram_unknown_type(self):
         """Test parse command with unknown telegram type."""
         result = self.runner.invoke(cli, [
             'telegram', 'parse', '<X0020012521F02D18+26,0§CIL>'
@@ -350,7 +340,7 @@ class TestAutoDetectTelegramCLI:
         assert result.exit_code == 1
         assert "Error parsing telegram" in result.output
 
-    def test_parse_any_telegram_unknown_type_json(self):
+    def test_parse_telegram_unknown_type_json(self):
         """Test parse command with unknown telegram type and JSON output."""
         result = self.runner.invoke(cli, [
             'telegram', 'parse', '<X0020012521F02D18+26,0§CIL>', '--json-output'
@@ -361,7 +351,7 @@ class TestAutoDetectTelegramCLI:
         assert output_data["success"] is False
         assert "Unknown telegram type" in output_data["error"]
 
-    def test_parse_any_telegram_help(self):
+    def test_parse_telegram_help(self):
         """Test parse command help."""
         result = self.runner.invoke(cli, [
             'telegram', 'parse', '--help'
@@ -376,7 +366,7 @@ class TestAutoDetectTelegramCLI:
         ("<S0020012521F02D18FN>", "system"),
         ("<R0020012521F02D18+26,0§CIL>", "reply")
     ])
-    def test_parse_any_telegram_type_detection(self, telegram, expected_type):
+    def test_parse_telegram_type_detection(self, telegram, expected_type):
         """Test that parse correctly detects and processes different telegram types."""
         result = self.runner.invoke(cli, [
             'telegram', 'parse', telegram, '--json-output'

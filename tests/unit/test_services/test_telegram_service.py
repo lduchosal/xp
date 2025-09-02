@@ -415,69 +415,69 @@ class TestAutoDetectTelegramParsing:
         """Setup test fixtures"""
         self.service = TelegramService()
     
-    def test_parse_any_telegram_event(self):
+    def test_parse_telegram_event(self):
         """Test auto-parsing event telegram"""
         raw = "<E14L00I02MAK>"
-        result = self.service.parse_any_telegram(raw)
+        result = self.service.parse_telegram(raw)
         
         assert isinstance(result, EventTelegram)
         assert result.module_type == 14
         assert hasattr(result, 'event_type')
     
-    def test_parse_any_telegram_system(self):
+    def test_parse_telegram_system(self):
         """Test auto-parsing system telegram"""
         raw = "<S0020012521F02D18FN>"
-        result = self.service.parse_any_telegram(raw)
+        result = self.service.parse_telegram(raw)
         
         assert isinstance(result, SystemTelegram)
         assert result.serial_number == "0020012521"
         assert not hasattr(result, 'data_value')
     
-    def test_parse_any_telegram_reply(self):
+    def test_parse_telegram_reply(self):
         """Test auto-parsing reply telegram"""
         raw = "<R0020012521F02D18+26,0§CIL>"
-        result = self.service.parse_any_telegram(raw)
+        result = self.service.parse_telegram(raw)
         
         assert isinstance(result, ReplyTelegram)
         assert result.serial_number == "0020012521"
         assert hasattr(result, 'data_value')
         assert result.data_value == "+26,0§C"
     
-    def test_parse_any_telegram_empty_string(self):
+    def test_parse_telegram_empty_string(self):
         """Test parsing empty string raises error"""
         with pytest.raises(TelegramParsingError, match="Empty telegram string"):
-            self.service.parse_any_telegram("")
+            self.service.parse_telegram("")
     
-    def test_parse_any_telegram_unknown_type(self):
+    def test_parse_telegram_unknown_type(self):
         """Test parsing unknown telegram type raises error"""
         with pytest.raises(TelegramParsingError, match="Unknown telegram type: X"):
-            self.service.parse_any_telegram("<X0020012521F02D18+26,0§CIL>")
+            self.service.parse_telegram("<X0020012521F02D18+26,0§CIL>")
     
-    def test_parse_any_telegram_invalid_format(self):
+    def test_parse_telegram_invalid_format(self):
         """Test parsing invalid format raises error for appropriate type"""
         # This should try to parse as system telegram and fail
         with pytest.raises(TelegramParsingError, match="Invalid system telegram format"):
-            self.service.parse_any_telegram("<S002001252F02D18FN>")
+            self.service.parse_telegram("<S002001252F02D18FN>")
         
         # This should try to parse as reply telegram and fail
         with pytest.raises(TelegramParsingError, match="Invalid reply telegram format"):
-            self.service.parse_any_telegram("<R002001252F02D18+26,0§CIL>")
+            self.service.parse_telegram("<R002001252F02D18+26,0§CIL>")
         
         # This should try to parse as event telegram and fail
         with pytest.raises(TelegramParsingError, match="Invalid telegram format"):
-            self.service.parse_any_telegram("<E14L100I02MAK>")
+            self.service.parse_telegram("<E14L100I02MAK>")
     
-    def test_parse_any_telegram_short_string(self):
+    def test_parse_telegram_short_string(self):
         """Test parsing very short string raises error"""
         with pytest.raises(TelegramParsingError, match="Unknown telegram type"):
-            self.service.parse_any_telegram("<")
+            self.service.parse_telegram("<")
     
     @pytest.mark.parametrize("raw_telegram,expected_type", [
         ("<E14L00I02MAK>", EventTelegram),
         ("<S0020012521F02D18FN>", SystemTelegram),
         ("<R0020012521F02D18+26,0§CIL>", ReplyTelegram)
     ])
-    def test_parse_any_telegram_type_detection(self, raw_telegram, expected_type):
-        """Test that parse_any_telegram correctly detects telegram types"""
-        result = self.service.parse_any_telegram(raw_telegram)
+    def test_parse_telegram_type_detection(self, raw_telegram, expected_type):
+        """Test that parse_telegram correctly detects telegram types"""
+        result = self.service.parse_telegram(raw_telegram)
         assert isinstance(result, expected_type)

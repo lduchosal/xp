@@ -188,7 +188,7 @@ class TestSystemTelegramEnhancements:
             ("18", DataPointType.TEMPERATURE),
             ("19", DataPointType.HUMIDITY),
             ("20", DataPointType.VOLTAGE),
-            ("21", DataPointType.CURRENT),
+            ("17", DataPointType.CURRENT),
         ]
         
         for code, expected_type in test_cases:

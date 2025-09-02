@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Optional
 from enum import Enum
 
-from src.xp.models.telegram import Telegram
+from .telegram import Telegram
 
 
 class SystemFunction(Enum):
@@ -35,11 +35,11 @@ class DataPointType(Enum):
     """Data point types for system telegrams"""
     STATUS = "00"       # General status
     LINK_NUMBER = "04"  # Link number data point
+    CURRENT = "17"      # Current data point
     TEMPERATURE = "18"  # Temperature data point
     HUMIDITY = "19"     # Humidity data point
     VOLTAGE = "20"      # Voltage data point
-    CURRENT = "21"      # Current data point
-    
+
     @classmethod
     def from_code(cls, code: str) -> Optional['DataPointType']:
         """Get DataPointType from code string"""

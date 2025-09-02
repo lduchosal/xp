@@ -31,7 +31,7 @@ class TestLogFileService:
         
         # Mock telegram service
         mock_telegram = Mock(spec=SystemTelegram)
-        service.telegram_service.parse_any_telegram = Mock(return_value=mock_telegram)
+        service.telegram_service.parse_telegram = Mock(return_value=mock_telegram)
         
         result = service._parse_log_line(line, 1)
         
@@ -43,7 +43,7 @@ class TestLogFileService:
         assert result.parse_error is None
         
         # Verify telegram service was called
-        service.telegram_service.parse_any_telegram.assert_called_once_with("<S0020044964F27D00AAFN>")
+        service.telegram_service.parse_telegram.assert_called_once_with("<S0020044964F27D00AAFN>")
     
     def test_parse_log_line_telegram_parsing_error(self):
         """Test parsing log line with telegram parsing error"""
@@ -51,7 +51,7 @@ class TestLogFileService:
         line = "22:44:20,352 [RX] <invalid>"
         
         # Mock telegram service to raise error
-        service.telegram_service.parse_any_telegram = Mock(
+        service.telegram_service.parse_telegram = Mock(
             side_effect=TelegramParsingError("Invalid telegram format")
         )
         
@@ -92,7 +92,7 @@ class TestLogFileService:
         
         # Mock telegram service
         mock_telegrams = [Mock(spec=SystemTelegram), Mock(spec=SystemTelegram), Mock(spec=EventTelegram)]
-        service.telegram_service.parse_any_telegram = Mock(side_effect=mock_telegrams)
+        service.telegram_service.parse_telegram = Mock(side_effect=mock_telegrams)
         
         results = service.parse_log_lines(lines)
         
@@ -125,7 +125,7 @@ class TestLogFileService:
         
         # Mock telegram service - first and third calls succeed, second fails
         mock_telegram = Mock(spec=SystemTelegram)
-        service.telegram_service.parse_any_telegram = Mock(side_effect=[
+        service.telegram_service.parse_telegram = Mock(side_effect=[
             mock_telegram,
             mock_telegram  # Only two valid telegrams
         ])
@@ -159,7 +159,7 @@ class TestLogFileService:
         
         service = LogFileService()
         mock_telegram = Mock(spec=SystemTelegram)
-        service.telegram_service.parse_any_telegram = Mock(return_value=mock_telegram)
+        service.telegram_service.parse_telegram = Mock(return_value=mock_telegram)
         
         results = service.parse_log_file("/path/to/log.txt")
         

@@ -67,7 +67,7 @@ class TestLinkNumberIntegration:
         ]
         
         for telegram_str in test_cases:
-            parsed = telegram_service.parse_any_telegram(telegram_str)
+            parsed = telegram_service.parse_telegram(telegram_str)
             
             # Verify checksum validation
             assert parsed.checksum_validated is not None

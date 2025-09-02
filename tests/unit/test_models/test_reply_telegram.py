@@ -131,9 +131,9 @@ class TestReplyTelegram:
             serial_number="0020012521",
             system_function=SystemFunction.RETURN_DATA,
             data_point_id=DataPointType.HUMIDITY,
-            data_value="+65,5§H",
+            data_value="+65,5§RH",
             checksum="XY",
-            raw_telegram="<R0020012521F02D19+65,5§HXY>"
+            raw_telegram="<R0020012521F02D19+65,5§RHXY>"
         )
         
         parsed = telegram.parsed_value
@@ -142,7 +142,7 @@ class TestReplyTelegram:
         assert parsed["value"] == 65.5
         assert parsed["unit"] == "%RH"
         assert parsed["formatted"] == "65.5%RH"
-        assert parsed["raw_value"] == "+65,5§H"
+        assert parsed["raw_value"] == "+65,5§RH"
     
     def test_parse_voltage_value(self):
         """Test voltage value parsing."""
@@ -318,10 +318,10 @@ class TestReplyTelegram:
         assert parsed["unit"] == expected_unit
     
     @pytest.mark.parametrize("data_value,expected_value", [
-        ("+65,5§H", 65.5),
-        ("+0,0§H", 0.0),
-        ("+100,0§H", 100.0),
-        ("+50,3§H", 50.3)
+        ("+65,5§RH", 65.5),
+        ("+0,0§RH", 0.0),
+        ("+100,0§RH", 100.0),
+        ("+50,3§RH", 50.3)
     ])
     def test_humidity_parsing_variations(self, data_value, expected_value):
         """Test humidity parsing with various values."""

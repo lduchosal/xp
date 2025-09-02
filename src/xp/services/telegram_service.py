@@ -292,7 +292,7 @@ class TelegramService:
         except ValueError as e:
             raise TelegramParsingError(f"Invalid values in reply telegram: {e}")
 
-    def parse_any_telegram(self, raw_telegram: str) -> Union[EventTelegram, SystemTelegram, ReplyTelegram]:
+    def parse_telegram(self, raw_telegram: str) -> Union[EventTelegram, SystemTelegram, ReplyTelegram]:
         """
         Auto-detect and parse any type of telegram.
         

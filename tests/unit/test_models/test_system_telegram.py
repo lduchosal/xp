@@ -45,7 +45,7 @@ class TestDataPointType:
         assert DataPointType.from_code("18") == DataPointType.TEMPERATURE
         assert DataPointType.from_code("19") == DataPointType.HUMIDITY
         assert DataPointType.from_code("20") == DataPointType.VOLTAGE
-        assert DataPointType.from_code("21") == DataPointType.CURRENT
+        assert DataPointType.from_code("17") == DataPointType.CURRENT
         assert DataPointType.from_code("00") == DataPointType.STATUS
     
     def test_from_code_invalid(self):
@@ -59,7 +59,7 @@ class TestDataPointType:
         assert DataPointType.TEMPERATURE.value == "18"
         assert DataPointType.HUMIDITY.value == "19"
         assert DataPointType.VOLTAGE.value == "20"
-        assert DataPointType.CURRENT.value == "21"
+        assert DataPointType.CURRENT.value == "17"
         assert DataPointType.STATUS.value == "00"
 
 
