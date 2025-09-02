@@ -147,7 +147,15 @@ class DiscoveryService:
                 devices.append(device_info)
         
         return devices
-    
+
+    def _generate_discovery_response(self, serial_number: str) -> str:
+        """Generate discovery response telegram for a device"""
+        # Format: <R{serial}F01D{checksum}>
+        data_part = f"R{serial_number}F01D"
+        checksum = calculate_checksum(data_part)
+        telegram = f"<{data_part}{checksum}>"
+        return telegram
+
     def get_unique_devices(self, devices: List[DeviceInfo]) -> List[DeviceInfo]:
         """
         Filter out duplicate devices based on serial number.
@@ -258,3 +266,9 @@ class DiscoveryService:
                 lines.append(f"  {prefix}xxxx: {count} device(s)")
         
         return "\n".join(lines)
+
+    def _is_discovery_request(self, telegram: SystemTelegram) -> bool:
+        """Check if telegram is a discovery request"""
+        return (telegram.system_function == SystemFunction.DISCOVERY and
+                telegram.serial_number == "0000000000")  # Broadcast address
+
