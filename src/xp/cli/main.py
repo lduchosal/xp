@@ -1518,7 +1518,7 @@ _server_instance = None
 
 
 @server.command("start")
-@click.option('--port', '-p', default=1000, type=int, help='Port to listen on (default: 1000)')
+@click.option('--port', '-p', default=10001, type=int, help='Port to listen on (default: 10001)')
 @click.option('--config', '-c', default="config.yml", help='Configuration file path')
 @click.option('--json-output', '-j', is_flag=True, help='Output in JSON format')
 def start_server(port: int, config: str, json_output: bool):

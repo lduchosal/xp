@@ -32,7 +32,7 @@
 ```python
 # ALWAYS use this pattern for connections
 def agent_connection_pattern():
-    client = TCPClient("192.168.0.1", 1000)
+    client = TCPClient("192.168.0.1", 10001)
     try:
         if client.connect():
             # Validate connection BEFORE sending commands
@@ -279,7 +279,7 @@ Usage: xp xp20 action
 class TCPClient:
     """Manages TCP socket connection to remote console bus"""
     
-    def __init__(self, host: str = "192.168.0.1", port: int = 1000):
+    def __init__(self, host: str = "192.168.0.1", port: int = 10001):
         self.host = host
         self.port = port
         self.socket = None
@@ -316,7 +316,7 @@ class ConsoleProtocol:
 ```python
 @click.group()
 @click.option('--host', default='192.168.0.1')
-@click.option('--port', default=1000)
+@click.option('--port', default=10001)
 @click.pass_context
 def cli(ctx, host, port):
     """xp CLI tool for remote console bus operations"""
@@ -406,7 +406,7 @@ class ModuleNotFoundError(xpError):
 # xp.yml
 connection:
   host: "192.168.0.1"
-  port: 1000
+  port: 10001
   timeout: 30
   retry_attempts: 3
 

@@ -5,8 +5,8 @@ TCP server that emulates Conbus device behavior for testing and development purp
 
 ## TCP Server
 - **Protocol**: TCP
-- **Port**: 1000
-- **Binding**: Listen on all interfaces (0.0.0.0:1000)
+- **Port**: 10001
+- **Binding**: Listen on all interfaces (0.0.0.0:10001)
 - **Connection**: Accept a single connections
 - **Timeout**: 30 seconds for idle connections
 
@@ -37,7 +37,7 @@ devices:
 - Each device responds individually to Discovery Requests
 
 ## Protocol Behavior
-1. **Listen**: TCP server accepts connections on port 1000
+1. **Listen**: TCP server accepts connections on port 10001
 2. **Receive**: Parse incoming Discovery Request telegram
 3. **Validate**: Check telegram format and checksum
 4. **Respond**: Send response for each configured device
@@ -92,7 +92,7 @@ xp server stop     # Stop the running emulator server
 - **xp server start**:
   - Load config.yml
   - Initialize device services (XP20, XP24)
-  - Start TCP server on port 1000
+  - Start TCP server on port 10001
   - Display server status and listening port
   
 - **xp server stop**:

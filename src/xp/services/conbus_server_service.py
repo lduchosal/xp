@@ -1,6 +1,6 @@
 """Conbus Server Service for emulating device discovery responses.
 
-This service implements a TCP server that listens on port 1000 and responds to
+This service implements a TCP server that listens on port 10001 and responds to
 Discovery Request telegrams with configurable device information.
 """
 
@@ -11,11 +11,8 @@ import yaml
 import os
 from typing import Dict, List, Optional
 
-from ..cli.main import discovery
-from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
 from ..services.telegram_service import TelegramService
 from ..services.discovery_service import DiscoveryService
-from ..utils.checksum import calculate_checksum
 
 
 class ConbusServerError(Exception):
@@ -31,7 +28,7 @@ class ConbusServerService:
     parses Discovery Request telegrams, and coordinates device responses.
     """
     
-    def __init__(self, config_path: str = "config.yml", port: int = 1000):
+    def __init__(self, config_path: str = "config.yml", port: int = 10001):
         """Initialize the Conbus server service"""
         self.config_path = config_path
         self.port = port
@@ -64,7 +61,7 @@ class ConbusServerService:
             self.devices = {}
     
     def start_server(self):
-        """Start the TCP server on port 1000"""
+        """Start the TCP server on port 10001"""
         if self.is_running:
             raise ConbusServerError("Server is already running")
         
@@ -73,7 +70,7 @@ class ConbusServerService:
             self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             
-            # Bind to port 1000 on all interfaces
+            # Bind to port 10001 on all interfaces
             self.server_socket.bind(('0.0.0.0', self.port))
             self.server_socket.listen(1)  # Accept single connection as per spec
             
