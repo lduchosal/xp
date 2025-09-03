@@ -1,0 +1,7 @@
+3c53 3030 3230 3034 3439 3636 4630 3244 3138 4642 3e 
+<S0020044966F02D18FB>
+
+3c52 3030 3230 3034 3439 3636 4630 3244 3138 2b33 312c 35a7 4349 453e  
+<R0020044966F02D18+31,5.CIE>
+
+Error receiving responses: 'utf-8' codec can't decode byte 0xa7 in position 23: invalid start byte

@@ -26,7 +26,6 @@ class MockConbusServer:
             "<S0020012521F02D18FN>": ["<R0020012521F02D18+23.4C§OK>"],
             "<S0020030837F02D20FM>": ["<R0020030837F02D20+12.5V§OK>"],
             "<S0020030837F02DE2CJ>": ["<R0020030837F02DE2COUCOUFM>"],
-
         }
     
     def start(self):

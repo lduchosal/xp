@@ -4,8 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: Conbus client">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Fix: Conbus client">
+      <change afterPath="$PROJECT_DIR$/Specs/Feature-Conbus-Results.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Specs/Feature-Conbus-Scan.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Specs/Fix-Encoding-Issue.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cli.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cli.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" afterDir="false" />
     </list>
@@ -66,7 +71,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/q/Projects/xp",
+    "last_opened_file_path": "/Users/q/Projects/xp/Specs",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -79,6 +84,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Specs" />
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -239,7 +245,7 @@
       <workItem from="1756238343796" duration="33000" />
       <workItem from="1756238436428" duration="3455000" />
       <workItem from="1756275107111" duration="30469000" />
-      <workItem from="1756830585261" duration="13321000" />
+      <workItem from="1756830585261" duration="19984000" />
     </task>
     <task id="LOCAL-00001" summary="Feat: initial">
       <option name="closed" value="true" />
@@ -337,7 +343,23 @@
       <option name="project" value="LOCAL" />
       <updated>1756889143389</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Fix: Conbus client">
+      <option name="closed" value="true" />
+      <created>1756892350197</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1756892350197</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Fix: Conbus client">
+      <option name="closed" value="true" />
+      <created>1756892383973</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1756892383973</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -352,7 +374,8 @@
     <MESSAGE value="Feat: version" />
     <MESSAGE value="Feat: Conbus server" />
     <MESSAGE value="Feat: Conbus client" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feat: Conbus client" />
+    <MESSAGE value="Fix: Conbus client" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix: Conbus client" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -408,7 +431,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestErrorScenarios_test_multiple_concurrent_connections.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestErrorScenarios.test_multiple_concurrent_connections Coverage Results" MODIFIED="1756891785454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestCustomTelegrams_test_custom_telegram_send.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestCustomTelegrams.test_custom_telegram_send Coverage Results" MODIFIED="1756891106347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestConnectionStatusIntegration_test_connection_status_lifecycle.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestConnectionStatusIntegration.test_connection_status_lifecycle Coverage Results" MODIFIED="1756891211230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1756892294723" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1756932070276" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$telegram_test_data.coverage" NAME="telegram_test_data Coverage Results" MODIFIED="1756275468881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/fixtures" />
     <SUITE FILE_PATH="coverage/xp$demo.coverage" NAME="demo Coverage Results" MODIFIED="1756276295879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_voltage_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request Coverage Results" MODIFIED="1756890872793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

@@ -306,6 +306,40 @@ class ConbusClientSendService:
         )
         return self.send_telegram(request)
     
+    def scan_module(self, target_serial: str) -> List[ConbusSendResponse]:
+        """Scan all functions and datapoints for a module"""
+        results = []
+        
+        # Scan functions 00-FF and datapoints 00-FF
+        for function_hex in range(256):
+            for datapoint_hex in range(256):
+                function_code = f"{function_hex:02X}"
+                data_point_code = f"{datapoint_hex:02X}"
+                
+                try:
+                    response = self.send_custom_telegram(target_serial, function_code, data_point_code)
+                    results.append(response)
+                    
+                    # Small delay to prevent overwhelming the server
+                    import time
+                    time.sleep(0.001)  # 1ms delay
+                    
+                except Exception as e:
+                    # Create error response for failed scan attempt
+                    error_response = ConbusSendResponse(
+                        success=False,
+                        request=ConbusSendRequest(
+                            telegram_type=TelegramType.DISCOVERY,  # Placeholder
+                            target_serial=target_serial,
+                            function_code=function_code,
+                            data_point_code=data_point_code
+                        ),
+                        error=f"Scan failed for F{function_code}D{data_point_code}: {e}"
+                    )
+                    results.append(error_response)
+        
+        return results
+    
     def send_custom_telegram(self, target_serial: str, function_code: str, data_point_code: str) -> ConbusSendResponse:
         """Send custom telegram with specified function and data point codes"""
         # Generate custom system telegram: <S{serial}F{function}{data_point}{checksum}>
