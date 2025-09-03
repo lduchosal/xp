@@ -43,3 +43,6 @@ $ xp conbus scan 0020030837
 - For each function, scans datapoint codes (00-FF)  
 - Uses existing telegram generation and communication infrastructure
 - Supports --json-output flag for structured results
+- **Background Processing**: Scan operations run in background with real-time output
+- **Live Output Display**: Results are displayed as they arrive from the server
+- Small delays between requests prevent server overload

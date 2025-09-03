@@ -4,15 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Fix: Conbus client">
-      <change afterPath="$PROJECT_DIR$/Specs/Feature-Conbus-Results.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Specs/Feature-Conbus-Scan.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Specs/Fix-Encoding-Issue.md" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Fix: Conbus scan">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cli.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Specs/Feature-Conbus-Scan.md" beforeDir="false" afterPath="$PROJECT_DIR$/Specs/Feature-Conbus-Scan.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -245,7 +241,7 @@
       <workItem from="1756238343796" duration="33000" />
       <workItem from="1756238436428" duration="3455000" />
       <workItem from="1756275107111" duration="30469000" />
-      <workItem from="1756830585261" duration="19984000" />
+      <workItem from="1756830585261" duration="21493000" />
     </task>
     <task id="LOCAL-00001" summary="Feat: initial">
       <option name="closed" value="true" />
@@ -359,7 +355,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756892383973</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Fix: Conbus scan">
+      <option name="closed" value="true" />
+      <created>1756932325384</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1756932325384</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -375,7 +379,8 @@
     <MESSAGE value="Feat: Conbus server" />
     <MESSAGE value="Feat: Conbus client" />
     <MESSAGE value="Fix: Conbus client" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix: Conbus client" />
+    <MESSAGE value="Fix: Conbus scan" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix: Conbus scan" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

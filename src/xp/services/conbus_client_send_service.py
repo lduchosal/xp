@@ -306,19 +306,26 @@ class ConbusClientSendService:
         )
         return self.send_telegram(request)
     
-    def scan_module(self, target_serial: str) -> List[ConbusSendResponse]:
-        """Scan all functions and datapoints for a module"""
+    def scan_module(self, target_serial: str, progress_callback=None) -> List[ConbusSendResponse]:
+        """Scan all functions and datapoints for a module with live output"""
         results = []
+        total_combinations = 256 * 256  # 65536 combinations
+        count = 0
         
         # Scan functions 00-FF and datapoints 00-FF
         for function_hex in range(256):
             for datapoint_hex in range(256):
                 function_code = f"{function_hex:02X}"
                 data_point_code = f"{datapoint_hex:02X}"
+                count += 1
                 
                 try:
                     response = self.send_custom_telegram(target_serial, function_code, data_point_code)
                     results.append(response)
+                    
+                    # Call progress callback with live results
+                    if progress_callback:
+                        progress_callback(response, count, total_combinations)
                     
                     # Small delay to prevent overwhelming the server
                     import time
@@ -337,8 +344,25 @@ class ConbusClientSendService:
                         error=f"Scan failed for F{function_code}D{data_point_code}: {e}"
                     )
                     results.append(error_response)
+                    
+                    # Call progress callback with error response
+                    if progress_callback:
+                        progress_callback(error_response, count, total_combinations)
         
         return results
+    
+    def scan_module_background(self, target_serial: str, progress_callback=None):
+        """Scan module in background with immediate output via callback"""
+        import threading
+        
+        def background_scan():
+            return self.scan_module(target_serial, progress_callback)
+        
+        # Start background thread
+        scan_thread = threading.Thread(target=background_scan, daemon=True)
+        scan_thread.start()
+        
+        return scan_thread
     
     def send_custom_telegram(self, target_serial: str, function_code: str, data_point_code: str) -> ConbusSendResponse:
         """Send custom telegram with specified function and data point codes"""

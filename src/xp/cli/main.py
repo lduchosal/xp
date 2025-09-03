@@ -1923,49 +1923,113 @@ def send_telegram(json_output: bool):
 @conbus.command("scan")
 @click.argument('serial_number')
 @click.option('--json-output', '-j', is_flag=True, help='Output in JSON format')
-def scan_module(serial_number: str, json_output: bool):
+@click.option('--background', '-b', default=True, is_flag=True, help='Run scan in background with live output')
+def scan_module(serial_number: str, json_output: bool, background: bool):
     """
     Scan all functions and datapoints for a module.
     
     Example: xp conbus scan 0020030837
+    Example: xp conbus scan 0020030837 --background
     """
     service = ConbusClientSendService()
     
+    # Shared state for results collection and live output
+    results = []
+    successful_count = 0
+    failed_count = 0
+    
+    def progress_callback(response, count, total):
+        nonlocal successful_count, failed_count
+        results.append(response)
+        
+        if not json_output:
+            # Display results immediately as they arrive
+            if response.success and response.sent_telegram:
+                timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                click.echo(f"{timestamp} [TX] {response.sent_telegram}")
+                successful_count += 1
+                
+                # Show responses if any
+                for received in response.received_telegrams:
+                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    click.echo(f"{timestamp} [RX] {received}")
+            else:
+                failed_count += 1
+            
+            # Show progress every 1000 scans
+            if count % 1000 == 0:
+                progress_pct = (count / total) * 100
+                click.echo(f"Progress: {count}/{total} ({progress_pct:.1f}%) - Success: {successful_count}, Failed: {failed_count}")
+    
     try:
         with service:
-            results = service.scan_module(serial_number)
+            if background:
+                # Background processing with live output
+                if not json_output:
+                    click.echo(f"Starting background scan of module {serial_number}...")
+                    click.echo("Results will appear in real-time as they arrive from the server.")
+                    click.echo("Press Ctrl+C to stop the scan.\n")
+                
+                # Use background scanning with progress callback
+                import threading, time
+                scan_complete = threading.Event()
+                
+                def background_scan():
+                    try:
+                        service.scan_module(serial_number, progress_callback)
+                    except Exception as e:
+                        if not json_output:
+                            click.echo(f"Error during scan: {e}", err=True)
+                    finally:
+                        scan_complete.set()
+                
+                # Start background thread
+                scan_thread = threading.Thread(target=background_scan, daemon=True)
+                scan_thread.start()
+                
+                # Wait for completion or user interrupt
+                try:
+                    while not scan_complete.is_set():
+                        scan_complete.wait(1.0)  # Check every second
+                except KeyboardInterrupt:
+                    if not json_output:
+                        click.echo(f"\nScan interrupted by user.")
+                        click.echo(f"Partial results: {successful_count} successful, {failed_count} failed scans")
+                    raise click.Abort()
+                
+                # Wait for thread to complete
+                scan_thread.join(timeout=1.0)
+                
+            else:
+                # Traditional synchronous scanning
+                results = service.scan_module(serial_number, progress_callback if not json_output else None)
+                successful_count = len([r for r in results if r.success])
+                failed_count = len([r for r in results if not r.success])
         
+        # Final output
         if json_output:
             output = {
                 "serial_number": serial_number,
                 "total_scans": len(results),
-                "successful_scans": len([r for r in results if r.success]),
-                "failed_scans": len([r for r in results if not r.success]),
+                "successful_scans": successful_count,
+                "failed_scans": failed_count,
+                "background_mode": background,
                 "results": [result.to_dict() for result in results]
             }
             click.echo(json.dumps(output, indent=2))
         else:
-            # Format output like the specification examples
-            successful_count = 0
-            for result in results:
-                if result.success and result.sent_telegram:
-                    timestamp = result.timestamp.strftime('%H:%M:%S,%f')[:-3]
-                    click.echo(f"{timestamp} [TX] {result.sent_telegram}")
-                    successful_count += 1
-                    
-                    # Show responses if any
-                    for received in result.received_telegrams:
-                        timestamp = result.timestamp.strftime('%H:%M:%S,%f')[:-3]
-                        click.echo(f"{timestamp} [RX] {received}")
-            
-            click.echo(f"\nScan completed: {successful_count}/{len(results)} telegrams sent successfully")
+            if not background:  # Only show summary if not already shown during background processing
+                click.echo(f"\nScan completed: {successful_count}/{len(results)} telegrams sent successfully")
+            else:
+                click.echo(f"\nBackground scan completed: {successful_count} successful, {failed_count} failed scans")
             
     except ConbusClientSendError as e:
         if json_output:
             error_response = {
                 "success": False,
                 "error": str(e),
-                "serial_number": serial_number
+                "serial_number": serial_number,
+                "background_mode": background
             }
             click.echo(json.dumps(error_response, indent=2))
             raise SystemExit(1)
@@ -1977,12 +2041,16 @@ def scan_module(serial_number: str, json_output: bool):
             else:
                 click.echo(f"Error: {e}", err=True)
             raise click.ClickException("Module scan failed")
+    except click.Abort:
+        # User interrupted the scan
+        raise
     except Exception as e:
         if json_output:
             error_response = {
                 "success": False,
                 "error": str(e),
-                "serial_number": serial_number
+                "serial_number": serial_number,
+                "background_mode": background
             }
             click.echo(json.dumps(error_response, indent=2))
             raise SystemExit(1)
