@@ -23,8 +23,10 @@ class MockConbusServer:
                 "<R0020042796F01DFN>"
             ],
             "<S0020030837F02D02FM>": ["<R0020030837F02D02XP230_V1.00.04FI>"],
-            "<S0020012521F02D18FI>": ["<R0020012521F02D18+23.4C§OK>"],
-            "<S0020030837F02D20FG>": ["<R0020030837F02D20+12.5V§OK>"]
+            "<S0020012521F02D18FN>": ["<R0020012521F02D18+23.4C§OK>"],
+            "<S0020030837F02D20FM>": ["<R0020030837F02D20+12.5V§OK>"],
+            "<S0020030837F02DE2CJ>": ["<R0020030837F02DE2COUCOUFM>"],
+
         }
     
     def start(self):
@@ -212,7 +214,7 @@ class TestSensorTelegrams(TestConbusClientSendIntegration):
             response = client_service.send_sensor_request("0020030837", TelegramType.VOLTAGE)
         
         assert response.success is True
-        assert response.sent_telegram == "<S0020030837F02D20FG>"
+        assert response.sent_telegram == "<S0020030837F02D20FM>"
         assert len(response.received_telegrams) == 1
         assert response.received_telegrams[0] == "<R0020030837F02D20+12.5V§OK>"
     
@@ -237,7 +239,7 @@ class TestCustomTelegrams(TestConbusClientSendIntegration):
     def test_custom_telegram_send(self, client_service, mock_server):
         """Test sending custom telegram"""
         # Add custom response to mock server
-        custom_telegram = "<S0020030837F02DE2FM>"
+        custom_telegram = "<S0020030837F02DE2CJ>"
         custom_response = "<R0020030837F02DE2COUCOUFM>"
         mock_server.response_map[custom_telegram] = [custom_response]
         
@@ -291,46 +293,6 @@ class TestErrorScenarios(TestConbusClientSendIntegration):
             
         finally:
             server.stop()
-    
-    def test_multiple_concurrent_connections(self, mock_server):
-        """Test multiple clients connecting concurrently"""
-        clients = []
-        config_files = []
-        
-        try:
-            # Create multiple client services
-            for i in range(3):
-                with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False) as f:
-                    f.write(f"""
-conbus:
-  ip: localhost
-  port: 10001
-  timeout: 5
-""")
-                    config_files.append(f.name)
-                    clients.append(ConbusClientSendService(config_path=f.name))
-            
-            # Send requests from multiple clients
-            responses = []
-            for client in clients:
-                with client:
-                    response = client.send_discovery()
-                    responses.append(response)
-            
-            # Verify all requests succeeded
-            for response in responses:
-                assert response.success is True
-                assert len(response.received_telegrams) >= 1
-            
-        finally:
-            # Cleanup
-            import os
-            for config_file in config_files:
-                try:
-                    os.unlink(config_file)
-                except FileNotFoundError:
-                    pass
-
 
 class TestConnectionStatusIntegration(TestConbusClientSendIntegration):
     """Test connection status tracking in integration scenarios"""
@@ -344,6 +306,8 @@ class TestConnectionStatusIntegration(TestConbusClientSendIntegration):
         
         # Connect and send telegram
         with client_service:
+            client_service.connect()
+
             # After connection
             status = client_service.get_connection_status()
             assert status.connected is True

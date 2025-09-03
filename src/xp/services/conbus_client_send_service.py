@@ -65,9 +65,11 @@ class ConbusClientSendService:
                     self.config.ip = conbus_config.get('ip', self.config.ip)
                     self.config.port = conbus_config.get('port', self.config.port)
                     self.config.timeout = conbus_config.get('timeout', self.config.timeout)
-                    
+
+                    print(f"Loaded configuration from {self.config_path}")
                     self.logger.info(f"Loaded configuration from {self.config_path}")
             else:
+                print(f"No configuration file found at {self.config_path}")
                 self.logger.warning(f"Config file {self.config_path} not found, using defaults")
         except Exception as e:
             self.logger.error(f"Error loading config file: {e}")
