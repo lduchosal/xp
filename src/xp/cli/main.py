@@ -8,6 +8,8 @@ from ..services.link_number_service import LinkNumberService, LinkNumberError
 from ..services.discovery_service import DiscoveryService, DiscoveryError, DeviceInfo
 from ..services.version_service import VersionService, VersionParsingError
 from ..services.conbus_server_service import ConbusServerService, ConbusServerError
+from ..services.conbus_client_send_service import ConbusClientSendService, ConbusClientSendError
+from ..models.conbus_client_send import TelegramType
 
 
 @click.group()
@@ -1674,6 +1676,234 @@ def server_status(json_output: bool):
         else:
             click.echo(f"Error getting server status: {e}", err=True)
             raise click.ClickException("Status check failed")
+
+
+@cli.group()
+def conbus():
+    """Conbus client operations for sending telegrams to remote servers"""
+    pass
+
+
+@conbus.command("config")
+@click.option('--json-output', '-j', is_flag=True, help='Output in JSON format')
+def show_config(json_output: bool):
+    """
+    Display current Conbus client configuration.
+    
+    Example: xp conbus config
+    """
+    service = ConbusClientSendService()
+    
+    try:
+        config = service.get_config()
+        
+        if json_output:
+            click.echo(json.dumps(config.to_dict(), indent=2))
+        else:
+            click.echo(f"  ip: {config.ip}")
+            click.echo(f"  port: {config.port}")
+            click.echo(f"  timeout: {config.timeout} seconds")
+            
+    except Exception as e:
+        if json_output:
+            error_response = {
+                "success": False,
+                "error": str(e)
+            }
+            click.echo(json.dumps(error_response, indent=2))
+            raise SystemExit(1)
+        else:
+            click.echo(f"Error getting configuration: {e}", err=True)
+            raise click.ClickException("Configuration retrieval failed")
+
+
+@conbus.command("send")
+@click.argument('telegram_type_or_serial')
+@click.argument('telegram_type', required=False)
+@click.option('--json-output', '-j', is_flag=True, help='Output in JSON format')
+def send_telegram(telegram_type_or_serial: str, telegram_type: str, json_output: bool):
+    """
+    Send telegram to Conbus server.
+    
+    Examples:
+    xp conbus send discovery
+    xp conbus send 0020030837 version
+    xp conbus send 0020030837 voltage
+    xp conbus send 0020030837 temperature
+    xp conbus send 0020030837 current
+    xp conbus send 0020030837 humidity
+    """
+    service = ConbusClientSendService()
+    
+    try:
+        # Determine if first argument is telegram type (discovery) or serial number
+        if telegram_type is None and telegram_type_or_serial.lower() == "discovery":
+            # Discovery telegram
+            telegram_type_enum = TelegramType.DISCOVERY
+            target_serial = None
+        else:
+            # Serial number + telegram type
+            target_serial = telegram_type_or_serial
+            if telegram_type is None:
+                if json_output:
+                    error_response = {
+                        "success": False,
+                        "error": "Telegram type required when target serial is specified"
+                    }
+                    click.echo(json.dumps(error_response, indent=2))
+                    raise SystemExit(1)
+                else:
+                    click.echo("Error: Telegram type required when target serial is specified", err=True)
+                    raise click.ClickException("Missing telegram type")
+            
+            # Map string to enum
+            telegram_type_map = {
+                "discovery": TelegramType.DISCOVERY,
+                "version": TelegramType.VERSION,
+                "voltage": TelegramType.VOLTAGE,
+                "temperature": TelegramType.TEMPERATURE,
+                "current": TelegramType.CURRENT,
+                "humidity": TelegramType.HUMIDITY
+            }
+            
+            telegram_type_enum = telegram_type_map.get(telegram_type.lower())
+            if not telegram_type_enum:
+                if json_output:
+                    error_response = {
+                        "success": False,
+                        "error": f"Unknown telegram type: {telegram_type}",
+                        "valid_types": list(telegram_type_map.keys())
+                    }
+                    click.echo(json.dumps(error_response, indent=2))
+                    raise SystemExit(1)
+                else:
+                    click.echo(f"Error: Unknown telegram type: {telegram_type}", err=True)
+                    click.echo(f"Valid types: {', '.join(telegram_type_map.keys())}")
+                    raise click.ClickException("Invalid telegram type")
+        
+        # Create request
+        from ..models.conbus_client_send import ConbusSendRequest
+        request = ConbusSendRequest(
+            telegram_type=telegram_type_enum,
+            target_serial=target_serial
+        )
+        
+        # Send telegram
+        with service:
+            response = service.send_telegram(request)
+        
+        if json_output:
+            click.echo(json.dumps(response.to_dict(), indent=2))
+        else:
+            if response.success:
+                # Format output like the specification examples
+                if response.sent_telegram:
+                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    click.echo(f"{timestamp} [TX] {response.sent_telegram}")
+                
+                # Show received telegrams
+                for received in response.received_telegrams:
+                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    click.echo(f"{timestamp} [RX] {received}")
+                
+                if not response.received_telegrams:
+                    click.echo("No response received")
+            else:
+                click.echo(f"Error: {response.error}")
+                
+    except ConbusClientSendError as e:
+        if json_output:
+            error_response = {
+                "success": False,
+                "error": str(e)
+            }
+            click.echo(json.dumps(error_response, indent=2))
+            raise SystemExit(1)
+        else:
+            if "Connection timeout" in str(e):
+                click.echo(f"Connecting to {service.config.ip}:{service.config.port}...")
+                click.echo(f"Error: Connection timeout after {service.config.timeout} seconds")
+                click.echo("Failed to connect to server")
+            else:
+                click.echo(f"Error: {e}", err=True)
+            raise click.ClickException("Telegram send failed")
+    except Exception as e:
+        if json_output:
+            error_response = {
+                "success": False,
+                "error": str(e)
+            }
+            click.echo(json.dumps(error_response, indent=2))
+            raise SystemExit(1)
+        else:
+            click.echo(f"Error sending telegram: {e}", err=True)
+            raise click.ClickException("Telegram send failed")
+
+
+@conbus.command("custom")
+@click.argument('serial_number')
+@click.argument('function_code')
+@click.argument('data_point_code')
+@click.option('--json-output', '-j', is_flag=True, help='Output in JSON format')
+def send_custom_telegram(serial_number: str, function_code: str, data_point_code: str, json_output: bool):
+    """
+    Send custom telegram with specified function and data point codes.
+    
+    Example: xp conbus custom 0020030837 02 E2
+    """
+    service = ConbusClientSendService()
+    
+    try:
+        with service:
+            response = service.send_custom_telegram(serial_number, function_code, data_point_code)
+        
+        if json_output:
+            click.echo(json.dumps(response.to_dict(), indent=2))
+        else:
+            if response.success:
+                # Format output like the specification examples  
+                if response.sent_telegram:
+                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    click.echo(f"{timestamp} [TX] {response.sent_telegram}")
+                
+                # Show received telegrams
+                for received in response.received_telegrams:
+                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    click.echo(f"{timestamp} [RX] {received}")
+                
+                if not response.received_telegrams:
+                    click.echo("No response received")
+            else:
+                click.echo(f"Error: {response.error}")
+                
+    except ConbusClientSendError as e:
+        if json_output:
+            error_response = {
+                "success": False,
+                "error": str(e),
+                "serial_number": serial_number,
+                "function_code": function_code,
+                "data_point_code": data_point_code
+            }
+            click.echo(json.dumps(error_response, indent=2))
+            raise SystemExit(1)
+        else:
+            click.echo(f"Error: {e}", err=True)
+            raise click.ClickException("Custom telegram send failed")
+    except Exception as e:
+        if json_output:
+            error_response = {
+                "success": False,
+                "error": str(e),
+                "serial_number": serial_number,
+                "function_code": function_code,
+                "data_point_code": data_point_code
+            }
+            click.echo(json.dumps(error_response, indent=2))
+            raise SystemExit(1)
+        else:
+            click.echo(f"Error sending custom telegram: {e}", err=True)
+            raise click.ClickException("Custom telegram send failed")
 
 
 if __name__ == '__main__':

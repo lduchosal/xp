@@ -13,6 +13,7 @@ src/xp/cli/main.py
 src/xp/connection/__init__.py
 src/xp/connection/exceptions.py
 src/xp/models/__init__.py
+src/xp/models/conbus_client_send.py
 src/xp/models/event_telegram.py
 src/xp/models/log_entry.py
 src/xp/models/module_type.py
@@ -22,6 +23,7 @@ src/xp/models/system_telegram.py
 src/xp/models/telegram.py
 src/xp/services/__init__.py
 src/xp/services/checksum_service.py
+src/xp/services/conbus_client_send_service.py
 src/xp/services/conbus_server_service.py
 src/xp/services/discovery_service.py
 src/xp/services/link_number_service.py
