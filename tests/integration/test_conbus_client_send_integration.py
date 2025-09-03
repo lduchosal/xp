@@ -67,13 +67,13 @@ class MockConbusServer:
                 if not data:
                     break
                 
-                message = data.decode('utf-8').strip()
+                message = data.decode('latin-1').strip()
                 self.received_messages.append(message)
                 
                 # Send configured responses
                 responses = self.response_map.get(message, [])
                 for response in responses:
-                    client_socket.send(response.encode('utf-8'))
+                    client_socket.send(response.encode('latin-1'))
                     time.sleep(0.01)  # Small delay between responses
                 
         except socket.timeout:

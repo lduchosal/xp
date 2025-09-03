@@ -66,10 +66,8 @@ class ConbusClientSendService:
                     self.config.port = conbus_config.get('port', self.config.port)
                     self.config.timeout = conbus_config.get('timeout', self.config.timeout)
 
-                    print(f"Loaded configuration from {self.config_path}")
                     self.logger.info(f"Loaded configuration from {self.config_path}")
             else:
-                print(f"No configuration file found at {self.config_path}")
                 self.logger.warning(f"Config file {self.config_path} not found, using defaults")
         except Exception as e:
             self.logger.error(f"Error loading config file: {e}")
@@ -169,7 +167,7 @@ class ConbusClientSendService:
                 )
             
             # Send telegram
-            self.socket.send(telegram.encode('utf-8'))
+            self.socket.send(telegram.encode('latin-1'))
             self.last_activity = datetime.now()
             
             self.logger.info(f"Sent telegram: {telegram}")
@@ -263,7 +261,7 @@ class ConbusClientSendService:
                     if not data:
                         break
                     
-                    message = data.decode('utf-8').strip()
+                    message = data.decode('latin-1').strip()
                     if message:
                         responses.append(message)
                         self.logger.info(f"Received: {message}")
@@ -387,7 +385,7 @@ class ConbusClientSendService:
                     )
             
             # Send telegram
-            self.socket.send(telegram.encode('utf-8'))
+            self.socket.send(telegram.encode('latin-1'))
             self.last_activity = datetime.now()
             self.logger.info(f"Sent custom telegram: {telegram}")
             

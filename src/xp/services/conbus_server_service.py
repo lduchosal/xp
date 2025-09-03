@@ -132,7 +132,7 @@ class ConbusServerService:
                 if not data:
                     break
                 
-                message = data.decode('utf-8').strip()
+                message = data.decode('latin-1').strip()
                 self.logger.info(f"Received from {client_address}: {message}")
                 
                 # Process discovery request
@@ -140,7 +140,7 @@ class ConbusServerService:
                 
                 # Send responses
                 for response in responses:
-                    client_socket.send(response.encode('utf-8'))
+                    client_socket.send(response.encode('latin-1'))
                     self.logger.info(f"Sent to {client_address}: {response}")
                 
         except socket.timeout:

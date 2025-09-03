@@ -46,9 +46,11 @@ conbus:
 class TestServiceInitialization(TestConbusClientSendService):
     """Test service initialization and configuration loading"""
     
-    def test_default_initialization(self):
+    def test_default_initialization(self, tmp_path):
         """Test service initialization with default config"""
-        service = ConbusClientSendService()
+        # Use a non-existent config file to test defaults
+        non_existent_config = str(tmp_path / "non_existent.yml")
+        service = ConbusClientSendService(config_path=non_existent_config)
         
         assert service.config.ip == "192.168.1.100"
         assert service.config.port == 10001
