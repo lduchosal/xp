@@ -1922,14 +1922,14 @@ def send_telegram(json_output: bool):
 
 @conbus.command("scan")
 @click.argument('serial_number')
+@click.argument('function_code')
 @click.option('--json-output', '-j', is_flag=True, help='Output in JSON format')
 @click.option('--background', '-b', default=True, is_flag=True, help='Run scan in background with live output')
-def scan_module(serial_number: str, json_output: bool, background: bool):
+def scan_module(serial_number: str, function_code: str, json_output: bool, background: bool):
     """
-    Scan all functions and datapoints for a module.
+    Scan all datapoints of a function_code for a module.
     
-    Example: xp conbus scan 0020030837
-    Example: xp conbus scan 0020030837 --background
+    Example: xp conbus scan 0020030837 02
     """
     service = ConbusClientSendService()
     
@@ -1976,7 +1976,7 @@ def scan_module(serial_number: str, json_output: bool, background: bool):
                 
                 def background_scan():
                     try:
-                        service.scan_module(serial_number, progress_callback)
+                        service.scan_module(serial_number, function_code, progress_callback)
                     except Exception as e:
                         if not json_output:
                             click.echo(f"Error during scan: {e}", err=True)
@@ -2002,7 +2002,7 @@ def scan_module(serial_number: str, json_output: bool, background: bool):
                 
             else:
                 # Traditional synchronous scanning
-                results = service.scan_module(serial_number, progress_callback if not json_output else None)
+                results = service.scan_module(serial_number, function_code, progress_callback if not json_output else None)
                 successful_count = len([r for r in results if r.success])
                 failed_count = len([r for r in results if not r.success])
         

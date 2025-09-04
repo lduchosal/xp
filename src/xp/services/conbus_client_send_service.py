@@ -304,49 +304,46 @@ class ConbusClientSendService:
         )
         return self.send_telegram(request)
     
-    def scan_module(self, target_serial: str, progress_callback=None) -> List[ConbusSendResponse]:
+    def scan_module(self, target_serial: str, function_code: str, progress_callback=None) -> List[ConbusSendResponse]:
         """Scan all functions and datapoints for a module with live output"""
         results = []
         total_combinations = 256 * 256  # 65536 combinations
         count = 0
         
-        # Scan functions 00-FF and datapoints 00-FF
-        for function_hex in range(256):
-            for datapoint_hex in range(256):
-                function_code = f"{function_hex:02X}"
-                data_point_code = f"{datapoint_hex:02X}"
-                count += 1
-                
-                try:
-                    response = self.send_custom_telegram(target_serial, function_code, data_point_code)
-                    results.append(response)
-                    
-                    # Call progress callback with live results
-                    if progress_callback:
-                        progress_callback(response, count, total_combinations)
-                    
-                    # Small delay to prevent overwhelming the server
-                    import time
-                    time.sleep(0.001)  # 1ms delay
-                    
-                except Exception as e:
-                    # Create error response for failed scan attempt
-                    error_response = ConbusSendResponse(
-                        success=False,
-                        request=ConbusSendRequest(
-                            telegram_type=TelegramType.DISCOVERY,  # Placeholder
-                            target_serial=target_serial,
-                            function_code=function_code,
-                            data_point_code=data_point_code
-                        ),
-                        error=f"Scan failed for F{function_code}D{data_point_code}: {e}"
-                    )
-                    results.append(error_response)
-                    
-                    # Call progress callback with error response
-                    if progress_callback:
-                        progress_callback(error_response, count, total_combinations)
-        
+        for datapoint_hex in range(256):
+            data_point_code = f"{datapoint_hex:02X}"
+            count += 1
+
+            try:
+                response = self.send_custom_telegram(target_serial, function_code, data_point_code)
+                results.append(response)
+
+                # Call progress callback with live results
+                if progress_callback:
+                    progress_callback(response, count, total_combinations)
+
+                # Small delay to prevent overwhelming the server
+                import time
+                time.sleep(0.001)  # 1ms delay
+
+            except Exception as e:
+                # Create error response for failed scan attempt
+                error_response = ConbusSendResponse(
+                    success=False,
+                    request=ConbusSendRequest(
+                        telegram_type=TelegramType.DISCOVERY,  # Placeholder
+                        target_serial=target_serial,
+                        function_code=function_code,
+                        data_point_code=data_point_code
+                    ),
+                    error=f"Scan failed for F{function_code}D{data_point_code}: {e}"
+                )
+                results.append(error_response)
+
+                # Call progress callback with error response
+                if progress_callback:
+                    progress_callback(error_response, count, total_combinations)
+
         return results
     
     def scan_module_background(self, target_serial: str, progress_callback=None):
