@@ -6,9 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Fix: Conbus encoding">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Conbus-DataPoint-Code.md" beforeDir="false" afterPath="$PROJECT_DIR$/Specs/Feature-Conbus-DataPoint-Code.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/xp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/xp.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_module_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_module_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -241,7 +243,7 @@
       <workItem from="1756238343796" duration="33000" />
       <workItem from="1756238436428" duration="3455000" />
       <workItem from="1756275107111" duration="30469000" />
-      <workItem from="1756830585261" duration="26802000" />
+      <workItem from="1756830585261" duration="28100000" />
     </task>
     <task id="LOCAL-00001" summary="Feat: initial">
       <option name="closed" value="true" />
@@ -379,7 +381,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756937744965</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Fix: Conbus encoding">
+      <option name="closed" value="true" />
+      <created>1756965018146</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1756965018146</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -438,6 +448,11 @@
           <line>6</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/xp/cli/commands/telegram_commands.py</url>
+          <line>1</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
@@ -449,7 +464,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestErrorScenarios_test_multiple_concurrent_connections.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestErrorScenarios.test_multiple_concurrent_connections Coverage Results" MODIFIED="1756891785454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestCustomTelegrams_test_custom_telegram_send.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestCustomTelegrams.test_custom_telegram_send Coverage Results" MODIFIED="1756891106347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestConnectionStatusIntegration_test_connection_status_lifecycle.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestConnectionStatusIntegration.test_connection_status_lifecycle Coverage Results" MODIFIED="1756891211230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1756938595835" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1756966243991" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$telegram_test_data.coverage" NAME="telegram_test_data Coverage Results" MODIFIED="1756275468881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/fixtures" />
     <SUITE FILE_PATH="coverage/xp$demo.coverage" NAME="demo Coverage Results" MODIFIED="1756276295879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_voltage_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request Coverage Results" MODIFIED="1756890872793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

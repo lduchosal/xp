@@ -98,7 +98,7 @@ class TestSystemTelegramCLI:
         ])
         
         assert result.exit_code == 1
-        assert "Error parsing system telegram" in result.output
+        assert "Error parsing telegram" in result.output
 
     def test_parse_system_telegram_invalid_format_json(self):
         """Test parsing invalid system telegram format with JSON output."""
@@ -228,7 +228,7 @@ class TestReplyTelegramCLI:
         ])
         
         assert result.exit_code == 1
-        assert "Error parsing reply telegram" in result.output
+        assert "Error parsing telegram" in result.output
 
     def test_parse_reply_telegram_invalid_format_json(self):
         """Test parsing invalid reply telegram format with JSON output."""

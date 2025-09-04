@@ -121,7 +121,7 @@ class TestModuleIntegration:
         
         assert result.exit_code == 0
         assert "Found" in result.output
-        assert "modules matching 'push button'" in result.output
+        assert "items matching 'push button'" in result.output
         assert "XP2606" in result.output
     
     def test_module_search_command_json_output(self):
@@ -149,7 +149,7 @@ class TestModuleIntegration:
         result = self.runner.invoke(cli, ['module', 'search', 'NONEXISTENT'])
         
         assert result.exit_code == 0
-        assert "No modules found matching 'NONEXISTENT'" in result.output
+        assert "No items found matching 'NONEXISTENT'" in result.output
     
     def test_module_categories_command(self):
         """Test module categories command"""

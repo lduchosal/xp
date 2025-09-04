@@ -132,7 +132,7 @@ class TestEventTelegramIntegration:
         result = self.runner.invoke(cli, ['telegram', 'validate', 'INVALID'])
         
         assert result.exit_code == 1
-        assert "✗ Telegram format is invalid" in result.output
+        assert "\u2717 Input format is invalid" in result.output
         assert "Error:" in result.output
     
     def test_validate_telegram_command_invalid_json(self):
@@ -230,7 +230,7 @@ class TestEventTelegramIntegration:
             
             result = self.runner.invoke(cli, ['telegram', 'parse-multiple', 'test data'])
             assert result.exit_code == 1
-            assert "Error parsing data stream" in result.output
+            assert "Error parsing telegram" in result.output
     
     def test_parse_multiple_event_telegrams_exception_handling_json(self):
         """Test exception handling in parse-multiple command with JSON output"""
