@@ -21,7 +21,8 @@ class SystemFunction(Enum):
     SYSTEM_RESET = "05"  # System reset
     ACK = "18"  # Acknowledge response
     NAK = "19"  # Not acknowledge response
-    
+    ACTION = "27"  # Action function
+
     @classmethod
     def from_code(cls, code: str) -> Optional['SystemFunction']:
         """Get SystemFunction from code string"""
