@@ -4,21 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: XP33 Emulator">
-      <change afterPath="$PROJECT_DIR$/Specs/Feature-Query-ModuleType.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.coverage" beforeDir="false" afterPath="$PROJECT_DIR$/.coverage" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: ModuleType query">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Module-Type.md" beforeDir="false" afterPath="$PROJECT_DIR$/Specs/Feature-Module-Type.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/module_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/module_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_server_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/xp130_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp130_server_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/xp20_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp20_server_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/xp230_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp230_server_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/xp24_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp24_server_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/xp33_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp33_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_module_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_module_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp130_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp130_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp230_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp230_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp33_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp33_server_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,7 +250,7 @@
       <workItem from="1756238343796" duration="33000" />
       <workItem from="1756238436428" duration="3455000" />
       <workItem from="1756275107111" duration="30469000" />
-      <workItem from="1756830585261" duration="54617000" />
+      <workItem from="1756830585261" duration="55814000" />
     </task>
     <task id="LOCAL-00001" summary="Feat: initial">
       <option name="closed" value="true" />
@@ -451,7 +444,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757536986281</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Feat: ModuleType query">
+      <option name="closed" value="true" />
+      <created>1757539581185</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1757539581185</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -473,7 +474,8 @@
     <MESSAGE value="Chore: refactor cli, extract commands" />
     <MESSAGE value="Feat: XP24-Action" />
     <MESSAGE value="Feat: XP33 Emulator" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feat: XP33 Emulator" />
+    <MESSAGE value="Feat: ModuleType query" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: ModuleType query" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

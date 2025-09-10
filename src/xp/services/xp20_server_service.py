@@ -98,9 +98,7 @@ class XP20ServerService:
         if (request.system_function == SystemFunction.RETURN_DATA and
             request.data_point_id == DataPointType.MODULE_TYPE):
             
-            # CP20 code is 2, return as 2-digit hex
-            module_type_hex = f"{self.module_type_code:02X}"
-            data_part = f"R{self.serial_number}F02D07{module_type_hex}"
+            data_part = f"R{self.serial_number}F02D07{self.module_type_code}"
             checksum = calculate_checksum(data_part)
             telegram = f"<{data_part}{checksum}>"
             

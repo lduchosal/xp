@@ -9,6 +9,7 @@ from typing import Dict, Optional
 from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
 from ..models.reply_telegram import ReplyTelegram
 from ..utils.checksum import calculate_checksum
+from .base_server_service import BaseServerService
 
 
 class XP24ServerError(Exception):
@@ -16,7 +17,7 @@ class XP24ServerError(Exception):
     pass
 
 
-class XP24ServerService:
+class XP24ServerService(BaseServerService):
     """
     XP24 device emulation service.
     
@@ -98,9 +99,7 @@ class XP24ServerService:
         if (request.system_function == SystemFunction.RETURN_DATA and
             request.data_point_id == DataPointType.MODULE_TYPE):
             
-            # XP24 code is 7, return as 2-digit hex
-            module_type_hex = f"{self.module_type_code:02X}"
-            data_part = f"R{self.serial_number}F02D07{module_type_hex}"
+            data_part = f"R{self.serial_number}F02D07{self.module_type_code}"
             checksum = calculate_checksum(data_part)
             telegram = f"<{data_part}{checksum}>"
             

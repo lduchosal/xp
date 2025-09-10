@@ -75,21 +75,23 @@ class ConbusServerService:
         
         for serial_number, device_type in self.devices.items():
             try:
+                # Convert serial number to string for device services
+                serial_str = str(serial_number)
                 if device_type.upper() == "XP24":
-                    self.device_services[serial_number] = XP24ServerService(serial_number)
+                    self.device_services[serial_number] = XP24ServerService(serial_str)
                 elif device_type.upper() == "XP33":
                     # Default to XP33LR, could be configurable
-                    self.device_services[serial_number] = XP33ServerService(serial_number, "XP33LR")
+                    self.device_services[serial_number] = XP33ServerService(serial_str, "XP33LR")
                 elif device_type.upper() == "XP33LR":
-                    self.device_services[serial_number] = XP33ServerService(serial_number, "XP33LR")
+                    self.device_services[serial_number] = XP33ServerService(serial_str, "XP33LR")
                 elif device_type.upper() == "XP33LED":
-                    self.device_services[serial_number] = XP33ServerService(serial_number, "XP33LED")
+                    self.device_services[serial_number] = XP33ServerService(serial_str, "XP33LED")
                 elif device_type.upper() == "XP20":
-                    self.device_services[serial_number] = XP20ServerService(serial_number)
+                    self.device_services[serial_number] = XP20ServerService(serial_str)
                 elif device_type.upper() == "XP130":
-                    self.device_services[serial_number] = XP130ServerService(serial_number)
+                    self.device_services[serial_number] = XP130ServerService(serial_str)
                 elif device_type.upper() == "XP230":
-                    self.device_services[serial_number] = XP230ServerService(serial_number)
+                    self.device_services[serial_number] = XP230ServerService(serial_str)
                 else:
                     self.logger.warning(f"Unknown device type '{device_type}' for serial {serial_number}")
                     
@@ -219,15 +221,20 @@ class ConbusServerService:
                         if response:
                             responses.append(response)
                             responses.append('\n')
-                # If specific device
-                elif target_serial in self.device_services:
-                    device_service = self.device_services[target_serial]
-                    response = device_service.process_system_telegram(parsed_telegram)
-                    if response:
-                        responses.append(response)
-                        responses.append('\n')
+                # If specific device - convert string serial to int for lookup
                 else:
-                    self.logger.debug(f"No device found for serial: {target_serial}")
+                    try:
+                        target_serial_int = int(target_serial)
+                        if target_serial_int in self.device_services:
+                            device_service = self.device_services[target_serial_int]
+                            response = device_service.process_system_telegram(parsed_telegram)
+                            if response:
+                                responses.append(response)
+                                responses.append('\n')
+                        else:
+                            self.logger.debug(f"No device found for serial: {target_serial}")
+                    except ValueError:
+                        self.logger.warning(f"Invalid serial number format: {target_serial}")
 
         except Exception as e:
             self.logger.error(f"Error processing request: {e}")
