@@ -8,7 +8,6 @@ import logging
 from typing import Dict, Optional
 from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
 from ..models.reply_telegram import ReplyTelegram
-from ..utils.checksum import calculate_checksum
 from .base_server_service import BaseServerService
 
 
@@ -30,86 +29,12 @@ class XP24ServerService(BaseServerService):
         super().__init__(serial_number)
         self.device_type = "XP24"
         self.module_type_code = 7  # XP24 module type from registry
-        
-        # XP24 device characteristics
         self.firmware_version = "XP24_V0.34.03"
-        self.device_status = "OK"
-        self.link_number = 1
     
-    def generate_discovery_response(self) -> str:
-        """Generate XP24 discovery response telegram"""
-        # Format: <R{serial}F01D{checksum}>
-        data_part = f"R{self.serial_number}F01D"
-        checksum = calculate_checksum(data_part)
-        telegram = f"<{data_part}{checksum}>"
-        
-        self.logger.debug(f"Generated XP24 discovery response: {telegram}")
-        return telegram
     
-    def generate_version_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate version response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.VERSION):
-            
-            # Format: <R{serial}F02D02{version}{checksum}>
-            data_part = f"R{self.serial_number}F02D02{self.firmware_version}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP24 version response: {telegram}")
-            return telegram
-        
-        return None
     
-    def generate_status_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate status response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.STATUS):
-            
-            # Format: <R{serial}F02D00{status}{checksum}>
-            data_part = f"R{self.serial_number}F02D00{self.device_status}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP24 status response: {telegram}")
-            return telegram
-        
-        return None
     
-    def generate_link_number_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate link number response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.LINK_NUMBER):
-            
-            # Format: <R{serial}F02D04{link_number}{checksum}>
-            # Link number is typically encoded as 2-digit hex
-            link_hex = f"{self.link_number:02X}"
-            data_part = f"R{self.serial_number}F02D04{link_hex}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP24 link number response: {telegram}")
-            return telegram
-        
-        return None
     
-    def set_link_number(self, request: SystemTelegram, new_link_number: int) -> Optional[str]:
-        """Set link number and generate ACK response"""
-        if (request.system_function == SystemFunction.WRITE_CONFIG and
-            request.data_point_id == DataPointType.LINK_NUMBER):
-            
-            # Update internal link number
-            self.link_number = new_link_number
-            
-            # Generate ACK response: <R{serial}F18D{checksum}>
-            data_part = f"R{self.serial_number}F18D"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.info(f"XP24 link number set to {new_link_number}")
-            return telegram
-        
-        return None
     
     def generate_temperature_response(self, request: SystemTelegram) -> Optional[str]:
         """Generate temperature response telegram (simulated)"""
@@ -119,44 +44,17 @@ class XP24ServerService(BaseServerService):
             # Simulate temperature reading: +23.5°C
             temperature_value = "+23,5§C"
             data_part = f"R{self.serial_number}F02D18{temperature_value}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP24 temperature response: {telegram}")
+            telegram = self._build_response_telegram(data_part)
+            self._log_response("temperature", telegram)
             return telegram
         
         return None
     
-    def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
-        """Process system telegram and generate appropriate response"""
-        # Check if request is for this device
-        if not self._check_request_for_device(request):
-            return None
+    def _handle_device_specific_data_request(self, request: SystemTelegram) -> Optional[str]:
+        """Handle XP24-specific data requests"""
+        if request.data_point_id == DataPointType.TEMPERATURE:
+            return self.generate_temperature_response(request)
         
-        # Handle different system functions
-        if request.system_function == SystemFunction.DISCOVERY:
-            return self.generate_discovery_response()
-        
-        elif request.system_function == SystemFunction.RETURN_DATA:
-            # Handle different data point requests
-            if request.data_point_id == DataPointType.VERSION:
-                return self.generate_version_response(request)
-            elif request.data_point_id == DataPointType.STATUS:
-                return self.generate_status_response(request)
-            elif request.data_point_id == DataPointType.LINK_NUMBER:
-                return self.generate_link_number_response(request)
-            elif request.data_point_id == DataPointType.MODULE_TYPE:
-                return self.generate_module_type_response(request)
-            elif request.data_point_id == DataPointType.TEMPERATURE:
-                return self.generate_temperature_response(request)
-        
-        elif request.system_function == SystemFunction.WRITE_CONFIG:
-            if request.data_point_id == DataPointType.LINK_NUMBER:
-                # Extract link number from request data
-                # This would need more sophisticated parsing in real implementation
-                return self.set_link_number(request, 1)
-        
-        self.logger.warning(f"Unhandled XP24 request: {request}")
         return None
     
     def get_device_info(self) -> Dict:

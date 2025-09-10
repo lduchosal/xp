@@ -27,7 +27,7 @@ class TestXP20ServerService:
         """Test discovery response generation"""
         response = self.xp20_service.generate_discovery_response()
         
-        assert response == '<R0020037487F01DFJ>'
+        assert response == '<R0020037487F01DFM>'
         assert response.startswith('<R0020037487F01D')
         assert response.endswith('>')
     

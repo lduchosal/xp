@@ -9,7 +9,6 @@ import logging
 from typing import Dict, Optional, List
 from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
 from ..models.reply_telegram import ReplyTelegram
-from ..utils.checksum import calculate_checksum
 from .base_server_service import BaseServerService
 
 
@@ -29,23 +28,30 @@ class XP33ServerService(BaseServerService):
     def __init__(self, serial_number: str, variant: str = "XP33LR"):
         """Initialize XP33 server service"""
         super().__init__(serial_number)
-        self.variant = variant  # XP33LR or XP33LED
+        self.variant = variant  # XP33 or XP33LR or XP33LED
         self.device_type = "XP33"
-        
+        self.module_type_code = 11  # XP33 module type
+
         # XP33 device characteristics
         if variant == "XP33LED":
             self.firmware_version = "XP33LED_V0.04.02"
             self.ean_code = "5703513058999"
             self.max_power = 300  # 3 x 100VA
-        else:  # XP33LR
+            self.module_type_code = 31  # XP33LR module type
+        elif variant == "XP33LR":  # XP33LR
             self.firmware_version = "XP33LR_V0.04.02"
             self.ean_code = "5703513058982"
             self.max_power = 640  # Total 640VA
-        
+            self.module_type_code = 30  # XP33LR module type
+        else: # XP33
+            self.firmware_version = "XP33_V0.04.02"
+            self.ean_code = "5703513058981"
+            self.max_power = 100  # Total 640VA
+            self.module_type_code = 11  # XP33 module type
+
         self.device_status = "00"  # Normal status
         self.link_number = 4  # 4 links configured
-        self.module_type_code = 48  # XP33LR module type (48 decimal = 30 hex)
-        
+
         # Channel states (3 channels, 0-100% dimming)
         self.channel_states = [0, 0, 0]  # All channels at 0%
         
@@ -57,45 +63,8 @@ class XP33ServerService(BaseServerService):
             4: [0, 0, 0]  # Scene 4: Off
         }
     
-    def generate_discovery_response(self) -> str:
-        """Generate XP33 discovery response telegram"""
-        # Format: <R{serial}F01D{checksum}>
-        data_part = f"R{self.serial_number}F01D"
-        checksum = calculate_checksum(data_part)
-        telegram = f"<{data_part}{checksum}>"
-        
-        self.logger.debug(f"Generated XP33 discovery response: {telegram}")
-        return telegram
     
-    def generate_version_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate version response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.VERSION):
-            
-            # Format: <R{serial}F02D02{version}{checksum}>
-            data_part = f"R{self.serial_number}F02D02{self.firmware_version}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP33 version response: {telegram}")
-            return telegram
-        
-        return None
     
-    def generate_status_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate status response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.STATUS_QUERY):
-            
-            # Format: <R{serial}F02D10{status}{checksum}>
-            data_part = f"R{self.serial_number}F02D10{self.device_status}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP33 status response: {telegram}")
-            return telegram
-        
-        return None
     
     def generate_channel_states_response(self, request: SystemTelegram) -> Optional[str]:
         """Generate channel states response telegram"""
@@ -110,29 +79,12 @@ class XP33ServerService(BaseServerService):
             
             channel_data = f"{ch1_hex}{ch2_hex}{ch3_hex}000"
             data_part = f"R{self.serial_number}F02D12{channel_data}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP33 channel states response: {telegram}")
+            telegram = self._build_response_telegram(data_part)
+            self._log_response("channel states", telegram)
             return telegram
         
         return None
     
-    def generate_link_number_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate link number response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id in [DataPointType.LINK_NUMBER, DataPointType.LINK_NUMBER]):
-            
-            # Format: <R{serial}F02D04{count}{checksum}>
-            link_hex = f"{self.link_number:02X}"
-            data_part = f"R{self.serial_number}F02D04{link_hex}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP33 link number response: {telegram}")
-            return telegram
-        
-        return None
     
     def set_channel_dimming(self, channel: int, level: int) -> bool:
         """Set individual channel dimming level"""
@@ -171,40 +123,34 @@ class XP33ServerService(BaseServerService):
             
             channel_data = f"{ch1_hex}{ch2_hex}{ch3_hex}00"
             data_part = f"R{self.serial_number}F02D{request.data_point_id.value}{channel_data}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP33 channel {channel} response: {telegram}")
+            telegram = self._build_response_telegram(data_part)
+            self._log_response(f"channel {channel}", telegram)
             return telegram
         
         return None
     
-    def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
-        """Process system telegram and generate appropriate response"""
-        # Check if request is for this device
-        if not self._check_request_for_device(request):
-            return None
+    def _handle_device_specific_data_request(self, request: SystemTelegram) -> Optional[str]:
+        """Handle XP33-specific data requests"""
+        if request.data_point_id == DataPointType.STATUS_QUERY:
+            return self.generate_status_response(request, DataPointType.STATUS_QUERY)
+        elif request.data_point_id == DataPointType.CHANNEL_STATES:
+            return self.generate_channel_states_response(request)
+        elif request.data_point_id in [DataPointType.CHANNEL_1, DataPointType.CHANNEL_2, DataPointType.CHANNEL_3]:
+            return self.generate_channel_control_response(request)
         
-        # Handle different system functions
-        if request.system_function == SystemFunction.DISCOVERY:
-            return self.generate_discovery_response()
+        return None
+    
+    def generate_status_response(self, request: SystemTelegram, status_data_point: DataPointType = DataPointType.STATUS_QUERY) -> Optional[str]:
+        """Generate status response telegram for XP33 (uses STATUS_QUERY)"""
+        if (request.system_function == SystemFunction.RETURN_DATA and
+            request.data_point_id == status_data_point):
+            
+            # Format: <R{serial}F02D10{status}{checksum}>
+            data_part = f"R{self.serial_number}F02D10{self.device_status}"
+            telegram = self._build_response_telegram(data_part)
+            self._log_response("status", telegram)
+            return telegram
         
-        elif request.system_function == SystemFunction.RETURN_DATA:
-            # Handle different data point requests
-            if request.data_point_id == DataPointType.VERSION:
-                return self.generate_version_response(request)
-            elif request.data_point_id == DataPointType.MODULE_TYPE:
-                return self.generate_module_type_response(request)
-            elif request.data_point_id == DataPointType.STATUS_QUERY:
-                return self.generate_status_response(request)
-            elif request.data_point_id == DataPointType.CHANNEL_STATES:
-                return self.generate_channel_states_response(request)
-            elif request.data_point_id in [DataPointType.LINK_NUMBER, DataPointType.LINK_NUMBER]:
-                return self.generate_link_number_response(request)
-            elif request.data_point_id in [DataPointType.CHANNEL_1, DataPointType.CHANNEL_2, DataPointType.CHANNEL_3]:
-                return self.generate_channel_control_response(request)
-        
-        self.logger.warning(f"Unhandled XP33 request: {request}")
         return None
     
     def get_device_info(self) -> Dict:
