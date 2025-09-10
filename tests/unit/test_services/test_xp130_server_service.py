@@ -21,6 +21,7 @@ class TestXP130ServerService:
         assert service.firmware_version == 'XP130_V1.02.15'
         assert service.device_status == 'OK'
         assert service.link_number == 1
+        assert service.module_type_code == 13  # XP130 module type
         assert service.ip_address == '192.168.1.100'
         assert service.subnet_mask == '255.255.255.0'
         assert service.gateway == '192.168.1.1'
@@ -132,6 +133,53 @@ class TestXP130ServerService:
         assert '+21,0§C' in response
         assert response.startswith('<R0019664896F02D18')
         assert response.endswith('>')
+    
+    def test_generate_module_type_response(self):
+        """Test module type response generation"""
+        request = SystemTelegram(
+            serial_number='0019664896',
+            system_function=SystemFunction.RETURN_DATA,
+            data_point_id=DataPointType.MODULE_TYPE,
+            checksum='FN',
+            raw_telegram='<S0019664896F02D07FN>'
+        )
+        
+        response = self.service.generate_module_type_response(request)
+        
+        assert response is not None
+        assert response == '<R0019664896F02D070DCK>'
+        assert 'F02D07' in response
+        assert '0D' in response  # XP130 code is 13 = 0x0D
+    
+    def test_generate_module_type_response_wrong_function(self):
+        """Test module type response with wrong function returns None"""
+        request = SystemTelegram(
+            serial_number='0019664896',
+            system_function=SystemFunction.DISCOVERY,  # Wrong function
+            data_point_id=DataPointType.MODULE_TYPE,
+            checksum='FN',
+            raw_telegram='<S0019664896F01D07FN>'
+        )
+        
+        response = self.service.generate_module_type_response(request)
+        assert response is None
+    
+    def test_process_system_telegram_module_type(self):
+        """Test processing module type query through main handler"""
+        request = SystemTelegram(
+            serial_number='0019664896',
+            system_function=SystemFunction.RETURN_DATA,
+            data_point_id=DataPointType.MODULE_TYPE,
+            checksum='FN',
+            raw_telegram='<S0019664896F02D07FN>'
+        )
+        
+        response = self.service.process_system_telegram(request)
+        
+        assert response is not None
+        assert response == '<R0019664896F02D070DCK>'
+        assert 'F02D07' in response
+        assert '0D' in response  # XP130 code is 13 = 0x0D
     
     def test_set_link_number(self):
         """Test setting link number"""

@@ -21,6 +21,7 @@ class TestXP230ServerService:
         assert service.firmware_version == 'XP230_V1.00.04'
         assert service.device_status == 'OK'
         assert service.link_number == 1
+        assert service.module_type_code == 24  # XP230 module type
     
     def test_generate_discovery_response(self):
         """Test discovery response generation"""
@@ -112,6 +113,53 @@ class TestXP230ServerService:
         assert '+50,5§C' in response  # Temperature from ConReport.log
         assert response.startswith('<R0020030837F02D18')
         assert response.endswith('>')
+    
+    def test_generate_module_type_response(self):
+        """Test module type response generation"""
+        request = SystemTelegram(
+            serial_number='0020030837',
+            system_function=SystemFunction.RETURN_DATA,
+            data_point_id=DataPointType.MODULE_TYPE,
+            checksum='FJ',
+            raw_telegram='<S0020030837F02D07FJ>'
+        )
+        
+        response = self.service.generate_module_type_response(request)
+        
+        assert response is not None
+        assert response == '<R0020030837F02D0718FB>'
+        assert 'F02D07' in response
+        assert '18' in response  # XP230 code is 24 = 0x18
+    
+    def test_generate_module_type_response_wrong_function(self):
+        """Test module type response with wrong function returns None"""
+        request = SystemTelegram(
+            serial_number='0020030837',
+            system_function=SystemFunction.DISCOVERY,  # Wrong function
+            data_point_id=DataPointType.MODULE_TYPE,
+            checksum='FJ',
+            raw_telegram='<S0020030837F01D07FJ>'
+        )
+        
+        response = self.service.generate_module_type_response(request)
+        assert response is None
+    
+    def test_process_system_telegram_module_type(self):
+        """Test processing module type query through main handler"""
+        request = SystemTelegram(
+            serial_number='0020030837',
+            system_function=SystemFunction.RETURN_DATA,
+            data_point_id=DataPointType.MODULE_TYPE,
+            checksum='FJ',
+            raw_telegram='<S0020030837F02D07FJ>'
+        )
+        
+        response = self.service.process_system_telegram(request)
+        
+        assert response is not None
+        assert response == '<R0020030837F02D0718FB>'
+        assert 'F02D07' in response
+        assert '18' in response  # XP230 code is 24 = 0x18
     
     def test_set_link_number(self):
         """Test setting link number"""

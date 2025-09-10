@@ -16,7 +16,7 @@ The following module type codes exists in the XP system:
 - XP31DD 10 XP ballast controller DSI/DALI
 - XP33 11 XP 33 3 channel lightdimmer
 - CP485 12 CP RS485 interface module
-- XP130 13 Etnernet/TCPIP interface module
+- XP130 13 Ethernet/TCPIP interface module
 - XP2606 14 5 way push button panel with sesam, L-Team design
 - XP2606A 15 5 way push button panel with sesam, L-Team design and 38kHz IR receiver
 - XP2606B 16 5 way push button panel with sesam, L-Team design and B&O IR receiver
@@ -27,3 +27,6 @@ The following module type codes exists in the XP system:
 - XP2506B 21 5 way push button panel with sesam and B&O IR, Conson design
 - XPX1-8 22 8 way push button panel interface
 - XP134 23 Junctionbox interlink
+- XP230 24 Ethernet/TCPIP interface module
+- XP33LR 30 XP 3 channel lightdimmer
+- XP20 33 XP switch link module

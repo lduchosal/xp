@@ -25,7 +25,7 @@ class TestXP33ServerService:
         assert service.max_power == 640
         assert service.device_status == '00'
         assert service.link_number == 4
-        assert service.module_type_code == 11
+        assert service.module_type_code == 48
         assert service.channel_states == [0, 0, 0]
         assert len(service.scenes) == 4
     
@@ -41,7 +41,7 @@ class TestXP33ServerService:
         assert service.max_power == 300
         assert service.device_status == '00'
         assert service.link_number == 4
-        assert service.module_type_code == 11
+        assert service.module_type_code == 48
     
     def test_generate_discovery_response(self):
         """Test discovery response generation"""
@@ -98,7 +98,7 @@ class TestXP33ServerService:
         
         assert response == '<R0020042796F02D0730FK>'
         assert 'F02D07' in response
-        assert '30' in response  # 11 + 37 = 48 = 0x30
+        assert '30' in response  # 30 = 0x30
     
     def test_generate_status_response(self):
         """Test status response generation"""

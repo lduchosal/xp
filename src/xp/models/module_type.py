@@ -30,6 +30,8 @@ class ModuleTypeCode(Enum):
     XPX1_8 = 22     # 8 way push button panel interface
     XP134 = 23      # Junctionbox interlink
     XP230 = 24      # XP230 module
+    XP33LR = 30     # XP 33 3 channel lightdimmer
+    XP20 = 33       # XP switch link module
 
 
 @dataclass
@@ -149,6 +151,8 @@ MODULE_TYPE_REGISTRY: Dict[int, Dict[str, str]] = {
     22: {"name": "XPX1_8", "description": "8 way push button panel interface"},
     23: {"name": "XP134", "description": "Junctionbox interlink"},
     24: {"name": "XP230", "description": "XP230 module"},
+    33: {"name": "XP20", "description": "XP switch link module"},
+    48: {"name": "XP33LR", "description": "XP 33 3 channel lightdimmer"},
 }
 
 

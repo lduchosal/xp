@@ -34,6 +34,7 @@ class XP24ServerService:
         self.firmware_version = "XP24_V0.34.03"
         self.device_status = "OK"
         self.link_number = 1
+        self.module_type_code = 7  # XP24 module type from registry
     
     def generate_discovery_response(self) -> str:
         """Generate XP24 discovery response telegram"""
@@ -92,6 +93,22 @@ class XP24ServerService:
         
         return None
     
+    def generate_module_type_response(self, request: SystemTelegram) -> Optional[str]:
+        """Generate module type response telegram"""
+        if (request.system_function == SystemFunction.RETURN_DATA and
+            request.data_point_id == DataPointType.MODULE_TYPE):
+            
+            # XP24 code is 7, return as 2-digit hex
+            module_type_hex = f"{self.module_type_code:02X}"
+            data_part = f"R{self.serial_number}F02D07{module_type_hex}"
+            checksum = calculate_checksum(data_part)
+            telegram = f"<{data_part}{checksum}>"
+            
+            self.logger.debug(f"Generated XP24 module type response: {telegram}")
+            return telegram
+        
+        return None
+    
     def set_link_number(self, request: SystemTelegram, new_link_number: int) -> Optional[str]:
         """Set link number and generate ACK response"""
         if (request.system_function == SystemFunction.WRITE_CONFIG and
@@ -144,6 +161,8 @@ class XP24ServerService:
                 return self.generate_status_response(request)
             elif request.data_point_id == DataPointType.LINK_NUMBER:
                 return self.generate_link_number_response(request)
+            elif request.data_point_id == DataPointType.MODULE_TYPE:
+                return self.generate_module_type_response(request)
             elif request.data_point_id == DataPointType.TEMPERATURE:
                 return self.generate_temperature_response(request)
         

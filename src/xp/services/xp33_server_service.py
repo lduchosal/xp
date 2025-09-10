@@ -44,7 +44,7 @@ class XP33ServerService:
         
         self.device_status = "00"  # Normal status
         self.link_number = 4  # 4 links configured
-        self.module_type_code = 11  # XP33 module type
+        self.module_type_code = 48  # XP33LR module type (48 decimal = 30 hex)
         
         # Channel states (3 channels, 0-100% dimming)
         self.channel_states = [0, 0, 0]  # All channels at 0%
@@ -87,8 +87,8 @@ class XP33ServerService:
         if (request.system_function == SystemFunction.RETURN_DATA and
             request.data_point_id == DataPointType.MODULE_TYPE):
             
-            # XP33 code is 11, with offset becomes 48 decimal = 30 hex
-            module_type_hex = f"{self.module_type_code + 37:02X}"  # 11 + 37 = 48 = 0x30
+            # XP33LR code is 30 hex  
+            module_type_hex = f"{self.module_type_code:02X}"  # 48 decimal = 0x30
             data_part = f"R{self.serial_number}F02D07{module_type_hex}"
             checksum = calculate_checksum(data_part)
             telegram = f"<{data_part}{checksum}>"
