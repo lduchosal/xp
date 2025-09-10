@@ -10,6 +10,7 @@ from typing import Dict, Optional, List
 from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
 from ..models.reply_telegram import ReplyTelegram
 from ..utils.checksum import calculate_checksum
+from .base_server_service import BaseServerService
 
 
 class XP33ServerError(Exception):
@@ -17,7 +18,7 @@ class XP33ServerError(Exception):
     pass
 
 
-class XP33ServerService:
+class XP33ServerService(BaseServerService):
     """
     XP33 device emulation service.
     
@@ -27,10 +28,9 @@ class XP33ServerService:
     
     def __init__(self, serial_number: str, variant: str = "XP33LR"):
         """Initialize XP33 server service"""
-        self.serial_number = serial_number
+        super().__init__(serial_number)
         self.variant = variant  # XP33LR or XP33LED
         self.device_type = "XP33"
-        self.logger = logging.getLogger(__name__)
         
         # XP33 device characteristics
         if variant == "XP33LED":
@@ -78,20 +78,6 @@ class XP33ServerService:
             telegram = f"<{data_part}{checksum}>"
             
             self.logger.debug(f"Generated XP33 version response: {telegram}")
-            return telegram
-        
-        return None
-    
-    def generate_module_type_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate module type response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.MODULE_TYPE):
-            
-            data_part = f"R{self.serial_number}F02D07{self.module_type_code}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP33 module type response: {telegram}")
             return telegram
         
         return None
@@ -196,7 +182,7 @@ class XP33ServerService:
     def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
         """Process system telegram and generate appropriate response"""
         # Check if request is for this device
-        if request.serial_number != self.serial_number and request.serial_number != "0000000000":
+        if not self._check_request_for_device(request):
             return None
         
         # Handle different system functions

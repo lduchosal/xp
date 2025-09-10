@@ -9,6 +9,7 @@ from typing import Dict, Optional
 from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
 from ..models.reply_telegram import ReplyTelegram
 from ..utils.checksum import calculate_checksum
+from .base_server_service import BaseServerService
 
 
 class XP20ServerError(Exception):
@@ -16,7 +17,7 @@ class XP20ServerError(Exception):
     pass
 
 
-class XP20ServerService:
+class XP20ServerService(BaseServerService):
     """
     XP20 device emulation service.
     
@@ -26,15 +27,14 @@ class XP20ServerService:
     
     def __init__(self, serial_number: str):
         """Initialize XP20 server service"""
-        self.serial_number = serial_number
+        super().__init__(serial_number)
         self.device_type = "XP20"
-        self.logger = logging.getLogger(__name__)
+        self.module_type_code = 33  # XP20 module type from registry
         
         # XP20 device characteristics
         self.firmware_version = "XP20_V0.01.05"
         self.device_status = "OK"
         self.link_number = 1
-        self.module_type_code = 33  # CP20 module type from registry
     
     def generate_discovery_response(self) -> str:
         """Generate XP20 discovery response telegram"""
@@ -93,20 +93,6 @@ class XP20ServerService:
         
         return None
     
-    def generate_module_type_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate module type response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.MODULE_TYPE):
-            
-            data_part = f"R{self.serial_number}F02D07{self.module_type_code}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP20 module type response: {telegram}")
-            return telegram
-        
-        return None
-    
     def set_link_number(self, request: SystemTelegram, new_link_number: int) -> Optional[str]:
         """Set link number and generate ACK response"""
         if (request.system_function == SystemFunction.WRITE_CONFIG and
@@ -160,7 +146,7 @@ class XP20ServerService:
     def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
         """Process system telegram and generate appropriate response"""
         # Check if request is for this device
-        if request.serial_number != self.serial_number and request.serial_number != "0000000000":
+        if not self._check_request_for_device(request):
             return None
         
         # Handle different system functions

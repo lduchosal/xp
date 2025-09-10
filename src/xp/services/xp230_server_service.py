@@ -9,6 +9,7 @@ from typing import Dict, Optional
 from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
 from ..models.reply_telegram import ReplyTelegram
 from ..utils.checksum import calculate_checksum
+from .base_server_service import BaseServerService
 
 
 class XP230ServerError(Exception):
@@ -16,7 +17,7 @@ class XP230ServerError(Exception):
     pass
 
 
-class XP230ServerService:
+class XP230ServerService(BaseServerService):
     """
     XP230 device emulation service.
     
@@ -26,15 +27,14 @@ class XP230ServerService:
     
     def __init__(self, serial_number: str):
         """Initialize XP230 server service"""
-        self.serial_number = serial_number
+        super().__init__(serial_number)
         self.device_type = "XP230"
-        self.logger = logging.getLogger(__name__)
+        self.module_type_code = 24  # XP230 module type from registry
         
         # XP230 device characteristics
         self.firmware_version = "XP230_V1.00.04"
         self.device_status = "OK"
         self.link_number = 1
-        self.module_type_code = 24  # XP230 module type from registry
     
     def generate_discovery_response(self) -> str:
         """Generate XP230 discovery response telegram"""
@@ -111,20 +111,6 @@ class XP230ServerService:
         
         return None
     
-    def generate_module_type_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate module type response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.MODULE_TYPE):
-            
-            data_part = f"R{self.serial_number}F02D07{self.module_type_code}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP230 module type response: {telegram}")
-            return telegram
-        
-        return None
-    
     def generate_temperature_response(self, request: SystemTelegram) -> Optional[str]:
         """Generate temperature response telegram (simulated)"""
         if (request.system_function == SystemFunction.RETURN_DATA and
@@ -144,7 +130,7 @@ class XP230ServerService:
     def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
         """Process system telegram and generate appropriate response"""
         # Check if request is for this device
-        if request.serial_number != self.serial_number and request.serial_number != "0000000000":
+        if not self._check_request_for_device(request):
             return None
         
         # Handle different system functions

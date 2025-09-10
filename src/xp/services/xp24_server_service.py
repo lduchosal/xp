@@ -27,15 +27,14 @@ class XP24ServerService(BaseServerService):
     
     def __init__(self, serial_number: str):
         """Initialize XP24 server service"""
-        self.serial_number = serial_number
+        super().__init__(serial_number)
         self.device_type = "XP24"
-        self.logger = logging.getLogger(__name__)
+        self.module_type_code = 7  # XP24 module type from registry
         
         # XP24 device characteristics
         self.firmware_version = "XP24_V0.34.03"
         self.device_status = "OK"
         self.link_number = 1
-        self.module_type_code = 7  # XP24 module type from registry
     
     def generate_discovery_response(self) -> str:
         """Generate XP24 discovery response telegram"""
@@ -94,20 +93,6 @@ class XP24ServerService(BaseServerService):
         
         return None
     
-    def generate_module_type_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate module type response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.MODULE_TYPE):
-            
-            data_part = f"R{self.serial_number}F02D07{self.module_type_code}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
-            
-            self.logger.debug(f"Generated XP24 module type response: {telegram}")
-            return telegram
-        
-        return None
-    
     def set_link_number(self, request: SystemTelegram, new_link_number: int) -> Optional[str]:
         """Set link number and generate ACK response"""
         if (request.system_function == SystemFunction.WRITE_CONFIG and
@@ -145,7 +130,7 @@ class XP24ServerService(BaseServerService):
     def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
         """Process system telegram and generate appropriate response"""
         # Check if request is for this device
-        if request.serial_number != self.serial_number and request.serial_number != "0000000000":
+        if not self._check_request_for_device(request):
             return None
         
         # Handle different system functions
