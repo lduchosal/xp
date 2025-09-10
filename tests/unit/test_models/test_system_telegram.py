@@ -47,6 +47,14 @@ class TestDataPointType:
         assert DataPointType.from_code("20") == DataPointType.VOLTAGE
         assert DataPointType.from_code("17") == DataPointType.CURRENT
         assert DataPointType.from_code("00") == DataPointType.STATUS
+        assert DataPointType.from_code("02") == DataPointType.VERSION
+        assert DataPointType.from_code("04") == DataPointType.LINK_COUNT
+        assert DataPointType.from_code("07") == DataPointType.MODULE_TYPE
+        assert DataPointType.from_code("10") == DataPointType.STATUS_QUERY
+        assert DataPointType.from_code("12") == DataPointType.CHANNEL_STATES
+        assert DataPointType.from_code("13") == DataPointType.CHANNEL_1
+        assert DataPointType.from_code("14") == DataPointType.CHANNEL_2
+        assert DataPointType.from_code("15") == DataPointType.CHANNEL_3
     
     def test_from_code_invalid(self):
         """Test from_code with invalid codes."""
@@ -61,6 +69,15 @@ class TestDataPointType:
         assert DataPointType.VOLTAGE.value == "20"
         assert DataPointType.CURRENT.value == "17"
         assert DataPointType.STATUS.value == "00"
+        assert DataPointType.VERSION.value == "02"
+        assert DataPointType.LINK_COUNT.value == "04"
+        assert DataPointType.MODULE_TYPE.value == "07"
+        assert DataPointType.STATUS_QUERY.value == "10"
+        assert DataPointType.CHANNEL_STATES.value == "12"
+        assert DataPointType.CHANNEL_1.value == "13"
+        assert DataPointType.CHANNEL_2.value == "14"
+        assert DataPointType.CHANNEL_3.value == "15"
+        assert DataPointType.LINK_NUMBER.value == "04"  # Legacy alias
 
 
 class TestSystemTelegram:
@@ -207,7 +224,16 @@ class TestSystemTelegram:
         (DataPointType.HUMIDITY, "Humidity"),
         (DataPointType.VOLTAGE, "Voltage"),
         (DataPointType.CURRENT, "Current"),
-        (DataPointType.STATUS, "Status")
+        (DataPointType.STATUS, "Status"),
+        (DataPointType.VERSION, "Version"),
+        (DataPointType.LINK_COUNT, "Link Count"),
+        (DataPointType.MODULE_TYPE, "Module Type"),
+        (DataPointType.STATUS_QUERY, "Status Query"),
+        (DataPointType.CHANNEL_STATES, "Channel States"),
+        (DataPointType.CHANNEL_1, "Channel 1 Control"),
+        (DataPointType.CHANNEL_2, "Channel 2 Control"),
+        (DataPointType.CHANNEL_3, "Channel 3 Control"),
+        (DataPointType.LINK_NUMBER, "Link Count")  # Legacy alias resolves to current name
     ])
     def test_data_point_descriptions(self, data_point, description):
         """Test all data point descriptions."""

@@ -35,12 +35,20 @@ class SystemFunction(Enum):
 class DataPointType(Enum):
     """Data point types for system telegrams"""
     STATUS = "00"       # General status
-    VERSION = "02"       # General status
-    LINK_NUMBER = "04"  # Link number data point
+    VERSION = "02"      # Version information
+    LINK_COUNT = "04"   # Link count data point (was LINK_NUMBER)
+    MODULE_TYPE = "07"  # Module type data point
+    STATUS_QUERY = "10" # Status query data point
+    CHANNEL_STATES = "12" # Channel states (XP33)
+    CHANNEL_1 = "13"    # Individual channel 1 control (XP33)
+    CHANNEL_2 = "14"    # Individual channel 2 control (XP33)
+    CHANNEL_3 = "15"    # Individual channel 3 control (XP33)
     CURRENT = "17"      # Current data point
     TEMPERATURE = "18"  # Temperature data point
     HUMIDITY = "19"     # Humidity data point
     VOLTAGE = "20"      # Voltage data point
+    # Legacy alias
+    LINK_NUMBER = "04"  # Link number data point (alias for LINK_COUNT)
 
     @classmethod
     def from_code(cls, code: str) -> Optional['DataPointType']:
@@ -87,11 +95,18 @@ class SystemTelegram(Telegram):
         descriptions = {
             DataPointType.STATUS: "Status",
             DataPointType.VERSION: "Version",
-            DataPointType.LINK_NUMBER: "Link Number",
+            DataPointType.LINK_NUMBER: "Link Number",  # Legacy alias first
+            DataPointType.MODULE_TYPE: "Module Type",
+            DataPointType.STATUS_QUERY: "Status Query",
+            DataPointType.CHANNEL_STATES: "Channel States",
+            DataPointType.CHANNEL_1: "Channel 1 Control",
+            DataPointType.CHANNEL_2: "Channel 2 Control", 
+            DataPointType.CHANNEL_3: "Channel 3 Control",
             DataPointType.TEMPERATURE: "Temperature",
             DataPointType.HUMIDITY: "Humidity",
             DataPointType.VOLTAGE: "Voltage", 
-            DataPointType.CURRENT: "Current"
+            DataPointType.CURRENT: "Current",
+            DataPointType.LINK_COUNT: "Link Count"  # Preferred name last, takes precedence
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
     

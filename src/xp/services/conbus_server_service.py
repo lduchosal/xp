@@ -13,6 +13,8 @@ from typing import Dict, List, Optional
 
 from ..services.telegram_service import TelegramService
 from ..services.discovery_service import DiscoveryService
+from ..services.xp24_server_service import XP24ServerService
+from ..services.xp33_server_service import XP33ServerService
 
 
 class ConbusServerError(Exception):
@@ -35,6 +37,7 @@ class ConbusServerService:
         self.server_socket: Optional[socket.socket] = None
         self.is_running = False
         self.devices: Dict[str, str] = {}
+        self.device_services: Dict[str, object] = {}  # serial -> device service instance
         self.telegram_service = TelegramService()
         self.discovery_service = DiscoveryService()
 
@@ -52,13 +55,37 @@ class ConbusServerService:
                 with open(self.config_path, 'r') as file:
                     config = yaml.safe_load(file)
                     self.devices = config.get('devices', {})
+                    self._create_device_services()
                     self.logger.info(f"Loaded {len(self.devices)} devices from config")
             else:
                 self.logger.warning(f"Config file {self.config_path} not found, using empty device list")
                 self.devices = {}
+                self.device_services = {}
         except Exception as e:
             self.logger.error(f"Error loading config file: {e}")
             self.devices = {}
+            self.device_services = {}
+    
+    def _create_device_services(self):
+        """Create device service instances based on device configuration"""
+        self.device_services = {}
+        
+        for serial_number, device_type in self.devices.items():
+            try:
+                if device_type.upper() == "XP24":
+                    self.device_services[serial_number] = XP24ServerService(serial_number)
+                elif device_type.upper() == "XP33":
+                    # Default to XP33LR, could be configurable
+                    self.device_services[serial_number] = XP33ServerService(serial_number, "XP33LR")
+                elif device_type.upper() == "XP33LR":
+                    self.device_services[serial_number] = XP33ServerService(serial_number, "XP33LR")
+                elif device_type.upper() == "XP33LED":
+                    self.device_services[serial_number] = XP33ServerService(serial_number, "XP33LED")
+                else:
+                    self.logger.warning(f"Unknown device type '{device_type}' for serial {serial_number}")
+                    
+            except Exception as e:
+                self.logger.error(f"Error creating device service for {serial_number}: {e}")
     
     def start_server(self):
         """Start the TCP server on port 10001"""
@@ -135,8 +162,8 @@ class ConbusServerService:
                 message = data.decode('latin-1').strip()
                 self.logger.info(f"Received from {client_address}: {message}")
                 
-                # Process discovery request
-                responses = self._process_discovery_request(message)
+                # Process request (discovery or data request)
+                responses = self._process_request(message)
                 
                 # Send responses
                 for response in responses:
@@ -154,23 +181,47 @@ class ConbusServerService:
             except Exception as e:
                 self.logger.error(f"Error closing client socket: {e}")
     
-    def _process_discovery_request(self, message: str) -> List[str]:
-        """Process discovery request and generate responses"""
+    def _process_request(self, message: str) -> List[str]:
+        """Process incoming request and generate responses"""
         responses = []
         
         try:
             # Parse the telegram
             parsed_telegram = self.telegram_service.parse_system_telegram(message)
             
-            if parsed_telegram and self.discovery_service._is_discovery_request(parsed_telegram):
-                # Generate responses for each configured device
-                for serial_number, device_type in self.devices.items():
-                    response = self.discovery_service._generate_discovery_response(serial_number)
+            if not parsed_telegram:
+                self.logger.warning(f"Failed to parse telegram: {message}")
+                return responses
+            
+            # Handle discovery requests
+            if self.discovery_service._is_discovery_request(parsed_telegram):
+                for serial_number, device_service in self.device_services.items():
+                    response = device_service.generate_discovery_response()
                     responses.append(response)
                     responses.append('\n')
+            else:
+                # Handle data requests for specific devices
+                target_serial = parsed_telegram.serial_number
+                
+                # If broadcast (0000000000), respond from all devices
+                if target_serial == "0000000000":
+                    for serial_number, device_service in self.device_services.items():
+                        response = device_service.process_system_telegram(parsed_telegram)
+                        if response:
+                            responses.append(response)
+                            responses.append('\n')
+                # If specific device
+                elif target_serial in self.device_services:
+                    device_service = self.device_services[target_serial]
+                    response = device_service.process_system_telegram(parsed_telegram)
+                    if response:
+                        responses.append(response)
+                        responses.append('\n')
+                else:
+                    self.logger.debug(f"No device found for serial: {target_serial}")
 
         except Exception as e:
-            self.logger.error(f"Error processing discovery request: {e}")
+            self.logger.error(f"Error processing request: {e}")
         
         return responses
 
@@ -187,4 +238,4 @@ class ConbusServerService:
     def reload_config(self):
         """Reload device configuration from file"""
         self._load_device_config()
-        self.logger.info(f"Configuration reloaded: {len(self.devices)} devices")
+        self.logger.info(f"Configuration reloaded: {len(self.devices)} devices, {len(self.device_services)} services")
