@@ -29,6 +29,7 @@ class ModuleTypeCode(Enum):
     XP2506B = 21    # 5 way push button panel with sesam and B&O IR, Conson design
     XPX1_8 = 22     # 8 way push button panel interface
     XP134 = 23      # Junctionbox interlink
+    XP230 = 24      # XP230 module
 
 
 @dataclass
@@ -99,7 +100,7 @@ class ModuleType:
             return "CP Link Modules"
         elif 7 <= self.code <= 13:
             return "XP Control Modules"
-        elif 14 <= self.code <= 23:
+        elif 14 <= self.code <= 24:
             return "Interface Panels"
         else:
             return "Unknown"
@@ -147,6 +148,7 @@ MODULE_TYPE_REGISTRY: Dict[int, Dict[str, str]] = {
     21: {"name": "XP2506B", "description": "5 way push button panel with sesam and B&O IR, Conson design"},
     22: {"name": "XPX1_8", "description": "8 way push button panel interface"},
     23: {"name": "XP134", "description": "Junctionbox interlink"},
+    24: {"name": "XP230", "description": "XP230 module"},
 }
 
 

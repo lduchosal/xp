@@ -118,18 +118,19 @@ class TestModuleType:
     
     def test_all_module_codes_covered(self):
         """Test that all codes in enum are in registry"""
-        for code in range(24):  # 0-23 are defined in the spec
+        for code in range(25):  # 0-24 are defined in the spec including XP230
             assert code in MODULE_TYPE_REGISTRY
     
     def test_module_registry_completeness(self):
         """Test that module registry contains all expected entries"""
-        assert len(MODULE_TYPE_REGISTRY) == 24
+        assert len(MODULE_TYPE_REGISTRY) == 25
         
         # Test some specific entries
         assert MODULE_TYPE_REGISTRY[0]["name"] == "NOMOD"
         assert MODULE_TYPE_REGISTRY[7]["name"] == "XP24"
         assert MODULE_TYPE_REGISTRY[14]["name"] == "XP2606"
         assert MODULE_TYPE_REGISTRY[23]["name"] == "XP134"
+        assert MODULE_TYPE_REGISTRY[24]["name"] == "XP230"
 
 
 class TestModuleTypeFunctions:
@@ -139,7 +140,7 @@ class TestModuleTypeFunctions:
         """Test getting all module types"""
         modules = get_all_module_types()
         
-        assert len(modules) == 24
+        assert len(modules) == 25
         assert all(isinstance(module, ModuleType) for module in modules)
         
         # Verify they are sorted by code
@@ -165,8 +166,9 @@ class TestModuleTypeFunctions:
         assert is_valid_module_code(0) is True
         assert is_valid_module_code(14) is True
         assert is_valid_module_code(23) is True
+        assert is_valid_module_code(24) is True
         
         # Invalid codes
         assert is_valid_module_code(-1) is False
-        assert is_valid_module_code(24) is False
+        assert is_valid_module_code(25) is False
         assert is_valid_module_code(999) is False

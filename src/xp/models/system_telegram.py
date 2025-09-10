@@ -47,6 +47,7 @@ class DataPointType(Enum):
     TEMPERATURE = "18"  # Temperature data point
     HUMIDITY = "19"     # Humidity data point
     VOLTAGE = "20"      # Voltage data point
+    NETWORK_CONFIG = "20"  # Network configuration (alias for voltage in XP130)
     # Legacy alias
 
     @classmethod

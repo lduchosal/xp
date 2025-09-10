@@ -15,6 +15,9 @@ from ..services.telegram_service import TelegramService
 from ..services.discovery_service import DiscoveryService
 from ..services.xp24_server_service import XP24ServerService
 from ..services.xp33_server_service import XP33ServerService
+from ..services.xp20_server_service import XP20ServerService
+from ..services.xp130_server_service import XP130ServerService
+from ..services.xp230_server_service import XP230ServerService
 
 
 class ConbusServerError(Exception):
@@ -81,6 +84,12 @@ class ConbusServerService:
                     self.device_services[serial_number] = XP33ServerService(serial_number, "XP33LR")
                 elif device_type.upper() == "XP33LED":
                     self.device_services[serial_number] = XP33ServerService(serial_number, "XP33LED")
+                elif device_type.upper() == "XP20":
+                    self.device_services[serial_number] = XP20ServerService(serial_number)
+                elif device_type.upper() == "XP130":
+                    self.device_services[serial_number] = XP130ServerService(serial_number)
+                elif device_type.upper() == "XP230":
+                    self.device_services[serial_number] = XP230ServerService(serial_number)
                 else:
                     self.logger.warning(f"Unknown device type '{device_type}' for serial {serial_number}")
                     

@@ -48,7 +48,9 @@ src/xp/services/log_file_service.py
 src/xp/services/module_type_service.py
 src/xp/services/telegram_service.py
 src/xp/services/version_service.py
+src/xp/services/xp130_server_service.py
 src/xp/services/xp20_server_service.py
+src/xp/services/xp230_server_service.py
 src/xp/services/xp24_action_service.py
 src/xp/services/xp24_server_service.py
 src/xp/services/xp33_server_service.py
