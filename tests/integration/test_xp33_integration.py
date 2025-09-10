@@ -125,8 +125,8 @@ class TestXP33Integration:
         assert 'F02D12' in response
         assert '00000000' in response  # All channels at 0%
     
-    def test_xp33_link_count_processing(self):
-        """Test processing link count requests for XP33 devices"""
+    def test_xp33_link_number_processing(self):
+        """Test processing link number requests for XP33 devices"""
         link_request = '<S0020042796F02D04FL>'
         responses = self.server._process_request(link_request)
         response = responses[0].strip() if responses else None

@@ -14,7 +14,7 @@ Client → Reverse Proxy (port 10001) → Conbus Server (cli.yml configured)
 - **Protocol**: TCP
 - **Listen Port**: 10001
 - **Binding**: All interfaces (0.0.0.0:10001)
-- **Connection**: Multiple concurrent client connections
+- **Connection**: Multiple concurrent clieplementnt connections
 - **Timeout**: 30 seconds for idle connections
 
 ### Target Server Configuration
@@ -53,6 +53,7 @@ HH:MM:SS,mmm [PROXY→CLIENT] <telegram>
 14:32:15,158 [PROXY→CLIENT] <R0020030837F01DFM>
 14:32:15,201 [SERVER→PROXY] <R0020044966F01DFK>
 14:32:15,202 [PROXY→CLIENT] <R0020044966F01DFK>
+14:32:15,201 [SERVER→PROXY] <E071299939AK>
 ```
 
 ## Implementation Requirements
@@ -66,37 +67,36 @@ HH:MM:SS,mmm [PROXY→CLIENT] <telegram>
   - Telegram logging and monitoring
 
 ### Connection Management
-- **Client Connections**: Accept multiple concurrent connections
-- **Server Connections**: One server connection per client connection
+- **Client Connections**: Accept single connections
+- **Server Connections**: Single server connection for all clients connection
 - **Error Handling**: Graceful disconnection on either side
 - **Resource Cleanup**: Proper socket closure and thread termination
 
 ### Configuration Loading
 - Read target server details from `cli.yml`
-- Support configuration reload without restart
 - Default fallback values if configuration is missing
 
 ### Logging and Monitoring
 - Real-time telegram display to console
+- File logging for audit trail
 - Connection establishment/termination events
 - Error conditions and network failures
-- Optional file logging for audit trail
 
 ## CLI Interface
 
 ### Start Reverse Proxy
 ```bash
-xp reverse-proxy start    # Start reverse proxy on port 10001
+xp rp start    # Start reverse proxy on port 10001
 ```
 
 ### Stop Reverse Proxy
 ```bash
-xp reverse-proxy stop     # Stop running reverse proxy
+xp rp stop     # Stop running reverse proxy
 ```
 
 ### Status Check
 ```bash
-xp reverse-proxy status   # Show proxy status and active connections
+xp rp status   # Show proxy status and active connections
 ```
 
 ## Error Handling
@@ -175,19 +175,3 @@ xp reverse-proxy status   # Show proxy status and active connections
 - No data loss during relay
 - Proper connection cleanup
 - Configuration changes respected
-
-## Future Enhancements
-
-### Optional Features
-- **SSL/TLS Support**: Encrypted connections to target server
-- **Load Balancing**: Distribute requests across multiple servers
-- **Caching**: Cache common responses for performance
-- **Rate Limiting**: Protect target server from excessive requests
-- **Access Logging**: Detailed audit trail to files
-- **Health Checks**: Monitor target server availability
-
-### Advanced Monitoring
-- **Metrics Collection**: Connection counts, throughput statistics
-- **Dashboard**: Web interface for monitoring proxy status
-- **Alerting**: Notifications on connection failures or errors
-- **Protocol Analysis**: Deep inspection of telegram content

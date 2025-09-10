@@ -43,7 +43,7 @@ class XP33ServerService:
             self.max_power = 640  # Total 640VA
         
         self.device_status = "00"  # Normal status
-        self.link_count = 4  # 4 links configured
+        self.link_number = 4  # 4 links configured
         self.module_type_code = 11  # XP33 module type
         
         # Channel states (3 channels, 0-100% dimming)
@@ -134,18 +134,18 @@ class XP33ServerService:
         
         return None
     
-    def generate_link_count_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate link count response telegram"""
+    def generate_link_number_response(self, request: SystemTelegram) -> Optional[str]:
+        """Generate link number response telegram"""
         if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id in [DataPointType.LINK_COUNT, DataPointType.LINK_NUMBER]):
+            request.data_point_id in [DataPointType.LINK_NUMBER, DataPointType.LINK_NUMBER]):
             
             # Format: <R{serial}F02D04{count}{checksum}>
-            link_hex = f"{self.link_count:02X}"
+            link_hex = f"{self.link_number:02X}"
             data_part = f"R{self.serial_number}F02D04{link_hex}"
             checksum = calculate_checksum(data_part)
             telegram = f"<{data_part}{checksum}>"
             
-            self.logger.debug(f"Generated XP33 link count response: {telegram}")
+            self.logger.debug(f"Generated XP33 link number response: {telegram}")
             return telegram
         
         return None
@@ -215,8 +215,8 @@ class XP33ServerService:
                 return self.generate_status_response(request)
             elif request.data_point_id == DataPointType.CHANNEL_STATES:
                 return self.generate_channel_states_response(request)
-            elif request.data_point_id in [DataPointType.LINK_COUNT, DataPointType.LINK_NUMBER]:
-                return self.generate_link_count_response(request)
+            elif request.data_point_id in [DataPointType.LINK_NUMBER, DataPointType.LINK_NUMBER]:
+                return self.generate_link_number_response(request)
             elif request.data_point_id in [DataPointType.CHANNEL_1, DataPointType.CHANNEL_2, DataPointType.CHANNEL_3]:
                 return self.generate_channel_control_response(request)
         
@@ -233,7 +233,7 @@ class XP33ServerService:
             "ean_code": self.ean_code,
             "max_power": self.max_power,
             "status": self.device_status,
-            "link_count": self.link_count,
+            "link_number": self.link_number,
             "channel_states": self.channel_states.copy(),
             "available_scenes": list(self.scenes.keys())
         }

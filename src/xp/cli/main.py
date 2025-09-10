@@ -11,6 +11,7 @@ from .commands.discovery_commands import discovery
 from .commands.file_commands import file
 from .commands.server_commands import server
 from .commands.conbus_commands import conbus
+from .commands.reverse_proxy_commands import reverse_proxy
 
 
 @click.group()
@@ -30,6 +31,7 @@ cli.add_command(discovery)
 cli.add_command(file)
 cli.add_command(server)
 cli.add_command(conbus)
+cli.add_command(reverse_proxy)
 
 
 if __name__ == '__main__':

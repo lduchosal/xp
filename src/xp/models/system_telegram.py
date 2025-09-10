@@ -36,7 +36,7 @@ class DataPointType(Enum):
     """Data point types for system telegrams"""
     STATUS = "00"       # General status
     VERSION = "02"      # Version information
-    LINK_COUNT = "04"   # Link count data point (was LINK_NUMBER)
+    LINK_NUMBER = "04"  # Link number data point
     MODULE_TYPE = "07"  # Module type data point
     STATUS_QUERY = "10" # Status query data point
     CHANNEL_STATES = "12" # Channel states (XP33)
@@ -48,7 +48,6 @@ class DataPointType(Enum):
     HUMIDITY = "19"     # Humidity data point
     VOLTAGE = "20"      # Voltage data point
     # Legacy alias
-    LINK_NUMBER = "04"  # Link number data point (alias for LINK_COUNT)
 
     @classmethod
     def from_code(cls, code: str) -> Optional['DataPointType']:
@@ -106,7 +105,7 @@ class SystemTelegram(Telegram):
             DataPointType.HUMIDITY: "Humidity",
             DataPointType.VOLTAGE: "Voltage", 
             DataPointType.CURRENT: "Current",
-            DataPointType.LINK_COUNT: "Link Count"  # Preferred name last, takes precedence
+            DataPointType.LINK_NUMBER: "Link Number"  # Preferred name last, takes precedence
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
     

@@ -24,7 +24,7 @@ class TestXP33ServerService:
         assert service.ean_code == '5703513058982'
         assert service.max_power == 640
         assert service.device_status == '00'
-        assert service.link_count == 4
+        assert service.link_number == 4
         assert service.module_type_code == 11
         assert service.channel_states == [0, 0, 0]
         assert len(service.scenes) == 4
@@ -40,7 +40,7 @@ class TestXP33ServerService:
         assert service.ean_code == '5703513058999'
         assert service.max_power == 300
         assert service.device_status == '00'
-        assert service.link_count == 4
+        assert service.link_number == 4
         assert service.module_type_code == 11
     
     def test_generate_discovery_response(self):
@@ -132,24 +132,8 @@ class TestXP33ServerService:
         assert 'F02D12' in response
         assert '00000000' in response  # All channels at 0%
     
-    def test_generate_link_count_response(self):
-        """Test link count response generation"""
-        request = SystemTelegram(
-            checksum='FL',
-            raw_telegram='<S0020042796F02D04FL>',
-            serial_number='0020042796',
-            system_function=SystemFunction.RETURN_DATA,
-            data_point_id=DataPointType.LINK_COUNT
-        )
-        
-        response = self.xp33lr_service.generate_link_count_response(request)
-        
-        assert response == '<R0020042796F02D0404FO>'
-        assert 'F02D04' in response
-        assert '04' in response  # 4 links configured
-    
-    def test_generate_link_count_response_legacy_alias(self):
-        """Test link count response with legacy LINK_NUMBER alias"""
+    def test_generate_link_number_response(self):
+        """Test link number response generation"""
         request = SystemTelegram(
             checksum='FL',
             raw_telegram='<S0020042796F02D04FL>',
@@ -158,7 +142,23 @@ class TestXP33ServerService:
             data_point_id=DataPointType.LINK_NUMBER
         )
         
-        response = self.xp33lr_service.generate_link_count_response(request)
+        response = self.xp33lr_service.generate_link_number_response(request)
+        
+        assert response == '<R0020042796F02D0404FO>'
+        assert 'F02D04' in response
+        assert '04' in response  # 4 links configured
+    
+    def test_generate_link_number_response_legacy_alias(self):
+        """Test link number response with legacy LINK_NUMBER alias"""
+        request = SystemTelegram(
+            checksum='FL',
+            raw_telegram='<S0020042796F02D04FL>',
+            serial_number='0020042796',
+            system_function=SystemFunction.RETURN_DATA,
+            data_point_id=DataPointType.LINK_NUMBER
+        )
+        
+        response = self.xp33lr_service.generate_link_number_response(request)
         
         assert response == '<R0020042796F02D0404FO>'
     
@@ -277,7 +277,7 @@ class TestXP33ServerService:
             (DataPointType.MODULE_TYPE, 'F02D07'),
             (DataPointType.STATUS_QUERY, 'F02D10'),
             (DataPointType.CHANNEL_STATES, 'F02D12'),
-            (DataPointType.LINK_COUNT, 'F02D04'),
+            (DataPointType.LINK_NUMBER, 'F02D04'),
             (DataPointType.CHANNEL_1, 'F02D13'),
             (DataPointType.CHANNEL_2, 'F02D14'),
             (DataPointType.CHANNEL_3, 'F02D15'),
@@ -303,7 +303,7 @@ class TestXP33ServerService:
         
         expected_keys = [
             'serial_number', 'device_type', 'variant', 'firmware_version',
-            'ean_code', 'max_power', 'status', 'link_count',
+            'ean_code', 'max_power', 'status', 'link_number',
             'channel_states', 'available_scenes'
         ]
         

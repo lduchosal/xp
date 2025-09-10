@@ -48,7 +48,7 @@ class TestDataPointType:
         assert DataPointType.from_code("17") == DataPointType.CURRENT
         assert DataPointType.from_code("00") == DataPointType.STATUS
         assert DataPointType.from_code("02") == DataPointType.VERSION
-        assert DataPointType.from_code("04") == DataPointType.LINK_COUNT
+        assert DataPointType.from_code("04") == DataPointType.LINK_NUMBER
         assert DataPointType.from_code("07") == DataPointType.MODULE_TYPE
         assert DataPointType.from_code("10") == DataPointType.STATUS_QUERY
         assert DataPointType.from_code("12") == DataPointType.CHANNEL_STATES
@@ -70,7 +70,7 @@ class TestDataPointType:
         assert DataPointType.CURRENT.value == "17"
         assert DataPointType.STATUS.value == "00"
         assert DataPointType.VERSION.value == "02"
-        assert DataPointType.LINK_COUNT.value == "04"
+        assert DataPointType.LINK_NUMBER.value == "04"
         assert DataPointType.MODULE_TYPE.value == "07"
         assert DataPointType.STATUS_QUERY.value == "10"
         assert DataPointType.CHANNEL_STATES.value == "12"
@@ -226,14 +226,14 @@ class TestSystemTelegram:
         (DataPointType.CURRENT, "Current"),
         (DataPointType.STATUS, "Status"),
         (DataPointType.VERSION, "Version"),
-        (DataPointType.LINK_COUNT, "Link Count"),
+        (DataPointType.LINK_NUMBER, "Link Number"),
         (DataPointType.MODULE_TYPE, "Module Type"),
         (DataPointType.STATUS_QUERY, "Status Query"),
         (DataPointType.CHANNEL_STATES, "Channel States"),
         (DataPointType.CHANNEL_1, "Channel 1 Control"),
         (DataPointType.CHANNEL_2, "Channel 2 Control"),
         (DataPointType.CHANNEL_3, "Channel 3 Control"),
-        (DataPointType.LINK_NUMBER, "Link Count")  # Legacy alias resolves to current name
+        (DataPointType.LINK_NUMBER, "Link Number")  # Legacy alias resolves to current name
     ])
     def test_data_point_descriptions(self, data_point, description):
         """Test all data point descriptions."""
