@@ -41,13 +41,7 @@ class BaseServerService(ABC):
                 self.logger.error(f"Module type code not set for {self.device_type}")
                 return None
             
-            # Format module type code as hex if it's an integer
-            if isinstance(self.module_type_code, int):
-                module_type_hex = f"{self.module_type_code:02X}"
-            else:
-                module_type_hex = str(self.module_type_code)
-            
-            data_part = f"R{self.serial_number}F02D07{module_type_hex}"
+            data_part = f"R{self.serial_number}F02D07{self.module_type_code}"
             checksum = calculate_checksum(data_part)
             telegram = f"<{data_part}{checksum}>"
             

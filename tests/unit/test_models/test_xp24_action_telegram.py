@@ -4,7 +4,7 @@ import pytest
 from datetime import datetime
 from unittest.mock import patch
 
-from src.xp.models.xp24_action_telegram import XP24ActionTelegram, ActionType
+from src.xp.models.input_telegram import XPInputTelegram, ActionType
 
 
 class TestActionType:
@@ -32,7 +32,7 @@ class TestXP24ActionTelegram:
     
     def test_init_default_values(self):
         """Test XP24ActionTelegram initialization with default values."""
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             checksum="FN",
             raw_telegram="<S0020044964F27D00AAFN>"
         )
@@ -49,7 +49,7 @@ class TestXP24ActionTelegram:
         """Test XP24ActionTelegram initialization with specific values."""
         test_time = datetime(2023, 1, 1, 12, 0, 0)
         
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             serial_number="0020044964",
             input_number=2,
             action_type=ActionType.PRESS,
@@ -67,13 +67,13 @@ class TestXP24ActionTelegram:
         assert telegram.checksum_validated is True
         assert telegram.timestamp == test_time
     
-    @patch('src.xp.models.xp24_action_telegram.datetime')
+    @patch('src.xp.models.xp_input_telegram.datetime')
     def test_post_init_sets_timestamp(self, mock_datetime):
         """Test that __post_init__ sets timestamp when None."""
         mock_now = datetime(2023, 1, 1, 12, 0, 0)
         mock_datetime.now.return_value = mock_now
         
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             checksum="FN",
             raw_telegram="<S0020044964F27D00AAFN>"
         )
@@ -85,7 +85,7 @@ class TestXP24ActionTelegram:
         """Test that __post_init__ preserves existing timestamp."""
         existing_time = datetime(2023, 1, 1, 12, 0, 0)
         
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             checksum="FN",
             raw_telegram="<S0020044964F27D00AAFN>",
             timestamp=existing_time
@@ -95,7 +95,7 @@ class TestXP24ActionTelegram:
     
     def test_action_description_press(self):
         """Test action_description property for PRESS action."""
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             action_type=ActionType.PRESS,
             checksum="FN",
             raw_telegram="<S0020044964F27D00AAFN>"
@@ -105,7 +105,7 @@ class TestXP24ActionTelegram:
     
     def test_action_description_release(self):
         """Test action_description property for RELEASE action."""
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             action_type=ActionType.RELEASE,
             checksum="FN",
             raw_telegram="<S0020044964F27D00ABFN>"
@@ -115,7 +115,7 @@ class TestXP24ActionTelegram:
     
     def test_action_description_none(self):
         """Test action_description property when action_type is None."""
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             action_type=None,
             checksum="FN",
             raw_telegram="<S0020044964F27D00AAFN>"
@@ -125,7 +125,7 @@ class TestXP24ActionTelegram:
     
     def test_input_description(self):
         """Test input_description property."""
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             input_number=2,
             checksum="FN",
             raw_telegram="<S0020044964F27D02AAFN>"
@@ -137,7 +137,7 @@ class TestXP24ActionTelegram:
         """Test to_dict method with complete data."""
         test_time = datetime(2023, 1, 1, 12, 0, 0)
         
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             serial_number="0020044964",
             input_number=1,
             action_type=ActionType.PRESS,
@@ -159,14 +159,14 @@ class TestXP24ActionTelegram:
             "checksum_validated": True,
             "raw_telegram": "<S0020044964F27D01AAFN>",
             "timestamp": "2023-01-01T12:00:00",
-            "telegram_type": "xp24_action"
+            "telegram_type": "xp_input"
         }
         
         assert telegram.to_dict() == expected
     
     def test_to_dict_minimal(self):
         """Test to_dict method with minimal data."""
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             action_type=None,
             checksum="FN",
             raw_telegram="<S0020044964F27D00AAFN>",
@@ -180,11 +180,11 @@ class TestXP24ActionTelegram:
         assert result["action_type"]["code"] is None
         assert result["action_type"]["description"] == "Unknown Action"
         assert result["timestamp"] is not None  # __post_init__ sets it
-        assert result["telegram_type"] == "xp24_action"
+        assert result["telegram_type"] == "xp_input"
     
     def test_str_representation(self):
         """Test __str__ method."""
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             serial_number="0020044964",
             input_number=3,
             action_type=ActionType.RELEASE,
@@ -192,12 +192,12 @@ class TestXP24ActionTelegram:
             raw_telegram="<S0020044964F27D03ABFN>"
         )
         
-        expected = "XP24 Action: Release (Break) on Input 3 for device 0020044964"
+        expected = "XP Input: Release (Break) on Input 3 for device 0020044964"
         assert str(telegram) == expected
     
     def test_str_representation_unknown_action(self):
         """Test __str__ method with unknown action."""
-        telegram = XP24ActionTelegram(
+        telegram = XPInputTelegram(
             serial_number="0020044964",
             input_number=0,
             action_type=None,
@@ -205,5 +205,5 @@ class TestXP24ActionTelegram:
             raw_telegram="<S0020044964F27D00AAFN>"
         )
         
-        expected = "XP24 Action: Unknown Action on Input 0 for device 0020044964"
+        expected = "XP Input: Unknown Action on Input 0 for device 0020044964"
         assert str(telegram) == expected

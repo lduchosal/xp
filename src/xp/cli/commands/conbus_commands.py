@@ -6,9 +6,9 @@ import threading
 import time
 
 from ...services.conbus_client_send_service import ConbusClientSendService, ConbusClientSendError
-from ...services.xp24_action_service import XP24ActionService, XP24ActionError
+from ...services.input_service import XPInputService, XPInputError
 from ...models.conbus_client_send import TelegramType, ConbusSendRequest
-from ...models.xp24_action_telegram import ActionType
+from ...models.input_telegram import ActionType
 from ..utils.decorators import json_output_option, connection_command, handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
@@ -341,24 +341,24 @@ def scan_module(serial_number: str, function_code: str, json_output: bool, backg
         raise
 
 
-@conbus.command("xp24")
+@conbus.command("input")
 @click.argument('serial_number')
 @click.argument('input_number_or_status')
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
-def xp24_action(serial_number: str, input_number_or_status: str, json_output: bool):
+def xp_input(serial_number: str, input_number_or_status: str, json_output: bool):
     """
-    Send action command to XP24 module or query status.
+    Send input command to XP module or query status.
     
     Examples:
-    xp conbus xp24 0020044964 0        # Toggle input 0
-    xp conbus xp24 0020044964 1        # Toggle input 1  
-    xp conbus xp24 0020044964 2        # Toggle input 2
-    xp conbus xp24 0020044964 3        # Toggle input 3
-    xp conbus xp24 0020044964 status   # Query input status
+    xp conbus input 0020044964 0        # Toggle input 0
+    xp conbus input 0020044964 1        # Toggle input 1
+    xp conbus input 0020044964 2        # Toggle input 2
+    xp conbus input 0020044964 3        # Toggle input 3
+    xp conbus input 0020044964 status   # Query input status
     """
     service = ConbusClientSendService()
-    xp24_service = XP24ActionService()
+    xp24_service = XPInputService()
     
     try:
         with service:
@@ -381,7 +381,7 @@ def xp24_action(serial_number: str, input_number_or_status: str, json_output: bo
                         try:
                             status = xp24_service.parse_status_response(response.received_telegrams[0])
                             response_data['input_status'] = status
-                        except XP24ActionError:
+                        except XPInputError:
                             # Status parsing failed, keep raw response
                             pass
                     
@@ -403,7 +403,7 @@ def xp24_action(serial_number: str, input_number_or_status: str, json_output: bo
                                 status = xp24_service.parse_status_response(received)
                                 status_summary = xp24_service.format_status_summary(status)
                                 click.echo(f"\n{status_summary}")
-                            except XP24ActionError:
+                            except XPInputError:
                                 # Status parsing failed, skip formatting
                                 pass
                         
@@ -417,7 +417,7 @@ def xp24_action(serial_number: str, input_number_or_status: str, json_output: bo
                 try:
                     input_number = int(input_number_or_status)
                     xp24_service.validate_input_number(input_number)
-                except (ValueError, XP24ActionError) as e:
+                except (ValueError, XPInputError) as e:
                     error_msg = f"Invalid input number: {input_number_or_status}"
                     if json_output:
                         error_response = {
@@ -469,7 +469,7 @@ def xp24_action(serial_number: str, input_number_or_status: str, json_output: bo
                     else:
                         click.echo(f"Error: {response.error}")
                 
-    except XP24ActionError as e:
+    except XPInputError as e:
         if json_output:
             error_response = {
                 "success": False,

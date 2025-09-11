@@ -36,13 +36,14 @@ src/xp/models/reply_telegram.py
 src/xp/models/response.py
 src/xp/models/system_telegram.py
 src/xp/models/telegram.py
-src/xp/models/xp24_action_telegram.py
+src/xp/models/xp_input_telegram.py
 src/xp/services/__init__.py
 src/xp/services/base_server_service.py
 src/xp/services/checksum_service.py
 src/xp/services/conbus_client_send_service.py
 src/xp/services/conbus_reverse_proxy_service.py
 src/xp/services/conbus_server_service.py
+src/xp/services/cp20_server_service.py
 src/xp/services/discovery_service.py
 src/xp/services/link_number_service.py
 src/xp/services/log_file_service.py

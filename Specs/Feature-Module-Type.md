@@ -27,6 +27,6 @@ The following module type codes exists in the XP system:
 - XP2506B 21 5 way push button panel with sesam and B&O IR, Conson design
 - XPX1-8 22 8 way push button panel interface
 - XP134 23 Junctionbox interlink
-- XP230 24 Ethernet/TCPIP interface module
 - XP33LR 30 XP 3 channel lightdimmer
 - XP20 33 XP switch link module
+- XP230 34 Ethernet/TCPIP interface module

@@ -1,7 +1,9 @@
-"""XP24 action telegram model for console bus communication.
+"""XP input telegram model for console bus communication.
 
-XP24 action telegrams are used for controlling relay inputs on XP24 modules.
+XP input telegrams are used for controlling relay inputs on XP modules.
 Each XP24 module has 4 inputs (0-3) that can be pressed or released.
+Each XP33 module has 3 inputs (0-2) that can be pressed or released.
+Each XP31 module has 1 inputs (0-0) that can be pressed or released.
 """
 
 from dataclasses import dataclass
@@ -27,15 +29,15 @@ class ActionType(Enum):
 
 
 @dataclass
-class XP24ActionTelegram(Telegram):
+class XPInputTelegram(Telegram):
     """
-    Represents a parsed XP24 action telegram from the console bus.
+    Represents a parsed XP input telegram from the console bus.
     
     Format: <S{serial_number}F27D{input:02d}{action}{checksum}>
     Example: <S0020044964F27D00AAFN>
     """
     serial_number: str = ""
-    input_number: int = 0  # 0-3 for XP24 modules
+    input_number: int = 0  # 0-3 for XP24 modules, 0-2 for XP33, 0 for XP31
     action_type: Optional[ActionType] = None
 
     def __post_init__(self):
@@ -70,13 +72,13 @@ class XP24ActionTelegram(Telegram):
             "checksum_validated": self.checksum_validated,
             "raw_telegram": self.raw_telegram,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
-            "telegram_type": "xp24_action"
+            "telegram_type": "xp_input"
         }
     
     def __str__(self) -> str:
         """Human-readable string representation"""
         return (
-            f"XP24 Action: {self.action_description} "
+            f"XP Input: {self.action_description} "
             f"on {self.input_description} "
             f"for device {self.serial_number}"
         )

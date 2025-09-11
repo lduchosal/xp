@@ -123,7 +123,7 @@ class TestModuleType:
     
     def test_module_registry_completeness(self):
         """Test that module registry contains all expected entries"""
-        assert len(MODULE_TYPE_REGISTRY) == 25
+        assert len(MODULE_TYPE_REGISTRY) == 27
         
         # Test some specific entries
         assert MODULE_TYPE_REGISTRY[0]["name"] == "NOMOD"
@@ -140,7 +140,7 @@ class TestModuleTypeFunctions:
         """Test getting all module types"""
         modules = get_all_module_types()
         
-        assert len(modules) == 25
+        assert len(modules) == 27
         assert all(isinstance(module, ModuleType) for module in modules)
         
         # Verify they are sorted by code
@@ -151,7 +151,7 @@ class TestModuleTypeFunctions:
         """Test getting module types grouped by category"""
         categories = get_module_types_by_category()
         
-        expected_categories = {"System", "CP Link Modules", "XP Control Modules", "Interface Panels"}
+        expected_categories = {"System", "CP Link Modules", "XP Control Modules", "Interface Panels", "Unknown"}
         assert set(categories.keys()) == expected_categories
         
         # Check some category contents

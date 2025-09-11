@@ -28,12 +28,10 @@ class XP230ServerService(BaseServerService):
         """Initialize XP230 server service"""
         super().__init__(serial_number)
         self.device_type = "XP230"
-        self.module_type_code = 24  # XP230 module type from registry
+        self.module_type_code = 34  # XP230 module type from registry
         self.firmware_version = "XP230_V1.00.04"
     
-    
-    
-    
+
     
     
     def generate_temperature_response(self, request: SystemTelegram) -> Optional[str]:

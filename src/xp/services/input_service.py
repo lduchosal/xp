@@ -1,21 +1,19 @@
-"""XP24 action service for handling XP24 device operations."""
+"""XP input service for handling XP input device operations."""
 
 import re
 from typing import Dict, Optional
-from ..models.xp24_action_telegram import XP24ActionTelegram, ActionType
-from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
-from ..models.reply_telegram import ReplyTelegram
+from ..models.input_telegram import XPInputTelegram, ActionType
 from ..utils.checksum import calculate_checksum
 
 
-class XP24ActionError(Exception):
+class XPInputError(Exception):
     """Raised when XP24 action operations fail"""
     pass
 
 
-class XP24ActionService:
+class XPInputService:
     """
-    Service for XP24 action operations.
+    Service for XP action operations.
     
     Handles parsing and validation of XP24 action telegrams,
     status queries, and action command generation.
@@ -29,12 +27,12 @@ class XP24ActionService:
     STATUS_DATAPOINT = "12"  # Data point code for input status
     
     # Regex pattern for XP24 action telegrams
-    XP24_ACTION_PATTERN = re.compile(
+    XP_INPUT_PATTERN = re.compile(
         r'^<S(\d{10})F27D(\d{2})([A-Z0-9]{2})([A-Z0-9]{2})>$'
     )
     
     def __init__(self):
-        """Initialize the XP24 action service"""
+        """Initialize the XP input service"""
         pass
     
     def validate_input_number(self, input_number: int) -> None:
@@ -45,13 +43,13 @@ class XP24ActionService:
             input_number: Input number to validate (0-3)
             
         Raises:
-            XP24ActionError: If input number is invalid
+            XPInputError: If input number is invalid
         """
         if not isinstance(input_number, int):
-            raise XP24ActionError(f"Input number must be integer, got {type(input_number)}")
+            raise XPInputError(f"Input number must be integer, got {type(input_number)}")
         
         if not (0 <= input_number < self.MAX_INPUTS):
-            raise XP24ActionError(
+            raise XPInputError(
                 f"Invalid input number: {input_number}. "
                 f"XP24 supports inputs 0-{self.MAX_INPUTS-1}"
             )
@@ -67,15 +65,15 @@ class XP24ActionService:
             XP24ActionError: If serial number is invalid
         """
         if not isinstance(serial_number, str):
-            raise XP24ActionError(f"Serial number must be string, got {type(serial_number)}")
+            raise XPInputError(f"Serial number must be string, got {type(serial_number)}")
         
         if len(serial_number) != 10 or not serial_number.isdigit():
-            raise XP24ActionError(
+            raise XPInputError(
                 f"Invalid serial number: {serial_number}. "
                 "Serial number must be exactly 10 digits"
             )
     
-    def generate_action_telegram(self, serial_number: str, input_number: int, action: ActionType) -> str:
+    def generate_input_telegram(self, serial_number: str, input_number: int, action: ActionType) -> str:
         """
         Generate XP24 action telegram string.
         
@@ -95,7 +93,7 @@ class XP24ActionService:
         self.validate_input_number(input_number)
         
         if not isinstance(action, ActionType):
-            raise XP24ActionError(f"Invalid action type: {action}")
+            raise XPInputError(f"Invalid action type: {action}")
         
         # Build data part without checksum
         data_part = f"S{serial_number}F{self.ACTION_FUNCTION}D{input_number:02d}{action.value}"
@@ -106,9 +104,9 @@ class XP24ActionService:
         # Return complete telegram
         return f"<{data_part}{checksum}>"
     
-    def generate_status_telegram(self, serial_number: str) -> str:
+    def generate_input_status_telegram(self, serial_number: str) -> str:
         """
-        Generate XP24 status query telegram.
+        Generate XP input status query telegram.
         
         Args:
             serial_number: Target module serial number
@@ -117,7 +115,7 @@ class XP24ActionService:
             Complete status query telegram string
             
         Raises:
-            XP24ActionError: If serial number is invalid
+            XPInputError: If serial number is invalid
         """
         # Validate inputs
         self.validate_serial_number(serial_number)
@@ -131,26 +129,26 @@ class XP24ActionService:
         # Return complete telegram
         return f"<{data_part}{checksum}>"
     
-    def parse_action_telegram(self, raw_telegram: str) -> XP24ActionTelegram:
+    def parse_input_telegram(self, raw_telegram: str) -> XPInputTelegram:
         """
-        Parse a raw XP24 action telegram string.
+        Parse a raw XP input telegram string.
         
         Args:
             raw_telegram: The raw telegram string (e.g., "<S0020044964F27D00AAFN>")
             
         Returns:
-            XP24ActionTelegram object with parsed data
+            XPInputTelegram object with parsed data
             
         Raises:
-            XP24ActionError: If telegram format is invalid
+            XPInputError: If telegram format is invalid
         """
         if not raw_telegram:
-            raise XP24ActionError("Empty telegram string")
+            raise XPInputError("Empty telegram string")
         
         # Validate and parse using regex
-        match = self.XP24_ACTION_PATTERN.match(raw_telegram.strip())
+        match = self.XP_INPUT_PATTERN.match(raw_telegram.strip())
         if not match:
-            raise XP24ActionError(f"Invalid XP24 action telegram format: {raw_telegram}")
+            raise XPInputError(f"Invalid XP24 action telegram format: {raw_telegram}")
         
         try:
             serial_number = match.group(1)
@@ -164,10 +162,10 @@ class XP24ActionService:
             # Parse action type
             action_type = ActionType.from_code(action_code)
             if action_type is None:
-                raise XP24ActionError(f"Unknown action code: {action_code}")
+                raise XPInputError(f"Unknown action code: {action_code}")
             
             # Create telegram object
-            telegram = XP24ActionTelegram(
+            telegram = XPInputTelegram(
                 serial_number=serial_number,
                 input_number=input_number,
                 action_type=action_type,
@@ -181,9 +179,9 @@ class XP24ActionService:
             return telegram
             
         except ValueError as e:
-            raise XP24ActionError(f"Invalid values in XP24 action telegram: {e}")
+            raise XPInputError(f"Invalid values in XP24 action telegram: {e}")
     
-    def validate_checksum(self, telegram: XP24ActionTelegram) -> bool:
+    def validate_checksum(self, telegram: XPInputTelegram) -> bool:
         """
         Validate the checksum of a parsed XP24 action telegram.
         
@@ -223,16 +221,16 @@ class XP24ActionService:
             XP24ActionError: If telegram format is invalid
         """
         if not raw_telegram:
-            raise XP24ActionError("Empty status response telegram")
+            raise XPInputError("Empty status response telegram")
         
         # Look for status pattern in reply telegram
         status_match = re.search(r'F02D12xxxx(\d{4})', raw_telegram)
         if not status_match:
-            raise XP24ActionError(f"Invalid status response format: {raw_telegram}")
+            raise XPInputError(f"Invalid status response format: {raw_telegram}")
         
         status_bits = status_match.group(1)
         if len(status_bits) != 4:
-            raise XP24ActionError(f"Invalid status bits length: {status_bits}")
+            raise XPInputError(f"Invalid status bits length: {status_bits}")
         
         # Map each bit to input state
         status = {}
@@ -258,7 +256,7 @@ class XP24ActionService:
         
         return "\n".join(lines)
     
-    def format_action_summary(self, telegram: XP24ActionTelegram) -> str:
+    def format_action_summary(self, telegram: XPInputTelegram) -> str:
         """
         Format XP24 action telegram for human-readable output.
         
@@ -274,7 +272,7 @@ class XP24ActionService:
             checksum_status = f" ({status_indicator})"
         
         return (
-            f"XP24 Action: {telegram}\n"
+            f"XP Input: {telegram}\n"
             f"Raw: {telegram.raw_telegram}\n"
             f"Timestamp: {telegram.timestamp}\n"
             f"Checksum: {telegram.checksum}{checksum_status}"

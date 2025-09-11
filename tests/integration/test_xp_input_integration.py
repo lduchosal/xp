@@ -3,28 +3,28 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from src.xp.services.xp24_action_service import XP24ActionService, XP24ActionError
-from src.xp.models.xp24_action_telegram import XP24ActionTelegram, ActionType
+from src.xp.services.input_service import XPInputService, XPInputError
+from src.xp.models.input_telegram import XPInputTelegram, ActionType
 from src.xp.services.conbus_client_send_service import ConbusClientSendService
 
 
-class TestXP24ActionIntegration:
+class TestXPInputIntegration:
     """Integration tests for XP24 action functionality."""
     
     def setup_method(self):
         """Set up test fixtures."""
-        self.xp24_service = XP24ActionService()
+        self.input_service = XPInputService()
         self.conbus_service = ConbusClientSendService()
     
     def test_end_to_end_action_generation_and_parsing(self):
         """Test complete flow: generate telegram, parse it back."""
         # Generate action telegram
-        original_telegram = self.xp24_service.generate_action_telegram(
+        original_telegram = self.input_service.generate_input_telegram(
             "0020044964", 2, ActionType.RELEASE
         )
         
         # Parse the generated telegram
-        parsed = self.xp24_service.parse_action_telegram(original_telegram)
+        parsed = self.input_service.parse_input_telegram(original_telegram)
         
         # Verify parsed data matches original
         assert parsed.serial_number == "0020044964"
@@ -36,7 +36,7 @@ class TestXP24ActionIntegration:
     def test_end_to_end_status_generation_and_parsing(self):
         """Test complete flow: generate status query, parse response."""
         # Generate status query telegram
-        status_telegram = self.xp24_service.generate_status_telegram("0020044964")
+        status_telegram = self.input_service.generate_input_status_telegram("0020044964")
         
         # Verify generated format
         assert status_telegram.startswith("<S0020044964F02D12")
@@ -45,7 +45,7 @@ class TestXP24ActionIntegration:
         
         # Simulate status response and parse
         mock_response = "<R0020044964F02D12xxxx1010FJ>"
-        status = self.xp24_service.parse_status_response(mock_response)
+        status = self.input_service.parse_status_response(mock_response)
         
         expected = {0: True, 1: False, 2: True, 3: False}
         assert status == expected
@@ -55,12 +55,12 @@ class TestXP24ActionIntegration:
         for input_num in range(4):
             for action in [ActionType.PRESS, ActionType.RELEASE]:
                 # Generate telegram
-                telegram = self.xp24_service.generate_action_telegram(
+                telegram = self.input_service.generate_input_telegram(
                     "1234567890", input_num, action
                 )
                 
                 # Parse it back
-                parsed = self.xp24_service.parse_action_telegram(telegram)
+                parsed = self.input_service.parse_input_telegram(telegram)
                 
                 # Verify consistency
                 assert parsed.serial_number == "1234567890"
@@ -74,7 +74,7 @@ class TestXP24ActionIntegration:
             binary_str = format(status_bits, '04b')
             mock_response = f"<R0020044964F02D12xxxx{binary_str}FJ>"
             
-            status = self.xp24_service.parse_status_response(mock_response)
+            status = self.input_service.parse_status_response(mock_response)
             
             # Verify each bit is correctly parsed
             for i in range(4):
@@ -84,17 +84,17 @@ class TestXP24ActionIntegration:
     def test_checksum_validation_integration(self):
         """Test checksum validation with real checksums."""
         # Generate telegram with valid checksum
-        valid_telegram = self.xp24_service.generate_action_telegram(
+        valid_telegram = self.input_service.generate_input_telegram(
             "0020044964", 1, ActionType.PRESS
         )
         
         # Parse and verify checksum is valid
-        parsed = self.xp24_service.parse_action_telegram(valid_telegram)
+        parsed = self.input_service.parse_input_telegram(valid_telegram)
         assert parsed.checksum_validated is True
         
         # Create telegram with invalid checksum
         invalid_telegram = valid_telegram[:-3] + "XX>"
-        parsed_invalid = self.xp24_service.parse_action_telegram(invalid_telegram)
+        parsed_invalid = self.input_service.parse_input_telegram(invalid_telegram)
         assert parsed_invalid.checksum_validated is False
     
     def test_telegram_service_integration(self):
@@ -104,7 +104,7 @@ class TestXP24ActionIntegration:
         telegram_service = TelegramService()
         
         # Generate XP24 action telegram
-        xp24_telegram = self.xp24_service.generate_action_telegram(
+        xp24_telegram = self.input_service.generate_input_telegram(
             "0020044964", 0, ActionType.PRESS
         )
         
@@ -132,7 +132,7 @@ class TestXP24ActionIntegration:
         mock_send.return_value = mock_response
         
         runner = CliRunner()
-        result = runner.invoke(conbus, ['xp24', '0020044964', '1'])
+        result = runner.invoke(conbus, ['input', '0020044964', '1'])
         
         assert result.exit_code == 0
         assert "[TX] <S0020044964F27D01AAFN>" in result.output
@@ -158,7 +158,7 @@ class TestXP24ActionIntegration:
         mock_send.return_value = mock_response
         
         runner = CliRunner()
-        result = runner.invoke(conbus, ['xp24', '0020044964', 'status'])
+        result = runner.invoke(conbus, ['input', '0020044964', 'status'])
         
         assert result.exit_code == 0
         assert "[TX] <S0020044964F02D12FJ>" in result.output
@@ -190,7 +190,7 @@ class TestXP24ActionIntegration:
         mock_send.return_value = mock_response
         
         runner = CliRunner()
-        result = runner.invoke(conbus, ['xp24', '0020044964', '0', '--json-output'])
+        result = runner.invoke(conbus, ['input', '0020044964', '0', '--json-output'])
         assert result.exit_code == 0
 
         # Parse JSON output
@@ -204,31 +204,31 @@ class TestXP24ActionIntegration:
     def test_error_handling_integration(self):
         """Test error handling across service layers."""
         # Test invalid input number
-        with pytest.raises(XP24ActionError, match="Invalid input number: 5"):
-            self.xp24_service.generate_action_telegram("0020044964", 5, ActionType.PRESS)
+        with pytest.raises(XPInputError, match="Invalid input number: 5"):
+            self.input_service.generate_input_telegram("0020044964", 5, ActionType.PRESS)
         
         # Test invalid serial number
-        with pytest.raises(XP24ActionError, match="Invalid serial number: 123"):
-            self.xp24_service.generate_status_telegram("123")
+        with pytest.raises(XPInputError, match="Invalid serial number: 123"):
+            self.input_service.generate_input_status_telegram("123")
         
         # Test invalid telegram parsing
-        with pytest.raises(XP24ActionError, match="Invalid XP24 action telegram format"):
-            self.xp24_service.parse_action_telegram("<E14L00I02MAK>")
+        with pytest.raises(XPInputError, match="Invalid XP24 action telegram format"):
+            self.input_service.parse_input_telegram("<E14L00I02MAK>")
     
     def test_architecture_compliance(self):
         """Test compliance with architecture constraints."""
         # Verify MAX_INPUTS constraint is enforced
-        assert self.xp24_service.MAX_INPUTS == 4
+        assert self.input_service.MAX_INPUTS == 4
         
         # Verify all input validation follows architecture rules
         for invalid_input in [-1, 4, 5, 10]:
-            with pytest.raises(XP24ActionError):
-                self.xp24_service.validate_input_number(invalid_input)
+            with pytest.raises(XPInputError):
+                self.input_service.validate_input_number(invalid_input)
         
         # Verify serial number validation
         for invalid_serial in ["123", "12345678901", "abc1234567", ""]:
-            with pytest.raises(XP24ActionError):
-                self.xp24_service.validate_serial_number(invalid_serial)
+            with pytest.raises(XPInputError):
+                self.input_service.validate_serial_number(invalid_serial)
     
     def test_performance_requirements(self):
         """Test performance characteristics."""
@@ -237,7 +237,7 @@ class TestXP24ActionIntegration:
         # Test telegram generation performance
         start_time = time.time()
         for _ in range(1000):
-            self.xp24_service.generate_action_telegram("0020044964", 0, ActionType.PRESS)
+            self.input_service.generate_input_telegram("0020044964", 0, ActionType.PRESS)
         generation_time = time.time() - start_time
         
         # Should generate 1000 telegrams in under 1 second
@@ -247,7 +247,7 @@ class TestXP24ActionIntegration:
         test_telegram = "<S0020044964F27D01AAFN>"
         start_time = time.time()
         for _ in range(1000):
-            self.xp24_service.parse_action_telegram(test_telegram)
+            self.input_service.parse_input_telegram(test_telegram)
         parsing_time = time.time() - start_time
         
         # Should parse 1000 telegrams in under 1 second

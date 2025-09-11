@@ -39,8 +39,8 @@ class TestBaseServerService:
         
         assert response is not None
         assert 'F02D07' in response
-        assert '2A' in response  # 42 = 0x2A
-        assert response.startswith('<R1234567890F02D072A')
+        assert '42' in response
+        assert response.startswith('<R1234567890F02D0742')
         assert response.endswith('>')
     
     def test_generate_module_type_response_wrong_function(self):
