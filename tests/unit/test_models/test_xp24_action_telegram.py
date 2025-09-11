@@ -67,7 +67,7 @@ class TestXP24ActionTelegram:
         assert telegram.checksum_validated is True
         assert telegram.timestamp == test_time
     
-    @patch('src.xp.models.xp_input_telegram.datetime')
+    @patch('src.xp.models.input_telegram.datetime')
     def test_post_init_sets_timestamp(self, mock_datetime):
         """Test that __post_init__ sets timestamp when None."""
         mock_now = datetime(2023, 1, 1, 12, 0, 0)

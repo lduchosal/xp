@@ -36,7 +36,7 @@ src/xp/models/reply_telegram.py
 src/xp/models/response.py
 src/xp/models/system_telegram.py
 src/xp/models/telegram.py
-src/xp/models/xp_input_telegram.py
+src/xp/models/input_telegram.py
 src/xp/services/__init__.py
 src/xp/services/base_server_service.py
 src/xp/services/checksum_service.py

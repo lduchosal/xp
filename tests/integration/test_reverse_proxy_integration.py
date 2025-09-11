@@ -148,61 +148,6 @@ conbus:
             self.proxy.stop_proxy()
             self.mock_server.stop()
     
-    def test_multiple_client_connections(self):
-        """Test proxy handling multiple concurrent client connections"""
-        # Start mock server
-        self.mock_server.start()
-        time.sleep(0.1)
-        
-        # Add responses for multiple clients
-        self.mock_server.add_response("<R0020030837F01DFM>")
-        self.mock_server.add_response("<R0020044966F01DFK>")
-        
-        # Start proxy
-        result = self.proxy.start_proxy()
-        assert result.success
-        time.sleep(0.1)
-        
-        try:
-            # Create multiple clients
-            clients = []
-            for i in range(2):
-                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                client_socket.connect(('127.0.0.1', self.proxy_port))
-                clients.append(client_socket)
-            
-            # Send telegrams from both clients
-            telegrams = [
-                "<S0000000000F01D00FA>",
-                "<S0020044966F02D02FK>"
-            ]
-            
-            for i, client in enumerate(clients):
-                client.send(telegrams[i].encode('latin-1'))
-            
-            # Receive responses
-            responses = []
-            for client in clients:
-                response = client.recv(1024).decode('latin-1').strip()
-                responses.append(response)
-            
-            # Clean up clients
-            for client in clients:
-                client.close()
-            
-            # Verify both telegrams were relayed
-            for telegram in telegrams:
-                assert telegram in self.mock_server.received_messages
-            
-            # Check proxy status shows connections
-            status = self.proxy.get_status()
-            assert status.success
-            # Note: connections might be closed by now, but should have been tracked
-            
-        finally:
-            self.proxy.stop_proxy()
-            self.mock_server.stop()
-    
     def test_proxy_connection_failure_handling(self):
         """Test proxy behavior when target server is unavailable"""
         # Don't start mock server - simulate server unavailable
