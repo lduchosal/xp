@@ -36,7 +36,8 @@ class ReplyTelegram(Telegram):
             SystemFunction.DISCOVERY: "Discover Response",
             SystemFunction.READ_CONFIG: "Configuration Response",
             SystemFunction.WRITE_CONFIG: "Write Configuration Response",
-            SystemFunction.SYSTEM_RESET: "System Reset Response"
+            SystemFunction.BLINK: "Blink Response",
+            SystemFunction.UNBLINK: "Unblink Response"
         }
         return descriptions.get(self.system_function, "Unknown Response")
     

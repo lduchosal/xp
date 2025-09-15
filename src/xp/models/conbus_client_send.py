@@ -14,6 +14,8 @@ class TelegramType(Enum):
     TEMPERATURE = "temperature"
     CURRENT = "current"
     HUMIDITY = "humidity"
+    BLINK = "blink"
+    UNBLINK = "unblink"
 
 
 @dataclass

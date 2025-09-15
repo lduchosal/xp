@@ -30,8 +30,18 @@ class ModuleTypeCode(Enum):
     XPX1_8 = 22     # 8 way push button panel interface
     XP134 = 23      # Junctionbox interlink
     XP230 = 24      # XP230 module
+    XP28A = 25      #
+    XP28B = 26      #
+    CONTOOL = 27    #
+    XP28 = 28       #
+    XP31LR = 29     # XP 1 channel lightdimmer
     XP33LR = 30     # XP 33 3 channel lightdimmer
+    XP31CR = 31     # XP 31 1 channel dimmer
+    XP31BC = 32     # XP 31 1 channel dimmer
     XP20 = 33       # XP switch link module
+    XP230   = 34    # Ethernet/TCPIP interface module
+    XP33LED = 36    # XP 3 channel LED dimmer
+    XP31LED = 37    # XP 1 channel LED dimmer
 
 
 @dataclass
@@ -151,8 +161,18 @@ MODULE_TYPE_REGISTRY: Dict[int, Dict[str, str]] = {
     22: {"name": "XPX1_8", "description": "8 way push button panel interface"},
     23: {"name": "XP134", "description": "Junctionbox interlink"},
     24: {"name": "XP230", "description": "XP230 module"},
+    25: {"name": "XP28A", "description": "XP28A module"},
+    26: {"name": "XP28B", "description": "XP28B module"},
+    27: {"name": "CONTOOL", "description": "CONTOOL module"},
+    28: {"name": "XP28", "description": "XP28 module"},
+    29: {"name": "XP31LR", "description": "XP 1 channel lightdimmer"},
+    30: {"name": "XP33LR", "description": "XP 33 3 channel lightdimmer"},
+    31: {"name": "XP31CR", "description": "XP 31 1 channel dimmer"},
+    32: {"name": "XP31BC", "description": "XP 31 1 channel dimmer"},
     33: {"name": "XP20", "description": "XP switch link module"},
-    48: {"name": "XP33LR", "description": "XP 33 3 channel lightdimmer"},
+    34: {"name": "XP230", "description": "Ethernet/TCPIP interface module"},
+    36: {"name": "XP33LED", "description": "XP 3 channel LED dimmer"},
+    37: {"name": "XP31LED", "description": "XP 1 channel LED dimmer"},
 }
 
 

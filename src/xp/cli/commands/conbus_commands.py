@@ -1,4 +1,6 @@
 """Conbus client operations CLI commands."""
+from pickle import BINPUT
+
 import click
 import json
 import re
@@ -7,6 +9,7 @@ import time
 
 from ...services.conbus_client_send_service import ConbusClientSendService, ConbusClientSendError
 from ...services.input_service import XPInputService, XPInputError
+from ...services.blink_service import BlinkService, BlinkError
 from ...models.conbus_client_send import TelegramType, ConbusSendRequest
 from ...models.input_telegram import ActionType
 from ..utils.decorators import json_output_option, connection_command, handle_service_errors
@@ -344,21 +347,22 @@ def scan_module(serial_number: str, function_code: str, json_output: bool, backg
 @conbus.command("input")
 @click.argument('serial_number')
 @click.argument('input_number_or_status')
+@click.argument('on_or_off')
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
-def xp_input(serial_number: str, input_number_or_status: str, json_output: bool):
+def xp_input(serial_number: str, input_number_or_status: str, on_or_off: str, json_output: bool):
     """
     Send input command to XP module or query status.
     
     Examples:
-    xp conbus input 0020044964 0        # Toggle input 0
-    xp conbus input 0020044964 1        # Toggle input 1
-    xp conbus input 0020044964 2        # Toggle input 2
-    xp conbus input 0020044964 3        # Toggle input 3
+    xp conbus input 0020044964 0 ON       # Toggle input 0
+    xp conbus input 0020044964 1 OFF      # Toggle input 1
+    xp conbus input 0020044964 2 ON       # Toggle input 2
+    xp conbus input 0020044964 3 ON       # Toggle input 3
     xp conbus input 0020044964 status   # Query input status
     """
     service = ConbusClientSendService()
-    xp24_service = XPInputService()
+    input_service = XPInputService()
     
     try:
         with service:
@@ -366,20 +370,20 @@ def xp_input(serial_number: str, input_number_or_status: str, json_output: bool)
                 # Send status query using custom telegram method
                 response = service.send_custom_telegram(
                     serial_number, 
-                    xp24_service.STATUS_FUNCTION,  # "02"
-                    xp24_service.STATUS_DATAPOINT  # "12"
+                    input_service.STATUS_FUNCTION,  # "02"
+                    input_service.STATUS_DATAPOINT  # "12"
                 )
                 
                 if json_output:
                     # Add XP24-specific data to response
                     response_data = response.to_dict()
                     response_data['xp24_operation'] = 'status_query'
-                    response_data['telegram_type'] = 'xp24_status'
+                    response_data['telegram_type'] = 'xp_input'
                     
                     # Parse status from response if available
                     if response.success and response.received_telegrams:
                         try:
-                            status = xp24_service.parse_status_response(response.received_telegrams[0])
+                            status = input_service.parse_status_response(response.received_telegrams[0])
                             response_data['input_status'] = status
                         except XPInputError:
                             # Status parsing failed, keep raw response
@@ -400,8 +404,8 @@ def xp_input(serial_number: str, input_number_or_status: str, json_output: bool)
                             
                             # Parse and display status in human-readable format
                             try:
-                                status = xp24_service.parse_status_response(received)
-                                status_summary = xp24_service.format_status_summary(status)
+                                status = input_service.parse_status_response(received)
+                                status_summary = input_service.format_status_summary(status)
                                 click.echo(f"\n{status_summary}")
                             except XPInputError:
                                 # Status parsing failed, skip formatting
@@ -416,7 +420,7 @@ def xp_input(serial_number: str, input_number_or_status: str, json_output: bool)
                 # Parse input number and send action
                 try:
                     input_number = int(input_number_or_status)
-                    xp24_service.validate_input_number(input_number)
+                    input_service.validate_input_number(input_number)
                 except (ValueError, XPInputError) as e:
                     error_msg = f"Invalid input number: {input_number_or_status}"
                     if json_output:
@@ -435,10 +439,14 @@ def xp_input(serial_number: str, input_number_or_status: str, json_output: bool)
                 
                 # Send action telegram using custom telegram method
                 # Format: F27D{input:02d}AA (Function 27, input number, PRESS action)
-                data_point_code = f"{input_number:02d}{ActionType.PRESS.value}"
+                action_type = ActionType.RELEASE.value
+                if on_or_off.lower() == 'on':
+                    action_type = ActionType.PRESS.value
+
+                data_point_code = f"{input_number:02d}{action_type}"
                 response = service.send_custom_telegram(
                     serial_number,
-                    xp24_service.ACTION_FUNCTION,  # "27"
+                    input_service.ACTION_FUNCTION,  # "27"
                     data_point_code  # "00AA", "01AA", etc.
                 )
                 
@@ -483,9 +491,10 @@ def xp_input(serial_number: str, input_number_or_status: str, json_output: bool)
             raise click.ClickException(str(e))
             
     except ConbusClientSendError as e:
-        CLIErrorHandler.handle_service_error(e, json_output, "XP24 action", {
+        CLIErrorHandler.handle_service_error(e, json_output, "XP Input", {
             "serial_number": serial_number,
-            "input_number_or_status": input_number_or_status
+            "input_number_or_status": input_number_or_status,
+            "on_or_off": on_or_off,
         })
 
 
@@ -531,4 +540,144 @@ def send_custom_telegram(serial_number: str, function_code: str, data_point_code
             "serial_number": serial_number,
             "function_code": function_code,
             "data_point_code": data_point_code
+        })
+
+
+@conbus.command("blink")
+@click.argument('serial_number')
+@connection_command()
+@handle_service_errors(ConbusClientSendError, BlinkError)
+def send_blink_telegram(serial_number: str, json_output: bool):
+    """
+    Send blink command to start blinking module LED.
+    
+    Example: xp conbus blink 0020044964
+    """
+    conbus_service = ConbusClientSendService()
+    blink_service = BlinkService()
+    
+    try:
+        # Validate serial number using blink service
+        blink_service.generate_blink_telegram(serial_number)  # This validates the serial
+        
+        # Send blink telegram using custom method (F05D00)
+        with conbus_service:
+            response = conbus_service.send_custom_telegram(
+                serial_number, 
+                "05",  # Blink function code
+                "00"   # Status data point
+            )
+        
+        if json_output:
+            response_data = response.to_dict()
+            response_data['operation'] = 'blink'
+            response_data['blink_operation'] = 'start_blinking'
+            click.echo(json.dumps(response_data, indent=2))
+        else:
+            if response.success:
+                # Format output like other conbus commands
+                if response.sent_telegram:
+                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    click.echo(f"{timestamp} [TX] {response.sent_telegram}")
+                
+                # Show received telegrams
+                for received in response.received_telegrams:
+                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    click.echo(f"{timestamp} [RX] {received}")
+                
+                if not response.received_telegrams:
+                    click.echo("No response received")
+                else:
+                    click.echo(f"Blink command sent to module {serial_number}")
+            else:
+                click.echo(f"Error: {response.error}")
+                
+    except BlinkError as e:
+        if json_output:
+            error_response = {
+                "success": False,
+                "error": str(e),
+                "operation": "blink",
+                "serial_number": serial_number
+            }
+            click.echo(json.dumps(error_response, indent=2))
+            raise SystemExit(1)
+        else:
+            click.echo(f"Blink Error: {e}", err=True)
+            raise click.ClickException(str(e))
+            
+    except ConbusClientSendError as e:
+        CLIErrorHandler.handle_service_error(e, json_output, "blink command", {
+            "serial_number": serial_number,
+            "operation": "blink"
+        })
+
+
+@conbus.command("unblink")
+@click.argument('serial_number')
+@connection_command()
+@handle_service_errors(ConbusClientSendError, BlinkError)
+def send_unblink_telegram(serial_number: str, json_output: bool):
+    """
+    Send unblink command to stop blinking module LED.
+    
+    Example: xp conbus unblink 0020030837
+    """
+    conbus_service = ConbusClientSendService()
+    blink_service = BlinkService()
+    
+    try:
+        # Validate serial number using blink service
+        blink_service.generate_unblink_telegram(serial_number)  # This validates the serial
+        
+        # Send unblink telegram using custom method (F06D00)
+        with conbus_service:
+            response = conbus_service.send_custom_telegram(
+                serial_number, 
+                "06",  # Unblink function code
+                "00"   # Status data point
+            )
+        
+        if json_output:
+            response_data = response.to_dict()
+            response_data['operation'] = 'unblink'
+            response_data['blink_operation'] = 'stop_blinking'
+            click.echo(json.dumps(response_data, indent=2))
+        else:
+            if response.success:
+                # Format output like other conbus commands
+                if response.sent_telegram:
+                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    click.echo(f"{timestamp} [TX] {response.sent_telegram}")
+                
+                # Show received telegrams
+                for received in response.received_telegrams:
+                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    click.echo(f"{timestamp} [RX] {received}")
+                
+                if not response.received_telegrams:
+                    click.echo("No response received")
+                else:
+                    click.echo(f"Unblink command sent to module {serial_number}")
+            else:
+                click.echo(f"Error: {response.error}")
+                
+    except BlinkError as e:
+        if json_output:
+            error_response = {
+                "success": False,
+                "error": str(e),
+                "operation": "unblink",
+                "serial_number": serial_number
+            }
+            click.echo(json.dumps(error_response, indent=2))
+            raise SystemExit(1)
+        else:
+            click.echo(f"Blink Error: {e}", err=True)
+            raise click.ClickException(str(e))
+            
+    except ConbusClientSendError as e:
+        CLIErrorHandler.handle_service_error(e, json_output, "unblink command", {
+            "serial_number": serial_number,
+            "operation": "unblink"
         })

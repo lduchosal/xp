@@ -11,14 +11,14 @@ from enum import Enum
 
 from .telegram import Telegram
 
-
 class SystemFunction(Enum):
     """System function codes for system telegrams"""
     DISCOVERY = "01"  # Discovery function
     RETURN_DATA = "02"  # Return data function
     READ_CONFIG = "03"  # Read configuration
     WRITE_CONFIG = "04"  # Write configuration
-    SYSTEM_RESET = "05"  # System reset
+    BLINK = "05"  # Blink LED function
+    UNBLINK = "06"  # Unblink LED function
     ACK = "18"  # Acknowledge response
     NAK = "19"  # Not acknowledge response
     ACTION = "27"  # Action function
@@ -83,7 +83,8 @@ class SystemTelegram(Telegram):
             SystemFunction.RETURN_DATA: "Return Data",
             SystemFunction.READ_CONFIG: "Read Configuration",
             SystemFunction.WRITE_CONFIG: "Write Configuration",
-            SystemFunction.SYSTEM_RESET: "System Reset",
+            SystemFunction.BLINK: "Blink LED",
+            SystemFunction.UNBLINK: "Unblink LED",
             SystemFunction.ACK: "Acknowledge",
             SystemFunction.NAK: "Not Acknowledge"
         }
@@ -95,7 +96,7 @@ class SystemTelegram(Telegram):
         descriptions = {
             DataPointType.STATUS: "Status",
             DataPointType.VERSION: "Version",
-            DataPointType.LINK_NUMBER: "Link Number",  # Legacy alias first
+            DataPointType.LINK_NUMBER: "Link Number",
             DataPointType.MODULE_TYPE: "Module Type",
             DataPointType.STATUS_QUERY: "Status Query",
             DataPointType.CHANNEL_STATES: "Channel States",
@@ -106,7 +107,6 @@ class SystemTelegram(Telegram):
             DataPointType.HUMIDITY: "Humidity",
             DataPointType.VOLTAGE: "Voltage", 
             DataPointType.CURRENT: "Current",
-            DataPointType.LINK_NUMBER: "Link Number"  # Preferred name last, takes precedence
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
     

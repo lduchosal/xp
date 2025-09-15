@@ -16,9 +16,9 @@ from .telegram import Telegram
 
 class ActionType(Enum):
     """Action types for XP24 telegrams"""
-    PRESS = "AA"    # Make action (activate relay)
-    RELEASE = "AB"  # Break action (deactivate relay)
-    
+    RELEASE = "AA"  # Break action (deactivate relay)
+    PRESS = "AB"    # Make action (activate relay)
+
     @classmethod
     def from_code(cls, code: str) -> Optional['ActionType']:
         """Get ActionType from code string"""
