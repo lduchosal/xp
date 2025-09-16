@@ -4,19 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: Blink">
-      <change afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_config_commands.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_custom_commands.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Refactor: conbus_commands">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_input_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram_enhancements.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram_enhancements.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -262,7 +252,7 @@
       <workItem from="1756275107111" duration="30469000" />
       <workItem from="1756830585261" duration="79203000" />
       <workItem from="1757696538700" duration="629000" />
-      <workItem from="1757752097335" duration="5610000" />
+      <workItem from="1757752097335" duration="5772000" />
     </task>
     <task id="LOCAL-00001" summary="Feat: initial">
       <option name="closed" value="true" />
@@ -528,7 +518,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758002046103</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Refactor: conbus_commands">
+      <option name="closed" value="true" />
+      <created>1758002591264</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1758002591264</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -554,7 +552,8 @@
     <MESSAGE value="Feat: BaseModule" />
     <MESSAGE value="Refactore: XP24 action into XP input" />
     <MESSAGE value="Feat: Blink" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feat: Blink" />
+    <MESSAGE value="Refactor: conbus_commands" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor: conbus_commands" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -618,7 +617,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestConnectionStatusIntegration_test_connection_status_lifecycle.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestConnectionStatusIntegration.test_connection_status_lifecycle Coverage Results" MODIFIED="1756891211230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp24_action_integration_TestXP24ActionIntegration_test_cli_command_json_output.coverage" NAME="pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.test_cli_command_json_output Coverage Results" MODIFIED="1757433750210" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp24_action_integration_TestXP24ActionIntegration.coverage" NAME="pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration Coverage Results" MODIFIED="1757433614255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758002437977" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758002556525" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_reverse_proxy_integration_TestReverseProxyErrorHandling_test_proxy_start_port_already_in_use.coverage" NAME="pytest for tests.integration.test_reverse_proxy_integration.TestReverseProxyErrorHandling.test_proxy_start_port_already_in_use Coverage Results" MODIFIED="1757519561359" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$demo.coverage" NAME="demo Coverage Results" MODIFIED="1756276295879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$telegram_test_data.coverage" NAME="telegram_test_data Coverage Results" MODIFIED="1757433458751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/fixtures" />
