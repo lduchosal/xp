@@ -24,7 +24,7 @@ def show_config(json_output: bool):
     Example: xp conbus config
     """
     service = ConbusClientSendService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         config = service.get_config()

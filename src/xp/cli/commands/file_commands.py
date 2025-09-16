@@ -125,7 +125,7 @@ def analyze_log_file(log_file_path: str, json_output: bool):
     from ...services.log_file_service import LogFileService
 
     service = LogFileService()
-    formatter = StatisticsFormatter(json_output)
+    StatisticsFormatter(json_output)
 
     try:
         entries = service.parse_log_file(log_file_path)
@@ -207,7 +207,7 @@ def validate_log_file(log_file_path: str, json_output: bool):
     from ...services.log_file_service import LogFileService
 
     service = LogFileService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         entries = service.parse_log_file(log_file_path)

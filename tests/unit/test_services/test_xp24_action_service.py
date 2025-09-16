@@ -234,7 +234,8 @@ class TestXP24ActionService:
     def test_validate_checksum_wrong_length(self):
         """Test validate_checksum with wrong checksum length."""
         telegram = InputTelegram(
-            checksum="F", raw_telegram="<S0020044964F27D00AAF>"  # Only 1 character
+            checksum="F",
+            raw_telegram="<S0020044964F27D00AAF>",  # Only 1 character
         )
 
         result = self.service.validate_checksum(telegram)

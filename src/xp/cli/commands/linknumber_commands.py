@@ -28,7 +28,7 @@ def generate_set_link_number(serial_number: str, link_number: int, json_output: 
     Example: xp linknumber generate 0020044974 25
     """
     service = LinkNumberService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         telegram = service.generate_set_link_number_telegram(serial_number, link_number)
@@ -68,7 +68,7 @@ def generate_read_link_number(serial_number: str, json_output: bool):
     Example: xp linknumber read 0020044974
     """
     service = LinkNumberService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         telegram = service.generate_read_link_number_telegram(serial_number)
@@ -105,7 +105,7 @@ def parse_link_number_telegrams(telegram_list: tuple, json_output: bool):
     """
     telegram_service = TelegramService()
     link_service = LinkNumberService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     results = []
 

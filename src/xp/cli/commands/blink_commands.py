@@ -27,7 +27,7 @@ def blink_on(serial_number: str, json_output: bool):
     Example: xp blink on 0020044964
     """
     service = BlinkService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         telegram = service.generate_blink_telegram(serial_number)
@@ -65,7 +65,7 @@ def blink_off(serial_number: str, json_output: bool):
     Example: xp blink off 0020030837
     """
     service = BlinkService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         telegram = service.generate_unblink_telegram(serial_number)
@@ -105,7 +105,7 @@ def parse_blink_telegrams(telegram_list: tuple, json_output: bool):
     """
     telegram_service = TelegramService()
     blink_service = BlinkService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     results = []
 

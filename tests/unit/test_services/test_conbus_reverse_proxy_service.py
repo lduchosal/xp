@@ -292,7 +292,7 @@ conbus:
     def test_proxy_lifecycle(self):
         """Test complete proxy lifecycle: start, status, stop"""
         # Start proxy
-        with patch("threading.Thread") as mock_thread:
+        with patch("threading.Thread"):
             result = self.service.start_proxy()
             assert result.success
             assert self.service.is_running

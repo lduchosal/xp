@@ -134,15 +134,15 @@ class TestLinkNumberIntegration:
             parsed = telegram_service.parse_system_telegram(telegram_str)
 
             # Checksum should be valid
-            assert (
-                parsed.checksum_validated is True
-            ), f"Checksum failed for link number {link_num}"
+            assert parsed.checksum_validated is True, (
+                f"Checksum failed for link number {link_num}"
+            )
 
             # Verify checksum manually
             is_valid = telegram_service.validate_checksum(parsed)
-            assert (
-                is_valid is True
-            ), f"Manual checksum validation failed for link number {link_num}"
+            assert is_valid is True, (
+                f"Manual checksum validation failed for link number {link_num}"
+            )
 
     def test_error_handling_integration(self):
         """Test error handling across services"""

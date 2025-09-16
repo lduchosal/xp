@@ -71,7 +71,7 @@ class TestChecksumUtilities:
 
         # Test "PP" -> 0xFF
         result = de_nibble("PP")
-        assert result == b"\xFF"
+        assert result == b"\xff"
 
     def test_de_nibble_multiple_bytes(self):
         """Test de_nibble with multiple byte pairs."""

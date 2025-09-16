@@ -150,7 +150,7 @@ def proxy_status(json_output: bool):
     Example: xp rp status
     """
     global _proxy_instance
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         if _proxy_instance is None:

@@ -44,7 +44,6 @@ class XP130ServerService(BaseServerService):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == DataPointType.NETWORK_CONFIG
         ):
-
             # Format: <R{serial}F02D20{ip_config}{checksum}>
             # IP config includes IP, subnet, gateway separated by commas
             ip_config = f"{self.ip_address},{self.subnet_mask},{self.gateway}"
@@ -61,7 +60,6 @@ class XP130ServerService(BaseServerService):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == DataPointType.TEMPERATURE
         ):
-
             # Simulate temperature reading: +21.0°C (network equipment runs cooler)
             temperature_value = "+21,0§C"
             data_part = f"R{self.serial_number}F02D18{temperature_value}"

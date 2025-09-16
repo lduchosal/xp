@@ -26,7 +26,7 @@ def module_info(identifier: str, json_output: bool):
     Example: xp module info XP2606
     """
     service = ModuleTypeService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         # Try to parse as integer first, then as string
@@ -63,7 +63,7 @@ def module_list(category: str, json_output: bool, group_by_category: bool):
     Example: xp module list --group-by-category
     """
     service = ModuleTypeService()
-    formatter = ListFormatter(json_output)
+    ListFormatter(json_output)
 
     try:
         if category:
@@ -151,7 +151,7 @@ def module_categories(json_output: bool):
     Example: xp module categories
     """
     service = ModuleTypeService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         categories = service.list_modules_by_category()

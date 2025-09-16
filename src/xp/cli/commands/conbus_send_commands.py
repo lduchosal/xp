@@ -1,6 +1,5 @@
 """Conbus client operations CLI commands."""
 
-
 import click
 import json
 

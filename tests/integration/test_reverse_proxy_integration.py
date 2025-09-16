@@ -47,7 +47,7 @@ class MockConbusServer:
             try:
                 client_socket, address = self.socket.accept()
                 self._handle_client(client_socket)
-            except:
+            except (OSError, socket.error):
                 break
 
     def _handle_client(self, client_socket):
@@ -66,7 +66,7 @@ class MockConbusServer:
                     response = self.responses.pop(0)
                     client_socket.send(response.encode("latin-1"))
 
-        except:
+        except Exception:
             pass
         finally:
             client_socket.close()

@@ -385,7 +385,7 @@ class TestWorkflowIntegration(TestConbusClientSendIntegration):
             time.sleep(0.1)
 
             # This request might fail
-            response2 = client_service.send_discovery()
+            client_service.send_discovery()
 
             # Restart server
             mock_server.start()
@@ -393,5 +393,5 @@ class TestWorkflowIntegration(TestConbusClientSendIntegration):
 
             # Reconnect and try again
             client_service.disconnect()
-            response3 = client_service.send_discovery()
+            client_service.send_discovery()
             # Should eventually succeed with retry logic

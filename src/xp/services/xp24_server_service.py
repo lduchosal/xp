@@ -38,7 +38,6 @@ class XP24ServerService(BaseServerService):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == DataPointType.TEMPERATURE
         ):
-
             # Simulate temperature reading: +23.5°C
             temperature_value = "+23,5§C"
             data_part = f"R{self.serial_number}F02D18{temperature_value}"

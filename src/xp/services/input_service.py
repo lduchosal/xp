@@ -53,7 +53,7 @@ class XPInputService:
         if not (0 <= input_number < self.MAX_INPUTS):
             raise XPInputError(
                 f"Invalid input number: {input_number}. "
-                f"XP24 supports inputs 0-{self.MAX_INPUTS-1}"
+                f"XP24 supports inputs 0-{self.MAX_INPUTS - 1}"
             )
 
     def validate_serial_number(self, serial_number: str) -> None:

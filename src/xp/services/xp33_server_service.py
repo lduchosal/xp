@@ -72,7 +72,6 @@ class XP33ServerService(BaseServerService):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == DataPointType.CHANNEL_STATES
         ):
-
             # Format: xxxxx000 (3 channels + padding)
             # Each channel: 00-64 hex (0-100%)
             ch1_hex = f"{int(self.channel_states[0] * 100 / 100):02X}"
@@ -118,7 +117,6 @@ class XP33ServerService(BaseServerService):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id in channel_mapping
         ):
-
             channel = channel_mapping[request.data_point_id]
 
             # Return current channel state in 5-hex format
@@ -163,7 +161,6 @@ class XP33ServerService(BaseServerService):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == status_data_point
         ):
-
             # Format: <R{serial}F02D10{status}{checksum}>
             data_part = f"R{self.serial_number}F02D10{self.device_status}"
             telegram = self._build_response_telegram(data_part)

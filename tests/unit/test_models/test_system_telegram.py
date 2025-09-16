@@ -206,7 +206,7 @@ class TestSystemTelegram:
         "function,description",
         [
             (SystemFunction.DISCOVERY, "Discovery"),
-            (SystemFunction.READ_DATAPOINT,"Read Data point"),
+            (SystemFunction.READ_DATAPOINT, "Read Data point"),
             (SystemFunction.READ_CONFIG, "Read Configuration"),
             (SystemFunction.WRITE_CONFIG, "Write Configuration"),
             (SystemFunction.BLINK, "Blink LED"),

@@ -40,7 +40,6 @@ class BaseServerService(ABC):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == DataPointType.MODULE_TYPE
         ):
-
             if self.module_type_code is None:
                 self.logger.error(f"Module type code not set for {self.device_type}")
                 return None
@@ -87,7 +86,6 @@ class BaseServerService(ABC):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == DataPointType.VERSION
         ):
-
             data_part = f"R{self.serial_number}F02D02{self.firmware_version}"
             telegram = self._build_response_telegram(data_part)
             self._log_response("version", telegram)
@@ -105,7 +103,6 @@ class BaseServerService(ABC):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == status_data_point
         ):
-
             data_part = f"R{self.serial_number}F02D00{self.device_status}"
             telegram = self._build_response_telegram(data_part)
             self._log_response("status", telegram)
@@ -119,7 +116,6 @@ class BaseServerService(ABC):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == DataPointType.LINK_NUMBER
         ):
-
             link_hex = f"{self.link_number:02X}"
             data_part = f"R{self.serial_number}F02D04{link_hex}"
             telegram = self._build_response_telegram(data_part)
@@ -136,7 +132,6 @@ class BaseServerService(ABC):
             request.system_function == SystemFunction.WRITE_CONFIG
             and request.data_point_id == DataPointType.LINK_NUMBER
         ):
-
             # Update internal link number
             self.link_number = new_link_number
 

@@ -38,7 +38,6 @@ class XP20ServerService(BaseServerService):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == DataPointType.HUMIDITY
         ):
-
             # Simulate humidity reading: +65.5%RH
             humidity_value = "+65,5§RH"
             data_part = f"R{self.serial_number}F02D19{humidity_value}"
@@ -54,7 +53,6 @@ class XP20ServerService(BaseServerService):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.data_point_id == DataPointType.VOLTAGE
         ):
-
             # Simulate voltage reading: +12.5V
             voltage_value = "+12,5§V"
             data_part = f"R{self.serial_number}F02D20{voltage_value}"

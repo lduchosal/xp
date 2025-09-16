@@ -1,6 +1,5 @@
 """Conbus client operations CLI commands."""
 
-
 import click
 import json
 
@@ -35,12 +34,12 @@ def xp_input(
     """
     Send input command to XP module or query status.
 
-    Examples:
-    xp conbus input 0020044964 0 ON       # Toggle input 0
-    xp conbus input 0020044964 1 OFF      # Toggle input 1
-    xp conbus input 0020044964 2 ON       # Toggle input 2
-    xp conbus input 0020044964 3 ON       # Toggle input 3
-    xp conbus input 0020044964 status   # Query input status
+    Examples:\n
+        xp conbus input 0020044964 0 ON    # Toggle input 0\n
+        xp conbus input 0020044964 1 OFF   # Toggle input 1
+        xp conbus input 0020044964 2 ON    # Toggle input 2
+        xp conbus input 0020044964 3 ON    # Toggle input 3
+        xp conbus input 0020044964 status  # Query input status
     """
     service = ConbusClientSendService()
     input_service = XPInputService()

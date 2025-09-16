@@ -142,7 +142,7 @@ def parse_discovery_request_telegram(
     Example: xp telegram parse-discover-request "<S0000000000F01D00FA>"
     """
     service = TelegramService()
-    formatter = TelegramFormatter(json_output)
+    TelegramFormatter(json_output)
 
     try:
         parsed = service.parse_discovery_request(telegram_string)
@@ -194,7 +194,7 @@ def parse_discovery_response_telegram(
     Example: xp telegram parse-discover-response "<R0020030837F01DFM>"
     """
     service = TelegramService()
-    formatter = TelegramFormatter(json_output)
+    TelegramFormatter(json_output)
 
     try:
         parsed = service.parse_discovery_response(telegram_string)
@@ -244,7 +244,7 @@ def parse_any_telegram(telegram_string: str, json_output: bool):
     Example: xp telegram parse "<R0020030837F01DFM>"
     """
     service = TelegramService()
-    formatter = TelegramFormatter(json_output)
+    TelegramFormatter(json_output)
 
     try:
         parsed = service.parse_telegram(telegram_string)
@@ -289,7 +289,7 @@ def parse_multiple_telegrams(data_stream: str, json_output: bool):
     Example: xp telegram parse-multiple "Some data <E14L00I02MAK> more <E14L01I03BB1>"
     """
     service = TelegramService()
-    formatter = TelegramFormatter(json_output)
+    TelegramFormatter(json_output)
 
     try:
         telegrams = service.parse_multiple_telegrams(data_stream)
@@ -324,7 +324,7 @@ def validate_telegram(telegram_string: str, json_output: bool):
     Example: xp telegram validate "<E14L00I02MAK>"
     """
     service = TelegramService()
-    formatter = TelegramFormatter(json_output)
+    TelegramFormatter(json_output)
 
     try:
         parsed = service.parse_event_telegram(telegram_string)

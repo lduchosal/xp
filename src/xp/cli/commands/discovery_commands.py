@@ -26,7 +26,7 @@ def generate_discovery(json_output: bool):
     Example: xp discovery generate
     """
     service = DiscoveryService()
-    formatter = OutputFormatter(json_output)
+    OutputFormatter(json_output)
 
     try:
         telegram = service.generate_discovery_telegram()
@@ -67,7 +67,7 @@ def parse_discovery_responses(telegram_list: tuple, json_output: bool, summary: 
     """
     telegram_service = TelegramService()
     discovery_service = DiscoveryService()
-    formatter = ListFormatter(json_output)
+    ListFormatter(json_output)
 
     devices = []
     errors = []
@@ -160,7 +160,7 @@ def analyze_discovery_session(log_file_path: str, json_output: bool, time_range:
     from ...utils.time_utils import parse_time_range, TimeParsingError
 
     log_service = LogFileService()
-    telegram_service = TelegramService()
+    TelegramService()
     discovery_service = DiscoveryService()
     formatter = OutputFormatter(json_output)
 

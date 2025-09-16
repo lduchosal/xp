@@ -42,9 +42,9 @@ class ConbusServerService:
         self.server_socket: Optional[socket.socket] = None
         self.is_running = False
         self.devices: Dict[str, str] = {}
-        self.device_services: Dict[str, object] = (
-            {}
-        )  # serial -> device service instance
+        self.device_services: Dict[
+            str, object
+        ] = {}  # serial -> device service instance
         self.telegram_service = TelegramService()
         self.discovery_service = DiscoveryService()
 

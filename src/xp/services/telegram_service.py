@@ -202,7 +202,7 @@ class TelegramService:
             serial_number = match.group(1)
             function_code = match.group(2)
             data_point_code = match.group(3)
-            data_value = match.group(4)  # Optional data value
+            match.group(4)  # Optional data value
             checksum = match.group(5)
 
             # Parse system function
