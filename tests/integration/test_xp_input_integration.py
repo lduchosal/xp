@@ -120,7 +120,7 @@ class TestXPInputIntegration:
     def test_cli_command_integration_action(self, mock_send):
         """Test integration with CLI command for action."""
         from click.testing import CliRunner
-        from src.xp.cli.commands.conbus_commands import conbus
+        from src.xp.cli.commands.conbus_custom_commands import conbus
         
         # Mock successful response
         mock_response = MagicMock()
@@ -146,7 +146,7 @@ class TestXPInputIntegration:
     def test_cli_command_integration_status(self, mock_send):
         """Test integration with CLI command for status query."""
         from click.testing import CliRunner
-        from src.xp.cli.commands.conbus_commands import conbus
+        from src.xp.cli.commands.conbus_custom_commands import conbus
         
         # Mock successful status response
         mock_response = MagicMock()
@@ -176,7 +176,7 @@ class TestXPInputIntegration:
     def test_cli_command_json_output(self, mock_send):
         """Test CLI command with JSON output."""
         from click.testing import CliRunner
-        from src.xp.cli.commands.conbus_commands import conbus
+        from src.xp.cli.commands.conbus_custom_commands import conbus
         import json
         
         # Mock successful response

@@ -20,8 +20,9 @@ class TestSystemFunction:
         assert SystemFunction.from_code("02") == SystemFunction.RETURN_DATA
         assert SystemFunction.from_code("03") == SystemFunction.READ_CONFIG
         assert SystemFunction.from_code("04") == SystemFunction.WRITE_CONFIG
-        assert SystemFunction.from_code("05") == SystemFunction.SYSTEM_RESET
-    
+        assert SystemFunction.from_code("05") == SystemFunction.BLINK
+        assert SystemFunction.from_code("06") == SystemFunction.UNBLINK
+
     def test_from_code_invalid(self):
         """Test from_code with invalid codes."""
         assert SystemFunction.from_code("99") is None
@@ -34,7 +35,8 @@ class TestSystemFunction:
         assert SystemFunction.RETURN_DATA.value == "02"
         assert SystemFunction.READ_CONFIG.value == "03"
         assert SystemFunction.WRITE_CONFIG.value == "04"
-        assert SystemFunction.SYSTEM_RESET.value == "05"
+        assert SystemFunction.BLINK.value == "05"
+        assert SystemFunction.UNBLINK.value == "06"
 
 
 class TestDataPointType:
@@ -205,7 +207,8 @@ class TestSystemTelegram:
         (SystemFunction.RETURN_DATA, "Return Data"),
         (SystemFunction.READ_CONFIG, "Read Configuration"),
         (SystemFunction.WRITE_CONFIG, "Write Configuration"),
-        (SystemFunction.SYSTEM_RESET, "System Reset")
+        (SystemFunction.BLINK, "Blink module"),
+        (SystemFunction.UNBLINK, "Unblink module")
     ])
     def test_function_descriptions(self, function, description):
         """Test all function descriptions."""

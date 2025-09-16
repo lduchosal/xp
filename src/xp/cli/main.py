@@ -11,7 +11,7 @@ from .commands.version_commands import version
 from .commands.discovery_commands import discovery
 from .commands.file_commands import file
 from .commands.server_commands import server
-from .commands.conbus_commands import conbus
+from .commands.conbus_custom_commands import conbus
 from .commands.reverse_proxy_commands import reverse_proxy
 
 

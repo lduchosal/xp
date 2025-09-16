@@ -3,7 +3,7 @@
 import pytest
 from unittest.mock import Mock, patch
 from click.testing import CliRunner
-from src.xp.cli.commands.conbus_commands import conbus
+from src.xp.cli.commands.conbus_custom_commands import conbus
 from src.xp.services.blink_service import BlinkError
 from src.xp.services.conbus_client_send_service import ConbusClientSendError
 from src.xp.models.conbus_client_send import ConbusSendResponse, ConbusSendRequest, TelegramType

@@ -167,7 +167,8 @@ class TestSystemTelegramEnhancements:
             ("02", SystemFunction.RETURN_DATA),
             ("03", SystemFunction.READ_CONFIG),
             ("04", SystemFunction.WRITE_CONFIG),
-            ("05", SystemFunction.SYSTEM_RESET),
+            ("05", SystemFunction.BLINK),
+            ("06", SystemFunction.UNBLINK),
             ("18", SystemFunction.ACK),
             ("19", SystemFunction.NAK),
         ]
