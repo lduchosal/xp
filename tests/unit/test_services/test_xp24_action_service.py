@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from src.xp.services.input_service import XPInputService, XPInputError
 from src.xp.models.input_telegram import InputTelegram
-from xp.models.action_type import ActionType
+from src.xp.models.action_type import ActionType
 
 
 class TestXP24ActionService:

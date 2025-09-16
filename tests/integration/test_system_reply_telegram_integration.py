@@ -8,7 +8,7 @@ import json
 import pytest
 from click.testing import CliRunner
 from src.xp.cli.main import cli
-from xp.models.datapoint_type import DataPointType
+from src.xp.models.datapoint_type import DataPointType
 
 
 class TestSystemTelegramCLI:

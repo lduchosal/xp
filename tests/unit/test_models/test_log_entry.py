@@ -1,6 +1,5 @@
 """Tests for LogEntry model"""
 
-import pytest
 from datetime import datetime
 from src.xp.models.log_entry import LogEntry
 from src.xp.models.event_telegram import EventTelegram

@@ -1,7 +1,7 @@
 """XP input service for handling XP input device operations."""
 
 import re
-from typing import Dict, Optional
+from typing import Dict
 from ..models.input_telegram import InputTelegram
 from ..models.action_type import ActionType
 from ..utils.checksum import calculate_checksum

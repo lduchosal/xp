@@ -1,5 +1,5 @@
 import re
-from typing import Optional, List, Union
+from typing import List, Union
 from ..models.event_telegram import EventTelegram
 from ..models import EventType
 from ..models.system_telegram import SystemTelegram

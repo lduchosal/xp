@@ -1,5 +1,4 @@
 import pytest
-import tempfile
 import threading
 import time
 import socket
@@ -94,7 +93,7 @@ class TestConbusClientSendIntegration:
     def config_file(self, tmp_path):
         """Create temporary configuration file"""
         config_file = tmp_path / "cli.yml"
-        config_content = f"""
+        config_content = """
 conbus:
   ip: localhost
   port: 10001

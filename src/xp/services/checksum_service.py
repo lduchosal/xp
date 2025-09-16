@@ -4,8 +4,8 @@ This service provides business logic for checksum operations,
 following the layered architecture pattern.
 """
 
-from typing import Dict, Any, Union
-from ..utils.checksum import calculate_checksum, calculate_checksum32, de_nibble
+from typing import Union
+from ..utils.checksum import calculate_checksum, calculate_checksum32
 from ..models.response import Response
 
 

@@ -1,12 +1,11 @@
 """Integration tests for version parsing functionality."""
 
 import unittest
-from datetime import datetime
 
 from src.xp.services.telegram_service import TelegramService, TelegramParsingError
-from src.xp.services.version_service import VersionService, VersionParsingError
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
+from src.xp.services.version_service import VersionService
+from src.xp.models.datapoint_type import DataPointType
+from src.xp.models.system_function import SystemFunction
 
 
 class TestVersionIntegration(unittest.TestCase):

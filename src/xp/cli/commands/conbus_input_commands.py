@@ -1,26 +1,19 @@
 """Conbus client operations CLI commands."""
 
-from pickle import BINPUT
 
 import click
 import json
-import threading
 
-from ...models.system_function import SystemFunction
 from ...services.conbus_client_send_service import (
     ConbusClientSendService,
     ConbusClientSendError,
 )
 from ...services.input_service import XPInputService, XPInputError
-from ...services.blink_service import BlinkService, BlinkError
-from ...models import ConbusSendRequest, TelegramType
 from ...models.action_type import ActionType
 from ..utils.decorators import (
-    json_output_option,
     connection_command,
     handle_service_errors,
 )
-from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 
 
@@ -33,7 +26,7 @@ def conbus():
 @conbus.command("input")
 @click.argument("serial_number")
 @click.argument("input_number_or_status")
-@click.argument("on_or_off")
+@click.argument("on_or_off", type=click.Choice(["on", "off"]), default="on")
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
 def xp_input(
@@ -113,7 +106,7 @@ def xp_input(
                 try:
                     input_number = int(input_number_or_status)
                     input_service.validate_input_number(input_number)
-                except (ValueError, XPInputError) as e:
+                except (ValueError, XPInputError):
                     error_msg = f"Invalid input number: {input_number_or_status}"
                     if json_output:
                         error_response = {

@@ -4,7 +4,7 @@ import click
 import json
 
 from ...services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
-from ..utils.decorators import json_output_option, list_command
+from ..utils.decorators import list_command
 from ..utils.formatters import OutputFormatter, ListFormatter
 from ..utils.error_handlers import CLIErrorHandler
 

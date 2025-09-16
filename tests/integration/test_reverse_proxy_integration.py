@@ -1,12 +1,10 @@
 """Integration tests for Conbus reverse proxy functionality."""
 
-import pytest
 import socket
 import threading
 import time
 import tempfile
 import os
-from unittest.mock import patch
 
 from src.xp.services.conbus_reverse_proxy_service import ConbusReverseProxyService
 

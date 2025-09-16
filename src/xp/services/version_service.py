@@ -5,7 +5,6 @@ following the layered architecture pattern.
 """
 
 import re
-from typing import Dict, Any, Optional
 from ..models.response import Response
 from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
@@ -273,7 +272,7 @@ class VersionService:
                     product = version_info.get("product", "Unknown")
                     version = version_info.get("version", "Unknown")
 
-                    summary = f"Device Version Information:\n"
+                    summary = "Device Version Information:\n"
                     summary += f"Serial Number: {serial}\n"
                     summary += f"Product: {product}\n"
                     summary += f"Version: {version}\n"

@@ -3,3 +3,5 @@
 /htmlcov/
 /build/
 /src/xp.egg-info/
+/pdm.lock
+/.pdm-python

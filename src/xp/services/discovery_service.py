@@ -4,7 +4,7 @@ This service handles generation and parsing of device discovery system telegrams
 used for enumerating all connected devices on the console bus.
 """
 
-from typing import List, Optional, Set, Union
+from typing import List, Optional, Set
 from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
 from ..models.system_function import SystemFunction
@@ -257,7 +257,7 @@ class DiscoveryService:
         unique_devices = self.get_unique_devices(devices)
 
         lines = [
-            f"=== Device Discovery Results ===",
+            "=== Device Discovery Results ===",
             f"Total Responses: {summary['total_responses']}",
             f"Unique Devices: {summary['unique_devices']}",
             f"Valid Checksums: {summary['valid_checksums']}/{summary['unique_devices']} ({summary['success_rate']:.1f}%)",
@@ -266,7 +266,7 @@ class DiscoveryService:
         if summary["duplicate_responses"] > 0:
             lines.append(f"Duplicate Responses: {summary['duplicate_responses']}")
 
-        lines.append(f"\nDiscovered Devices:")
+        lines.append("\nDiscovered Devices:")
         lines.append("-" * 40)
 
         for device in unique_devices:
@@ -274,7 +274,7 @@ class DiscoveryService:
             lines.append(f"{status_icon} {device.serial_number}")
 
         if summary["serial_prefixes"]:
-            lines.append(f"\nSerial Number Distribution:")
+            lines.append("\nSerial Number Distribution:")
             for prefix, count in sorted(summary["serial_prefixes"].items()):
                 lines.append(f"  {prefix}xxxx: {count} device(s)")
 

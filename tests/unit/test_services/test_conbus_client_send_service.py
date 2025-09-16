@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock, call
+from unittest.mock import Mock, patch
 import socket
 from datetime import datetime
 from src.xp.services.conbus_client_send_service import (
@@ -7,11 +7,9 @@ from src.xp.services.conbus_client_send_service import (
     ConbusClientSendError,
 )
 from src.xp.models import (
-    ConbusClientConfig,
     ConbusSendRequest,
     ConbusSendResponse,
     TelegramType,
-    ConbusConnectionStatus,
 )
 
 

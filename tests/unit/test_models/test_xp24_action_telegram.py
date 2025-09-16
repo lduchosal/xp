@@ -1,11 +1,10 @@
 """Unit tests for XP24ActionTelegram model."""
 
-import pytest
 from datetime import datetime
 from unittest.mock import patch
 
 from src.xp.models.input_telegram import InputTelegram
-from xp.models.action_type import ActionType
+from src.xp.models.action_type import ActionType
 
 
 class TestActionType:

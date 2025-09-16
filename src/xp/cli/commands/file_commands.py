@@ -37,7 +37,7 @@ def decode_log_file(
     Example: xp file decode conbus.log
     Example: xp file decode conbus.log --filter-type event --json-output
     """
-    from ...services.log_file_service import LogFileService, LogFileParsingError
+    from ...services.log_file_service import LogFileService
     from ...utils.time_utils import parse_time_range, TimeParsingError
 
     service = LogFileService()
@@ -102,7 +102,7 @@ def decode_log_file(
                 click.echo(
                     formatter.format_file_statistics(log_file_path, stats, len(entries))
                 )
-                click.echo(f"\n=== Log Entries ===")
+                click.echo("\n=== Log Entries ===")
                 for entry in entries:
                     click.echo(str(entry))
 
@@ -122,7 +122,7 @@ def analyze_log_file(log_file_path: str, json_output: bool):
 
     Example: xp file analyze conbus.log
     """
-    from ...services.log_file_service import LogFileService, LogFileParsingError
+    from ...services.log_file_service import LogFileService
 
     service = LogFileService()
     formatter = StatisticsFormatter(json_output)
@@ -137,7 +137,7 @@ def analyze_log_file(log_file_path: str, json_output: bool):
             )
         else:
             # Format analysis output
-            click.echo(f"=== Console Bus Log Analysis ===")
+            click.echo("=== Console Bus Log Analysis ===")
             click.echo(f"File: {log_file_path}")
 
             if stats.get("time_range", {}).get("start"):
@@ -148,13 +148,13 @@ def analyze_log_file(log_file_path: str, json_output: bool):
                     f"Duration: {stats['time_range']['duration_seconds']:.3f} seconds"
                 )
 
-            click.echo(f"\nParsing Results:")
+            click.echo("\nParsing Results:")
             click.echo(f"  Total Entries: {stats['total_entries']}")
             click.echo(f"  Successfully Parsed: {stats['valid_parses']}")
             click.echo(f"  Parse Errors: {stats['parse_errors']}")
             click.echo(f"  Parse Success Rate: {stats['parse_success_rate']:.1f}%")
 
-            click.echo(f"\nChecksum Validation:")
+            click.echo("\nChecksum Validation:")
             cv = stats["checksum_validation"]
             click.echo(f"  Validated Telegrams: {cv['validated_count']}")
             click.echo(f"  Valid Checksums: {cv['valid_checksums']}")
@@ -163,7 +163,7 @@ def analyze_log_file(log_file_path: str, json_output: bool):
                 f"  Validation Success Rate: {cv['validation_success_rate']:.1f}%"
             )
 
-            click.echo(f"\nTelegram Types:")
+            click.echo("\nTelegram Types:")
             type_counts = stats["telegram_type_counts"]
             for t_type, count in type_counts.items():
                 percentage = (
@@ -173,7 +173,7 @@ def analyze_log_file(log_file_path: str, json_output: bool):
                 )
                 click.echo(f"  {t_type.capitalize()}: {count} ({percentage:.1f}%)")
 
-            click.echo(f"\nDirection Distribution:")
+            click.echo("\nDirection Distribution:")
             dir_counts = stats["direction_counts"]
             for direction, count in dir_counts.items():
                 percentage = (
@@ -184,7 +184,7 @@ def analyze_log_file(log_file_path: str, json_output: bool):
                 click.echo(f"  {direction.upper()}: {count} ({percentage:.1f}%)")
 
             if stats.get("devices"):
-                click.echo(f"\nDevices Found:")
+                click.echo("\nDevices Found:")
                 for device in stats["devices"]:
                     click.echo(f"  {device}")
 
@@ -204,7 +204,7 @@ def validate_log_file(log_file_path: str, json_output: bool):
 
     Example: xp file validate conbus.log
     """
-    from ...services.log_file_service import LogFileService, LogFileParsingError
+    from ...services.log_file_service import LogFileService
 
     service = LogFileService()
     formatter = OutputFormatter(json_output)
@@ -228,7 +228,7 @@ def validate_log_file(log_file_path: str, json_output: bool):
             click.echo(json.dumps(result, indent=2))
         else:
             # Format validation output
-            click.echo(f"=== Console Bus Log Validation ===")
+            click.echo("=== Console Bus Log Validation ===")
             click.echo(f"File: {log_file_path}")
 
             status = "✓ VALID" if is_valid else "✗ INVALID"
@@ -258,8 +258,8 @@ def validate_log_file(log_file_path: str, json_output: bool):
                     )
 
             if is_valid and cv["invalid_checksums"] == 0:
-                click.echo(f"\n✓ All telegrams parsed successfully")
-                click.echo(f"✓ All checksums validated successfully")
+                click.echo("\n✓ All telegrams parsed successfully")
+                click.echo("✓ All checksums validated successfully")
 
     except Exception as e:
         CLIErrorHandler.handle_file_error(

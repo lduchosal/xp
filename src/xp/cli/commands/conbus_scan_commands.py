@@ -105,7 +105,7 @@ def scan_module(
                         scan_complete.wait(1.0)  # Check every second
                 except KeyboardInterrupt:
                     if not json_output:
-                        click.echo(f"\nScan interrupted by user.")
+                        click.echo("\nScan interrupted by user.")
                         click.echo(
                             f"Partial results: {successful_count} successful, {failed_count} failed scans"
                         )

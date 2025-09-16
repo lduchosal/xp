@@ -56,7 +56,7 @@ def start_server(port: int, config: str, json_output: bool):
             status = _server_instance.get_server_status()
             click.echo(json.dumps(status, indent=2))
         else:
-            click.echo(f"Starting Conbus emulator server...")
+            click.echo("Starting Conbus emulator server...")
             click.echo(f"Port: {port}")
             click.echo(f"Config: {config}")
 
@@ -70,7 +70,7 @@ def start_server(port: int, config: str, json_output: bool):
             shutdown_response = {"success": True, "message": "Server shutdown by user"}
             click.echo(json.dumps(shutdown_response, indent=2))
         else:
-            click.echo(f"\nServer shutdown by user")
+            click.echo("\nServer shutdown by user")
 
 
 @server.command("stop")

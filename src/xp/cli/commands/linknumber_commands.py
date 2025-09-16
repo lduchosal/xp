@@ -43,7 +43,7 @@ def generate_set_link_number(serial_number: str, link_number: int, json_output: 
             }
             click.echo(json.dumps(output, indent=2))
         else:
-            click.echo(f"Set Link Number Telegram:")
+            click.echo("Set Link Number Telegram:")
             click.echo(f"Serial: {serial_number}")
             click.echo(f"Link Number: {link_number}")
             click.echo(f"Telegram: {telegram}")
@@ -82,7 +82,7 @@ def generate_read_link_number(serial_number: str, json_output: bool):
             }
             click.echo(json.dumps(output, indent=2))
         else:
-            click.echo(f"Read Link Number Telegram:")
+            click.echo("Read Link Number Telegram:")
             click.echo(f"Serial: {serial_number}")
             click.echo(f"Telegram: {telegram}")
 
@@ -153,7 +153,7 @@ def parse_link_number_telegrams(telegram_list: tuple, json_output: bool):
         }
         click.echo(json.dumps(output, indent=2))
     else:
-        click.echo(f"=== Link Number Telegram Analysis ===")
+        click.echo("=== Link Number Telegram Analysis ===")
         click.echo(f"Parsed {len(results)} telegrams:")
         click.echo("-" * 60)
 

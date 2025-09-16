@@ -7,10 +7,7 @@ from src.xp.services.log_file_service import LogFileService, LogFileParsingError
 from src.xp.services.telegram_service import TelegramService, TelegramParsingError
 from src.xp.models.log_entry import LogEntry
 from src.xp.models.event_telegram import EventTelegram
-from src.xp.models import EventType
 from src.xp.models.system_telegram import SystemTelegram
-from src.xp.models.datapoint_type import DataPointType
-from src.xp.models.system_function import SystemFunction
 
 
 class TestLogFileService:

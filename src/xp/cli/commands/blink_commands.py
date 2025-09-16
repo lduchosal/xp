@@ -41,7 +41,7 @@ def blink_on(serial_number: str, json_output: bool):
             }
             click.echo(json.dumps(output, indent=2))
         else:
-            click.echo(f"Blink LED Telegram:")
+            click.echo("Blink LED Telegram:")
             click.echo(f"Serial: {serial_number}")
             click.echo(f"Telegram: {telegram}")
 
@@ -79,7 +79,7 @@ def blink_off(serial_number: str, json_output: bool):
             }
             click.echo(json.dumps(output, indent=2))
         else:
-            click.echo(f"Unblink LED Telegram:")
+            click.echo("Unblink LED Telegram:")
             click.echo(f"Serial: {serial_number}")
             click.echo(f"Telegram: {telegram}")
 
@@ -147,7 +147,7 @@ def parse_blink_telegrams(telegram_list: tuple, json_output: bool):
         }
         click.echo(json.dumps(output, indent=2))
     else:
-        click.echo(f"=== Blink Telegram Analysis ===")
+        click.echo("=== Blink Telegram Analysis ===")
         click.echo(f"Parsed {len(results)} telegrams:")
         click.echo("-" * 60)
 

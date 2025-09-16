@@ -1,8 +1,7 @@
-import pytest
-from src.xp.services.xp33_server_service import XP33ServerService, XP33ServerError
+from src.xp.services.xp33_server_service import XP33ServerService
 from src.xp.models.system_telegram import SystemTelegram
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
+from src.xp.models.datapoint_type import DataPointType
+from src.xp.models.system_function import SystemFunction
 from src.xp.services.telegram_service import TelegramService
 
 

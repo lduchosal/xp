@@ -45,7 +45,7 @@ def generate_version_request(serial_number: str, json_output: bool):
         if json_output:
             click.echo(json.dumps(result.to_dict(), indent=2))
         else:
-            click.echo(f"Version Request Telegram:")
+            click.echo("Version Request Telegram:")
             click.echo(f"Serial: {result.data['serial_number']}")
             click.echo(f"Telegram: {result.data['telegram']}")
             click.echo(f"Function: {result.data['function_code']} (Return Data)")
@@ -98,12 +98,12 @@ def parse_version_telegram(telegram_string: str, json_output: bool):
                 click.echo(json.dumps(result.to_dict(), indent=2))
             else:
                 if result.success and result.data["is_version_request"]:
-                    click.echo(f"Version Request Telegram:")
+                    click.echo("Version Request Telegram:")
                     click.echo(f"Serial: {result.data['serial_number']}")
                     click.echo(f"Function: {result.data['function_description']}")
                     click.echo(f"Data Point: {result.data['data_point_description']}")
                 else:
-                    click.echo(f"Not a version request telegram")
+                    click.echo("Not a version request telegram")
         else:
             error_response = formatter.error_response(
                 "Not a version-related telegram", {"raw_input": telegram_string}

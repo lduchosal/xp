@@ -10,7 +10,7 @@ import logging
 import yaml
 import os
 import time
-from typing import Optional, Dict, Any
+from typing import Optional, Dict
 from datetime import datetime
 
 from ..models.response import Response

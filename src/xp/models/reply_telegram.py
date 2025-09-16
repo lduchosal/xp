@@ -6,7 +6,7 @@ like temperature readings, status information, etc.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 from .datapoint_type import DataPointType
 from .system_function import SystemFunction
 from .telegram import Telegram

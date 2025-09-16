@@ -7,8 +7,8 @@ validation, and data structure integrity.
 import pytest
 from datetime import datetime
 from src.xp.models.system_telegram import SystemTelegram
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
+from src.xp.models.datapoint_type import DataPointType
+from src.xp.models.system_function import SystemFunction
 
 
 class TestSystemFunction:
@@ -206,11 +206,11 @@ class TestSystemTelegram:
         "function,description",
         [
             (SystemFunction.DISCOVERY, "Discovery"),
-            (SystemFunction.READ_DATAPOINT, "Return Data"),
+            (SystemFunction.READ_DATAPOINT,"Read Data point"),
             (SystemFunction.READ_CONFIG, "Read Configuration"),
             (SystemFunction.WRITE_CONFIG, "Write Configuration"),
-            (SystemFunction.BLINK, "Blink module"),
-            (SystemFunction.UNBLINK, "Unblink module"),
+            (SystemFunction.BLINK, "Blink LED"),
+            (SystemFunction.UNBLINK, "Unblink LED"),
         ],
     )
     def test_function_descriptions(self, function, description):

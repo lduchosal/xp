@@ -4,7 +4,6 @@ This service handles generation and parsing of blink/unblink system telegrams
 used for controlling module LED status.
 """
 
-from typing import Optional
 from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
 from ..models.system_function import SystemFunction

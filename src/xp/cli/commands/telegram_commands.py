@@ -2,7 +2,6 @@
 
 import click
 import json
-from typing import Dict, Any
 
 from ...services.telegram_service import TelegramService, TelegramParsingError
 from ..utils.decorators import (

@@ -1,6 +1,5 @@
 """Error handling utilities for CLI commands."""
 
-import json
 import click
 from typing import Dict, Any, Optional
 from .formatters import OutputFormatter

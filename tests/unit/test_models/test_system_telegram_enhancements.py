@@ -1,10 +1,9 @@
 """Tests for SystemTelegram enhancements for link number functionality"""
 
-import pytest
 from datetime import datetime
 from src.xp.models.system_telegram import SystemTelegram
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
+from src.xp.models.datapoint_type import DataPointType
+from src.xp.models.system_function import SystemFunction
 
 
 class TestSystemTelegramEnhancements:

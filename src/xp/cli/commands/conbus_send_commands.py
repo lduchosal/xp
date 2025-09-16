@@ -1,6 +1,5 @@
 """Conbus client operations CLI commands."""
 
-from pickle import BINPUT
 
 import click
 import json
@@ -11,7 +10,6 @@ from ...services.conbus_client_send_service import (
 )
 from ...models import ConbusSendRequest, TelegramType
 from ..utils.decorators import (
-    json_output_option,
     connection_command,
     handle_service_errors,
 )

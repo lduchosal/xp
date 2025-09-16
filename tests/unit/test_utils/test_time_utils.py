@@ -1,7 +1,7 @@
 """Tests for time parsing utilities"""
 
 import pytest
-from datetime import datetime, date
+from datetime import datetime
 from src.xp.utils.time_utils import (
     parse_log_timestamp,
     TimeParsingError,

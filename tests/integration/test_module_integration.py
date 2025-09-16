@@ -1,4 +1,3 @@
-import pytest
 from click.testing import CliRunner
 import json
 from src.xp.cli.main import cli

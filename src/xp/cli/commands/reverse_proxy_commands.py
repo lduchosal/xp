@@ -95,7 +95,7 @@ def start_proxy(port: int, config: str, json_output: bool):
             }
             click.echo(json.dumps(shutdown_response, indent=2))
         else:
-            click.echo(f"\nReverse proxy shutdown by user")
+            click.echo("\nReverse proxy shutdown by user")
 
 
 @reverse_proxy.command("stop")

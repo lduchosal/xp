@@ -4,8 +4,8 @@ import pytest
 from src.xp.services.link_number_service import LinkNumberService, LinkNumberError
 from src.xp.services.telegram_service import TelegramService, TelegramParsingError
 from src.xp.models.system_telegram import SystemTelegram
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
+from src.xp.models.datapoint_type import DataPointType
+from src.xp.models.system_function import SystemFunction
 from src.xp.models.reply_telegram import ReplyTelegram
 
 

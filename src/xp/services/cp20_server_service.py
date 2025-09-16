@@ -4,12 +4,8 @@ This service provides CP20-specific device emulation functionality,
 including response generation and device configuration handling.
 """
 
-import logging
 from typing import Dict, Optional
 from ..models.system_telegram import SystemTelegram
-from ..models.datapoint_type import DataPointType
-from ..models.system_function import SystemFunction
-from ..models.reply_telegram import ReplyTelegram
 from .base_server_service import BaseServerService
 
 

@@ -1,12 +1,10 @@
-import pytest
 from src.xp.models.module_type import (
     ModuleType,
     get_all_module_types,
     get_module_types_by_category,
     is_valid_module_code,
 )
-from xp.models.module_type_code import MODULE_TYPE_REGISTRY
-from xp.models import ModuleTypeCode
+from src.xp.models.module_type_code import MODULE_TYPE_REGISTRY
 
 
 class TestModuleType:
@@ -132,7 +130,7 @@ class TestModuleType:
 
     def test_module_registry_completeness(self):
         """Test that module registry contains all expected entries"""
-        assert len(MODULE_TYPE_REGISTRY) == 27
+        assert len(MODULE_TYPE_REGISTRY) == 37
 
         # Test some specific entries
         assert MODULE_TYPE_REGISTRY[0]["name"] == "NOMOD"
@@ -149,7 +147,7 @@ class TestModuleTypeFunctions:
         """Test getting all module types"""
         modules = get_all_module_types()
 
-        assert len(modules) == 27
+        assert len(modules) == 37
         assert all(isinstance(module, ModuleType) for module in modules)
 
         # Verify they are sorted by code
@@ -181,9 +179,9 @@ class TestModuleTypeFunctions:
         assert is_valid_module_code(0) is True
         assert is_valid_module_code(14) is True
         assert is_valid_module_code(23) is True
-        assert is_valid_module_code(24) is True
+        assert is_valid_module_code(37) is True
 
         # Invalid codes
         assert is_valid_module_code(-1) is False
-        assert is_valid_module_code(25) is False
+        assert is_valid_module_code(38) is False
         assert is_valid_module_code(999) is False

@@ -3,12 +3,11 @@
 import unittest
 from datetime import datetime
 
-from src.xp.services.version_service import VersionService, VersionParsingError
+from src.xp.services.version_service import VersionService
 from src.xp.models.system_telegram import SystemTelegram
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
+from src.xp.models.datapoint_type import DataPointType
+from src.xp.models.system_function import SystemFunction
 from src.xp.models.reply_telegram import ReplyTelegram
-from src.xp.models.response import Response
 
 
 class TestVersionService(unittest.TestCase):

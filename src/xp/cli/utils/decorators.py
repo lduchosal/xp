@@ -1,7 +1,6 @@
 """Common decorators for CLI commands."""
 
 import functools
-import json
 import click
 from typing import Tuple, Type, Callable, Any
 from ..utils.formatters import OutputFormatter

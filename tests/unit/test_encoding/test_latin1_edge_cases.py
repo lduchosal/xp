@@ -10,7 +10,7 @@ import socket
 import threading
 import time
 from src.xp.services.conbus_client_send_service import ConbusClientSendService
-from src.xp.models import ConbusSendRequest, TelegramType
+from src.xp.models import TelegramType
 
 
 class Latin1TestServer:
@@ -286,7 +286,7 @@ conbus:
         decoded = test_data.decode("latin-1")
 
         assert char in decoded
-        assert decoded == f"<R0020044966F02D18+31,5§CIE>"
+        assert decoded == "<R0020044966F02D18+31,5§CIE>"
 
     def test_raw_hex_data_decoding(self, client_service):
         """Test decoding of the actual hex data from the issue description"""

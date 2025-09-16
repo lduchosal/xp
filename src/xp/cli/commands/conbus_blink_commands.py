@@ -1,26 +1,19 @@
 """Conbus client operations CLI commands."""
 
-from pickle import BINPUT
 
 import click
 import json
-import threading
 
 from ...models.system_function import SystemFunction
 from ...services.conbus_client_send_service import (
     ConbusClientSendService,
     ConbusClientSendError,
 )
-from ...services.input_service import XPInputService, XPInputError
 from ...services.blink_service import BlinkService, BlinkError
-from ...models import ConbusSendRequest, TelegramType
-from ...models.action_type import ActionType
 from ..utils.decorators import (
-    json_output_option,
     connection_command,
     handle_service_errors,
 )
-from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 
 

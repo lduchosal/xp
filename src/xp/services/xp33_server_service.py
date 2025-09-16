@@ -5,12 +5,10 @@ including response generation and device configuration handling for
 3-channel light dimmer modules.
 """
 
-import logging
-from typing import Dict, Optional, List
+from typing import Dict, Optional
 from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
 from ..models.system_function import SystemFunction
-from ..models.reply_telegram import ReplyTelegram
 from .base_server_service import BaseServerService
 
 

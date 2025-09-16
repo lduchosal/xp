@@ -40,11 +40,11 @@ def generate_discovery(json_output: bool):
             }
             click.echo(json.dumps(output, indent=2))
         else:
-            click.echo(f"Discovery Broadcast Telegram:")
-            click.echo(f"Broadcast Address: 0000000000")
+            click.echo("Discovery Broadcast Telegram:")
+            click.echo("Broadcast Address: 0000000000")
             click.echo(f"Telegram: {telegram}")
             click.echo(
-                f"\nUse this telegram to enumerate all devices on the console bus."
+                "\nUse this telegram to enumerate all devices on the console bus."
             )
 
     except DiscoveryError as e:
@@ -122,11 +122,11 @@ def parse_discovery_responses(telegram_list: tuple, json_output: bool, summary: 
                 click.echo("No devices discovered")
         else:
             # Detailed output
-            click.echo(f"=== Discovery Response Analysis ===")
+            click.echo("=== Discovery Response Analysis ===")
             click.echo(f"Processed {len(telegram_list)} telegram(s)")
 
             if devices:
-                click.echo(f"\nDiscovered Devices:")
+                click.echo("\nDiscovered Devices:")
                 click.echo("-" * 50)
 
                 for i, device in enumerate(devices, 1):
@@ -135,7 +135,7 @@ def parse_discovery_responses(telegram_list: tuple, json_output: bool, summary: 
                     click.echo(f"   Raw: {device.raw_telegram}")
 
             if errors:
-                click.echo(f"\nErrors:")
+                click.echo("\nErrors:")
                 click.echo("-" * 50)
                 for error in errors:
                     click.echo(f"✗ {error['telegram']}: {error['error']}")
@@ -156,7 +156,7 @@ def analyze_discovery_session(log_file_path: str, json_output: bool, time_range:
     Example: xp discovery analyze conbus-discover.log
     Example: xp discovery analyze conbus.log --time-range "22:48:38,000-22:48:39,000"
     """
-    from ...services.log_file_service import LogFileService, LogFileParsingError
+    from ...services.log_file_service import LogFileService
     from ...utils.time_utils import parse_time_range, TimeParsingError
 
     log_service = LogFileService()
@@ -224,7 +224,7 @@ def analyze_discovery_session(log_file_path: str, json_output: bool, time_range:
             }
             click.echo(json.dumps(output, indent=2))
         else:
-            click.echo(f"=== Discovery Session Analysis ===")
+            click.echo("=== Discovery Session Analysis ===")
             click.echo(f"File: {log_file_path}")
 
             if time_range:
@@ -234,7 +234,7 @@ def analyze_discovery_session(log_file_path: str, json_output: bool, time_range:
             click.echo(f"Discovery Responses: {len(discovery_responses)}")
 
             if discovery_requests:
-                click.echo(f"\nDiscovery Requests:")
+                click.echo("\nDiscovery Requests:")
                 for req in discovery_requests[:3]:  # Show first 3
                     click.echo(
                         f"  {req.timestamp.strftime('%H:%M:%S,%f')[:-3]} [{req.direction}] {req.raw_telegram}"
@@ -245,7 +245,7 @@ def analyze_discovery_session(log_file_path: str, json_output: bool, time_range:
             if devices:
                 click.echo(f"\n{discovery_service.format_discovery_results(devices)}")
             else:
-                click.echo(f"\nNo devices discovered in the log file.")
+                click.echo("\nNo devices discovered in the log file.")
 
     except Exception as e:
         CLIErrorHandler.handle_file_error(
