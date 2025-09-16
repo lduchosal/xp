@@ -6,12 +6,7 @@ from xp.cli.utils.decorators import json_output_option, handle_service_errors
 from xp.cli.utils.error_handlers import CLIErrorHandler
 from xp.cli.utils.formatters import OutputFormatter
 from xp.services.conbus_client_send_service import ConbusClientSendService
-
-
-@click.group()
-def conbus():
-    """Conbus client operations for sending telegrams to remote servers"""
-    pass
+from .conbus import conbus
 
 
 @conbus.command("config")

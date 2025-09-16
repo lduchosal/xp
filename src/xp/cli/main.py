@@ -12,7 +12,14 @@ from .commands.version_commands import version
 from .commands.discovery_commands import discovery
 from .commands.file_commands import file
 from .commands.server_commands import server
-from .commands.conbus_custom_commands import conbus
+from .commands.conbus import conbus
+# Import all conbus command modules to register their commands
+from .commands import conbus_send_commands
+from .commands import conbus_config_commands
+from .commands import conbus_scan_commands
+from .commands import conbus_input_commands
+from .commands import conbus_custom_commands
+from .commands import conbus_blink_commands
 from .commands.reverse_proxy_commands import reverse_proxy
 
 

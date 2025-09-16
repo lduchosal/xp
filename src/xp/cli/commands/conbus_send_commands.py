@@ -14,12 +14,7 @@ from ..utils.decorators import (
 )
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
-
-
-@click.group()
-def conbus():
-    """Conbus client operations for sending telegrams to remote servers"""
-    pass
+from .conbus import conbus
 
 
 @conbus.command("send")

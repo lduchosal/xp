@@ -6,37 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Refactor: cleanup code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/blink_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_config_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_config_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_custom_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_custom_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_input_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_input_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/discovery_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/discovery_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/file_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/file_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/linknumber_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/linknumber_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/module_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/module_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/reverse_proxy_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/reverse_proxy_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/base_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/base_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/input_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/input_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/xp130_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp130_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/xp20_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp20_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/xp230_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp230_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/xp24_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp24_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/xp33_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp33_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_link_number_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_link_number_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -286,7 +262,7 @@
       <workItem from="1756275107111" duration="30469000" />
       <workItem from="1756830585261" duration="79203000" />
       <workItem from="1757696538700" duration="629000" />
-      <workItem from="1757752097335" duration="11671000" />
+      <workItem from="1757752097335" duration="12561000" />
     </task>
     <task id="LOCAL-00001" summary="Feat: initial">
       <option name="closed" value="true" />
@@ -608,7 +584,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758051028332</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Refactor: cleanup code">
+      <option name="closed" value="true" />
+      <created>1758051863631</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1758051863631</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

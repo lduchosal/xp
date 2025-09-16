@@ -10,12 +10,7 @@ from ...services.conbus_client_send_service import (
 )
 from ..utils.decorators import connection_command, handle_service_errors
 from ..utils.error_handlers import CLIErrorHandler
-
-
-@click.group()
-def conbus():
-    """Conbus client operations for sending telegrams to remote servers"""
-    pass
+from .conbus import conbus
 
 
 @conbus.command("scan")
