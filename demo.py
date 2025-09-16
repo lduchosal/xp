@@ -19,9 +19,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 from xp.services.telegram_service import TelegramService, TelegramParsingError
 from xp.services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
 from xp.services.version_service import VersionService, VersionParsingError
-from xp.models.event_telegram import EventType, InputType
+from xp.models import InputType, EventType
 from xp.models.module_type import ModuleType
-from xp.models.system_telegram import SystemFunction, DataPointType
+from xp.models.datapoint_type import DataPointType
+from xp.models.system_function import SystemFunction
 
 
 def demo_basic_parsing():

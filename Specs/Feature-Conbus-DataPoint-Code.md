@@ -168,9 +168,8 @@ Add response methods for each new datapoint in both XP24 and XP20 server service
 ```python
 def generate_device_type_response(self, request: SystemTelegram) -> Optional[str]:
     """Generate device type response telegram"""
-    if (request.system_function == SystemFunction.RETURN_DATA and
-        request.data_point_id == DataPointType.DEVICE_TYPE):
-        
+    if (request.system_function == SystemFunction.READ_DATAPOINT and
+            request.data_point_id == DataPointType.DEVICE_TYPE):
         data_part = f"R{self.serial_number}F02D01{self.device_type}"
         checksum = calculate_checksum(data_part)
         telegram = f"<{data_part}{checksum}>"

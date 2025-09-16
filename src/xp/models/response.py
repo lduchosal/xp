@@ -10,14 +10,14 @@ from typing import Any, Optional
 
 class Response:
     """Standard response model for service operations.
-    
+
     Provides consistent structure for all service responses including
     success status, data payload, error messages, and timestamp.
     """
-    
+
     def __init__(self, success: bool, data: Any, error: Optional[str] = None):
         """Initialize response.
-        
+
         Args:
             success: Whether the operation was successful
             data: Response data payload
@@ -27,10 +27,10 @@ class Response:
         self.data = data
         self.error = error
         self.timestamp = datetime.now()
-    
+
     def to_dict(self) -> dict:
         """Convert response to dictionary for JSON serialization.
-        
+
         Returns:
             Dictionary representation of the response
         """
@@ -38,5 +38,5 @@ class Response:
             "success": self.success,
             "data": self.data,
             "error": self.error,
-            "timestamp": self.timestamp.isoformat()
+            "timestamp": self.timestamp.isoformat(),
         }

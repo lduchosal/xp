@@ -7,7 +7,8 @@ like temperature readings, status information, etc.
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Union
-from .system_telegram import SystemFunction, DataPointType
+from .datapoint_type import DataPointType
+from .system_function import SystemFunction
 from .telegram import Telegram
 
 
@@ -15,10 +16,11 @@ from .telegram import Telegram
 class ReplyTelegram(Telegram):
     """
     Represents a parsed reply telegram from the console bus.
-    
+
     Format: <R{serial_number}F{function_code}D{data_point_id}{data_value}{checksum}>
     Example: <R0020012521F02D18+26,0§CIL>
     """
+
     serial_number: str = ""
     system_function: Optional[SystemFunction] = None
     data_point_id: Optional[DataPointType] = None
@@ -27,33 +29,33 @@ class ReplyTelegram(Telegram):
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = datetime.now()
-    
+
     @property
     def function_description(self) -> str:
         """Get human-readable function description"""
         descriptions = {
-            SystemFunction.RETURN_DATA: "Data Response",
+            SystemFunction.READ_DATAPOINT: "Data Response",
             SystemFunction.DISCOVERY: "Discover Response",
             SystemFunction.READ_CONFIG: "Configuration Response",
             SystemFunction.WRITE_CONFIG: "Write Configuration Response",
             SystemFunction.BLINK: "Blink Response",
-            SystemFunction.UNBLINK: "Unblink Response"
+            SystemFunction.UNBLINK: "Unblink Response",
         }
         return descriptions.get(self.system_function, "Unknown Response")
-    
+
     @property
     def data_point_description(self) -> str:
         """Get human-readable data point description"""
         descriptions = {
             DataPointType.TEMPERATURE: "Temperature",
             DataPointType.HUMIDITY: "Humidity",
-            DataPointType.VOLTAGE: "Voltage", 
+            DataPointType.VOLTAGE: "Voltage",
             DataPointType.CURRENT: "Current",
             DataPointType.STATUS: "Status",
-            DataPointType.VERSION: "Version"
+            DataPointType.VERSION: "Version",
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
-    
+
     @property
     def parsed_value(self) -> dict:
         """Parse the data value based on data point type"""
@@ -71,7 +73,7 @@ class ReplyTelegram(Telegram):
             return self._parse_version_value()
         else:
             return {"raw_value": self.data_value, "parsed": False}
-    
+
     def _parse_temperature_value(self) -> dict:
         """Parse temperature value like '+26,0§C'"""
         try:
@@ -80,21 +82,21 @@ class ReplyTelegram(Telegram):
             # Replace comma with dot for decimal
             value_str = value_part.replace(",", ".")
             temperature = float(value_str)
-            
+
             return {
                 "value": temperature,
                 "unit": "°C",
                 "formatted": f"{temperature:.1f}°C",
                 "raw_value": self.data_value,
-                "parsed": True
+                "parsed": True,
             }
         except (ValueError, AttributeError):
             return {
                 "raw_value": self.data_value,
                 "parsed": False,
-                "error": "Failed to parse temperature"
+                "error": "Failed to parse temperature",
             }
-    
+
     def _parse_humidity_value(self) -> dict:
         """Parse humidity value like '+65,5§H'"""
         try:
@@ -103,21 +105,21 @@ class ReplyTelegram(Telegram):
             # Replace comma with dot for decimal
             value_str = value_part.replace(",", ".")
             humidity = float(value_str)
-            
+
             return {
                 "value": humidity,
                 "unit": "%RH",
                 "formatted": f"{humidity:.1f}%RH",
                 "raw_value": self.data_value,
-                "parsed": True
+                "parsed": True,
             }
         except (ValueError, AttributeError):
             return {
                 "raw_value": self.data_value,
                 "parsed": False,
-                "error": "Failed to parse humidity"
+                "error": "Failed to parse humidity",
             }
-    
+
     def _parse_voltage_value(self) -> dict:
         """Parse voltage value like '+12,5§V'"""
         try:
@@ -126,21 +128,21 @@ class ReplyTelegram(Telegram):
             # Replace comma with dot for decimal
             value_str = value_part.replace(",", ".")
             voltage = float(value_str)
-            
+
             return {
                 "value": voltage,
                 "unit": "V",
                 "formatted": f"{voltage:.1f}V",
                 "raw_value": self.data_value,
-                "parsed": True
+                "parsed": True,
             }
         except (ValueError, AttributeError):
             return {
                 "raw_value": self.data_value,
                 "parsed": False,
-                "error": "Failed to parse voltage"
+                "error": "Failed to parse voltage",
             }
-    
+
     def _parse_current_value(self) -> dict:
         """Parse current value like '+0,25§A'"""
         try:
@@ -149,30 +151,30 @@ class ReplyTelegram(Telegram):
             # Replace comma with dot for decimal
             value_str = value_part.replace(",", ".")
             current = float(value_str)
-            
+
             return {
                 "value": current,
                 "unit": "A",
                 "formatted": f"{current:.2f}A",
                 "raw_value": self.data_value,
-                "parsed": True
+                "parsed": True,
             }
         except (ValueError, AttributeError):
             return {
                 "raw_value": self.data_value,
                 "parsed": False,
-                "error": "Failed to parse current"
+                "error": "Failed to parse current",
             }
-    
+
     def _parse_status_value(self) -> dict:
         """Parse status value"""
         # Status values are typically alphanumeric codes
         return {
             "status_code": self.data_value,
             "raw_value": self.data_value,
-            "parsed": True
+            "parsed": True,
         }
-    
+
     def _parse_version_value(self) -> dict:
         """Parse version value like 'XP230_V1.00.04'"""
         try:
@@ -183,57 +185,54 @@ class ReplyTelegram(Telegram):
                 if len(parts) == 2:
                     product = parts[0]
                     version = parts[1]
-                    
+
                     return {
                         "product": product,
                         "version": version,
                         "full_version": self.data_value,
                         "formatted": f"{product} v{version}",
                         "raw_value": self.data_value,
-                        "parsed": True
+                        "parsed": True,
                     }
-            
+
             # If format doesn't match expected pattern, treat as raw
             return {
                 "full_version": self.data_value,
                 "formatted": self.data_value,
                 "raw_value": self.data_value,
                 "parsed": False,
-                "error": "Version format not recognized"
+                "error": "Version format not recognized",
             }
-            
+
         except (ValueError, AttributeError):
             return {
                 "raw_value": self.data_value,
                 "parsed": False,
-                "error": "Failed to parse version"
+                "error": "Failed to parse version",
             }
-    
+
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization"""
         parsed_data = self.parsed_value
-        
+
         return {
             "serial_number": self.serial_number,
             "system_function": {
                 "code": self.system_function.value,
-                "description": self.function_description
+                "description": self.function_description,
             },
             "data_point_id": {
                 "code": self.data_point_id.value,
-                "description": self.data_point_description
+                "description": self.data_point_description,
             },
-            "data_value": {
-                "raw": self.data_value,
-                "parsed": parsed_data
-            },
+            "data_value": {"raw": self.data_value, "parsed": parsed_data},
             "checksum": self.checksum,
             "checksum_validated": self.checksum_validated,
             "raw_telegram": self.raw_telegram,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
-            "telegram_type": "reply"
+            "telegram_type": "reply",
         }
-    
+
     def __str__(self) -> str:
         """Human-readable string representation"""
         parsed = self.parsed_value
@@ -241,7 +240,7 @@ class ReplyTelegram(Telegram):
             value_display = parsed["formatted"]
         else:
             value_display = self.data_value
-            
+
         return (
             f"Reply Telegram: {self.function_description} "
             f"for {self.data_point_description} = {value_display} "

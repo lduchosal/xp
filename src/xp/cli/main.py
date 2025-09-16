@@ -1,4 +1,5 @@
 """XP CLI tool entry point with modular command structure."""
+
 import click
 
 # Import command groups from modular structure
@@ -35,23 +36,27 @@ cli.add_command(server)
 cli.add_command(conbus)
 cli.add_command(reverse_proxy)
 
+
 # Register legacy blink commands as top-level commands (for compatibility with spec)
 @cli.command("blink")
-@click.argument('serial_number')
-@click.option('--json', 'json_output', is_flag=True, help='Output in JSON format')
+@click.argument("serial_number")
+@click.option("--json", "json_output", is_flag=True, help="Output in JSON format")
 def blink_legacy(serial_number: str, json_output: bool):
     """Start blinking module LED (legacy command)"""
     from .commands.blink_commands import blink_on
+
     blink_on.callback(serial_number, json_output)
 
+
 @cli.command("unblink")
-@click.argument('serial_number')
-@click.option('--json', 'json_output', is_flag=True, help='Output in JSON format')
+@click.argument("serial_number")
+@click.option("--json", "json_output", is_flag=True, help="Output in JSON format")
 def unblink_legacy(serial_number: str, json_output: bool):
     """Stop blinking module LED (legacy command)"""
     from .commands.blink_commands import blink_off
+
     blink_off.callback(serial_number, json_output)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

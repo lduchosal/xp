@@ -13,6 +13,7 @@ def conbus():
     """Conbus client operations for sending telegrams to remote servers"""
     pass
 
+
 @conbus.command("config")
 @json_output_option
 @handle_service_errors(Exception)
@@ -37,4 +38,3 @@ def show_config(json_output: bool):
 
     except Exception as e:
         CLIErrorHandler.handle_service_error(e, json_output, "configuration retrieval")
-

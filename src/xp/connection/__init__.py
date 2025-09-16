@@ -5,13 +5,13 @@ from .exceptions import (
     ConnectionError,
     ProtocolError,
     ValidationError,
-    ModuleNotFoundError
+    ModuleNotFoundError,
 )
 
 __all__ = [
-    'XPError',
-    'ConnectionError',
-    'ProtocolError',
-    'ValidationError',
-    'ModuleNotFoundError'
+    "XPError",
+    "ConnectionError",
+    "ProtocolError",
+    "ValidationError",
+    "ModuleNotFoundError",
 ]

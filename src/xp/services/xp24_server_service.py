@@ -6,57 +6,59 @@ including response generation and device configuration handling.
 
 import logging
 from typing import Dict, Optional
-from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
+from ..models.system_telegram import SystemTelegram
+from ..models.datapoint_type import DataPointType
+from ..models.system_function import SystemFunction
 from ..models.reply_telegram import ReplyTelegram
 from .base_server_service import BaseServerService
 
 
 class XP24ServerError(Exception):
     """Raised when XP24 server operations fail"""
+
     pass
 
 
 class XP24ServerService(BaseServerService):
     """
     XP24 device emulation service.
-    
+
     Generates XP24-specific responses, handles XP24 device configuration,
     and implements XP24 telegram format.
     """
-    
+
     def __init__(self, serial_number: str):
         """Initialize XP24 server service"""
         super().__init__(serial_number)
         self.device_type = "XP24"
         self.module_type_code = 7  # XP24 module type from registry
         self.firmware_version = "XP24_V0.34.03"
-    
-    
-    
-    
-    
-    
+
     def generate_temperature_response(self, request: SystemTelegram) -> Optional[str]:
         """Generate temperature response telegram (simulated)"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.TEMPERATURE):
-            
+        if (
+            request.system_function == SystemFunction.READ_DATAPOINT
+            and request.data_point_id == DataPointType.TEMPERATURE
+        ):
+
             # Simulate temperature reading: +23.5°C
             temperature_value = "+23,5§C"
             data_part = f"R{self.serial_number}F02D18{temperature_value}"
             telegram = self._build_response_telegram(data_part)
             self._log_response("temperature", telegram)
             return telegram
-        
+
         return None
-    
-    def _handle_device_specific_data_request(self, request: SystemTelegram) -> Optional[str]:
+
+    def _handle_device_specific_data_request(
+        self, request: SystemTelegram
+    ) -> Optional[str]:
         """Handle XP24-specific data requests"""
         if request.data_point_id == DataPointType.TEMPERATURE:
             return self.generate_temperature_response(request)
-        
+
         return None
-    
+
     def get_device_info(self) -> Dict:
         """Get XP24 device information"""
         return {
@@ -64,5 +66,5 @@ class XP24ServerService(BaseServerService):
             "device_type": self.device_type,
             "firmware_version": self.firmware_version,
             "status": self.device_status,
-            "link_number": self.link_number
+            "link_number": self.link_number,
         }

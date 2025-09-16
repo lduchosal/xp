@@ -1,12 +1,20 @@
 """Conbus client operations CLI commands."""
+
 from pickle import BINPUT
 
 import click
 import json
 
-from ...services.conbus_client_send_service import ConbusClientSendService, ConbusClientSendError
-from ...models.conbus_client_send import TelegramType, ConbusSendRequest
-from ..utils.decorators import json_output_option, connection_command, handle_service_errors
+from ...services.conbus_client_send_service import (
+    ConbusClientSendService,
+    ConbusClientSendError,
+)
+from ...models import ConbusSendRequest, TelegramType
+from ..utils.decorators import (
+    json_output_option,
+    connection_command,
+    handle_service_errors,
+)
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 
@@ -18,8 +26,8 @@ def conbus():
 
 
 @conbus.command("send")
-@click.argument('target_serial')
-@click.argument('telegram_type')
+@click.argument("target_serial")
+@click.argument("telegram_type")
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
 def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
@@ -64,16 +72,18 @@ def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
             "voltage": TelegramType.VOLTAGE,
             "temperature": TelegramType.TEMPERATURE,
             "current": TelegramType.CURRENT,
-            "humidity": TelegramType.HUMIDITY
+            "humidity": TelegramType.HUMIDITY,
         }
 
         telegram_type_enum = telegram_type_map.get(telegram_type.lower())
         if not telegram_type_enum:
             error_data = {
                 "telegram_type": telegram_type,
-                "valid_types": list(telegram_type_map.keys())
+                "valid_types": list(telegram_type_map.keys()),
             }
-            error_response = formatter.error_response(f"Unknown telegram type: {telegram_type}", error_data)
+            error_response = formatter.error_response(
+                f"Unknown telegram type: {telegram_type}", error_data
+            )
 
             if json_output:
                 click.echo(error_response)
@@ -85,8 +95,7 @@ def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
 
         # Create request
         request = ConbusSendRequest(
-            telegram_type=telegram_type_enum,
-            target_serial=target_serial
+            telegram_type=telegram_type_enum, target_serial=target_serial
         )
 
         # Send telegram
@@ -99,12 +108,12 @@ def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
             if response.success:
                 # Format output like the specification examples
                 if response.sent_telegram:
-                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
                     click.echo(f"{timestamp} [TX] {response.sent_telegram}")
 
                 # Show received telegrams
                 for received in response.received_telegrams:
-                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
                     click.echo(f"{timestamp} [RX] {received}")
 
                 if not response.received_telegrams:
@@ -115,17 +124,24 @@ def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
     except ConbusClientSendError as e:
         if "Connection timeout" in str(e):
             if not json_output:
-                click.echo(f"Connecting to {service.config.ip}:{service.config.port}...")
-                click.echo(f"Error: Connection timeout after {service.config.timeout} seconds")
+                click.echo(
+                    f"Connecting to {service.config.ip}:{service.config.port}..."
+                )
+                click.echo(
+                    f"Error: Connection timeout after {service.config.timeout} seconds"
+                )
                 click.echo("Failed to connect to server")
-            CLIErrorHandler.handle_connection_error(e, json_output, {
-                "ip": service.config.ip,
-                "port": service.config.port,
-                "timeout": service.config.timeout
-            })
+            CLIErrorHandler.handle_connection_error(
+                e,
+                json_output,
+                {
+                    "ip": service.config.ip,
+                    "port": service.config.port,
+                    "timeout": service.config.timeout,
+                },
+            )
         else:
             CLIErrorHandler.handle_service_error(e, json_output, "telegram send")
-
 
 
 @conbus.command("discover")
@@ -147,8 +163,7 @@ def send_discover_telegram(json_output: bool):
 
         # Create request
         request = ConbusSendRequest(
-            telegram_type=telegram_type_enum,
-            target_serial=target_serial
+            telegram_type=telegram_type_enum, target_serial=target_serial
         )
 
         # Send telegram
@@ -161,12 +176,12 @@ def send_discover_telegram(json_output: bool):
             if response.success:
                 # Format output like the specification examples
                 if response.sent_telegram:
-                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
                     click.echo(f"{timestamp} [TX] {response.sent_telegram}")
 
                 # Show received telegrams
                 for received in response.received_telegrams:
-                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
                     click.echo(f"{timestamp} [RX] {received}")
 
                 if not response.received_telegrams:
@@ -177,14 +192,23 @@ def send_discover_telegram(json_output: bool):
     except ConbusClientSendError as e:
         if "Connection timeout" in str(e):
             if not json_output:
-                click.echo(f"Connecting to {service.config.ip}:{service.config.port}...")
-                click.echo(f"Error: Connection timeout after {service.config.timeout} seconds")
+                click.echo(
+                    f"Connecting to {service.config.ip}:{service.config.port}..."
+                )
+                click.echo(
+                    f"Error: Connection timeout after {service.config.timeout} seconds"
+                )
                 click.echo("Failed to connect to server")
-            CLIErrorHandler.handle_connection_error(e, json_output, {
-                "ip": service.config.ip,
-                "port": service.config.port,
-                "timeout": service.config.timeout
-            })
+            CLIErrorHandler.handle_connection_error(
+                e,
+                json_output,
+                {
+                    "ip": service.config.ip,
+                    "port": service.config.port,
+                    "timeout": service.config.timeout,
+                },
+            )
         else:
-            CLIErrorHandler.handle_service_error(e, json_output, "discovery telegram send")
-
+            CLIErrorHandler.handle_service_error(
+                e, json_output, "discovery telegram send"
+            )

@@ -1,17 +1,25 @@
 """Conbus client operations CLI commands."""
+
 from pickle import BINPUT
 
 import click
 import json
 import threading
 
-from ...models.system_telegram import SystemFunction
-from ...services.conbus_client_send_service import ConbusClientSendService, ConbusClientSendError
+from ...models.system_function import SystemFunction
+from ...services.conbus_client_send_service import (
+    ConbusClientSendService,
+    ConbusClientSendError,
+)
 from ...services.input_service import XPInputService, XPInputError
 from ...services.blink_service import BlinkService, BlinkError
-from ...models.conbus_client_send import TelegramType, ConbusSendRequest
-from ...models.input_telegram import ActionType
-from ..utils.decorators import json_output_option, connection_command, handle_service_errors
+from ...models import ConbusSendRequest, TelegramType
+from ...models.action_type import ActionType
+from ..utils.decorators import (
+    json_output_option,
+    connection_command,
+    handle_service_errors,
+)
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 
@@ -21,46 +29,56 @@ def conbus():
     """Conbus client operations for sending telegrams to remote servers"""
     pass
 
+
 @conbus.command("custom")
-@click.argument('serial_number')
-@click.argument('function_code')
-@click.argument('data_point_code')
+@click.argument("serial_number")
+@click.argument("function_code")
+@click.argument("data_point_code")
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
-def send_custom_telegram(serial_number: str, function_code: str, data_point_code: str, json_output: bool):
+def send_custom_telegram(
+    serial_number: str, function_code: str, data_point_code: str, json_output: bool
+):
     """
     Send custom telegram with specified function and data point codes.
-    
+
     Example: xp conbus custom 0020030837 02 E2
     """
     service = ConbusClientSendService()
-    
+
     try:
         with service:
-            response = service.send_custom_telegram(serial_number, function_code, data_point_code)
-        
+            response = service.send_custom_telegram(
+                serial_number, function_code, data_point_code
+            )
+
         if json_output:
             click.echo(json.dumps(response.to_dict(), indent=2))
         else:
             if response.success:
-                # Format output like the specification examples  
+                # Format output like the specification examples
                 if response.sent_telegram:
-                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
                     click.echo(f"{timestamp} [TX] {response.sent_telegram}")
-                
+
                 # Show received telegrams
                 for received in response.received_telegrams:
-                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
+                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
                     click.echo(f"{timestamp} [RX] {received}")
-                
+
                 if not response.received_telegrams:
                     click.echo("No response received")
             else:
                 click.echo(f"Error: {response.error}")
-                
+
     except ConbusClientSendError as e:
-        CLIErrorHandler.handle_service_error(e, json_output, "custom telegram send", {
-            "serial_number": serial_number,
-            "function_code": function_code,
-            "data_point_code": data_point_code
-        })
+        CLIErrorHandler.handle_service_error(
+            e,
+            json_output,
+            "custom telegram send",
+            {
+                "serial_number": serial_number,
+                "function_code": function_code,
+                "data_point_code": data_point_code,
+            },
+        )

@@ -7,24 +7,27 @@ including response generation and device configuration handling for
 
 import logging
 from typing import Dict, Optional, List
-from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
+from ..models.system_telegram import SystemTelegram
+from ..models.datapoint_type import DataPointType
+from ..models.system_function import SystemFunction
 from ..models.reply_telegram import ReplyTelegram
 from .base_server_service import BaseServerService
 
 
 class XP33ServerError(Exception):
     """Raised when XP33 server operations fail"""
+
     pass
 
 
 class XP33ServerService(BaseServerService):
     """
     XP33 device emulation service.
-    
+
     Generates XP33-specific responses, handles XP33 device configuration,
     and implements XP33 telegram format for 3-channel dimmer modules.
     """
-    
+
     def __init__(self, serial_number: str, variant: str = "XP33LR"):
         """Initialize XP33 server service"""
         super().__init__(serial_number)
@@ -43,7 +46,7 @@ class XP33ServerService(BaseServerService):
             self.ean_code = "5703513058982"
             self.max_power = 640  # Total 640VA
             self.module_type_code = 30  # XP33LR module type
-        else: # XP33
+        else:  # XP33
             self.firmware_version = "XP33_V0.04.02"
             self.ean_code = "5703513058981"
             self.max_power = 100  # Total 640VA
@@ -54,38 +57,38 @@ class XP33ServerService(BaseServerService):
 
         # Channel states (3 channels, 0-100% dimming)
         self.channel_states = [0, 0, 0]  # All channels at 0%
-        
+
         # Scene configuration (4 scenes)
         self.scenes = {
             1: [50, 30, 20],  # Scene 1: 50%, 30%, 20%
             2: [100, 100, 100],  # Scene 2: All full
             3: [25, 25, 25],  # Scene 3: Low level
-            4: [0, 0, 0]  # Scene 4: Off
+            4: [0, 0, 0],  # Scene 4: Off
         }
-    
-    
-    
-    
-    def generate_channel_states_response(self, request: SystemTelegram) -> Optional[str]:
+
+    def generate_channel_states_response(
+        self, request: SystemTelegram
+    ) -> Optional[str]:
         """Generate channel states response telegram"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == DataPointType.CHANNEL_STATES):
-            
+        if (
+            request.system_function == SystemFunction.READ_DATAPOINT
+            and request.data_point_id == DataPointType.CHANNEL_STATES
+        ):
+
             # Format: xxxxx000 (3 channels + padding)
             # Each channel: 00-64 hex (0-100%)
             ch1_hex = f"{int(self.channel_states[0] * 100 / 100):02X}"
             ch2_hex = f"{int(self.channel_states[1] * 100 / 100):02X}"
             ch3_hex = f"{int(self.channel_states[2] * 100 / 100):02X}"
-            
+
             channel_data = f"{ch1_hex}{ch2_hex}{ch3_hex}000"
             data_part = f"R{self.serial_number}F02D12{channel_data}"
             telegram = self._build_response_telegram(data_part)
             self._log_response("channel states", telegram)
             return telegram
-        
+
         return None
-    
-    
+
     def set_channel_dimming(self, channel: int, level: int) -> bool:
         """Set individual channel dimming level"""
         if 1 <= channel <= 3 and 0 <= level <= 100:
@@ -93,7 +96,7 @@ class XP33ServerService(BaseServerService):
             self.logger.info(f"XP33 channel {channel} set to {level}%")
             return True
         return False
-    
+
     def activate_scene(self, scene: int) -> bool:
         """Activate a pre-programmed scene"""
         if scene in self.scenes:
@@ -101,58 +104,76 @@ class XP33ServerService(BaseServerService):
             self.logger.info(f"XP33 scene {scene} activated: {self.channel_states}")
             return True
         return False
-    
-    def generate_channel_control_response(self, request: SystemTelegram) -> Optional[str]:
+
+    def generate_channel_control_response(
+        self, request: SystemTelegram
+    ) -> Optional[str]:
         """Generate individual channel control response"""
         # Check for individual channel data points
         channel_mapping = {
             DataPointType.CHANNEL_1: 1,
             DataPointType.CHANNEL_2: 2,
-            DataPointType.CHANNEL_3: 3
+            DataPointType.CHANNEL_3: 3,
         }
-        
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id in channel_mapping):
-            
+
+        if (
+            request.system_function == SystemFunction.READ_DATAPOINT
+            and request.data_point_id in channel_mapping
+        ):
+
             channel = channel_mapping[request.data_point_id]
-            
+
             # Return current channel state in 5-hex format
             ch1_hex = f"{int(self.channel_states[0] * 100 / 100):02X}"
             ch2_hex = f"{int(self.channel_states[1] * 100 / 100):02X}"
             ch3_hex = f"{int(self.channel_states[2] * 100 / 100):02X}"
-            
+
             channel_data = f"{ch1_hex}{ch2_hex}{ch3_hex}00"
-            data_part = f"R{self.serial_number}F02D{request.data_point_id.value}{channel_data}"
+            data_part = (
+                f"R{self.serial_number}F02D{request.data_point_id.value}{channel_data}"
+            )
             telegram = self._build_response_telegram(data_part)
             self._log_response(f"channel {channel}", telegram)
             return telegram
-        
+
         return None
-    
-    def _handle_device_specific_data_request(self, request: SystemTelegram) -> Optional[str]:
+
+    def _handle_device_specific_data_request(
+        self, request: SystemTelegram
+    ) -> Optional[str]:
         """Handle XP33-specific data requests"""
         if request.data_point_id == DataPointType.STATUS_QUERY:
             return self.generate_status_response(request, DataPointType.STATUS_QUERY)
         elif request.data_point_id == DataPointType.CHANNEL_STATES:
             return self.generate_channel_states_response(request)
-        elif request.data_point_id in [DataPointType.CHANNEL_1, DataPointType.CHANNEL_2, DataPointType.CHANNEL_3]:
+        elif request.data_point_id in [
+            DataPointType.CHANNEL_1,
+            DataPointType.CHANNEL_2,
+            DataPointType.CHANNEL_3,
+        ]:
             return self.generate_channel_control_response(request)
-        
+
         return None
-    
-    def generate_status_response(self, request: SystemTelegram, status_data_point: DataPointType = DataPointType.STATUS_QUERY) -> Optional[str]:
+
+    def generate_status_response(
+        self,
+        request: SystemTelegram,
+        status_data_point: DataPointType = DataPointType.STATUS_QUERY,
+    ) -> Optional[str]:
         """Generate status response telegram for XP33 (uses STATUS_QUERY)"""
-        if (request.system_function == SystemFunction.RETURN_DATA and
-            request.data_point_id == status_data_point):
-            
+        if (
+            request.system_function == SystemFunction.READ_DATAPOINT
+            and request.data_point_id == status_data_point
+        ):
+
             # Format: <R{serial}F02D10{status}{checksum}>
             data_part = f"R{self.serial_number}F02D10{self.device_status}"
             telegram = self._build_response_telegram(data_part)
             self._log_response("status", telegram)
             return telegram
-        
+
         return None
-    
+
     def get_device_info(self) -> Dict:
         """Get XP33 device information"""
         return {
@@ -165,9 +186,9 @@ class XP33ServerService(BaseServerService):
             "status": self.device_status,
             "link_number": self.link_number,
             "channel_states": self.channel_states.copy(),
-            "available_scenes": list(self.scenes.keys())
+            "available_scenes": list(self.scenes.keys()),
         }
-    
+
     def get_technical_specs(self) -> Dict:
         """Get technical specifications"""
         if self.variant == "XP33LED":
@@ -176,7 +197,7 @@ class XP33ServerService(BaseServerService):
                 "total_power": "300VA",
                 "load_types": ["LED lamps", "resistive", "capacitive"],
                 "dimming_type": "Leading/Trailing edge configurable",
-                "protection": "Short-circuit proof channels"
+                "protection": "Short-circuit proof channels",
             }
         else:  # XP33LR
             return {
@@ -184,5 +205,5 @@ class XP33ServerService(BaseServerService):
                 "total_power": "640VA",
                 "load_types": ["Resistive", "inductive"],
                 "dimming_type": "Leading edge, logarithmic control",
-                "protection": "Thermal protection, neutral break detection"
+                "protection": "Thermal protection, neutral break detection",
             }

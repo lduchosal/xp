@@ -5,166 +5,169 @@ used for controlling module LED status.
 """
 
 from typing import Optional
-from ..models.system_telegram import SystemTelegram, SystemFunction, DataPointType
+from ..models.system_telegram import SystemTelegram
+from ..models.datapoint_type import DataPointType
+from ..models.system_function import SystemFunction
 from ..models.reply_telegram import ReplyTelegram
 from ..utils.checksum import calculate_checksum
 
 
 class BlinkError(Exception):
     """Raised when blink/unblink operations fail"""
+
     pass
 
 
 class BlinkService:
     """
     Service for generating and handling blink/unblink system telegrams.
-    
+
     Handles telegrams for controlling module LED status using the F05D00 and F06D00 formats:
     - Blink: <S{serial_number}F05D00{checksum}>
     - Unblink: <S{serial_number}F06D00{checksum}>
     """
-    
+
     def __init__(self):
         """Initialize the blink service"""
         pass
-    
+
     def generate_blink_telegram(self, serial_number: str) -> str:
         """
         Generate a telegram to start blinking a module's LED.
-        
+
         Args:
             serial_number: The 10-digit module serial number
-            
+
         Returns:
             Formatted telegram string (e.g., "<S0020044964F05D00FN>")
-            
+
         Raises:
             BlinkError: If parameters are invalid
         """
         # Validate serial number
         if not serial_number or len(serial_number) != 10:
             raise BlinkError(f"Serial number must be 10 digits, got: {serial_number}")
-        
+
         if not serial_number.isdigit():
             raise BlinkError(f"Serial number must contain only digits: {serial_number}")
-        
+
         # Build the data part of the telegram (F05D00 - Blink function, Status data point)
         data_part = f"S{serial_number}F05D00"
-        
+
         # Calculate checksum
         checksum = calculate_checksum(data_part)
-        
+
         # Build complete telegram
         telegram = f"<{data_part}{checksum}>"
-        
+
         return telegram
-    
+
     def generate_unblink_telegram(self, serial_number: str) -> str:
         """
         Generate a telegram to stop blinking a module's LED.
-        
+
         Args:
             serial_number: The 10-digit module serial number
-            
+
         Returns:
             Formatted telegram string (e.g., "<S0020030837F06D00FJ>")
-            
+
         Raises:
             BlinkError: If parameters are invalid
         """
         # Validate serial number
         if not serial_number or len(serial_number) != 10:
             raise BlinkError(f"Serial number must be 10 digits, got: {serial_number}")
-        
+
         if not serial_number.isdigit():
             raise BlinkError(f"Serial number must contain only digits: {serial_number}")
-        
+
         # Build the data part of the telegram (F06D00 - Unblink function, Status data point)
         data_part = f"S{serial_number}F06D00"
-        
+
         # Calculate checksum
         checksum = calculate_checksum(data_part)
-        
+
         # Build complete telegram
         telegram = f"<{data_part}{checksum}>"
-        
+
         return telegram
-    
+
     def create_blink_telegram_object(self, serial_number: str) -> SystemTelegram:
         """
         Create a SystemTelegram object for blinking LED.
-        
+
         Args:
             serial_number: The 10-digit module serial number
-            
+
         Returns:
             SystemTelegram object representing the blink command
-            
+
         Raises:
             BlinkError: If parameters are invalid
         """
         raw_telegram = self.generate_blink_telegram(serial_number)
-        
+
         # Extract checksum from the generated telegram
         checksum = raw_telegram[-3:-1]  # Get checksum before closing >
-        
+
         telegram = SystemTelegram(
             serial_number=serial_number,
             system_function=SystemFunction.BLINK,
             data_point_id=DataPointType.STATUS,
             checksum=checksum,
-            raw_telegram=raw_telegram
+            raw_telegram=raw_telegram,
         )
-        
+
         return telegram
-    
+
     def create_unblink_telegram_object(self, serial_number: str) -> SystemTelegram:
         """
         Create a SystemTelegram object for unblink LED.
-        
+
         Args:
             serial_number: The 10-digit module serial number
-            
+
         Returns:
             SystemTelegram object representing the unblink command
-            
+
         Raises:
             BlinkError: If parameters are invalid
         """
         raw_telegram = self.generate_unblink_telegram(serial_number)
-        
+
         # Extract checksum from the generated telegram
         checksum = raw_telegram[-3:-1]  # Get checksum before closing >
-        
+
         telegram = SystemTelegram(
             serial_number=serial_number,
             system_function=SystemFunction.UNBLINK,
             data_point_id=DataPointType.STATUS,
             checksum=checksum,
-            raw_telegram=raw_telegram
+            raw_telegram=raw_telegram,
         )
-        
+
         return telegram
-    
+
     def is_ack_response(self, reply_telegram: ReplyTelegram) -> bool:
         """
         Check if a reply telegram is an ACK response.
-        
+
         Args:
             reply_telegram: Reply telegram to check
-            
+
         Returns:
             True if this is an ACK response (F18D), False otherwise
         """
         return reply_telegram.system_function == SystemFunction.ACK
-    
+
     def is_nak_response(self, reply_telegram: ReplyTelegram) -> bool:
         """
         Check if a reply telegram is a NAK response.
-        
+
         Args:
             reply_telegram: Reply telegram to check
-            
+
         Returns:
             True if this is a NAK response (F19D), False otherwise
         """

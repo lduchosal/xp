@@ -3,60 +3,62 @@
 import pytest
 from src.xp.services.blink_service import BlinkService, BlinkError
 from src.xp.services.telegram_service import TelegramService, TelegramParsingError
-from src.xp.models.system_telegram import SystemTelegram, SystemFunction, DataPointType
+from src.xp.models.system_telegram import SystemTelegram
+from xp.models.datapoint_type import DataPointType
+from xp.models.system_function import SystemFunction
 from src.xp.models.reply_telegram import ReplyTelegram
 
 
 class TestBlinkIntegration:
     """Integration test cases for blink operations"""
-    
+
     def test_complete_blink_workflow(self):
         """Test complete workflow: generate blink -> parse -> validate"""
         blink_service = BlinkService()
         telegram_service = TelegramService()
-        
+
         # Generate blink telegram
         serial = "0020044964"
-        
+
         generated_telegram = blink_service.generate_blink_telegram(serial)
         assert generated_telegram == "<S0020044964F05D00FN>"
-        
+
         # Parse the generated telegram
         parsed_telegram = telegram_service.parse_system_telegram(generated_telegram)
-        
+
         assert isinstance(parsed_telegram, SystemTelegram)
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.BLINK
         assert parsed_telegram.data_point_id == DataPointType.STATUS
         assert parsed_telegram.checksum == "FN"
         assert parsed_telegram.checksum_validated is True  # Should auto-validate
-    
+
     def test_complete_unblink_workflow(self):
         """Test complete workflow: generate unblink -> parse -> validate"""
         blink_service = BlinkService()
         telegram_service = TelegramService()
-        
+
         # Generate unblink telegram
         serial = "0020030837"
-        
+
         generated_telegram = blink_service.generate_unblink_telegram(serial)
         assert generated_telegram == "<S0020030837F06D00FK>"
-        
+
         # Parse the generated telegram
         parsed_telegram = telegram_service.parse_system_telegram(generated_telegram)
-        
+
         assert isinstance(parsed_telegram, SystemTelegram)
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.UNBLINK
         assert parsed_telegram.data_point_id == DataPointType.STATUS
         assert parsed_telegram.checksum == "FK"
         assert parsed_telegram.checksum_validated is True
-    
+
     def test_parse_specification_examples(self):
         """Test parsing the examples from the specification"""
         telegram_service = TelegramService()
         blink_service = BlinkService()
-        
+
         # Test telegrams from the specification
         test_cases = [
             # Blink command and ACK response
@@ -66,14 +68,14 @@ class TestBlinkIntegration:
             ("<S0020030837F06D00FK>", SystemFunction.UNBLINK),
             ("<R0020030837F18DFE>", SystemFunction.ACK),
         ]
-        
+
         for telegram_str, expected_function in test_cases:
             parsed = telegram_service.parse_telegram(telegram_str)
-            
+
             # Verify checksum validation
             assert parsed.checksum_validated is not None
             assert parsed.system_function == expected_function
-            
+
             if telegram_str.startswith("<S"):  # System telegram
                 assert isinstance(parsed, SystemTelegram)
                 if expected_function == SystemFunction.BLINK:
@@ -82,130 +84,173 @@ class TestBlinkIntegration:
                 elif expected_function == SystemFunction.UNBLINK:
                     assert parsed.serial_number == "0020030837"
                     assert parsed.data_point_id == DataPointType.STATUS
-                    
+
             elif telegram_str.startswith("<R"):  # Reply telegram
                 assert isinstance(parsed, ReplyTelegram)
-                
+
                 # Check if it's ACK response
                 if expected_function == SystemFunction.ACK:
                     assert blink_service.is_ack_response(parsed) is True
                     assert blink_service.is_nak_response(parsed) is False
-    
+
     def test_telegram_object_creation_and_parsing_consistency(self):
         """Test that created telegram objects match parsed ones"""
         blink_service = BlinkService()
         telegram_service = TelegramService()
-        
+
         # Test blink telegram object
-        created_blink_telegram = blink_service.create_blink_telegram_object("0020044964")
-        parsed_blink_telegram = telegram_service.parse_system_telegram(created_blink_telegram.raw_telegram)
-        
+        created_blink_telegram = blink_service.create_blink_telegram_object(
+            "0020044964"
+        )
+        parsed_blink_telegram = telegram_service.parse_system_telegram(
+            created_blink_telegram.raw_telegram
+        )
+
         # They should match
-        assert created_blink_telegram.serial_number == parsed_blink_telegram.serial_number
-        assert created_blink_telegram.system_function == parsed_blink_telegram.system_function
-        assert created_blink_telegram.data_point_id == parsed_blink_telegram.data_point_id
+        assert (
+            created_blink_telegram.serial_number == parsed_blink_telegram.serial_number
+        )
+        assert (
+            created_blink_telegram.system_function
+            == parsed_blink_telegram.system_function
+        )
+        assert (
+            created_blink_telegram.data_point_id == parsed_blink_telegram.data_point_id
+        )
         assert created_blink_telegram.checksum == parsed_blink_telegram.checksum
         assert created_blink_telegram.raw_telegram == parsed_blink_telegram.raw_telegram
-        
+
         # Test unblink telegram object
-        created_unblink_telegram = blink_service.create_unblink_telegram_object("0020030837")
-        parsed_unblink_telegram = telegram_service.parse_system_telegram(created_unblink_telegram.raw_telegram)
-        
+        created_unblink_telegram = blink_service.create_unblink_telegram_object(
+            "0020030837"
+        )
+        parsed_unblink_telegram = telegram_service.parse_system_telegram(
+            created_unblink_telegram.raw_telegram
+        )
+
         # They should match
-        assert created_unblink_telegram.serial_number == parsed_unblink_telegram.serial_number
-        assert created_unblink_telegram.system_function == parsed_unblink_telegram.system_function
-        assert created_unblink_telegram.data_point_id == parsed_unblink_telegram.data_point_id
+        assert (
+            created_unblink_telegram.serial_number
+            == parsed_unblink_telegram.serial_number
+        )
+        assert (
+            created_unblink_telegram.system_function
+            == parsed_unblink_telegram.system_function
+        )
+        assert (
+            created_unblink_telegram.data_point_id
+            == parsed_unblink_telegram.data_point_id
+        )
         assert created_unblink_telegram.checksum == parsed_unblink_telegram.checksum
-        assert created_unblink_telegram.raw_telegram == parsed_unblink_telegram.raw_telegram
-    
+        assert (
+            created_unblink_telegram.raw_telegram
+            == parsed_unblink_telegram.raw_telegram
+        )
+
     def test_checksum_validation_integration(self):
         """Test that checksum validation works for generated telegrams"""
         blink_service = BlinkService()
         telegram_service = TelegramService()
-        
+
         # Test multiple serial numbers
-        test_serials = ["0020044964", "0020030837", "1234567890", "0000000000", "9999999999"]
-        
+        test_serials = [
+            "0020044964",
+            "0020030837",
+            "1234567890",
+            "0000000000",
+            "9999999999",
+        ]
+
         for serial in test_serials:
             # Test blink telegram
             blink_telegram_str = blink_service.generate_blink_telegram(serial)
             parsed_blink = telegram_service.parse_system_telegram(blink_telegram_str)
-            
-            assert parsed_blink.checksum_validated is True, f"Blink checksum failed for serial {serial}"
+
+            assert (
+                parsed_blink.checksum_validated is True
+            ), f"Blink checksum failed for serial {serial}"
             is_valid_blink = telegram_service.validate_checksum(parsed_blink)
-            assert is_valid_blink is True, f"Manual blink checksum validation failed for serial {serial}"
-            
+            assert (
+                is_valid_blink is True
+            ), f"Manual blink checksum validation failed for serial {serial}"
+
             # Test unblink telegram
             unblink_telegram_str = blink_service.generate_unblink_telegram(serial)
-            parsed_unblink = telegram_service.parse_system_telegram(unblink_telegram_str)
-            
-            assert parsed_unblink.checksum_validated is True, f"Unblink checksum failed for serial {serial}"
+            parsed_unblink = telegram_service.parse_system_telegram(
+                unblink_telegram_str
+            )
+
+            assert (
+                parsed_unblink.checksum_validated is True
+            ), f"Unblink checksum failed for serial {serial}"
             is_valid_unblink = telegram_service.validate_checksum(parsed_unblink)
-            assert is_valid_unblink is True, f"Manual unblink checksum validation failed for serial {serial}"
-    
+            assert (
+                is_valid_unblink is True
+            ), f"Manual unblink checksum validation failed for serial {serial}"
+
     def test_error_handling_integration(self):
         """Test error handling across services"""
         blink_service = BlinkService()
         telegram_service = TelegramService()
-        
+
         # Test invalid telegram generation
         with pytest.raises(BlinkError):
             blink_service.generate_blink_telegram("invalid")
-        
+
         with pytest.raises(BlinkError):
             blink_service.generate_unblink_telegram("invalid")
-        
+
         # Test parsing invalid telegram
         with pytest.raises(TelegramParsingError):
             telegram_service.parse_system_telegram("<INVALID>")
-        
+
         # Test that error doesn't occur for valid input
         valid_blink_telegram = blink_service.generate_blink_telegram("0020044964")
         parsed_blink = telegram_service.parse_system_telegram(valid_blink_telegram)
         assert parsed_blink is not None
-        
+
         valid_unblink_telegram = blink_service.generate_unblink_telegram("0020030837")
         parsed_unblink = telegram_service.parse_system_telegram(valid_unblink_telegram)
         assert parsed_unblink is not None
-    
+
     def test_end_to_end_workflow_with_replies(self):
         """Test complete end-to-end workflow including reply handling"""
         blink_service = BlinkService()
         telegram_service = TelegramService()
-        
+
         # Generate blink command
         blink_command = blink_service.generate_blink_telegram("0020044964")
         assert blink_command == "<S0020044964F05D00FN>"
-        
-        # Parse ACK reply from specification  
+
+        # Parse ACK reply from specification
         ack_reply_str = "<R0020044964F18DFA>"
         ack_reply = telegram_service.parse_reply_telegram(ack_reply_str)
-        
+
         # Verify it's properly identified as ACK
         assert blink_service.is_ack_response(ack_reply) is True
         assert blink_service.is_nak_response(ack_reply) is False
-        
+
         # Generate unblink command
         unblink_command = blink_service.generate_unblink_telegram("0020030837")
         assert unblink_command == "<S0020030837F06D00FK>"
-        
+
         # Parse ACK reply from specification
         unblink_ack_reply_str = "<R0020030837F18DFE>"
         unblink_ack_reply = telegram_service.parse_reply_telegram(unblink_ack_reply_str)
-        
+
         # Verify it's properly identified as ACK
         assert blink_service.is_ack_response(unblink_ack_reply) is True
         assert blink_service.is_nak_response(unblink_ack_reply) is False
-        
+
         # Both should have valid checksums
         assert ack_reply.checksum_validated is True
         assert unblink_ack_reply.checksum_validated is True
-    
+
     def test_boundary_values_integration(self):
         """Test boundary values across the entire system"""
         blink_service = BlinkService()
         telegram_service = TelegramService()
-        
+
         # Test boundary serial numbers
         boundary_serials = [
             "0000000000",  # Minimum serial
@@ -213,58 +258,60 @@ class TestBlinkIntegration:
             "0020044964",  # From spec (blink)
             "0020030837",  # From spec (unblink)
         ]
-        
+
         for serial in boundary_serials:
             # Test blink
             blink_telegram_str = blink_service.generate_blink_telegram(serial)
             parsed_blink = telegram_service.parse_system_telegram(blink_telegram_str)
-            
+
             # Verify all properties
             assert parsed_blink.serial_number == serial
             assert parsed_blink.system_function == SystemFunction.BLINK
             assert parsed_blink.data_point_id == DataPointType.STATUS
             assert parsed_blink.checksum_validated is True
-            
+
             # Verify telegram format
             assert f"S{serial}F05D00" in blink_telegram_str
-            
+
             # Test unblink
             unblink_telegram_str = blink_service.generate_unblink_telegram(serial)
-            parsed_unblink = telegram_service.parse_system_telegram(unblink_telegram_str)
-            
+            parsed_unblink = telegram_service.parse_system_telegram(
+                unblink_telegram_str
+            )
+
             # Verify all properties
             assert parsed_unblink.serial_number == serial
             assert parsed_unblink.system_function == SystemFunction.UNBLINK
             assert parsed_unblink.data_point_id == DataPointType.STATUS
             assert parsed_unblink.checksum_validated is True
-            
+
             # Verify telegram format
             assert f"S{serial}F06D00" in unblink_telegram_str
-    
+
     def test_blink_unblink_command_distinction(self):
         """Test that blink and unblink commands are correctly distinguished"""
         blink_service = BlinkService()
         telegram_service = TelegramService()
-        
+
         serial = "1234567890"
-        
+
         # Generate both commands
         blink_telegram = blink_service.generate_blink_telegram(serial)
         unblink_telegram = blink_service.generate_unblink_telegram(serial)
-        
+
         # Parse both commands
         parsed_blink = telegram_service.parse_system_telegram(blink_telegram)
         parsed_unblink = telegram_service.parse_system_telegram(unblink_telegram)
-        
+
         # They should be different functions
         assert parsed_blink.system_function == SystemFunction.BLINK
         assert parsed_unblink.system_function == SystemFunction.UNBLINK
         assert parsed_blink.system_function != parsed_unblink.system_function
-        
+
         # Both should use STATUS data point
         assert parsed_blink.data_point_id == DataPointType.STATUS
         assert parsed_unblink.data_point_id == DataPointType.STATUS
-        
+
         # Both should have same serial but different checksums
         assert parsed_blink.serial_number == parsed_unblink.serial_number == serial
         assert parsed_blink.checksum != parsed_unblink.checksum
