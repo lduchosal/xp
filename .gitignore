@@ -5,3 +5,5 @@
 /src/xp.egg-info/
 /pdm.lock
 /.pdm-python
+/tests/.coverage
+/.coverage
