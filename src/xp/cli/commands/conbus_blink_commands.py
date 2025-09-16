@@ -30,19 +30,24 @@ def send_blink_telegram(serial_number: str, on_or_off: str, json_output: bool):
     """
     Send blink command to start blinking module LED.
     
-    Example: xp conbus blink 0020044964
+    Example: xp conbus blink 0020044964 on
+    Example: xp conbus blink 0020044964 off
     """
     conbus_service = ConbusClientSendService()
     blink_service = BlinkService()
-    
+
+    # Blink is 05, Unblink is 06
+    function_code = SystemFunction.UNBLINK.value
+    operation = "unblink"
+    blink_operation = "stop_blinking"
+    if on_or_off.lower() == 'on':
+        function_code = SystemFunction.BLINK.value
+        operation = "blink"
+        blink_operation = "start_blinking"
+
     try:
         # Validate serial number using blink service
         blink_service.generate_blink_telegram(serial_number)  # This validates the serial
-
-        # Blink is 05, Unblink is 06
-        function_code = SystemFunction.UNBLINK.value
-        if on_or_off.lower() == 'on':
-            function_code = SystemFunction.BLINK.value
 
         # Send blink telegram using custom method (F05D00)
         with conbus_service:
@@ -54,8 +59,8 @@ def send_blink_telegram(serial_number: str, on_or_off: str, json_output: bool):
         
         if json_output:
             response_data = response.to_dict()
-            response_data['operation'] = 'blink'
-            response_data['blink_operation'] = 'start_blinking'
+            response_data['operation'] = operation
+            response_data['blink_operation'] = blink_operation
             click.echo(json.dumps(response_data, indent=2))
         else:
             if response.success:
@@ -81,7 +86,7 @@ def send_blink_telegram(serial_number: str, on_or_off: str, json_output: bool):
             error_response = {
                 "success": False,
                 "error": str(e),
-                "operation": "blink",
+                "operation": operation,
                 "serial_number": serial_number
             }
             click.echo(json.dumps(error_response, indent=2))
@@ -93,5 +98,5 @@ def send_blink_telegram(serial_number: str, on_or_off: str, json_output: bool):
     except ConbusClientSendError as e:
         CLIErrorHandler.handle_service_error(e, json_output, "blink command", {
             "serial_number": serial_number,
-            "operation": "blink"
+            "operation": operation
         })

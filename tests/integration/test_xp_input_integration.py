@@ -132,7 +132,7 @@ class TestXPInputIntegration:
         mock_send.return_value = mock_response
         
         runner = CliRunner()
-        result = runner.invoke(conbus, ['input', '0020044964', '1'])
+        result = runner.invoke(conbus, ['input', '0020044964', '1', 'on'])
         
         assert result.exit_code == 0
         assert "[TX] <S0020044964F27D01AAFN>" in result.output

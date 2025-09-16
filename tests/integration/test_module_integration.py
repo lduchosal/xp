@@ -76,8 +76,8 @@ class TestModuleIntegration:
         output = json.loads(result.output)
         assert 'modules' in output
         assert 'count' in output
-        assert output['count'] == 27
-        assert len(output['modules']) == 27
+        assert output['count'] == 37
+        assert len(output['modules']) == 37
     
     def test_module_list_command_by_category(self):
         """Test module list command filtered by category"""

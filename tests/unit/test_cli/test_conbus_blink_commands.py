@@ -1,10 +1,8 @@
 """Tests for conbus blink commands"""
 
-import pytest
 from unittest.mock import Mock, patch
 from click.testing import CliRunner
-from src.xp.cli.commands.conbus_custom_commands import conbus
-from src.xp.services.blink_service import BlinkError
+from src.xp.cli.commands.conbus_blink_commands import conbus
 from src.xp.services.conbus_client_send_service import ConbusClientSendError
 from src.xp.models.conbus_client_send import ConbusSendResponse, ConbusSendRequest, TelegramType
 from datetime import datetime
@@ -20,7 +18,7 @@ class TestConbusBlinkCommands:
         
         assert result.exit_code == 0
         assert 'Send blink command to start blinking module LED' in result.output
-        assert 'Example: xp conbus blink 0020044964' in result.output
+        assert 'Example: xp conbus blink 0020044964 on' in result.output
     
     def test_conbus_unblink_help(self):
         """Test help text for conbus unblink command"""
@@ -28,10 +26,10 @@ class TestConbusBlinkCommands:
         result = runner.invoke(conbus, ['blink', '--help'])
         
         assert result.exit_code == 0
-        assert 'Send unblink command to stop blinking module LED' in result.output
-        assert 'Example: xp conbus unblink 0020030837' in result.output
+        assert 'Usage: conbus blink [OPTIONS] SERIAL_NUMBER ON_OR_OFF' in result.output
+        assert 'Example: xp conbus blink 0020044964 off' in result.output
     
-    @patch('src.xp.cli.commands.conbus_commands.ConbusClientSendService')
+    @patch('src.xp.cli.commands.conbus_blink_commands.ConbusClientSendService')
     def test_conbus_blink_success(self, mock_service_class):
         """Test successful blink command execution"""
         # Mock the service instance and response
@@ -67,7 +65,7 @@ class TestConbusBlinkCommands:
         # Verify the service was called correctly
         mock_service.send_custom_telegram.assert_called_once_with("0020044964", "05", "00")
     
-    @patch('src.xp.cli.commands.conbus_commands.ConbusClientSendService')
+    @patch('src.xp.cli.commands.conbus_blink_commands.ConbusClientSendService')
     def test_conbus_unblink_success(self, mock_service_class):
         """Test successful unblink command execution"""
         # Mock the service instance and response
@@ -98,12 +96,12 @@ class TestConbusBlinkCommands:
         assert result.exit_code == 0
         assert '[TX] <S0020030837F06D00FK>' in result.output
         assert '[RX] <R0020030837F18DFE>' in result.output
-        assert 'Unblink command sent to module 0020030837' in result.output
+        assert 'Blink command sent to module 0020030837' in result.output
         
         # Verify the service was called correctly
         mock_service.send_custom_telegram.assert_called_once_with("0020030837", "06", "00")
     
-    @patch('src.xp.cli.commands.conbus_commands.ConbusClientSendService')
+    @patch('src.xp.cli.commands.conbus_blink_commands.ConbusClientSendService')
     def test_conbus_blink_json_success(self, mock_service_class):
         """Test successful blink command with JSON output"""
         # Mock the service instance and response
@@ -154,7 +152,7 @@ class TestConbusBlinkCommands:
         assert '"error": "Serial number must be 10 digits, got: invalid"' in result.output
         assert '"operation": "blink"' in result.output
     
-    @patch('src.xp.cli.commands.conbus_commands.ConbusClientSendService')
+    @patch('src.xp.cli.commands.conbus_blink_commands.ConbusClientSendService')
     def test_conbus_blink_connection_error(self, mock_service_class):
         """Test blink command with connection error"""
         # Mock the service instance to raise connection error
@@ -173,7 +171,7 @@ class TestConbusBlinkCommands:
         assert result.exit_code != 0
         assert 'Connection timeout' in result.output
     
-    @patch('src.xp.cli.commands.conbus_commands.ConbusClientSendService')
+    @patch('src.xp.cli.commands.conbus_blink_commands.ConbusClientSendService')
     def test_conbus_blink_no_response(self, mock_service_class):
         """Test blink command with no response from server"""
         # Mock the service instance and response with no received telegrams
@@ -213,7 +211,7 @@ class TestConbusBlinkCommands:
         assert result.exit_code != 0
         assert 'Serial number must be 10 digits' in result.output
     
-    @patch('src.xp.cli.commands.conbus_commands.ConbusClientSendService')
+    @patch('src.xp.cli.commands.conbus_blink_commands.ConbusClientSendService')
     def test_conbus_unblink_json_success(self, mock_service_class):
         """Test successful unblink command with JSON output"""
         # Mock the service instance and response
