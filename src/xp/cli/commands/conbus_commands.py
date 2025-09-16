@@ -7,6 +7,7 @@ import re
 import threading
 import time
 
+from ...models.system_telegram import SystemFunction
 from ...services.conbus_client_send_service import ConbusClientSendService, ConbusClientSendError
 from ...services.input_service import XPInputService, XPInputError
 from ...services.blink_service import BlinkService, BlinkError
@@ -542,12 +543,12 @@ def send_custom_telegram(serial_number: str, function_code: str, data_point_code
             "data_point_code": data_point_code
         })
 
-
 @conbus.command("blink")
 @click.argument('serial_number')
+@click.argument('on_or_off')
 @connection_command()
 @handle_service_errors(ConbusClientSendError, BlinkError)
-def send_blink_telegram(serial_number: str, json_output: bool):
+def send_blink_telegram(serial_number: str, on_or_off: str, json_output: bool):
     """
     Send blink command to start blinking module LED.
     
@@ -559,12 +560,17 @@ def send_blink_telegram(serial_number: str, json_output: bool):
     try:
         # Validate serial number using blink service
         blink_service.generate_blink_telegram(serial_number)  # This validates the serial
-        
+
+        # Blink is 05, Unblink is 06
+        function_code = SystemFunction.UNBLINK.value
+        if on_or_off.lower() == 'on':
+            function_code = SystemFunction.BLINK.value
+
         # Send blink telegram using custom method (F05D00)
         with conbus_service:
             response = conbus_service.send_custom_telegram(
                 serial_number, 
-                "05",  # Blink function code
+                function_code,  # Blink or Unblink function code
                 "00"   # Status data point
             )
         
@@ -610,74 +616,4 @@ def send_blink_telegram(serial_number: str, json_output: bool):
         CLIErrorHandler.handle_service_error(e, json_output, "blink command", {
             "serial_number": serial_number,
             "operation": "blink"
-        })
-
-
-@conbus.command("unblink")
-@click.argument('serial_number')
-@connection_command()
-@handle_service_errors(ConbusClientSendError, BlinkError)
-def send_unblink_telegram(serial_number: str, json_output: bool):
-    """
-    Send unblink command to stop blinking module LED.
-    
-    Example: xp conbus unblink 0020030837
-    """
-    conbus_service = ConbusClientSendService()
-    blink_service = BlinkService()
-    
-    try:
-        # Validate serial number using blink service
-        blink_service.generate_unblink_telegram(serial_number)  # This validates the serial
-        
-        # Send unblink telegram using custom method (F06D00)
-        with conbus_service:
-            response = conbus_service.send_custom_telegram(
-                serial_number, 
-                "06",  # Unblink function code
-                "00"   # Status data point
-            )
-        
-        if json_output:
-            response_data = response.to_dict()
-            response_data['operation'] = 'unblink'
-            response_data['blink_operation'] = 'stop_blinking'
-            click.echo(json.dumps(response_data, indent=2))
-        else:
-            if response.success:
-                # Format output like other conbus commands
-                if response.sent_telegram:
-                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
-                    click.echo(f"{timestamp} [TX] {response.sent_telegram}")
-                
-                # Show received telegrams
-                for received in response.received_telegrams:
-                    timestamp = response.timestamp.strftime('%H:%M:%S,%f')[:-3]
-                    click.echo(f"{timestamp} [RX] {received}")
-                
-                if not response.received_telegrams:
-                    click.echo("No response received")
-                else:
-                    click.echo(f"Unblink command sent to module {serial_number}")
-            else:
-                click.echo(f"Error: {response.error}")
-                
-    except BlinkError as e:
-        if json_output:
-            error_response = {
-                "success": False,
-                "error": str(e),
-                "operation": "unblink",
-                "serial_number": serial_number
-            }
-            click.echo(json.dumps(error_response, indent=2))
-            raise SystemExit(1)
-        else:
-            click.echo(f"Blink Error: {e}", err=True)
-            raise click.ClickException(str(e))
-            
-    except ConbusClientSendError as e:
-        CLIErrorHandler.handle_service_error(e, json_output, "unblink command", {
-            "serial_number": serial_number,
-            "operation": "unblink"
         })

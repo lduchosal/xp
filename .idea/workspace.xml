@@ -5,18 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: Blink">
-      <change afterPath="$PROJECT_DIR$/Specs/Feature-Action-Table.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Blink-Unblink.md" beforeDir="false" afterPath="$PROJECT_DIR$/Specs/Feature-Blink-Unblink.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Module-Type.md" beforeDir="false" afterPath="$PROJECT_DIR$/Specs/Feature-Module-Type.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp.egg-info/SOURCES.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Specs/MODULE_TYPE_IMPLEMENTATION.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_client_send.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/input_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/input_telegram.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/module_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/module_type.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/system_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/system_telegram.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -261,7 +253,7 @@
       <workItem from="1756275107111" duration="30469000" />
       <workItem from="1756830585261" duration="79203000" />
       <workItem from="1757696538700" duration="629000" />
-      <workItem from="1757752097335" duration="2646000" />
+      <workItem from="1757752097335" duration="5069000" />
     </task>
     <task id="LOCAL-00001" summary="Feat: initial">
       <option name="closed" value="true" />
@@ -511,7 +503,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757618185595</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Feat: Blink">
+      <option name="closed" value="true" />
+      <created>1757971247034</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1757971247034</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -536,7 +536,8 @@
     <MESSAGE value="Feat: ModuleType query" />
     <MESSAGE value="Feat: BaseModule" />
     <MESSAGE value="Refactore: XP24 action into XP input" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactore: XP24 action into XP input" />
+    <MESSAGE value="Feat: Blink" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: Blink" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

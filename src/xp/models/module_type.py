@@ -14,7 +14,7 @@ class ModuleTypeCode(Enum):
     CP70D = 6       # CP timer link module
     XP24 = 7        # XP relay module
     XP31UNI = 8     # XP universal load light dimmer
-    XP31BC = 9      # XP ballast controller, 0-10VActions
+    XP31BCU = 9     # XP ballast controller, 0-10VActions
     XP31DD = 10     # XP ballast controller DSI/DALI
     XP33 = 11       # XP 33 3 channel lightdimmer
     CP485 = 12      # CP RS485 interface module
@@ -29,7 +29,7 @@ class ModuleTypeCode(Enum):
     XP2506B = 21    # 5 way push button panel with sesam and B&O IR, Conson design
     XPX1_8 = 22     # 8 way push button panel interface
     XP134 = 23      # Junctionbox interlink
-    XP230 = 24      # XP230 module
+    XP24P = 24      # XP24P module
     XP28A = 25      #
     XP28B = 26      #
     CONTOOL = 27    #
@@ -42,7 +42,6 @@ class ModuleTypeCode(Enum):
     XP230   = 34    # Ethernet/TCPIP interface module
     XP33LED = 36    # XP 3 channel LED dimmer
     XP31LED = 37    # XP 1 channel LED dimmer
-
 
 @dataclass
 class ModuleType:
