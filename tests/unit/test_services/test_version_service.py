@@ -137,7 +137,7 @@ class TestVersionService(unittest.TestCase):
         self.assertEqual(result.data["serial_number"], "0020030837")
         self.assertEqual(result.data["function"], "02")
         self.assertEqual(result.data["data_point"], "02")
-        self.assertEqual(result.data["function_description"], "Return Data")
+        self.assertEqual(result.data["function_description"], "Read Data point")
         self.assertEqual(result.data["data_point_description"], "Version")
 
     def test_validate_version_telegram_not_version(self):

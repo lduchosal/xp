@@ -48,7 +48,7 @@ def generate_version_request(serial_number: str, json_output: bool):
             click.echo("Version Request Telegram:")
             click.echo(f"Serial: {result.data['serial_number']}")
             click.echo(f"Telegram: {result.data['telegram']}")
-            click.echo(f"Function: {result.data['function_code']} (Return Data)")
+            click.echo(f"Function: {result.data['function_code']} (Read Data point)")
             click.echo(f"Data Point: {result.data['data_point_code']} (Version)")
             click.echo(f"Checksum: {result.data['checksum']}")
 

@@ -39,7 +39,7 @@ class TestVersionSystemTelegram(unittest.TestCase):
     def test_version_system_telegram_descriptions(self):
         """Test human-readable descriptions for version telegram."""
         self.assertEqual(
-            self.version_system_telegram.function_description, "Return Data"
+            self.version_system_telegram.function_description, "Read Data point"
         )
         self.assertEqual(self.version_system_telegram.data_point_description, "Version")
 
@@ -49,7 +49,7 @@ class TestVersionSystemTelegram(unittest.TestCase):
 
         self.assertEqual(result["serial_number"], "0020030837")
         self.assertEqual(result["system_function"]["code"], "02")
-        self.assertEqual(result["system_function"]["description"], "Return Data")
+        self.assertEqual(result["system_function"]["description"], "Read Data point")
         self.assertEqual(result["data_point_id"]["code"], "02")
         self.assertEqual(result["data_point_id"]["description"], "Version")
         self.assertEqual(result["checksum"], "FM")
@@ -58,7 +58,7 @@ class TestVersionSystemTelegram(unittest.TestCase):
 
     def test_version_system_telegram_str(self):
         """Test string representation of version system telegram."""
-        expected = "System Telegram: Return Data for Version from device 0020030837"
+        expected = "System Telegram: Read Data point for Version from device 0020030837"
         self.assertEqual(str(self.version_system_telegram), expected)
 
 

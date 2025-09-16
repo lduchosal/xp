@@ -4,7 +4,7 @@
 Send telegram to scan all functions and all datapoints for a module.
 
 ## Telegram Format
-System telegrams are identified by the "S", and followed by the receiver serial number. The two digits after "F" designates the system function (here "return data"), and the two digits after "D" is the data point ID (here temperature).
+System telegrams are identified by the "S", and followed by the receiver serial number. The two digits after "F" designates the system function (here "Read Data point"), and the two digits after "D" is the data point ID (here temperature).
 
 ## Requirements
 - Scan all available functions for a specified module

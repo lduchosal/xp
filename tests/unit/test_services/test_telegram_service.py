@@ -326,7 +326,7 @@ class TestSystemTelegramParsing:
         summary = self.service.format_system_telegram_summary(telegram)
 
         assert (
-            "System: System Telegram: Return Data for Temperature from device 0020012521"
+            "System: System Telegram: Read Data point for Temperature from device 0020012521"
             in summary
         )
         assert "Raw: <S0020012521F02D18FN>" in summary

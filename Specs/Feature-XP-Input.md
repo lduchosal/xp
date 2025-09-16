@@ -37,7 +37,7 @@ XP24 modules are remote switch devices that can be commanded via the conbus. Eac
 **Example**: `<S0020044964F02D12FJ>`
 - **Type**: System (S)
 - **Module**: 0020044964 
-- **Function**: 02 (return data)
+- **Function**: 02 (Read Data point)
 - **DataPoint**: 12 (inputs status)
 
 ### Status Response (Reply Telegram)
@@ -46,7 +46,7 @@ XP24 modules are remote switch devices that can be commanded via the conbus. Eac
 **Example**: `<R0020044964F02D12xxxx1110FJ>`
 - **Type**: Reply (R)
 - **Module**: 0020044964 
-- **Function**: 02 (return data)
+- **Function**: 02 (Read Data point)
 - **DataPoint**: 12xxxx1110 (inputs status: ON ON ON OFF)
 
 ### Event Notification (Event Telegram)

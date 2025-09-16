@@ -21,7 +21,7 @@ Listed below are the possible output actions in an action table.
  | SCENENEXT      |   14 | Change to next lighe scene                                                            |
  | SCENEPREV      |   15 | Change to previous light scene                                                        |
  | CTRLMETHOD     |   16 | Reserved                                                                              |
- | RETURNDATA     |   17 | Return data from module                                                               |
+ | RETURNDATA     |   17 | Read Data point from module                                                               |
  | DELEAYEDON     |   18 | Delay on action with time as parameter                                                |
  | EVENTTIMER1    |   19 | Event timers, that will send out an event message after the time specified            |
  | EVENTTIMER2    |   20 | in the parameter. The event will use the host module type (if the function is used    |

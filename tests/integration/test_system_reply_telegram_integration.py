@@ -28,7 +28,7 @@ class TestSystemTelegramCLI:
         output = result.output
 
         assert (
-            "System: System Telegram: Return Data for Temperature from device 0020012521"
+            "System: System Telegram: Read Data point for Temperature from device 0020012521"
             in output
         )
         assert "Raw: <S0020012521F02D18FN>" in output
@@ -47,7 +47,7 @@ class TestSystemTelegramCLI:
 
         assert output_data["serial_number"] == "0020012521"
         assert output_data["system_function"]["code"] == "02"
-        assert output_data["system_function"]["description"] == "Return Data"
+        assert output_data["system_function"]["description"] == "Read Data point"
         assert output_data["data_point_id"]["code"] == "18"
         assert output_data["data_point_id"]["description"] == "Temperature"
         assert output_data["checksum"] == "FN"
@@ -307,7 +307,7 @@ class TestAutoDetectTelegramCLI:
 
         # Should use system telegram formatting
         assert "System:" in output
-        assert "Return Data for Temperature" in output
+        assert "Read Data point for Temperature" in output
 
     def test_parse_telegram_reply(self):
         """Test parse command with reply telegram."""

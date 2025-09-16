@@ -127,7 +127,7 @@ class TestSystemTelegram:
             raw_telegram="<S0020012521F02D18FN>",
         )
 
-        assert telegram.function_description == "Return Data"
+        assert telegram.function_description == "Read Data point"
 
         # Test other functions
         telegram.system_function = SystemFunction.WRITE_CONFIG
@@ -176,7 +176,7 @@ class TestSystemTelegram:
         assert isinstance(result, dict)
         assert result["serial_number"] == "0020012521"
         assert result["system_function"]["code"] == "02"
-        assert result["system_function"]["description"] == "Return Data"
+        assert result["system_function"]["description"] == "Read Data point"
         assert result["data_point_id"]["code"] == "18"
         assert result["data_point_id"]["description"] == "Temperature"
         assert result["checksum"] == "FN"
@@ -198,7 +198,7 @@ class TestSystemTelegram:
         str_repr = str(telegram)
 
         assert "System Telegram" in str_repr
-        assert "Return Data" in str_repr
+        assert "Read Data point" in str_repr
         assert "Temperature" in str_repr
         assert "0020012521" in str_repr
 

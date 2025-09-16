@@ -114,7 +114,7 @@ class VersionService:
                 )
 
             # Build telegram: S{serial_number}F{function}D{data_point}
-            # Function 02 = Return Data, Data Point 02 = Version
+            # Function 02 = Read Data point, Data Point 02 = Version
             data_part = f"S{serial_number}F02D02"
 
             # Calculate checksum

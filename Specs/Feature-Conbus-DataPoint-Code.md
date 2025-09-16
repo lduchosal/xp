@@ -1,6 +1,6 @@
 # Conbus DataPoint Code Specification
 
-This document specifies the missing datapoints in the F02 (Return Data) function for Conbus communication protocol and their implementation requirements.
+This document specifies the missing datapoints in the F02 (Read Data point) function for Conbus communication protocol and their implementation requirements.
 
 ## Overview
 
@@ -190,7 +190,7 @@ Update the `process_system_telegram` methods in both server services to handle t
 The implementation should handle the following test cases based on captured data:
 
 ```
-Serial: 0020044989, Function: 02 (Return Data)
+Serial: 0020044989, Function: 02 (Read Data point)
 
 D01 → XP24           (Device Type)
 D03 → 0020044989     (Serial Number)
