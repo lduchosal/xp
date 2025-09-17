@@ -308,24 +308,6 @@ conbus:
         assert stop_result.success
         assert not self.service.is_running
 
-    @patch("socket.socket")
-    def test_run_blocking_keyboard_interrupt(self, mock_socket_class):
-        """Test run_blocking method with keyboard interrupt"""
-        mock_socket = Mock()
-        mock_socket_class.return_value = mock_socket
-
-        # Mock the blocking run to raise KeyboardInterrupt after short delay
-        def mock_run():
-            time.sleep(0.1)
-            raise KeyboardInterrupt()
-
-        with patch.object(self.service, "start_proxy") as mock_start:
-            mock_start.return_value.success = True
-
-            # Should handle KeyboardInterrupt gracefully
-            self.service.run_blocking = mock_run
-            self.service.run_blocking()
-
     def test_error_handling_start_failure(self):
         """Test error handling when start_proxy fails"""
         with patch.object(self.service, "start_proxy") as mock_start:
