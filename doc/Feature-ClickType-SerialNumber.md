@@ -43,3 +43,4 @@ Fully tested in test unit
 ## Code base modification
 ./cli/commands/*.py 
 add type=SERIAL_NUMBER where option is 'serial_number'
+@click.argument("serial_number")
