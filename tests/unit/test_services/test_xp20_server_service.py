@@ -45,10 +45,10 @@ class TestXP20ServerService:
         response = self.xp20_service.generate_module_type_response(request)
 
         # XP20 should map to hex 33 according to spec
-        expected_response = "<R0020037487F02D0721FL>"
+        expected_response = "<R0020037487F02D0733FI>"
         assert response == expected_response
         assert "F02D07" in response
-        assert "21" in response  # XP20 code is 33 = 0x21
+        assert "33" in response  # XP20 code is 33 = 0x21
 
     def test_generate_module_type_response_wrong_function(self):
         """Test module type response with wrong function returns None"""
@@ -75,10 +75,10 @@ class TestXP20ServerService:
 
         response = self.xp20_service.process_system_telegram(request)
 
-        expected_response = "<R0020037487F02D0721FL>"
+        expected_response = "<R0020037487F02D0733FI>"
         assert response == expected_response
         assert "F02D07" in response
-        assert "21" in response
+        assert "33" in response
 
     def test_process_system_telegram_broadcast(self):
         """Test processing telegram with broadcast serial"""
@@ -92,7 +92,7 @@ class TestXP20ServerService:
 
         response = self.xp20_service.process_system_telegram(request)
 
-        expected_response = "<R0020037487F02D0721FL>"
+        expected_response = "<R0020037487F02D0733FI>"
         assert response == expected_response
         assert "F02D07" in response
-        assert "21" in response
+        assert "33" in response

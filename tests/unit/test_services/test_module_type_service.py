@@ -57,7 +57,7 @@ class TestModuleTypeService:
         """Test listing all modules"""
         modules = self.service.list_all_modules()
 
-        assert len(modules) == 24
+        assert len(modules) == 37
         assert all(isinstance(module, ModuleType) for module in modules)
 
     def test_list_modules_by_category(self):
@@ -65,6 +65,7 @@ class TestModuleTypeService:
         categories = self.service.list_modules_by_category()
 
         expected_categories = {
+            'Unknown',
             "System",
             "CP Link Modules",
             "XP Control Modules",
@@ -74,7 +75,7 @@ class TestModuleTypeService:
 
         # Check total count
         total_modules = sum(len(modules) for modules in categories.values())
-        assert total_modules == 24
+        assert total_modules == 37
 
     def test_search_modules_by_name(self):
         """Test searching modules by name"""
@@ -159,7 +160,7 @@ class TestModuleTypeService:
     def test_validate_module_code_invalid(self):
         """Test validating invalid module codes"""
         assert self.service.validate_module_code(-1) is False
-        assert self.service.validate_module_code(24) is False
+        assert self.service.validate_module_code(38) is False
         assert self.service.validate_module_code(999) is False
 
     def test_get_module_info_summary_valid_code(self):

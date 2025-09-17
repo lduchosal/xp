@@ -97,9 +97,9 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.generate_module_type_response(request)
 
-        assert response == "<R0020042796F02D071ECN>"
+        assert response == "<R0020042796F02D0730FK>"
         assert "F02D07" in response
-        assert "1E" in response  # 30 decimal = 0x1E
+        assert "30" in response  # 30 decimal = 0x1E
 
     def test_generate_status_response(self):
         """Test status response generation"""

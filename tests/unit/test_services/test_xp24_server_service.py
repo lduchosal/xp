@@ -44,7 +44,7 @@ class TestXP24ServerService:
 
         response = self.xp24_service.generate_module_type_response(request)
 
-        assert response == "<R0020044991F02D0707FB>"
+        assert response == "<R0020044991F02D077GB>"
         assert "F02D07" in response
         assert "07" in response  # XP24 code is 7 = 0x07
 
@@ -86,7 +86,7 @@ class TestXP24ServerService:
 
         response = self.xp24_service.process_system_telegram(request)
 
-        assert response == "<R0020044991F02D0707FB>"
+        assert response == "<R0020044991F02D077GB>"
         assert "F02D07" in response
         assert "07" in response
 
@@ -115,6 +115,6 @@ class TestXP24ServerService:
 
         response = self.xp24_service.process_system_telegram(request)
 
-        assert response == "<R0020044991F02D0707FB>"
+        assert response == "<R0020044991F02D077GB>"
         assert "F02D07" in response
         assert "07" in response

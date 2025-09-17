@@ -88,7 +88,7 @@ class TestXP24ActionService:
 
     # Telegram generation tests
 
-    @patch("src.xp.services.xp24_action_service.calculate_checksum")
+    @patch("src.xp.services.input_service.calculate_checksum")
     def test_generate_action_telegram_press(self, mock_checksum):
         """Test generate_action_telegram for PRESS action."""
         mock_checksum.return_value = "FN"
@@ -98,7 +98,7 @@ class TestXP24ActionService:
         assert result == "<S0020044964F27D00AAFN>"
         mock_checksum.assert_called_once_with("S0020044964F27D00AA")
 
-    @patch("src.xp.services.xp24_action_service.calculate_checksum")
+    @patch("src.xp.services.input_service.calculate_checksum")
     def test_generate_action_telegram_release(self, mock_checksum):
         """Test generate_action_telegram for RELEASE action."""
         mock_checksum.return_value = "FB"
@@ -125,7 +125,7 @@ class TestXP24ActionService:
         with pytest.raises(XPInputError, match="Invalid action type"):
             self.service.generate_input_telegram("0020044964", 0, "INVALID")
 
-    @patch("src.xp.services.xp24_action_service.calculate_checksum")
+    @patch("src.xp.services.input_service.calculate_checksum")
     def test_generate_status_telegram(self, mock_checksum):
         """Test generate_status_telegram."""
         mock_checksum.return_value = "FJ"
@@ -192,7 +192,7 @@ class TestXP24ActionService:
 
     # Checksum validation tests
 
-    @patch("src.xp.services.xp24_action_service.calculate_checksum")
+    @patch("src.xp.services.input_service.calculate_checksum")
     def test_validate_checksum_valid(self, mock_checksum):
         """Test validate_checksum with valid checksum."""
         mock_checksum.return_value = "FN"
@@ -204,7 +204,7 @@ class TestXP24ActionService:
         assert result is True
         mock_checksum.assert_called_once_with("S0020044964F27D00AA")
 
-    @patch("src.xp.services.xp24_action_service.calculate_checksum")
+    @patch("src.xp.services.input_service.calculate_checksum")
     def test_validate_checksum_invalid(self, mock_checksum):
         """Test validate_checksum with invalid checksum."""
         mock_checksum.return_value = "FN"
@@ -313,7 +313,7 @@ class TestXP24ActionService:
         result = self.service.format_action_summary(telegram)
 
         assert (
-            "XP Input: XP24 Action: Press (Make) on Input 1 for device 0020044964"
+            "XP Input: XP Input: Press (Make) on Input 1 for device 0020044964"
             in result
         )
         assert "Raw: <S0020044964F27D01AAFN>" in result

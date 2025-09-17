@@ -25,14 +25,15 @@ class TestSystemTelegramCLI:
         )
 
         assert result.exit_code == 0
-        output = result.output
 
-        assert (
-            "System: System Telegram: Read Data point for Temperature from device 0020012521"
-            in output
-        )
-        assert "Raw: <S0020012521F02D18FN>" in output
-        assert "Checksum: FN" in output
+        # Parse JSON output
+        output_data = json.loads(result.output)
+
+        assert output_data["serial_number"] == "0020012521"
+        assert output_data["system_function"]["description"] == "Read Data point"
+        assert output_data["data_point_id"]["description"] == "Temperature"
+        assert output_data["checksum"] == "FN"
+        assert output_data["telegram_type"] == "system"
 
     def test_parse_system_telegram_json_output(self):
         """Test telegram parse-system command with JSON output."""
@@ -101,7 +102,12 @@ class TestSystemTelegramCLI:
         )
 
         assert result.exit_code == 1
-        assert "Error parsing telegram" in result.output
+
+        # Parse JSON error output
+        output_data = json.loads(result.output)
+        assert output_data["success"] is False
+        assert "Invalid system telegram format" in output_data["error"]
+        assert output_data["raw_input"] == "<S002001252F02D18FN>"
 
     def test_parse_system_telegram_invalid_format_json(self):
         """Test parsing invalid system telegram format with JSON output."""
@@ -149,15 +155,17 @@ class TestReplyTelegramCLI:
         )
 
         assert result.exit_code == 0
-        output = result.output
 
-        assert (
-            "Reply: Reply Telegram: Data Response for Temperature = 26.0°C from device 0020012521"
-            in output
-        )
-        assert "Data: 26.0°C" in output
-        assert "Raw: <R0020012521F02D18+26,0§CIL>" in output
-        assert "Checksum: IL" in output
+        # Parse JSON output
+        output_data = json.loads(result.output)
+
+        assert output_data["serial_number"] == "0020012521"
+        assert output_data["system_function"]["description"] == "Data Response"
+        assert output_data["data_point_id"]["description"] == "Temperature"
+        assert output_data["data_value"]["parsed"]["value"] == 26.0
+        assert output_data["data_value"]["parsed"]["unit"] == "°C"
+        assert output_data["checksum"] == "IL"
+        assert output_data["telegram_type"] == "reply"
 
     def test_parse_reply_telegram_json_output(self):
         """Test telegram parse-reply command with JSON output."""
@@ -167,7 +175,6 @@ class TestReplyTelegramCLI:
                 "telegram",
                 "parse-reply",
                 "<R0020012521F02D18+26,0§CIL>",
-                "",
             ],
         )
 
@@ -197,7 +204,6 @@ class TestReplyTelegramCLI:
                 "telegram",
                 "parse-reply",
                 "<R0020012521F02D19+65,5§RHIL>",
-                "",
             ],
         )
         assert result.exit_code == 0
@@ -212,7 +218,6 @@ class TestReplyTelegramCLI:
                 "telegram",
                 "parse-reply",
                 "<R0020012521F02D20+12,5§VIL>",
-                "",
             ],
         )
 
@@ -240,7 +245,6 @@ class TestReplyTelegramCLI:
                 "telegram",
                 "parse-reply",
                 "<R0020012521F02D18-15,2§CIL>",
-                "",
             ],
         )
 
@@ -256,7 +260,12 @@ class TestReplyTelegramCLI:
         )
 
         assert result.exit_code == 1
-        assert "Error parsing telegram" in result.output
+
+        # Parse JSON error output
+        output_data = json.loads(result.output)
+        assert output_data["success"] is False
+        assert "Invalid reply telegram format" in output_data["error"]
+        assert output_data["raw_input"] == "<R002001252F02D18+26,0§CIL>"
 
     def test_parse_reply_telegram_invalid_format_json(self):
         """Test parsing invalid reply telegram format with JSON output."""
@@ -291,23 +300,29 @@ class TestAutoDetectTelegramCLI:
         result = self.runner.invoke(cli, ["telegram", "parse", "<E14L00I02MAK>"])
 
         assert result.exit_code == 0
-        output = result.output
+
+        # Parse JSON output
+        output_data = json.loads(result.output)
 
         # Should use event telegram formatting
-        assert "Event:" in output
-        assert "XP2606 (Type 14)" in output
-        assert "pressed" in output
+        assert "module_type" in output_data
+        assert "event_type" in output_data
+        assert output_data["module_type"] == 14
+        assert output_data["module_info"]["name"] == "XP2606"
 
     def test_parse_telegram_system(self):
         """Test parse command with system telegram."""
         result = self.runner.invoke(cli, ["telegram", "parse", "<S0020012521F02D18FN>"])
 
         assert result.exit_code == 0
-        output = result.output
+
+        # Parse JSON output
+        output_data = json.loads(result.output)
 
         # Should use system telegram formatting
-        assert "System:" in output
-        assert "Read Data point for Temperature" in output
+        assert output_data["telegram_type"] == "system"
+        assert output_data["system_function"]["description"] == "Read Data point"
+        assert output_data["data_point_id"]["description"] == "Temperature"
 
     def test_parse_telegram_reply(self):
         """Test parse command with reply telegram."""
@@ -316,11 +331,14 @@ class TestAutoDetectTelegramCLI:
         )
 
         assert result.exit_code == 0
-        output = result.output
+
+        # Parse JSON output
+        output_data = json.loads(result.output)
 
         # Should use reply telegram formatting
-        assert "Reply:" in output
-        assert "Data: 26.0°C" in output
+        assert output_data["telegram_type"] == "reply"
+        assert output_data["data_value"]["parsed"]["value"] == 26.0
+        assert output_data["data_value"]["parsed"]["unit"] == "°C"
 
     def test_parse_telegram_json_output(self):
         """Test parse command with JSON output for different types."""
@@ -361,7 +379,12 @@ class TestAutoDetectTelegramCLI:
         )
 
         assert result.exit_code == 1
-        assert "Error parsing telegram" in result.output
+
+        # Parse JSON error output
+        output_data = json.loads(result.output)
+        assert output_data["success"] is False
+        assert "Unknown telegram type" in output_data["error"]
+        assert output_data["raw_input"] == "<X0020012521F02D18+26,0§CIL>"
 
     def test_parse_telegram_unknown_type_json(self):
         """Test parse command with unknown telegram type and JSON output."""

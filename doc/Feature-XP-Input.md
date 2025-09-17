@@ -127,7 +127,7 @@ class XP24ActionService:
 @click.argument('input_number_or_status', type=click.IntRange(0, 3))
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
-def xp24_action(serial_number: str, input_number: int, action: str, json_output: bool):
+def xp_action(serial_number: str, input_number: int, action: str, json_output: bool):
     """
     Send action command to XP24 module or query status.
     

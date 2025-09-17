@@ -15,17 +15,25 @@ class TestModuleIntegration:
         result = self.runner.invoke(cli, ["module", "info", "14"])
 
         assert result.exit_code == 0
-        assert "Module: XP2606 (Code 14)" in result.output
-        assert "5 way push button panel" in result.output
-        assert "Category: Interface Panels" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert output["code"] == 14
+        assert output["name"] == "XP2606"
+        assert "5 way push button panel" in output["description"]
+        assert output["category"] == "Interface Panels"
 
     def test_module_info_command_by_name(self):
         """Test module info command with name"""
         result = self.runner.invoke(cli, ["module", "info", "XP2606"])
 
         assert result.exit_code == 0
-        assert "Module: XP2606 (Code 14)" in result.output
-        assert "Push Button Panel" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert output["code"] == 14
+        assert output["name"] == "XP2606"
+        assert output["is_push_button_panel"] is True
 
     def test_module_info_command_json_output(self):
         """Test module info command with JSON output"""
@@ -44,7 +52,12 @@ class TestModuleIntegration:
         result = self.runner.invoke(cli, ["module", "info", "999"])
 
         assert result.exit_code == 1
-        assert "Module type with code 999 not found" in result.output
+
+        # Parse JSON error response
+        output = json.loads(result.output)
+        assert output["success"] is False
+        assert "error" in output
+        assert "999" in output["identifier"]
 
     def test_module_info_command_invalid_code_json(self):
         """Test module info command with invalid code and JSON output"""
@@ -62,9 +75,15 @@ class TestModuleIntegration:
         result = self.runner.invoke(cli, ["module", "list"])
 
         assert result.exit_code == 0
-        assert "Code | Name       | Description" in result.output
-        assert "NOMOD" in result.output
-        assert "XP2606" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert "modules" in output
+        assert "count" in output
+        # Check for specific modules
+        module_names = [m["name"] for m in output["modules"]]
+        assert "NOMOD" in module_names
+        assert "XP2606" in module_names
 
     def test_module_list_command_json_output(self):
         """Test module list command with JSON output"""
@@ -83,18 +102,28 @@ class TestModuleIntegration:
         result = self.runner.invoke(cli, ["module", "list", "--category", "System"])
 
         assert result.exit_code == 0
-        assert "NOMOD" in result.output
-        assert "ALLMOD" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert "modules" in output
+        # Check for specific modules in System category
+        module_names = [m["name"] for m in output["modules"]]
+        assert "NOMOD" in module_names
+        assert "ALLMOD" in module_names
 
     def test_module_list_command_group_by_category(self):
         """Test module list command grouped by category"""
         result = self.runner.invoke(cli, ["module", "list", "--group-by-category"])
 
         assert result.exit_code == 0
-        assert "=== System ===" in result.output
-        assert "=== CP Link Modules ===" in result.output
-        assert "=== XP Control Modules ===" in result.output
-        assert "=== Interface Panels ===" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert "modules_by_category" in output
+        assert "System" in output["modules_by_category"]
+        assert "CP Link Modules" in output["modules_by_category"]
+        assert "XP Control Modules" in output["modules_by_category"]
+        assert "Interface Panels" in output["modules_by_category"]
 
     def test_module_list_command_group_by_category_json(self):
         """Test module list command grouped by category with JSON output"""
@@ -114,16 +143,27 @@ class TestModuleIntegration:
         result = self.runner.invoke(cli, ["module", "list", "--category", "Invalid"])
 
         assert result.exit_code == 0
-        assert "No modules found in category 'Invalid'" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert "modules" in output
+        assert len(output["modules"]) == 0
+        assert output["category"] == "Invalid"
 
     def test_module_search_command(self):
         """Test module search command"""
         result = self.runner.invoke(cli, ["module", "search", "push button"])
 
         assert result.exit_code == 0
-        assert "Found" in result.output
-        assert "items matching 'push button'" in result.output
-        assert "XP2606" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert output["query"] == "push button"
+        assert output["count"] >= 1
+        assert "matches" in output
+        # Check that XP2606 is in the search results
+        match_names = [m["name"] for m in output["matches"]]
+        assert "XP2606" in match_names
 
     def test_module_search_command_json_output(self):
         """Test module search command with JSON output"""
@@ -152,16 +192,24 @@ class TestModuleIntegration:
         result = self.runner.invoke(cli, ["module", "search", "NONEXISTENT"])
 
         assert result.exit_code == 0
-        assert "No items found matching 'NONEXISTENT'" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert output["query"] == "NONEXISTENT"
+        assert output["count"] == 0
+        assert len(output["matches"]) == 0
 
     def test_module_categories_command(self):
         """Test module categories command"""
         result = self.runner.invoke(cli, ["module", "categories"])
 
         assert result.exit_code == 0
-        assert "Available categories:" in result.output
-        assert "System:" in result.output
-        assert "Interface Panels:" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert "categories" in output
+        assert "System" in output["categories"]
+        assert "Interface Panels" in output["categories"]
 
     def test_module_categories_command_json_output(self):
         """Test module categories command with JSON output"""
@@ -214,12 +262,17 @@ class TestModuleIntegration:
         assert output["module_info"]["category"] == "Interface Panels"
 
     def test_enhanced_telegram_parsing_human_readable(self):
-        """Test that human-readable telegram parsing includes module names"""
+        """Test that telegram parsing includes module names in JSON"""
         result = self.runner.invoke(cli, ["telegram", "parse", "<E14L00I02MAK>"])
 
         assert result.exit_code == 0
-        assert "XP2606 (Type 14)" in result.output
-        assert "pressed" in result.output
+
+        # Parse JSON output
+        output = json.loads(result.output)
+        assert output["module_type"] == 14
+        assert "module_info" in output
+        assert output["module_info"]["name"] == "XP2606"
+        assert output["event_type_name"] == "button_press"
 
     def test_enhanced_telegram_parsing_unknown_module(self):
         """Test telegram parsing with unknown module type"""

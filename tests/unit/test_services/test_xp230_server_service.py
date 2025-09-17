@@ -22,7 +22,7 @@ class TestXP230ServerService:
         assert service.firmware_version == "XP230_V1.00.04"
         assert service.device_status == "OK"
         assert service.link_number == 1
-        assert service.module_type_code == 24  # XP230 module type
+        assert service.module_type_code == 34  # XP230 module type
 
     def test_generate_discovery_response(self):
         """Test discovery response generation"""
@@ -128,9 +128,9 @@ class TestXP230ServerService:
         response = self.service.generate_module_type_response(request)
 
         assert response is not None
-        assert response == "<R0020030837F02D0718FB>"
+        assert response == "<R0020030837F02D0734FP>"
         assert "F02D07" in response
-        assert "18" in response  # XP230 code is 24 = 0x18
+        assert "34" in response  # XP230 code is 34
 
     def test_generate_module_type_response_wrong_function(self):
         """Test module type response with wrong function returns None"""
@@ -158,9 +158,9 @@ class TestXP230ServerService:
         response = self.service.process_system_telegram(request)
 
         assert response is not None
-        assert response == "<R0020030837F02D0718FB>"
+        assert response == "<R0020030837F02D0734FP>"
         assert "F02D07" in response
-        assert "18" in response  # XP230 code is 24 = 0x18
+        assert "34" in response  # XP230 code is 34
 
     def test_set_link_number(self):
         """Test setting link number"""

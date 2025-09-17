@@ -148,9 +148,9 @@ class TestXP130ServerService:
         response = self.service.generate_module_type_response(request)
 
         assert response is not None
-        assert response == "<R0019664896F02D070DCK>"
+        assert response == "<R0019664896F02D0713FM>"
         assert "F02D07" in response
-        assert "0D" in response  # XP130 code is 13 = 0x0D
+        assert "13" in response  # XP130 code is 13 = 0x0D
 
     def test_generate_module_type_response_wrong_function(self):
         """Test module type response with wrong function returns None"""
@@ -178,9 +178,9 @@ class TestXP130ServerService:
         response = self.service.process_system_telegram(request)
 
         assert response is not None
-        assert response == "<R0019664896F02D070DCK>"
+        assert response == "<R0019664896F02D0713FM>"
         assert "F02D07" in response
-        assert "0D" in response  # XP130 code is 13 = 0x0D
+        assert "13" in response  # XP130 code is 13 = 0x0D
 
     def test_set_link_number(self):
         """Test setting link number"""

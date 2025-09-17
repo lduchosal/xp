@@ -100,7 +100,7 @@ def xp_input(
                 response_data["xp24_operation"] = "action_command"
                 response_data["input_number"] = input_number
                 response_data["action_type"] = "press"
-                response_data["telegram_type"] = "xp24_action"
+                response_data["telegram_type"] = "xp_action"
                 click.echo(json.dumps(response_data, indent=2))
 
     except XPInputError as e:

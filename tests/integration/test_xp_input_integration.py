@@ -126,6 +126,7 @@ class TestXPInputIntegration:
         """Test integration with CLI command for action."""
         from click.testing import CliRunner
         from src.xp.cli.commands.conbus_input_commands import conbus
+        import json
 
         # Mock successful response
         mock_response = MagicMock()
@@ -133,16 +134,27 @@ class TestXPInputIntegration:
         mock_response.sent_telegram = "<S0020044964F27D01AAFN>"
         mock_response.received_telegrams = ["<R0020044964F18DFA>"]
         mock_response.timestamp.strftime.return_value = "12:34:56,789"
-        mock_response.to_dict.return_value = {"success": True}
+        mock_response.to_dict.return_value = {
+            "success": True,
+            "sent_telegram": "<S0020044964F27D01AAFN>",
+            "received_telegrams": ["<R0020044964F18DFA>"]
+        }
         mock_send.return_value = mock_response
 
         runner = CliRunner()
         result = runner.invoke(conbus, ["input", "0020044964", "1", "on"])
 
         assert result.exit_code == 0
-        assert "[TX] <S0020044964F27D01AAFN>" in result.output
-        assert "[RX] <R0020044964F18DFA>" in result.output
-        assert "XP24 action sent: Press input 1" in result.output
+
+        # Parse JSON output
+        output_data = json.loads(result.output)
+        assert output_data["success"] is True
+        assert output_data["xp24_operation"] == "action_command"
+        assert output_data["input_number"] == 1
+        assert output_data["action_type"] == "press"
+        assert output_data["telegram_type"] == "xp_action"
+        assert output_data["sent_telegram"] == "<S0020044964F27D01AAFN>"
+        assert output_data["received_telegrams"] == ["<R0020044964F18DFA>"]
 
         # Verify service was called with correct parameters
         mock_send.assert_called_once_with("0020044964", "27", "01AA")
@@ -154,6 +166,7 @@ class TestXPInputIntegration:
         """Test integration with CLI command for status query."""
         from click.testing import CliRunner
         from src.xp.cli.commands.conbus_input_commands import conbus
+        import json
 
         # Mock successful status response
         mock_response = MagicMock()
@@ -161,20 +174,29 @@ class TestXPInputIntegration:
         mock_response.sent_telegram = "<S0020044964F02D12FJ>"
         mock_response.received_telegrams = ["<R0020044964F02D12xxxx1010FJ>"]
         mock_response.timestamp.strftime.return_value = "12:34:56,789"
-        mock_response.to_dict.return_value = {"success": True}
+        mock_response.to_dict.return_value = {
+            "success": True,
+            "sent_telegram": "<S0020044964F02D12FJ>",
+            "received_telegrams": ["<R0020044964F02D12xxxx1010FJ>"]
+        }
         mock_send.return_value = mock_response
 
         runner = CliRunner()
         result = runner.invoke(conbus, ["input", "0020044964", "status"])
 
         assert result.exit_code == 0
-        assert "[TX] <S0020044964F02D12FJ>" in result.output
-        assert "[RX] <R0020044964F02D12xxxx1010FJ>" in result.output
-        assert "XP24 Input Status:" in result.output
-        assert "Input 0: ON" in result.output
-        assert "Input 1: OFF" in result.output
-        assert "Input 2: ON" in result.output
-        assert "Input 3: OFF" in result.output
+
+        # Parse JSON output
+        output_data = json.loads(result.output)
+        assert output_data["success"] is True
+        assert output_data["xp24_operation"] == "status_query"
+        assert output_data["telegram_type"] == "xp_input"
+        assert output_data["sent_telegram"] == "<S0020044964F02D12FJ>"
+        assert output_data["received_telegrams"] == ["<R0020044964F02D12xxxx1010FJ>"]
+        assert output_data["input_status"]["0"] is True
+        assert output_data["input_status"]["1"] is False
+        assert output_data["input_status"]["2"] is True
+        assert output_data["input_status"]["3"] is False
 
         # Verify service was called with correct parameters
         mock_send.assert_called_once_with("0020044964", "02", "12")
@@ -208,7 +230,7 @@ class TestXPInputIntegration:
         assert output_data["xp24_operation"] == "action_command"
         assert output_data["input_number"] == 0
         assert output_data["action_type"] == "press"
-        assert output_data["telegram_type"] == "xp24_action"
+        assert output_data["telegram_type"] == "xp_action"
 
     def test_error_handling_integration(self):
         """Test error handling across service layers."""
