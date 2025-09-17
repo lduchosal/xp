@@ -34,8 +34,6 @@ class XPInputService:
     # Regex pattern for XP24 action telegrams
     XP_INPUT_PATTERN = re.compile(r"^<S(\d{10})F27D(\d{2})([A-Z0-9]{2})([A-Z0-9]{2})>$")
 
-    checksum_service = ChecksumService()
-
     def __init__(self):
         """Initialize the XP input service"""
         pass
@@ -187,8 +185,7 @@ class XPInputService:
             )
 
             # Validate checksum
-            data = f'{serial_number}F{input_number}D{action_type:02d}'
-            telegram.checksum_validated = self.checksum_service.validate_checksum(telegram, checksum).success
+            telegram.checksum_validated = self.validate_checksum(telegram)
 
             return telegram
 
