@@ -8,11 +8,12 @@ from ...services.telegram_service import TelegramService, TelegramParsingError
 from ..utils.decorators import json_output_option, handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
+from ..utils.serial_number_type import SERIAL
 from .telegram import linknumber
 
 
 @linknumber.command("write")
-@click.argument("serial_number")
+@click.argument("serial_number", type=SERIAL)
 @click.argument("link_number", type=int)
 @json_output_option
 @handle_service_errors(LinkNumberError)
@@ -56,7 +57,7 @@ def generate_set_link_number(serial_number: str, link_number: int, json_output: 
 
 
 @linknumber.command("read")
-@click.argument("serial_number")
+@click.argument("serial_number", type=SERIAL)
 @json_output_option
 @handle_service_errors(LinkNumberError)
 def generate_read_link_number(serial_number: str, json_output: bool):

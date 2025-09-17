@@ -8,10 +8,11 @@ from ...services.telegram_service import TelegramService, TelegramParsingError
 from ..utils.decorators import json_output_option, handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
+from ..utils.serial_number_type import SERIAL
 from .telegram import blink
 
 @blink.command("on")
-@click.argument("serial_number")
+@click.argument("serial_number", type=SERIAL)
 @json_output_option
 @handle_service_errors(BlinkError)
 def blink_on(serial_number: str, json_output: bool):
@@ -53,7 +54,7 @@ def blink_on(serial_number: str, json_output: bool):
 
 
 @blink.command("off")
-@click.argument("serial_number")
+@click.argument("serial_number", type=SERIAL)
 @json_output_option
 @handle_service_errors(BlinkError)
 def blink_off(serial_number: str, json_output: bool):

@@ -8,10 +8,11 @@ from ...services.telegram_service import TelegramService, TelegramParsingError
 from ..utils.decorators import json_output_option, handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
+from ..utils.serial_number_type import SERIAL
 from .telegram import telegram
 
 @telegram.command("version")
-@click.argument("serial_number")
+@click.argument("serial_number", type=SERIAL)
 @json_output_option
 @handle_service_errors(VersionParsingError)
 def generate_version_request(serial_number: str, json_output: bool):

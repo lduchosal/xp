@@ -12,11 +12,12 @@ from ..utils.decorators import (
     handle_service_errors,
 )
 from ..utils.error_handlers import CLIErrorHandler
+from ..utils.serial_number_type import SERIAL
 from .conbus import conbus
 
 
 @conbus.command("custom")
-@click.argument("serial_number")
+@click.argument("serial_number", type=SERIAL)
 @click.argument("function_code")
 @click.argument("data_point_code")
 @connection_command()

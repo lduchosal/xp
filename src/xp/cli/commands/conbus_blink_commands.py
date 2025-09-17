@@ -14,11 +14,12 @@ from ..utils.decorators import (
     handle_service_errors,
 )
 from ..utils.error_handlers import CLIErrorHandler
+from ..utils.serial_number_type import SERIAL
 from .conbus import conbus
 
 
 @conbus.command("blink")
-@click.argument("serial_number")
+@click.argument("serial_number", type=SERIAL)
 @click.argument("on_or_off", type=click.Choice(["on", "off"]), default="on")
 @connection_command()
 @handle_service_errors(ConbusClientSendError, BlinkError)
