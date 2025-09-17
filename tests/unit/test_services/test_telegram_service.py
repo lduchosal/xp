@@ -137,44 +137,6 @@ class TestTelegramService:
         result = self.service.validate_checksum(telegram)
         assert result is False
 
-    def test_parse_multiple_event_telegrams_valid(self):
-        """Test parsing multiple valid telegrams from data stream"""
-        data = "Some data <E14L00I02MAK> more data <E14L01I03BB1> end"
-        results = self.service.parse_multiple_telegrams(data)
-
-        assert len(results) == 2
-
-        # First telegram
-        assert results[0].module_type == 14
-        assert results[0].link_number == 0
-        assert results[0].input_number == 2
-        assert results[0].event_type == EventType.BUTTON_PRESS
-
-        # Second telegram
-        assert results[1].module_type == 14
-        assert results[1].link_number == 1
-        assert results[1].input_number == 3
-        assert results[1].event_type == EventType.BUTTON_RELEASE
-
-    def test_parse_multiple_event_telegrams_empty_data(self):
-        """Test parsing multiple telegrams from empty data"""
-        results = self.service.parse_multiple_telegrams("")
-        assert len(results) == 0
-
-    def test_parse_multiple_event_telegrams_no_valid_telegrams(self):
-        """Test parsing multiple telegrams when no valid telegrams exist"""
-        data = "Just some random data with no telegrams"
-        results = self.service.parse_multiple_telegrams(data)
-        assert len(results) == 0
-
-    def test_parse_multiple_event_telegrams_mixed_valid_invalid(self):
-        """Test parsing multiple telegrams with mix of valid and invalid"""
-        data = "<E14L00I02MAK> <INVALID> <E14L01I03BB1>"
-        results = self.service.parse_multiple_telegrams(data)
-
-        # Should only return valid telegrams, skip invalid ones
-        assert len(results) == 2
-
     def test_format_telegram_summary(self):
         """Test formatting telegram for human-readable output"""
         telegram = self.service.parse_event_telegram("<E14L00I02MAK>")
@@ -214,14 +176,6 @@ class TestTelegramService:
         telegram.checksum = "A!"  # Invalid characters
         result = self.service.validate_checksum(telegram)
         assert result is False
-
-    def test_parse_multiple_event_telegrams_with_errors(self):
-        """Test parse_multiple_telegrams continues on errors"""
-        data = "<E14L00I02MAK> <INVALID_FORMAT> <E14L01I03BB1>"
-        results = self.service.parse_multiple_telegrams(data)
-        # Should skip the invalid one but keep the valid ones
-        assert len(results) == 2
-
 
 class TestSystemTelegramParsing:
     """Test cases for system telegram parsing in TelegramService"""

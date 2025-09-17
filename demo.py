@@ -47,28 +47,6 @@ def demo_basic_parsing():
             print(f"Error parsing {telegram_str}: {e}")
             print("-" * 50)
 
-
-def demo_multiple_parsing():
-    """Demonstrate parsing multiple telegrams from data stream"""
-    print("\n=== Multiple Telegram Parsing Demo ===\n")
-
-    service = TelegramService()
-    data_stream = (
-        "System startup... <E14L00I02MAK> button pressed, "
-        "processing... <E14L00I02BB1> button released, "
-        "IR remote signal <E14L00I25MIR> detected, "
-        "proximity sensor <E14L00I90MPS> activated."
-    )
-
-    print("Data stream:")
-    print(data_stream)
-    print("\nParsed telegrams:")
-
-    telegrams = service.parse_multiple_telegrams(data_stream)
-    for i, telegram in enumerate(telegrams, 1):
-        print(f"{i}. {telegram}")
-
-
 def demo_validation():
     """Demonstrate telegram validation"""
     print("\n=== Telegram Validation Demo ===\n")
