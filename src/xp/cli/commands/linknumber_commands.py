@@ -27,7 +27,7 @@ def generate_set_link_number(serial_number: str, link_number: int, json_output: 
     """
     Generate a telegram to set module link number.
 
-    Example:
+    Examples:
 
     \b
         xp linknumber generate 0020044974 25
@@ -70,7 +70,7 @@ def generate_read_link_number(serial_number: str, json_output: bool):
     """
     Generate a telegram to read module link number.
 
-    Example:
+    Examples:
 
     \b
         xp linknumber read 0020044974

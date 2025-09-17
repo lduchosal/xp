@@ -192,7 +192,8 @@ class TestModuleIntegration:
 
         assert result.exit_code == 0
         assert "Get information about a module type" in result.output
-        assert "Example: xp module info 14" in result.output
+        assert "Examples:" in result.output
+        assert "xp module info 14" in result.output
 
     def test_enhanced_telegram_parsing_with_module_info(self):
         """Test that telegram parsing now includes module information"""

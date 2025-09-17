@@ -188,7 +188,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.STATUS,
+            data_point_id=DataPointType.NONE,
             data_value="OK",
             checksum="ST",
             raw_telegram="<R0020012521F02D00OKST>",
@@ -284,7 +284,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.STATUS,
+            data_point_id=DataPointType.NONE,
             data_value="CUSTOM_STATUS",
             checksum="CS",
             raw_telegram="<R0020012521F02D00CUSTOM_STATUSCS>",
@@ -398,7 +398,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.STATUS,  # Using status for custom data
+            data_point_id=DataPointType.NONE,  # Using status for custom data
             data_value="UNKNOWN_DATA_FORMAT",
             checksum="UN",
             raw_telegram="<R0020012521F02D00UNKNOWN_DATA_FORMATUN>",

@@ -110,7 +110,7 @@ def stop_proxy(json_output: bool):
     """
     Stop the running Conbus reverse proxy server.
 
-    Example:
+    Examples:
 
     \b
         xp rp stop
@@ -155,7 +155,7 @@ def proxy_status(json_output: bool):
     Shows current running state, listen port, target server,
     and active connection details.
 
-    Example:
+    Examples:
 
     \b
         xp rp status

@@ -18,7 +18,8 @@ class TestConbusBlinkCommands:
 
         assert result.exit_code == 0
         assert "Send blink command to start blinking module LED" in result.output
-        assert "Example: xp conbus blink 0020044964 on" in result.output
+        assert "Examples:" in result.output
+        assert "xp conbus blink 0020044964 on" in result.output
 
     def test_conbus_unblink_help(self):
         """Test help text for conbus unblink command"""
@@ -27,7 +28,8 @@ class TestConbusBlinkCommands:
 
         assert result.exit_code == 0
         assert "Usage: conbus blink [OPTIONS] SERIAL_NUMBER ON_OR_OFF" in result.output
-        assert "Example: xp conbus blink 0020044964 off" in result.output
+        assert "Examples:" in result.output
+        assert "xp conbus blink 0020044964 off" in result.output
 
     @patch("src.xp.cli.commands.conbus_blink_commands.ConbusClientSendService")
     def test_conbus_blink_success(self, mock_service_class):

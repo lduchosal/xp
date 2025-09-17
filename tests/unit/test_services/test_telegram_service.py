@@ -270,7 +270,7 @@ class TestSystemTelegramParsing:
         # Status data point
         raw = "<S0020012521F02D00FN>"
         result = self.service.parse_system_telegram(raw)
-        assert result.data_point_id == DataPointType.STATUS
+        assert result.data_point_id == DataPointType.NONE
 
     def test_parse_system_telegram_empty_string(self):
         """Test parsing empty string raises error"""
@@ -372,7 +372,7 @@ class TestReplyTelegramParsing:
         # Status reply
         raw = "<R0020012521F02D00OKIL>"
         result = self.service.parse_reply_telegram(raw)
-        assert result.data_point_id == DataPointType.STATUS
+        assert result.data_point_id == DataPointType.NONE
         assert result.data_value == "OK"
 
     def test_parse_reply_telegram_complex_data_values(self):

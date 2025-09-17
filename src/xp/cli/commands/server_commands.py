@@ -85,7 +85,7 @@ def stop_server(json_output: bool):
     """
     Stop the running Conbus emulator server.
 
-    Example:
+    Examples:
 
     \b
         xp server stop
@@ -116,7 +116,7 @@ def server_status(json_output: bool):
     """
     Get status of the Conbus emulator server.
 
-    Example:
+    Examples:
 
     \b
         xp server status

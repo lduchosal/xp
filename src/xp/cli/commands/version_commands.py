@@ -26,7 +26,7 @@ def generate_version_request(serial_number: str, json_output: bool):
     """
     Generate a telegram to request version information from a device.
 
-    Example:
+    Examples:
 
     \b
         xp version request 0020030837
@@ -74,7 +74,7 @@ def parse_version_telegram(telegram_string: str, json_output: bool):
     """
     Parse version information from reply telegram.
 
-    Example:
+    Examples:
 
     \b
         xp version parse "<R0020030837F02D02XP230_V1.00.04FI>"

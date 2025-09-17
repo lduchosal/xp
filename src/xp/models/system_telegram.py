@@ -19,7 +19,7 @@ class SystemTelegram(Telegram):
     Represents a parsed system telegram from the console bus.
 
     Format: <S{serial_number}F{function_code}D{data_point_id}{checksum}>
-    Example: <S0020012521F02D18FN>
+    Examples: <S0020012521F02D18FN>
     """
 
     serial_number: str = ""
@@ -49,7 +49,7 @@ class SystemTelegram(Telegram):
     def data_point_description(self) -> str:
         """Get human-readable data point description"""
         descriptions = {
-            DataPointType.STATUS: "Status",
+            DataPointType.NONE: "Status",
             DataPointType.VERSION: "Version",
             DataPointType.LINK_NUMBER: "Link Number",
             DataPointType.MODULE_TYPE: "Module Type",

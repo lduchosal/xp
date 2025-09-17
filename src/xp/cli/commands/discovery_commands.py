@@ -25,7 +25,7 @@ def generate_discovery(json_output: bool):
     """
     Generate a discovery telegram for device enumeration.
 
-    Example:
+    Examples:
 
     \b
         xp discovery generate

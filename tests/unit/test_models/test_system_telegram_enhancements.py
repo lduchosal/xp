@@ -83,7 +83,7 @@ class TestSystemTelegramEnhancements:
         ack_telegram = SystemTelegram(
             serial_number="0020044974",
             system_function=SystemFunction.ACK,
-            data_point_id=DataPointType.STATUS,
+            data_point_id=DataPointType.NONE,
             checksum="FB",
             raw_telegram="<R0020044974F18DFB>",
         )
@@ -93,7 +93,7 @@ class TestSystemTelegramEnhancements:
         nak_telegram = SystemTelegram(
             serial_number="0020044974",
             system_function=SystemFunction.NAK,
-            data_point_id=DataPointType.STATUS,
+            data_point_id=DataPointType.NONE,
             checksum="FA",
             raw_telegram="<R0020044974F19DFA>",
         )
@@ -185,7 +185,7 @@ class TestSystemTelegramEnhancements:
     def test_all_data_point_types_from_code(self):
         """Test that all data point types can be retrieved by code"""
         test_cases = [
-            ("00", DataPointType.STATUS),
+            ("00", DataPointType.NONE),
             ("04", DataPointType.LINK_NUMBER),
             ("18", DataPointType.TEMPERATURE),
             ("19", DataPointType.HUMIDITY),

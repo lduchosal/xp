@@ -29,7 +29,7 @@ class TestBlinkIntegration:
         assert isinstance(parsed_telegram, SystemTelegram)
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.BLINK
-        assert parsed_telegram.data_point_id == DataPointType.STATUS
+        assert parsed_telegram.data_point_id == DataPointType.NONE
         assert parsed_telegram.checksum == "FN"
         assert parsed_telegram.checksum_validated is True  # Should auto-validate
 
@@ -50,7 +50,7 @@ class TestBlinkIntegration:
         assert isinstance(parsed_telegram, SystemTelegram)
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.UNBLINK
-        assert parsed_telegram.data_point_id == DataPointType.STATUS
+        assert parsed_telegram.data_point_id == DataPointType.NONE
         assert parsed_telegram.checksum == "FK"
         assert parsed_telegram.checksum_validated is True
 
@@ -80,10 +80,10 @@ class TestBlinkIntegration:
                 assert isinstance(parsed, SystemTelegram)
                 if expected_function == SystemFunction.BLINK:
                     assert parsed.serial_number == "0020044964"
-                    assert parsed.data_point_id == DataPointType.STATUS
+                    assert parsed.data_point_id == DataPointType.NONE
                 elif expected_function == SystemFunction.UNBLINK:
                     assert parsed.serial_number == "0020030837"
-                    assert parsed.data_point_id == DataPointType.STATUS
+                    assert parsed.data_point_id == DataPointType.NONE
 
             elif telegram_str.startswith("<R"):  # Reply telegram
                 assert isinstance(parsed, ReplyTelegram)
@@ -267,7 +267,7 @@ class TestBlinkIntegration:
             # Verify all properties
             assert parsed_blink.serial_number == serial
             assert parsed_blink.system_function == SystemFunction.BLINK
-            assert parsed_blink.data_point_id == DataPointType.STATUS
+            assert parsed_blink.data_point_id == DataPointType.NONE
             assert parsed_blink.checksum_validated is True
 
             # Verify telegram format
@@ -282,7 +282,7 @@ class TestBlinkIntegration:
             # Verify all properties
             assert parsed_unblink.serial_number == serial
             assert parsed_unblink.system_function == SystemFunction.UNBLINK
-            assert parsed_unblink.data_point_id == DataPointType.STATUS
+            assert parsed_unblink.data_point_id == DataPointType.NONE
             assert parsed_unblink.checksum_validated is True
 
             # Verify telegram format
@@ -309,8 +309,8 @@ class TestBlinkIntegration:
         assert parsed_blink.system_function != parsed_unblink.system_function
 
         # Both should use STATUS data point
-        assert parsed_blink.data_point_id == DataPointType.STATUS
-        assert parsed_unblink.data_point_id == DataPointType.STATUS
+        assert parsed_blink.data_point_id == DataPointType.NONE
+        assert parsed_unblink.data_point_id == DataPointType.NONE
 
         # Both should have same serial but different checksums
         assert parsed_blink.serial_number == parsed_unblink.serial_number == serial

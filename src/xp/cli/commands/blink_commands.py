@@ -68,7 +68,7 @@ def blink_off(serial_number: str, json_output: bool):
     """
     Generate a telegram to stop blinking module LED.
 
-    Example:
+    Examples:
 
     \b
         xp blink off 0020030837

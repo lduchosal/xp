@@ -48,7 +48,7 @@ class TestDataPointType:
         assert DataPointType.from_code("19") == DataPointType.HUMIDITY
         assert DataPointType.from_code("20") == DataPointType.VOLTAGE
         assert DataPointType.from_code("17") == DataPointType.CURRENT
-        assert DataPointType.from_code("00") == DataPointType.STATUS
+        assert DataPointType.from_code("00") == DataPointType.NONE
         assert DataPointType.from_code("02") == DataPointType.VERSION
         assert DataPointType.from_code("04") == DataPointType.LINK_NUMBER
         assert DataPointType.from_code("07") == DataPointType.MODULE_TYPE
@@ -70,7 +70,7 @@ class TestDataPointType:
         assert DataPointType.HUMIDITY.value == "19"
         assert DataPointType.VOLTAGE.value == "20"
         assert DataPointType.CURRENT.value == "17"
-        assert DataPointType.STATUS.value == "00"
+        assert DataPointType.NONE.value == "00"
         assert DataPointType.VERSION.value == "02"
         assert DataPointType.LINK_NUMBER.value == "04"
         assert DataPointType.MODULE_TYPE.value == "07"
@@ -158,7 +158,7 @@ class TestSystemTelegram:
         telegram.data_point_id = DataPointType.CURRENT
         assert telegram.data_point_description == "Current"
 
-        telegram.data_point_id = DataPointType.STATUS
+        telegram.data_point_id = DataPointType.NONE
         assert telegram.data_point_description == "Status"
 
     def test_to_dict(self):
@@ -232,7 +232,7 @@ class TestSystemTelegram:
             (DataPointType.HUMIDITY, "Humidity"),
             (DataPointType.VOLTAGE, "Voltage"),
             (DataPointType.CURRENT, "Current"),
-            (DataPointType.STATUS, "Status"),
+            (DataPointType.NONE, "Status"),
             (DataPointType.VERSION, "Version"),
             (DataPointType.LINK_NUMBER, "Link Number"),
             (DataPointType.MODULE_TYPE, "Module Type"),

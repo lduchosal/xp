@@ -159,7 +159,7 @@ def module_categories(json_output: bool):
     """
     List all available module categories.
 
-    Example:
+    Examples:
 
     \b
         xp module categories

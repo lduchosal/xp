@@ -29,7 +29,7 @@ class TestDiscoveryIntegration:
         assert isinstance(parsed_system, SystemTelegram)
         assert parsed_system.serial_number == "0000000000"
         assert parsed_system.system_function == SystemFunction.DISCOVERY
-        assert parsed_system.data_point_id == DataPointType.STATUS
+        assert parsed_system.data_point_id == DataPointType.NONE
         assert parsed_system.checksum == "FA"
         assert parsed_system.checksum_validated is True
 

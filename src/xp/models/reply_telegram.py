@@ -18,7 +18,7 @@ class ReplyTelegram(Telegram):
     Represents a parsed reply telegram from the console bus.
 
     Format: <R{serial_number}F{function_code}D{data_point_id}{data_value}{checksum}>
-    Example: <R0020012521F02D18+26,0§CIL>
+    Examples: <R0020012521F02D18+26,0§CIL>
     """
 
     serial_number: str = ""
@@ -51,7 +51,7 @@ class ReplyTelegram(Telegram):
             DataPointType.HUMIDITY: "Humidity",
             DataPointType.VOLTAGE: "Voltage",
             DataPointType.CURRENT: "Current",
-            DataPointType.STATUS: "Status",
+            DataPointType.NONE: "Status",
             DataPointType.VERSION: "Version",
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
@@ -67,7 +67,7 @@ class ReplyTelegram(Telegram):
             return self._parse_voltage_value()
         elif self.data_point_id == DataPointType.CURRENT:
             return self._parse_current_value()
-        elif self.data_point_id == DataPointType.STATUS:
+        elif self.data_point_id == DataPointType.NONE:
             return self._parse_status_value()
         elif self.data_point_id == DataPointType.VERSION:
             return self._parse_version_value()

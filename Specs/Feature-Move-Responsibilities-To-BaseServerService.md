@@ -45,7 +45,7 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
   ```python
   def generate_status_response(self, request: SystemTelegram) -> Optional[str]:
       if (request.system_function == SystemFunction.READ_DATAPOINT and
-          request.data_point_id == DataPointType.STATUS):  # or STATUS_QUERY for XP33
+          request.data_point_id == DataPointType.NONE):  # or STATUS_QUERY for XP33
           data_part = f"R{self.serial_number}F02D00{self.device_status}"
           checksum = calculate_checksum(data_part)
           telegram = f"<{data_part}{checksum}>"
@@ -132,12 +132,22 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
 Move the following methods to `BaseServerService`:
 
 #### 1. Core Response Generators
+
 ```python
 def generate_discovery_response(self) -> str
-def generate_version_response(self, request: SystemTelegram) -> Optional[str]
-def generate_status_response(self, request: SystemTelegram, status_data_point: DataPointType = DataPointType.STATUS) -> Optional[str]
-def generate_link_number_response(self, request: SystemTelegram) -> Optional[str]
-def set_link_number(self, request: SystemTelegram, new_link_number: int) -> Optional[str]
+
+
+    def generate_version_response(self, request: SystemTelegram) -> Optional[str]
+
+
+    def generate_status_response(self, request: SystemTelegram,
+                                 status_data_point: DataPointType = DataPointType.NONE) -> Optional[str]
+
+
+    def generate_link_number_response(self, request: SystemTelegram) -> Optional[str]
+
+
+    def set_link_number(self, request: SystemTelegram, new_link_number: int) -> Optional[str]
 ```
 
 #### 2. Helper Methods
@@ -189,7 +199,7 @@ def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
     """Handle RETURN_DATA requests - can be overridden by subclasses"""
     if request.data_point_id == DataPointType.VERSION:
         return self.generate_version_response(request)
-    elif request.data_point_id in [DataPointType.STATUS, DataPointType.STATUS_QUERY]:
+    elif request.data_point_id in [DataPointType.NONE, DataPointType.STATUS_QUERY]:
         return self.generate_status_response(request, request.data_point_id)
     elif request.data_point_id == DataPointType.LINK_NUMBER:
         return self.generate_link_number_response(request)

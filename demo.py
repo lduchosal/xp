@@ -170,7 +170,7 @@ def demo_module_types():
         print(f"{category}: {len(modules)} modules")
         # Show first module in each category
         if modules:
-            print(f"  Example: {modules[0].name}")
+            print(f"  Examples: {modules[0].name}")
     print()
 
 

@@ -55,7 +55,7 @@ class TestXP230ServerService:
         request = SystemTelegram(
             serial_number="0020030837",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.STATUS,
+            data_point_id=DataPointType.NONE,
             checksum="FM",
             raw_telegram="<S0020030837F02D00FM>",
         )
@@ -68,7 +68,7 @@ class TestXP230ServerService:
         request = SystemTelegram(
             serial_number="0020030837",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.STATUS,
+            data_point_id=DataPointType.NONE,
             checksum="FM",
             raw_telegram="<S0020030837F02D00FM>",
         )

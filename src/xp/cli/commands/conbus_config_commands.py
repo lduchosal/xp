@@ -16,7 +16,7 @@ def show_config(json_output: bool):
     """
     Display current Conbus client configuration.
 
-    Example:
+    Examples:
 
     \b
         xp conbus config

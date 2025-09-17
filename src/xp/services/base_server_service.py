@@ -96,7 +96,7 @@ class BaseServerService(ABC):
     def generate_status_response(
         self,
         request: SystemTelegram,
-        status_data_point: DataPointType = DataPointType.STATUS,
+        status_data_point: DataPointType = DataPointType.NONE,
     ) -> Optional[str]:
         """Generate status response telegram"""
         if (
@@ -167,8 +167,8 @@ class BaseServerService(ABC):
         """Handle RETURN_DATA requests - can be overridden by subclasses"""
         if request.data_point_id == DataPointType.VERSION:
             return self.generate_version_response(request)
-        elif request.data_point_id == DataPointType.STATUS:
-            return self.generate_status_response(request, DataPointType.STATUS)
+        elif request.data_point_id == DataPointType.NONE:
+            return self.generate_status_response(request, DataPointType.NONE)
         elif request.data_point_id == DataPointType.STATUS_QUERY:
             return self.generate_status_response(request, DataPointType.STATUS_QUERY)
         elif request.data_point_id == DataPointType.LINK_NUMBER:

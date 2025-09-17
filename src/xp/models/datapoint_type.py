@@ -5,7 +5,7 @@ from typing import Optional
 class DataPointType(Enum):
     """Data point types for system telegrams"""
 
-    STATUS = "00"  # General status
+    NONE = "00"  # General status
     VERSION = "02"  # Version information
     LINK_NUMBER = "04"  # Link number data point
     MODULE_TYPE = "07"  # Module type data point

@@ -14,7 +14,7 @@ class LogEntry:
     Represents a single entry in a console bus log file.
 
     Format: HH:MM:SS,mmm [TX/RX] <telegram>
-    Example: 22:44:20,352 [TX] <S0020044964F27D00AAFN>
+    Examples: 22:44:20,352 [TX] <S0020044964F27D00AAFN>
     """
 
     timestamp: datetime

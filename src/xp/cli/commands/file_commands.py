@@ -125,7 +125,7 @@ def analyze_log_file(log_file_path: str, json_output: bool):
     """
     Analyze console bus log file for patterns and statistics.
 
-    Example:
+    Examples:
 
     \b
         xp file analyze conbus.log
@@ -210,7 +210,7 @@ def validate_log_file(log_file_path: str, json_output: bool):
     """
     Validate console bus log file format and telegram checksums.
 
-    Example:
+    Examples:
 
     \b
         xp file validate conbus.log

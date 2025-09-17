@@ -14,7 +14,10 @@ class EventTelegram(Telegram):
     Represents a parsed event telegram from the console bus.
 
     Format: <E{module_type}L{link_number}I{input_number}{event_type}{checksum}>
-    Example: <E14L00I02MAK>
+    Examples:
+
+        \b
+        <E14L00I02MAK>
     """
 
     module_type: int = 0

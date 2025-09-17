@@ -30,7 +30,7 @@ def parse_event_telegram(
     """
     Parse a single event telegram string.
 
-    Example:
+    Examples:
 
     \b
         xp telegram parse-event "<E14L00I02MAK>"
@@ -70,7 +70,7 @@ def parse_system_telegram(
     """
     Parse a system telegram string.
 
-    Example:
+    Examples:
 
     \b
         xp telegram parse-system "<S0020012521F02D18FN>"
@@ -110,7 +110,7 @@ def parse_reply_telegram(
     """
     Parse a reply telegram string.
 
-    Example:
+    Examples:
 
     \b
         xp telegram parse-reply "<R0020012521F02D18+26,0§CIL>"
@@ -150,7 +150,7 @@ def parse_discovery_request_telegram(
     """
     Parse a discovery request telegram string.
 
-    Example:
+    Examples:
 
     \b
         xp telegram parse-discover-request "<S0000000000F01D00FA>"
@@ -205,7 +205,7 @@ def parse_discovery_response_telegram(
     """
     Parse a discovery response telegram string.
 
-    Example:
+    Examples:
 
     \b
         xp telegram parse-discover-response "<R0020030837F01DFM>"
@@ -306,7 +306,7 @@ def parse_multiple_telegrams(data_stream: str, json_output: bool):
     """
     Parse multiple event telegrams from a data stream.
 
-    Example:
+    Examples:
 
     \b
         xp telegram parse-multiple "Some data <E14L00I02MAK> more <E14L01I03BB1>"
@@ -344,7 +344,7 @@ def validate_telegram(telegram_string: str, json_output: bool):
     """
     Validate the format of an event telegram.
 
-    Example:
+    Examples:
 
     \b
         xp telegram validate "<E14L00I02MAK>"
