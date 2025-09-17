@@ -23,3 +23,6 @@ from .telegram_version_commands import *
 
 
 from .checksum_commands import *
+
+from .api import *
+from .api_start_commands import *

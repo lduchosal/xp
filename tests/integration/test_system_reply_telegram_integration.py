@@ -19,9 +19,9 @@ class TestSystemTelegramCLI:
         self.runner = CliRunner()
 
     def test_parse_system_telegram_command(self):
-        """Test telegram parse-system command."""
+        """Test telegram parse command."""
         result = self.runner.invoke(
-            cli, ["telegram", "parse-system", "<S0020012521F02D18FN>"]
+            cli, ["telegram", "parse", "<S0020012521F02D18FN>"]
         )
 
         assert result.exit_code == 0
@@ -36,9 +36,9 @@ class TestSystemTelegramCLI:
         assert output_data["telegram_type"] == "system"
 
     def test_parse_system_telegram_json_output(self):
-        """Test telegram parse-system command with JSON output."""
+        """Test telegram parse command with JSON output."""
         result = self.runner.invoke(
-            cli, ["telegram", "parse-system", "<S0020012521F02D18FN>"]
+            cli, ["telegram", "parse", "<S0020012521F02D18FN>"]
         )
 
         assert result.exit_code == 0
@@ -59,7 +59,7 @@ class TestSystemTelegramCLI:
         """Test parsing different system function types."""
         # Update firmware
         result = self.runner.invoke(
-            cli, ["telegram", "parse-system", "<S0020012521F01D18FN>"]
+            cli, ["telegram", "parse", "<S0020012521F01D18FN>"]
         )
 
         assert result.exit_code == 0
@@ -68,7 +68,7 @@ class TestSystemTelegramCLI:
 
         # Read config
         result = self.runner.invoke(
-            cli, ["telegram", "parse-system", "<S0020012521F03D18FN>"]
+            cli, ["telegram", "parse", "<S0020012521F03D18FN>"]
         )
 
         assert result.exit_code == 0
@@ -79,7 +79,7 @@ class TestSystemTelegramCLI:
         """Test parsing different data point types."""
         # Humidity
         result = self.runner.invoke(
-            cli, ["telegram", "parse-system", "<S0020012521F02D19FN>"]
+            cli, ["telegram", "parse", "<S0020012521F02D19FN>"]
         )
 
         assert result.exit_code == 0
@@ -88,7 +88,7 @@ class TestSystemTelegramCLI:
 
         # Status
         result = self.runner.invoke(
-            cli, ["telegram", "parse-system", "<S0020012521F02D00FN>"]
+            cli, ["telegram", "parse", "<S0020012521F02D00FN>"]
         )
 
         assert result.exit_code == 0
@@ -98,7 +98,7 @@ class TestSystemTelegramCLI:
     def test_parse_system_telegram_invalid_format(self):
         """Test parsing invalid system telegram format."""
         result = self.runner.invoke(
-            cli, ["telegram", "parse-system", "<S002001252F02D18FN>"]
+            cli, ["telegram", "parse", "<S002001252F02D18FN>"]
         )
 
         assert result.exit_code == 1
@@ -112,7 +112,7 @@ class TestSystemTelegramCLI:
     def test_parse_system_telegram_invalid_format_json(self):
         """Test parsing invalid system telegram format with JSON output."""
         result = self.runner.invoke(
-            cli, ["telegram", "parse-system", "<S002001252F02D18FN>"]
+            cli, ["telegram", "parse", "<S002001252F02D18FN>"]
         )
 
         assert result.exit_code == 1
@@ -124,7 +124,7 @@ class TestSystemTelegramCLI:
     def test_parse_system_telegram_unknown_function(self):
         """Test parsing system telegram with unknown function."""
         result = self.runner.invoke(
-            cli, ["telegram", "parse-system", "<S0020012521F99D18FN>"]
+            cli, ["telegram", "parse", "<S0020012521F99D18FN>"]
         )
 
         assert result.exit_code == 1
@@ -134,7 +134,7 @@ class TestSystemTelegramCLI:
 
     def test_parse_system_telegram_help(self):
         """Test system telegram parse command help."""
-        result = self.runner.invoke(cli, ["telegram", "parse-system", "--help"])
+        result = self.runner.invoke(cli, ["telegram", "parse", "--help"])
 
         assert result.exit_code == 0
         assert "Parse a system telegram string" in result.output
@@ -149,9 +149,9 @@ class TestReplyTelegramCLI:
         self.runner = CliRunner()
 
     def test_parse_reply_telegram_command(self):
-        """Test telegram parse-reply command."""
+        """Test telegram parse command."""
         result = self.runner.invoke(
-            cli, ["telegram", "parse-reply", "<R0020012521F02D18+26,0§CIL>"]
+            cli, ["telegram", "parse", "<R0020012521F02D18+26,0§CIL>"]
         )
 
         assert result.exit_code == 0
@@ -168,12 +168,12 @@ class TestReplyTelegramCLI:
         assert output_data["telegram_type"] == "reply"
 
     def test_parse_reply_telegram_json_output(self):
-        """Test telegram parse-reply command with JSON output."""
+        """Test telegram parse command with JSON output."""
         result = self.runner.invoke(
             cli,
             [
                 "telegram",
-                "parse-reply",
+                "parse",
                 "<R0020012521F02D18+26,0§CIL>",
             ],
         )
@@ -202,7 +202,7 @@ class TestReplyTelegramCLI:
             cli,
             [
                 "telegram",
-                "parse-reply",
+                "parse",
                 "<R0020012521F02D19+65,5§RHIL>",
             ],
         )
@@ -216,7 +216,7 @@ class TestReplyTelegramCLI:
             cli,
             [
                 "telegram",
-                "parse-reply",
+                "parse",
                 "<R0020012521F02D20+12,5§VIL>",
             ],
         )
@@ -229,7 +229,7 @@ class TestReplyTelegramCLI:
     def test_parse_reply_telegram_status_data(self):
         """Test parsing reply telegram with status data."""
         result = self.runner.invoke(
-            cli, ["telegram", "parse-reply", "<R0020012521F02D00OKIL>"]
+            cli, ["telegram", "parse", "<R0020012521F02D00OKIL>"]
         )
 
         assert result.exit_code == 0
@@ -243,7 +243,7 @@ class TestReplyTelegramCLI:
             cli,
             [
                 "telegram",
-                "parse-reply",
+                "parse",
                 "<R0020012521F02D18-15,2§CIL>",
             ],
         )
@@ -256,7 +256,7 @@ class TestReplyTelegramCLI:
     def test_parse_reply_telegram_invalid_format(self):
         """Test parsing invalid reply telegram format."""
         result = self.runner.invoke(
-            cli, ["telegram", "parse-reply", "<R002001252F02D18+26,0§CIL>"]
+            cli, ["telegram", "parse", "<R002001252F02D18+26,0§CIL>"]
         )
 
         assert result.exit_code == 1
@@ -271,7 +271,7 @@ class TestReplyTelegramCLI:
         """Test parsing invalid reply telegram format with JSON output."""
         result = self.runner.invoke(
             cli,
-            ["telegram", "parse-reply", "<R002001252F02D18+26,0§CIL>"],
+            ["telegram", "parse", "<R002001252F02D18+26,0§CIL>"],
         )
 
         assert result.exit_code == 1
@@ -281,7 +281,7 @@ class TestReplyTelegramCLI:
 
     def test_parse_reply_telegram_help(self):
         """Test reply telegram parse command help."""
-        result = self.runner.invoke(cli, ["telegram", "parse-reply", "--help"])
+        result = self.runner.invoke(cli, ["telegram", "parse", "--help"])
 
         assert result.exit_code == 0
         assert "Parse a reply telegram string" in result.output
@@ -446,8 +446,8 @@ class TestTelegramCLIIntegration:
 
         # Check that all telegram commands are listed
         assert "parse" in output
-        assert "parse-system" in output
-        assert "parse-reply" in output
+        assert "parse" in output
+        assert "parse" in output
         assert "parse" in output
         assert "parse-multiple" in output
         assert "validate" in output
@@ -457,8 +457,8 @@ class TestTelegramCLIIntegration:
         # Test each command with help to ensure they exist
         commands = [
             "parse",
-            "parse-system",
-            "parse-reply",
+            "parse",
+            "parse",
             "parse",
             "parse-multiple",
             "validate",
@@ -473,8 +473,8 @@ class TestTelegramCLIIntegration:
         # All commands should include timestamp and proper structure
         telegrams = [
             ("parse", "<E14L00I02MAK>"),
-            ("parse-system", "<S0020012521F02D18FN>"),
-            ("parse-reply", "<R0020012521F02D18+26,0§CIL>"),
+            ("parse", "<S0020012521F02D18FN>"),
+            ("parse", "<R0020012521F02D18+26,0§CIL>"),
             ("parse", "<E14L00I02MAK>"),
         ]
 
@@ -497,8 +497,8 @@ class TestTelegramCLIIntegration:
         # Test with invalid telegrams
         invalid_telegrams = [
             ("parse", "<INVALID>"),
-            ("parse-system", "<INVALID>"),
-            ("parse-reply", "<INVALID>"),
+            ("parse", "<INVALID>"),
+            ("parse", "<INVALID>"),
             ("parse", "<INVALID>"),
         ]
 
@@ -519,7 +519,7 @@ class TestTelegramCLIIntegration:
 
     def test_missing_arguments_handled_consistently(self):
         """Test that missing arguments are handled consistently."""
-        commands = ["parse", "parse-system", "parse-reply", "parse"]
+        commands = ["parse", "parse", "parse", "parse"]
 
         for cmd in commands:
             result = self.runner.invoke(cli, ["telegram", cmd])

@@ -35,10 +35,10 @@ Parse different types of telegrams:
 xp telegram parse "<E14L00I02MAK>"
 
 # Parse system telegram
-xp telegram parse-system "<S0020012521F02D18FN>"
+xp telegram parse "<S0020012521F02D18FN>"
 
 # Parse reply telegram
-xp telegram parse-reply "<R0020012521F02D18+26,0§CIL>"
+xp telegram parse "<R0020012521F02D18+26,0§CIL>"
 
 # Auto-detect telegram type
 xp telegram parse "<E14L00I02MAK>"

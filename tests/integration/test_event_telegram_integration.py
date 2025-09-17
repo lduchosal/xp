@@ -49,7 +49,7 @@ class TestEventTelegramIntegration:
     def test_parse_event_telegram_command_with_checksum_validation(self):
         """Test telegram parsing with checksum validation"""
         result = self.runner.invoke(
-            cli, ["telegram", "parse-event", "<E14L00I02MAK>", "--validate-checksum"]
+            cli, ["telegram", "parse", "<E14L00I02MAK>", "--validate-checksum"]
         )
 
         assert result.exit_code == 0
@@ -278,7 +278,7 @@ class TestEventTelegramIntegration:
             cli,
             [
                 "telegram",
-                "parse-event",
+                "parse",
                 "<E14L00I02MAK>",
                 "--validate-checksum",
             ],

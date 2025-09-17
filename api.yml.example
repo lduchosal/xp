@@ -1,0 +1,27 @@
+# Example API configuration file
+# Copy this to api.yml and modify as needed
+
+api:
+  title: "XP Protocol API"
+  description: "REST API for XP Protocol Conbus operations"
+  version: "0.2.0"
+
+  # CORS configuration
+  cors_origins:
+    - "*"  # Allow all origins (not recommended for production)
+    # - "http://localhost:3000"  # Frontend app
+    # - "https://your-domain.com"
+
+  cors_methods:
+    - "GET"
+    - "POST"
+    - "OPTIONS"
+
+  cors_headers:
+    - "*"
+
+# Conbus client configuration (used by CLI and API)
+conbus:
+  ip: "192.168.1.100"
+  port: 2113
+  timeout: 10

@@ -110,27 +110,6 @@ class DiscoveryService:
         """
         return reply_telegram.system_function == SystemFunction.DISCOVERY
 
-    def parse_multiple_discovery_responses(
-        self, reply_telegrams: List[ReplyTelegram]
-    ) -> List[DeviceInfo]:
-        """
-        Parse multiple reply telegrams to extract all discovered devices.
-
-        Args:
-            reply_telegrams: List of reply telegrams to analyze
-
-        Returns:
-            List of DeviceInfo objects for discovered devices
-        """
-        devices = []
-
-        for reply in reply_telegrams:
-            device_info = self.parse_discovery_response(reply)
-            if device_info:
-                devices.append(device_info)
-
-        return devices
-
     def _generate_discovery_response(self, serial_number: str) -> str:
         """Generate discovery response telegram for a device"""
         # Format: <R{serial}F01D{checksum}>

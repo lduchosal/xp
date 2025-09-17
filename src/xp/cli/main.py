@@ -11,6 +11,7 @@ from .commands.checksum_commands import checksum
 from .commands.file_commands import file
 from .commands.server_commands import server
 from .commands.conbus import conbus
+from .commands.api import api
 
 # Import all conbus command modules to register their commands
 from .commands.reverse_proxy_commands import reverse_proxy
@@ -30,6 +31,7 @@ cli.add_command(checksum)
 cli.add_command(file)
 cli.add_command(server)
 cli.add_command(conbus)
+cli.add_command(api)
 cli.add_command(reverse_proxy)
 
 # Add the tree command

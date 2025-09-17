@@ -4,11 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="fix: refactor">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: FastAPI">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_discovery_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_discovery_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_telegram_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_telegram_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,6 +101,7 @@
     "Python.telegram_test_data.executor": "Debug",
     "Python.test_blink_integration.executor": "Run",
     "Python.test_checksum.executor": "Run",
+    "Python.test_conbus_blink_commands.executor": "Run",
     "Python.test_discovery_integration.executor": "Run",
     "Python.test_event_telegram.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -122,7 +131,7 @@
       <recent name="$PROJECT_DIR$/Specs" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test_discovery_integration">
+  <component name="RunManager" selected="Python tests.Python tests in tests">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
@@ -161,6 +170,29 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/integration/test_blink_integration.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_conbus_blink_commands" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="xp" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/unit/test_cli" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -224,39 +256,21 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
-      <module name="xp" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_parameters" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.integration.test_xp_input_integration.TestXPInputIntegration&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.main" />
       <item itemvalue="Python.test_blink_integration" />
+      <item itemvalue="Python.test_conbus_blink_commands" />
       <item itemvalue="Python.test_discovery_integration" />
       <item itemvalue="Python tests.Python tests in fixtures" />
-      <item itemvalue="Python tests.pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration" />
       <item itemvalue="Python tests.Python tests in tests" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test_conbus_blink_commands" />
+        <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python.test_discovery_integration" />
         <item itemvalue="Python.test_blink_integration" />
         <item itemvalue="Python tests.Python tests in fixtures" />
-        <item itemvalue="Python tests.pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration" />
-        <item itemvalue="Python tests.Python tests in tests" />
       </list>
     </recent_temporary>
   </component>
@@ -286,15 +300,7 @@
       <workItem from="1756830585261" duration="79203000" />
       <workItem from="1757696538700" duration="629000" />
       <workItem from="1757752097335" duration="35847000" />
-      <workItem from="1758124896525" duration="10459000" />
-    </task>
-    <task id="LOCAL-00016" summary="Fix: Conbus scan background">
-      <option name="closed" value="true" />
-      <created>1756933894689</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1756933894689</updated>
+      <workItem from="1758124896525" duration="11800000" />
     </task>
     <task id="LOCAL-00017" summary="Fix: Conbus encoding">
       <option name="closed" value="true" />
@@ -680,7 +686,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758146922501</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="Feat: FastAPI">
+      <option name="closed" value="true" />
+      <created>1758147877668</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1758147877668</updated>
+    </task>
+    <option name="localTasksCounter" value="66" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -734,7 +748,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: Conbus server" />
     <MESSAGE value="Feat: Conbus client" />
     <MESSAGE value="Fix: Conbus client" />
     <MESSAGE value="Fix: Conbus scan" />
@@ -759,7 +772,8 @@
     <MESSAGE value="fix: lint" />
     <MESSAGE value="fix: test units" />
     <MESSAGE value="fix: refactor" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: refactor" />
+    <MESSAGE value="Feat: FastAPI" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: FastAPI" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -852,6 +866,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration Coverage Results" MODIFIED="1758123076107" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp24_action_integration_TestXP24ActionIntegration_test_cli_command_json_output.coverage" NAME="pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.test_cli_command_json_output Coverage Results" MODIFIED="1757433750210" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_checksum_integration_TestChecksumIntegration.coverage" NAME="pytest for tests.integration.test_checksum_integration.TestChecksumIntegration Coverage Results" MODIFIED="1758108115640" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$test_conbus_blink_commands.coverage" NAME="test_conbus_blink_commands Coverage Results" MODIFIED="1758148871913" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/unit/test_cli" />
     <SUITE FILE_PATH="coverage/xp$demo.coverage" NAME="demo Coverage Results" MODIFIED="1756276295879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$telegram_test_data.coverage" NAME="telegram_test_data Coverage Results" MODIFIED="1757433458751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/fixtures" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_cli_command_integration_action.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_action Coverage Results" MODIFIED="1758049983712" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

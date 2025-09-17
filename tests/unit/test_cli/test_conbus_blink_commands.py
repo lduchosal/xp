@@ -57,7 +57,7 @@ class TestConbusBlinkCommands:
         mock_service.send_custom_telegram.return_value = mock_response
 
         runner = CliRunner()
-        result = runner.invoke(conbus, ["blink", "0020044964", "on"])
+        result = runner.invoke(conbus, ["blink", "on", "0020044964"])
 
         assert result.exit_code == 0
         assert "<S0020044964F05D00FN>" in result.output
@@ -94,7 +94,7 @@ class TestConbusBlinkCommands:
         mock_service.send_custom_telegram.return_value = mock_response
 
         runner = CliRunner()
-        result = runner.invoke(conbus, ["blink", "0020030837", "off"])
+        result = runner.invoke(conbus, ["blink", "off", "0020030837"])
 
         assert result.exit_code == 0
         assert "<S0020030837F06D00FK>" in result.output
@@ -131,7 +131,7 @@ class TestConbusBlinkCommands:
         mock_service.send_custom_telegram.return_value = mock_response
 
         runner = CliRunner()
-        result = runner.invoke(conbus, ["blink", "0020044964", "on"])
+        result = runner.invoke(conbus, ["blink", "on", "0020044964"])
 
         assert result.exit_code == 0
         assert '"operation": "blink"' in result.output
@@ -141,7 +141,7 @@ class TestConbusBlinkCommands:
     def test_conbus_blink_invalid_serial_json(self):
         """Test blink command with invalid serial number and JSON output"""
         runner = CliRunner()
-        result = runner.invoke(conbus, ["blink", "invalid", "on"])
+        result = runner.invoke(conbus, ["blink", "on", "invalid"])
 
         assert result.exit_code == 2
         assert (
@@ -164,7 +164,7 @@ class TestConbusBlinkCommands:
         )
 
         runner = CliRunner()
-        result = runner.invoke(conbus, ["blink", "0020044964", "on"])
+        result = runner.invoke(conbus, ["blink", "on", "0020044964"])
 
         assert result.exit_code != 0
         assert "Connection timeout" in result.output
@@ -194,7 +194,7 @@ class TestConbusBlinkCommands:
         mock_service.send_custom_telegram.return_value = mock_response
 
         runner = CliRunner()
-        result = runner.invoke(conbus, ["blink", "0020044964", "on"])
+        result = runner.invoke(conbus, ["blink", "on", "0020044964"])
 
         assert result.exit_code == 0
         assert "<S0020044964F05D00FN>" in result.output
@@ -203,8 +203,9 @@ class TestConbusBlinkCommands:
     def test_conbus_unblink_invalid_serial(self):
         """Test unblink command with invalid serial number"""
         runner = CliRunner()
-        result = runner.invoke(conbus, ["blink", "123", "off"])
+        result = runner.invoke(conbus, ["blink", "off", "123"])
 
+        assert 'succeed' in result.output
         assert result.exit_code == 0
         assert '"target_serial": "0000000123"' in result.output
 
@@ -233,7 +234,7 @@ class TestConbusBlinkCommands:
         mock_service.send_custom_telegram.return_value = mock_response
 
         runner = CliRunner()
-        result = runner.invoke(conbus, ["blink", "0020030837", "off"])
+        result = runner.invoke(conbus, ["blink", "off", "0020030837"])
 
         assert result.exit_code == 0
         assert '"operation": "unblink"' in result.output
