@@ -1,1 +1,25 @@
 """Command modules for XP CLI."""
+
+from .conbus import *
+from .conbus_blink_commands import *
+from .conbus_config_commands import *
+from .conbus_custom_commands import *
+from .conbus_discover_commands import *
+from .conbus_input_commands import *
+from .conbus_scan_commands import *
+from .conbus_send_commands import *
+
+from .file_commands import *
+from .module_commands import *
+from .reverse_proxy_commands import *
+from .server_commands import *
+
+from .telegram import *
+from .telegram_blink_commands import *
+from .telegram_commands import *
+from .telegram_discovery_commands import *
+from .telegram_linknumber_commands import *
+from .telegram_version_commands import *
+
+
+from .checksum_commands import *

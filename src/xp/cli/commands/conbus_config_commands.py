@@ -10,7 +10,6 @@ from .conbus import conbus
 
 
 @conbus.command("config")
-
 @handle_service_errors(Exception)
 def show_config():
     """

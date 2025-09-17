@@ -2,6 +2,7 @@
 
 import click
 import json
+from click_help_colors import HelpColorsGroup
 
 from ...services.checksum_service import ChecksumService
 from ..utils.decorators import handle_service_errors
@@ -9,7 +10,7 @@ from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 
 
-@click.group()
+@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
 def checksum():
     """
     Checksum calculation and validation operations

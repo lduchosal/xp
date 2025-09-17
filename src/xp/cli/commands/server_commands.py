@@ -2,6 +2,7 @@
 
 import click
 import json
+from click_help_colors import HelpColorsGroup
 
 from ...services.conbus_server_service import ConbusServerService, ConbusServerError
 from ..utils.decorators import handle_service_errors
@@ -13,7 +14,7 @@ from ..utils.error_handlers import ServerErrorHandler
 _server_instance = None
 
 
-@click.group()
+@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
 def server():
     """
     Conbus emulator server operations

@@ -30,7 +30,7 @@ class BlinkService:
         """Initialize the blink service"""
         pass
 
-    def generate_blink_telegram(self, serial_number: str, on_or_off: bool) -> str:
+    def generate_blink_telegram(self, serial_number: str, on_or_off: str) -> str:
         """
         Generate a telegram to start blinking a module's LED.
 
@@ -51,7 +51,7 @@ class BlinkService:
             raise BlinkError(f"Serial number must contain only digits: {serial_number}")
 
         action_type = "05"
-        if not on_or_off:
+        if on_or_off.lower() == "off":
             action_type = "06"
 
         # Build the data part of the telegram (F05D00 - Blink function, Status data point)

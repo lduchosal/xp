@@ -14,7 +14,6 @@ from .telegram import linknumber
 @linknumber.command("write")
 @click.argument("serial_number", type=SERIAL)
 @click.argument("link_number", type=int)
-
 @handle_service_errors(LinkNumberError)
 def generate_set_link_number(serial_number: str, link_number: int):
     """

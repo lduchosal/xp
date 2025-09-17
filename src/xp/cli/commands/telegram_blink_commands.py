@@ -12,7 +12,6 @@ from .telegram import blink
 
 @blink.command("on")
 @click.argument("serial_number", type=SERIAL)
-
 @handle_service_errors(BlinkError)
 def blink_on(serial_number: str):
     """
@@ -28,7 +27,7 @@ def blink_on(serial_number: str):
     OutputFormatter(True)
 
     try:
-        telegram = service.generate_blink_telegram(serial_number, True)
+        telegram = service.generate_blink_telegram(serial_number, "on")
 
         output = {
             "success": True,
@@ -59,7 +58,7 @@ def blink_off(serial_number: str):
     OutputFormatter(True)
 
     try:
-        telegram = service.generate_blink_telegram(serial_number, False)
+        telegram = service.generate_blink_telegram(serial_number, "off")
 
         output = {
             "success": True,

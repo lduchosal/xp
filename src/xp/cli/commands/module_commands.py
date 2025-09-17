@@ -2,6 +2,7 @@
 
 import click
 import json
+from click_help_colors import HelpColorsGroup
 
 from ...services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
 from ..utils.decorators import list_command
@@ -9,7 +10,7 @@ from ..utils.formatters import OutputFormatter, ListFormatter
 from ..utils.error_handlers import CLIErrorHandler
 
 
-@click.group()
+@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
 def module():
     """
     Module type operations

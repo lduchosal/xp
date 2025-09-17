@@ -4,6 +4,7 @@ import click
 import json
 import signal
 import sys
+from click_help_colors import HelpColorsGroup
 
 from ...services.conbus_reverse_proxy_service import (
     ConbusReverseProxyService,
@@ -18,7 +19,7 @@ from ..utils.error_handlers import CLIErrorHandler
 _proxy_instance = None
 
 
-@click.group(name="rp")
+@click.group(name="rp", cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
 def reverse_proxy():
     """
     Conbus reverse proxy operations
