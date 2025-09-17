@@ -51,7 +51,7 @@ class ReplyTelegram(Telegram):
             DataPointType.HUMIDITY: "Humidity",
             DataPointType.VOLTAGE: "Voltage",
             DataPointType.CURRENT: "Current",
-            DataPointType.NONE: "Status",
+            DataPointType.NONE: "None",
             DataPointType.VERSION: "Version",
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
