@@ -27,7 +27,7 @@ class TestConbusBlinkCommands:
         result = runner.invoke(conbus, ["blink", "--help"])
 
         assert result.exit_code == 0
-        assert "Usage: conbus blink [OPTIONS] SERIAL_NUMBER ON_OR_OFF" in result.output
+        assert "Usage: conbus blink [OPTIONS] SERIAL_NUMBER [[on|off]]" in result.output
         assert "Examples:" in result.output
         assert "xp conbus blink 0020044964 off" in result.output
 

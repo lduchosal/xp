@@ -1,7 +1,7 @@
 """
 Unit tests for Latin-1 encoding edge cases in Conbus communication.
 
-Tests the specific encoding fix for the issue described in Specs/Fix-Encoding-Issue.md
+Tests the specific encoding fix for the issue described in doc/Fix-Encoding-Issue.md
 where UTF-8 decoding fails on Latin-1 characters like 0xa7 (§ symbol).
 """
 
