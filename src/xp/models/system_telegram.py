@@ -49,7 +49,7 @@ class SystemTelegram(Telegram):
     def data_point_description(self) -> str:
         """Get human-readable data point description"""
         descriptions = {
-            DataPointType.NONE: "Status",
+            DataPointType.NONE: "None",
             DataPointType.VERSION: "Version",
             DataPointType.LINK_NUMBER: "Link Number",
             DataPointType.MODULE_TYPE: "Module Type",

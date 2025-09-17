@@ -159,7 +159,7 @@ class TestSystemTelegram:
         assert telegram.data_point_description == "Current"
 
         telegram.data_point_id = DataPointType.NONE
-        assert telegram.data_point_description == "Status"
+        assert telegram.data_point_description == "None"
 
     def test_to_dict(self):
         """Test to_dict method."""
@@ -232,7 +232,7 @@ class TestSystemTelegram:
             (DataPointType.HUMIDITY, "Humidity"),
             (DataPointType.VOLTAGE, "Voltage"),
             (DataPointType.CURRENT, "Current"),
-            (DataPointType.NONE, "Status"),
+            (DataPointType.NONE, "None"),
             (DataPointType.VERSION, "Version"),
             (DataPointType.LINK_NUMBER, "Link Number"),
             (DataPointType.MODULE_TYPE, "Module Type"),
