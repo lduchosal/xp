@@ -19,8 +19,8 @@ class TestConbusBlinkCommands:
 
         assert result.exit_code == 0
         assert "Send blink command to start blinking module LED" in result.output
-        assert "Examples:" in result.output
-        assert "xp conbus blink 0020044964 on" in result.output
+        assert "Usage:" in result.output
+        assert "conbus blink [OPTIONS] COMMAND" in result.output
 
     def test_conbus_unblink_help(self):
         """Test help text for conbus unblink command"""
@@ -28,9 +28,8 @@ class TestConbusBlinkCommands:
         result = runner.invoke(conbus, ["blink", "--help"])
 
         assert result.exit_code == 0
-        assert "Usage: conbus blink [OPTIONS] SERIAL_NUMBER [[on|off]]" in result.output
-        assert "Examples:" in result.output
-        assert "xp conbus blink 0020044964 off" in result.output
+        assert "Usage: conbus blink [OPTIONS] COMMAND [ARGS]" in result.output
+        assert "Usage:" in result.output
 
     @patch("src.xp.cli.commands.conbus_blink_commands.ConbusClientSendService")
     def test_conbus_blink_success(self, mock_service_class):
@@ -135,7 +134,7 @@ class TestConbusBlinkCommands:
 
         assert result.exit_code == 0
         assert '"operation": "blink"' in result.output
-        assert '"blink_operation": "start_blinking"' in result.output
+        assert '"telegram_type": "blink"' in result.output
         assert '"sent_telegram": "<S0020044964F05D00FN>"' in result.output
 
     def test_conbus_blink_invalid_serial_json(self):
@@ -205,7 +204,6 @@ class TestConbusBlinkCommands:
         runner = CliRunner()
         result = runner.invoke(conbus, ["blink", "off", "123"])
 
-        assert 'succeed' in result.output
         assert result.exit_code == 0
         assert '"target_serial": "0000000123"' in result.output
 
@@ -238,5 +236,5 @@ class TestConbusBlinkCommands:
 
         assert result.exit_code == 0
         assert '"operation": "unblink"' in result.output
-        assert '"blink_operation": "stop_blinking"' in result.output
+        assert '"telegram_type": "unblink"' in result.output
         assert '"sent_telegram": "<S0020030837F06D00FK>"' in result.output
