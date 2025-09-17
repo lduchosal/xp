@@ -8,7 +8,7 @@ from ...services.conbus_client_send_service import (
     ConbusClientSendService,
     ConbusClientSendError,
 )
-from ...services.blink_service import BlinkService, BlinkError
+from ...services.telegram_blink_service import BlinkService, BlinkError
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,

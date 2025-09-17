@@ -1,7 +1,7 @@
 """Integration tests for device discovery functionality"""
 
 import pytest
-from src.xp.services.discovery_service import (
+from src.xp.services.telegram_discovery_service import (
     DiscoveryService,
 )
 from src.xp.services.telegram_service import TelegramService, TelegramParsingError

@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 from xp.services.telegram_service import TelegramService, TelegramParsingError
 from xp.services.module_type_service import ModuleTypeService
-from xp.services.version_service import VersionService
+from xp.services.telegram_version_service import VersionService
 from xp.models.datapoint_type import DataPointType
 
 

@@ -12,7 +12,7 @@ import os
 from typing import Dict, List, Optional
 
 from ..services.telegram_service import TelegramService
-from ..services.discovery_service import DiscoveryService
+from ..services.telegram_discovery_service import DiscoveryService
 from ..services.cp20_server_service import CP20ServerService
 from ..services.xp24_server_service import XP24ServerService
 from ..services.xp33_server_service import XP33ServerService

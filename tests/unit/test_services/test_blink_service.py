@@ -1,7 +1,7 @@
 """Tests for BlinkService"""
 
 import pytest
-from src.xp.services.blink_service import BlinkService, BlinkError
+from src.xp.services.telegram_blink_service import BlinkService, BlinkError
 from src.xp.models.system_telegram import SystemTelegram
 from src.xp.models.datapoint_type import DataPointType
 from src.xp.models.system_function import SystemFunction

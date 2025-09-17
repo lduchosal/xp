@@ -3,7 +3,7 @@
 import click
 import json
 
-from ...services.discovery_service import DiscoveryService, DiscoveryError
+from ...services.telegram_discovery_service import DiscoveryService, DiscoveryError
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler

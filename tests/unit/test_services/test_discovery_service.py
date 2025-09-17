@@ -1,7 +1,7 @@
 """Tests for DiscoveryService"""
 
 from unittest.mock import Mock
-from src.xp.services.discovery_service import (
+from src.xp.services.telegram_discovery_service import (
     DiscoveryService,
     DeviceInfo,
 )

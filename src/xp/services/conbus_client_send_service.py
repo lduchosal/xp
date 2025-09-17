@@ -20,8 +20,8 @@ from ..models import (
 )
 from ..models.response import Response
 from ..services.telegram_service import TelegramService
-from ..services.discovery_service import DiscoveryService
-from ..services.version_service import VersionService
+from ..services.telegram_discovery_service import DiscoveryService
+from ..services.telegram_version_service import VersionService
 from ..utils.checksum import calculate_checksum
 
 

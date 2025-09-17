@@ -3,8 +3,8 @@
 from .telegram_service import TelegramService, TelegramParsingError
 from .module_type_service import ModuleTypeService, ModuleTypeNotFoundError
 from .log_file_service import LogFileService, LogFileParsingError
-from .link_number_service import LinkNumberService, LinkNumberError
-from .discovery_service import DiscoveryService, DiscoveryError, DeviceInfo
+from .telegram_link_number_service import LinkNumberService, LinkNumberError
+from .telegram_discovery_service import DiscoveryService, DiscoveryError, DeviceInfo
 
 __all__ = [
     "TelegramService",
