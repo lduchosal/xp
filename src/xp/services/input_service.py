@@ -2,6 +2,9 @@
 
 import re
 from typing import Dict
+
+from . import checksum_service
+from .checksum_service import ChecksumService
 from ..models.input_telegram import InputTelegram
 from ..models.action_type import ActionType
 from ..utils.checksum import calculate_checksum
@@ -30,6 +33,8 @@ class XPInputService:
 
     # Regex pattern for XP24 action telegrams
     XP_INPUT_PATTERN = re.compile(r"^<S(\d{10})F27D(\d{2})([A-Z0-9]{2})([A-Z0-9]{2})>$")
+
+    checksum_service = ChecksumService()
 
     def __init__(self):
         """Initialize the XP input service"""
@@ -182,12 +187,39 @@ class XPInputService:
             )
 
             # Validate checksum
-            telegram.checksum_validated = self.validate_checksum(telegram)
+            data = f'{serial_number}F{input_number}D{action_type:02d}'
+            telegram.checksum_validated = self.checksum_service.validate_checksum(telegram, checksum).success
 
             return telegram
 
         except ValueError as e:
             raise XPInputError(f"Invalid values in XP24 action telegram: {e}")
+
+    def validate_checksum(self, telegram: InputTelegram) -> bool:
+        """
+        Validate the checksum of a parsed XP24 action telegram.
+
+        Args:
+            telegram: The parsed telegram
+
+        Returns:
+            True if checksum is valid, False otherwise
+        """
+        if not telegram.checksum or len(telegram.checksum) != 2:
+            return False
+
+        # Extract the data part (everything between < and checksum)
+        raw = telegram.raw_telegram
+        if not raw.startswith("<") or not raw.endswith(">"):
+            return False
+
+        # Get the data part without brackets and checksum
+        data_part = raw[1:-3]  # Remove '<' and last 2 chars (checksum) + '>'
+
+        # Calculate expected checksum
+        expected_checksum = calculate_checksum(data_part)
+
+        return telegram.checksum == expected_checksum
 
     def parse_status_response(self, raw_telegram: str) -> Dict[int, bool]:
         """

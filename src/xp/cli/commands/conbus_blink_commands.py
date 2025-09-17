@@ -40,15 +40,18 @@ def send_blink_telegram(serial_number: str, on_or_off: str):
     function_code = SystemFunction.UNBLINK.value
     operation = "unblink"
     blink_operation = "stop_blinking"
+    blink_value = False
     if on_or_off.lower() == "on":
         function_code = SystemFunction.BLINK.value
         operation = "blink"
         blink_operation = "start_blinking"
+        blink_value = True
 
     try:
         # Validate serial number using blink service
         blink_service.generate_blink_telegram(
-            serial_number
+            serial_number,
+            blink_value
         )  # This validates the serial
 
         # Send blink telegram using custom method (F05D00)
@@ -62,6 +65,7 @@ def send_blink_telegram(serial_number: str, on_or_off: str):
         response_data = response.to_dict()
         response_data["operation"] = operation
         response_data["blink_operation"] = blink_operation
+        response_data["blink_value"] = blink_value
         click.echo(json.dumps(response_data, indent=2))
 
     except BlinkError as e:
