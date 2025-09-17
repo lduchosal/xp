@@ -2,7 +2,8 @@
 
 from unittest.mock import Mock, patch
 from click.testing import CliRunner
-from src.xp.cli.commands.conbus_blink_commands import
+from src.xp.cli.commands.conbus_blink_commands import send_blink_telegram, send_blink_on_telegram, send_blink_off_telegram
+from src.xp.cli.commands import *
 from src.xp.services.conbus_client_send_service import ConbusClientSendError
 from src.xp.models import ConbusSendRequest, ConbusSendResponse, TelegramType
 from datetime import datetime

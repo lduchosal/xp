@@ -78,7 +78,7 @@ class BlinkService:
         Raises:
             BlinkError: If parameters are invalid
         """
-        raw_telegram = self.generate_blink_telegram(serial_number, True)
+        raw_telegram = self.generate_blink_telegram(serial_number, "on")
 
         # Extract checksum from the generated telegram
         checksum = raw_telegram[-3:-1]  # Get checksum before closing >
@@ -106,7 +106,7 @@ class BlinkService:
         Raises:
             BlinkError: If parameters are invalid
         """
-        raw_telegram = self.generate_blink_telegram(serial_number, False)
+        raw_telegram = self.generate_blink_telegram(serial_number, "off")
 
         # Extract checksum from the generated telegram
         checksum = raw_telegram[-3:-1]  # Get checksum before closing >
