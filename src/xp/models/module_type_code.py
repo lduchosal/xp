@@ -128,7 +128,7 @@ MODULE_TYPE_REGISTRY: Dict[int, Dict[str, str]] = {
         "name": "XP134",
         "description": "Junctionbox interlink",
     },
-    ModuleTypeCode.XP24P.value: {"name": "XP230", "description": "XP230 module"},
+    ModuleTypeCode.XP24P.value: {"name": "XP24P", "description": "XP24P module"},
     ModuleTypeCode.XP28A.value: {"name": "XP28A", "description": "XP28A module"},
     ModuleTypeCode.XP28B.value: {"name": "XP28B", "description": "XP28B module"},
     ModuleTypeCode.CONTOOL.value: {"name": "CONTOOL", "description": "CONTOOL module"},

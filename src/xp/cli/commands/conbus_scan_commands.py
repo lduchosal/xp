@@ -14,8 +14,8 @@ from .conbus import conbus
 
 
 @conbus.command("scan")
-@click.argument("serial_number")
-@click.argument("function_code")
+@click.argument("serial_number", type=str)
+@click.argument("function_code", type=int)
 @click.option(
     "--background",
     "-b",

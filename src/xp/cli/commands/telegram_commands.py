@@ -11,14 +11,7 @@ from ..utils.decorators import (
 )
 from ..utils.formatters import TelegramFormatter
 from ..utils.error_handlers import CLIErrorHandler
-
-
-@click.group()
-def telegram():
-    """
-    Event telegram operations
-    """
-    pass
+from .telegram import telegram
 
 
 @telegram.command("parse-event")

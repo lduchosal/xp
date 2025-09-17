@@ -18,8 +18,8 @@ from .conbus import conbus
 
 
 @conbus.command("input")
-@click.argument("serial_number")
-@click.argument("input_number_or_status")
+@click.argument("serial_number", type=click.STRING)
+@click.argument("input_number_or_status", type=click.Choice(["status", "0", "1", "2", "3", "4", "5", "6", "7", "8"]))
 @click.argument("on_or_off", type=click.Choice(["on", "off"]), default="on")
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
@@ -31,8 +31,8 @@ def xp_input(
     Examples:
 
     \b
-        xp conbus input 0011223344 0 ON     # Toggle input 0
-        xp conbus input 0011223344 1 OFF    # Toggle input 1
+        xp conbus input 0011223344 0 on     # Toggle input 0
+        xp conbus input 0011223344 1 off    # Toggle input 1
         xp conbus input 0011223344 status   # Query status
     """
     service = ConbusClientSendService()

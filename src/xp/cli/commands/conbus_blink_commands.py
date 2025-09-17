@@ -19,7 +19,7 @@ from .conbus import conbus
 
 @conbus.command("blink")
 @click.argument("serial_number")
-@click.argument("on_or_off")
+@click.argument("on_or_off", type=click.Choice(["on", "off"]), default="on")
 @connection_command()
 @handle_service_errors(ConbusClientSendError, BlinkError)
 def send_blink_telegram(serial_number: str, on_or_off: str, json_output: bool):

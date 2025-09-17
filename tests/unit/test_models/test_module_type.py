@@ -137,7 +137,7 @@ class TestModuleType:
         assert MODULE_TYPE_REGISTRY[7]["name"] == "XP24"
         assert MODULE_TYPE_REGISTRY[14]["name"] == "XP2606"
         assert MODULE_TYPE_REGISTRY[23]["name"] == "XP134"
-        assert MODULE_TYPE_REGISTRY[24]["name"] == "XP230"
+        assert MODULE_TYPE_REGISTRY[24]["name"] == "XP24P"
 
 
 class TestModuleTypeFunctions:
