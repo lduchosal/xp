@@ -22,7 +22,7 @@ from .conbus import conbus
 @click.argument("telegram_type")
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
-def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
+def send_telegram(target_serial: str, telegram_type: str):
     """
     Send telegram to Conbus server.
 
@@ -37,27 +37,19 @@ def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
         xp conbus send 0020030837 humidity
     """
     service = ConbusClientSendService()
-    formatter = OutputFormatter(json_output)
+    formatter = OutputFormatter(True)
 
     try:
         # Validate arguments
         if target_serial is None:
             error_response = formatter.error_response("target_serial is required")
-            if json_output:
-                click.echo(error_response)
-                raise SystemExit(1)
-            else:
-                click.echo("Error: target_serial is required", err=True)
-                raise click.ClickException("Missing target_serial")
+            click.echo(error_response)
+            raise SystemExit(1)
 
         if telegram_type is None:
             error_response = formatter.error_response("Telegram type required")
-            if json_output:
-                click.echo(error_response)
-                raise SystemExit(1)
-            else:
-                click.echo("Error: Telegram type required", err=True)
-                raise click.ClickException("Missing telegram type")
+            click.echo(error_response)
+            raise SystemExit(1)
 
         # Map string to enum
         telegram_type_map = {
@@ -79,13 +71,8 @@ def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
                 f"Unknown telegram type: {telegram_type}", error_data
             )
 
-            if json_output:
-                click.echo(error_response)
-                raise SystemExit(1)
-            else:
-                click.echo(f"Error: Unknown telegram type: {telegram_type}", err=True)
-                click.echo(f"Valid types: {', '.join(telegram_type_map.keys())}")
-                raise click.ClickException("Invalid telegram type")
+            click.echo(error_response)
+            raise SystemExit(1)
 
         # Create request
         request = ConbusSendRequest(
@@ -96,38 +83,13 @@ def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
         with service:
             response = service.send_telegram(request)
 
-        if json_output:
-            click.echo(json.dumps(response.to_dict(), indent=2))
-        else:
-            if response.success:
-                # Format output like the specification examples
-                if response.sent_telegram:
-                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
-                    click.echo(f"{timestamp} [TX] {response.sent_telegram}")
-
-                # Show received telegrams
-                for received in response.received_telegrams:
-                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
-                    click.echo(f"{timestamp} [RX] {received}")
-
-                if not response.received_telegrams:
-                    click.echo("No response received")
-            else:
-                click.echo(f"Error: {response.error}")
+        click.echo(json.dumps(response.to_dict(), indent=2))
 
     except ConbusClientSendError as e:
         if "Connection timeout" in str(e):
-            if not json_output:
-                click.echo(
-                    f"Connecting to {service.config.ip}:{service.config.port}..."
-                )
-                click.echo(
-                    f"Error: Connection timeout after {service.config.timeout} seconds"
-                )
-                click.echo("Failed to connect to server")
             CLIErrorHandler.handle_connection_error(
                 e,
-                json_output,
+                True,
                 {
                     "ip": service.config.ip,
                     "port": service.config.port,
@@ -135,4 +97,4 @@ def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
                 },
             )
         else:
-            CLIErrorHandler.handle_service_error(e, json_output, "telegram send")
+            CLIErrorHandler.handle_service_error(e, "telegram send")

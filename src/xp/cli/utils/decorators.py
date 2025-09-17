@@ -7,7 +7,7 @@ from ..utils.formatters import OutputFormatter
 
 
 def handle_service_errors(*service_exceptions: Type[Exception]):
-    """Decorator to handle common service exceptions with consistent error formatting.
+    """Decorator to handle common service exceptions with consistent JSON error formatting.
 
     Args:
         service_exceptions: Tuple of exception types to catch and handle
@@ -16,40 +16,25 @@ def handle_service_errors(*service_exceptions: Type[Exception]):
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> Any:
-            # Extract json_output from kwargs if present
-            json_output = kwargs.get("json_output", False)
-            formatter = OutputFormatter(json_output)
+            formatter = OutputFormatter(True)
 
             try:
                 return func(*args, **kwargs)
             except service_exceptions as e:
                 error_response = formatter.error_response(str(e))
-                if json_output:
-                    click.echo(error_response)
-                    raise SystemExit(1)
-                else:
-                    click.echo(error_response, err=True)
-                    raise click.ClickException(f"{func.__name__} failed")
+                click.echo(error_response)
+                raise SystemExit(1)
             except Exception as e:
                 # Handle unexpected errors
                 error_response = formatter.error_response(f"Unexpected error: {str(e)}")
-                if json_output:
-                    click.echo(error_response)
-                    raise SystemExit(1)
-                else:
-                    click.echo(error_response, err=True)
-                    raise click.ClickException(f"{func.__name__} failed")
+                click.echo(error_response)
+                raise SystemExit(1)
 
         return wrapper
 
     return decorator
 
 
-def json_output_option(func: Callable) -> Callable:
-    """Decorator to add --json-output option to a command."""
-    return click.option(
-        "--json-output", "-j", is_flag=True, help="Output in JSON format"
-    )(func)
 
 
 def validation_option(func: Callable) -> Callable:
@@ -60,9 +45,8 @@ def validation_option(func: Callable) -> Callable:
 
 
 def common_options(func: Callable) -> Callable:
-    """Decorator to add both json output and validation options."""
+    """Decorator to add validation option."""
     func = validation_option(func)
-    func = json_output_option(func)
     return func
 
 
@@ -96,7 +80,6 @@ def service_command(*service_exceptions: Type[Exception]):
     """
 
     def decorator(func: Callable) -> Callable:
-        func = json_output_option(func)
         func = handle_service_errors(*service_exceptions)(func)
         return func
 
@@ -107,7 +90,6 @@ def list_command(*service_exceptions: Type[Exception]):
     """Decorator for list/search commands with common options."""
 
     def decorator(func: Callable) -> Callable:
-        func = json_output_option(func)
         func = handle_service_errors(*service_exceptions)(func)
         return func
 
@@ -131,7 +113,6 @@ def file_operation_command():
             type=click.Choice(["event", "system", "reply"]),
             help="Filter by telegram type",
         )(func)
-        func = json_output_option(func)
         return func
 
     return decorator
@@ -147,9 +128,8 @@ def with_formatter(formatter_class=None):
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            json_output = kwargs.get("json_output", False)
             formatter_cls = formatter_class or OutputFormatter
-            formatter = formatter_cls(json_output)
+            formatter = formatter_cls(True)
             kwargs["formatter"] = formatter
             return func(*args, **kwargs)
 
@@ -168,8 +148,7 @@ def require_arguments(*required_args: str):
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            json_output = kwargs.get("json_output", False)
-            formatter = OutputFormatter(json_output)
+            formatter = OutputFormatter(True)
 
             # Check for missing required arguments
             missing_args = []
@@ -180,13 +159,8 @@ def require_arguments(*required_args: str):
             if missing_args:
                 error_msg = f"Missing required arguments: {', '.join(missing_args)}"
                 error_response = formatter.error_response(error_msg)
-
-                if json_output:
-                    click.echo(error_response)
-                    raise SystemExit(1)
-                else:
-                    click.echo(error_response, err=True)
-                    raise click.ClickException("Missing required arguments")
+                click.echo(error_response)
+                raise SystemExit(1)
 
             return func(*args, **kwargs)
 
@@ -199,12 +173,9 @@ def connection_command():
     """Decorator for commands that connect to remote services."""
 
     def decorator(func: Callable) -> Callable:
-        func = json_output_option(func)
-
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            json_output = kwargs.get("json_output", False)
-            formatter = OutputFormatter(json_output)
+            formatter = OutputFormatter(True)
 
             try:
                 return func(*args, **kwargs)
@@ -213,12 +184,7 @@ def connection_command():
                     # Special handling for connection timeouts
                     error_msg = "Connection timeout - server may be unreachable"
                     error_response = formatter.error_response(error_msg)
-
-                    if json_output:
-                        click.echo(error_response)
-                    else:
-                        click.echo("Failed to connect to server", err=True)
-
+                    click.echo(error_response)
                     raise SystemExit(1)
                 else:
                     # Re-raise other exceptions to be handled by other decorators

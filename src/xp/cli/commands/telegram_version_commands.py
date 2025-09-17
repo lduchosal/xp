@@ -5,7 +5,7 @@ import json
 
 from ...services.version_service import VersionService, VersionParsingError
 from ...services.telegram_service import TelegramService, TelegramParsingError
-from ..utils.decorators import json_output_option, handle_service_errors
+from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 from ..utils.serial_number_type import SERIAL
@@ -13,9 +13,9 @@ from .telegram import telegram
 
 @telegram.command("version")
 @click.argument("serial_number", type=SERIAL)
-@json_output_option
+
 @handle_service_errors(VersionParsingError)
-def generate_version_request(serial_number: str, json_output: bool):
+def generate_version_request(serial_number: str):
     """
     Generate a telegram to request version information from a device.
 
@@ -25,7 +25,7 @@ def generate_version_request(serial_number: str, json_output: bool):
         xp telegram version 0020030837
     """
     service = VersionService()
-    formatter = OutputFormatter(json_output)
+    formatter = OutputFormatter(True)
 
     try:
         result = service.generate_version_request_telegram(serial_number)
@@ -35,26 +35,10 @@ def generate_version_request(serial_number: str, json_output: bool):
                 result.error, {"serial_number": serial_number}
             )
             click.echo(error_response)
-            if json_output:
-                raise SystemExit(1)
-            else:
-                raise click.ClickException("Version request generation failed")
+            raise SystemExit(1)
 
-        if json_output:
-            click.echo(json.dumps(result.to_dict(), indent=2))
-        else:
-            click.echo("Version Request Telegram:")
-            click.echo(f"Serial: {result.data['serial_number']}")
-            click.echo(f"Telegram: {result.data['telegram']}")
-            click.echo(f"Function: {result.data['function_code']} (Read Data point)")
-            click.echo(f"Data Point: {result.data['data_point_code']} (Version)")
-            click.echo(f"Checksum: {result.data['checksum']}")
+        click.echo(json.dumps(result.to_dict(), indent=2))
 
     except VersionParsingError as e:
-        CLIErrorHandler.handle_service_error(
-            e,
-            json_output,
-            "version request generation",
-            {"serial_number": serial_number},
-        )
+        CLIErrorHandler.handle_service_error(e, "version request generation", {"serial_number": serial_number})
 

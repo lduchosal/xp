@@ -5,15 +5,15 @@ import json
 
 from ...services.discovery_service import DiscoveryService, DiscoveryError
 from ...services.telegram_service import TelegramService, TelegramParsingError
-from ..utils.decorators import json_output_option, handle_service_errors
+from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter, ListFormatter
 from ..utils.error_handlers import CLIErrorHandler
 from .telegram import discovery
 
 @discovery.command("generate")
-@json_output_option
+
 @handle_service_errors(DiscoveryError)
-def generate_discovery(json_output: bool):
+def generate_discovery():
     """
     Generate a discovery telegram for device enumeration.
 
@@ -23,28 +23,18 @@ def generate_discovery(json_output: bool):
         xp telegram discovery generate
     """
     service = DiscoveryService()
-    OutputFormatter(json_output)
+    formatter = OutputFormatter(True)
 
     try:
         telegram = service.generate_discovery_telegram()
 
-        if json_output:
-            output = {
-                "success": True,
-                "telegram": telegram,
-                "operation": "discovery_broadcast",
-                "broadcast_address": "0000000000",
-            }
-            click.echo(json.dumps(output, indent=2))
-        else:
-            click.echo("Discovery Broadcast Telegram:")
-            click.echo("Broadcast Address: 0000000000")
-            click.echo(f"Telegram: {telegram}")
-            click.echo(
-                "\nUse this telegram to enumerate all devices on the console bus."
-            )
+        output = {
+            "success": True,
+            "telegram": telegram,
+            "operation": "discovery_broadcast",
+            "broadcast_address": "0000000000",
+        }
+        click.echo(json.dumps(output, indent=2))
 
     except DiscoveryError as e:
-        CLIErrorHandler.handle_service_error(
-            e, json_output, "discovery telegram generation"
-        )
+        CLIErrorHandler.handle_service_error(e, "discovery telegram generation")

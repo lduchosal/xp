@@ -23,7 +23,7 @@ from .conbus import conbus
 @click.argument("on_or_off", type=click.Choice(["on", "off"]), default="on")
 @connection_command()
 @handle_service_errors(ConbusClientSendError, BlinkError)
-def send_blink_telegram(serial_number: str, on_or_off: str, json_output: bool):
+def send_blink_telegram(serial_number: str, on_or_off: str):
     """
     Send blink command to start blinking module LED.
 
@@ -59,48 +59,21 @@ def send_blink_telegram(serial_number: str, on_or_off: str, json_output: bool):
                 "00",  # Status data point
             )
 
-        if json_output:
-            response_data = response.to_dict()
-            response_data["operation"] = operation
-            response_data["blink_operation"] = blink_operation
-            click.echo(json.dumps(response_data, indent=2))
-        else:
-            if response.success:
-                # Format output like other conbus commands
-                if response.sent_telegram:
-                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
-                    click.echo(f"{timestamp} [TX] {response.sent_telegram}")
-
-                # Show received telegrams
-                for received in response.received_telegrams:
-                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
-                    click.echo(f"{timestamp} [RX] {received}")
-
-                if not response.received_telegrams:
-                    click.echo("No response received")
-                else:
-                    click.echo(f"Blink command sent to module {serial_number}")
-            else:
-                click.echo(f"Error: {response.error}")
+        response_data = response.to_dict()
+        response_data["operation"] = operation
+        response_data["blink_operation"] = blink_operation
+        click.echo(json.dumps(response_data, indent=2))
 
     except BlinkError as e:
-        if json_output:
-            error_response = {
-                "success": False,
-                "error": str(e),
-                "operation": operation,
-                "serial_number": serial_number,
-            }
-            click.echo(json.dumps(error_response, indent=2))
-            raise SystemExit(1)
-        else:
-            click.echo(f"Blink Error: {e}", err=True)
-            raise click.ClickException(str(e))
+        error_response = {
+            "success": False,
+            "error": str(e),
+            "operation": operation,
+            "serial_number": serial_number,
+        }
+        click.echo(json.dumps(error_response, indent=2))
+        raise SystemExit(1)
 
     except ConbusClientSendError as e:
-        CLIErrorHandler.handle_service_error(
-            e,
-            json_output,
-            "blink command",
-            {"serial_number": serial_number, "operation": operation},
-        )
+        CLIErrorHandler.handle_service_error(e, "blink command",
+                                             {"serial_number": serial_number, "operation": operation})

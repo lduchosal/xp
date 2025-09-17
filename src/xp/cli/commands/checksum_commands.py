@@ -4,7 +4,7 @@ import click
 import json
 
 from ...services.checksum_service import ChecksumService
-from ..utils.decorators import json_output_option, handle_service_errors
+from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 
@@ -26,9 +26,8 @@ def checksum():
     default="simple",
     help="Checksum algorithm to use",
 )
-@json_output_option
 @handle_service_errors(Exception)
-def calculate_checksum(data: str, algorithm: str, json_output: bool):
+def calculate_checksum(data: str, algorithm: str):
     """
     Calculate checksum for given data string.
 
@@ -39,7 +38,7 @@ def calculate_checksum(data: str, algorithm: str, json_output: bool):
         xp checksum calculate "E14L00I02M" --algorithm crc32
     """
     service = ChecksumService()
-    formatter = OutputFormatter(json_output)
+    formatter = OutputFormatter(True)
 
     try:
         if algorithm == "simple":
@@ -50,22 +49,12 @@ def calculate_checksum(data: str, algorithm: str, json_output: bool):
         if not result.success:
             error_response = formatter.error_response(result.error, {"input": data})
             click.echo(error_response)
-            if json_output:
-                raise SystemExit(1)
-            else:
-                raise click.ClickException("Checksum calculation failed")
+            raise SystemExit(1)
 
-        if json_output:
-            click.echo(json.dumps(result.to_dict(), indent=2))
-        else:
-            click.echo(f"Input: {data}")
-            click.echo(f"Algorithm: {result.data['algorithm']}")
-            click.echo(f"Checksum: {result.data['checksum']}")
+        click.echo(json.dumps(result.to_dict(), indent=2))
 
     except Exception as e:
-        CLIErrorHandler.handle_service_error(
-            e, json_output, "checksum calculation", {"input": data}
-        )
+        CLIErrorHandler.handle_service_error(e, "checksum calculation", {"input": data})
 
 
 @checksum.command("validate")
@@ -78,10 +67,9 @@ def calculate_checksum(data: str, algorithm: str, json_output: bool):
     default="simple",
     help="Checksum algorithm to use",
 )
-@json_output_option
 @handle_service_errors(Exception)
 def validate_checksum(
-    data: str, expected_checksum: str, algorithm: str, json_output: bool
+    data: str, expected_checksum: str, algorithm: str
 ):
     """
     Validate data against expected checksum.
@@ -93,7 +81,7 @@ def validate_checksum(
         xp checksum validate "E14L00I02M" "ABCDABCD" --algorithm crc32
     """
     service = ChecksumService()
-    formatter = OutputFormatter(json_output)
+    formatter = OutputFormatter(True)
 
     try:
         if algorithm == "simple":
@@ -106,24 +94,10 @@ def validate_checksum(
                 result.error, {"input": data, "expected_checksum": expected_checksum}
             )
             click.echo(error_response)
-            if json_output:
-                raise SystemExit(1)
-            else:
-                raise click.ClickException("Checksum validation failed")
+            raise SystemExit(1)
 
-        if json_output:
-            click.echo(json.dumps(result.to_dict(), indent=2))
-        else:
-            click.echo(f"Input: {data}")
-            click.echo(f"Expected: {expected_checksum}")
-            click.echo(f"Calculated: {result.data['calculated_checksum']}")
-            status = "✓ Valid" if result.data["is_valid"] else "✗ Invalid"
-            click.echo(f"Status: {status}")
+        click.echo(json.dumps(result.to_dict(), indent=2))
 
     except Exception as e:
-        CLIErrorHandler.handle_service_error(
-            e,
-            json_output,
-            "checksum validation",
-            {"input": data, "expected_checksum": expected_checksum},
-        )
+        CLIErrorHandler.handle_service_error(e, "checksum validation",
+                                             {"input": data, "expected_checksum": expected_checksum})

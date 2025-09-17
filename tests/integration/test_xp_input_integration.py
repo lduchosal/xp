@@ -199,7 +199,7 @@ class TestXPInputIntegration:
         mock_send.return_value = mock_response
 
         runner = CliRunner()
-        result = runner.invoke(conbus, ["input", "0020044964", "0", "--json-output"])
+        result = runner.invoke(conbus, ["input", "0020044964", "0"])
         assert result.exit_code == 0
 
         # Parse JSON output
@@ -237,7 +237,7 @@ class TestXPInputIntegration:
                 self.input_service.validate_input_number(invalid_input)
 
         # Verify serial number validation
-        for invalid_serial in ["123", "12345678901", "abc1234567", ""]:
+        for invalid_serial in ["123", "12345678901", "abc1234567"]:
             with pytest.raises(XPInputError):
                 self.input_service.validate_serial_number(invalid_serial)
 

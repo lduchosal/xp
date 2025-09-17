@@ -20,7 +20,7 @@ from .conbus import conbus
 @conbus.command("discover")
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
-def send_discover_telegram(json_output: bool):
+def send_discover_telegram():
     """
     Send discovery telegram to Conbus server.
 
@@ -45,38 +45,13 @@ def send_discover_telegram(json_output: bool):
         with service:
             response = service.send_telegram(request)
 
-        if json_output:
-            click.echo(json.dumps(response.to_dict(), indent=2))
-        else:
-            if response.success:
-                # Format output like the specification examples
-                if response.sent_telegram:
-                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
-                    click.echo(f"{timestamp} [TX] {response.sent_telegram}")
-
-                # Show received telegrams
-                for received in response.received_telegrams:
-                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
-                    click.echo(f"{timestamp} [RX] {received}")
-
-                if not response.received_telegrams:
-                    click.echo("No response received")
-            else:
-                click.echo(f"Error: {response.error}")
+        click.echo(json.dumps(response.to_dict(), indent=2))
 
     except ConbusClientSendError as e:
         if "Connection timeout" in str(e):
-            if not json_output:
-                click.echo(
-                    f"Connecting to {service.config.ip}:{service.config.port}..."
-                )
-                click.echo(
-                    f"Error: Connection timeout after {service.config.timeout} seconds"
-                )
-                click.echo("Failed to connect to server")
             CLIErrorHandler.handle_connection_error(
                 e,
-                json_output,
+                True,
                 {
                     "ip": service.config.ip,
                     "port": service.config.port,
@@ -84,6 +59,4 @@ def send_discover_telegram(json_output: bool):
                 },
             )
         else:
-            CLIErrorHandler.handle_service_error(
-                e, json_output, "discovery telegram send"
-            )
+            CLIErrorHandler.handle_service_error(e, "discovery telegram send")

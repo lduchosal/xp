@@ -66,6 +66,7 @@ class ChecksumService:
             return Response(
                 success=True,
                 data={
+                    "input": data,
                     "input_type": "string" if isinstance(data, str) else "bytes",
                     "input_length": len(byte_data),
                     "checksum": checksum,

@@ -23,7 +23,7 @@ from .conbus import conbus
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
 def send_custom_telegram(
-    serial_number: str, function_code: str, data_point_code: str, json_output: bool
+    serial_number: str, function_code: str, data_point_code: str
 ):
     """
     Send custom telegram with specified function and data point codes.
@@ -42,33 +42,11 @@ def send_custom_telegram(
                 serial_number, function_code, data_point_code
             )
 
-        if json_output:
-            click.echo(json.dumps(response.to_dict(), indent=2))
-        else:
-            if response.success:
-                # Format output like the specification examples
-                if response.sent_telegram:
-                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
-                    click.echo(f"{timestamp} [TX] {response.sent_telegram}")
-
-                # Show received telegrams
-                for received in response.received_telegrams:
-                    timestamp = response.timestamp.strftime("%H:%M:%S,%f")[:-3]
-                    click.echo(f"{timestamp} [RX] {received}")
-
-                if not response.received_telegrams:
-                    click.echo("No response received")
-            else:
-                click.echo(f"Error: {response.error}")
+        click.echo(json.dumps(response.to_dict(), indent=2))
 
     except ConbusClientSendError as e:
-        CLIErrorHandler.handle_service_error(
-            e,
-            json_output,
-            "custom telegram send",
-            {
-                "serial_number": serial_number,
-                "function_code": function_code,
-                "data_point_code": data_point_code,
-            },
-        )
+        CLIErrorHandler.handle_service_error(e, "custom telegram send", {
+            "serial_number": serial_number,
+            "function_code": function_code,
+            "data_point_code": data_point_code,
+        })

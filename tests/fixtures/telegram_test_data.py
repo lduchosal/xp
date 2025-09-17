@@ -110,7 +110,7 @@ CLI_TEST_CASES = [
         "description": "Basic telegram parse command",
     },
     {
-        "command": ["telegram", "parse", "<E14L00I02MAK>", "--json-output"],
+        "command": ["telegram", "parse", "<E14L00I02MAK>"],
         "expected_exit_code": 0,
         "json_output": True,
         "description": "Telegram parse with JSON output",
