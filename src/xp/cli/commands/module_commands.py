@@ -11,7 +11,9 @@ from ..utils.error_handlers import CLIErrorHandler
 
 @click.group()
 def module():
-    """Module type operations"""
+    """
+    Module type operations
+    """
     pass
 
 
@@ -22,8 +24,11 @@ def module_info(identifier: str, json_output: bool):
     """
     Get information about a module type by code or name.
 
-    Example: xp module info 14
-    Example: xp module info XP2606
+    Examples:
+
+    \b
+        xp module info 14
+        xp module info XP2606
     """
     service = ModuleTypeService()
     OutputFormatter(json_output)
@@ -58,9 +63,12 @@ def module_list(category: str, json_output: bool, group_by_category: bool):
     """
     List module types, optionally filtered by category.
 
-    Example: xp module list
-    Example: xp module list --category "Interface Panels"
-    Example: xp module list --group-by-category
+    Examples:
+
+    \b
+        xp module list
+        xp module list --category "Interface Panels"
+        xp module list --group-by-category
     """
     service = ModuleTypeService()
     ListFormatter(json_output)
@@ -115,8 +123,11 @@ def module_search(query: str, json_output: bool, field: tuple):
     """
     Search for module types by name or description.
 
-    Example: xp module search "push button"
-    Example: xp module search --field name "XP"
+    Examples:
+
+    \b
+        xp module search "push button"
+        xp module search --field name "XP"
     """
     service = ModuleTypeService()
     formatter = ListFormatter(json_output)
@@ -148,7 +159,10 @@ def module_categories(json_output: bool):
     """
     List all available module categories.
 
-    Example: xp module categories
+    Example:
+
+    \b
+        xp module categories
     """
     service = ModuleTypeService()
     OutputFormatter(json_output)

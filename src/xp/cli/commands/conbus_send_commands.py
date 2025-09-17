@@ -27,12 +27,14 @@ def send_telegram(target_serial: str, telegram_type: str, json_output: bool):
     Send telegram to Conbus server.
 
     Examples:
-    xp conbus send 0000000000 discovery
-    xp conbus send 0020030837 version
-    xp conbus send 0020030837 voltage
-    xp conbus send 0020030837 temperature
-    xp conbus send 0020030837 current
-    xp conbus send 0020030837 humidity
+
+    \b
+        xp conbus send 0000000000 discovery
+        xp conbus send 0020030837 version
+        xp conbus send 0020030837 voltage
+        xp conbus send 0020030837 temperature
+        xp conbus send 0020030837 current
+        xp conbus send 0020030837 humidity
     """
     service = ConbusClientSendService()
     formatter = OutputFormatter(json_output)
@@ -144,7 +146,9 @@ def send_discover_telegram(json_output: bool):
     Send discovery telegram to Conbus server.
 
     Examples:
-    xp conbus discover
+
+    \b
+        xp conbus discover
     """
     service = ConbusClientSendService()
 

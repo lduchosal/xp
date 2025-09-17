@@ -12,7 +12,9 @@ from ..utils.error_handlers import CLIErrorHandler
 
 @click.group()
 def discovery():
-    """Device discovery operations for console bus enumeration"""
+    """
+    Device discovery operations for console bus enumeration
+    """
     pass
 
 
@@ -23,7 +25,10 @@ def generate_discovery(json_output: bool):
     """
     Generate a discovery telegram for device enumeration.
 
-    Example: xp discovery generate
+    Example:
+
+    \b
+        xp discovery generate
     """
     service = DiscoveryService()
     OutputFormatter(json_output)
@@ -62,8 +67,11 @@ def parse_discovery_responses(telegram_list: tuple, json_output: bool, summary: 
     """
     Parse discovery response telegrams to identify discovered devices.
 
-    Example: xp discovery parse "<R0020030837F01DFM>" "<R0020044966F01DFK>"
-    Example: xp discovery parse --summary "<R0020030837F01DFM>" "<R0020044966F01DFK>"
+    Examples:
+
+    \b
+        xp discovery parse "<R0020030837F01DFM>" "<R0020044966F01DFK>"
+        xp discovery parse --summary "<R0020030837F01DFM>" "<R0020044966F01DFK>"
     """
     telegram_service = TelegramService()
     discovery_service = DiscoveryService()
@@ -153,8 +161,11 @@ def analyze_discovery_session(log_file_path: str, json_output: bool, time_range:
     """
     Analyze a console bus log file for discovery sessions.
 
-    Example: xp discovery analyze conbus-discover.log
-    Example: xp discovery analyze conbus.log --time-range "22:48:38,000-22:48:39,000"
+    Examples:
+
+    \b
+        xp discovery analyze conbus-discover.log
+        xp discovery analyze conbus.log --time-range "22:48:38,000-22:48:39,000"
     """
     from ...services.log_file_service import LogFileService
     from ...utils.time_utils import parse_time_range, TimeParsingError

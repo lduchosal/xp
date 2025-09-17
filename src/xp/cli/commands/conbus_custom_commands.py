@@ -27,7 +27,11 @@ def send_custom_telegram(
     """
     Send custom telegram with specified function and data point codes.
 
-    Example: xp conbus custom 0020030837 02 E2
+    Examples:
+
+    \b
+        xp conbus custom 0020030837 02 E2
+        xp conbus custom 0020030837 17 AA
     """
     service = ConbusClientSendService()
 

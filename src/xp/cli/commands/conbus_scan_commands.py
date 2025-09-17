@@ -31,7 +31,10 @@ def scan_module(
     """
     Scan all datapoints of a function_code for a module.
 
-    Example: xp conbus scan 0020030837 02
+    Example:
+
+    \b
+        xp conbus scan 0020030837 02 # Scan all datapoints of function Read data points (02)
     """
     service = ConbusClientSendService()
 

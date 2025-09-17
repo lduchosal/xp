@@ -15,7 +15,9 @@ _server_instance = None
 
 @click.group()
 def server():
-    """Conbus emulator server operations"""
+    """
+    Conbus emulator server operations
+    """
     pass
 
 
@@ -30,8 +32,11 @@ def start_server(port: int, config: str, json_output: bool):
     """
     Start the Conbus emulator server.
 
-    Example: xp server start
-    Example: xp server start --port 1001 --config my_config.yml
+    Examples:
+
+    \b
+        xp server start
+        xp server start --port 1001 --config my_config.yml
     """
     global _server_instance
 
@@ -80,7 +85,10 @@ def stop_server(json_output: bool):
     """
     Stop the running Conbus emulator server.
 
-    Example: xp server stop
+    Example:
+
+    \b
+        xp server stop
     """
     global _server_instance
 
@@ -108,7 +116,10 @@ def server_status(json_output: bool):
     """
     Get status of the Conbus emulator server.
 
-    Example: xp server status
+    Example:
+
+    \b
+        xp server status
     """
     global _server_instance
     formatter = OutputFormatter(json_output)

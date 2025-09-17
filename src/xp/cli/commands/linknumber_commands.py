@@ -12,7 +12,9 @@ from ..utils.error_handlers import CLIErrorHandler
 
 @click.group()
 def linknumber():
-    """Link number operations for module configuration"""
+    """
+    Link number operations for module configuration
+    """
     pass
 
 
@@ -25,7 +27,10 @@ def generate_set_link_number(serial_number: str, link_number: int, json_output: 
     """
     Generate a telegram to set module link number.
 
-    Example: xp linknumber generate 0020044974 25
+    Example:
+
+    \b
+        xp linknumber generate 0020044974 25
     """
     service = LinkNumberService()
     OutputFormatter(json_output)
@@ -65,7 +70,10 @@ def generate_read_link_number(serial_number: str, json_output: bool):
     """
     Generate a telegram to read module link number.
 
-    Example: xp linknumber read 0020044974
+    Example:
+
+    \b
+        xp linknumber read 0020044974
     """
     service = LinkNumberService()
     OutputFormatter(json_output)
@@ -100,8 +108,11 @@ def parse_link_number_telegrams(telegram_list: tuple, json_output: bool):
     """
     Parse link number related telegrams (system and reply).
 
-    Example: xp linknumber parse "<S0020044974F04D0425FO>" "<R0020044974F18DFB>"
-    Example: xp linknumber parse "<S0020044974F04D0409FA>" "<R0020044974F19DFA>"
+    Examples:
+
+    \b
+        xp linknumber parse "<S0020044974F04D0425FO>" "<R0020044974F18DFB>"
+        xp linknumber parse "<S0020044974F04D0409FA>" "<R0020044974F19DFA>"
     """
     telegram_service = TelegramService()
     link_service = LinkNumberService()

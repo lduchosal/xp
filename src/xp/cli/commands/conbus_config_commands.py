@@ -16,7 +16,10 @@ def show_config(json_output: bool):
     """
     Display current Conbus client configuration.
 
-    Example: xp conbus config
+    Example:
+
+    \b
+        xp conbus config
     """
     service = ConbusClientSendService()
     OutputFormatter(json_output)

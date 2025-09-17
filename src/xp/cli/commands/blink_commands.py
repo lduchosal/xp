@@ -12,7 +12,9 @@ from ..utils.error_handlers import CLIErrorHandler
 
 @click.group()
 def blink():
-    """Blink operations for module LED control"""
+    """
+    Blink operations for module LED control
+    """
     pass
 
 
@@ -24,7 +26,11 @@ def blink_on(serial_number: str, json_output: bool):
     """
     Generate a telegram to start blinking module LED.
 
-    Example: xp blink on 0020044964
+    Examples:
+
+    \b
+        xp blink on 0020044964
+        xp blink on 0020044964
     """
     service = BlinkService()
     OutputFormatter(json_output)
@@ -62,7 +68,10 @@ def blink_off(serial_number: str, json_output: bool):
     """
     Generate a telegram to stop blinking module LED.
 
-    Example: xp blink off 0020030837
+    Example:
+
+    \b
+        xp blink off 0020030837
     """
     service = BlinkService()
     OutputFormatter(json_output)
@@ -100,8 +109,11 @@ def parse_blink_telegrams(telegram_list: tuple, json_output: bool):
     """
     Parse blink related telegrams (system and reply).
 
-    Example: xp blink parse "<S0020044964F05D00FN>" "<R0020044964F18DFB>"
-    Example: xp blink parse "<S0020030837F06D00FJ>" "<R0020030837F19DFA>"
+    Examples:
+
+    \b
+        xp blink parse "<S0020044964F05D00FN>" "<R0020044964F18DFB>"
+        xp blink parse "<S0020030837F06D00FJ>" "<R0020030837F19DFA>"
     """
     telegram_service = TelegramService()
     blink_service = BlinkService()

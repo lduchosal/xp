@@ -20,7 +20,9 @@ _proxy_instance = None
 
 @click.group(name="rp")
 def reverse_proxy():
-    """Conbus reverse proxy operations"""
+    """
+    Conbus reverse proxy operations
+    """
     pass
 
 
@@ -39,8 +41,11 @@ def start_proxy(port: int, config: str, json_output: bool):
     to the target server configured in cli.yml. All traffic is monitored
     and printed with timestamps.
 
-    Example: xp rp start
-    Example: xp rp start --port 10002 --config my_cli.yml
+    Examples:
+
+    \b
+        xp rp start
+        xp rp start --port 10002 --config my_cli.yml
     """
     global _proxy_instance
 
@@ -105,7 +110,10 @@ def stop_proxy(json_output: bool):
     """
     Stop the running Conbus reverse proxy server.
 
-    Example: xp rp stop
+    Example:
+
+    \b
+        xp rp stop
     """
     global _proxy_instance
 
@@ -147,7 +155,10 @@ def proxy_status(json_output: bool):
     Shows current running state, listen port, target server,
     and active connection details.
 
-    Example: xp rp status
+    Example:
+
+    \b
+        xp rp status
     """
     global _proxy_instance
     OutputFormatter(json_output)

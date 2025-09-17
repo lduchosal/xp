@@ -12,7 +12,9 @@ from ..utils.error_handlers import CLIErrorHandler
 
 @click.group()
 def version():
-    """Version information operations for device firmware"""
+    """
+    Version information operations for device firmware
+    """
     pass
 
 
@@ -24,7 +26,10 @@ def generate_version_request(serial_number: str, json_output: bool):
     """
     Generate a telegram to request version information from a device.
 
-    Example: xp version request 0020030837
+    Example:
+
+    \b
+        xp version request 0020030837
     """
     service = VersionService()
     formatter = OutputFormatter(json_output)
@@ -69,7 +74,10 @@ def parse_version_telegram(telegram_string: str, json_output: bool):
     """
     Parse version information from reply telegram.
 
-    Example: xp version parse "<R0020030837F02D02XP230_V1.00.04FI>"
+    Example:
+
+    \b
+        xp version parse "<R0020030837F02D02XP230_V1.00.04FI>"
     """
     telegram_service = TelegramService()
     version_service = VersionService()

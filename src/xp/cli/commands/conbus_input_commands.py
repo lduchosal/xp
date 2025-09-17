@@ -26,15 +26,14 @@ from .conbus import conbus
 def xp_input(
     serial_number: str, input_number_or_status: str, on_or_off: str, json_output: bool
 ):
-    """
-    Send input command to XP module or query status.
+    """Send input command to XP module or query status.
 
-    Examples:\n
-        xp conbus input 0020044964 0 ON    # Toggle input 0\n
-        xp conbus input 0020044964 1 OFF   # Toggle input 1
-        xp conbus input 0020044964 2 ON    # Toggle input 2
-        xp conbus input 0020044964 3 ON    # Toggle input 3
-        xp conbus input 0020044964 status  # Query input status
+    Examples:
+
+    \b
+        xp conbus input 0011223344 0 ON     # Toggle input 0
+        xp conbus input 0011223344 1 OFF    # Toggle input 1
+        xp conbus input 0011223344 status   # Query status
     """
     service = ConbusClientSendService()
     input_service = XPInputService()

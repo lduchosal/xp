@@ -26,8 +26,11 @@ def send_blink_telegram(serial_number: str, on_or_off: str, json_output: bool):
     """
     Send blink command to start blinking module LED.
 
-    Example: xp conbus blink 0020044964 on
-    Example: xp conbus blink 0020044964 off
+    Examples:
+
+    \b
+        xp conbus blink 0020044964 on
+        xp conbus blink 0020044964 off
     """
     conbus_service = ConbusClientSendService()
     blink_service = BlinkService()

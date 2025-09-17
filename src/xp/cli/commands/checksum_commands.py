@@ -11,7 +11,9 @@ from ..utils.error_handlers import CLIErrorHandler
 
 @click.group()
 def checksum():
-    """Checksum calculation and validation operations"""
+    """
+    Checksum calculation and validation operations
+    """
     pass
 
 
@@ -30,8 +32,11 @@ def calculate_checksum(data: str, algorithm: str, json_output: bool):
     """
     Calculate checksum for given data string.
 
-    Example: xp checksum calculate "E14L00I02M"
-    Example: xp checksum calculate "E14L00I02M" --algorithm crc32
+    Examples:
+
+    \b
+        xp checksum calculate "E14L00I02M"
+        xp checksum calculate "E14L00I02M" --algorithm crc32
     """
     service = ChecksumService()
     formatter = OutputFormatter(json_output)
@@ -81,8 +86,11 @@ def validate_checksum(
     """
     Validate data against expected checksum.
 
-    Example: xp checksum validate "E14L00I02M" "AK"
-    Example: xp checksum validate "E14L00I02M" "ABCDABCD" --algorithm crc32
+    Examples:
+
+    \b
+        xp checksum validate "E14L00I02M" "AK"
+        xp checksum validate "E14L00I02M" "ABCDABCD" --algorithm crc32
     """
     service = ChecksumService()
     formatter = OutputFormatter(json_output)

@@ -132,6 +132,8 @@ def xp24_action(serial_number: str, input_number: int, action: str, json_output:
     Send action command to XP24 module or query status.
     
     Examples:
+
+    \b
     xp conbus xp24 0020044964 0        # Toggle input 0
     xp conbus xp24 0020044964 1        # Toggle input 1  
     xp conbus xp24 0020044964 2        # Toggle input 2

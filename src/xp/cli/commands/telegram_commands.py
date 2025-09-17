@@ -15,7 +15,9 @@ from ..utils.error_handlers import CLIErrorHandler
 
 @click.group()
 def telegram():
-    """Event telegram operations"""
+    """
+    Event telegram operations
+    """
     pass
 
 
@@ -28,7 +30,10 @@ def parse_event_telegram(
     """
     Parse a single event telegram string.
 
-    Example: xp telegram parse-event "<E14L00I02MAK>"
+    Example:
+
+    \b
+        xp telegram parse-event "<E14L00I02MAK>"
     """
     service = TelegramService()
     formatter = TelegramFormatter(json_output)
@@ -65,7 +70,10 @@ def parse_system_telegram(
     """
     Parse a system telegram string.
 
-    Example: xp telegram parse-system "<S0020012521F02D18FN>"
+    Example:
+
+    \b
+        xp telegram parse-system "<S0020012521F02D18FN>"
     """
     service = TelegramService()
     formatter = TelegramFormatter(json_output)
@@ -102,7 +110,10 @@ def parse_reply_telegram(
     """
     Parse a reply telegram string.
 
-    Example: xp telegram parse-reply "<R0020012521F02D18+26,0§CIL>"
+    Example:
+
+    \b
+        xp telegram parse-reply "<R0020012521F02D18+26,0§CIL>"
     """
     service = TelegramService()
     formatter = TelegramFormatter(json_output)
@@ -139,7 +150,10 @@ def parse_discovery_request_telegram(
     """
     Parse a discovery request telegram string.
 
-    Example: xp telegram parse-discover-request "<S0000000000F01D00FA>"
+    Example:
+
+    \b
+        xp telegram parse-discover-request "<S0000000000F01D00FA>"
     """
     service = TelegramService()
     TelegramFormatter(json_output)
@@ -191,7 +205,10 @@ def parse_discovery_response_telegram(
     """
     Parse a discovery response telegram string.
 
-    Example: xp telegram parse-discover-response "<R0020030837F01DFM>"
+    Example:
+
+    \b
+        xp telegram parse-discover-response "<R0020030837F01DFM>"
     """
     service = TelegramService()
     TelegramFormatter(json_output)
@@ -237,11 +254,14 @@ def parse_any_telegram(telegram_string: str, json_output: bool):
     """
     Auto-detect and parse any type of telegram (event, system, reply, or discovery).
 
-    Example: xp telegram parse "<E14L00I02MAK>"
-    Example: xp telegram parse "<S0020012521F02D18FN>"
-    Example: xp telegram parse "<R0020012521F02D18+26,0§CIL>"
-    Example: xp telegram parse "<S0000000000F01D00FA>"
-    Example: xp telegram parse "<R0020030837F01DFM>"
+    Examples:
+
+    \b
+        xp telegram parse "<E14L00I02MAK>"
+        xp telegram parse "<S0020012521F02D18FN>"
+        xp telegram parse "<R0020012521F02D18+26,0§CIL>"
+        xp telegram parse "<S0000000000F01D00FA>"
+        xp telegram parse "<R0020030837F01DFM>"
     """
     service = TelegramService()
     TelegramFormatter(json_output)
@@ -286,7 +306,10 @@ def parse_multiple_telegrams(data_stream: str, json_output: bool):
     """
     Parse multiple event telegrams from a data stream.
 
-    Example: xp telegram parse-multiple "Some data <E14L00I02MAK> more <E14L01I03BB1>"
+    Example:
+
+    \b
+        xp telegram parse-multiple "Some data <E14L00I02MAK> more <E14L01I03BB1>"
     """
     service = TelegramService()
     TelegramFormatter(json_output)
@@ -321,7 +344,10 @@ def validate_telegram(telegram_string: str, json_output: bool):
     """
     Validate the format of an event telegram.
 
-    Example: xp telegram validate "<E14L00I02MAK>"
+    Example:
+
+    \b
+        xp telegram validate "<E14L00I02MAK>"
     """
     service = TelegramService()
     TelegramFormatter(json_output)

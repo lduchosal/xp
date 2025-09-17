@@ -14,7 +14,9 @@ from ..utils.error_handlers import CLIErrorHandler
 
 @click.group()
 def file():
-    """File operations for console bus logs"""
+    """
+    File operations for console bus logs
+    """
     pass
 
 
@@ -34,8 +36,11 @@ def decode_log_file(
     """
     Decode and parse console bus log file.
 
-    Example: xp file decode conbus.log
-    Example: xp file decode conbus.log --filter-type event --json-output
+    Examples:
+
+    \b
+        xp file decode conbus.log
+        xp file decode conbus.log --filter-type event --json-output
     """
     from ...services.log_file_service import LogFileService
     from ...utils.time_utils import parse_time_range, TimeParsingError
@@ -120,7 +125,10 @@ def analyze_log_file(log_file_path: str, json_output: bool):
     """
     Analyze console bus log file for patterns and statistics.
 
-    Example: xp file analyze conbus.log
+    Example:
+
+    \b
+        xp file analyze conbus.log
     """
     from ...services.log_file_service import LogFileService
 
@@ -202,7 +210,10 @@ def validate_log_file(log_file_path: str, json_output: bool):
     """
     Validate console bus log file format and telegram checksums.
 
-    Example: xp file validate conbus.log
+    Example:
+
+    \b
+        xp file validate conbus.log
     """
     from ...services.log_file_service import LogFileService
 
