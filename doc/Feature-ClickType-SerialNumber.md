@@ -12,7 +12,7 @@ Custom Click parameter type for validating and formatting serial numbers.
 - Return formatted serial string
 
 ## Implementation
-The `SerialParamType` class extends Click's `ParamType` to provide:
+The `SerialNumberParamType` class extends Click's `ParamType` to provide:
 - Input validation for numeric-only strings
 - Automatic left-padding with zeros for short inputs
 - Error handling for oversized inputs
@@ -34,7 +34,11 @@ def command(serial_number):
 - Input: `"123abc"` → Error: Non-numeric characters
 
 ## Implementation
-./cli/utils/type_serial_number.py
+./src/cli/utils/serial_number_type.py
+./test/unit/test_cli/test_serial_number_type.py
+
+## Test
+Fully tested in test unit 
 
 ## Code base modification
 ./cli/commands/*.py 

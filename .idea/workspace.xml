@@ -4,44 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Fix: learning about click">
-      <change afterPath="$PROJECT_DIR$/src/xp/cli/utils/type_serial_number.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/webResources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/webResources.xml" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: serial number">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/8718699774097.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/doc/8718699774097.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Architecture.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Architecture.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/ConReport.log" beforeDir="false" afterPath="$PROJECT_DIR$/doc/ConReport.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/ConbusLog-discover.txt" beforeDir="false" afterPath="$PROJECT_DIR$/doc/ConbusLog-discover.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/ConbusLog.txt" beforeDir="false" afterPath="$PROJECT_DIR$/doc/ConbusLog.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/ConsonXPServiceTool.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/doc/ConsonXPServiceTool.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Action-Table.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Action-Table.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Blink-Unblink.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Blink-Unblink.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Checksum.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Checksum.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Conbus-Client-Send.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-Client-Send.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Conbus-DataPoint-Code.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-DataPoint-Code.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Conbus-Emulator.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-Emulator.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Conbus-Results.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-Results.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Conbus-ReverseProxy.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-ReverseProxy.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Conbus-Scan.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-Scan.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Discover-System-And-Reply-Telegram.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Discover-System-And-Reply-Telegram.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-File-Decode-Telegrams.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-File-Decode-Telegrams.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-LinkNumber-System-Telegram.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-LinkNumber-System-Telegram.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Module-Type.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Module-Type.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Move-Responsibilities-To-BaseServerService.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Move-Responsibilities-To-BaseServerService.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Parse-Version.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Parse-Version.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Query-ModuleType.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Query-ModuleType.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Refactor-Cli.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Refactor-Cli.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Server-MissingTypes.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Server-MissingTypes.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Telegram-Event.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Telegram-Event.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-Telegram-System-And-Reply.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Telegram-System-And-Reply.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-XP-Input.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-XP-Input.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Feature-XP33-Emulator-Spec.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-XP33-Emulator-Spec.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/Fix-Encoding-Issue.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Fix-Encoding-Issue.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/IMPLEMENTATION_SUMMARY.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/IMPLEMENTATION_SUMMARY.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Specs/concept2000xp-manual-fr.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/doc/concept2000xp-manual-fr.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feature-ClickType-Serial.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-ClickType-SerialNumber.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/type_serial_number.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/serial_number_type.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -291,7 +257,7 @@
       <workItem from="1756275107111" duration="30469000" />
       <workItem from="1756830585261" duration="79203000" />
       <workItem from="1757696538700" duration="629000" />
-      <workItem from="1757752097335" duration="19604000" />
+      <workItem from="1757752097335" duration="19790000" />
     </task>
     <task id="LOCAL-00001" summary="Feat: initial">
       <option name="closed" value="true" />
@@ -669,14 +635,21 @@
       <option name="project" value="LOCAL" />
       <updated>1758094022351</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="Feat: serial number">
+      <option name="closed" value="true" />
+      <created>1758094641790</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1758094641790</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: 1st draft claude" />
     <MESSAGE value="Feat: manual review" />
     <MESSAGE value="Feat: remove bullshit code" />
     <MESSAGE value="Fix: test unit" />
@@ -701,7 +674,8 @@
     <MESSAGE value="Fix: formatting of help" />
     <MESSAGE value="Fix: fine tuning" />
     <MESSAGE value="Fix: learning about click" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix: learning about click" />
+    <MESSAGE value="Feat: serial number" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: serial number" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
