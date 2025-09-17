@@ -98,32 +98,6 @@ class DiscoveryService:
 
         return telegram
 
-    def parse_discovery_response(
-        self, reply_telegram: ReplyTelegram
-    ) -> Optional[DeviceInfo]:
-        """
-        Parse a discovery reply telegram to extract device information.
-
-        Args:
-            reply_telegram: Reply telegram from a discovered device
-
-        Returns:
-            DeviceInfo object if this is a valid discovery response, None otherwise
-        """
-        # Check if this is a discovery response (F01D)
-        if reply_telegram.system_function != SystemFunction.DISCOVERY:
-            return None
-
-        # For discovery responses, the data_value should be empty or minimal
-        # The key information is the serial number
-        device_info = DeviceInfo(
-            serial_number=reply_telegram.serial_number,
-            checksum_valid=reply_telegram.checksum_validated or False,
-            raw_telegram=reply_telegram.raw_telegram,
-        )
-
-        return device_info
-
     def is_discovery_response(self, reply_telegram: ReplyTelegram) -> bool:
         """
         Check if a reply telegram is a discovery response.

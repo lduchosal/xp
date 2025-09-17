@@ -3,14 +3,14 @@
 import click
 import json
 
+from . import telegram
 from ...services.telegram_discovery_service import DiscoveryService, DiscoveryError
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
-from .telegram import discovery
+from .telegram import telegram
 
-@discovery.command("generate")
-
+@telegram.command("discover")
 @handle_service_errors(DiscoveryError)
 def generate_discovery():
     """
@@ -19,7 +19,7 @@ def generate_discovery():
     Examples:
 
     \b
-        xp telegram discovery generate
+        xp telegram discover
     """
     service = DiscoveryService()
     OutputFormatter(True)

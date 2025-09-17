@@ -3,6 +3,8 @@
 import click
 import json
 
+from ..utils.serial_number_type import SERIAL
+from ..utils.telegram_type_choice import TELEGRAM
 from ...services.conbus_client_send_service import (
     ConbusClientSendService,
     ConbusClientSendError,
@@ -18,8 +20,8 @@ from .conbus import conbus
 
 
 @conbus.command("send")
-@click.argument("target_serial")
-@click.argument("telegram_type")
+@click.argument("telegram_type", type=TELEGRAM)
+@click.argument("target_serial", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
 def send_telegram(target_serial: str, telegram_type: str):
@@ -29,12 +31,13 @@ def send_telegram(target_serial: str, telegram_type: str):
     Examples:
 
     \b
-        xp conbus send 0000000000 discovery
-        xp conbus send 0020030837 version
-        xp conbus send 0020030837 voltage
-        xp conbus send 0020030837 temperature
-        xp conbus send 0020030837 current
-        xp conbus send 0020030837 humidity
+        xp conbus send discovery 0000000000
+        xp conbus send discovery 0000000000
+        xp conbus send version 0020030837
+        xp conbus send voltage 0020030837
+        xp conbus send temperature 0020030837
+        xp conbus send current 0020030837
+        xp conbus send humidity 0020030837
     """
     service = ConbusClientSendService()
     formatter = OutputFormatter(True)
@@ -61,10 +64,10 @@ def send_telegram(target_serial: str, telegram_type: str):
             "humidity": TelegramType.HUMIDITY,
         }
 
-        telegram_type_enum = telegram_type_map.get(telegram_type.lower())
+        telegram_type_enum = telegram_type_map.get(telegram_type)
         if not telegram_type_enum:
             error_data = {
-                "telegram_type": telegram_type,
+                "telegram_type": telegram_type.value,
                 "valid_types": list(telegram_type_map.keys()),
             }
             error_response = formatter.error_response(

@@ -18,7 +18,7 @@ from ..utils.serial_number_type import SERIAL
 from .conbus import blink
 
 
-@blink.command("on")
+@blink.command("on", short_help="Blink on remote service")
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusClientSendError, BlinkError)
@@ -47,14 +47,6 @@ def send_blink_off_telegram(serial_number: str):
         xp conbus blink off 0020044964
     """
     send_blink_telegram(serial_number, 'off')
-
-@blink.command("send")
-@click.argument("serial_number", type=SERIAL)
-@click.argument("on_or_off", type=click.Choice(["on", "off"]))
-@connection_command()
-@handle_service_errors(ConbusClientSendError, BlinkError)
-def send_blink_on_off_telegram(serial_number: str, on_or_off: str):
-    send_blink_telegram(serial_number, on_or_off)
 
 def send_blink_telegram(serial_number: str, on_or_off: str):
 

@@ -12,3 +12,4 @@ class TelegramType(Enum):
     HUMIDITY = "humidity"
     BLINK = "blink"
     UNBLINK = "unblink"
+

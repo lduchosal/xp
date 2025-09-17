@@ -127,32 +127,6 @@ class TelegramService:
 
         return telegram.checksum == expected_checksum
 
-    def parse_multiple_telegrams(self, data: str) -> List[EventTelegram]:
-        """
-        Parse multiple telegrams from a data stream.
-
-        Args:
-            data: String containing one or more telegrams
-
-        Returns:
-            List of parsed EventTelegram objects
-        """
-        telegrams = []
-
-        # Find all telegram patterns in the data
-        pattern = r"<E\d{1,2}L\d{2}I\d{2}[MB][A-Z0-9]{2}>"
-        matches = re.findall(pattern, data)
-
-        for match in matches:
-            try:
-                telegram = self.parse_event_telegram(match)
-                telegrams.append(telegram)
-            except TelegramParsingError:
-                # Skip invalid telegrams but continue processing others
-                continue
-
-        return telegrams
-
     def format_event_telegram_summary(self, telegram: EventTelegram) -> str:
         """
         Format a telegram for human-readable output.

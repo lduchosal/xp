@@ -5,25 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="fix: refactor">
+      <change afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_parse_commands.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/xp/cli/utils/click_tree.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/xp/cli/utils/telegram_type_choice.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements-dev.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/checksum_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/checksum_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_config_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_config_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_input_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_input_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/file_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/file_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/module_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/module_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/reverse_proxy_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/reverse_proxy_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/server_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/server_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_linknumber_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_linknumber_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_commands.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_discovery_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_discovery_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/telegram_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/telegram_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_discovery_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_discovery_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -289,23 +286,7 @@
       <workItem from="1756830585261" duration="79203000" />
       <workItem from="1757696538700" duration="629000" />
       <workItem from="1757752097335" duration="35847000" />
-      <workItem from="1758124896525" duration="1724000" />
-    </task>
-    <task id="LOCAL-00012" summary="Feat: Conbus client">
-      <option name="closed" value="true" />
-      <created>1756889143389</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1756889143389</updated>
-    </task>
-    <task id="LOCAL-00013" summary="Fix: Conbus client">
-      <option name="closed" value="true" />
-      <created>1756892350197</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1756892350197</updated>
+      <workItem from="1758124896525" duration="8876000" />
     </task>
     <task id="LOCAL-00014" summary="Fix: Conbus client">
       <option name="closed" value="true" />
@@ -683,7 +664,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758123082689</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="fix: refactor">
+      <option name="closed" value="true" />
+      <created>1758138272408</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1758138272409</updated>
+    </task>
+    <task id="LOCAL-00062" summary="fix: refactor">
+      <option name="closed" value="true" />
+      <created>1758138277291</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1758138277291</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -798,7 +795,7 @@
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/xp/cli/commands/telegram_commands.py</url>
+          <url>file://$PROJECT_DIR$/src/xp/cli/commands/telegram_parse_commands.py</url>
           <line>2</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
@@ -834,7 +831,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py</url>
-          <line>73</line>
+          <line>65</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
       </breakpoints>
