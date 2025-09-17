@@ -12,7 +12,6 @@ from ..utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 from .conbus import conbus
 

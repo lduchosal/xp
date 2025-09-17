@@ -28,7 +28,7 @@ def parse_event_telegram(
         xp telegram parse-event "<E14L00I02MAK>"
     """
     service = TelegramService()
-    formatter = TelegramFormatter(True)
+    TelegramFormatter(True)
 
     try:
         parsed = service.parse_event_telegram(telegram_string)
@@ -62,7 +62,7 @@ def parse_system_telegram(
         xp telegram parse-system "<S0020012521F02D18FN>"
     """
     service = TelegramService()
-    formatter = TelegramFormatter(True)
+    TelegramFormatter(True)
 
     try:
         parsed = service.parse_system_telegram(telegram_string)
@@ -96,7 +96,7 @@ def parse_reply_telegram(
         xp telegram parse-reply "<R0020012521F02D18+26,0§CIL>"
     """
     service = TelegramService()
-    formatter = TelegramFormatter(True)
+    TelegramFormatter(True)
 
     try:
         parsed = service.parse_reply_telegram(telegram_string)

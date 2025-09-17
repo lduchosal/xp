@@ -139,7 +139,7 @@ def proxy_status():
         xp rp status
     """
     global _proxy_instance
-    formatter = OutputFormatter(True)
+    OutputFormatter(True)
 
     try:
         if _proxy_instance is None:

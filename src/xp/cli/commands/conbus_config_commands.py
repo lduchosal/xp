@@ -22,7 +22,7 @@ def show_config():
         xp conbus config
     """
     service = ConbusClientSendService()
-    formatter = OutputFormatter(True)
+    OutputFormatter(True)
 
     try:
         config = service.get_config()

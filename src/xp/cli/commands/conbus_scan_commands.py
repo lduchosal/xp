@@ -66,7 +66,7 @@ def scan_module(
                         service.scan_module(
                             serial_number, function_code, progress_callback
                         )
-                    except Exception as e:
+                    except Exception:
                         pass  # Will be handled by outer error handling
                     finally:
                         scan_complete.set()

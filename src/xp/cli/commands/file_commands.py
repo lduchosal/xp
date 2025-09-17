@@ -44,7 +44,7 @@ def decode_log_file(
     from ...utils.time_utils import parse_time_range, TimeParsingError
 
     service = LogFileService()
-    formatter = StatisticsFormatter(True)
+    StatisticsFormatter(True)
 
     try:
         # Parse the log file
@@ -114,7 +114,7 @@ def analyze_log_file(log_file_path: str):
     from ...services.log_file_service import LogFileService
 
     service = LogFileService()
-    formatter = StatisticsFormatter(True)
+    StatisticsFormatter(True)
 
     try:
         entries = service.parse_log_file(log_file_path)
@@ -146,7 +146,7 @@ def validate_log_file(log_file_path: str):
     from ...services.log_file_service import LogFileService
 
     service = LogFileService()
-    formatter = OutputFormatter(True)
+    OutputFormatter(True)
 
     try:
         entries = service.parse_log_file(log_file_path)

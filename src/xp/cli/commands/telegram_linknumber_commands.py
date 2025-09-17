@@ -4,7 +4,6 @@ import click
 import json
 
 from ...services.link_number_service import LinkNumberService, LinkNumberError
-from ...services.telegram_service import TelegramService, TelegramParsingError
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
@@ -27,7 +26,7 @@ def generate_set_link_number(serial_number: str, link_number: int):
         xp telegram linknumber write 0020044974 25
     """
     service = LinkNumberService()
-    formatter = OutputFormatter(True)
+    OutputFormatter(True)
 
     try:
         telegram = service.generate_set_link_number_telegram(serial_number, link_number)
@@ -60,7 +59,7 @@ def generate_read_link_number(serial_number: str):
         xp telegram linknumber read 0020044974
     """
     service = LinkNumberService()
-    formatter = OutputFormatter(True)
+    OutputFormatter(True)
 
     try:
         telegram = service.generate_read_link_number_telegram(serial_number)

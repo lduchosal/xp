@@ -117,7 +117,7 @@ def module_search(query: str, field: tuple):
         xp module search --field name "XP"
     """
     service = ModuleTypeService()
-    formatter = ListFormatter(True)
+    ListFormatter(True)
 
     try:
         search_fields = list(field) if field else ["name", "description"]

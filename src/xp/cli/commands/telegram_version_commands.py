@@ -4,7 +4,6 @@ import click
 import json
 
 from ...services.version_service import VersionService, VersionParsingError
-from ...services.telegram_service import TelegramService, TelegramParsingError
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
