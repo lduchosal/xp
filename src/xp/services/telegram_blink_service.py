@@ -30,7 +30,7 @@ class BlinkService:
         """Initialize the blink service"""
         pass
 
-    def generate_blink_telegram(self, serial_number: str) -> str:
+    def generate_blink_telegram(self, serial_number: str, on_or_off: bool) -> str:
         """
         Generate a telegram to start blinking a module's LED.
 
@@ -50,39 +50,12 @@ class BlinkService:
         if not serial_number.isdigit():
             raise BlinkError(f"Serial number must contain only digits: {serial_number}")
 
+        action_type = "05"
+        if not on_or_off:
+            action_type = "06"
+
         # Build the data part of the telegram (F05D00 - Blink function, Status data point)
-        data_part = f"S{serial_number}F05D00"
-
-        # Calculate checksum
-        checksum = calculate_checksum(data_part)
-
-        # Build complete telegram
-        telegram = f"<{data_part}{checksum}>"
-
-        return telegram
-
-    def generate_unblink_telegram(self, serial_number: str) -> str:
-        """
-        Generate a telegram to stop blinking a module's LED.
-
-        Args:
-            serial_number: The 10-digit module serial number
-
-        Returns:
-            Formatted telegram string (e.g., "<S0020030837F06D00FJ>")
-
-        Raises:
-            BlinkError: If parameters are invalid
-        """
-        # Validate serial number
-        if not serial_number or len(serial_number) != 10:
-            raise BlinkError(f"Serial number must be 10 digits, got: {serial_number}")
-
-        if not serial_number.isdigit():
-            raise BlinkError(f"Serial number must contain only digits: {serial_number}")
-
-        # Build the data part of the telegram (F06D00 - Unblink function, Status data point)
-        data_part = f"S{serial_number}F06D00"
+        data_part = f"S{serial_number}F{action_type}D00"
 
         # Calculate checksum
         checksum = calculate_checksum(data_part)
@@ -105,7 +78,7 @@ class BlinkService:
         Raises:
             BlinkError: If parameters are invalid
         """
-        raw_telegram = self.generate_blink_telegram(serial_number)
+        raw_telegram = self.generate_blink_telegram(serial_number, True)
 
         # Extract checksum from the generated telegram
         checksum = raw_telegram[-3:-1]  # Get checksum before closing >
@@ -133,7 +106,7 @@ class BlinkService:
         Raises:
             BlinkError: If parameters are invalid
         """
-        raw_telegram = self.generate_unblink_telegram(serial_number)
+        raw_telegram = self.generate_blink_telegram(serial_number, False)
 
         # Extract checksum from the generated telegram
         checksum = raw_telegram[-3:-1]  # Get checksum before closing >

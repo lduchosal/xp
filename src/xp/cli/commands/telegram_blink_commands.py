@@ -28,7 +28,7 @@ def blink_on(serial_number: str):
     OutputFormatter(True)
 
     try:
-        telegram = service.generate_blink_telegram(serial_number)
+        telegram = service.generate_blink_telegram(serial_number, True)
 
         output = {
             "success": True,
@@ -59,7 +59,7 @@ def blink_off(serial_number: str):
     OutputFormatter(True)
 
     try:
-        telegram = service.generate_unblink_telegram(serial_number)
+        telegram = service.generate_blink_telegram(serial_number, False)
 
         output = {
             "success": True,

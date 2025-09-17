@@ -86,7 +86,7 @@ dependencies = [
     "pyyaml>=6.0",
     "structlog>=22.0",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
 
@@ -101,6 +101,7 @@ dev = [
     "flake8>=5.0",
     "mypy>=1.0",
     "ruff>=0.1.0",
+    "vulture>=2.14"
 ]
 
 [tool.pdm.scripts]
@@ -118,3 +119,11 @@ install = "pdm install"
 install-dev = "pdm install -G dev"
 clean = "rm -rf .coverage htmlcov/ .pytest_cache/ __pycache__/ src/xp/__pycache__/"
 
+[tool.vulture]
+exclude = ["src/xp/cli"]
+ignore_decorators = ["@click"]
+make_whitelist = true
+min_confidence = 80
+paths = ["src", "tests"]
+sort_by_size = true
+verbose = false

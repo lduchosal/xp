@@ -189,32 +189,6 @@ class XPInputService:
         except ValueError as e:
             raise XPInputError(f"Invalid values in XP24 action telegram: {e}")
 
-    def validate_checksum(self, telegram: InputTelegram) -> bool:
-        """
-        Validate the checksum of a parsed XP24 action telegram.
-
-        Args:
-            telegram: The parsed telegram
-
-        Returns:
-            True if checksum is valid, False otherwise
-        """
-        if not telegram.checksum or len(telegram.checksum) != 2:
-            return False
-
-        # Extract the data part (everything between < and checksum)
-        raw = telegram.raw_telegram
-        if not raw.startswith("<") or not raw.endswith(">"):
-            return False
-
-        # Get the data part without brackets and checksum
-        data_part = raw[1:-3]  # Remove '<' and last 2 chars (checksum) + '>'
-
-        # Calculate expected checksum
-        expected_checksum = calculate_checksum(data_part)
-
-        return telegram.checksum == expected_checksum
-
     def parse_status_response(self, raw_telegram: str) -> Dict[int, bool]:
         """
         Parse XP24 status response telegram to extract input states.

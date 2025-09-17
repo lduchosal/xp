@@ -22,15 +22,15 @@ class TestBlinkService:
         service = BlinkService()
 
         # Test case from specification: <S0020044964F05D00FN>
-        result = service.generate_blink_telegram("0020044964")
+        result = service.generate_blink_telegram("0020044964", True)
         assert result == "<S0020044964F05D00FN>"
 
         # Test another case
-        result = service.generate_blink_telegram("0020030837")
+        result = service.generate_blink_telegram("0020030837", True)
         assert result == "<S0020030837F05D00FJ>"
 
         # Test different serial numbers
-        result = service.generate_blink_telegram("1234567890")
+        result = service.generate_blink_telegram("1234567890", True)
         assert result.startswith("<S1234567890F05D00")
         assert result.endswith(">")
         assert len(result) == 21  # <S{10}F05D00{2}> = 21 chars
@@ -41,34 +41,34 @@ class TestBlinkService:
 
         # Test empty serial
         with pytest.raises(BlinkError, match="Serial number must be 10 digits"):
-            service.generate_blink_telegram("")
+            service.generate_blink_telegram("", True)
 
         # Test short serial
         with pytest.raises(BlinkError, match="Serial number must be 10 digits"):
-            service.generate_blink_telegram("123456789")
+            service.generate_blink_telegram("123456789", True)
 
         # Test long serial
         with pytest.raises(BlinkError, match="Serial number must be 10 digits"):
-            service.generate_blink_telegram("12345678901")
+            service.generate_blink_telegram("12345678901", True)
 
         # Test non-numeric serial
         with pytest.raises(BlinkError, match="Serial number must contain only digits"):
-            service.generate_blink_telegram("123456789A")
+            service.generate_blink_telegram("123456789A", True)
 
     def test_generate_unblink_telegram_valid(self):
         """Test generating valid unblink telegram"""
         service = BlinkService()
 
         # Test case from specification: <S0020030837F06D00FK>
-        result = service.generate_unblink_telegram("0020030837")
+        result = service.generate_blink_telegram("0020030837", False)
         assert result == "<S0020030837F06D00FK>"
 
         # Test another case
-        result = service.generate_unblink_telegram("0020044964")
+        result = service.generate_blink_telegram("0020044964", False)
         assert result == "<S0020044964F06D00FO>"
 
         # Test different serial numbers
-        result = service.generate_unblink_telegram("1234567890")
+        result = service.generate_blink_telegram("1234567890", False)
         assert result.startswith("<S1234567890F06D00")
         assert result.endswith(">")
         assert len(result) == 21  # <S{10}F06D00{2}> = 21 chars
@@ -79,19 +79,19 @@ class TestBlinkService:
 
         # Test empty serial
         with pytest.raises(BlinkError, match="Serial number must be 10 digits"):
-            service.generate_unblink_telegram("")
+            service.generate_blink_telegram("", False)
 
         # Test short serial
         with pytest.raises(BlinkError, match="Serial number must be 10 digits"):
-            service.generate_unblink_telegram("123456789")
+            service.generate_blink_telegram("123456789", False)
 
         # Test long serial
         with pytest.raises(BlinkError, match="Serial number must be 10 digits"):
-            service.generate_unblink_telegram("12345678901")
+            service.generate_blink_telegram("12345678901", False)
 
         # Test non-numeric serial
         with pytest.raises(BlinkError, match="Serial number must contain only digits"):
-            service.generate_unblink_telegram("123456789A")
+            service.generate_blink_telegram("123456789A", False)
 
     def test_create_blink_telegram_object(self):
         """Test creating SystemTelegram object for blink operation"""
@@ -168,13 +168,13 @@ class TestBlinkService:
         service = BlinkService()
 
         # Test blink telegram structure
-        blink_telegram = service.generate_blink_telegram("0020044964")
+        blink_telegram = service.generate_blink_telegram("0020044964", True)
         assert blink_telegram.startswith("<S")
         assert "F05D00" in blink_telegram
         assert blink_telegram.endswith(">")
 
         # Test unblink telegram structure
-        unblink_telegram = service.generate_unblink_telegram("0020030837")
+        unblink_telegram = service.generate_blink_telegram("0020030837", False)
         assert unblink_telegram.startswith("<S")
         assert "F06D00" in unblink_telegram
         assert unblink_telegram.endswith(">")
@@ -192,8 +192,8 @@ class TestBlinkService:
         ]
 
         for serial in test_serials:
-            blink_telegram = service.generate_blink_telegram(serial)
-            unblink_telegram = service.generate_unblink_telegram(serial)
+            blink_telegram = service.generate_blink_telegram(serial, True)
+            unblink_telegram = service.generate_blink_telegram(serial, False)
 
             assert f"S{serial}" in blink_telegram
             assert f"S{serial}" in unblink_telegram

@@ -20,7 +20,7 @@ class TestBlinkIntegration:
         # Generate blink telegram
         serial = "0020044964"
 
-        generated_telegram = blink_service.generate_blink_telegram(serial)
+        generated_telegram = blink_service.generate_blink_telegram(serial, True)
         assert generated_telegram == "<S0020044964F05D00FN>"
 
         # Parse the generated telegram
@@ -41,7 +41,7 @@ class TestBlinkIntegration:
         # Generate unblink telegram
         serial = "0020030837"
 
-        generated_telegram = blink_service.generate_unblink_telegram(serial)
+        generated_telegram = blink_service.generate_blink_telegram(serial, False)
         assert generated_telegram == "<S0020030837F06D00FK>"
 
         # Parse the generated telegram
@@ -163,7 +163,7 @@ class TestBlinkIntegration:
 
         for serial in test_serials:
             # Test blink telegram
-            blink_telegram_str = blink_service.generate_blink_telegram(serial)
+            blink_telegram_str = blink_service.generate_blink_telegram(serial, True)
             parsed_blink = telegram_service.parse_system_telegram(blink_telegram_str)
 
             assert parsed_blink.checksum_validated is True, (
@@ -175,7 +175,7 @@ class TestBlinkIntegration:
             )
 
             # Test unblink telegram
-            unblink_telegram_str = blink_service.generate_unblink_telegram(serial)
+            unblink_telegram_str = blink_service.generate_blink_telegram(serial, False)
             parsed_unblink = telegram_service.parse_system_telegram(
                 unblink_telegram_str
             )
@@ -195,21 +195,21 @@ class TestBlinkIntegration:
 
         # Test invalid telegram generation
         with pytest.raises(BlinkError):
-            blink_service.generate_blink_telegram("invalid")
+            blink_service.generate_blink_telegram("invalid", True)
 
         with pytest.raises(BlinkError):
-            blink_service.generate_unblink_telegram("invalid")
+            blink_service.generate_blink_telegram("invalid", False)
 
         # Test parsing invalid telegram
         with pytest.raises(TelegramParsingError):
             telegram_service.parse_system_telegram("<INVALID>")
 
         # Test that error doesn't occur for valid input
-        valid_blink_telegram = blink_service.generate_blink_telegram("0020044964")
+        valid_blink_telegram = blink_service.generate_blink_telegram("0020044964", True)
         parsed_blink = telegram_service.parse_system_telegram(valid_blink_telegram)
         assert parsed_blink is not None
 
-        valid_unblink_telegram = blink_service.generate_unblink_telegram("0020030837")
+        valid_unblink_telegram = blink_service.generate_blink_telegram("0020030837", False)
         parsed_unblink = telegram_service.parse_system_telegram(valid_unblink_telegram)
         assert parsed_unblink is not None
 
@@ -219,7 +219,7 @@ class TestBlinkIntegration:
         telegram_service = TelegramService()
 
         # Generate blink command
-        blink_command = blink_service.generate_blink_telegram("0020044964")
+        blink_command = blink_service.generate_blink_telegram("0020044964", True)
         assert blink_command == "<S0020044964F05D00FN>"
 
         # Parse ACK reply from specification
@@ -231,7 +231,7 @@ class TestBlinkIntegration:
         assert blink_service.is_nak_response(ack_reply) is False
 
         # Generate unblink command
-        unblink_command = blink_service.generate_unblink_telegram("0020030837")
+        unblink_command = blink_service.generate_blink_telegram("0020030837", False)
         assert unblink_command == "<S0020030837F06D00FK>"
 
         # Parse ACK reply from specification
@@ -261,7 +261,7 @@ class TestBlinkIntegration:
 
         for serial in boundary_serials:
             # Test blink
-            blink_telegram_str = blink_service.generate_blink_telegram(serial)
+            blink_telegram_str = blink_service.generate_blink_telegram(serial, True)
             parsed_blink = telegram_service.parse_system_telegram(blink_telegram_str)
 
             # Verify all properties
@@ -274,7 +274,7 @@ class TestBlinkIntegration:
             assert f"S{serial}F05D00" in blink_telegram_str
 
             # Test unblink
-            unblink_telegram_str = blink_service.generate_unblink_telegram(serial)
+            unblink_telegram_str = blink_service.generate_blink_telegram(serial, False)
             parsed_unblink = telegram_service.parse_system_telegram(
                 unblink_telegram_str
             )
@@ -296,8 +296,8 @@ class TestBlinkIntegration:
         serial = "1234567890"
 
         # Generate both commands
-        blink_telegram = blink_service.generate_blink_telegram(serial)
-        unblink_telegram = blink_service.generate_unblink_telegram(serial)
+        blink_telegram = blink_service.generate_blink_telegram(serial, True)
+        unblink_telegram = blink_service.generate_blink_telegram(serial, False)
 
         # Parse both commands
         parsed_blink = telegram_service.parse_system_telegram(blink_telegram)
