@@ -4,27 +4,58 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: FastAPI / conbus / discover">
-      <change afterPath="$PROJECT_DIR$/src/xp/api/routers/errors.py" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: refactor / TelegramType -&gt; DatapointNameType">
+      <change afterPath="$PROJECT_DIR$/src/xp/api/models/datapoint.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_datapoint.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_discover.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/xp/services/conbus_discover_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/xp/services/conbus_scan_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cli.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cli.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-FastAPI-discover.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-FastAPI-discover.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feature-Conbus-Results.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-Results.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feature-Conbus-Scan.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-Scan.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Fix-Encoding-Issue.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Fix-Encoding-Issue.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp.egg-info/SOURCES.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/api/models/discovery.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/models/discovery.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_config_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_config_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_custom_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_custom_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_discover_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_discover_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/telegram_type_choice.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/telegram_type_choice.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_input_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_input_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_discovery_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_discovery_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/decorators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/decorators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_client_send.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_send_request.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_send_request.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_send_response.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_send_response.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/telegram_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/datapoint_name_type.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_send_request.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_datapoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_send_response.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_discover.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/datapoint_name_type.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/datapoint_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/datapoint_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_server_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_discovery_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_discovery_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_version_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_version_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/integration/test_api/test_discovery_endpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_api/test_discovery_endpoint.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_client_send_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_client_send_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_client_send_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_version_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_version_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +85,9 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests for integration.test_api.test_discovery_endpoint.TestDiscoveryEndpoint.test_service_exception_handling.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.Python tests for integration.test_checksum_integration.TestChecksumIntegration.test_checksum_validate_valid_checksum.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request.executor&quot;: &quot;Debug&quot;,
     &quot;Python tests.Python tests for integration.test_system_reply_telegram_integration.TestAutoDetectTelegramCLI.test_parse_telegram_system.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.Python tests for integration.test_system_reply_telegram_integration.TestSystemTelegramCLI.test_parse_system_telegram_command.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.Python tests for integration.test_system_reply_telegram_integration.TestSystemTelegramCLI.test_parse_system_telegram_json_output.executor&quot;: &quot;Run&quot;,
@@ -81,6 +114,8 @@
     &quot;Python tests.Python tests in test_xp24_action_integration.py.executor&quot;: &quot;Debug&quot;,
     &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_api.test_discovery_endpoint.TestDiscoveryEndpoint.test_connection_error.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_api.test_discovery_endpoint.TestDiscoveryEndpoint.test_successful_discovery.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_calculate_crc32_command.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_calculate_various_data.executor&quot;: &quot;Run&quot;,
@@ -92,6 +127,7 @@
     &quot;Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_temperature_request.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_command_with_checksum_validation.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_json_with_checksum_validation.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.integration.test_module_integration.TestModuleIntegration.test_module_list_command_json_output.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.integration.test_reverse_proxy_integration.TestReverseProxyErrorHandling.test_proxy_start_port_already_in_use.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.integration.test_system_reply_telegram_integration.executor&quot;: &quot;Debug&quot;,
@@ -103,8 +139,10 @@
     &quot;Python tests.pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_status.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.unit.test_cli.test_conbus_blink_commands.TestConbusBlinkCommands.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.unit.test_models.test_xp24_action_telegram.TestXP24ActionTelegram.test_post_init_sets_timestamp.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.unit.test_services.test_conbus_datapoint_service.TestConvenienceMethods.test_send_version_request.executor&quot;: &quot;Debug&quot;,
     &quot;Python tests.pytest for tests.unit.test_services.test_log_file_service.TestLogFileService.test_get_file_statistics_full.executor&quot;: &quot;Run&quot;,
     &quot;Python tests.pytest for tests.unit.test_services.test_xp24_action_service.TestXP24ActionService.test_format_action_summary_with_validation.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in tests.executor&quot;: &quot;Run&quot;,
     &quot;Python.demo.executor&quot;: &quot;Coverage&quot;,
     &quot;Python.telegram_test_data.executor&quot;: &quot;Debug&quot;,
     &quot;Python.test_blink_integration.executor&quot;: &quot;Run&quot;,
@@ -117,7 +155,7 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/q/Projects/xp/src/xp/cli/commands&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/q/Projects/xp/src/xp/api/models&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -130,16 +168,17 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/xp/cli/commands" />
+      <recent name="$PROJECT_DIR$/src/xp/api/models" />
+      <recent name="$PROJECT_DIR$/src/xp/api/routers" />
+      <recent name="$PROJECT_DIR$/src/xp/models" />
       <recent name="$PROJECT_DIR$/src/xp/services" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/Specs" />
+      <recent name="$PROJECT_DIR$/src/xp/cli/commands" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Specs" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test_conbus_blink_commands">
+  <component name="RunManager" selected="Python tests.Python tests in tests">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
@@ -163,89 +202,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test_blink_integration" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="xp" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/integration" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/integration/test_blink_integration.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test_conbus_blink_commands" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="xp" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/unit/test_cli" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test_discovery_integration" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="xp" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/integration" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests in fixtures" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/fixtures" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/fixtures&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <option name="_new_target" value="&quot;integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <configuration name="Python tests in tests" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
@@ -264,21 +234,95 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="xp" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_command_with_checksum_validation" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="xp" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_command_with_checksum_validation&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_json_with_checksum_validation" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="xp" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_json_with_checksum_validation&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest in tests" type="tests" factoryName="py.test" nameIsGenerated="true">
+      <module name="xp" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.9 (xp)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.main" />
-      <item itemvalue="Python.test_blink_integration" />
-      <item itemvalue="Python.test_conbus_blink_commands" />
-      <item itemvalue="Python.test_discovery_integration" />
-      <item itemvalue="Python tests.Python tests in fixtures" />
+      <item itemvalue="Python tests.pytest in tests" />
+      <item itemvalue="Python tests.Python tests for integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request" />
       <item itemvalue="Python tests.Python tests in tests" />
+      <item itemvalue="Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request" />
+      <item itemvalue="Python tests.pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_command_with_checksum_validation" />
+      <item itemvalue="Python tests.pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_json_with_checksum_validation" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test_conbus_blink_commands" />
         <item itemvalue="Python tests.Python tests in tests" />
-        <item itemvalue="Python.test_discovery_integration" />
-        <item itemvalue="Python.test_blink_integration" />
-        <item itemvalue="Python tests.Python tests in fixtures" />
+        <item itemvalue="Python tests.pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_json_with_checksum_validation" />
+        <item itemvalue="Python tests.pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_command_with_checksum_validation" />
+        <item itemvalue="Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request" />
+        <item itemvalue="Python tests.Python tests for integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request" />
       </list>
     </recent_temporary>
   </component>
@@ -309,15 +353,8 @@
       <workItem from="1757696538700" duration="629000" />
       <workItem from="1757752097335" duration="35847000" />
       <workItem from="1758124896525" duration="15519000" />
-      <workItem from="1758194876724" duration="3713000" />
-    </task>
-    <task id="LOCAL-00020" summary="Feat: XP24-Action">
-      <option name="closed" value="true" />
-      <created>1757444578691</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1757444578691</updated>
+      <workItem from="1758194876724" duration="12743000" />
+      <workItem from="1758234469139" duration="531000" />
     </task>
     <task id="LOCAL-00021" summary="Feat: XP33 Emulator">
       <option name="closed" value="true" />
@@ -703,7 +740,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758175476590</updated>
     </task>
-    <option name="localTasksCounter" value="69" />
+    <task id="LOCAL-00069" summary="Feat: refactor / TelegramType -&gt; DatapointNameType">
+      <option name="closed" value="true" />
+      <created>1758209194861</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1758209194861</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -757,7 +802,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix: Conbus client" />
     <MESSAGE value="Fix: Conbus scan" />
     <MESSAGE value="Fix: Conbus scan background" />
     <MESSAGE value="Fix: Conbus encoding" />
@@ -782,7 +826,8 @@
     <MESSAGE value="fix: refactor" />
     <MESSAGE value="Feat: FastAPI" />
     <MESSAGE value="Feat: FastAPI / conbus / discover" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feat: FastAPI / conbus / discover" />
+    <MESSAGE value="Feat: refactor / TelegramType -&gt; DatapointNameType" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: refactor / TelegramType -&gt; DatapointNameType" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -794,28 +839,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py</url>
-          <line>208</line>
+          <line>199</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py</url>
-          <line>200</line>
+          <line>191</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py</url>
-          <line>185</line>
+          <line>176</line>
           <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/xp/models/response.py</url>
-          <line>6</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/xp/services/telegram_discovery_service.py</url>
-          <line>6</line>
-          <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/xp/cli/commands/telegram_parse_commands.py</url>
@@ -859,8 +894,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py</url>
-          <line>14</line>
+          <line>15</line>
           <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py</url>
+          <line>205</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py</url>
+          <line>182</line>
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/xp/api/routers/conbus_discover.py</url>
+          <line>2</line>
+          <option name="timeStamp" value="38" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -868,7 +918,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_system_reply_telegram_integration.coverage" NAME="pytest for tests.integration.test_system_reply_telegram_integration Coverage Results" MODIFIED="1756485080075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_services_test_log_file_service_TestLogFileService_test_get_file_statistics_full.coverage" NAME="pytest for tests.unit.test_services.test_log_file_service.TestLogFileService.test_get_file_statistics_full Coverage Results" MODIFIED="1756330359196" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_event_telegram_integration_TestEventTelegramIntegration_test_parse_event_telegram_command_with_checksum_validation.coverage" NAME="pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_command_with_checksum_validation Coverage Results" MODIFIED="1756310664778" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_event_telegram_integration_TestEventTelegramIntegration_test_parse_event_telegram_command_with_checksum_validation.coverage" NAME="pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_command_with_checksum_validation Coverage Results" MODIFIED="1758222857830" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests.coverage" NAME="pytest for tests Coverage Results" MODIFIED="1756372178870" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_checksum_integration_TestChecksumIntegration_test_checksum_calculate_crc32_command.coverage" NAME="pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_calculate_crc32_command Coverage Results" MODIFIED="1758107733355" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestConnectionStatusIntegration_test_connection_status_lifecycle.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestConnectionStatusIntegration.test_connection_status_lifecycle Coverage Results" MODIFIED="1756891211230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
@@ -878,22 +928,27 @@
     <SUITE FILE_PATH="coverage/xp$test_conbus_blink_commands.coverage" NAME="test_conbus_blink_commands Coverage Results" MODIFIED="1758149256764" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/unit/test_cli" />
     <SUITE FILE_PATH="coverage/xp$demo.coverage" NAME="demo Coverage Results" MODIFIED="1756276295879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$telegram_test_data.coverage" NAME="telegram_test_data Coverage Results" MODIFIED="1757433458751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/fixtures" />
+    <SUITE FILE_PATH="coverage/xp$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1758222096741" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_cli_command_integration_action.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_action Coverage Results" MODIFIED="1758049983712" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_voltage_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request Coverage Results" MODIFIED="1756890872793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$test_discovery_integration.coverage" NAME="test_discovery_integration Coverage Results" MODIFIED="1758146716057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/integration" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_voltage_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request Coverage Results" MODIFIED="1758222746913" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_event_telegram_integration_TestEventTelegramIntegration_test_parse_event_telegram_json_with_checksum_validation.coverage" NAME="pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_json_with_checksum_validation Coverage Results" MODIFIED="1758230071764" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$test_event_telegram.coverage" NAME="test_event_telegram Coverage Results" MODIFIED="1756275486254" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/unit/test_models" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp24_action_integration_TestXP24ActionIntegration_test_telegram_service_integration.coverage" NAME="pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.test_telegram_service_integration Coverage Results" MODIFIED="1757052205585" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestBasicConnectivity_test_connection_failure_no_server.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestBasicConnectivity.test_connection_failure_no_server Coverage Results" MODIFIED="1757520242034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_models_test_xp24_action_telegram_TestXP24ActionTelegram_test_post_init_sets_timestamp.coverage" NAME="pytest for tests.unit.test_models.test_xp24_action_telegram.TestXP24ActionTelegram.test_post_init_sets_timestamp Coverage Results" MODIFIED="1757617048003" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$test_blink_integration.coverage" NAME="test_blink_integration Coverage Results" MODIFIED="1758146593577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/integration" />
+    <SUITE FILE_PATH="coverage/xp$test_blink_integration.coverage" NAME="test_blink_integration Coverage Results" MODIFIED="1758209443616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/integration" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestErrorScenarios_test_multiple_concurrent_connections.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestErrorScenarios.test_multiple_concurrent_connections Coverage Results" MODIFIED="1756891785454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestCustomTelegrams_test_custom_telegram_send.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestCustomTelegrams.test_custom_telegram_send Coverage Results" MODIFIED="1756891106347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_api_test_discovery_endpoint_TestDiscoveryEndpoint_test_connection_error.coverage" NAME="pytest for tests.integration.test_api.test_discovery_endpoint.TestDiscoveryEndpoint.test_connection_error Coverage Results" MODIFIED="1758210831535" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_api_test_discovery_endpoint_TestDiscoveryEndpoint_test_successful_discovery.coverage" NAME="pytest for tests.integration.test_api.test_discovery_endpoint.TestDiscoveryEndpoint.test_successful_discovery Coverage Results" MODIFIED="1758210784045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_services_test_xp24_action_service_TestXP24ActionService_test_format_action_summary_with_validation.coverage" NAME="pytest for tests.unit.test_services.test_xp24_action_service.TestXP24ActionService.test_format_action_summary_with_validation Coverage Results" MODIFIED="1758110817448" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_cli_test_conbus_blink_commands_TestConbusBlinkCommands.coverage" NAME="pytest for tests.unit.test_cli.test_conbus_blink_commands.TestConbusBlinkCommands Coverage Results" MODIFIED="1758114875027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp24_action_integration_TestXP24ActionIntegration.coverage" NAME="pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration Coverage Results" MODIFIED="1757433614255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_cli_command_integration_status.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_status Coverage Results" MODIFIED="1758050499455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_services_test_conbus_datapoint_service_TestConvenienceMethods_test_send_version_request.coverage" NAME="pytest for tests.unit.test_services.test_conbus_datapoint_service.TestConvenienceMethods.test_send_version_request Coverage Results" MODIFIED="1758221840670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_checksum_integration_TestChecksumIntegration_test_checksum_validate_valid_checksum.coverage" NAME="pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_validate_valid_checksum Coverage Results" MODIFIED="1758108163675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758123022502" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758230191697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_reverse_proxy_integration_TestReverseProxyErrorHandling_test_proxy_start_port_already_in_use.coverage" NAME="pytest for tests.integration.test_reverse_proxy_integration.TestReverseProxyErrorHandling.test_proxy_start_port_already_in_use Coverage Results" MODIFIED="1757519561359" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_module_integration_TestModuleIntegration_test_module_list_command_json_output.coverage" NAME="pytest for tests.integration.test_module_integration.TestModuleIntegration.test_module_list_command_json_output Coverage Results" MODIFIED="1757538920628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_temperature_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_temperature_request Coverage Results" MODIFIED="1756890926271" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

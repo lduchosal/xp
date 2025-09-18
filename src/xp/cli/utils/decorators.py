@@ -35,18 +35,8 @@ def handle_service_errors(*service_exceptions: Type[Exception]):
     return decorator
 
 
-
-
-def validation_option(func: Callable) -> Callable:
-    """Decorator to add --validate-checksum option to a command."""
-    return click.option(
-        "--validate-checksum", "-c", is_flag=True, help="Validate telegram checksum"
-    )(func)
-
-
 def common_options(func: Callable) -> Callable:
     """Decorator to add validation option."""
-    func = validation_option(func)
     return func
 
 

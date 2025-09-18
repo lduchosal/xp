@@ -3,9 +3,9 @@
 import click
 import json
 
-from ...services.conbus_client_send_service import (
-    ConbusClientSendService,
-    ConbusClientSendError,
+from ...services.conbus_datapoint_service import (
+    ConbusDatapointService,
+    ConbusDatapointError,
 )
 from ...services.input_service import XPInputService, XPInputError
 from ...models.action_type import ActionType
@@ -21,7 +21,7 @@ from .conbus import conbus
 @click.argument("input_number_or_status", type=click.Choice(["status", "0", "1", "2", "3", "4", "5", "6", "7", "8"]))
 @click.argument("on_or_off", type=click.Choice(["on", "off"]), default="on")
 @connection_command()
-@handle_service_errors(ConbusClientSendError)
+@handle_service_errors(ConbusDatapointError)
 def xp_input(
     serial_number: str, input_number_or_status: str, on_or_off: str
 ):
@@ -34,7 +34,7 @@ def xp_input(
         xp conbus input 0011223344 1 off    # Toggle input 1
         xp conbus input 0011223344 status   # Query status
     """
-    service = ConbusClientSendService()
+    service = ConbusDatapointService()
     input_service = XPInputService()
 
     try:
@@ -87,11 +87,11 @@ def xp_input(
                 if on_or_off.lower() == "on":
                     action_type = ActionType.PRESS.value
 
-                data_point_code = f"{input_number:02d}{action_type}"
+                datapoint_code = f"{input_number:02d}{action_type}"
                 response = service.send_custom_telegram(
                     serial_number,
                     input_service.ACTION_FUNCTION,  # "27"
-                    data_point_code,  # "00AA", "01AA", etc.
+                    datapoint_code,  # "00AA", "01AA", etc.
                 )
 
                 # Add XP24-specific data to response
@@ -111,7 +111,7 @@ def xp_input(
         click.echo(json.dumps(error_response, indent=2))
         raise SystemExit(1)
 
-    except ConbusClientSendError as e:
+    except ConbusDatapointError as e:
         CLIErrorHandler.handle_service_error(e, "XP Input", {
             "serial_number": serial_number,
             "input_number_or_status": input_number_or_status,

@@ -5,11 +5,11 @@ import json
 
 from ..utils.serial_number_type import SERIAL
 from ..utils.datapoint_type_name_choice import DATAPOINT
-from ...services.conbus_client_send_service import (
-    ConbusClientSendService,
-    ConbusClientSendError,
+from ...services.conbus_datapoint_service import (
+    ConbusDatapointService,
+    ConbusDatapointError,
 )
-from ...models import ConbusSendRequest, DatapointTypeName
+from ...models import ConbusDatapointRequest, DatapointTypeName
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,
@@ -19,25 +19,25 @@ from ..utils.error_handlers import CLIErrorHandler
 from .conbus import conbus
 
 
-@conbus.command("send")
-@click.argument("telegram_type", type=DATAPOINT)
+@conbus.command("datapoint")
+@click.argument("datapoint", type=DATAPOINT)
 @click.argument("target_serial", type=SERIAL)
 @connection_command()
-@handle_service_errors(ConbusClientSendError)
-def send_telegram(target_serial: str, telegram_type: DatapointTypeName):
+@handle_service_errors(ConbusDatapointError)
+def datapoint_telegram(target_serial: str, datapoint: DatapointTypeName):
     """
     Send telegram to Conbus server.
 
     Examples:
 
     \b
-        xp conbus send version 0020030837
-        xp conbus send voltage 0020030837
-        xp conbus send temperature 0020030837
-        xp conbus send current 0020030837
-        xp conbus send humidity 0020030837
+        xp conbus datapoint version 0020030837
+        xp conbus datapoint voltage 0020030837
+        xp conbus datapoint temperature 0020030837
+        xp conbus datapoint current 0020030837
+        xp conbus datapoint humidity 0020030837
     """
-    service = ConbusClientSendService()
+    service = ConbusDatapointService()
     formatter = OutputFormatter(True)
 
     try:
@@ -47,14 +47,14 @@ def send_telegram(target_serial: str, telegram_type: DatapointTypeName):
             click.echo(error_response)
             raise SystemExit(1)
 
-        if telegram_type is None:
-            error_response = formatter.error_response("Telegram type required")
+        if datapoint is None:
+            error_response = formatter.error_response("Datapoint is required")
             click.echo(error_response)
             raise SystemExit(1)
 
         # Create request
-        request = ConbusSendRequest(
-            telegram_type=telegram_type, target_serial=target_serial
+        request = ConbusDatapointRequest(
+            datapoint_type=datapoint, target_serial=target_serial
         )
 
         # Send telegram
@@ -63,7 +63,7 @@ def send_telegram(target_serial: str, telegram_type: DatapointTypeName):
 
         click.echo(json.dumps(response.to_dict(), indent=2))
 
-    except ConbusClientSendError as e:
+    except ConbusDatapointError as e:
         if "Connection timeout" in str(e):
             CLIErrorHandler.handle_connection_error(
                 e,

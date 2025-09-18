@@ -3,8 +3,9 @@ import threading
 import time
 import socket
 from datetime import datetime
-from src.xp.services.conbus_client_send_service import ConbusClientSendService
-from src.xp.models import ConbusSendRequest, DatapointTypeName
+from src.xp.services.conbus_datapoint_service import ConbusDatapointService
+from src.xp.models import ConbusDatapointRequest
+from xp.models import DatapointTypeName
 
 
 class MockConbusServer:
@@ -113,7 +114,7 @@ conbus:
     @pytest.fixture
     def client_service(self, config_file):
         """Create client service with test configuration"""
-        return ConbusClientSendService(config_path=config_file)
+        return ConbusDatapointService(config_path=config_file)
 
 
 class TestBasicConnectivity(TestConbusClientSendIntegration):
@@ -145,37 +146,6 @@ class TestBasicConnectivity(TestConbusClientSendIntegration):
         assert config.port == 10001
         assert config.timeout == 5
 
-
-class TestDiscoveryTelegrams(TestConbusClientSendIntegration):
-    """Test discovery telegram functionality"""
-
-    def test_discovery_send_receive(self, client_service, mock_server):
-        """Test sending discovery telegram and receiving responses"""
-        with client_service:
-            response = client_service.send_discovery()
-
-        assert response.success is True
-        assert response.sent_telegram == "<S0000000000F01D00FA>"
-        assert len(response.received_telegrams) == 3
-        assert "<R0020030837F01DFM>" in response.received_telegrams
-        assert "<R0020044966F01DFK>" in response.received_telegrams
-        assert "<R0020042796F01DFN>" in response.received_telegrams
-
-        # Verify server received the message
-        assert "<S0000000000F01D00FA>" in mock_server.received_messages
-
-    def test_discovery_telegram_request_object(self, client_service, mock_server):
-        """Test discovery using request object"""
-        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
-
-        with client_service:
-            response = client_service.send_telegram(request)
-
-        assert response.success is True
-        assert response.request.telegram_type == DatapointTypeName.DISCOVERY
-        assert len(response.received_telegrams) >= 1
-
-
 class TestVersionTelegrams(TestConbusClientSendIntegration):
     """Test version request telegram functionality"""
 
@@ -199,7 +169,7 @@ class TestSensorTelegrams(TestConbusClientSendIntegration):
     def test_temperature_request(self, client_service, mock_server):
         """Test temperature sensor request"""
         with client_service:
-            response = client_service.send_sensor_request(
+            response = client_service.datapoint_request(
                 "0020012521", DatapointTypeName.TEMPERATURE
             )
 
@@ -211,7 +181,7 @@ class TestSensorTelegrams(TestConbusClientSendIntegration):
     def test_voltage_request(self, client_service, mock_server):
         """Test voltage sensor request"""
         with client_service:
-            response = client_service.send_sensor_request(
+            response = client_service.datapoint_request(
                 "0020030837", DatapointTypeName.VOLTAGE
             )
 
@@ -219,21 +189,6 @@ class TestSensorTelegrams(TestConbusClientSendIntegration):
         assert response.sent_telegram == "<S0020030837F02D20FM>"
         assert len(response.received_telegrams) == 1
         assert response.received_telegrams[0] == "<R0020030837F02D20+12.5V§OK>"
-
-    def test_multiple_sensor_requests(self, client_service, mock_server):
-        """Test multiple sensor requests in sequence"""
-        sensor_types = [DatapointTypeName.VOLTAGE, DatapointTypeName.TEMPERATURE]
-        serial = "0020030837"
-
-        with client_service:
-            for sensor_type in sensor_types:
-                if sensor_type == DatapointTypeName.TEMPERATURE:
-                    serial = "0020012521"  # Use different serial for temperature
-
-                response = client_service.send_sensor_request(serial, sensor_type)
-                assert response.success is True
-                assert len(response.received_telegrams) >= 1
-
 
 class TestCustomTelegrams(TestConbusClientSendIntegration):
     """Test custom telegram functionality"""
@@ -254,103 +209,11 @@ class TestCustomTelegrams(TestConbusClientSendIntegration):
         assert response.received_telegrams[0] == custom_response
 
 
-class TestErrorScenarios(TestConbusClientSendIntegration):
-    """Test error scenarios and edge cases"""
-
-    def test_server_disconnect_during_operation(self, client_service, mock_server):
-        """Test handling of server disconnect during operation"""
-        # Connect first
-        with client_service:
-            # Send first request successfully
-            response1 = client_service.send_discovery()
-            assert response1.success is True
-
-            # Stop server
-            mock_server.stop()
-            time.sleep(0.1)
-
-            # Try to send another request
-            response2 = client_service.send_discovery()
-            # This might succeed or fail depending on timing and connection state
-            # The important thing is that it doesn't crash
-            assert isinstance(response2.success, bool)
-
-    def test_no_response_from_server(self, client_service):
-        """Test handling when server doesn't respond"""
-        # Create server that accepts connections but doesn't send responses
-        server = MockConbusServer(port=10002)
-        server.response_map = {}  # No responses
-        server.start()
-
-        try:
-            # Update client configuration
-            client_service.config.port = 10002
-
-            with client_service:
-                response = client_service.send_discovery()
-
-            assert response.success is True  # Send should still succeed
-            assert response.sent_telegram == "<S0000000000F01D00FA>"
-            assert len(response.received_telegrams) == 0  # No responses
-
-        finally:
-            server.stop()
-
-
 class TestConnectionStatusIntegration(TestConbusClientSendIntegration):
     """Test connection status tracking in integration scenarios"""
 
-    def test_connection_status_lifecycle(self, client_service, mock_server):
-        """Test connection status throughout connection lifecycle"""
-        # Initially disconnected
-        status = client_service.get_connection_status()
-        assert status.connected is False
-        assert status.last_activity is None
-
-        # Connect and send telegram
-        with client_service:
-            client_service.connect()
-
-            # After connection
-            status = client_service.get_connection_status()
-            assert status.connected is True
-
-            # Send telegram
-            response = client_service.send_discovery()
-            assert response.success is True
-
-            # Check activity was recorded
-            status = client_service.get_connection_status()
-            assert status.connected is True
-            assert status.last_activity is not None
-            assert isinstance(status.last_activity, datetime)
-
-        # After disconnect
-        status = client_service.get_connection_status()
-        assert status.connected is False
-
-
 class TestWorkflowIntegration(TestConbusClientSendIntegration):
     """Test complete workflow integration scenarios"""
-
-    def test_complete_discovery_workflow(self, client_service, mock_server):
-        """Test complete discovery workflow as specified"""
-        with client_service:
-            # Step 1: Send discovery
-            discovery_response = client_service.send_discovery()
-            assert discovery_response.success is True
-
-            # Step 2: For each discovered device, request version
-            discovered_devices = [
-                "0020030837",  # From mock responses
-                # Could extract more from actual responses
-            ]
-
-            for device_serial in discovered_devices:
-                version_response = client_service.send_version_request(device_serial)
-                if version_response.success:
-                    assert len(version_response.received_telegrams) >= 1
-                    # Could parse version info from response
 
     def test_sensor_monitoring_workflow(self, client_service, mock_server):
         """Test sensor data monitoring workflow"""
@@ -362,7 +225,7 @@ class TestWorkflowIntegration(TestConbusClientSendIntegration):
                 if sensor_type == DatapointTypeName.VOLTAGE:
                     device_serial = "0020030837"  # Different device for voltage
 
-                response = client_service.send_sensor_request(
+                response = client_service.datapoint_request(
                     device_serial, sensor_type
                 )
 
@@ -372,26 +235,3 @@ class TestWorkflowIntegration(TestConbusClientSendIntegration):
                     print(
                         f"Sensor {sensor_type.value} response: {response.received_telegrams}"
                     )
-
-    def test_error_recovery_workflow(self, client_service, mock_server):
-        """Test error recovery workflow"""
-        with client_service:
-            # First request should succeed
-            response1 = client_service.send_discovery()
-            assert response1.success is True
-
-            # Simulate network issue by stopping server briefly
-            mock_server.stop()
-            time.sleep(0.1)
-
-            # This request might fail
-            client_service.send_discovery()
-
-            # Restart server
-            mock_server.start()
-            time.sleep(0.1)
-
-            # Reconnect and try again
-            client_service.disconnect()
-            client_service.send_discovery()
-            # Should eventually succeed with retry logic

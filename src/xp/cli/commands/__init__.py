@@ -7,7 +7,7 @@ from .conbus_custom_commands import *
 from .conbus_discover_commands import *
 from .conbus_input_commands import *
 from .conbus_scan_commands import *
-from .conbus_send_commands import *
+from .conbus_datapoint_commands import *
 
 from .file_commands import *
 from .module_commands import *

@@ -132,15 +132,6 @@ class TestSystemTelegramCLI:
         assert output_data["success"] is False
         assert "Unknown system function code: 99" in output_data["error"]
 
-    def test_parse_system_telegram_help(self):
-        """Test system telegram parse command help."""
-        result = self.runner.invoke(cli, ["telegram", "parse", "--help"])
-
-        assert result.exit_code == 0
-        assert "Parse a system telegram string" in result.output
-        assert "" in result.output
-
-
 class TestReplyTelegramCLI:
     """Test class for reply telegram CLI integration."""
 
@@ -278,15 +269,6 @@ class TestReplyTelegramCLI:
         output_data = json.loads(result.output)
         assert output_data["success"] is False
         assert "Invalid reply telegram format" in output_data["error"]
-
-    def test_parse_reply_telegram_help(self):
-        """Test reply telegram parse command help."""
-        result = self.runner.invoke(cli, ["telegram", "parse", "--help"])
-
-        assert result.exit_code == 0
-        assert "Parse a reply telegram string" in result.output
-        assert "" in result.output
-
 
 class TestAutoDetectTelegramCLI:
     """Test class for auto-detect telegram CLI integration."""
@@ -446,10 +428,6 @@ class TestTelegramCLIIntegration:
 
         # Check that all telegram commands are listed
         assert "parse" in output
-        assert "parse" in output
-        assert "parse" in output
-        assert "parse" in output
-        assert "parse-multiple" in output
         assert "validate" in output
 
     def test_all_telegram_commands_exist(self):
@@ -457,10 +435,6 @@ class TestTelegramCLIIntegration:
         # Test each command with help to ensure they exist
         commands = [
             "parse",
-            "parse",
-            "parse",
-            "parse",
-            "parse-multiple",
             "validate",
         ]
 

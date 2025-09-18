@@ -6,10 +6,10 @@ from .module_type_code import ModuleTypeCode
 from .module_type import ModuleType, get_all_module_types, is_valid_module_code
 from .log_entry import LogEntry
 from .conbus_connection_status import ConbusConnectionStatus
-from .datapoint_name_type import DatapointTypeName
+from .datapoint_type import DatapointTypeName
 from .conbus_client_config import ConbusClientConfig
-from .conbus_send_request import ConbusSendRequest
-from .conbus_send_response import ConbusSendResponse
+from .conbus_datapoint import ConbusDatapointRequest, ConbusDatapointResponse
+from .conbus_discover import ConbusDiscoverRequest, ConbusDiscoverResponse
 from .event_telegram import EventTelegram
 
 __all__ = [
@@ -21,12 +21,11 @@ __all__ = [
     "get_all_module_types",
     "is_valid_module_code",
     "LogEntry",
-    "DiscoveryRequest",
-    "DiscoveryResponse",
-    "DiscoveryResult",
     "DatapointTypeName",
     "ConbusClientConfig",
-    "ConbusSendRequest",
-    "ConbusSendResponse",
+    "ConbusDatapointRequest",
+    "ConbusDatapointResponse",
+    "ConbusDiscoverRequest",
+    "ConbusDiscoverResponse",
     "ConbusConnectionStatus",
 ]

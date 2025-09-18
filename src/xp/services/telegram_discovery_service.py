@@ -44,7 +44,7 @@ class DeviceInfo:
         }
 
 
-class DiscoveryService:
+class TelegramDiscoveryService:
     """
     Service for generating and handling device discovery telegrams.
 

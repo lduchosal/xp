@@ -1,6 +1,6 @@
-"""Conbus Client Send Service for TCP communication with Conbus servers.
+"""Conbus Scan Service for TCP communication with Conbus servers.
 
-This service implements a TCP client that connects to Conbus servers and sends
+This service implements a TCP client that scan a Conbus servers and sends
 various types of telegrams including discovery, version, and sensor data requests.
 """
 
@@ -14,25 +14,26 @@ from datetime import datetime
 from .telegram_blink_service import BlinkService
 from ..models import (
     ConbusClientConfig,
-    ConbusSendRequest,
-    ConbusSendResponse,
+    ConbusDatapointRequest,
+    ConbusDatapointResponse,
     DatapointTypeName,
     ConbusConnectionStatus,
 )
 from ..models.response import Response
 from ..services.telegram_service import TelegramService
-from ..services.telegram_discovery_service import DiscoveryService
+from ..services.telegram_discovery_service import TelegramDiscoveryService
 from ..services.telegram_version_service import VersionService
 from ..utils.checksum import calculate_checksum
 
 
-class ConbusClientSendError(Exception):
+
+class ConbusScanError(Exception):
     """Raised when Conbus client send operations fail"""
 
     pass
 
 
-class ConbusClientSendService:
+class ConbusScanService:
     """
     TCP client service for sending telegrams to Conbus servers.
 
@@ -50,10 +51,6 @@ class ConbusClientSendService:
 
         # Service dependencies
         self.telegram_service = TelegramService()
-        self.discovery_service = DiscoveryService()
-        self.version_service = VersionService()
-        self.blink_service = BlinkService()
-
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -149,13 +146,13 @@ class ConbusClientSendService:
             last_activity=self.last_activity,
         )
 
-    def send_telegram(self, request: ConbusSendRequest) -> ConbusSendResponse:
+    def send_telegram(self, request: ConbusDatapointRequest) -> ConbusDatapointResponse:
         """Send a telegram to the Conbus server"""
         if not self.is_connected:
             # Try to connect automatically
             connect_result = self.connect()
             if not connect_result.success:
-                return ConbusSendResponse(
+                return ConbusDatapointResponse(
                     success=False,
                     request=request,
                     error=f"Not connected to server: {connect_result.error}",
@@ -165,10 +162,10 @@ class ConbusClientSendService:
             # Generate telegram based on type
             telegram = self._generate_telegram(request)
             if not telegram:
-                return ConbusSendResponse(
+                return ConbusDatapointResponse(
                     success=False,
                     request=request,
-                    error=f"Failed to generate telegram for type {request.telegram_type.value}",
+                    error=f"Failed to generate telegram for type {request.datapoint_type.value}",
                 )
 
             # Send telegram
@@ -193,7 +190,7 @@ class ConbusClientSendService:
                         self.logger.warning(f"Failed to parse telegram '{telegram_str}': {e}")
                         continue
 
-            return ConbusSendResponse(
+            return ConbusDatapointResponse(
                 success=True,
                 request=request,
                 sent_telegram=telegram,
@@ -204,40 +201,40 @@ class ConbusClientSendService:
         except socket.timeout:
             error_msg = "Response timeout"
             self.logger.error(error_msg)
-            return ConbusSendResponse(success=False, request=request, error=error_msg)
+            return ConbusDatapointResponse(success=False, request=request, error=error_msg)
         except Exception as e:
             error_msg = f"Failed to send telegram: {e}"
             self.logger.error(error_msg)
-            return ConbusSendResponse(success=False, request=request, error=error_msg)
+            return ConbusDatapointResponse(success=False, request=request, error=error_msg)
 
-    def _generate_telegram(self, request: ConbusSendRequest) -> Optional[str]:
+    def _generate_telegram(self, request: ConbusDatapointRequest) -> Optional[str]:
         """Generate telegram string based on request type"""
         try:
             if not request.target_serial:
                 return None
 
-            if request.telegram_type == DatapointTypeName.DISCOVERY:
+            if request.datapoint_type == DatapointTypeName.UNKNOWN:
                 return self.discovery_service.generate_discovery_telegram()
 
-            elif request.telegram_type == DatapointTypeName.VERSION:
+            elif request.datapoint_type == DatapointTypeName.VERSION:
                 result = self.version_service.generate_version_request_telegram(
                     request.target_serial
                 )
                 return result.data.get("telegram") if result.success else None
 
 
-            elif request.telegram_type in [
+            elif request.datapoint_type in [
                 DatapointTypeName.BLINK,
                 DatapointTypeName.UNBLINK,
             ]:
-                on_or_off = "off" if request.telegram_type == DatapointTypeName.UNBLINK else "on"
+                on_or_off = "off" if request.datapoint_type == DatapointTypeName.UNBLINK else "on"
                 telegram = self.blink_service.generate_blink_telegram(
                     request.target_serial,
                     on_or_off
                 )
                 return telegram
 
-            elif request.telegram_type in [
+            elif request.datapoint_type in [
                 DatapointTypeName.VOLTAGE,
                 DatapointTypeName.TEMPERATURE,
                 DatapointTypeName.CURRENT,
@@ -252,7 +249,7 @@ class ConbusClientSendService:
             self.logger.error(f"Error generating telegram: {e}")
             return None
 
-    def _generate_sensor_telegram(self, request: ConbusSendRequest) -> Optional[str]:
+    def _generate_sensor_telegram(self, request: ConbusDatapointRequest) -> Optional[str]:
         """Generate sensor data request telegram"""
         if not request.target_serial:
             return None
@@ -265,7 +262,7 @@ class ConbusClientSendService:
             DatapointTypeName.HUMIDITY: "19",  # Humidity data point
         }
 
-        data_point = sensor_data_points.get(request.telegram_type)
+        data_point = sensor_data_points.get(request.datapoint_type)
         if not data_point:
             return None
 
@@ -309,21 +306,21 @@ class ConbusClientSendService:
 
         return responses
 
-    def send_discovery(self) -> ConbusSendResponse:
+    def send_discovery(self) -> ConbusDatapointResponse:
         """Send discovery telegram"""
-        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
+        request = ConbusDatapointRequest(datapoint_type=DatapointTypeName.UNKNOWN)
         return self.send_telegram(request)
 
-    def send_version_request(self, target_serial: str) -> ConbusSendResponse:
+    def send_version_request(self, target_serial: str) -> ConbusDatapointResponse:
         """Send version request telegram"""
-        request = ConbusSendRequest(
-            telegram_type=DatapointTypeName.VERSION, target_serial=target_serial
+        request = ConbusDatapointRequest(
+            datapoint_type=DatapointTypeName.VERSION, target_serial=target_serial
         )
         return self.send_telegram(request)
 
     def send_sensor_request(
         self, target_serial: str, sensor_type: DatapointTypeName
-    ) -> ConbusSendResponse:
+    ) -> ConbusDatapointResponse:
         """Send sensor data request telegram"""
         if sensor_type not in [
             DatapointTypeName.VOLTAGE,
@@ -331,28 +328,28 @@ class ConbusClientSendService:
             DatapointTypeName.CURRENT,
             DatapointTypeName.HUMIDITY,
         ]:
-            raise ConbusClientSendError(f"Invalid sensor type: {sensor_type.value}")
+            raise ConbusDatapointError(f"Invalid sensor type: {sensor_type.value}")
 
-        request = ConbusSendRequest(
-            telegram_type=sensor_type, target_serial=target_serial
+        request = ConbusDatapointRequest(
+            datapoint_type=sensor_type, target_serial=target_serial
         )
         return self.send_telegram(request)
 
     def scan_module(
         self, target_serial: str, function_code: str, progress_callback=None
-    ) -> List[ConbusSendResponse]:
+    ) -> List[ConbusDatapointResponse]:
         """Scan all functions and datapoints for a module with live output"""
         results = []
         total_combinations = 256 * 256  # 65536 combinations
         count = 0
 
         for datapoint_hex in range(256):
-            data_point_code = f"{datapoint_hex:02X}"
+            datapoint_code = f"{datapoint_hex:02X}"
             count += 1
 
             try:
                 response = self.send_custom_telegram(
-                    target_serial, function_code, data_point_code
+                    target_serial, function_code, datapoint_code
                 )
                 results.append(response)
 
@@ -367,15 +364,15 @@ class ConbusClientSendService:
 
             except Exception as e:
                 # Create error response for failed scan attempt
-                error_response = ConbusSendResponse(
+                error_response = ConbusDatapointResponse(
                     success=False,
-                    request=ConbusSendRequest(
-                        telegram_type=DatapointTypeName.DISCOVERY,  # Placeholder
+                    request=ConbusDatapointRequest(
+                        datapoint_type=DatapointTypeName.UNKNOWN,  # Placeholder
                         target_serial=target_serial,
                         function_code=function_code,
-                        data_point_code=data_point_code,
+                        datapoint_code=datapoint_code,
                     ),
-                    error=f"Scan failed for F{function_code}D{data_point_code}: {e}",
+                    error=f"Scan failed for F{function_code}D{datapoint_code}: {e}",
                 )
                 results.append(error_response)
 
@@ -399,11 +396,11 @@ class ConbusClientSendService:
         return scan_thread
 
     def send_custom_telegram(
-        self, target_serial: str, function_code: str, data_point_code: str
-    ) -> ConbusSendResponse:
+        self, target_serial: str, function_code: str, datapoint_code: str
+    ) -> ConbusDatapointResponse:
         """Send custom telegram with specified function and data point codes"""
         # Generate custom system telegram: <S{serial}F{function}{data_point}{checksum}>
-        telegram_body = f"S{target_serial}F{function_code}D{data_point_code}"
+        telegram_body = f"S{target_serial}F{function_code}D{datapoint_code}"
         checksum = calculate_checksum(telegram_body)
         telegram = f"<{telegram_body}{checksum}>"
 
@@ -411,13 +408,13 @@ class ConbusClientSendService:
             if not self.is_connected:
                 connect_result = self.connect()
                 if not connect_result.success:
-                    return ConbusSendResponse(
+                    return ConbusDatapointResponse(
                         success=False,
-                        request=ConbusSendRequest(
-                            telegram_type=DatapointTypeName.DISCOVERY,  # Placeholder
+                        request=ConbusDatapointRequest(
+                            datapoint_type=DatapointTypeName.UNKNOWN,  # Placeholder
                             target_serial=target_serial,
                             function_code=function_code,
-                            data_point_code=data_point_code,
+                            datapoint_code=datapoint_code,
                         ),
                         error=f"Not connected to server: {connect_result.error}",
                     )
@@ -430,13 +427,13 @@ class ConbusClientSendService:
             # Receive responses
             responses = self._receive_responses()
 
-            return ConbusSendResponse(
+            return ConbusDatapointResponse(
                 success=True,
-                request=ConbusSendRequest(
-                    telegram_type=DatapointTypeName.DISCOVERY,  # Placeholder
+                request=ConbusDatapointRequest(
+                    datapoint_type=DatapointTypeName.UNKNOWN,  # Placeholder
                     target_serial=target_serial,
                     function_code=function_code,
-                    data_point_code=data_point_code,
+                    datapoint_code=datapoint_code,
                 ),
                 sent_telegram=telegram,
                 received_telegrams=responses,
@@ -445,13 +442,13 @@ class ConbusClientSendService:
         except Exception as e:
             error_msg = f"Failed to send custom telegram: {e}"
             self.logger.error(error_msg)
-            return ConbusSendResponse(
+            return ConbusDatapointResponse(
                 success=False,
-                request=ConbusSendRequest(
-                    telegram_type=DatapointTypeName.DISCOVERY,  # Placeholder
+                request=ConbusDatapointRequest(
+                    datapoint_type=DatapointTypeName.UNKNOWN,  # Placeholder
                     target_serial=target_serial,
                     function_code=function_code,
-                    data_point_code=data_point_code,
+                    datapoint_code=datapoint_code,
                 ),
                 error=error_msg,
             )

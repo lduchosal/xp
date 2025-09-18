@@ -2,7 +2,7 @@
 
 import pytest
 from src.xp.services.telegram_discovery_service import (
-    DiscoveryService,
+    TelegramDiscoveryService,
 )
 from src.xp.services.telegram_service import TelegramService, TelegramParsingError
 from src.xp.models.system_telegram import SystemTelegram
@@ -16,7 +16,7 @@ class TestDiscoveryIntegration:
 
     def test_complete_discovery_workflow(self):
         """Test complete workflow: generate -> parse -> analyze"""
-        discovery_service = DiscoveryService()
+        discovery_service = TelegramDiscoveryService()
         telegram_service = TelegramService()
 
         # Generate discovery telegram
@@ -35,7 +35,7 @@ class TestDiscoveryIntegration:
 
     def test_discovery_telegram_object_creation_and_parsing_consistency(self):
         """Test that created telegram objects match parsed ones"""
-        discovery_service = DiscoveryService()
+        discovery_service = TelegramDiscoveryService()
         telegram_service = TelegramService()
 
         # Create telegram object
@@ -55,7 +55,7 @@ class TestDiscoveryIntegration:
 
     def test_checksum_validation_integration(self):
         """Test that checksum validation works for discovery telegrams"""
-        discovery_service = DiscoveryService()
+        discovery_service = TelegramDiscoveryService()
         telegram_service = TelegramService()
 
         # Test discovery request
@@ -88,7 +88,7 @@ class TestDiscoveryIntegration:
 
     def test_error_handling_integration(self):
         """Test error handling across services"""
-        discovery_service = DiscoveryService()
+        discovery_service = TelegramDiscoveryService()
         telegram_service = TelegramService()
 
         # Test parsing invalid telegram
@@ -103,7 +103,7 @@ class TestDiscoveryIntegration:
     def test_discovery_response_format_validation_integration(self):
         """Test discovery response format validation with real telegrams"""
         telegram_service = TelegramService()
-        discovery_service = DiscoveryService()
+        discovery_service = TelegramDiscoveryService()
 
         # Valid discovery responses
         valid_responses = [

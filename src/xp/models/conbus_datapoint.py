@@ -2,18 +2,41 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-from .conbus_send_request import ConbusSendRequest
+from ..models.datapoint_type import DatapointTypeName
+
+@dataclass
+class ConbusDatapointRequest:
+    """Represents a Conbus send request"""
+
+    datapoint_type: DatapointTypeName
+    target_serial: Optional[str] = None
+    function_code: Optional[str] = None
+    datapoint_code: Optional[str] = None
+    timestamp: Optional[datetime] = None
+
+    def __post_init__(self):
+        if self.timestamp is None:
+            self.timestamp = datetime.now()
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for JSON serialization"""
+        return {
+            "datapoint_type": self.datapoint_type.value,
+            "datapoint_code": self.datapoint_code,
+            "target_serial": self.target_serial,
+            "function_code": self.function_code,
+            "timestamp": self.timestamp.isoformat() if self.timestamp else None,
+        }
 
 
 @dataclass
-class ConbusSendResponse:
+class ConbusDatapointResponse:
     """Represents a response from Conbus send operation"""
 
     success: bool
-    request: ConbusSendRequest
+    request: ConbusDatapointRequest
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
-    discovered_devices: Optional[list] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
@@ -30,7 +53,6 @@ class ConbusSendResponse:
             "request": self.request.to_dict(),
             "sent_telegram": self.sent_telegram,
             "received_telegrams": self.received_telegrams,
-            "discovered_devices": self.discovered_devices,
             "error": self.error,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
         }

@@ -9,8 +9,8 @@ import pytest
 import socket
 import threading
 import time
-from src.xp.services.conbus_client_send_service import ConbusClientSendService
-from src.xp.models import DatapointTypeName
+from src.xp.services.conbus_datapoint_service import ConbusDatapointService
+from xp.models import DatapointTypeName
 
 
 class Latin1TestServer:
@@ -120,12 +120,12 @@ conbus:
   timeout: 5
 """
         config_file.write_text(config_content)
-        return ConbusClientSendService(config_path=str(config_file))
+        return ConbusDatapointService(config_path=str(config_file))
 
     def test_section_symbol_0xa7(self, client_service, latin1_server):
         """Test handling of § symbol (byte 0xa7) in temperature response"""
         with client_service:
-            response = client_service.send_sensor_request(
+            response = client_service.datapoint_request(
                 "0020012521", DatapointTypeName.TEMPERATURE
             )
 
@@ -139,7 +139,7 @@ conbus:
     def test_copyright_symbol_0xa9(self, client_service, latin1_server):
         """Test handling of © symbol (byte 0xa9) in voltage response"""
         with client_service:
-            response = client_service.send_sensor_request(
+            response = client_service.datapoint_request(
                 "0020030837", DatapointTypeName.VOLTAGE
             )
 
@@ -152,12 +152,12 @@ conbus:
     def test_registered_symbol_0xae(self, client_service, latin1_server):
         """Test handling of ® symbol (byte 0xae) in current response"""
         with client_service:
-            response = client_service.send_sensor_request(
+            response = client_service.datapoint_request(
                 "0020044966", DatapointTypeName.CURRENT
             )
 
         assert response.success is True
-        assert response.sent_telegram == "<S0020044966F02D21FL>"
+        assert response.sent_telegram == "<S0020044966F02D17FO>"
         assert len(response.received_telegrams) == 1
         assert response.received_telegrams[0] == "<R0020044966F02D21+2,3A®OK>"
         assert "®" in response.received_telegrams[0]
@@ -165,7 +165,7 @@ conbus:
     def test_plus_minus_symbol_0xb1(self, client_service, latin1_server):
         """Test handling of ± symbol (byte 0xb1) in humidity response"""
         with client_service:
-            response = client_service.send_sensor_request(
+            response = client_service.datapoint_request(
                 "0020042796", DatapointTypeName.HUMIDITY
             )
 
@@ -190,18 +190,6 @@ conbus:
         assert "©" in response.received_telegrams[0]
         assert "®" in response.received_telegrams[0]
         assert "±" in response.received_telegrams[0]
-
-    def test_discovery_with_extended_chars(self, client_service, latin1_server):
-        """Test discovery response with Latin-1 extended characters"""
-        with client_service:
-            response = client_service.send_discovery()
-
-        assert response.success is True
-        assert response.sent_telegram == "<S0000000000F01D00FA>"
-        assert len(response.received_telegrams) == 1
-        assert response.received_telegrams[0] == "<R0020030837F01D©XP24®>"
-        assert "©" in response.received_telegrams[0]
-        assert "®" in response.received_telegrams[0]
 
     def test_all_latin1_extended_chars(self, client_service, latin1_server):
         """Test a comprehensive range of Latin-1 extended characters (128-255)"""

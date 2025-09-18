@@ -4,9 +4,9 @@ import click
 import json
 import threading
 
-from ...services.conbus_client_send_service import (
-    ConbusClientSendService,
-    ConbusClientSendError,
+from ...services.conbus_datapoint_service import (
+    ConbusDatapointService,
+    ConbusDatapointError,
 )
 from ..utils.decorators import connection_command, handle_service_errors
 from ..utils.error_handlers import CLIErrorHandler
@@ -24,7 +24,7 @@ from .conbus import conbus
     help="Run scan in background with live output",
 )
 @connection_command()
-@handle_service_errors(ConbusClientSendError)
+@handle_service_errors(ConbusDatapointError)
 def scan_module(
     serial_number: str, function_code: str, background: bool
 ):
@@ -36,7 +36,7 @@ def scan_module(
     \b
         xp conbus scan 0020030837 02 # Scan all datapoints of function Read data points (02)
     """
-    service = ConbusClientSendService()
+    service = ConbusDatapointService()
 
     # Shared state for results collection and live output
     results = []
@@ -117,7 +117,7 @@ def scan_module(
         }
         click.echo(json.dumps(output, indent=2))
 
-    except ConbusClientSendError as e:
+    except ConbusDatapointError as e:
         if "Connection timeout" in str(e):
             CLIErrorHandler.handle_connection_error(
                 e,

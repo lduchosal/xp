@@ -3,10 +3,6 @@
 from typing import List
 from pydantic import BaseModel, Field
 
-class DiscoveryRequest(BaseModel):
-    """Request model for discovery endpoint."""
-    pass  # Empty body as per specification
-
 class DiscoveryResponse(BaseModel):
     """Response model for successful discovery operation."""
 

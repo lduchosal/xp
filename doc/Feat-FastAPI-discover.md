@@ -83,7 +83,7 @@ POST /api/xp/conbus/discover
 2. **API Router** (`src/xp/api/routers/conbus.py`)
    - FastAPI router with `/discover` endpoint
    - Request validation and error handling
-   - Integration with existing `ConbusClientSendService`
+   - Integration with existing `ConbusDatapointService`
 
 3. **FastAPI Application** (`src/xp/api/main.py`)
    - FastAPI app initialization
@@ -93,7 +93,7 @@ POST /api/xp/conbus/discover
 ### Service Integration
 
 The endpoint leverages existing functionality:
-- `ConbusClientSendService` for TCP communication
+- `ConbusDatapointService` for TCP communication
 - `TelegramService` for telegram parsing
 - `DiscoveryService` for response processing
 - Existing error handling patterns from CLI commands

@@ -12,7 +12,7 @@ import os
 from typing import Dict, List, Optional
 
 from ..services.telegram_service import TelegramService
-from ..services.telegram_discovery_service import DiscoveryService
+from ..services.telegram_discovery_service import TelegramDiscoveryService
 from ..services.cp20_server_service import CP20ServerService
 from ..services.xp24_server_service import XP24ServerService
 from ..services.xp33_server_service import XP33ServerService
@@ -46,7 +46,7 @@ class ConbusServerService:
             str, object
         ] = {}  # serial -> device service instance
         self.telegram_service = TelegramService()
-        self.discovery_service = DiscoveryService()
+        self.discovery_service = TelegramDiscoveryService()
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

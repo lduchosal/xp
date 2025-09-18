@@ -5,7 +5,7 @@ import click
 from xp.cli.utils.decorators import handle_service_errors
 from xp.cli.utils.error_handlers import CLIErrorHandler
 from xp.cli.utils.formatters import OutputFormatter
-from xp.services.conbus_client_send_service import ConbusClientSendService
+from xp.services.conbus_datapoint_service import ConbusDatapointService
 from .conbus import conbus
 
 
@@ -20,7 +20,7 @@ def show_config():
     \b
         xp conbus config
     """
-    service = ConbusClientSendService()
+    service = ConbusDatapointService()
     OutputFormatter(True)
 
     try:

@@ -168,10 +168,10 @@ xp conbus custom 0020044966 00 00
 22:16:37,700 [TX] <S0020044966F00D00FK>
 22:16:37,700 [RX] <R0020044966F19DFD>
 xp conbus custom 0020044966 00   
-Usage: xp conbus custom [OPTIONS] SERIAL_NUMBER FUNCTION_CODE DATA_POINT_CODE
+Usage: xp conbus custom [OPTIONS] SERIAL_NUMBER FUNCTION_CODE datapoint_code
 Try 'xp conbus custom --help' for help.
 
-Error: Missing argument 'DATA_POINT_CODE'.
+Error: Missing argument 'datapoint_code'.
 xp conbus custom 0020044966 00 00
 
 22:16:46,940 [TX] <S0020044966F00D00FK>

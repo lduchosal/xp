@@ -175,7 +175,7 @@ class TelegramService:
         try:
             serial_number = match.group(1)
             function_code = match.group(2)
-            data_point_code = match.group(3)
+            datapoint_code = match.group(3)
             match.group(4)  # Optional data value
             checksum = match.group(5)
 
@@ -187,10 +187,10 @@ class TelegramService:
                 )
 
             # Parse data point type
-            data_point_type = DataPointType.from_code(data_point_code)
+            data_point_type = DataPointType.from_code(datapoint_code)
             if data_point_type is None:
                 raise TelegramParsingError(
-                    f"Unknown data point code: {data_point_code}"
+                    f"Unknown data point code: {datapoint_code}"
                 )
 
             # Create the telegram object
@@ -245,23 +245,23 @@ class TelegramService:
                 )
 
             # Parse data point and data value from full_data_value
-            data_point_code = None
+            datapoint_code = None
             data_value = None
 
             if full_data_value.startswith("D") and len(full_data_value) >= 3:
                 # Regular reply format: D{data_point}{data}
-                data_point_code = full_data_value[1:3]
+                datapoint_code = full_data_value[1:3]
                 data_value = full_data_value[3:] if len(full_data_value) > 3 else ""
             else:
                 # ACK/NAK format: just data (like "D" for ACK/NAK)
-                data_point_code = "00"  # Default to STATUS
+                datapoint_code = "00"  # Default to STATUS
                 data_value = full_data_value
 
             # Parse data point type
-            data_point_type = DataPointType.from_code(data_point_code)
+            data_point_type = DataPointType.from_code(datapoint_code)
             if data_point_type is None:
                 raise TelegramParsingError(
-                    f"Unknown data point code: {data_point_code}"
+                    f"Unknown data point code: {datapoint_code}"
                 )
 
             # Create the telegram object

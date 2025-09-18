@@ -16,7 +16,7 @@ System telegrams are identified by the "S", and followed by the receiver serial 
 - The two digits after "F" designates the system function
 - The two digits after "D" is the data point ID
 - Integrates into existing `xp conbus` command group
-- Reuses existing ConbusClientSendService for communication
+- Reuses existing ConbusDatapointService for communication
 - Follows existing CLI patterns and output formatting
 
 ### Command Integration
@@ -38,7 +38,7 @@ $ xp conbus scan 0020030837
 ```
 
 ### Technical Implementation
-- Extends existing ConbusClientSendService with scan functionality
+- Extends existing ConbusDatapointService with scan functionality
 - Systematically iterates through function codes (00-FF)
 - For each function, scans datapoint codes (00-FF)  
 - Uses existing telegram generation and communication infrastructure

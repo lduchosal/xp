@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 
 from src.xp.services.input_service import XPInputService, XPInputError
 from src.xp.models.action_type import ActionType
-from src.xp.services.conbus_client_send_service import ConbusClientSendService
+from src.xp.services.conbus_datapoint_service import ConbusDatapointService
 
 
 class TestXPInputIntegration:
@@ -14,7 +14,7 @@ class TestXPInputIntegration:
     def setup_method(self):
         """Set up test fixtures."""
         self.input_service = XPInputService()
-        self.conbus_service = ConbusClientSendService()
+        self.conbus_service = ConbusDatapointService()
 
     def test_end_to_end_action_generation_and_parsing(self):
         """Test complete flow: generate telegram, parse it back."""
@@ -120,7 +120,7 @@ class TestXPInputIntegration:
         assert parsed_generic.serial_number == "0020044964"
 
     @patch(
-        "src.xp.services.conbus_client_send_service.ConbusClientSendService.send_custom_telegram"
+        "src.xp.services.conbus_datapoint_service.ConbusDatapointService.send_custom_telegram"
     )
     def test_cli_command_integration_action(self, mock_send):
         """Test integration with CLI command for action."""
@@ -160,7 +160,7 @@ class TestXPInputIntegration:
         mock_send.assert_called_once_with("0020044964", "27", "01AA")
 
     @patch(
-        "src.xp.services.conbus_client_send_service.ConbusClientSendService.send_custom_telegram"
+        "src.xp.services.conbus_datapoint_service.ConbusDatapointService.send_custom_telegram"
     )
     def test_cli_command_integration_status(self, mock_send):
         """Test integration with CLI command for status query."""
@@ -202,7 +202,7 @@ class TestXPInputIntegration:
         mock_send.assert_called_once_with("0020044964", "02", "12")
 
     @patch(
-        "src.xp.services.conbus_client_send_service.ConbusClientSendService.send_custom_telegram"
+        "src.xp.services.conbus_datapoint_service.ConbusDatapointService.send_custom_telegram"
     )
     def test_cli_command_json_output(self, mock_send):
         """Test CLI command with JSON output."""

@@ -2,7 +2,7 @@
 
 from unittest.mock import Mock
 from src.xp.services.telegram_discovery_service import (
-    DiscoveryService,
+    TelegramDiscoveryService,
     DeviceInfo,
 )
 from src.xp.models.system_telegram import SystemTelegram
@@ -63,19 +63,19 @@ class TestDiscoveryService:
 
     def test_init(self):
         """Test initialization"""
-        service = DiscoveryService()
-        assert isinstance(service, DiscoveryService)
+        service = TelegramDiscoveryService()
+        assert isinstance(service, TelegramDiscoveryService)
 
     def test_generate_discovery_telegram(self):
         """Test generating discovery broadcast telegram"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         result = service.generate_discovery_telegram()
         assert result == "<S0000000000F01D00FA>"
 
     def test_create_discovery_telegram_object(self):
         """Test creating SystemTelegram object for discovery"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         telegram = service.create_discovery_telegram_object()
 
@@ -88,7 +88,7 @@ class TestDiscoveryService:
 
     def test_is_discovery_response(self):
         """Test identifying discovery responses"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         # Create mock discovery response
         discovery_reply = Mock(spec=ReplyTelegram)
@@ -104,7 +104,7 @@ class TestDiscoveryService:
 
     def test_get_unique_devices(self):
         """Test filtering unique devices"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         devices = [
             DeviceInfo("0020030837"),
@@ -124,7 +124,7 @@ class TestDiscoveryService:
 
     def test_validate_discovery_response_format_valid(self):
         """Test validating valid discovery response format"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         valid_telegrams = [
             "<R0020030837F01DFM>",
@@ -138,7 +138,7 @@ class TestDiscoveryService:
 
     def test_validate_discovery_response_format_invalid(self):
         """Test validating invalid discovery response format"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         invalid_telegrams = [
             "<R002003083F01DFM>",  # Serial too short
@@ -156,7 +156,7 @@ class TestDiscoveryService:
 
     def test_generate_discovery_summary(self):
         """Test generating discovery summary"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         devices = [
             DeviceInfo("0020030837", checksum_valid=True),
@@ -180,7 +180,7 @@ class TestDiscoveryService:
 
     def test_generate_discovery_summary_empty(self):
         """Test generating summary for empty device list"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         result = service.generate_discovery_summary([])
 
@@ -195,14 +195,14 @@ class TestDiscoveryService:
 
     def test_format_discovery_results_empty(self):
         """Test formatting results for empty device list"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         result = service.format_discovery_results([])
         assert result == "No devices discovered"
 
     def test_format_discovery_results_with_devices(self):
         """Test formatting results with devices"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         devices = [
             DeviceInfo("0020030837", checksum_valid=True),
@@ -223,7 +223,7 @@ class TestDiscoveryService:
 
     def test_format_discovery_results_with_duplicates(self):
         """Test formatting results with duplicate devices"""
-        service = DiscoveryService()
+        service = TelegramDiscoveryService()
 
         devices = [
             DeviceInfo("0020030837", checksum_valid=True),

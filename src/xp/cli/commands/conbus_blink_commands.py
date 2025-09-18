@@ -4,9 +4,9 @@ import click
 import json
 
 from ...models.system_function import SystemFunction
-from ...services.conbus_client_send_service import (
-    ConbusClientSendService,
-    ConbusClientSendError,
+from ...services.conbus_datapoint_service import (
+    ConbusDatapointService,
+    ConbusDatapointError,
 )
 from ...services.telegram_blink_service import BlinkService, BlinkError
 from ..utils.decorators import (
@@ -21,7 +21,7 @@ from .conbus import blink
 @blink.command("on", short_help="Blink on remote service")
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
-@handle_service_errors(ConbusClientSendError, BlinkError)
+@handle_service_errors(ConbusDatapointError, BlinkError)
 def send_blink_on_telegram(serial_number: str):
     """
     Send blink command to start blinking module LED.
@@ -36,7 +36,7 @@ def send_blink_on_telegram(serial_number: str):
 @blink.command("off")
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
-@handle_service_errors(ConbusClientSendError, BlinkError)
+@handle_service_errors(ConbusDatapointError, BlinkError)
 def send_blink_off_telegram(serial_number: str):
     """
     Send blink command to start blinking module LED.
@@ -59,7 +59,7 @@ def send_blink_telegram(serial_number: str, on_or_off: str):
         xp conbus blink 0020044964 on
         xp conbus blink 0020044964 off
     """
-    conbus_service = ConbusClientSendService()
+    conbus_service = ConbusDatapointService()
     blink_service = BlinkService()
 
     # Blink is 05, Unblink is 06
@@ -99,7 +99,7 @@ def send_blink_telegram(serial_number: str, on_or_off: str):
         click.echo(json.dumps(error_response, indent=2))
         raise SystemExit(1)
 
-    except ConbusClientSendError as e:
+    except ConbusDatapointError as e:
         CLIErrorHandler.handle_service_error(
             e,
             "blink command",

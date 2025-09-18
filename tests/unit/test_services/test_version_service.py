@@ -89,7 +89,7 @@ class TestVersionService(unittest.TestCase):
 
                 self.assertEqual(result.data["serial_number"], serial_number)
                 self.assertEqual(result.data["function_code"], "02")
-                self.assertEqual(result.data["data_point_code"], "02")
+                self.assertEqual(result.data["datapoint_code"], "02")
                 self.assertEqual(result.data["operation"], "version_request")
 
                 # Verify telegram format

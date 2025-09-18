@@ -46,19 +46,6 @@ class TestEventTelegramIntegration:
         assert output["checksum"] == "AK"
         assert output["raw_telegram"] == "<E14L00I02MAK>"
 
-    def test_parse_event_telegram_command_with_checksum_validation(self):
-        """Test telegram parsing with checksum validation"""
-        result = self.runner.invoke(
-            cli, ["telegram", "parse", "<E14L00I02MAK>", "--validate-checksum"]
-        )
-
-        assert result.exit_code == 0
-
-        # Parse JSON output
-        output = json.loads(result.output)
-        assert "checksum_valid" in output
-        assert output["checksum_valid"] is True
-
     def test_parse_event_telegram_command_invalid_format(self):
         """Test telegram parsing with invalid format"""
         result = self.runner.invoke(cli, ["telegram", "parse", "INVALID"])
@@ -84,71 +71,6 @@ class TestEventTelegramIntegration:
         assert output["success"] is False
         assert "error" in output
         assert output["raw_input"] == "INVALID"
-
-    def test_parse_multiple_event_telegrams_command_success(self):
-        """Test parsing multiple telegrams via CLI"""
-        data = "Some data <E14L00I02MAK> more <E14L01I03BB1> end"
-        result = self.runner.invoke(cli, ["telegram", "parse-multiple", data])
-
-        assert result.exit_code == 0
-
-        # Parse JSON output
-        output = json.loads(result.output)
-        assert output["success"] is True
-        assert output["count"] == 2
-        assert len(output["telegrams"]) == 2
-
-    def test_parse_multiple_event_telegrams_command_json_output(self):
-        """Test parsing multiple telegrams with JSON output"""
-        data = "Some data <E14L00I02MAK> more <E14L01I03BB1> end"
-        result = self.runner.invoke(
-            cli, ["telegram", "parse-multiple", data]
-        )
-
-        assert result.exit_code == 0
-
-        # Parse JSON output
-        output = json.loads(result.output)
-        assert output["success"] is True
-        assert output["count"] == 2
-        assert len(output["telegrams"]) == 2
-
-        # Check first telegram
-        first_telegram = output["telegrams"][0]
-        assert first_telegram["module_type"] == 14
-        assert first_telegram["event_type_name"] == "button_press"
-
-        # Check second telegram
-        second_telegram = output["telegrams"][1]
-        assert second_telegram["module_type"] == 14
-        assert second_telegram["event_type_name"] == "button_release"
-
-    def test_parse_multiple_event_telegrams_command_no_telegrams(self):
-        """Test parsing multiple telegrams when none exist"""
-        result = self.runner.invoke(
-            cli, ["telegram", "parse-multiple", "No telegrams here"]
-        )
-
-        assert result.exit_code == 0
-
-        # Parse JSON output
-        output = json.loads(result.output)
-        assert output["success"] is True
-        assert output["count"] == 0
-        assert len(output["telegrams"]) == 0
-
-    def test_validate_telegram_command_valid(self):
-        """Test telegram validation with valid telegram"""
-        result = self.runner.invoke(cli, ["telegram", "validate", "<E14L00I02MAK>"])
-
-        assert result.exit_code == 0
-
-        # Parse JSON output
-        output = json.loads(result.output)
-        assert output["success"] is True
-        assert output["valid_format"] is True
-        assert output["valid_checksum"] is True
-        assert "telegram" in output
 
     def test_validate_telegram_command_valid_json(self):
         """Test telegram validation with valid telegram and JSON output"""
@@ -200,7 +122,6 @@ class TestEventTelegramIntegration:
         assert result.exit_code == 0
         assert "Event telegram operations" in result.output
         assert "parse" in result.output
-        assert "parse-multiple" in result.output
         assert "validate" in result.output
 
     def test_main_cli_help(self):
@@ -271,22 +192,3 @@ class TestEventTelegramIntegration:
         # Ensure consistency
         assert parse_data["module_type"] == validate_data["telegram"]["module_type"]
         assert parse_data["event_type"] == validate_data["telegram"]["event_type"]
-
-    def test_parse_event_telegram_json_with_checksum_validation(self):
-        """Test JSON output with checksum validation (cover line 43)"""
-        result = self.runner.invoke(
-            cli,
-            [
-                "telegram",
-                "parse",
-                "<E14L00I02MAK>",
-                "--validate-checksum",
-            ],
-        )
-
-        assert result.exit_code == 0
-
-        # Parse JSON output and verify checksum_valid field is present
-        output = json.loads(result.output)
-        assert "checksum_valid" in output
-        assert isinstance(output["checksum_valid"], bool)

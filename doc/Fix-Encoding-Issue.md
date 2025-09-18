@@ -30,7 +30,7 @@ Problem byte: 0xa7 at position 23 (§ symbol)
 
 ## Root Cause
 
-The issue occurs in the `conbus_client_send_service.py` at line 266:
+The issue occurs in the `conbus_datapoint_service.py` at line 266:
 ```python
 message = data.decode('utf-8').strip()
 ```
@@ -39,7 +39,7 @@ The received data contains extended characters (specifically 0xa7 = § symbol) t
 
 ## Affected Files
 
-- `/src/xp/services/conbus_client_send_service.py:266`
+- `/src/xp/services/conbus_datapoint_service.py:266`
 - `/src/xp/services/conbus_server_service.py:135`
 - `/tests/integration/test_conbus_client_send_integration.py:70`
 

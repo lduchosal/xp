@@ -3,11 +3,12 @@
 import click
 import json
 
-from ...services.conbus_client_send_service import (
-    ConbusClientSendService,
-    ConbusClientSendError,
+from ...services.conbus_discover_service import (
+    ConbusDiscoverService,
+    ConbusDiscoverRequest,
+    ConbusDiscoverError,
 )
-from ...models import ConbusSendRequest, DatapointTypeName
+from ...models import ConbusDatapointRequest, DatapointTypeName
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,
@@ -18,7 +19,7 @@ from .conbus import conbus
 
 @conbus.command("discover")
 @connection_command()
-@handle_service_errors(ConbusClientSendError)
+@handle_service_errors(ConbusDiscoverError)
 def send_discover_telegram():
     """
     Send discovery telegram to Conbus server.
@@ -28,17 +29,11 @@ def send_discover_telegram():
     \b
         xp conbus discover
     """
-    service = ConbusClientSendService()
+    service = ConbusDiscoverService()
 
     try:
         # Discovery telegram
-        telegram_type_enum = DatapointTypeName.DISCOVERY
-        target_serial = None
-
-        # Create request
-        request = ConbusSendRequest(
-            telegram_type=telegram_type_enum, target_serial=target_serial
-        )
+        request = ConbusDiscoverRequest()
 
         # Send telegram
         with service:
@@ -46,7 +41,7 @@ def send_discover_telegram():
 
         click.echo(json.dumps(response.to_dict(), indent=2))
 
-    except ConbusClientSendError as e:
+    except ConbusDiscoverError as e:
         if "Connection timeout" in str(e):
             CLIErrorHandler.handle_connection_error(
                 e,

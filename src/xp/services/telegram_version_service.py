@@ -129,7 +129,7 @@ class VersionService:
                     "telegram": telegram,
                     "serial_number": serial_number,
                     "function_code": "02",
-                    "data_point_code": "02",
+                    "datapoint_code": "02",
                     "checksum": checksum,
                     "operation": "version_request",
                 },

@@ -4,7 +4,7 @@ import click
 import json
 
 from . import telegram
-from ...services.telegram_discovery_service import DiscoveryService, DiscoveryError
+from ...services.telegram_discovery_service import TelegramDiscoveryService, DiscoveryError
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
@@ -21,7 +21,7 @@ def generate_discovery():
     \b
         xp telegram discover
     """
-    service = DiscoveryService()
+    service = TelegramDiscoveryService()
     OutputFormatter(True)
 
     try:
