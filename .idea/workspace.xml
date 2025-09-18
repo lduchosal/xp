@@ -5,12 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: FastAPI / conbus / discover">
+      <change afterPath="$PROJECT_DIR$/src/xp/api/routers/errors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cli.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/models/discovery.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/models/discovery.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_api/test_models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_discover_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_discover_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_send_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/telegram_type_choice.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/telegram_type_choice.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_client_send.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_send_request.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_send_request.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_send_response.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_send_response.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/telegram_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/datapoint_name_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_client_send_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_api/test_discovery_endpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_api/test_discovery_endpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_client_send_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_client_send_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,82 +52,82 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Python tests for integration.test_checksum_integration.TestChecksumIntegration.test_checksum_validate_valid_checksum.executor": "Debug",
-    "Python tests.Python tests for integration.test_system_reply_telegram_integration.TestAutoDetectTelegramCLI.test_parse_telegram_system.executor": "Run",
-    "Python tests.Python tests for integration.test_system_reply_telegram_integration.TestSystemTelegramCLI.test_parse_system_telegram_command.executor": "Run",
-    "Python tests.Python tests for integration.test_system_reply_telegram_integration.TestSystemTelegramCLI.test_parse_system_telegram_json_output.executor": "Run",
-    "Python tests.Python tests for integration.test_xp24_action_integration.TestXP24ActionIntegration.executor": "Debug",
-    "Python tests.Python tests for integration.test_xp24_action_integration.TestXP24ActionIntegration.test_cli_command_json_output.executor": "Run",
-    "Python tests.Python tests for integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_action.executor": "Run",
-    "Python tests.Python tests for integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_status.executor": "Run",
-    "Python tests.Python tests for integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_json_output.executor": "Run",
-    "Python tests.Python tests for tests.integration.test_system_reply_telegram_integration.TestReplyTelegramCLI.test_parse_reply_telegram_different_data_types.executor": "Run",
-    "Python tests.Python tests for tests.unit.test_cli.test_validators.TestValidators.test_validate_telegram_string_valid_formats.executor": "Run",
-    "Python tests.Python tests for tests.unit.test_models.test_module_type.TestModuleType.executor": "Coverage",
-    "Python tests.Python tests for tests.unit.test_models.test_reply_telegram.TestReplyTelegram.executor": "Run",
-    "Python tests.Python tests for tests.unit.test_models.test_system_telegram.TestSystemFunction.executor": "Run",
-    "Python tests.Python tests for tests.unit.test_models.test_system_telegram.TestSystemFunction.test_from_code_valid.executor": "Run",
-    "Python tests.Python tests for tests.unit.test_services.test_checksum_service.TestChecksumService.test_telegram_crash1.executor": "Run",
-    "Python tests.Python tests for unit.test_models.test_module_type.TestModuleType.test_module_registry_completeness.executor": "Run",
-    "Python tests.Python tests for unit.test_models.test_module_type.TestModuleTypeFunctions.test_is_valid_module_code.executor": "Run",
-    "Python tests.Python tests for unit.test_models.test_system_telegram.TestSystemTelegram.test_function_descriptions.executor": "Run",
-    "Python tests.Python tests for unit.test_services.test_xp24_action_service.TestXP24ActionService.test_format_action_summary_with_validation.executor": "Run",
-    "Python tests.Python tests in integration.executor": "Run",
-    "Python tests.Python tests in test_checksum.py.executor": "Run",
-    "Python tests.Python tests in test_models.executor": "Run",
-    "Python tests.Python tests in test_serial_number_type.py.executor": "Run",
-    "Python tests.Python tests in test_xp24_action_integration.py.executor": "Debug",
-    "Python tests.Python tests in tests.executor": "Run",
-    "Python tests.pytest for tests.executor": "Run",
-    "Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.executor": "Run",
-    "Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_calculate_crc32_command.executor": "Run",
-    "Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_calculate_various_data.executor": "Run",
-    "Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_validate_valid_checksum.executor": "Debug",
-    "Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestBasicConnectivity.test_connection_failure_no_server.executor": "Run",
-    "Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestConnectionStatusIntegration.test_connection_status_lifecycle.executor": "Run",
-    "Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestCustomTelegrams.test_custom_telegram_send.executor": "Run",
-    "Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestErrorScenarios.test_multiple_concurrent_connections.executor": "Run",
-    "Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_temperature_request.executor": "Run",
-    "Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request.executor": "Run",
-    "Python tests.pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_command_with_checksum_validation.executor": "Run",
-    "Python tests.pytest for tests.integration.test_module_integration.TestModuleIntegration.test_module_list_command_json_output.executor": "Run",
-    "Python tests.pytest for tests.integration.test_reverse_proxy_integration.TestReverseProxyErrorHandling.test_proxy_start_port_already_in_use.executor": "Run",
-    "Python tests.pytest for tests.integration.test_system_reply_telegram_integration.executor": "Debug",
-    "Python tests.pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.executor": "Debug",
-    "Python tests.pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.test_cli_command_json_output.executor": "Debug",
-    "Python tests.pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.test_telegram_service_integration.executor": "Run",
-    "Python tests.pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.executor": "Run",
-    "Python tests.pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_action.executor": "Run",
-    "Python tests.pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_status.executor": "Run",
-    "Python tests.pytest for tests.unit.test_cli.test_conbus_blink_commands.TestConbusBlinkCommands.executor": "Run",
-    "Python tests.pytest for tests.unit.test_models.test_xp24_action_telegram.TestXP24ActionTelegram.test_post_init_sets_timestamp.executor": "Run",
-    "Python tests.pytest for tests.unit.test_services.test_log_file_service.TestLogFileService.test_get_file_statistics_full.executor": "Run",
-    "Python tests.pytest for tests.unit.test_services.test_xp24_action_service.TestXP24ActionService.test_format_action_summary_with_validation.executor": "Run",
-    "Python.demo.executor": "Coverage",
-    "Python.telegram_test_data.executor": "Debug",
-    "Python.test_blink_integration.executor": "Run",
-    "Python.test_checksum.executor": "Run",
-    "Python.test_conbus_blink_commands.executor": "Run",
-    "Python.test_discovery_integration.executor": "Run",
-    "Python.test_event_telegram.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/q/Projects/xp/src/xp/cli/commands",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "aDefault",
-    "settings.editor.selected.configurable": "com.intellij.mcpserver.settings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests for integration.test_checksum_integration.TestChecksumIntegration.test_checksum_validate_valid_checksum.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for integration.test_system_reply_telegram_integration.TestAutoDetectTelegramCLI.test_parse_telegram_system.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for integration.test_system_reply_telegram_integration.TestSystemTelegramCLI.test_parse_system_telegram_command.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for integration.test_system_reply_telegram_integration.TestSystemTelegramCLI.test_parse_system_telegram_json_output.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for integration.test_xp24_action_integration.TestXP24ActionIntegration.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for integration.test_xp24_action_integration.TestXP24ActionIntegration.test_cli_command_json_output.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_action.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_status.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_json_output.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.integration.test_system_reply_telegram_integration.TestReplyTelegramCLI.test_parse_reply_telegram_different_data_types.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.unit.test_cli.test_validators.TestValidators.test_validate_telegram_string_valid_formats.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.unit.test_models.test_module_type.TestModuleType.executor&quot;: &quot;Coverage&quot;,
+    &quot;Python tests.Python tests for tests.unit.test_models.test_reply_telegram.TestReplyTelegram.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.unit.test_models.test_system_telegram.TestSystemFunction.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.unit.test_models.test_system_telegram.TestSystemFunction.test_from_code_valid.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.unit.test_services.test_checksum_service.TestChecksumService.test_telegram_crash1.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for unit.test_models.test_module_type.TestModuleType.test_module_registry_completeness.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for unit.test_models.test_module_type.TestModuleTypeFunctions.test_is_valid_module_code.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for unit.test_models.test_system_telegram.TestSystemTelegram.test_function_descriptions.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for unit.test_services.test_xp24_action_service.TestXP24ActionService.test_format_action_summary_with_validation.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in integration.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_checksum.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_models.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_serial_number_type.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_xp24_action_integration.py.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_calculate_crc32_command.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_calculate_various_data.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_validate_valid_checksum.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestBasicConnectivity.test_connection_failure_no_server.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestConnectionStatusIntegration.test_connection_status_lifecycle.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestCustomTelegrams.test_custom_telegram_send.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestErrorScenarios.test_multiple_concurrent_connections.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_temperature_request.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_command_with_checksum_validation.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_module_integration.TestModuleIntegration.test_module_list_command_json_output.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_reverse_proxy_integration.TestReverseProxyErrorHandling.test_proxy_start_port_already_in_use.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_system_reply_telegram_integration.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.test_cli_command_json_output.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.test_telegram_service_integration.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_action.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_status.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.unit.test_cli.test_conbus_blink_commands.TestConbusBlinkCommands.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.unit.test_models.test_xp24_action_telegram.TestXP24ActionTelegram.test_post_init_sets_timestamp.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.unit.test_services.test_log_file_service.TestLogFileService.test_get_file_statistics_full.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.unit.test_services.test_xp24_action_service.TestXP24ActionService.test_format_action_summary_with_validation.executor&quot;: &quot;Run&quot;,
+    &quot;Python.demo.executor&quot;: &quot;Coverage&quot;,
+    &quot;Python.telegram_test_data.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.test_blink_integration.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_checksum.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_conbus_blink_commands.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_discovery_integration.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_event_telegram.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/q/Projects/xp/src/xp/cli/commands&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.intellij.mcpserver.settings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/xp/cli/commands" />
@@ -294,15 +308,8 @@
       <workItem from="1756830585261" duration="79203000" />
       <workItem from="1757696538700" duration="629000" />
       <workItem from="1757752097335" duration="35847000" />
-      <workItem from="1758124896525" duration="13979000" />
-    </task>
-    <task id="LOCAL-00019" summary="Chore: refactor cli, extract commands">
-      <option name="closed" value="true" />
-      <created>1756966358501</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1756966358501</updated>
+      <workItem from="1758124896525" duration="15519000" />
+      <workItem from="1758194876724" duration="3713000" />
     </task>
     <task id="LOCAL-00020" summary="Feat: XP24-Action">
       <option name="closed" value="true" />
@@ -688,7 +695,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758149541399</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="Feat: FastAPI / conbus / discover">
+      <option name="closed" value="true" />
+      <created>1758175476590</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1758175476590</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -846,11 +861,6 @@
           <url>file://$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py</url>
           <line>14</line>
           <option name="timeStamp" value="32" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/xp/api/routers/conbus.py</url>
-          <line>67</line>
-          <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from datetime import datetime
 
 from xp.api.main import create_app
-from xp.models import ConbusSendRequest, ConbusSendResponse, TelegramType
+from xp.models import ConbusSendRequest, ConbusSendResponse, DatapointTypeName
 from xp.services.conbus_client_send_service import ConbusClientSendError
 
 
@@ -22,7 +22,7 @@ def mock_successful_response():
     """Mock successful discovery response."""
     return ConbusSendResponse(
         success=True,
-        request=ConbusSendRequest(telegram_type=TelegramType.DISCOVERY),
+        request=ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY),
         sent_telegram="<S0000000000F01D00FA>",
         received_telegrams=[
             "<R0020030837F01DFM>",
@@ -135,7 +135,7 @@ class TestDiscoveryEndpoint:
         # Mock failed response with timeout
         failed_response = ConbusSendResponse(
             success=False,
-            request=ConbusSendRequest(telegram_type=TelegramType.DISCOVERY),
+            request=ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY),
             error="Connection timeout after 10 seconds"
         )
         mock_service.send_telegram.return_value = failed_response
@@ -159,7 +159,7 @@ class TestDiscoveryEndpoint:
         # Mock failed response with connection error
         failed_response = ConbusSendResponse(
             success=False,
-            request=ConbusSendRequest(telegram_type=TelegramType.DISCOVERY),
+            request=ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY),
             error="Unable to connect to 192.168.1.100:2113"
         )
         mock_service.send_telegram.return_value = failed_response
@@ -217,7 +217,7 @@ class TestDiscoveryEndpoint:
 
         empty_response = ConbusSendResponse(
             success=True,
-            request=ConbusSendRequest(telegram_type=TelegramType.DISCOVERY),
+            request=ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY),
             sent_telegram="<S0000000000F01D00FA>",
             received_telegrams=[],
             timestamp=datetime.now()

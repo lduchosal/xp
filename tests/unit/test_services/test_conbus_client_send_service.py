@@ -9,7 +9,7 @@ from src.xp.services.conbus_client_send_service import (
 from src.xp.models import (
     ConbusSendRequest,
     ConbusSendResponse,
-    TelegramType,
+    DatapointTypeName,
 )
 
 
@@ -169,7 +169,7 @@ class TestTelegramGeneration(TestConbusClientSendService):
 
     def test_discovery_telegram_generation(self, service):
         """Test discovery telegram generation"""
-        request = ConbusSendRequest(telegram_type=TelegramType.DISCOVERY)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
 
         telegram = service._generate_telegram(request)
 
@@ -187,7 +187,7 @@ class TestTelegramGeneration(TestConbusClientSendService):
             mock_version_method.return_value = mock_response
 
             request = ConbusSendRequest(
-                telegram_type=TelegramType.VERSION, target_serial="0020030837"
+                telegram_type=DatapointTypeName.VERSION, target_serial="0020030837"
             )
 
             telegram = service._generate_telegram(request)
@@ -197,7 +197,7 @@ class TestTelegramGeneration(TestConbusClientSendService):
 
     def test_version_telegram_without_serial(self, service):
         """Test version telegram generation without target serial"""
-        request = ConbusSendRequest(telegram_type=TelegramType.VERSION)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.VERSION)
 
         telegram = service._generate_telegram(request)
 
@@ -206,10 +206,10 @@ class TestTelegramGeneration(TestConbusClientSendService):
     def test_sensor_telegram_generation(self, service):
         """Test sensor telegram generation"""
         test_cases = [
-            (TelegramType.VOLTAGE, "20", "<S0020030837F02D20FG>"),
-            (TelegramType.TEMPERATURE, "18", "<S0020030837F02D18FI>"),
-            (TelegramType.CURRENT, "21", "<S0020030837F02D21FF>"),
-            (TelegramType.HUMIDITY, "19", "<S0020030837F02D19FH>"),
+            (DatapointTypeName.VOLTAGE, "20", "<S0020030837F02D20FG>"),
+            (DatapointTypeName.TEMPERATURE, "18", "<S0020030837F02D18FI>"),
+            (DatapointTypeName.CURRENT, "21", "<S0020030837F02D21FF>"),
+            (DatapointTypeName.HUMIDITY, "19", "<S0020030837F02D19FH>"),
         ]
 
         for telegram_type, data_point, expected in test_cases:
@@ -226,7 +226,7 @@ class TestTelegramGeneration(TestConbusClientSendService):
 
     def test_sensor_telegram_without_serial(self, service):
         """Test sensor telegram generation without target serial"""
-        request = ConbusSendRequest(telegram_type=TelegramType.VOLTAGE)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.VOLTAGE)
 
         # Should return None instead of raising exception in _generate_telegram
         telegram = service._generate_telegram(request)
@@ -253,7 +253,7 @@ class TestTelegramSending(TestConbusClientSendService):
         mock_socket_class.return_value = mock_socket
         mock_socket.recv.side_effect = [b"<R0020030837F01DFM>", b""]  # End of data
 
-        request = ConbusSendRequest(telegram_type=TelegramType.DISCOVERY)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
 
         response = service.send_telegram(request)
 
@@ -269,7 +269,7 @@ class TestTelegramSending(TestConbusClientSendService):
         mock_socket_class.return_value = mock_socket
         mock_socket.recv.return_value = b""
 
-        request = ConbusSendRequest(telegram_type=TelegramType.DISCOVERY)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
 
         response = service.send_telegram(request)
 
@@ -286,7 +286,7 @@ class TestTelegramSending(TestConbusClientSendService):
         mock_socket.connect.side_effect = socket.timeout()
 
         request = ConbusSendRequest(
-            telegram_type=TelegramType.VERSION, target_serial="0020030837"
+            telegram_type=DatapointTypeName.VERSION, target_serial="0020030837"
         )
 
         response = service.send_telegram(request)
@@ -304,7 +304,7 @@ class TestTelegramSending(TestConbusClientSendService):
         service.socket = mock_socket
 
         request = ConbusSendRequest(
-            telegram_type=TelegramType.VERSION
+            telegram_type=DatapointTypeName.VERSION
         )  # Missing serial
 
         response = service.send_telegram(request)
@@ -322,7 +322,7 @@ class TestTelegramSending(TestConbusClientSendService):
         service.is_connected = True
         service.socket = mock_socket
 
-        request = ConbusSendRequest(telegram_type=TelegramType.DISCOVERY)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
 
         response = service.send_telegram(request)
 
@@ -340,7 +340,7 @@ class TestTelegramSending(TestConbusClientSendService):
             b"",  # End of data
         ]
 
-        request = ConbusSendRequest(telegram_type=TelegramType.DISCOVERY)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
 
         response = service.send_telegram(request)
 
@@ -359,7 +359,7 @@ class TestConvenienceMethods(TestConbusClientSendService):
         """Test send_discovery convenience method"""
         mock_response = ConbusSendResponse(
             success=True,
-            request=ConbusSendRequest(telegram_type=TelegramType.DISCOVERY),
+            request=ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY),
             sent_telegram="<S0000000000F01D00FA>",
         )
         mock_send.return_value = mock_response
@@ -369,7 +369,7 @@ class TestConvenienceMethods(TestConbusClientSendService):
         assert response.success is True
         mock_send.assert_called_once()
         args = mock_send.call_args[0][0]
-        assert args.telegram_type == TelegramType.DISCOVERY
+        assert args.telegram_type == DatapointTypeName.DISCOVERY
 
     @patch.object(ConbusClientSendService, "send_telegram")
     def test_send_version_request(self, mock_send, service):
@@ -377,7 +377,7 @@ class TestConvenienceMethods(TestConbusClientSendService):
         mock_response = ConbusSendResponse(
             success=True,
             request=ConbusSendRequest(
-                telegram_type=TelegramType.VERSION, target_serial="0020030837"
+                telegram_type=DatapointTypeName.VERSION, target_serial="0020030837"
             ),
             sent_telegram="<S0020030837F02D02FM>",
         )
@@ -388,7 +388,7 @@ class TestConvenienceMethods(TestConbusClientSendService):
         assert response.success is True
         mock_send.assert_called_once()
         args = mock_send.call_args[0][0]
-        assert args.telegram_type == TelegramType.VERSION
+        assert args.telegram_type == DatapointTypeName.VERSION
         assert args.target_serial == "0020030837"
 
     @patch.object(ConbusClientSendService, "send_telegram")
@@ -397,24 +397,24 @@ class TestConvenienceMethods(TestConbusClientSendService):
         mock_response = ConbusSendResponse(
             success=True,
             request=ConbusSendRequest(
-                telegram_type=TelegramType.TEMPERATURE, target_serial="0020012521"
+                telegram_type=DatapointTypeName.TEMPERATURE, target_serial="0020012521"
             ),
             sent_telegram="<S0020012521F02D18FM>",
         )
         mock_send.return_value = mock_response
 
-        response = service.send_sensor_request("0020012521", TelegramType.TEMPERATURE)
+        response = service.send_sensor_request("0020012521", DatapointTypeName.TEMPERATURE)
 
         assert response.success is True
         mock_send.assert_called_once()
         args = mock_send.call_args[0][0]
-        assert args.telegram_type == TelegramType.TEMPERATURE
+        assert args.telegram_type == DatapointTypeName.TEMPERATURE
         assert args.target_serial == "0020012521"
 
     def test_send_sensor_request_invalid_type(self, service):
         """Test send_sensor_request with invalid sensor type"""
         with pytest.raises(ConbusClientSendError, match="Invalid sensor type"):
-            service.send_sensor_request("0020030837", TelegramType.DISCOVERY)
+            service.send_sensor_request("0020030837", DatapointTypeName.DISCOVERY)
 
 
 class TestCustomTelegrams(TestConbusClientSendService):
@@ -498,7 +498,7 @@ class TestErrorHandling(TestConbusClientSendService):
         mock_socket_class.return_value = mock_socket
         mock_socket.send.side_effect = BrokenPipeError("Broken pipe")
 
-        request = ConbusSendRequest(telegram_type=TelegramType.DISCOVERY)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
 
         response = service.send_telegram(request)
 

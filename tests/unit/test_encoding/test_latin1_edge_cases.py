@@ -10,7 +10,7 @@ import socket
 import threading
 import time
 from src.xp.services.conbus_client_send_service import ConbusClientSendService
-from src.xp.models import TelegramType
+from src.xp.models import DatapointTypeName
 
 
 class Latin1TestServer:
@@ -126,7 +126,7 @@ conbus:
         """Test handling of § symbol (byte 0xa7) in temperature response"""
         with client_service:
             response = client_service.send_sensor_request(
-                "0020012521", TelegramType.TEMPERATURE
+                "0020012521", DatapointTypeName.TEMPERATURE
             )
 
         assert response.success is True
@@ -140,7 +140,7 @@ conbus:
         """Test handling of © symbol (byte 0xa9) in voltage response"""
         with client_service:
             response = client_service.send_sensor_request(
-                "0020030837", TelegramType.VOLTAGE
+                "0020030837", DatapointTypeName.VOLTAGE
             )
 
         assert response.success is True
@@ -153,7 +153,7 @@ conbus:
         """Test handling of ® symbol (byte 0xae) in current response"""
         with client_service:
             response = client_service.send_sensor_request(
-                "0020044966", TelegramType.CURRENT
+                "0020044966", DatapointTypeName.CURRENT
             )
 
         assert response.success is True
@@ -166,7 +166,7 @@ conbus:
         """Test handling of ± symbol (byte 0xb1) in humidity response"""
         with client_service:
             response = client_service.send_sensor_request(
-                "0020042796", TelegramType.HUMIDITY
+                "0020042796", DatapointTypeName.HUMIDITY
             )
 
         assert response.success is True

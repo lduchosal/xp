@@ -3,7 +3,7 @@
 This service handles generation and parsing of blink/unblink system telegrams
 used for controlling module LED status.
 """
-
+from ..models.response import Response
 from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
 from ..models.system_function import SystemFunction
@@ -50,12 +50,12 @@ class BlinkService:
         if not serial_number.isdigit():
             raise BlinkError(f"Serial number must contain only digits: {serial_number}")
 
-        action_type = "05"
+        action_type = SystemFunction.BLINK
         if on_or_off.lower() == "off":
-            action_type = "06"
+            action_type = SystemFunction.UNBLINK
 
         # Build the data part of the telegram (F05D00 - Blink function, Status data point)
-        data_part = f"S{serial_number}F{action_type}D00"
+        data_part = f"S{serial_number}F{action_type.value}D00"
 
         # Calculate checksum
         checksum = calculate_checksum(data_part)

@@ -4,12 +4,12 @@ import click
 import json
 
 from ..utils.serial_number_type import SERIAL
-from ..utils.telegram_type_choice import TELEGRAM
+from ..utils.datapoint_type_name_choice import DATAPOINT
 from ...services.conbus_client_send_service import (
     ConbusClientSendService,
     ConbusClientSendError,
 )
-from ...models import ConbusSendRequest, TelegramType
+from ...models import ConbusSendRequest, DatapointTypeName
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,
@@ -20,19 +20,17 @@ from .conbus import conbus
 
 
 @conbus.command("send")
-@click.argument("telegram_type", type=TELEGRAM)
+@click.argument("telegram_type", type=DATAPOINT)
 @click.argument("target_serial", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
-def send_telegram(target_serial: str, telegram_type: str):
+def send_telegram(target_serial: str, telegram_type: DatapointTypeName):
     """
     Send telegram to Conbus server.
 
     Examples:
 
     \b
-        xp conbus send discovery 0000000000
-        xp conbus send discovery 0000000000
         xp conbus send version 0020030837
         xp conbus send voltage 0020030837
         xp conbus send temperature 0020030837
@@ -54,32 +52,9 @@ def send_telegram(target_serial: str, telegram_type: str):
             click.echo(error_response)
             raise SystemExit(1)
 
-        # Map string to enum
-        telegram_type_map = {
-            "discovery": TelegramType.DISCOVERY,
-            "version": TelegramType.VERSION,
-            "voltage": TelegramType.VOLTAGE,
-            "temperature": TelegramType.TEMPERATURE,
-            "current": TelegramType.CURRENT,
-            "humidity": TelegramType.HUMIDITY,
-        }
-
-        telegram_type_enum = telegram_type_map.get(telegram_type)
-        if not telegram_type_enum:
-            error_data = {
-                "telegram_type": telegram_type.value,
-                "valid_types": list(telegram_type_map.keys()),
-            }
-            error_response = formatter.error_response(
-                f"Unknown telegram type: {telegram_type}", error_data
-            )
-
-            click.echo(error_response)
-            raise SystemExit(1)
-
         # Create request
         request = ConbusSendRequest(
-            telegram_type=telegram_type_enum, target_serial=target_serial
+            telegram_type=telegram_type, target_serial=target_serial
         )
 
         # Send telegram

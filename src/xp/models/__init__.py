@@ -6,7 +6,7 @@ from .module_type_code import ModuleTypeCode
 from .module_type import ModuleType, get_all_module_types, is_valid_module_code
 from .log_entry import LogEntry
 from .conbus_connection_status import ConbusConnectionStatus
-from .telegram_type import TelegramType
+from .datapoint_name_type import DatapointTypeName
 from .conbus_client_config import ConbusClientConfig
 from .conbus_send_request import ConbusSendRequest
 from .conbus_send_response import ConbusSendResponse
@@ -24,7 +24,7 @@ __all__ = [
     "DiscoveryRequest",
     "DiscoveryResponse",
     "DiscoveryResult",
-    "TelegramType",
+    "DatapointTypeName",
     "ConbusClientConfig",
     "ConbusSendRequest",
     "ConbusSendResponse",

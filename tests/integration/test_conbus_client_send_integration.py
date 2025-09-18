@@ -4,7 +4,7 @@ import time
 import socket
 from datetime import datetime
 from src.xp.services.conbus_client_send_service import ConbusClientSendService
-from src.xp.models import ConbusSendRequest, TelegramType
+from src.xp.models import ConbusSendRequest, DatapointTypeName
 
 
 class MockConbusServer:
@@ -166,13 +166,13 @@ class TestDiscoveryTelegrams(TestConbusClientSendIntegration):
 
     def test_discovery_telegram_request_object(self, client_service, mock_server):
         """Test discovery using request object"""
-        request = ConbusSendRequest(telegram_type=TelegramType.DISCOVERY)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
 
         with client_service:
             response = client_service.send_telegram(request)
 
         assert response.success is True
-        assert response.request.telegram_type == TelegramType.DISCOVERY
+        assert response.request.telegram_type == DatapointTypeName.DISCOVERY
         assert len(response.received_telegrams) >= 1
 
 
@@ -200,7 +200,7 @@ class TestSensorTelegrams(TestConbusClientSendIntegration):
         """Test temperature sensor request"""
         with client_service:
             response = client_service.send_sensor_request(
-                "0020012521", TelegramType.TEMPERATURE
+                "0020012521", DatapointTypeName.TEMPERATURE
             )
 
         assert response.success is True
@@ -212,7 +212,7 @@ class TestSensorTelegrams(TestConbusClientSendIntegration):
         """Test voltage sensor request"""
         with client_service:
             response = client_service.send_sensor_request(
-                "0020030837", TelegramType.VOLTAGE
+                "0020030837", DatapointTypeName.VOLTAGE
             )
 
         assert response.success is True
@@ -222,12 +222,12 @@ class TestSensorTelegrams(TestConbusClientSendIntegration):
 
     def test_multiple_sensor_requests(self, client_service, mock_server):
         """Test multiple sensor requests in sequence"""
-        sensor_types = [TelegramType.VOLTAGE, TelegramType.TEMPERATURE]
+        sensor_types = [DatapointTypeName.VOLTAGE, DatapointTypeName.TEMPERATURE]
         serial = "0020030837"
 
         with client_service:
             for sensor_type in sensor_types:
-                if sensor_type == TelegramType.TEMPERATURE:
+                if sensor_type == DatapointTypeName.TEMPERATURE:
                     serial = "0020012521"  # Use different serial for temperature
 
                 response = client_service.send_sensor_request(serial, sensor_type)
@@ -355,11 +355,11 @@ class TestWorkflowIntegration(TestConbusClientSendIntegration):
     def test_sensor_monitoring_workflow(self, client_service, mock_server):
         """Test sensor data monitoring workflow"""
         device_serial = "0020012521"
-        sensor_types = [TelegramType.TEMPERATURE, TelegramType.VOLTAGE]
+        sensor_types = [DatapointTypeName.TEMPERATURE, DatapointTypeName.VOLTAGE]
 
         with client_service:
             for sensor_type in sensor_types:
-                if sensor_type == TelegramType.VOLTAGE:
+                if sensor_type == DatapointTypeName.VOLTAGE:
                     device_serial = "0020030837"  # Different device for voltage
 
                 response = client_service.send_sensor_request(

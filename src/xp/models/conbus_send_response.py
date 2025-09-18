@@ -13,6 +13,7 @@ class ConbusSendResponse:
     request: ConbusSendRequest
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
+    discovered_devices: Optional[list] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
@@ -29,6 +30,7 @@ class ConbusSendResponse:
             "request": self.request.to_dict(),
             "sent_telegram": self.sent_telegram,
             "received_telegrams": self.received_telegrams,
+            "discovered_devices": self.discovered_devices,
             "error": self.error,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
         }

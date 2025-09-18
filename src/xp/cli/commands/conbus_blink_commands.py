@@ -100,6 +100,8 @@ def send_blink_telegram(serial_number: str, on_or_off: str):
         raise SystemExit(1)
 
     except ConbusClientSendError as e:
-        CLIErrorHandler.handle_service_error(e, "blink command",
-                                             {"serial_number": serial_number, "operation": operation})
+        CLIErrorHandler.handle_service_error(
+            e,
+            "blink command",
+            {"serial_number": serial_number, "operation": operation})
 

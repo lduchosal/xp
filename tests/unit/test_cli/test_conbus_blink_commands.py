@@ -5,7 +5,7 @@ from click.testing import CliRunner
 from src.xp.cli.commands.conbus_blink_commands import send_blink_telegram, send_blink_on_telegram, send_blink_off_telegram
 from src.xp.cli.commands import *
 from src.xp.services.conbus_client_send_service import ConbusClientSendError
-from src.xp.models import ConbusSendRequest, ConbusSendResponse, TelegramType
+from src.xp.models import ConbusSendRequest, ConbusSendResponse, DatapointTypeName
 from datetime import datetime
 
 
@@ -45,7 +45,7 @@ class TestConbusBlinkCommands:
         mock_response = ConbusSendResponse(
             success=True,
             request=ConbusSendRequest(
-                telegram_type=TelegramType.BLINK, target_serial="0020044964"
+                telegram_type=DatapointTypeName.BLINK, target_serial="0020044964"
             ),
             sent_telegram="<S0020044964F05D00FN>",
             received_telegrams=["<R0020044964F18DFA>"],
@@ -82,7 +82,7 @@ class TestConbusBlinkCommands:
         mock_response = ConbusSendResponse(
             success=True,
             request=ConbusSendRequest(
-                telegram_type=TelegramType.UNBLINK, target_serial="0020030837"
+                telegram_type=DatapointTypeName.UNBLINK, target_serial="0020030837"
             ),
             sent_telegram="<S0020030837F06D00FK>",
             received_telegrams=["<R0020030837F18DFE>"],
@@ -119,7 +119,7 @@ class TestConbusBlinkCommands:
         mock_response = ConbusSendResponse(
             success=True,
             request=ConbusSendRequest(
-                telegram_type=TelegramType.BLINK, target_serial="0020044964"
+                telegram_type=DatapointTypeName.BLINK, target_serial="0020044964"
             ),
             sent_telegram="<S0020044964F05D00FN>",
             received_telegrams=["<R0020044964F18DFA>"],
@@ -182,7 +182,7 @@ class TestConbusBlinkCommands:
         mock_response = ConbusSendResponse(
             success=True,
             request=ConbusSendRequest(
-                telegram_type=TelegramType.BLINK, target_serial="0020044964"
+                telegram_type=DatapointTypeName.BLINK, target_serial="0020044964"
             ),
             sent_telegram="<S0020044964F05D00FN>",
             received_telegrams=[],  # No response
@@ -221,7 +221,7 @@ class TestConbusBlinkCommands:
         mock_response = ConbusSendResponse(
             success=True,
             request=ConbusSendRequest(
-                telegram_type=TelegramType.UNBLINK, target_serial="0020030837"
+                telegram_type=DatapointTypeName.UNBLINK, target_serial="0020030837"
             ),
             sent_telegram="<S0020030837F06D00FK>",
             received_telegrams=["<R0020030837F18DFE>"],

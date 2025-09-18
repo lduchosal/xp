@@ -2,14 +2,14 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-from xp.models import TelegramType
+from xp.models import DatapointTypeName
 
 
 @dataclass
 class ConbusSendRequest:
     """Represents a Conbus send request"""
 
-    telegram_type: TelegramType
+    telegram_type: DatapointTypeName
     target_serial: Optional[str] = None
     function_code: Optional[str] = None
     data_point_code: Optional[str] = None

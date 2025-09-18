@@ -7,7 +7,7 @@ from ...services.conbus_client_send_service import (
     ConbusClientSendService,
     ConbusClientSendError,
 )
-from ...models import ConbusSendRequest, TelegramType
+from ...models import ConbusSendRequest, DatapointTypeName
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,
@@ -32,7 +32,7 @@ def send_discover_telegram():
 
     try:
         # Discovery telegram
-        telegram_type_enum = TelegramType.DISCOVERY
+        telegram_type_enum = DatapointTypeName.DISCOVERY
         target_serial = None
 
         # Create request

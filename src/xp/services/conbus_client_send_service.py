@@ -11,11 +11,12 @@ import os
 from typing import List, Optional
 from datetime import datetime
 
+from .telegram_blink_service import BlinkService
 from ..models import (
     ConbusClientConfig,
     ConbusSendRequest,
     ConbusSendResponse,
-    TelegramType,
+    DatapointTypeName,
     ConbusConnectionStatus,
 )
 from ..models.response import Response
@@ -51,6 +52,8 @@ class ConbusClientSendService:
         self.telegram_service = TelegramService()
         self.discovery_service = DiscoveryService()
         self.version_service = VersionService()
+        self.blink_service = BlinkService()
+
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -177,11 +180,25 @@ class ConbusClientSendService:
             # Receive responses (with timeout)
             responses = self._receive_responses()
 
+            # Parse received telegrams to extract device information
+            discovered_devices = []
+            for telegrams_str in responses:
+                for telegram_str in telegrams_str.split("\n"):
+                    try:
+                        # Parse telegram using TelegramService
+                        telegram_result = self.telegram_service.parse_telegram(telegram_str)
+                        discovered_devices.append(telegram_result.serial_number)
+
+                    except Exception as e:
+                        self.logger.warning(f"Failed to parse telegram '{telegram_str}': {e}")
+                        continue
+
             return ConbusSendResponse(
                 success=True,
                 request=request,
                 sent_telegram=telegram,
                 received_telegrams=responses,
+                discovered_devices=discovered_devices,
             )
 
         except socket.timeout:
@@ -196,22 +213,35 @@ class ConbusClientSendService:
     def _generate_telegram(self, request: ConbusSendRequest) -> Optional[str]:
         """Generate telegram string based on request type"""
         try:
-            if request.telegram_type == TelegramType.DISCOVERY:
+            if not request.target_serial:
+                return None
+
+            if request.telegram_type == DatapointTypeName.DISCOVERY:
                 return self.discovery_service.generate_discovery_telegram()
 
-            elif request.telegram_type == TelegramType.VERSION:
-                if not request.target_serial:
-                    return None
+            elif request.telegram_type == DatapointTypeName.VERSION:
                 result = self.version_service.generate_version_request_telegram(
                     request.target_serial
                 )
                 return result.data.get("telegram") if result.success else None
 
+
             elif request.telegram_type in [
-                TelegramType.VOLTAGE,
-                TelegramType.TEMPERATURE,
-                TelegramType.CURRENT,
-                TelegramType.HUMIDITY,
+                DatapointTypeName.BLINK,
+                DatapointTypeName.UNBLINK,
+            ]:
+                on_or_off = "off" if request.telegram_type == DatapointTypeName.UNBLINK else "on"
+                telegram = self.blink_service.generate_blink_telegram(
+                    request.target_serial,
+                    on_or_off
+                )
+                return telegram
+
+            elif request.telegram_type in [
+                DatapointTypeName.VOLTAGE,
+                DatapointTypeName.TEMPERATURE,
+                DatapointTypeName.CURRENT,
+                DatapointTypeName.HUMIDITY,
             ]:
                 return self._generate_sensor_telegram(request)
 
@@ -229,10 +259,10 @@ class ConbusClientSendService:
 
         # Map telegram types to data point codes
         sensor_data_points = {
-            TelegramType.VOLTAGE: "20",  # Voltage data point
-            TelegramType.TEMPERATURE: "18",  # Temperature data point
-            TelegramType.CURRENT: "21",  # Current data point
-            TelegramType.HUMIDITY: "19",  # Humidity data point
+            DatapointTypeName.VOLTAGE: "20",  # Voltage data point
+            DatapointTypeName.TEMPERATURE: "18",  # Temperature data point
+            DatapointTypeName.CURRENT: "21",  # Current data point
+            DatapointTypeName.HUMIDITY: "19",  # Humidity data point
         }
 
         data_point = sensor_data_points.get(request.telegram_type)
@@ -281,25 +311,25 @@ class ConbusClientSendService:
 
     def send_discovery(self) -> ConbusSendResponse:
         """Send discovery telegram"""
-        request = ConbusSendRequest(telegram_type=TelegramType.DISCOVERY)
+        request = ConbusSendRequest(telegram_type=DatapointTypeName.DISCOVERY)
         return self.send_telegram(request)
 
     def send_version_request(self, target_serial: str) -> ConbusSendResponse:
         """Send version request telegram"""
         request = ConbusSendRequest(
-            telegram_type=TelegramType.VERSION, target_serial=target_serial
+            telegram_type=DatapointTypeName.VERSION, target_serial=target_serial
         )
         return self.send_telegram(request)
 
     def send_sensor_request(
-        self, target_serial: str, sensor_type: TelegramType
+        self, target_serial: str, sensor_type: DatapointTypeName
     ) -> ConbusSendResponse:
         """Send sensor data request telegram"""
         if sensor_type not in [
-            TelegramType.VOLTAGE,
-            TelegramType.TEMPERATURE,
-            TelegramType.CURRENT,
-            TelegramType.HUMIDITY,
+            DatapointTypeName.VOLTAGE,
+            DatapointTypeName.TEMPERATURE,
+            DatapointTypeName.CURRENT,
+            DatapointTypeName.HUMIDITY,
         ]:
             raise ConbusClientSendError(f"Invalid sensor type: {sensor_type.value}")
 
@@ -340,7 +370,7 @@ class ConbusClientSendService:
                 error_response = ConbusSendResponse(
                     success=False,
                     request=ConbusSendRequest(
-                        telegram_type=TelegramType.DISCOVERY,  # Placeholder
+                        telegram_type=DatapointTypeName.DISCOVERY,  # Placeholder
                         target_serial=target_serial,
                         function_code=function_code,
                         data_point_code=data_point_code,
@@ -384,7 +414,7 @@ class ConbusClientSendService:
                     return ConbusSendResponse(
                         success=False,
                         request=ConbusSendRequest(
-                            telegram_type=TelegramType.DISCOVERY,  # Placeholder
+                            telegram_type=DatapointTypeName.DISCOVERY,  # Placeholder
                             target_serial=target_serial,
                             function_code=function_code,
                             data_point_code=data_point_code,
@@ -403,7 +433,7 @@ class ConbusClientSendService:
             return ConbusSendResponse(
                 success=True,
                 request=ConbusSendRequest(
-                    telegram_type=TelegramType.DISCOVERY,  # Placeholder
+                    telegram_type=DatapointTypeName.DISCOVERY,  # Placeholder
                     target_serial=target_serial,
                     function_code=function_code,
                     data_point_code=data_point_code,
@@ -418,7 +448,7 @@ class ConbusClientSendService:
             return ConbusSendResponse(
                 success=False,
                 request=ConbusSendRequest(
-                    telegram_type=TelegramType.DISCOVERY,  # Placeholder
+                    telegram_type=DatapointTypeName.DISCOVERY,  # Placeholder
                     target_serial=target_serial,
                     function_code=function_code,
                     data_point_code=data_point_code,
