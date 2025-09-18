@@ -6,7 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: FastAPI / conbus / discover">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cli.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cli.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/api/models/discovery.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/models/discovery.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_api/test_models.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -290,15 +294,7 @@
       <workItem from="1756830585261" duration="79203000" />
       <workItem from="1757696538700" duration="629000" />
       <workItem from="1757752097335" duration="35847000" />
-      <workItem from="1758124896525" duration="12117000" />
-    </task>
-    <task id="LOCAL-00018" summary="Fix: Conbus encoding">
-      <option name="closed" value="true" />
-      <created>1756965018146</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1756965018146</updated>
+      <workItem from="1758124896525" duration="13979000" />
     </task>
     <task id="LOCAL-00019" summary="Chore: refactor cli, extract commands">
       <option name="closed" value="true" />
@@ -684,7 +680,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758149228390</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="Feat: FastAPI / conbus / discover">
+      <option name="closed" value="true" />
+      <created>1758149541399</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1758149541399</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -842,6 +846,11 @@
           <url>file://$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py</url>
           <line>14</line>
           <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/xp/api/routers/conbus.py</url>
+          <line>67</line>
+          <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

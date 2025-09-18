@@ -1,4 +1,6 @@
 conbus:
-  ip: 10.0.3.162
+  ip: 127.0.0.1
+  ip_local: 127.0.0.1
+  ip_home: 10.0.3.162
   port: 10001
   timeout: 10

@@ -12,8 +12,6 @@ from ..models.discovery import (
     DiscoveryRequest,
     DiscoveryResponse,
     DiscoveryErrorResponse,
-    DeviceInfo,
-    DiscoveryRequestInfo,
 )
 
 router = APIRouter(prefix="/api/xp/conbus", tags=["conbus"])
@@ -30,7 +28,7 @@ logger = logging.getLogger(__name__)
         500: {"model": DiscoveryErrorResponse, "description": "Internal server error"},
     },
 )
-async def discover_devices(request: DiscoveryRequest) -> Union[DiscoveryResponse, DiscoveryErrorResponse]:
+async def discover_devices(request: DiscoveryRequest) -> Union[DiscoveryResponse, JSONResponse]:
     """
     Initiate a Conbus discovery operation to find devices on the network.
 
@@ -53,55 +51,30 @@ async def discover_devices(request: DiscoveryRequest) -> Union[DiscoveryResponse
         if not response.success:
             # Handle service errors
             error_msg = response.error or "Unknown service error"
-
-            # Map specific errors to appropriate HTTP status codes and return JSON response
-            if "Connection timeout" in error_msg or "timeout" in error_msg.lower():
-                return JSONResponse(
-                    status_code=status.HTTP_408_REQUEST_TIMEOUT,
-                    content=DiscoveryErrorResponse(error=error_msg).model_dump()
-                )
-            elif "Unable to connect" in error_msg or "Connection refused" in error_msg:
-                return JSONResponse(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    content=DiscoveryErrorResponse(error=error_msg).model_dump()
-                )
-            else:
-                return JSONResponse(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    content=DiscoveryErrorResponse(error=error_msg).model_dump()
-                )
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return JSONResponse(
+                status_code=status_code,
+                content=DiscoveryErrorResponse(error=error_msg).model_dump()
+            )
 
         # Parse received telegrams to extract device information
         discovered_devices = []
         received_telegrams = response.received_telegrams or []
 
-        for telegram_str in received_telegrams:
-            try:
-                # Parse telegram using TelegramService
-                telegram_result = telegram_service.parse_telegram(telegram_str)
-                if telegram_result.success and telegram_result.data:
-                    telegram_obj = telegram_result.data
+        for telegrams_str in received_telegrams:
+            for telegram_str in telegrams_str.split("\n"):
+                try:
+                    # Parse telegram using TelegramService
+                    telegram_result = telegram_service.parse_telegram(telegram_str)
+                    discovered_devices.append(telegram_result.serial_number)
 
-                    # Check if this is a discovery response (reply telegram)
-                    if hasattr(telegram_obj, 'telegram_type') and telegram_obj.telegram_type == 'REPLY':
-                        # Extract serial number from reply telegram
-                        if hasattr(telegram_obj, 'serial_number'):
-                            device_info = DeviceInfo(
-                                serial=telegram_obj.serial_number,
-                                telegram=telegram_str
-                            )
-                            discovered_devices.append(device_info)
-
-            except Exception as e:
-                logger.warning(f"Failed to parse telegram '{telegram_str}': {e}")
-                continue
+                except Exception as e:
+                    logger.warning(f"Failed to parse telegram '{telegram_str}': {e}")
+                    continue
 
         # Build successful response
         return DiscoveryResponse(
-            request=DiscoveryRequestInfo(),
-            sent_telegram=response.sent_telegram or "",
-            received_telegrams=received_telegrams,
-            discovered_devices=discovered_devices,
+            devices=discovered_devices,
         )
 
     except HTTPException:
