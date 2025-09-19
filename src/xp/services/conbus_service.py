@@ -18,6 +18,7 @@ from ..models import (
     ConbusConnectionStatus,
 )
 from ..models.response import Response
+from ..models.system_function import SystemFunction
 from ..utils.checksum import calculate_checksum
 
 
@@ -171,10 +172,11 @@ class ConbusService:
         return responses
 
     def send_telegram(
-        self, serial_number: str, function_code: str, data: str
+        self, serial_number: str, system_function: SystemFunction, data: str
     ) -> ConbusResponse:
         """Send custom telegram with specified function and data point codes"""
         # Generate custom system telegram: <S{serial}F{function}{data_point}{checksum}>
+        function_code = system_function.value
         telegram_body = f"S{serial_number}F{function_code}D{data}"
         checksum = calculate_checksum(telegram_body)
         telegram = f"<{telegram_body}{checksum}>"

@@ -13,6 +13,7 @@ from ..models import (
     DatapointTypeName,
 )
 from ..models.datapoint_type import DataPointType
+from ..models.system_function import SystemFunction
 from ..services.telegram_service import TelegramService
 
 
@@ -53,10 +54,11 @@ class ConbusDatapointService:
             DatapointTypeName.HUMIDITY: DataPointType.HUMIDITY.value,  # Humidity data point
         }
 
+        function_code = SystemFunction.READ_DATAPOINT
         data_point = sensor_data_points.get(request.datapoint_type)
 
         # Send telegram
-        responses = self.conbus_service.send_telegram(request.serial_number, "02", data_point)
+        responses = self.conbus_service.send_telegram(request.serial_number, function_code, data_point)
 
         return ConbusDatapointResponse(
             success=True,
@@ -84,4 +86,11 @@ class ConbusDatapointService:
             datapoint_type=sensor_type, serial_number=serial_number
         )
         return self.send_telegram(request)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+      # Cleanup logic if needed
+        pass
 

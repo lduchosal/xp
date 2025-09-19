@@ -5,8 +5,10 @@ from typing import Dict
 
 from . import telegram_checksum_service
 from .telegram_checksum_service import TelegramChecksumService
+from ..models.datapoint_type import DataPointType
 from ..models.input_telegram import InputTelegram
 from ..models.action_type import ActionType
+from ..models.system_function import SystemFunction
 from ..utils.checksum import calculate_checksum
 
 
@@ -26,10 +28,6 @@ class XPInputService:
 
     # XP24 specific constants
     MAX_INPUTS = 4  # XP24 has exactly 4 inputs (0-3)
-    MODULE_TYPE = 7  # XP24 module type code
-    ACTION_FUNCTION = "27"  # Function code for XP24 actions
-    STATUS_FUNCTION = "02"  # Function code for status queries
-    STATUS_DATAPOINT = "12"  # Data point code for input status
 
     # Regex pattern for XP24 action telegrams
     XP_INPUT_PATTERN = re.compile(r"^<S(\d{10})F27D(\d{2})([A-Z0-9]{2})([A-Z0-9]{2})>$")
@@ -104,9 +102,10 @@ class XPInputService:
         if not isinstance(action, ActionType):
             raise XPInputError(f"Invalid action type: {action}")
 
+        function_code = SystemFunction.ACTION.value
         # Build data part without checksum
         data_part = (
-            f"S{serial_number}F{self.ACTION_FUNCTION}D{input_number:02d}{action.value}"
+            f"S{serial_number}F{function_code}D{input_number:02d}{action.value}"
         )
 
         # Calculate checksum
@@ -130,9 +129,11 @@ class XPInputService:
         """
         # Validate inputs
         self.validate_serial_number(serial_number)
+        function_code = SystemFunction.READ_DATAPOINT.value
+        datapoint_code = DataPointType.CHANNEL_STATES.value
 
         # Build data part without checksum
-        data_part = f"S{serial_number}F{self.STATUS_FUNCTION}D{self.STATUS_DATAPOINT}"
+        data_part = f"S{serial_number}F{function_code}D{datapoint_code}"
 
         # Calculate checksum
         checksum = calculate_checksum(data_part)

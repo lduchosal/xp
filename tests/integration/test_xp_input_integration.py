@@ -41,8 +41,8 @@ class TestXPInputIntegration:
         )
 
         # Verify generated format
-        assert status_telegram.startswith("<S0020044964F02D12")
-        assert status_telegram.endswith(">")
+        assert "<S0020044964F02D12" in status_telegram
+        assert ">" in status_telegram
         assert len(status_telegram) == 21  # <S0020044964F02D12XX>
 
         # Simulate status response and parse

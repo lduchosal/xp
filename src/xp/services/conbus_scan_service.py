@@ -12,6 +12,7 @@ from ..models import (
     ConbusResponse,
     ConbusRequest,
 )
+from ..models.system_function import SystemFunction
 from ..services.telegram_service import TelegramService
 
 
@@ -40,7 +41,7 @@ class ConbusScanService:
         self.logger = logging.getLogger(__name__)
 
     def scan_module(
-        self, serial_number: str, function_code: str, progress_callback=None
+        self, serial_number: str, system_function: SystemFunction, progress_callback=None
     ) -> List[ConbusResponse]:
         """Scan all functions and datapoints for a module with live output"""
         results = []
@@ -53,7 +54,7 @@ class ConbusScanService:
 
             try:
                 response = self.conbus_service.send_telegram(
-                    serial_number, function_code, data
+                    serial_number, system_function, data
                 )
                 results.append(response)
 

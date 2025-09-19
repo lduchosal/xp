@@ -18,10 +18,6 @@ class TestXP24ActionService:
     def test_constants(self):
         """Test service constants."""
         assert self.service.MAX_INPUTS == 4
-        assert self.service.MODULE_TYPE == 7
-        assert self.service.ACTION_FUNCTION == "27"
-        assert self.service.STATUS_FUNCTION == "02"
-        assert self.service.STATUS_DATAPOINT == "12"
 
     # Input validation tests
 

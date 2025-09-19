@@ -70,3 +70,10 @@ class ConbusDiscoverService:
             discovered_devices=discovered_devices,
         )
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+      # Cleanup logic if needed
+        pass
+
