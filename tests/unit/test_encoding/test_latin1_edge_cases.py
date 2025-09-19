@@ -9,7 +9,7 @@ import pytest
 import socket
 import threading
 import time
-from src.xp.services.conbus_datapoint_service import ConbusDatapointService
+from xp.services.conbus_datapoint_service import ConbusDatapointService
 from xp.models import DatapointTypeName
 
 
@@ -169,8 +169,8 @@ conbus:
                 "0020042796", DatapointTypeName.HUMIDITY
             )
 
-        assert response.success is True
         assert response.sent_telegram == "<S0020042796F02D19FH>"
+        assert response.success is True
         assert len(response.received_telegrams) == 1
         assert response.received_telegrams[0] == "<R0020042796F02D19+65,2%±OK>"
         assert "±" in response.received_telegrams[0]

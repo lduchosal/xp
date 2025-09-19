@@ -286,11 +286,11 @@ class ConbusDatapointService:
         print(f"DatapointTypeName.__module__: {DatapointTypeName.__module__}")
 
         """Send sensor data request telegram"""
-        if sensor_type not in [
-            DatapointTypeName.VOLTAGE,
-            DatapointTypeName.TEMPERATURE,
-            DatapointTypeName.CURRENT,
-            DatapointTypeName.HUMIDITY,
+        if sensor_type.value not in [
+            DatapointTypeName.VOLTAGE.value,
+            DatapointTypeName.TEMPERATURE.value,
+            DatapointTypeName.CURRENT.value,
+            DatapointTypeName.HUMIDITY.value,
         ]:
             raise ConbusDatapointError(f"Invalid sensor type: {sensor_type.value}")
 

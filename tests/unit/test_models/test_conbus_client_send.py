@@ -122,7 +122,7 @@ class TestConbusSendRequest:
             "datapoint_code": "21",
             "timestamp": "2023-08-27T10:30:45.123456",
         }
-        assert result == expected
+        assert expected == result
 
 
 class TestConbusSendResponse:
