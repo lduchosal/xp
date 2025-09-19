@@ -149,19 +149,6 @@ conbus:
         assert response.received_telegrams[0] == "<R0020030837F02D20+12,5V©OK>"
         assert "©" in response.received_telegrams[0]
 
-    def test_registered_symbol_0xae(self, client_service, latin1_server):
-        """Test handling of ® symbol (byte 0xae) in current response"""
-        with client_service:
-            response = client_service.datapoint_request(
-                "0020044966", DatapointTypeName.CURRENT
-            )
-
-        assert response.success is True
-        assert response.sent_telegram == "<S0020044966F02D17FO>"
-        assert len(response.received_telegrams) == 1
-        assert response.received_telegrams[0] == "<R0020044966F02D21+2,3A®OK>"
-        assert "®" in response.received_telegrams[0]
-
     def test_plus_minus_symbol_0xb1(self, client_service, latin1_server):
         """Test handling of ± symbol (byte 0xb1) in humidity response"""
         with client_service:

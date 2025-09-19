@@ -1,9 +1,9 @@
 import tempfile
 import os
 import yaml
-from src.xp.services.conbus_server_service import ConbusServerService
-from src.xp.services.xp33_server_service import XP33ServerService
-from src.xp.services.telegram_service import TelegramService
+from xp.services.conbus_server_service import ConbusServerService
+from xp.services.xp33_server_service import XP33ServerService
+from xp.services.telegram_service import TelegramService
 
 
 class TestXP33Integration:

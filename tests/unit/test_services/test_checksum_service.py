@@ -5,8 +5,8 @@ following the architecture pattern for service testing.
 """
 
 import pytest
-from src.xp.services.checksum_service import ChecksumService
-from src.xp.models.response import Response
+from xp.services.checksum_service import ChecksumService
+from xp.models.response import Response
 
 
 class TestChecksumService:

@@ -7,7 +7,7 @@ ensuring proper integration between all layers.
 import json
 import pytest
 from click.testing import CliRunner
-from src.xp.cli.main import cli
+from xp.cli.main import cli
 
 
 class TestChecksumIntegration:

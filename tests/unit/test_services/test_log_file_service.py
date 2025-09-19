@@ -3,11 +3,11 @@
 import pytest
 from datetime import datetime
 from unittest.mock import Mock, patch, mock_open
-from src.xp.services.log_file_service import LogFileService, LogFileParsingError
-from src.xp.services.telegram_service import TelegramService, TelegramParsingError
-from src.xp.models.log_entry import LogEntry
-from src.xp.models.event_telegram import EventTelegram
-from src.xp.models.system_telegram import SystemTelegram
+from xp.services.log_file_service import LogFileService, LogFileParsingError
+from xp.services.telegram_service import TelegramService, TelegramParsingError
+from xp.models.log_entry import LogEntry
+from xp.models.event_telegram import EventTelegram
+from xp.models.system_telegram import SystemTelegram
 
 
 class TestLogFileService:

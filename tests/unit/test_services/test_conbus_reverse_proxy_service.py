@@ -7,7 +7,7 @@ import tempfile
 import os
 from unittest.mock import Mock, patch
 
-from src.xp.services.conbus_reverse_proxy_service import (
+from xp.services.conbus_reverse_proxy_service import (
     ConbusReverseProxyService,
     ConbusReverseProxyError,
 )

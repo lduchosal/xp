@@ -1,11 +1,11 @@
 """Tests for BlinkService"""
 
 import pytest
-from src.xp.services.telegram_blink_service import BlinkService, BlinkError
-from src.xp.models.system_telegram import SystemTelegram
-from src.xp.models.datapoint_type import DataPointType
-from src.xp.models.system_function import SystemFunction
-from src.xp.models.reply_telegram import ReplyTelegram
+from xp.services.telegram_blink_service import BlinkService, BlinkError
+from xp.models.system_telegram import SystemTelegram
+from xp.models.datapoint_type import DataPointType
+from xp.models.system_function import SystemFunction
+from xp.models.reply_telegram import ReplyTelegram
 from unittest.mock import Mock
 
 

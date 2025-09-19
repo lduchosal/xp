@@ -1,9 +1,9 @@
 import pytest
-from src.xp.services.module_type_service import (
+from xp.services.module_type_service import (
     ModuleTypeService,
     ModuleTypeNotFoundError,
 )
-from src.xp.models.module_type import ModuleType
+from xp.models.module_type import ModuleType
 
 
 class TestModuleTypeService:

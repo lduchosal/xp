@@ -16,10 +16,10 @@ import os
 # Add src to path so we can import our modules
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from src.xp.services.telegram_service import TelegramService, TelegramParsingError
-from src.xp.services.module_type_service import ModuleTypeService
-from src.xp.services.telegram_version_service import VersionService
-from src.xp.models.datapoint_type import DataPointType
+from xp.services.telegram_service import TelegramService, TelegramParsingError
+from xp.services.module_type_service import ModuleTypeService
+from xp.services.telegram_version_service import VersionService
+from xp.models.datapoint_type import DataPointType
 
 
 def demo_basic_parsing():

@@ -2,7 +2,7 @@
 
 import pytest
 from datetime import datetime
-from src.xp.utils.time_utils import (
+from xp.utils.time_utils import (
     parse_log_timestamp,
     TimeParsingError,
     format_log_timestamp,

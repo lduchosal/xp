@@ -1,10 +1,10 @@
-from src.xp.models.module_type import (
+from xp.models.module_type import (
     ModuleType,
     get_all_module_types,
     get_module_types_by_category,
     is_valid_module_code,
 )
-from src.xp.models.module_type_code import MODULE_TYPE_REGISTRY
+from xp.models.module_type_code import MODULE_TYPE_REGISTRY
 
 
 class TestModuleType:

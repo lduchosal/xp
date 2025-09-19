@@ -3,9 +3,9 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from src.xp.services.input_service import XPInputService, XPInputError
-from src.xp.models.action_type import ActionType
-from src.xp.services.conbus_datapoint_service import ConbusDatapointService
+from xp.services.input_service import XPInputService, XPInputError
+from xp.models.action_type import ActionType
+from xp.services.conbus_datapoint_service import ConbusDatapointService
 
 
 class TestXPInputIntegration:
@@ -101,7 +101,7 @@ class TestXPInputIntegration:
 
     def test_telegram_service_integration(self):
         """Test integration with existing telegram service."""
-        from src.xp.services.telegram_service import TelegramService
+        from xp.services.telegram_service import TelegramService
 
         telegram_service = TelegramService()
 
@@ -114,18 +114,18 @@ class TestXPInputIntegration:
         parsed_generic = telegram_service.parse_telegram(xp24_telegram)
 
         # Should be parsed as SystemTelegram
-        from src.xp.models.system_telegram import SystemTelegram
+        from xp.models.system_telegram import SystemTelegram
 
         assert isinstance(parsed_generic, SystemTelegram)
         assert parsed_generic.serial_number == "0020044964"
 
     @patch(
-        "src.xp.services.conbus_datapoint_service.ConbusDatapointService.send_custom_telegram"
+        "xp.services.conbus_datapoint_service.ConbusDatapointService.send_custom_telegram"
     )
     def test_cli_command_integration_action(self, mock_send):
         """Test integration with CLI command for action."""
         from click.testing import CliRunner
-        from src.xp.cli.commands.conbus_input_commands import conbus
+        from xp.cli.commands.conbus_input_commands import conbus
         import json
 
         # Mock successful response
@@ -160,12 +160,12 @@ class TestXPInputIntegration:
         mock_send.assert_called_once_with("0020044964", "27", "01AA")
 
     @patch(
-        "src.xp.services.conbus_datapoint_service.ConbusDatapointService.send_custom_telegram"
+        "xp.services.conbus_datapoint_service.ConbusDatapointService.send_custom_telegram"
     )
     def test_cli_command_integration_status(self, mock_send):
         """Test integration with CLI command for status query."""
         from click.testing import CliRunner
-        from src.xp.cli.commands.conbus_input_commands import conbus
+        from xp.cli.commands.conbus_input_commands import conbus
         import json
 
         # Mock successful status response
@@ -202,12 +202,12 @@ class TestXPInputIntegration:
         mock_send.assert_called_once_with("0020044964", "02", "12")
 
     @patch(
-        "src.xp.services.conbus_datapoint_service.ConbusDatapointService.send_custom_telegram"
+        "xp.services.conbus_datapoint_service.ConbusDatapointService.send_custom_telegram"
     )
     def test_cli_command_json_output(self, mock_send):
         """Test CLI command with JSON output."""
         from click.testing import CliRunner
-        from src.xp.cli.commands.conbus_input_commands import conbus
+        from xp.cli.commands.conbus_input_commands import conbus
         import json
 
         # Mock successful response

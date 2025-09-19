@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
-from src.xp.models.event_telegram import EventTelegram
-from src.xp.models import InputType, EventType
+from xp.models.event_telegram import EventTelegram
+from xp.models import InputType, EventType
 
 
 class TestEventTelegram:

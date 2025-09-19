@@ -3,8 +3,8 @@ import threading
 import time
 import socket
 from datetime import datetime
-from src.xp.services.conbus_datapoint_service import ConbusDatapointService
-from src.xp.models import ConbusDatapointRequest
+from xp.services.conbus_datapoint_service import ConbusDatapointService
+from xp.models import ConbusDatapointRequest
 from xp.models import DatapointTypeName
 
 

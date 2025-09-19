@@ -1,13 +1,13 @@
 """Tests for LogEntry model"""
 
 from datetime import datetime
-from src.xp.models.log_entry import LogEntry
-from src.xp.models.event_telegram import EventTelegram
-from src.xp.models import EventType
-from src.xp.models.system_telegram import SystemTelegram
-from src.xp.models.datapoint_type import DataPointType
-from src.xp.models.system_function import SystemFunction
-from src.xp.models.reply_telegram import ReplyTelegram
+from xp.models.log_entry import LogEntry
+from xp.models.event_telegram import EventTelegram
+from xp.models import EventType
+from xp.models.system_telegram import SystemTelegram
+from xp.models.datapoint_type import DataPointType
+from xp.models.system_function import SystemFunction
+from xp.models.reply_telegram import ReplyTelegram
 
 
 class TestLogEntry:

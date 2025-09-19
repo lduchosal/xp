@@ -2,11 +2,11 @@ import pytest
 from unittest.mock import Mock, patch
 import socket
 from datetime import datetime
-from src.xp.services.conbus_datapoint_service import (
+from xp.services.conbus_datapoint_service import (
     ConbusDatapointService,
     ConbusDatapointError,
 )
-from src.xp.models import (
+from xp.models import (
     ConbusDatapointRequest,
 )
 from xp.models import ConbusDatapointResponse, DatapointTypeName

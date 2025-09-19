@@ -6,7 +6,7 @@ import time
 import tempfile
 import os
 
-from src.xp.services.conbus_reverse_proxy_service import ConbusReverseProxyService
+from xp.services.conbus_reverse_proxy_service import ConbusReverseProxyService
 
 
 class MockConbusServer:

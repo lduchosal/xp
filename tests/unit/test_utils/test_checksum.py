@@ -5,7 +5,7 @@ the expected behavior of the Java implementation.
 """
 
 import pytest
-from src.xp.utils.checksum import (
+from xp.utils.checksum import (
     calculate_checksum,
     calculate_checksum32,
     de_nibble,

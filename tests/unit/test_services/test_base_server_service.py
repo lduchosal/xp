@@ -1,7 +1,7 @@
-from src.xp.services.base_server_service import BaseServerService
-from src.xp.models.system_telegram import SystemTelegram
-from src.xp.models.datapoint_type import DataPointType
-from src.xp.models.system_function import SystemFunction
+from xp.services.base_server_service import BaseServerService
+from xp.models.system_telegram import SystemTelegram
+from xp.models.datapoint_type import DataPointType
+from xp.models.system_function import SystemFunction
 
 
 class MockServerService(BaseServerService):
