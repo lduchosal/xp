@@ -24,6 +24,14 @@ def blink():
     """
     pass
 
+@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
+def checksum():
+    """
+    Checksum calculation and validation operations
+    """
+    pass
+
 telegram.add_command(linknumber)
 telegram.add_command(blink)
+telegram.add_command(checksum)
 

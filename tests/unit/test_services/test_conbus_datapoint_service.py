@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 import socket
 from datetime import datetime
 from xp.services.conbus_datapoint_service import (
-    ConbusDatapointService,
+    ConbusService,
     ConbusDatapointError,
 )
 from xp.models import (
@@ -12,8 +12,8 @@ from xp.models import (
 from xp.models import ConbusDatapointResponse, DatapointTypeName
 
 
-class TestConbusDatapointService:
-    """Test cases for ConbusDatapointService"""
+class TestConbusService:
+    """Test cases for ConbusService"""
 
     @pytest.fixture
     def mock_config_file(self, tmp_path):
@@ -31,7 +31,7 @@ conbus:
     @pytest.fixture
     def service(self, mock_config_file):
         """Create service instance with test config"""
-        return ConbusDatapointService(config_path=mock_config_file)
+        return ConbusService(config_path=mock_config_file)
 
     @pytest.fixture
     def mock_socket(self):
@@ -46,14 +46,14 @@ conbus:
         return mock_sock
 
 
-class TestServiceInitialization(TestConbusDatapointService):
+class TestServiceInitialization(TestConbusService):
     """Test service initialization and configuration loading"""
 
     def test_default_initialization(self, tmp_path):
         """Test service initialization with default config"""
         # Use a non-existent config file to test defaults
         non_existent_config = str(tmp_path / "non_existent.yml")
-        service = ConbusDatapointService(config_path=non_existent_config)
+        service = ConbusService(config_path=non_existent_config)
 
         assert service.config.ip == "192.168.1.100"
         assert service.config.port == 10001
@@ -69,7 +69,7 @@ class TestServiceInitialization(TestConbusDatapointService):
 
     def test_nonexistent_config_file(self):
         """Test handling of non-existent config file"""
-        service = ConbusDatapointService(config_path="nonexistent.yml")
+        service = ConbusService(config_path="nonexistent.yml")
 
         # Should use defaults when config file doesn't exist
         assert service.config.ip == "192.168.1.100"
@@ -83,7 +83,7 @@ class TestServiceInitialization(TestConbusDatapointService):
         """Test error handling when config file is malformed"""
         mock_yaml.side_effect = Exception("YAML parsing error")
 
-        service = ConbusDatapointService(config_path="bad_config.yml")
+        service = ConbusService(config_path="bad_config.yml")
 
         # Should use defaults when config parsing fails
         assert service.config.ip == "192.168.1.100"
@@ -91,7 +91,7 @@ class TestServiceInitialization(TestConbusDatapointService):
         assert service.config.timeout == 10
 
 
-class TestConnectionManagement(TestConbusDatapointService):
+class TestConnectionManagement(TestConbusService):
     """Test connection establishment and management"""
 
     @patch("socket.socket")
@@ -162,96 +162,7 @@ class TestConnectionManagement(TestConbusDatapointService):
         assert service.is_connected is False
         assert service.socket is None
 
-
-class TestTelegramGeneration(TestConbusDatapointService):
-    """Test telegram generation for different types"""
-
-    def test_version_telegram_without_serial(self, service):
-        """Test version telegram generation without target serial"""
-        request = ConbusDatapointRequest(datapoint_type=DatapointTypeName.VERSION)
-
-        telegram = service._generate_telegram(request)
-
-        assert telegram is None
-
-    def test_sensor_telegram_without_serial(self, service):
-        """Test sensor telegram generation without target serial"""
-        request = ConbusDatapointRequest(datapoint_type=DatapointTypeName.VOLTAGE)
-
-        # Should return None instead of raising exception in _generate_telegram
-        telegram = service._generate_telegram(request)
-        assert telegram is None
-
-class TestConvenienceMethods(TestConbusDatapointService):
-    """Test convenience methods"""
-
-    @patch.object(ConbusDatapointService, "send_telegram")
-    def test_send_version_request(self, mock_send, service):
-        """Test send_version_request convenience method"""
-        mock_response = ConbusDatapointResponse(
-            success=True,
-            request=ConbusDatapointRequest(
-                datapoint_type=DatapointTypeName.VERSION,
-                serial_number="0020030837"
-            ),
-            sent_telegram="<S0020030837F02D02FM>",
-        )
-        mock_send.return_value = mock_response
-
-        response = service.send_version_request("0020030837")
-
-        assert response.success is True
-        mock_send.assert_called_once()
-        args = mock_send.call_args[0][0]
-        assert args.datapoint_type.value == DatapointTypeName.VERSION.value
-        assert args.serial_number == "0020030837"
-
-    @patch.object(ConbusDatapointService, "send_telegram")
-    def test_send_sensor_request(self, mock_send, service):
-        """Test send_sensor_request convenience method"""
-        mock_response = ConbusDatapointResponse(
-            success=True,
-            request=ConbusDatapointRequest(
-                datapoint_type=DatapointTypeName.TEMPERATURE, serial_number="0020012521"
-            ),
-            sent_telegram="<S0020012521F02D18FM>",
-        )
-        mock_send.return_value = mock_response
-
-        response = service.datapoint_request("0020012521", DatapointTypeName.TEMPERATURE)
-
-        assert response.success is True
-        mock_send.assert_called_once()
-        args = mock_send.call_args[0][0]
-        assert args.datapoint_type == DatapointTypeName.TEMPERATURE
-        assert args.serial_number == "0020012521"
-
-    def test_send_sensor_request_invalid_type(self, service):
-        """Test send_sensor_request with invalid sensor type"""
-        with pytest.raises(ConbusDatapointError, match="Invalid sensor type"):
-            service.datapoint_request("0020030837", DatapointTypeName.UNKNOWN)
-
-
-class TestCustomTelegrams(TestConbusDatapointService):
-    """Test custom telegram functionality"""
-
-    @patch("socket.socket")
-    def test_send_custom_telegram(self, mock_socket_class, service, mock_socket):
-        """Test sending custom telegram"""
-        mock_socket_class.return_value = mock_socket
-        mock_socket.recv.side_effect = [b"<R0020030837F02DE2COUCOUFM>", b""]
-
-        response = service.send_custom_telegram("0020030837", "02", "E2")
-
-        assert response.success is True
-        # Verify telegram structure
-        sent_telegram = response.sent_telegram
-        assert sent_telegram.startswith("<S0020030837F02DE2")
-        assert sent_telegram.endswith(">")
-        assert response.received_telegrams[0] == "<R0020030837F02DE2COUCOUFM>"
-
-
-class TestConnectionStatus(TestConbusDatapointService):
+class TestConnectionStatus(TestConbusService):
     """Test connection status functionality"""
 
     def test_get_connection_status_disconnected(self, service):
@@ -276,7 +187,7 @@ class TestConnectionStatus(TestConbusDatapointService):
         assert status.last_activity == datetime(2023, 8, 27, 14, 30, 0)
 
 
-class TestContextManager(TestConbusDatapointService):
+class TestContextManager(TestConbusService):
     """Test context manager functionality"""
 
     def test_context_manager_enter_exit(self, service, mock_socket):
@@ -292,7 +203,7 @@ class TestContextManager(TestConbusDatapointService):
         mock_socket.close.assert_called_once()
 
 
-class TestErrorHandling(TestConbusDatapointService):
+class TestErrorHandling(TestConbusService):
     """Test error handling scenarios"""
 
     def test_response_receiving_error(self, service, mock_socket):

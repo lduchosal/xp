@@ -3,8 +3,8 @@
 import re
 from typing import Dict
 
-from . import checksum_service
-from .checksum_service import ChecksumService
+from . import telegram_checksum_service
+from .telegram_checksum_service import TelegramChecksumService
 from ..models.input_telegram import InputTelegram
 from ..models.action_type import ActionType
 from ..utils.checksum import calculate_checksum

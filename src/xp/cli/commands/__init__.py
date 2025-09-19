@@ -20,9 +20,7 @@ from .telegram_parse_commands import *
 from .telegram_discovery_commands import *
 from .telegram_linknumber_commands import *
 from .telegram_version_commands import *
-
-
-from .checksum_commands import *
+from .telegram_checksum_commands import *
 
 from .api import *
 from .api_start_commands import *

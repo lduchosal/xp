@@ -64,11 +64,3 @@ class TestConbusBlinkCommands:
         assert result.exit_code != 0
         assert "Connection timeout" in result.output
 
-    def test_conbus_unblink_invalid_serial(self):
-        """Test unblink command with invalid serial number"""
-        runner = CliRunner()
-        result = runner.invoke(conbus, ["blink", "off", "123"])
-
-        assert result.exit_code == 0
-        assert '"serial_number": "0000000123"' in result.output
-

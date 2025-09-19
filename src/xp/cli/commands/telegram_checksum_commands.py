@@ -2,20 +2,12 @@
 
 import click
 import json
-from click_help_colors import HelpColorsGroup
 
-from ...services.checksum_service import ChecksumService
+from ...services.telegram_checksum_service import TelegramChecksumService
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
-
-
-@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def checksum():
-    """
-    Checksum calculation and validation operations
-    """
-    pass
+from .telegram import checksum
 
 
 @checksum.command("calculate")
@@ -38,7 +30,7 @@ def calculate_checksum(data: str, algorithm: str):
         xp checksum calculate "E14L00I02M"
         xp checksum calculate "E14L00I02M" --algorithm crc32
     """
-    service = ChecksumService()
+    service = TelegramChecksumService()
     formatter = OutputFormatter(True)
 
     try:
@@ -81,7 +73,7 @@ def validate_checksum(
         xp checksum validate "E14L00I02M" "AK"
         xp checksum validate "E14L00I02M" "ABCDABCD" --algorithm crc32
     """
-    service = ChecksumService()
+    service = TelegramChecksumService()
     formatter = OutputFormatter(True)
 
     try:

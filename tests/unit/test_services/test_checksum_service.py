@@ -5,7 +5,7 @@ following the architecture pattern for service testing.
 """
 
 import pytest
-from xp.services.checksum_service import ChecksumService
+from xp.services.telegram_checksum_service import TelegramChecksumService
 from xp.models.response import Response
 
 
@@ -14,11 +14,11 @@ class TestChecksumService:
 
     def setup_method(self):
         """Set up test instance."""
-        self.service = ChecksumService()
+        self.service = TelegramChecksumService()
 
     def test_service_initialization(self):
         """Test that service initializes properly."""
-        assert isinstance(self.service, ChecksumService)
+        assert isinstance(self.service, TelegramChecksumService)
 
     def test_calculate_simple_checksum_success(self):
         """Test successful simple checksum calculation."""

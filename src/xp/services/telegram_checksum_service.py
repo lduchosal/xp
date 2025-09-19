@@ -9,7 +9,7 @@ from ..utils.checksum import calculate_checksum, calculate_checksum32
 from ..models.response import Response
 
 
-class ChecksumService:
+class TelegramChecksumService:
     """Service class for checksum operations."""
 
     def __init__(self):

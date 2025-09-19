@@ -7,7 +7,7 @@ from xp.cli.utils.click_tree import add_tree_command
 # Import command groups from modular structure
 from .commands.telegram_parse_commands import telegram
 from .commands.module_commands import module
-from .commands.checksum_commands import checksum
+from .commands.telegram_checksum_commands import checksum
 from .commands.file_commands import file
 from .commands.server_commands import server
 from .commands.conbus import conbus
@@ -27,7 +27,6 @@ def cli():
 # Register all command groups
 cli.add_command(telegram)
 cli.add_command(module)
-cli.add_command(checksum)
 cli.add_command(file)
 cli.add_command(server)
 cli.add_command(conbus)
