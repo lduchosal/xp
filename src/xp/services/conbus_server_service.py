@@ -236,10 +236,10 @@ class ConbusServerService:
                     responses.append("\n")
             else:
                 # Handle data requests for specific devices
-                target_serial = parsed_telegram.serial_number
+                serial_number = parsed_telegram.serial_number
 
                 # If broadcast (0000000000), respond from all devices
-                if target_serial == "0000000000":
+                if serial_number == "0000000000":
                     for serial_number, device_service in self.device_services.items():
                         response = device_service.process_system_telegram(
                             parsed_telegram
@@ -249,8 +249,8 @@ class ConbusServerService:
                             responses.append("\n")
                 # If specific device - lookup by string serial number
                 else:
-                    if target_serial in self.device_services:
-                        device_service = self.device_services[target_serial]
+                    if serial_number in self.device_services:
+                        device_service = self.device_services[serial_number]
                         response = device_service.process_system_telegram(
                             parsed_telegram
                         )
@@ -259,7 +259,7 @@ class ConbusServerService:
                             responses.append("\n")
                     else:
                         self.logger.debug(
-                            f"No device found for serial: {target_serial}"
+                            f"No device found for serial: {serial_number}"
                         )
 
         except Exception as e:

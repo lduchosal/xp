@@ -5,13 +5,13 @@ from typing import Optional, Dict, Any
 from ..models.datapoint_type import DatapointTypeName
 
 @dataclass
-class ConbusDatapointRequest:
+class ConbusRequest:
     """Represents a Conbus send request"""
 
-    datapoint_type: DatapointTypeName
     serial_number: Optional[str] = None
     function_code: Optional[str] = None
-    datapoint_code: Optional[str] = None
+    data: Optional[str] = None
+    telegram: Optional[str] = None
     timestamp: Optional[datetime] = None
 
     def __post_init__(self):
@@ -21,20 +21,19 @@ class ConbusDatapointRequest:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         return {
-            "datapoint_type": self.datapoint_type.value,
-            "datapoint_code": self.datapoint_code,
             "serial_number": self.serial_number,
             "function_code": self.function_code,
+            "data": self.data,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
         }
 
 
 @dataclass
-class ConbusDatapointResponse:
+class ConbusResponse:
     """Represents a response from Conbus send operation"""
 
     success: bool
-    request: ConbusDatapointRequest
+    request: ConbusRequest
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
     error: Optional[str] = None

@@ -21,10 +21,10 @@ from .conbus import conbus
 
 @conbus.command("datapoint")
 @click.argument("datapoint", type=DATAPOINT)
-@click.argument("target_serial", type=SERIAL)
+@click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def datapoint_telegram(target_serial: str, datapoint: DatapointTypeName):
+def datapoint_telegram(serial_number: str, datapoint: DatapointTypeName):
     """
     Send telegram to Conbus server.
 
@@ -42,8 +42,8 @@ def datapoint_telegram(target_serial: str, datapoint: DatapointTypeName):
 
     try:
         # Validate arguments
-        if target_serial is None:
-            error_response = formatter.error_response("target_serial is required")
+        if serial_number is None:
+            error_response = formatter.error_response("serial_number is required")
             click.echo(error_response)
             raise SystemExit(1)
 
@@ -54,7 +54,7 @@ def datapoint_telegram(target_serial: str, datapoint: DatapointTypeName):
 
         # Create request
         request = ConbusDatapointRequest(
-            datapoint_type=datapoint, target_serial=target_serial
+            datapoint_type=datapoint, serial_number=serial_number
         )
 
         # Send telegram

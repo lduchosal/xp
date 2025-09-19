@@ -26,7 +26,7 @@ POST /api/xp/conbus/discover
   "success": true,
   "request": {
     "telegram_type": "DISCOVERY",
-    "target_serial": null
+    "serial_number": null
   },
   "sent_telegram": "<S0000000000F01D00FA>",
   "received_telegrams": [

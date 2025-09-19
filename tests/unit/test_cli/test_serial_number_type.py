@@ -54,9 +54,9 @@ class TestSerialNumberParamType:
 class TestSerialNumberTypeInCommand:
     def test_serial_type_in_click_command(self):
         @click.command()
-        @click.argument('serial', type=SERIAL)
-        def test_command(serial):
-            click.echo(f"Serial: {serial}")
+        @click.argument('serial_number', type=SERIAL)
+        def test_command(serial_number):
+            click.echo(f"Serial: {serial_number}")
 
         runner = CliRunner()
 

@@ -7,9 +7,9 @@ from fastapi.responses import JSONResponse
 
 from .conbus import router
 from .errors import handle_service_error
+from ..models.datapoint import DatapointResponse, DatapointErrorResponse
 from ...models import ConbusDatapointRequest
 from ...models.datapoint_type import DatapointTypeName
-from ..models.datapoint import DatapointResponse, DatapointErrorResponse
 from ...services.conbus_datapoint_service import ConbusDatapointService
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ async def datapoint_devices(sensor: str, serial: str) -> Union[DatapointResponse
 
     # CreateDatapoint request
     conbus_request = ConbusDatapointRequest(
-        target_serial=serial,
+        serial_number=serial,
         datapoint_type=DatapointTypeName(sensor)
     )
 

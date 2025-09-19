@@ -67,7 +67,7 @@ class TestConbusSendRequest:
         request = ConbusDatapointRequest(datapoint_type=DatapointTypeName.UNKNOWN)
 
         assert request.datapoint_type == DatapointTypeName.UNKNOWN
-        assert request.target_serial is None
+        assert request.serial_number is None
         assert request.function_code is None
         assert request.datapoint_code is None
         assert isinstance(request.timestamp, datetime)
@@ -75,21 +75,21 @@ class TestConbusSendRequest:
     def test_version_request(self):
         """Test version request creation"""
         request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.VERSION, target_serial="0020030837"
+            datapoint_type=DatapointTypeName.VERSION, serial_number="0020030837"
         )
 
         assert request.datapoint_type == DatapointTypeName.VERSION
-        assert request.target_serial == "0020030837"
+        assert request.serial_number == "0020030837"
         assert isinstance(request.timestamp, datetime)
 
     def test_sensor_request(self):
         """Test sensor request creation"""
         request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.TEMPERATURE, target_serial="0020012521"
+            datapoint_type=DatapointTypeName.TEMPERATURE, serial_number="0020012521"
         )
 
         assert request.datapoint_type == DatapointTypeName.TEMPERATURE
-        assert request.target_serial == "0020012521"
+        assert request.serial_number == "0020012521"
         assert isinstance(request.timestamp, datetime)
 
     def test_custom_timestamp(self):
@@ -97,7 +97,7 @@ class TestConbusSendRequest:
         custom_time = datetime(2023, 8, 27, 10, 30, 45)
         request = ConbusDatapointRequest(
             datapoint_type=DatapointTypeName.VOLTAGE,
-            target_serial="0020030837",
+            serial_number="0020030837",
             timestamp=custom_time,
         )
 
@@ -108,7 +108,7 @@ class TestConbusSendRequest:
         timestamp = datetime(2023, 8, 27, 10, 30, 45, 123456)
         request = ConbusDatapointRequest(
             datapoint_type=DatapointTypeName.CURRENT,
-            target_serial="0020044974",
+            serial_number="0020044974",
             function_code="02",
             datapoint_code="21",
             timestamp=timestamp,
@@ -117,7 +117,7 @@ class TestConbusSendRequest:
         result = request.to_dict()
         expected = {
             "datapoint_type": "current",
-            "target_serial": "0020044974",
+            "serial_number": "0020044974",
             "function_code": "02",
             "datapoint_code": "21",
             "timestamp": "2023-08-27T10:30:45.123456",
@@ -150,7 +150,7 @@ class TestConbusSendResponse:
     def test_failed_response(self):
         """Test failed response creation"""
         request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.VERSION, target_serial="0020030837"
+            datapoint_type=DatapointTypeName.VERSION, serial_number="0020030837"
         )
         response = ConbusDatapointResponse(
             success=False, request=request, error="Connection timeout"
@@ -166,7 +166,7 @@ class TestConbusSendResponse:
     def test_empty_received_telegrams_initialization(self):
         """Test that received_telegrams is initialized as empty list"""
         request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.HUMIDITY, target_serial="0020012521"
+            datapoint_type=DatapointTypeName.HUMIDITY, serial_number="0020012521"
         )
         response = ConbusDatapointResponse(success=True, request=request)
 
@@ -177,7 +177,7 @@ class TestConbusSendResponse:
         """Test response with custom timestamp"""
         custom_time = datetime(2023, 8, 27, 15, 45, 30)
         request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.VOLTAGE, target_serial="0020030837"
+            datapoint_type=DatapointTypeName.VOLTAGE, serial_number="0020030837"
         )
         response = ConbusDatapointResponse(
             success=True, request=request, timestamp=custom_time
@@ -189,7 +189,7 @@ class TestConbusSendResponse:
         """Test conversion to dictionary"""
         timestamp = datetime(2023, 8, 27, 16, 20, 15, 789123)
         request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.TEMPERATURE, target_serial="0020012521"
+            datapoint_type=DatapointTypeName.TEMPERATURE, serial_number="0020012521"
         )
         response = ConbusDatapointResponse(
             success=True,
@@ -315,7 +315,7 @@ class TestModelIntegration:
         # Create request
         request = ConbusDatapointRequest(
             datapoint_type=DatapointTypeName.VERSION,
-            target_serial="9999999999",  # Non-existent device
+            serial_number="9999999999",  # Non-existent device
         )
 
         # Create failed response

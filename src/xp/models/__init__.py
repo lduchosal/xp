@@ -8,6 +8,7 @@ from .log_entry import LogEntry
 from .conbus_connection_status import ConbusConnectionStatus
 from .datapoint_type import DatapointTypeName
 from .conbus_client_config import ConbusClientConfig
+from .conbus import ConbusRequest, ConbusResponse
 from .conbus_datapoint import ConbusDatapointRequest, ConbusDatapointResponse
 from .conbus_discover import ConbusDiscoverRequest, ConbusDiscoverResponse
 from .event_telegram import EventTelegram
@@ -23,6 +24,8 @@ __all__ = [
     "LogEntry",
     "DatapointTypeName",
     "ConbusClientConfig",
+    "ConbusRequest",
+    "ConbusResponse",
     "ConbusDatapointRequest",
     "ConbusDatapointResponse",
     "ConbusDiscoverRequest",

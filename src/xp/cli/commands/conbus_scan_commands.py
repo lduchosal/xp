@@ -4,6 +4,7 @@ import click
 import json
 import threading
 
+from ..utils.serial_number_type import SERIAL
 from ...services.conbus_datapoint_service import (
     ConbusDatapointService,
     ConbusDatapointError,
@@ -11,10 +12,11 @@ from ...services.conbus_datapoint_service import (
 from ..utils.decorators import connection_command, handle_service_errors
 from ..utils.error_handlers import CLIErrorHandler
 from .conbus import conbus
+from ...services.conbus_scan_service import ConbusScanService
 
 
 @conbus.command("scan")
-@click.argument("serial_number", type=str)
+@click.argument("serial_number", type=SERIAL)
 @click.argument("function_code", type=int)
 @click.option(
     "--background",
@@ -36,7 +38,7 @@ def scan_module(
     \b
         xp conbus scan 0020030837 02 # Scan all datapoints of function Read data points (02)
     """
-    service = ConbusDatapointService()
+    service = ConbusScanService()
 
     # Shared state for results collection and live output
     results = []

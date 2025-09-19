@@ -192,7 +192,7 @@ class TestConvenienceMethods(TestConbusDatapointService):
             success=True,
             request=ConbusDatapointRequest(
                 datapoint_type=DatapointTypeName.VERSION,
-                target_serial="0020030837"
+                serial_number="0020030837"
             ),
             sent_telegram="<S0020030837F02D02FM>",
         )
@@ -204,7 +204,7 @@ class TestConvenienceMethods(TestConbusDatapointService):
         mock_send.assert_called_once()
         args = mock_send.call_args[0][0]
         assert args.datapoint_type.value == DatapointTypeName.VERSION.value
-        assert args.target_serial == "0020030837"
+        assert args.serial_number == "0020030837"
 
     @patch.object(ConbusDatapointService, "send_telegram")
     def test_send_sensor_request(self, mock_send, service):
@@ -212,7 +212,7 @@ class TestConvenienceMethods(TestConbusDatapointService):
         mock_response = ConbusDatapointResponse(
             success=True,
             request=ConbusDatapointRequest(
-                datapoint_type=DatapointTypeName.TEMPERATURE, target_serial="0020012521"
+                datapoint_type=DatapointTypeName.TEMPERATURE, serial_number="0020012521"
             ),
             sent_telegram="<S0020012521F02D18FM>",
         )
@@ -224,7 +224,7 @@ class TestConvenienceMethods(TestConbusDatapointService):
         mock_send.assert_called_once()
         args = mock_send.call_args[0][0]
         assert args.datapoint_type == DatapointTypeName.TEMPERATURE
-        assert args.target_serial == "0020012521"
+        assert args.serial_number == "0020012521"
 
     def test_send_sensor_request_invalid_type(self, service):
         """Test send_sensor_request with invalid sensor type"""

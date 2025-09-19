@@ -70,5 +70,5 @@ class TestConbusBlinkCommands:
         result = runner.invoke(conbus, ["blink", "off", "123"])
 
         assert result.exit_code == 0
-        assert '"target_serial": "0000000123"' in result.output
+        assert '"serial_number": "0000000123"' in result.output
 

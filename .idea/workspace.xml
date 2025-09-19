@@ -5,52 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: refactor / TelegramType -&gt; DatapointNameType">
+      <change afterPath="$PROJECT_DIR$/src/xp/models/conbus.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/xp/services/conbus_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/fixtures/telegram_test_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/fixtures/telegram_test_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_api/test_discovery_endpoint.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_checksum_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_checksum_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_client_send_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_link_number_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_link_number_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_module_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_module_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_version_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_version_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_xp33_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_xp33_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cli.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cli.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-FastAPI-discover.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-FastAPI-discover.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus_datapoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_datapoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_input_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_input_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_datapoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_datapoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_discover_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_discover_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_scan_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_scan_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_server_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_serial_number_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_serial_number_type.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_event_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_event_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_log_entry.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_log_entry.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_module_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_module_type.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram_enhancements.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram_enhancements.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_version_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_version_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_xp24_action_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_xp24_action_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_base_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_base_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_blink_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_checksum_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_checksum_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_link_number_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_link_number_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_log_file_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_log_file_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_module_type_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_module_type_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_telegram_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_telegram_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_version_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_version_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp130_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp130_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp20_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp20_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp230_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp230_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp33_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp33_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_utils/test_time_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_utils/test_time_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,7 +125,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/q/Projects/xp/src/xp/api/models",
+    "last_opened_file_path": "/Users/q/Projects/xp/src/xp/models",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -165,11 +138,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/xp/api/models" />
-      <recent name="$PROJECT_DIR$/src/xp/api/routers" />
       <recent name="$PROJECT_DIR$/src/xp/models" />
       <recent name="$PROJECT_DIR$/src/xp/services" />
       <recent name="$PROJECT_DIR$/src/xp/cli/commands" />
+      <recent name="$PROJECT_DIR$/src/xp/api/models" />
+      <recent name="$PROJECT_DIR$/src/xp/api/routers" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Specs" />
@@ -353,15 +326,7 @@
       <workItem from="1757752097335" duration="35847000" />
       <workItem from="1758124896525" duration="15519000" />
       <workItem from="1758194876724" duration="12743000" />
-      <workItem from="1758234469139" duration="2357000" />
-    </task>
-    <task id="LOCAL-00023" summary="Feat: XP33 Emulator">
-      <option name="closed" value="true" />
-      <created>1757535566133</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1757535566133</updated>
+      <workItem from="1758234469139" duration="5507000" />
     </task>
     <task id="LOCAL-00024" summary="Feat: XP33 Emulator">
       <option name="closed" value="true" />
@@ -747,7 +712,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758260680139</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <task id="LOCAL-00072" summary="Feat: refactor / TelegramType -&gt; DatapointNameType">
+      <option name="closed" value="true" />
+      <created>1758261682056</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1758261682056</updated>
+    </task>
+    <option name="localTasksCounter" value="73" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -949,7 +922,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_cli_command_integration_status.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_status Coverage Results" MODIFIED="1758050499455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_services_test_conbus_datapoint_service_TestConvenienceMethods_test_send_version_request.coverage" NAME="pytest for tests.unit.test_services.test_conbus_datapoint_service.TestConvenienceMethods.test_send_version_request Coverage Results" MODIFIED="1758221840670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_checksum_integration_TestChecksumIntegration_test_checksum_validate_valid_checksum.coverage" NAME="pytest for tests.integration.test_checksum_integration.TestChecksumIntegration.test_checksum_validate_valid_checksum Coverage Results" MODIFIED="1758108163675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758261556026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758261670990" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_reverse_proxy_integration_TestReverseProxyErrorHandling_test_proxy_start_port_already_in_use.coverage" NAME="pytest for tests.integration.test_reverse_proxy_integration.TestReverseProxyErrorHandling.test_proxy_start_port_already_in_use Coverage Results" MODIFIED="1757519561359" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_module_integration_TestModuleIntegration_test_module_list_command_json_output.coverage" NAME="pytest for tests.integration.test_module_integration.TestModuleIntegration.test_module_list_command_json_output Coverage Results" MODIFIED="1757538920628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_temperature_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_temperature_request Coverage Results" MODIFIED="1756890926271" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

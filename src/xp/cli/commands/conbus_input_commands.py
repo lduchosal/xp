@@ -3,10 +3,12 @@
 import click
 import json
 
+from ..utils.serial_number_type import SERIAL
 from ...services.conbus_datapoint_service import (
     ConbusDatapointService,
     ConbusDatapointError,
 )
+from ...services.conbus_service import ConbusService
 from ...services.input_service import XPInputService, XPInputError
 from ...models.action_type import ActionType
 from ..utils.decorators import (
@@ -17,7 +19,7 @@ from ..utils.error_handlers import CLIErrorHandler
 from .conbus import conbus
 
 @conbus.command("input")
-@click.argument("serial_number", type=click.STRING)
+@click.argument("serial_number", type=SERIAL)
 @click.argument("input_number_or_status", type=click.Choice(["status", "0", "1", "2", "3", "4", "5", "6", "7", "8"]))
 @click.argument("on_or_off", type=click.Choice(["on", "off"]), default="on")
 @connection_command()
@@ -34,14 +36,14 @@ def xp_input(
         xp conbus input 0011223344 1 off    # Toggle input 1
         xp conbus input 0011223344 status   # Query status
     """
-    service = ConbusDatapointService()
+    service = ConbusService()
     input_service = XPInputService()
 
     try:
         with service:
             if input_number_or_status.lower() == "status":
                 # Send status query using custom telegram method
-                response = service.send_custom_telegram(
+                response = service.send_telegram(
                     serial_number,
                     input_service.STATUS_FUNCTION,  # "02"
                     input_service.STATUS_DATAPOINT,  # "12"
