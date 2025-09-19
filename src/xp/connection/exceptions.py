@@ -10,12 +10,6 @@ class XPError(Exception):
     pass
 
 
-class ConnectionError(XPError):
-    """TCP connection related errors"""
-
-    pass
-
-
 class ProtocolError(XPError):
     """Console bus protocol errors"""
 
@@ -28,7 +22,3 @@ class ValidationError(XPError):
     pass
 
 
-class ModuleNotFoundError(XPError):
-    """Module not found on remote bus"""
-
-    pass

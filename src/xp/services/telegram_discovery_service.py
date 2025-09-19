@@ -4,11 +4,12 @@ This service handles generation and parsing of device discovery system telegrams
 used for enumerating all connected devices on the console bus.
 """
 
-from typing import List, Optional, Set
-from ..models.system_telegram import SystemTelegram
+from typing import List, Set
+
 from ..models.datapoint_type import DataPointType
-from ..models.system_function import SystemFunction
 from ..models.reply_telegram import ReplyTelegram
+from ..models.system_function import SystemFunction
+from ..models.system_telegram import SystemTelegram
 from ..utils.checksum import calculate_checksum
 
 
@@ -57,7 +58,8 @@ class TelegramDiscoveryService:
         """Initialize the discovery service"""
         pass
 
-    def generate_discovery_telegram(self) -> str:
+    @staticmethod
+    def generate_discovery_telegram() -> str:
         """
         Generate a broadcast discovery telegram to enumerate all devices.
 
@@ -98,7 +100,8 @@ class TelegramDiscoveryService:
 
         return telegram
 
-    def is_discovery_response(self, reply_telegram: ReplyTelegram) -> bool:
+    @staticmethod
+    def is_discovery_response(reply_telegram: ReplyTelegram) -> bool:
         """
         Check if a reply telegram is a discovery response.
 
@@ -110,7 +113,8 @@ class TelegramDiscoveryService:
         """
         return reply_telegram.system_function == SystemFunction.DISCOVERY
 
-    def _generate_discovery_response(self, serial_number: str) -> str:
+    @staticmethod
+    def _generate_discovery_response(serial_number: str) -> str:
         """Generate discovery response telegram for a device"""
         # Format: <R{serial}F01D{checksum}>
         data_part = f"R{serial_number}F01D"
@@ -118,7 +122,8 @@ class TelegramDiscoveryService:
         telegram = f"<{data_part}{checksum}>"
         return telegram
 
-    def get_unique_devices(self, devices: List[DeviceInfo]) -> List[DeviceInfo]:
+    @staticmethod
+    def get_unique_devices(devices: List[DeviceInfo]) -> List[DeviceInfo]:
         """
         Filter out duplicate devices based on serial number.
 
@@ -138,7 +143,8 @@ class TelegramDiscoveryService:
 
         return unique_devices
 
-    def validate_discovery_response_format(self, raw_telegram: str) -> bool:
+    @staticmethod
+    def validate_discovery_response_format(raw_telegram: str) -> bool:
         """
         Validate if a raw telegram matches discovery response format.
 
@@ -233,7 +239,8 @@ class TelegramDiscoveryService:
 
         return "\n".join(lines)
 
-    def _is_discovery_request(self, telegram: SystemTelegram) -> bool:
+    @staticmethod
+    def is_discovery_request(telegram: SystemTelegram) -> bool:
         """Check if telegram is a discovery request"""
         return (
             telegram.system_function == SystemFunction.DISCOVERY

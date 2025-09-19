@@ -1,15 +1,12 @@
-import pytest
-from unittest.mock import Mock, patch
 import socket
 from datetime import datetime
+from unittest.mock import Mock, patch
+
+import pytest
+
 from xp.services.conbus_datapoint_service import (
     ConbusService,
-    ConbusDatapointError,
 )
-from xp.models import (
-    ConbusDatapointRequest,
-)
-from xp.models import ConbusDatapointResponse, DatapointTypeName
 
 
 class TestConbusService:
@@ -79,7 +76,7 @@ class TestServiceInitialization(TestConbusService):
     @patch("yaml.safe_load")
     @patch("builtins.open")
     @patch("os.path.exists", return_value=True)
-    def test_config_file_error_handling(self, mock_exists, mock_open, mock_yaml):
+    def test_config_file_error_handling(self, mock_yaml):
         """Test error handling when config file is malformed"""
         mock_yaml.side_effect = Exception("YAML parsing error")
 

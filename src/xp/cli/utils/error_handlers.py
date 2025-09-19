@@ -4,14 +4,12 @@ import click
 from typing import Dict, Any, Optional
 from .formatters import OutputFormatter
 
-
 class CLIErrorHandler:
     """Centralized error handling for CLI commands."""
 
     @staticmethod
     def handle_parsing_error(
         error: Exception,
-        json_output: bool,
         raw_input: str,
         context: Optional[Dict[str, Any]] = None,
     ) -> None:
@@ -19,7 +17,6 @@ class CLIErrorHandler:
 
         Args:
             error: The parsing error that occurred
-            json_output: Whether to format as JSON (always True now)
             raw_input: The raw input that failed to parse
             context: Additional context information
         """
@@ -35,13 +32,12 @@ class CLIErrorHandler:
 
     @staticmethod
     def handle_connection_error(
-        error: Exception, json_output: bool, config: Optional[Dict[str, Any]] = None
+        error: Exception, config: Optional[Dict[str, Any]] = None
     ) -> None:
         """Handle connection/network errors with JSON formatting.
 
         Args:
             error: The connection error that occurred
-            json_output: Whether to format as JSON (always True now)
             config: Configuration information (IP, port, timeout)
         """
         formatter = OutputFormatter(True)
@@ -73,7 +69,6 @@ class CLIErrorHandler:
 
         Args:
             error: The service error that occurred
-            json_output: Whether to format as JSON (always True now)
             operation: Description of the operation that failed
             context: Additional context information
         """
@@ -89,13 +84,12 @@ class CLIErrorHandler:
 
     @staticmethod
     def handle_validation_error(
-        error: Exception, json_output: bool, input_data: str
+        error: Exception, input_data: str
     ) -> None:
         """Handle validation errors with JSON formatting.
 
         Args:
             error: The validation error that occurred
-            json_output: Whether to format as JSON (always True now)
             input_data: The input that failed validation
         """
         formatter = OutputFormatter(True)
@@ -108,7 +102,6 @@ class CLIErrorHandler:
     @staticmethod
     def handle_file_error(
         error: Exception,
-        json_output: bool,
         file_path: str,
         operation: str = "processing",
     ) -> None:
@@ -116,7 +109,6 @@ class CLIErrorHandler:
 
         Args:
             error: The file error that occurred
-            json_output: Whether to format as JSON (always True now)
             file_path: Path to the file that caused the error
             operation: Type of file operation (parsing, reading, etc.)
         """
@@ -129,13 +121,12 @@ class CLIErrorHandler:
 
     @staticmethod
     def handle_not_found_error(
-        error: Exception, json_output: bool, item_type: str, identifier: str
+        error: Exception, item_type: str, identifier: str
     ) -> None:
         """Handle 'not found' errors with JSON formatting.
 
         Args:
             error: The not found error that occurred
-            json_output: Whether to format as JSON (always True now)
             item_type: Type of item that was not found
             identifier: Identifier used to search for the item
         """
@@ -152,7 +143,7 @@ class ServerErrorHandler(CLIErrorHandler):
 
     @staticmethod
     def handle_server_startup_error(
-        error: Exception, json_output: bool, port: int, config_path: str
+        error: Exception, port: int, config_path: str
     ) -> None:
         """Handle server startup errors with JSON formatting."""
         formatter = OutputFormatter(True)
@@ -167,7 +158,7 @@ class ServerErrorHandler(CLIErrorHandler):
         raise SystemExit(1)
 
     @staticmethod
-    def handle_server_not_running_error(json_output: bool) -> None:
+    def handle_server_not_running_error() -> None:
         """Handle errors when server is not running with JSON formatting."""
         formatter = OutputFormatter(True)
         error_response = formatter.error_response("No server is currently running")

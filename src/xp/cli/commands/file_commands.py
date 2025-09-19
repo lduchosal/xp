@@ -95,7 +95,7 @@ def decode_log_file(
 
     except Exception as e:
         CLIErrorHandler.handle_file_error(
-            e, True, log_file_path, "log file parsing"
+            e, log_file_path, "log file parsing"
         )
 
 
@@ -127,7 +127,7 @@ def analyze_log_file(log_file_path: str):
 
     except Exception as e:
         CLIErrorHandler.handle_file_error(
-            e, True, log_file_path, "log file analysis"
+            e, log_file_path, "log file analysis"
         )
 
 
@@ -168,5 +168,5 @@ def validate_log_file(log_file_path: str):
 
     except Exception as e:
         CLIErrorHandler.handle_file_error(
-            e, True, log_file_path, "log file validation"
+            e, log_file_path, "log file validation"
         )

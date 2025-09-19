@@ -1,23 +1,23 @@
 """Conbus client operations CLI commands."""
 
-import click
 import json
 import threading
 
+import click
+
+from .conbus import conbus
+from ..utils.decorators import connection_command, handle_service_errors
 from ..utils.serial_number_type import SERIAL
+from ...models.system_function import SystemFunction
 from ...services.conbus_datapoint_service import (
-    ConbusDatapointService,
     ConbusDatapointError,
 )
-from ..utils.decorators import connection_command, handle_service_errors
-from ..utils.error_handlers import CLIErrorHandler
-from .conbus import conbus
 from ...services.conbus_scan_service import ConbusScanService
 
 
 @conbus.command("scan")
 @click.argument("serial_number", type=SERIAL)
-@click.argument("function_code", type=int)
+@click.argument("system_function", type=int)
 @click.option(
     "--background",
     "-b",
@@ -28,7 +28,7 @@ from ...services.conbus_scan_service import ConbusScanService
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
 def scan_module(
-    serial_number: str, function_code: str, background: bool
+    serial_number: str, system_function: SystemFunction, background: bool
 ):
     """
     Scan all datapoints of a function_code for a module.
@@ -45,7 +45,7 @@ def scan_module(
     successful_count = 0
     failed_count = 0
 
-    def progress_callback(response, count, total):
+    def progress_callback(response):
         nonlocal successful_count, failed_count
         results.append(response)
 
@@ -66,7 +66,7 @@ def scan_module(
                 def background_scan():
                     try:
                         service.scan_module(
-                            serial_number, function_code, progress_callback
+                            serial_number, system_function, progress_callback
                         )
                     except Exception:
                         pass  # Will be handled by outer error handling
@@ -102,7 +102,7 @@ def scan_module(
                 # Traditional synchronous scanning
                 results = service.scan_module(
                     serial_number,
-                    function_code,
+                    system_function,
                     progress_callback,
                 )
                 successful_count = len([r for r in results if r.success])
@@ -119,20 +119,6 @@ def scan_module(
         }
         click.echo(json.dumps(output, indent=2))
 
-    except ConbusDatapointError as e:
-        if "Connection timeout" in str(e):
-            CLIErrorHandler.handle_connection_error(
-                e,
-                True,
-                {
-                    "ip": service.config.ip,
-                    "port": service.config.port,
-                    "timeout": service.config.timeout,
-                },
-            )
-        else:
-            CLIErrorHandler.handle_service_error(e, "module scan",
-                                                 {"serial_number": serial_number, "background_mode": background})
     except click.Abort:
         # User interrupted the scan
         raise

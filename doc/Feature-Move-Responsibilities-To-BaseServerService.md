@@ -134,7 +134,7 @@ Move the following methods to `BaseServerService`:
 #### 1. Core Response Generators
 
 ```python
-def generate_discovery_response(self) -> str
+def generate_discovery_response(self) -> str:
 
 
     def generate_version_response(self, request: SystemTelegram) -> Optional[str]

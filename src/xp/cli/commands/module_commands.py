@@ -46,7 +46,7 @@ def module_info(identifier: str):
 
     except ModuleTypeNotFoundError as e:
         CLIErrorHandler.handle_not_found_error(
-            e, True, "module type", identifier
+            e, "module type", identifier
         )
 
 
@@ -89,7 +89,7 @@ def module_list(category: str, group_by_category: bool):
             }
         else:
             output = {
-                "modules": [module.to_dict() for module in modules],
+                "modules": [_module.to_dict() for _module in modules],
                 "count": len(modules),
             }
         click.echo(json.dumps(output, indent=2))
@@ -127,7 +127,7 @@ def module_search(query: str, field: tuple):
         output = {
             "query": query,
             "search_fields": search_fields,
-            "matches": [module.to_dict() for module in matching_modules],
+            "matches": [_module.to_dict() for _module in matching_modules],
             "count": len(matching_modules),
         }
         click.echo(json.dumps(output, indent=2))

@@ -187,7 +187,8 @@ class LogFileService:
         entries = self.parse_log_file(file_path)
         return [entry.raw_telegram for entry in entries]
 
-    def get_file_statistics(self, entries: List[LogEntry]) -> Dict[str, Any]:
+    @staticmethod
+    def get_file_statistics(entries: List[LogEntry]) -> Dict[str, Any]:
         """
         Generate statistics for a list of log entries
 
@@ -274,9 +275,9 @@ class LogFileService:
             "devices": sorted(list(devices)),
         }
 
+    @staticmethod
     def filter_entries(
-        self,
-        entries: List[LogEntry],
+            entries: List[LogEntry],
         telegram_type: Optional[str] = None,
         direction: Optional[str] = None,
         start_time: Optional[datetime] = None,

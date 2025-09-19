@@ -10,8 +10,8 @@ from xp.utils.checksum import (
     calculate_checksum32,
     de_nibble,
     un_bcd,
-    _nibble,
-    _byte_to_int_no_sign,
+    a_nibble,
+    a_byte_to_int_no_sign,
 )
 
 
@@ -51,13 +51,13 @@ class TestChecksumUtilities:
     def test_nibble_conversion(self):
         """Test nibble conversion function."""
         # Test zero
-        assert _nibble(0) == "AA"
+        assert a_nibble(0) == "AA"
 
         # Test 0x41 (ASCII 'A')
-        assert _nibble(0x41) == "EB"
+        assert a_nibble(0x41) == "EB"
 
         # Test 0xFF (255)
-        assert _nibble(0xFF) == "PP"
+        assert a_nibble(0xFF) == "PP"
 
     def test_de_nibble_conversion(self):
         """Test reverse nibble conversion."""
@@ -91,10 +91,10 @@ class TestChecksumUtilities:
 
     def test_byte_to_int_no_sign(self):
         """Test unsigned byte conversion."""
-        assert _byte_to_int_no_sign(0) == 0
-        assert _byte_to_int_no_sign(127) == 127
-        assert _byte_to_int_no_sign(-1) == 255
-        assert _byte_to_int_no_sign(-128) == 128
+        assert a_byte_to_int_no_sign(0) == 0
+        assert a_byte_to_int_no_sign(127) == 127
+        assert a_byte_to_int_no_sign(-1) == 255
+        assert a_byte_to_int_no_sign(-128) == 128
 
     def test_un_bcd_conversion(self):
         """Test BCD to integer conversion."""
@@ -165,7 +165,7 @@ class TestChecksumUtilities:
     def test_nibble_roundtrip(self):
         """Test that nibble conversion is reversible."""
         for test_byte in [0, 1, 65, 127, 255]:
-            nibbled = _nibble(test_byte)
+            nibbled = a_nibble(test_byte)
             de_nibbled = de_nibble(nibbled)
             assert de_nibbled[0] == test_byte
 

@@ -67,8 +67,10 @@ New service for log file operations:
 
 ```python
 class LogFileService:
-    def parse_log_file(self, file_path: str) -> List[LogEntry]
-    def extract_telegrams(self, file_path: str) -> List[str]
+    def parse_log_file(self, file_path: str) -> List[LogEntry]:
+        pass
+    def extract_telegrams(self, file_path: str) -> List[str]:
+        pass
 ```
 
 ### 2. CLI Commands

@@ -94,6 +94,7 @@ class ModuleService:
         # 2. Call connection layer
         # 3. Process response
         # 4. Return structured data
+        pass
         
 # Device-specific constraints (ENFORCE STRICTLY)
 class XP24Service:
@@ -159,6 +160,7 @@ def test_new_feature():
 # THEN implement the actual method
 def new_method(self, params):
     # Implementation here
+    pass
 ```
 
 ### Coverage Requirements

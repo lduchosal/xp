@@ -30,8 +30,9 @@ class LinkNumberService:
         """Initialize the link number service"""
         pass
 
+    @staticmethod
     def generate_set_link_number_telegram(
-        self, serial_number: str, link_number: int
+            serial_number: str, link_number: int
     ) -> str:
         """
         Generate a telegram to set a module's link number.
@@ -77,7 +78,8 @@ class LinkNumberService:
 
         return telegram
 
-    def generate_read_link_number_telegram(self, serial_number: str) -> str:
+    @staticmethod
+    def generate_read_link_number_telegram(serial_number: str) -> str:
         """
         Generate a telegram to read a module's current link number.
 
@@ -175,8 +177,9 @@ class LinkNumberService:
 
         return telegram
 
+    @staticmethod
     def parse_link_number_from_reply(
-        self, reply_telegram: ReplyTelegram
+            reply_telegram: ReplyTelegram
     ) -> Optional[int]:
         """
         Parse the link number value from a reply telegram.
@@ -203,7 +206,8 @@ class LinkNumberService:
 
         return None
 
-    def is_ack_response(self, reply_telegram: ReplyTelegram) -> bool:
+    @staticmethod
+    def is_ack_response(reply_telegram: ReplyTelegram) -> bool:
         """
         Check if a reply telegram is an ACK response.
 
@@ -215,7 +219,8 @@ class LinkNumberService:
         """
         return reply_telegram.system_function == SystemFunction.ACK
 
-    def is_nak_response(self, reply_telegram: ReplyTelegram) -> bool:
+    @staticmethod
+    def is_nak_response(reply_telegram: ReplyTelegram) -> bool:
         """
         Check if a reply telegram is a NAK response.
 

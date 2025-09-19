@@ -6,7 +6,7 @@ and reading temperature from modules.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 from .datapoint_type import DataPointType
 from .system_function import SystemFunction
@@ -24,7 +24,7 @@ class SystemTelegram(Telegram):
 
     serial_number: str = ""
     system_function: Optional[SystemFunction] = None
-    data_point_id: DataPointType = 0
+    data_point_id: DataPointType = DataPointType.NONE
 
     def __post_init__(self):
         if self.timestamp is None:
@@ -65,7 +65,7 @@ class SystemTelegram(Telegram):
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         return {
             "serial_number": self.serial_number,

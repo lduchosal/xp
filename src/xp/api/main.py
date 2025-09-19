@@ -55,7 +55,7 @@ def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
     config = load_api_config()
 
-    app = FastAPI(
+    fastapi = FastAPI(
         title=config["title"],
         description=config["description"],
         version=config["version"],
@@ -64,7 +64,7 @@ def create_app() -> FastAPI:
     )
 
     # Add CORS middleware
-    app.add_middleware(
+    fastapi.add_middleware(
         CORSMiddleware,
         allow_origins=config["cors_origins"],
         allow_credentials=True,
@@ -73,16 +73,16 @@ def create_app() -> FastAPI:
     )
 
     # Include routers
-    app.include_router(conbus.router)
+    fastapi.include_router(conbus.router)
 
     # Health check endpoint
-    @app.get("/health")
+    @fastapi.get("/health")
     async def health_check():
         """Health check endpoint."""
         return {"status": "healthy", "service": "xp-api"}
 
     # Root endpoint
-    @app.get("/")
+    @fastapi.get("/")
     async def root():
         """Root endpoint with API information."""
         return {
@@ -93,7 +93,7 @@ def create_app() -> FastAPI:
         }
 
     logger.info(f"FastAPI application created: {config['title']} v{config['version']}")
-    return app
+    return fastapi
 
 
 # Create the application instance

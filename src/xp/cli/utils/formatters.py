@@ -44,7 +44,8 @@ class OutputFormatter:
 
         return "✓ Valid" if is_valid else "✗ Invalid"
 
-    def _format_text_response(self, data: Dict[str, Any]) -> str:
+    @staticmethod
+    def _format_text_response(data: Dict[str, Any]) -> str:
         """Format data for human-readable text output."""
         lines = []
 
@@ -128,8 +129,7 @@ class ListFormatter(OutputFormatter):
                 indent=2,
             )
 
-        lines = [f"{title}: {len(items)} items"]
-        lines.append("-" * 50)
+        lines = [f"{title}: {len(items)} items", "-" * 50]
 
         for i, item in enumerate(items, 1):
             if item_formatter:

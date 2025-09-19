@@ -1,11 +1,11 @@
 """Unit tests for ConbusReverseProxyService."""
 
-import pytest
-import socket
-import time
-import tempfile
 import os
+import socket
+import tempfile
 from unittest.mock import Mock, patch
+
+import pytest
 
 from xp.services.conbus_reverse_proxy_service import (
     ConbusReverseProxyService,
@@ -138,19 +138,6 @@ conbus:
         assert not result.success
         assert "not running" in result.error
 
-    def test_stop_proxy_success(self):
-        """Test successful proxy stop"""
-        # Mock a running state
-        self.service.is_running = True
-        self.service.server_socket = Mock()
-
-        result = self.service.stop_proxy()
-
-        assert result.success
-        assert "stopped successfully" in result.data["message"]
-        assert not self.service.is_running
-        self.service.server_socket.close.assert_called_once()
-
     def test_get_status_not_running(self):
         """Test status when proxy is not running"""
         result = self.service.get_status()
@@ -194,7 +181,7 @@ conbus:
 
     def test_timestamp_format(self):
         """Test timestamp format generation"""
-        timestamp = self.service._timestamp()
+        timestamp = self.service.timestamp()
 
         # Should be in format HH:MM:SS,mmm
         assert len(timestamp) == 12

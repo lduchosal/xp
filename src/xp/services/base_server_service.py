@@ -28,9 +28,9 @@ class BaseServerService(ABC):
         self.logger = logging.getLogger(__name__)
 
         # Must be set by subclasses
-        self.device_type: str = None
-        self.module_type_code: int = None
-        self.firmware_version: str = None
+        self.device_type: str = ""
+        self.module_type_code: int = 0
+        self.firmware_version: str = ""
         self.device_status: str = "OK"
         self.link_number: int = 1
 
@@ -62,7 +62,8 @@ class BaseServerService(ABC):
             or request.serial_number == "0000000000"
         )
 
-    def _build_response_telegram(self, data_part: str) -> str:
+    @staticmethod
+    def _build_response_telegram(data_part: str) -> str:
         """Build a complete response telegram with checksum"""
         checksum = calculate_checksum(data_part)
         return f"<{data_part}{checksum}>"
@@ -190,10 +191,10 @@ class BaseServerService(ABC):
         if request.data_point_id == DataPointType.LINK_NUMBER:
             return self.set_link_number(request, 1)  # Default implementation
 
-        return self._handle_device_specific_config_request(request)
+        return self._handle_device_specific_config_request()
 
+    @staticmethod
     def _handle_device_specific_config_request(
-        self, request: SystemTelegram
     ) -> Optional[str]:
         """Override in subclasses for device-specific config requests"""
         return None

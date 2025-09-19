@@ -1,8 +1,9 @@
 """API server start command."""
 
-import click
-import os
 import sys
+
+import click
+import uvicorn
 
 from .api import api
 
@@ -24,7 +25,7 @@ from .api import api
 @click.option(
     "--reload",
     is_flag=True,
-    default=False,
+    default=True,
     help="Enable auto-reload for development",
 )
 @click.option(
@@ -71,17 +72,6 @@ def start_api_server(host, port, reload, workers, log_level, access_log):
         # Start production server with multiple workers
         xp api start --host 0.0.0.0 --workers 4 --no-access-log
     """
-    try:
-        import uvicorn
-    except ImportError:
-        click.echo(
-            click.style(
-                "Error: uvicorn is not installed. Please install it with: pip install uvicorn",
-                fg="red",
-            ),
-            err=True,
-        )
-        sys.exit(1)
 
     # Validate workers and reload options
     if reload and workers > 1:
@@ -94,9 +84,9 @@ def start_api_server(host, port, reload, workers, log_level, access_log):
         workers = 1
 
     click.echo(f"Starting XP Protocol API server...")
-    click.echo(f"Server will be available at: http://{host}:{port}")
-    click.echo(f"API documentation at: http://{host}:{port}/docs")
-    click.echo(f"Health check at: http://{host}:{port}/health")
+    click.echo(f"Server will be available at: https://{host}:{port}")
+    click.echo(f"API documentation at: https://{host}:{port}/docs")
+    click.echo(f"Health check at: https://{host}:{port}/health")
 
     if reload:
         click.echo(click.style("Development mode: Auto-reload enabled", fg="green"))

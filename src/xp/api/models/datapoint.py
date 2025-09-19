@@ -1,15 +1,16 @@
 """Pydantic models for Datapoint API endpoints."""
 
-from typing import List
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
-from xp.models import DatapointTypeName
 
 class DatapointResponse(BaseModel):
     """Response model for successful Datapoint operation."""
 
     success: bool = Field(default=True, description="Operation success status")
-    result: str = Field(default=str, description="Parsed device information")
+    result: Optional[str] = Field(default=str, description="Datapoint result string")
+    description: Optional[str]  = Field(default=str, description="Datapoint description")
 
 class DatapointErrorResponse(BaseModel):
     """Response model for failed Datapoint operation."""

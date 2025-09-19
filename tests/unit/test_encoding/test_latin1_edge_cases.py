@@ -5,12 +5,13 @@ Tests the specific encoding fix for the issue described in doc/Fix-Encoding-Issu
 where UTF-8 decoding fails on Latin-1 characters like 0xa7 (§ symbol).
 """
 
-import pytest
 import socket
 import threading
 import time
+
+import pytest
+
 from xp.services.conbus_datapoint_service import ConbusDatapointService
-from xp.models import DatapointTypeName
 
 
 class Latin1TestServer:
@@ -77,7 +78,8 @@ class Latin1TestServer:
             except Exception:
                 pass
 
-    def _generate_latin1_response(self, message):
+    @staticmethod
+    def _generate_latin1_response(message):
         """Generate responses containing Latin-1 extended characters"""
         # Map of requests to responses with extended characters
         latin1_responses = {

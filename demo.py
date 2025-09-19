@@ -429,7 +429,6 @@ if __name__ == "__main__":
     print("=" * 70)
 
     demo_basic_parsing()
-    demo_multiple_parsing()
     demo_validation()
     demo_input_types()
     demo_module_types()

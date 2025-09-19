@@ -6,7 +6,7 @@ like temperature readings, status information, etc.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 from .datapoint_type import DataPointType
 from .system_function import SystemFunction
 from .telegram import Telegram
@@ -211,7 +211,7 @@ class ReplyTelegram(Telegram):
                 "error": "Failed to parse version",
             }
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         parsed_data = self.parsed_value
 

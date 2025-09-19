@@ -11,10 +11,19 @@ def conbus():
     pass
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def blink():
+def conbus_blink():
     """
     Conbus client operations for sending blink telegrams to remote servers
     """
     pass
 
-conbus.add_command(blink)
+
+@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
+def conbus_input():
+    """
+    Conbus input operations to remote servers
+    """
+    pass
+
+conbus.add_command(conbus_blink)
+conbus.add_command(conbus_input)

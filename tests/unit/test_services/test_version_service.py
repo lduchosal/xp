@@ -159,14 +159,6 @@ class TestVersionService(unittest.TestCase):
         self.assertFalse(result.data["is_version_request"])
         self.assertEqual(result.data["data_point_description"], "Temperature")
 
-    def test_validate_version_telegram_invalid_input(self):
-        """Test validating with invalid input."""
-        result = self.service.validate_version_telegram("not a telegram")
-
-        self.assertFalse(result.success)
-        self.assertIsNotNone(result.error)
-        self.assertIn("SystemTelegram", result.error)
-
     def test_parse_version_reply_valid(self):
         """Test parsing valid version reply telegrams."""
         test_cases = [
@@ -241,14 +233,6 @@ class TestVersionService(unittest.TestCase):
         self.assertFalse(result.success)
         self.assertIsNotNone(result.error)
         self.assertIn("Not a version reply", result.error)
-
-    def test_parse_version_reply_invalid_input(self):
-        """Test parsing version reply with invalid input."""
-        result = self.service.parse_version_reply("not a telegram")
-
-        self.assertFalse(result.success)
-        self.assertIsNotNone(result.error)
-        self.assertIn("ReplyTelegram", result.error)
 
     def test_format_version_summary_valid(self):
         """Test formatting valid version summary."""

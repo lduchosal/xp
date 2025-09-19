@@ -8,11 +8,10 @@ import logging
 
 from .conbus_service import ConbusService
 from ..models import (
-    ConbusDiscoverRequest,
     ConbusDiscoverResponse,
 )
-from ..services.telegram_service import TelegramService
 from ..services.telegram_discovery_service import TelegramDiscoveryService
+from ..services.telegram_service import TelegramService
 
 
 class ConbusDiscoverError(Exception):
@@ -35,12 +34,12 @@ class ConbusDiscoverService:
         # Service dependencies
         self.telegram_service = TelegramService()
         self.discovery_service = TelegramDiscoveryService()
-        self.conbus_service = ConbusService()
+        self.conbus_service = ConbusService(config_path)
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def send_telegram(self, request: ConbusDiscoverRequest) -> ConbusDiscoverResponse:
+    def send_telegram(self) -> ConbusDiscoverResponse:
         """Send a telegram to the Conbus server"""
 
         # Generate telegram based on type
@@ -64,7 +63,6 @@ class ConbusDiscoverService:
 
         return ConbusDiscoverResponse(
             success=True,
-            request=request,
             sent_telegram=telegram,
             received_telegrams=responses.received_telegrams,
             discovered_devices=discovered_devices,

@@ -1,11 +1,12 @@
 import re
-from typing import List, Union
-from ..models.event_telegram import EventTelegram
+from typing import Union
+
 from ..models import EventType
-from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
-from ..models.system_function import SystemFunction
+from ..models.event_telegram import EventTelegram
 from ..models.reply_telegram import ReplyTelegram
+from ..models.system_function import SystemFunction
+from ..models.system_telegram import SystemTelegram
 from ..utils.checksum import calculate_checksum
 
 
@@ -101,7 +102,8 @@ class TelegramService:
         except ValueError as e:
             raise TelegramParsingError(f"Invalid numeric values in telegram: {e}")
 
-    def validate_checksum(self, telegram: EventTelegram) -> bool:
+    @staticmethod
+    def validate_checksum(telegram: Union[EventTelegram, ReplyTelegram, SystemTelegram]) -> bool:
         """
         Validate the checksum of a parsed telegram.
 
@@ -127,7 +129,8 @@ class TelegramService:
 
         return telegram.checksum == expected_checksum
 
-    def format_event_telegram_summary(self, telegram: EventTelegram) -> str:
+    @staticmethod
+    def format_event_telegram_summary(telegram: EventTelegram) -> str:
         """
         Format a telegram for human-readable output.
 
@@ -245,9 +248,6 @@ class TelegramService:
                 )
 
             # Parse data point and data value from full_data_value
-            datapoint_code = None
-            data_value = None
-
             if full_data_value.startswith("D") and len(full_data_value) >= 3:
                 # Regular reply format: D{data_point}{data}
                 datapoint_code = full_data_value[1:3]
@@ -312,7 +312,8 @@ class TelegramService:
         else:
             raise TelegramParsingError(f"Unknown telegram type: {telegram_type}")
 
-    def format_system_telegram_summary(self, telegram: SystemTelegram) -> str:
+    @staticmethod
+    def format_system_telegram_summary(telegram: SystemTelegram) -> str:
         """
         Format a system telegram for human-readable output.
 
@@ -334,7 +335,8 @@ class TelegramService:
             f"Checksum: {telegram.checksum}{checksum_status}"
         )
 
-    def format_reply_telegram_summary(self, telegram: ReplyTelegram) -> str:
+    @staticmethod
+    def format_reply_telegram_summary(telegram: ReplyTelegram) -> str:
         """
         Format a reply telegram for human-readable output.
 

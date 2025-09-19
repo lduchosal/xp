@@ -6,6 +6,8 @@ import signal
 import sys
 from click_help_colors import HelpColorsGroup
 
+from typing import Optional
+
 from ...services.conbus_reverse_proxy_service import (
     ConbusReverseProxyService,
     ConbusReverseProxyError,
@@ -16,7 +18,7 @@ from ..utils.error_handlers import CLIErrorHandler
 
 
 # Global proxy instance
-_proxy_instance = None
+global_proxy_instance: Optional[ConbusReverseProxyService] = None
 
 
 @click.group(name="rp", cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
@@ -48,11 +50,11 @@ def start_proxy(port: int, config: str):
         xp rp start
         xp rp start --port 10002 --config my_cli.yml
     """
-    global _proxy_instance
+    global global_proxy_instance
 
     try:
         # Check if proxy is already running
-        if _proxy_instance and _proxy_instance.is_running:
+        if global_proxy_instance and global_proxy_instance.is_running:
             error_response = {
                 "success": False,
                 "error": "Reverse proxy is already running",
@@ -61,26 +63,26 @@ def start_proxy(port: int, config: str):
             raise SystemExit(1)
 
         # Create proxy instance
-        _proxy_instance = ConbusReverseProxyService(
+        global_proxy_instance = ConbusReverseProxyService(
             config_path=config, listen_port=port
         )
 
         # Handle graceful shutdown on SIGINT
-        def signal_handler(signum, frame):
-            if _proxy_instance and _proxy_instance.is_running:
+        def signal_handler():
+            if global_proxy_instance and global_proxy_instance.is_running:
                 print(
-                    f"\n{_proxy_instance._timestamp()} [SHUTDOWN] Received interrupt signal"
+                    f"\n{global_proxy_instance.timestamp()} [SHUTDOWN] Received interrupt signal"
                 )
-                _proxy_instance.stop_proxy()
+                global_proxy_instance.stop_proxy()
             sys.exit(0)
 
-        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGINT, signal_handler())
 
         # Start proxy (this will block)
-        result = _proxy_instance.start_proxy()
+        result = global_proxy_instance.start_proxy()
         click.echo(json.dumps(result.to_dict(), indent=2))
         if result.success:
-            _proxy_instance.run_blocking()
+            global_proxy_instance.run_blocking()
 
     except ConbusReverseProxyError as e:
         CLIErrorHandler.handle_service_error(e, "reverse proxy startup", {"port": port, "config": config})
@@ -104,10 +106,10 @@ def stop_proxy():
     \b
         xp rp stop
     """
-    global _proxy_instance
+    global global_proxy_instance
 
     try:
-        if _proxy_instance is None or not _proxy_instance.is_running:
+        if global_proxy_instance is None or not global_proxy_instance.is_running:
             error_response = {
                 "success": False,
                 "error": "Reverse proxy is not running",
@@ -116,7 +118,7 @@ def stop_proxy():
             raise SystemExit(1)
 
         # Stop the proxy
-        result = _proxy_instance.stop_proxy()
+        result = global_proxy_instance.stop_proxy()
 
         click.echo(json.dumps(result.to_dict(), indent=2))
 
@@ -139,11 +141,11 @@ def proxy_status():
     \b
         xp rp status
     """
-    global _proxy_instance
+    global global_proxy_instance
     OutputFormatter(True)
 
     try:
-        if _proxy_instance is None:
+        if global_proxy_instance is None:
             status_data = {
                 "running": False,
                 "listen_port": None,
@@ -153,7 +155,7 @@ def proxy_status():
                 "connections": {},
             }
         else:
-            result = _proxy_instance.get_status()
+            result = global_proxy_instance.get_status()
             status_data = result.data if result.success else {}
 
         click.echo(json.dumps(status_data, indent=2))

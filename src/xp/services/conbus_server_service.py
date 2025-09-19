@@ -9,8 +9,9 @@ import threading
 import logging
 import yaml
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
+from .base_server_service import BaseServerService
 from ..services.telegram_service import TelegramService
 from ..services.telegram_discovery_service import TelegramDiscoveryService
 from ..services.cp20_server_service import CP20ServerService
@@ -43,7 +44,7 @@ class ConbusServerService:
         self.is_running = False
         self.devices: Dict[str, str] = {}
         self.device_services: Dict[
-            str, object
+            str, Union[BaseServerService, XP33ServerService, XP20ServerService, XP130ServerService]
         ] = {}  # serial -> device service instance
         self.telegram_service = TelegramService()
         self.discovery_service = TelegramDiscoveryService()
@@ -229,7 +230,7 @@ class ConbusServerService:
                 return responses
 
             # Handle discovery requests
-            if self.discovery_service._is_discovery_request(parsed_telegram):
+            if self.discovery_service.is_discovery_request(parsed_telegram):
                 for serial_number, device_service in self.device_services.items():
                     response = device_service.generate_discovery_response()
                     responses.append(response)

@@ -40,3 +40,5 @@ class DatapointTypeName(Enum):
     TEMPERATURE = "temperature"
     CURRENT = "current"
     HUMIDITY = "humidity"
+    LINK_NUMBER = "linknumber"
+    CHANNEL_STATES = "channelstates"

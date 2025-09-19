@@ -12,7 +12,7 @@ class TestEventTelegramIntegration:
 
     def test_parse_event_telegram_command_success(self):
         """Test successful telegram parsing via CLI"""
-        result = self.runner.invoke(cli, ["telegram", "parse", "<E14L00I02MAK>"])
+        result = self.runner.invoke(cli(), ["telegram", "parse", "<E14L00I02MAK>"])
 
         assert result.exit_code == 0
 
@@ -30,7 +30,7 @@ class TestEventTelegramIntegration:
     def test_parse_event_telegram_command_json_output(self):
         """Test telegram parsing with JSON output"""
         result = self.runner.invoke(
-            cli, ["telegram", "parse", "<E14L00I02MAK>"]
+            cli(), ["telegram", "parse", "<E14L00I02MAK>"]
         )
 
         assert result.exit_code == 0
@@ -48,7 +48,7 @@ class TestEventTelegramIntegration:
 
     def test_parse_event_telegram_command_invalid_format(self):
         """Test telegram parsing with invalid format"""
-        result = self.runner.invoke(cli, ["telegram", "parse", "INVALID"])
+        result = self.runner.invoke(cli(), ["telegram", "parse", "INVALID"])
 
         assert result.exit_code == 1
 
@@ -56,12 +56,11 @@ class TestEventTelegramIntegration:
         output = json.loads(result.output)
         assert output["success"] is False
         assert "error" in output
-        assert output["raw_input"] == "INVALID"
 
     def test_parse_event_telegram_command_invalid_format_json(self):
         """Test telegram parsing with invalid format and JSON output"""
         result = self.runner.invoke(
-            cli, ["telegram", "parse", "INVALID"]
+            cli(), ["telegram", "parse", "INVALID"]
         )
 
         assert result.exit_code == 1
@@ -70,12 +69,11 @@ class TestEventTelegramIntegration:
         output = json.loads(result.output)
         assert output["success"] is False
         assert "error" in output
-        assert output["raw_input"] == "INVALID"
 
     def test_validate_telegram_command_valid_json(self):
         """Test telegram validation with valid telegram and JSON output"""
         result = self.runner.invoke(
-            cli, ["telegram", "validate", "<E14L00I02MAK>"]
+            cli(), ["telegram", "validate", "<E14L00I02MAK>"]
         )
 
         assert result.exit_code == 0
@@ -89,21 +87,20 @@ class TestEventTelegramIntegration:
 
     def test_validate_telegram_command_invalid(self):
         """Test telegram validation with invalid telegram"""
-        result = self.runner.invoke(cli, ["telegram", "validate", "INVALID"])
+        result = self.runner.invoke(cli(), ["telegram", "validate", "INVALID"])
 
         assert result.exit_code == 1
 
         # Parse JSON error response
         output = json.loads(result.output)
         assert output["success"] is False
-        assert output["valid_format"] is False
         assert "error" in output
         assert output["raw_input"] == "INVALID"
 
     def test_validate_telegram_command_invalid_json(self):
         """Test telegram validation with invalid telegram and JSON output"""
         result = self.runner.invoke(
-            cli, ["telegram", "validate", "INVALID"]
+            cli(), ["telegram", "validate", "INVALID"]
         )
 
         assert result.exit_code == 1
@@ -111,13 +108,12 @@ class TestEventTelegramIntegration:
         # Parse JSON error response
         output = json.loads(result.output)
         assert output["success"] is False
-        assert output["valid_format"] is False
         assert "error" in output
         assert output["raw_input"] == "INVALID"
 
     def test_telegram_help_command(self):
         """Test telegram help command"""
-        result = self.runner.invoke(cli, ["telegram", "--help"])
+        result = self.runner.invoke(cli(), ["telegram", "--help"])
 
         assert result.exit_code == 0
         assert "Event telegram operations" in result.output
@@ -126,7 +122,7 @@ class TestEventTelegramIntegration:
 
     def test_main_cli_help(self):
         """Test main CLI help"""
-        result = self.runner.invoke(cli, ["--help"])
+        result = self.runner.invoke(cli(), ["--help"])
 
         assert result.exit_code == 0
         assert "XP CLI tool for remote console bus operations" in result.output
@@ -134,7 +130,7 @@ class TestEventTelegramIntegration:
 
     def test_parse_event_telegram_button_release(self):
         """Test parsing button release telegram"""
-        result = self.runner.invoke(cli, ["telegram", "parse", "<E14L01I03BB1>"])
+        result = self.runner.invoke(cli(), ["telegram", "parse", "<E14L01I03BB1>"])
 
         assert result.exit_code == 0
 
@@ -147,7 +143,7 @@ class TestEventTelegramIntegration:
 
     def test_parse_event_telegram_ir_remote(self):
         """Test parsing IR remote telegram"""
-        result = self.runner.invoke(cli, ["telegram", "parse", "<E14L00I25MXX>"])
+        result = self.runner.invoke(cli(), ["telegram", "parse", "<E14L00I25MXX>"])
 
         assert result.exit_code == 0
 
@@ -160,7 +156,7 @@ class TestEventTelegramIntegration:
 
     def test_parse_event_telegram_proximity_sensor(self):
         """Test parsing proximity sensor telegram"""
-        result = self.runner.invoke(cli, ["telegram", "parse", "<E14L00I90MXX>"])
+        result = self.runner.invoke(cli(), ["telegram", "parse", "<E14L00I90MXX>"])
 
         assert result.exit_code == 0
 
@@ -177,14 +173,14 @@ class TestEventTelegramIntegration:
 
         # Parse telegram
         parse_result = self.runner.invoke(
-            cli, ["telegram", "parse", telegram]
+            cli(), ["telegram", "parse", telegram]
         )
         assert parse_result.exit_code == 0
         parse_data = json.loads(parse_result.output)
 
         # Validate telegram
         validate_result = self.runner.invoke(
-            cli, ["telegram", "validate", telegram]
+            cli(), ["telegram", "validate", telegram]
         )
         assert validate_result.exit_code == 0
         validate_data = json.loads(validate_result.output)

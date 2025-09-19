@@ -213,6 +213,7 @@ class ConbusService:
             return ConbusResponse(
                 success=True,
                 request=request,
+                sent_telegram=telegram,
                 received_telegrams=responses,
             )
 

@@ -3,11 +3,10 @@
 This service handles generation and parsing of blink/unblink system telegrams
 used for controlling module LED status.
 """
-from ..models.response import Response
-from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
-from ..models.system_function import SystemFunction
 from ..models.reply_telegram import ReplyTelegram
+from ..models.system_function import SystemFunction
+from ..models.system_telegram import SystemTelegram
 from ..utils.checksum import calculate_checksum
 
 
@@ -30,7 +29,8 @@ class BlinkService:
         """Initialize the blink service"""
         pass
 
-    def generate_blink_telegram(self, serial_number: str, on_or_off: str) -> str:
+    @staticmethod
+    def generate_blink_telegram(serial_number: str, on_or_off: str) -> str:
         """
         Generate a telegram to start blinking a module's LED.
 
@@ -42,6 +42,8 @@ class BlinkService:
 
         Raises:
             BlinkError: If parameters are invalid
+            :param serial_number:
+            :param on_or_off:
         """
         # Validate serial number
         if not serial_number or len(serial_number) != 10:
@@ -121,7 +123,8 @@ class BlinkService:
 
         return telegram
 
-    def is_ack_response(self, reply_telegram: ReplyTelegram) -> bool:
+    @staticmethod
+    def is_ack_response(reply_telegram: ReplyTelegram) -> bool:
         """
         Check if a reply telegram is an ACK response.
 
@@ -133,7 +136,8 @@ class BlinkService:
         """
         return reply_telegram.system_function == SystemFunction.ACK
 
-    def is_nak_response(self, reply_telegram: ReplyTelegram) -> bool:
+    @staticmethod
+    def is_nak_response(reply_telegram: ReplyTelegram) -> bool:
         """
         Check if a reply telegram is a NAK response.
 

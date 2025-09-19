@@ -35,7 +35,7 @@ class ConbusScanService:
 
         # Service dependencies
         self.telegram_service = TelegramService()
-        self.conbus_service = ConbusService()
+        self.conbus_service = ConbusService(config_path)
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -73,10 +73,10 @@ class ConbusScanService:
                     success=False,
                     request=ConbusRequest(
                         serial_number=serial_number,
-                        function_code=function_code,
+                        function_code=system_function.value,
                         data=data,
                     ),
-                    error=f"Scan failed for F{function_code}D{data}: {e}",
+                    error=f"Scan failed for F{system_function.value}D{data}: {e}",
                 )
                 results.append(error_response)
 

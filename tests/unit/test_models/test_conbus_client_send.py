@@ -1,7 +1,6 @@
 from datetime import datetime
 from xp.models import (
     ConbusClientConfig,
-    ConbusDatapointRequest,
     ConbusConnectionStatus,
 )
 from xp.models import ConbusDatapointResponse, DatapointTypeName
@@ -22,6 +21,8 @@ class TestTelegramType:
     def test_telegram_type_count(self):
         """Test that all expected telegram types are present"""
         expected_types = {
+            "channelstates",
+            'linknumber',
             "version",
             "voltage",
             "temperature",
@@ -59,87 +60,18 @@ class TestConbusClientConfig:
         assert result == expected
 
 
-class TestConbusSendRequest:
-    """Test cases for ConbusSendRequest model"""
-
-    def test_discovery_request(self):
-        """Test discovery request creation"""
-        request = ConbusDatapointRequest(datapoint_type=DatapointTypeName.UNKNOWN)
-
-        assert request.datapoint_type == DatapointTypeName.UNKNOWN
-        assert request.serial_number is None
-        assert request.function_code is None
-        assert request.datapoint_code is None
-        assert isinstance(request.timestamp, datetime)
-
-    def test_version_request(self):
-        """Test version request creation"""
-        request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.VERSION, serial_number="0020030837"
-        )
-
-        assert request.datapoint_type == DatapointTypeName.VERSION
-        assert request.serial_number == "0020030837"
-        assert isinstance(request.timestamp, datetime)
-
-    def test_sensor_request(self):
-        """Test sensor request creation"""
-        request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.TEMPERATURE, serial_number="0020012521"
-        )
-
-        assert request.datapoint_type == DatapointTypeName.TEMPERATURE
-        assert request.serial_number == "0020012521"
-        assert isinstance(request.timestamp, datetime)
-
-    def test_custom_timestamp(self):
-        """Test request with custom timestamp"""
-        custom_time = datetime(2023, 8, 27, 10, 30, 45)
-        request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.VOLTAGE,
-            serial_number="0020030837",
-            timestamp=custom_time,
-        )
-
-        assert request.timestamp == custom_time
-
-    def test_to_dict(self):
-        """Test conversion to dictionary"""
-        timestamp = datetime(2023, 8, 27, 10, 30, 45, 123456)
-        request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.CURRENT,
-            serial_number="0020044974",
-            function_code="02",
-            datapoint_code="21",
-            timestamp=timestamp,
-        )
-
-        result = request.to_dict()
-        expected = {
-            "datapoint_type": "current",
-            "serial_number": "0020044974",
-            "function_code": "02",
-            "datapoint_code": "21",
-            "timestamp": "2023-08-27T10:30:45.123456",
-        }
-        assert expected == result
-
-
 class TestConbusSendResponse:
     """Test cases for ConbusSendResponse model"""
 
     def test_successful_response(self):
         """Test successful response creation"""
-        request = ConbusDatapointRequest(datapoint_type=DatapointTypeName.UNKNOWN)
         response = ConbusDatapointResponse(
             success=True,
-            request=request,
             sent_telegram="<S0000000000F01D00FA>",
             received_telegrams=["<R0020030837F01DFM>", "<R0020044966F01DFK>"],
         )
 
         assert response.success is True
-        assert response.request == request
         assert response.sent_telegram == "<S0000000000F01D00FA>"
         assert len(response.received_telegrams) == 2
         assert "<R0020030837F01DFM>" in response.received_telegrams
@@ -147,40 +79,11 @@ class TestConbusSendResponse:
         assert response.error is None
         assert isinstance(response.timestamp, datetime)
 
-    def test_failed_response(self):
-        """Test failed response creation"""
-        request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.VERSION, serial_number="0020030837"
-        )
-        response = ConbusDatapointResponse(
-            success=False, request=request, error="Connection timeout"
-        )
-
-        assert response.success is False
-        assert response.request == request
-        assert response.sent_telegram is None
-        assert response.received_telegrams == []
-        assert response.error == "Connection timeout"
-        assert isinstance(response.timestamp, datetime)
-
-    def test_empty_received_telegrams_initialization(self):
-        """Test that received_telegrams is initialized as empty list"""
-        request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.HUMIDITY, serial_number="0020012521"
-        )
-        response = ConbusDatapointResponse(success=True, request=request)
-
-        assert response.received_telegrams == []
-        assert isinstance(response.received_telegrams, list)
-
     def test_custom_timestamp(self):
         """Test response with custom timestamp"""
         custom_time = datetime(2023, 8, 27, 15, 45, 30)
-        request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.VOLTAGE, serial_number="0020030837"
-        )
         response = ConbusDatapointResponse(
-            success=True, request=request, timestamp=custom_time
+            success=True, timestamp=custom_time
         )
 
         assert response.timestamp == custom_time
@@ -188,12 +91,8 @@ class TestConbusSendResponse:
     def test_to_dict(self):
         """Test conversion to dictionary"""
         timestamp = datetime(2023, 8, 27, 16, 20, 15, 789123)
-        request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.TEMPERATURE, serial_number="0020012521"
-        )
         response = ConbusDatapointResponse(
             success=True,
-            request=request,
             sent_telegram="<S0020012521F02D18FM>",
             received_telegrams=["<R0020012521F02D18+23.4C§OK>"],
             timestamp=timestamp,
@@ -282,13 +181,9 @@ class TestModelIntegration:
         # Create config
         config = ConbusClientConfig(ip="192.168.1.200", port=10002, timeout=20)
 
-        # Create request
-        request = ConbusDatapointRequest(datapoint_type=DatapointTypeName.UNKNOWN)
-
         # Create successful response
         response = ConbusDatapointResponse(
             success=True,
-            request=request,
             sent_telegram="<S0000000000F01D00FA>",
             received_telegrams=[
                 "<R0020030837F01DFM>",
@@ -305,7 +200,6 @@ class TestModelIntegration:
         # Verify all models work together
         assert config.ip == status.ip
         assert config.port == status.port
-        assert request.datapoint_type == DatapointTypeName.UNKNOWN
         assert response.success is True
         assert len(response.received_telegrams) == 3
         assert status.connected is True
@@ -313,14 +207,10 @@ class TestModelIntegration:
     def test_error_scenario_workflow(self):
         """Test error scenario workflow"""
         # Create request
-        request = ConbusDatapointRequest(
-            datapoint_type=DatapointTypeName.VERSION,
-            serial_number="9999999999",  # Non-existent device
-        )
 
         # Create failed response
         response = ConbusDatapointResponse(
-            success=False, request=request, error="Device not found"
+            success=False, error="Device not found"
         )
 
         # Create disconnected status

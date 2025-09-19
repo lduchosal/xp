@@ -18,10 +18,10 @@ def calculate_checksum(buffer: str) -> str:
     for char in buffer:
         cc ^= ord(char)
 
-    return _nibble(cc & 0xFF)
+    return a_nibble(cc & 0xFF)
 
 
-def _nibble(byte_val: int) -> str:
+def a_nibble(byte_val: int) -> str:
     """Convert byte value to two-character nibble representation.
 
     Args:
@@ -68,11 +68,11 @@ def un_bcd(bcd: int) -> int:
     Returns:
         Integer representation
     """
-    i_bcd = _byte_to_int_no_sign(bcd)
+    i_bcd = a_byte_to_int_no_sign(bcd)
     return (i_bcd >> 4) * 10 + (i_bcd & 0xF)
 
 
-def _byte_to_int_no_sign(byte_val: int) -> int:
+def a_byte_to_int_no_sign(byte_val: int) -> int:
     """Convert signed byte to unsigned integer.
 
     Args:
@@ -113,7 +113,7 @@ def calculate_checksum32(buffer: bytes) -> str:
 
     # Convert to nibble format (4 bytes, little-endian)
     for _ in range(4):
-        nibble_result = _nibble(crc & 0xFF) + nibble_result
+        nibble_result = a_nibble(crc & 0xFF) + nibble_result
         crc >>= 8
 
     return nibble_result

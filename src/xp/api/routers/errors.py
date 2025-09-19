@@ -4,18 +4,18 @@ from starlette.responses import JSONResponse
 from xp.api.models.discovery import DiscoveryErrorResponse
 
 
-def handle_service_error(response, default_status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR) -> JSONResponse:
+def handle_service_error(error: str, default_status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR) -> JSONResponse:
     """
     Handle service errors by creating a standardized JSON error response.
 
     Args:
-        response: Service response object with success and error attributes
+        error: Service response object with success and error attributes
         default_status_code: HTTP status code to use (defaults to 500)
 
     Returns:
         JSONResponse with error details
     """
-    error_msg = response.error or "Unknown service error"
+    error_msg = error or "Unknown service error"
 
     # Map specific error patterns to appropriate HTTP status codes
     if "Not connected to server" in error_msg:

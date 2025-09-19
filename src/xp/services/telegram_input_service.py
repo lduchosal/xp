@@ -3,11 +3,9 @@
 import re
 from typing import Dict
 
-from . import telegram_checksum_service
-from .telegram_checksum_service import TelegramChecksumService
+from ..models.action_type import ActionType
 from ..models.datapoint_type import DataPointType
 from ..models.input_telegram import InputTelegram
-from ..models.action_type import ActionType
 from ..models.system_function import SystemFunction
 from ..utils.checksum import calculate_checksum
 
@@ -18,7 +16,7 @@ class XPInputError(Exception):
     pass
 
 
-class XPInputService:
+class TelegramInputService:
     """
     Service for XP action operations.
 
@@ -57,7 +55,8 @@ class XPInputService:
                 f"XP24 supports inputs 0-{self.MAX_INPUTS - 1}"
             )
 
-    def validate_serial_number(self, serial_number: str) -> None:
+    @staticmethod
+    def validate_serial_number(serial_number: str) -> None:
         """
         Validate serial number format.
 
@@ -193,7 +192,8 @@ class XPInputService:
         except ValueError as e:
             raise XPInputError(f"Invalid values in XP24 action telegram: {e}")
 
-    def validate_checksum(self, telegram: InputTelegram) -> bool:
+    @staticmethod
+    def validate_checksum(telegram: InputTelegram) -> bool:
         """
         Validate the checksum of a parsed XP24 action telegram.
 
@@ -219,7 +219,8 @@ class XPInputService:
 
         return telegram.checksum == expected_checksum
 
-    def parse_status_response(self, raw_telegram: str) -> Dict[int, bool]:
+    @staticmethod
+    def parse_status_response(raw_telegram: str) -> Dict[int, bool]:
         """
         Parse XP24 status response telegram to extract input states.
 
@@ -251,7 +252,8 @@ class XPInputService:
 
         return status
 
-    def format_status_summary(self, status: Dict[int, bool]) -> str:
+    @staticmethod
+    def format_status_summary(status: Dict[int, bool]) -> str:
         """
         Format status dictionary into human-readable summary.
 
@@ -268,7 +270,8 @@ class XPInputService:
 
         return "\n".join(lines)
 
-    def format_action_summary(self, telegram: InputTelegram) -> str:
+    @staticmethod
+    def format_action_summary(telegram: InputTelegram) -> str:
         """
         Format XP24 action telegram for human-readable output.
 

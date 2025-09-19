@@ -6,7 +6,6 @@ from fastapi.responses import JSONResponse
 
 from .conbus import router
 from .errors import handle_service_error
-from ...models import ConbusDiscoverRequest
 from ..models.discovery import (
     DiscoveryResponse,
     DiscoveryErrorResponse,
@@ -33,15 +32,12 @@ async def discover_devices() -> Union[DiscoveryResponse, JSONResponse]:
     """
     service = ConbusDiscoverService()
 
-    # Create discovery request
-    conbus_request = ConbusDiscoverRequest()
-
     # Send discovery telegram and receive responses
     with service:
-        response = service.send_telegram(conbus_request)
+        response = service.send_telegram()
 
     if not response.success:
-        return handle_service_error(response)
+        return handle_service_error(response.error)
 
     # Build successful response
     return DiscoveryResponse(

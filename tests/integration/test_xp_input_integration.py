@@ -1,11 +1,10 @@
 """Integration tests for XP24 action functionality."""
 
 import pytest
-from unittest.mock import patch, MagicMock
 
-from xp.services.input_service import XPInputService, XPInputError
 from xp.models.action_type import ActionType
 from xp.services.conbus_datapoint_service import ConbusDatapointService
+from xp.services.telegram_input_service import TelegramInputService, XPInputError
 
 
 class TestXPInputIntegration:
@@ -13,7 +12,7 @@ class TestXPInputIntegration:
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.input_service = XPInputService()
+        self.input_service = TelegramInputService()
         self.conbus_service = ConbusDatapointService()
 
     def test_end_to_end_action_generation_and_parsing(self):

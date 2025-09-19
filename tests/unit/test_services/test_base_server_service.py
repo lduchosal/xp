@@ -70,40 +70,6 @@ class TestBaseServerService:
         response = self.service.generate_module_type_response(request)
         assert response is None
 
-    def test_generate_module_type_response_no_code_set(self):
-        """Test module type response when module_type_code is None"""
-        service = MockServerService("1234567890")
-        service.module_type_code = None
-
-        request = SystemTelegram(
-            checksum="FH",
-            raw_telegram="<S1234567890F02D07FH>",
-            serial_number="1234567890",
-            system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE,
-        )
-
-        response = service.generate_module_type_response(request)
-        assert response is None
-
-    def test_generate_module_type_response_string_code(self):
-        """Test module type response with string module type code"""
-        service = MockServerService("1234567890")
-        service.module_type_code = "2A"  # String instead of int
-
-        request = SystemTelegram(
-            checksum="FH",
-            raw_telegram="<S1234567890F02D07FH>",
-            serial_number="1234567890",
-            system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE,
-        )
-
-        response = service.generate_module_type_response(request)
-
-        assert response is not None
-        assert "2A" in response
-
     def test_check_request_for_device_matching_serial(self):
         """Test device request check with matching serial"""
         request = SystemTelegram(

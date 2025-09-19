@@ -23,7 +23,8 @@ class ModuleTypeService:
         """Initialize the module type service"""
         pass
 
-    def get_module_type(self, identifier: Union[int, str]) -> ModuleType:
+    @staticmethod
+    def get_module_type(identifier: Union[int, str]) -> ModuleType:
         """
         Get module type by code or name.
 
@@ -55,7 +56,8 @@ class ModuleTypeService:
 
         return module_type
 
-    def list_all_modules(self) -> List[ModuleType]:
+    @staticmethod
+    def list_all_modules() -> List[ModuleType]:
         """
         Get all available module types.
 
@@ -64,7 +66,8 @@ class ModuleTypeService:
         """
         return get_all_module_types()
 
-    def list_modules_by_category(self) -> Dict[str, List[ModuleType]]:
+    @staticmethod
+    def list_modules_by_category() -> Dict[str, List[ModuleType]]:
         """
         Get module types grouped by category.
 
@@ -73,8 +76,9 @@ class ModuleTypeService:
         """
         return get_module_types_by_category()
 
+    @staticmethod
     def search_modules(
-        self, query: str, search_fields: Optional[List[str]] = None
+            query: str, search_fields: Optional[List[str]] = None
     ) -> List[ModuleType]:
         """
         Search for module types matching a query string.
@@ -108,7 +112,8 @@ class ModuleTypeService:
 
         return matching_modules
 
-    def get_modules_by_category(self, category: str) -> List[ModuleType]:
+    @staticmethod
+    def get_modules_by_category(category: str) -> List[ModuleType]:
         """
         Get all module types in a specific category.
 
@@ -121,7 +126,8 @@ class ModuleTypeService:
         categories = get_module_types_by_category()
         return categories.get(category, [])
 
-    def get_push_button_panels(self) -> List[ModuleType]:
+    @staticmethod
+    def get_push_button_panels() -> List[ModuleType]:
         """
         Get all push button panel module types.
 
@@ -132,7 +138,8 @@ class ModuleTypeService:
             module for module in get_all_module_types() if module.is_push_button_panel
         ]
 
-    def get_ir_capable_modules(self) -> List[ModuleType]:
+    @staticmethod
+    def get_ir_capable_modules() -> List[ModuleType]:
         """
         Get all IR-capable module types.
 
@@ -141,7 +148,8 @@ class ModuleTypeService:
         """
         return [module for module in get_all_module_types() if module.is_ir_capable]
 
-    def validate_module_code(self, code: int) -> bool:
+    @staticmethod
+    def validate_module_code(code: int) -> bool:
         """
         Validate if a module code is valid.
 
@@ -184,7 +192,8 @@ class ModuleTypeService:
         else:
             return self._format_all_modules()
 
-    def _format_module_summary(self, module_type: ModuleType) -> str:
+    @staticmethod
+    def _format_module_summary(module_type: ModuleType) -> str:
         """Format a single module type for display"""
         summary = f"Module: {module_type.name} (Code {module_type.code})\n"
         summary += f"Description: {module_type.description}\n"
@@ -203,18 +212,19 @@ class ModuleTypeService:
 
         return summary.strip()
 
-    def _format_all_modules(self) -> str:
+    @staticmethod
+    def _format_all_modules() -> str:
         """Format all modules in a simple list"""
         modules = get_all_module_types()
-        lines = ["Code | Name       | Description"]
-        lines.append("-" * 60)
+        lines = ["Code | Name       | Description", "-" * 60]
 
         for module in modules:
             lines.append(f"{module.code:4} | {module.name:10} | {module.description}")
 
         return "\n".join(lines)
 
-    def _format_modules_by_category(self) -> str:
+    @staticmethod
+    def _format_modules_by_category() -> str:
         """Format modules grouped by category"""
         categories = get_module_types_by_category()
         lines = []

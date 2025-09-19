@@ -26,7 +26,8 @@ class VersionService:
         """Initialize the version service."""
         pass
 
-    def parse_version_string(self, version_string: str) -> Response:
+    @staticmethod
+    def parse_version_string(version_string: str) -> Response:
         """Parse a version string into its components.
 
         Args:
@@ -91,7 +92,8 @@ class VersionService:
                 success=False, data=None, error=f"Version parsing failed: {str(e)}"
             )
 
-    def generate_version_request_telegram(self, serial_number: str) -> Response:
+    @staticmethod
+    def generate_version_request_telegram(serial_number: str) -> Response:
         """Generate a system telegram to request version information.
 
         Args:
@@ -143,7 +145,8 @@ class VersionService:
                 error=f"Version request telegram generation failed: {str(e)}",
             )
 
-    def validate_version_telegram(self, telegram: SystemTelegram) -> Response:
+    @staticmethod
+    def validate_version_telegram(telegram: SystemTelegram) -> Response:
         """Validate if a system telegram is a valid version request.
 
         Args:
@@ -191,7 +194,8 @@ class VersionService:
                 error=f"Version telegram validation failed: {str(e)}",
             )
 
-    def parse_version_reply(self, telegram: ReplyTelegram) -> Response:
+    @staticmethod
+    def parse_version_reply(telegram: ReplyTelegram) -> Response:
         """Parse version information from a reply telegram.
 
         Args:
@@ -251,7 +255,8 @@ class VersionService:
                 error=f"Version reply parsing failed: {str(e)}",
             )
 
-    def format_version_summary(self, version_data: dict) -> str:
+    @staticmethod
+    def format_version_summary(version_data: dict) -> str:
         """Format version information for human-readable output.
 
         Args:

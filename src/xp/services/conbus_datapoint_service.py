@@ -8,7 +8,6 @@ import logging
 
 from .conbus_service import ConbusService
 from ..models import (
-    ConbusDatapointRequest,
     ConbusDatapointResponse,
     DatapointTypeName,
 )
@@ -36,12 +35,12 @@ class ConbusDatapointService:
 
         # Service dependencies
         self.telegram_service = TelegramService()
-        self.conbus_service = ConbusService()
+        self.conbus_service = ConbusService(config_path)
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def send_telegram(self, request: ConbusDatapointRequest) -> ConbusDatapointResponse:
+    def send_telegram(self, datapoint_type: DatapointTypeName, serial_number: str) -> ConbusDatapointResponse:
         """Send a telegram to the Conbus server"""
 
         # Generate telegram based on type
@@ -55,23 +54,28 @@ class ConbusDatapointService:
         }
 
         function_code = SystemFunction.READ_DATAPOINT
-        data_point = sensor_data_points.get(request.datapoint_type)
+        datapoint = sensor_data_points.get(datapoint_type)
 
         # Send telegram
-        responses = self.conbus_service.send_telegram(request.serial_number, function_code, data_point)
+        response = self.conbus_service.send_telegram(serial_number, function_code, datapoint)
+        datapoint_telegram = None
+        if len(response.received_telegrams) > 0:
+            telegram = response.received_telegrams[0]
+            datapoint_telegram = self.telegram_service.parse_telegram(telegram)
 
         return ConbusDatapointResponse(
             success=True,
-            request=request,
-            sent_telegram=responses.sent_telegram,
-            received_telegrams=responses.received_telegrams,
+            serial_number=serial_number,
+            datapoint_type=datapoint_type,
+            datapoint=datapoint,
+            sent_telegram=response.sent_telegram,
+            received_telegrams=response.received_telegrams,
+            datapoint_telegram=datapoint_telegram,
         )
 
-    def datapoint_request(
+    def send_datapoint_request(
         self, serial_number: str, sensor_type: DatapointTypeName
     ) -> ConbusDatapointResponse:
-        print(f"sensor_type.__class__.__module__: {sensor_type.__class__.__module__}")
-        print(f"DatapointTypeName.__module__: {DatapointTypeName.__module__}")
 
         """Send sensor data request telegram"""
         if sensor_type.value not in [
@@ -79,13 +83,11 @@ class ConbusDatapointService:
             DatapointTypeName.TEMPERATURE.value,
             DatapointTypeName.CURRENT.value,
             DatapointTypeName.HUMIDITY.value,
+            DatapointTypeName.CHANNEL_STATES.value,
         ]:
             raise ConbusDatapointError(f"Invalid sensor type: {sensor_type.value}")
 
-        request = ConbusDatapointRequest(
-            datapoint_type=sensor_type, serial_number=serial_number
-        )
-        return self.send_telegram(request)
+        return self.send_telegram(datapoint_type=sensor_type, serial_number=serial_number)
 
     def __enter__(self):
         return self

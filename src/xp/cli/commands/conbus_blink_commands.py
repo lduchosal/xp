@@ -1,24 +1,25 @@
 """Conbus client operations CLI commands."""
 
-import click
 import json
 
-from ...models.system_function import SystemFunction
-from ...services.conbus_datapoint_service import (
-    ConbusDatapointService,
-    ConbusDatapointError,
-)
-from ...services.telegram_blink_service import BlinkService, BlinkError
+import click
+
+from .conbus import conbus_blink
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,
 )
 from ..utils.error_handlers import CLIErrorHandler
 from ..utils.serial_number_type import SERIAL
-from .conbus import blink
+from ...models.system_function import SystemFunction
+from ...services.conbus_datapoint_service import (
+    ConbusDatapointError,
+)
+from ...services.conbus_service import ConbusService
+from ...services.telegram_blink_service import BlinkService, BlinkError
 
 
-@blink.command("on", short_help="Blink on remote service")
+@conbus_blink.command("on", short_help="Blink on remote service")
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
@@ -33,7 +34,7 @@ def send_blink_on_telegram(serial_number: str):
     """
     send_blink_telegram(serial_number, 'on')
 
-@blink.command("off")
+@conbus_blink.command("off")
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
@@ -59,14 +60,14 @@ def send_blink_telegram(serial_number: str, on_or_off: str):
         xp conbus blink 0020044964 on
         xp conbus blink 0020044964 off
     """
-    conbus_service = ConbusDatapointService()
+    conbus_service = ConbusService()
     blink_service = BlinkService()
 
     # Blink is 05, Unblink is 06
-    function_code = SystemFunction.UNBLINK.value
+    system_function = SystemFunction.UNBLINK
     operation = "unblink"
     if on_or_off.lower() == "on":
-        function_code = SystemFunction.BLINK.value
+        system_function = SystemFunction.BLINK
         operation = "blink"
 
     try:
@@ -78,9 +79,9 @@ def send_blink_telegram(serial_number: str, on_or_off: str):
 
         # Send blink telegram using custom method (F05D00)
         with conbus_service:
-            response = conbus_service.send_custom_telegram(
+            response = conbus_service.send_telegram(
                 serial_number,
-                function_code,  # Blink or Unblink function code
+                system_function,  # Blink or Unblink function code
                 "00",  # Status data point
             )
 

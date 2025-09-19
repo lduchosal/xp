@@ -190,7 +190,7 @@ class TestXP33Integration:
 
     def test_complete_xp33_workflow(self):
         """Test complete workflow with XP33 device"""
-        xp33lr_service = self.server.device_services["0020042796"]
+        xp33lr_service: XP33ServerService = self.server.device_services["0020042796"]
 
         # 1. Discovery
         discovery_responses = self.server._process_request("<S0000000000F01D00FA>")

@@ -1,4 +1,5 @@
 """Conbus emulator server operations CLI commands."""
+from typing import Optional
 
 import click
 import json
@@ -11,7 +12,7 @@ from ..utils.error_handlers import ServerErrorHandler
 
 
 # Global server instance
-_server_instance = None
+_server_instance: Optional[ConbusServerService] = None
 
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
@@ -61,7 +62,7 @@ def start_server(port: int, config: str):
         _server_instance.start_server()
 
     except ConbusServerError as e:
-        ServerErrorHandler.handle_server_startup_error(e, True, port, config)
+        ServerErrorHandler.handle_server_startup_error(e, port, config)
     except KeyboardInterrupt:
         shutdown_response = {"success": True, "message": "Server shutdown by user"}
         click.echo(json.dumps(shutdown_response, indent=2))
@@ -83,7 +84,7 @@ def stop_server():
 
     try:
         if _server_instance is None or not _server_instance.is_running:
-            ServerErrorHandler.handle_server_not_running_error(True)
+            ServerErrorHandler.handle_server_not_running_error()
 
         # Stop the server
         _server_instance.stop_server()
@@ -92,7 +93,7 @@ def stop_server():
         click.echo(json.dumps(response, indent=2))
 
     except ConbusServerError as e:
-        ServerErrorHandler.handle_server_startup_error(e, True, 0, "")
+        ServerErrorHandler.handle_server_startup_error(e, 0, "")
 
 
 @server.command("status")

@@ -236,7 +236,7 @@ class TestXP33ServerService:
             raw_telegram="<S0000000000F01D00FA>",
             serial_number="0000000000",
             system_function=SystemFunction.DISCOVERY,
-            data_point_id=0,
+            data_point_id=DataPointType.NONE,
         )
 
         response = self.xp33lr_service.process_system_telegram(request)

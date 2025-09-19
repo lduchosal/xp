@@ -1,16 +1,16 @@
 """Telegram-related CLI commands."""
 
-import click
 import json
 
-from ...services.telegram_service import TelegramService, TelegramParsingError
+import click
+
+from .telegram import telegram
 from ..utils.decorators import (
-    telegram_parser_command,
     handle_service_errors,
 )
-from ..utils.formatters import TelegramFormatter
 from ..utils.error_handlers import CLIErrorHandler
-from .telegram import telegram
+from ..utils.formatters import TelegramFormatter
+from ...services.telegram_service import TelegramService, TelegramParsingError
 
 
 @telegram.command("parse")
@@ -38,7 +38,7 @@ def parse_any_telegram(telegram_string: str):
         click.echo(json.dumps(output, indent=2))
 
     except TelegramParsingError as e:
-        CLIErrorHandler.handle_parsing_error(e, True, telegram_string)
+        CLIErrorHandler.handle_parsing_error(e, telegram_string)
 
 
 @telegram.command("validate")
@@ -69,4 +69,4 @@ def validate_telegram(telegram_string: str):
         click.echo(json.dumps(output, indent=2))
 
     except TelegramParsingError as e:
-        CLIErrorHandler.handle_validation_error(e, True, telegram_string)
+        CLIErrorHandler.handle_validation_error(e, telegram_string)

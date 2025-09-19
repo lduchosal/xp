@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 from .input_type import InputType
 from .event_type import EventType
@@ -56,9 +56,9 @@ class EventTelegram(Telegram):
         """True if this is a button release event"""
         return self.event_type == EventType.BUTTON_RELEASE
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        result = {
+        result: dict[str, Any] = {
             "module_type": self.module_type,
             "link_number": self.link_number,
             "input_number": self.input_number,

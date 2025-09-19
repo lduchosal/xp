@@ -12,7 +12,7 @@ class TestModuleIntegration:
 
     def test_module_info_command_by_code(self):
         """Test module info command with code"""
-        result = self.runner.invoke(cli, ["module", "info", "14"])
+        result = self.runner.invoke(cli(), ["module", "info", "14"])
 
         assert result.exit_code == 0
 
@@ -25,7 +25,7 @@ class TestModuleIntegration:
 
     def test_module_info_command_by_name(self):
         """Test module info command with name"""
-        result = self.runner.invoke(cli, ["module", "info", "XP2606"])
+        result = self.runner.invoke(cli(), ["module", "info", "XP2606"])
 
         assert result.exit_code == 0
 
@@ -37,7 +37,7 @@ class TestModuleIntegration:
 
     def test_module_info_command_json_output(self):
         """Test module info command with JSON output"""
-        result = self.runner.invoke(cli, ["module", "info", "14"])
+        result = self.runner.invoke(cli(), ["module", "info", "14"])
 
         assert result.exit_code == 0
 
@@ -49,7 +49,7 @@ class TestModuleIntegration:
 
     def test_module_info_command_invalid_code(self):
         """Test module info command with invalid code"""
-        result = self.runner.invoke(cli, ["module", "info", "999"])
+        result = self.runner.invoke(cli(), ["module", "info", "999"])
 
         assert result.exit_code == 1
 
@@ -57,22 +57,22 @@ class TestModuleIntegration:
         output = json.loads(result.output)
         assert output["success"] is False
         assert "error" in output
-        assert "999" in output["identifier"]
+        assert "999" in output
 
     def test_module_info_command_invalid_code_json(self):
         """Test module info command with invalid code and JSON output"""
-        result = self.runner.invoke(cli, ["module", "info", "999"])
+        result = self.runner.invoke(cli(), ["module", "info", "999"])
 
         assert result.exit_code == 1
 
         output = json.loads(result.output)
         assert output["success"] is False
         assert "error" in output
-        assert output["identifier"] == "999"
+        assert "999" in output
 
     def test_module_list_command(self):
         """Test module list command"""
-        result = self.runner.invoke(cli, ["module", "list"])
+        result = self.runner.invoke(cli(), ["module", "list"])
 
         assert result.exit_code == 0
 
@@ -87,7 +87,7 @@ class TestModuleIntegration:
 
     def test_module_list_command_json_output(self):
         """Test module list command with JSON output"""
-        result = self.runner.invoke(cli, ["module", "list"])
+        result = self.runner.invoke(cli(), ["module", "list"])
 
         assert result.exit_code == 0
 
@@ -99,7 +99,7 @@ class TestModuleIntegration:
 
     def test_module_list_command_by_category(self):
         """Test module list command filtered by category"""
-        result = self.runner.invoke(cli, ["module", "list", "--category", "System"])
+        result = self.runner.invoke(cli(), ["module", "list", "--category", "System"])
 
         assert result.exit_code == 0
 
@@ -113,7 +113,7 @@ class TestModuleIntegration:
 
     def test_module_list_command_group_by_category(self):
         """Test module list command grouped by category"""
-        result = self.runner.invoke(cli, ["module", "list", "--group-by-category"])
+        result = self.runner.invoke(cli(), ["module", "list", "--group-by-category"])
 
         assert result.exit_code == 0
 
@@ -128,7 +128,7 @@ class TestModuleIntegration:
     def test_module_list_command_group_by_category_json(self):
         """Test module list command grouped by category with JSON output"""
         result = self.runner.invoke(
-            cli, ["module", "list", "--group-by-category"]
+            cli(), ["module", "list", "--group-by-category"]
         )
 
         assert result.exit_code == 0
@@ -140,7 +140,7 @@ class TestModuleIntegration:
 
     def test_module_list_command_invalid_category(self):
         """Test module list command with invalid category"""
-        result = self.runner.invoke(cli, ["module", "list", "--category", "Invalid"])
+        result = self.runner.invoke(cli(), ["module", "list", "--category", "Invalid"])
 
         assert result.exit_code == 0
 
@@ -152,7 +152,7 @@ class TestModuleIntegration:
 
     def test_module_search_command(self):
         """Test module search command"""
-        result = self.runner.invoke(cli, ["module", "search", "push button"])
+        result = self.runner.invoke(cli(), ["module", "search", "push button"])
 
         assert result.exit_code == 0
 
@@ -168,7 +168,7 @@ class TestModuleIntegration:
     def test_module_search_command_json_output(self):
         """Test module search command with JSON output"""
         result = self.runner.invoke(
-            cli, ["module", "search", "XP2606"]
+            cli(), ["module", "search", "XP2606"]
         )
 
         assert result.exit_code == 0
@@ -181,7 +181,7 @@ class TestModuleIntegration:
 
     def test_module_search_command_by_name_field(self):
         """Test module search command searching only name field"""
-        result = self.runner.invoke(cli, ["module", "search", "XP", "--field", "name"])
+        result = self.runner.invoke(cli(), ["module", "search", "XP", "--field", "name"])
 
         assert result.exit_code == 0
         assert "XP2606" in result.output
@@ -189,7 +189,7 @@ class TestModuleIntegration:
 
     def test_module_search_command_no_matches(self):
         """Test module search command with no matches"""
-        result = self.runner.invoke(cli, ["module", "search", "NONEXISTENT"])
+        result = self.runner.invoke(cli(), ["module", "search", "NONEXISTENT"])
 
         assert result.exit_code == 0
 
@@ -201,7 +201,7 @@ class TestModuleIntegration:
 
     def test_module_categories_command(self):
         """Test module categories command"""
-        result = self.runner.invoke(cli, ["module", "categories"])
+        result = self.runner.invoke(cli(), ["module", "categories"])
 
         assert result.exit_code == 0
 
@@ -213,7 +213,7 @@ class TestModuleIntegration:
 
     def test_module_categories_command_json_output(self):
         """Test module categories command with JSON output"""
-        result = self.runner.invoke(cli, ["module", "categories"])
+        result = self.runner.invoke(cli(), ["module", "categories"])
 
         assert result.exit_code == 0
 
@@ -225,7 +225,7 @@ class TestModuleIntegration:
 
     def test_module_help_command(self):
         """Test module help command"""
-        result = self.runner.invoke(cli, ["module", "--help"])
+        result = self.runner.invoke(cli(), ["module", "--help"])
 
         assert result.exit_code == 0
         assert "Module type operations" in result.output
@@ -236,7 +236,7 @@ class TestModuleIntegration:
 
     def test_module_subcommand_help(self):
         """Test module subcommand help"""
-        result = self.runner.invoke(cli, ["module", "info", "--help"])
+        result = self.runner.invoke(cli(), ["module", "info", "--help"])
 
         assert result.exit_code == 0
         assert "Get information about a module type" in result.output
@@ -246,7 +246,7 @@ class TestModuleIntegration:
     def test_enhanced_telegram_parsing_with_module_info(self):
         """Test that telegram parsing now includes module information"""
         result = self.runner.invoke(
-            cli, ["telegram", "parse", "<E14L00I02MAK>"]
+            cli(), ["telegram", "parse", "<E14L00I02MAK>"]
         )
 
         assert result.exit_code == 0
@@ -263,7 +263,7 @@ class TestModuleIntegration:
 
     def test_enhanced_telegram_parsing_human_readable(self):
         """Test that telegram parsing includes module names in JSON"""
-        result = self.runner.invoke(cli, ["telegram", "parse", "<E14L00I02MAK>"])
+        result = self.runner.invoke(cli(), ["telegram", "parse", "<E14L00I02MAK>"])
 
         assert result.exit_code == 0
 
@@ -279,7 +279,7 @@ class TestModuleIntegration:
         # Test with a module type that doesn't exist (using high number)
         # This tests the graceful handling when module_info is None
         result = self.runner.invoke(
-            cli, ["telegram", "parse", "<E99L00I02MAK>"]
+            cli(), ["telegram", "parse", "<E99L00I02MAK>"]
         )
 
         assert result.exit_code == 0

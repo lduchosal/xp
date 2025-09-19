@@ -51,7 +51,7 @@ class TestModuleTypeService:
     def test_get_module_type_invalid_type_raises_error(self):
         """Test getting module type with invalid type raises error"""
         with pytest.raises(ModuleTypeNotFoundError, match="Invalid identifier type"):
-            self.service.get_module_type(3.14)
+            self.service.get_module_type(314)
 
     def test_list_all_modules(self):
         """Test listing all modules"""

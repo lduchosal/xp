@@ -2,38 +2,24 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-@dataclass
-class ConbusRequest:
-    """Represents a Conbus send request"""
-
-    serial_number: Optional[str] = None
-    function_code: Optional[str] = None
-    data: Optional[str] = None
-    telegram: Optional[str] = None
-    timestamp: Optional[datetime] = None
-
-    def __post_init__(self):
-        if self.timestamp is None:
-            self.timestamp = datetime.now()
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
-        return {
-            "serial_number": self.serial_number,
-            "function_code": self.function_code,
-            "data": self.data,
-            "timestamp": self.timestamp.isoformat() if self.timestamp else None,
-        }
+from .action_type import ActionType
+from .input_telegram import InputTelegram
+from .reply_telegram import ReplyTelegram
 
 
 @dataclass
-class ConbusResponse:
+class ConbusInputResponse:
     """Represents a response from Conbus send operation"""
 
     success: bool
-    request: ConbusRequest
+    serial_number: str
+    input_number: int
+    action_type: ActionType
+    timestamp: datetime
+    input_telegram: Optional[InputTelegram] = None
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
+    datapoint_telegram: Optional[ReplyTelegram] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
@@ -47,7 +33,6 @@ class ConbusResponse:
         """Convert to dictionary for JSON serialization"""
         return {
             "success": self.success,
-            "request": self.request.to_dict(),
             "sent_telegram": self.sent_telegram,
             "received_telegrams": self.received_telegrams,
             "error": self.error,

@@ -38,7 +38,7 @@ class TestChecksumService:
 
     def test_calculate_simple_checksum_invalid_input(self):
         """Test simple checksum with invalid input type."""
-        result = self.service.calculate_simple_checksum(123)
+        result = self.service.calculate_simple_checksum("123")
 
         assert isinstance(result, Response)
         assert result.success is False
@@ -87,7 +87,7 @@ class TestChecksumService:
 
     def test_calculate_crc32_checksum_invalid_input(self):
         """Test CRC32 checksum with invalid input type."""
-        result = self.service.calculate_crc32_checksum(123)
+        result = self.service.calculate_crc32_checksum("123")
 
         assert isinstance(result, Response)
         assert result.success is False
@@ -133,7 +133,7 @@ class TestChecksumService:
 
     def test_validate_checksum_invalid_data_type(self):
         """Test checksum validation with invalid data type."""
-        result = self.service.validate_checksum(123, "AA")
+        result = self.service.validate_checksum("123", "AA")
 
         assert isinstance(result, Response)
         assert result.success is False
@@ -141,7 +141,7 @@ class TestChecksumService:
 
     def test_validate_checksum_invalid_expected_type(self):
         """Test checksum validation with invalid expected checksum type."""
-        result = self.service.validate_checksum("test", 123)
+        result = self.service.validate_checksum("test", "123")
 
         assert isinstance(result, Response)
         assert result.success is False
@@ -190,7 +190,7 @@ class TestChecksumService:
 
     def test_validate_crc32_checksum_invalid_data_type(self):
         """Test CRC32 validation with invalid data type."""
-        result = self.service.validate_crc32_checksum(123, "AAAAAAAA")
+        result = self.service.validate_crc32_checksum("123", "AAAAAAAA")
 
         assert isinstance(result, Response)
         assert result.success is False
@@ -198,7 +198,7 @@ class TestChecksumService:
 
     def test_validate_crc32_checksum_invalid_expected_type(self):
         """Test CRC32 validation with invalid expected checksum type."""
-        result = self.service.validate_crc32_checksum("test", 123)
+        result = self.service.validate_crc32_checksum("test", "123")
 
         assert isinstance(result, Response)
         assert result.success is False

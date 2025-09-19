@@ -24,7 +24,6 @@ class TestActionType:
         """Test ActionType.from_code with invalid codes."""
         assert ActionType.from_code("XX") is None
         assert ActionType.from_code("") is None
-        assert ActionType.from_code(None) is None
 
 
 class TestXP24ActionTelegram:

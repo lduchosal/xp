@@ -51,8 +51,13 @@ class XP24ServerService(BaseServerService):
         self, request: SystemTelegram
     ) -> Optional[str]:
         """Handle XP24-specific data requests"""
-        if request.data_point_id == DataPointType.TEMPERATURE:
-            return self.generate_temperature_response(request)
+        if request.system_function == SystemFunction.READ_DATAPOINT:
+            if request.data_point_id == DataPointType.TEMPERATURE:
+                return self.generate_temperature_response(request)
+
+        if request.system_function == SystemFunction.ACTION:
+            if request.data_point_id == DataPointType.TEMPERATURE:
+                return self.generate_temperature_response(request)
 
         return None
 

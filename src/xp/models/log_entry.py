@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from .event_telegram import EventTelegram
 from .system_telegram import SystemTelegram
 from .reply_telegram import ReplyTelegram
@@ -60,9 +60,9 @@ class LogEntry:
             return self.parsed_telegram.checksum_validated
         return None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        result = {
+        result: dict[str, Any] = {
             "line_number": self.line_number,
             "timestamp": self.timestamp.strftime("%H:%M:%S.%f")[
                 :-3

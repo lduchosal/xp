@@ -16,7 +16,8 @@ class TelegramChecksumService:
         """Initialize the checksum service."""
         pass
 
-    def calculate_simple_checksum(self, data: str) -> Response:
+    @staticmethod
+    def calculate_simple_checksum(data: str) -> Response:
         """Calculate simple XOR checksum for string data.
 
         Args:
@@ -41,7 +42,8 @@ class TelegramChecksumService:
                 success=False, data=None, error=f"Checksum calculation failed: {str(e)}"
             )
 
-    def calculate_crc32_checksum(self, data: Union[str, bytes]) -> Response:
+    @staticmethod
+    def calculate_crc32_checksum(data: Union[str, bytes]) -> Response:
         """Calculate CRC32 checksum for data.
 
         Args:
@@ -81,7 +83,8 @@ class TelegramChecksumService:
                 error=f"CRC32 checksum calculation failed: {str(e)}",
             )
 
-    def validate_checksum(self, data: str, expected_checksum: str) -> Response:
+    @staticmethod
+    def validate_checksum(data: str, expected_checksum: str) -> Response:
         """Validate data against expected simple checksum.
 
         Args:
@@ -117,8 +120,9 @@ class TelegramChecksumService:
                 success=False, data=None, error=f"Checksum validation failed: {str(e)}"
             )
 
+    @staticmethod
     def validate_crc32_checksum(
-        self, data: Union[str, bytes], expected_checksum: str
+            data: Union[str, bytes], expected_checksum: str
     ) -> Response:
         """Validate data against expected CRC32 checksum.
 

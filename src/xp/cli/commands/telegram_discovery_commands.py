@@ -1,14 +1,15 @@
 """Device discovery operations CLI commands."""
 
-import click
 import json
 
-from . import telegram
-from ...services.telegram_discovery_service import TelegramDiscoveryService, DiscoveryError
-from ..utils.decorators import handle_service_errors
-from ..utils.formatters import OutputFormatter
-from ..utils.error_handlers import CLIErrorHandler
+import click
+
 from .telegram import telegram
+from ..utils.decorators import handle_service_errors
+from ..utils.error_handlers import CLIErrorHandler
+from ..utils.formatters import OutputFormatter
+from ...services.telegram_discovery_service import TelegramDiscoveryService, DiscoveryError
+
 
 @telegram.command("discover")
 @handle_service_errors(DiscoveryError)
@@ -25,11 +26,11 @@ def generate_discovery():
     OutputFormatter(True)
 
     try:
-        telegram = service.generate_discovery_telegram()
+        discovery = service.generate_discovery_telegram()
 
         output = {
             "success": True,
-            "telegram": telegram,
+            "telegram": discovery,
             "operation": "discovery_broadcast",
             "broadcast_address": "0000000000",
         }

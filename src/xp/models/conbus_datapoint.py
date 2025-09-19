@@ -2,31 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
 
+from .reply_telegram import ReplyTelegram
 from ..models.datapoint_type import DatapointTypeName
-
-@dataclass
-class ConbusDatapointRequest:
-    """Represents a Conbus send request"""
-
-    datapoint_type: DatapointTypeName
-    serial_number: Optional[str] = None
-    function_code: Optional[str] = None
-    datapoint_code: Optional[str] = None
-    timestamp: Optional[datetime] = None
-
-    def __post_init__(self):
-        if self.timestamp is None:
-            self.timestamp = datetime.now()
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
-        return {
-            "datapoint_type": self.datapoint_type.value,
-            "datapoint_code": self.datapoint_code,
-            "serial_number": self.serial_number,
-            "function_code": self.function_code,
-            "timestamp": self.timestamp.isoformat() if self.timestamp else None,
-        }
 
 
 @dataclass
@@ -34,9 +11,12 @@ class ConbusDatapointResponse:
     """Represents a response from Conbus send operation"""
 
     success: bool
-    request: ConbusDatapointRequest
+    serial_number : Optional[str] = None,
+    datapoint_type : Optional[DatapointTypeName] = None,
+    datapoint: Optional[str] = None,
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
+    datapoint_telegram: Optional[ReplyTelegram] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
@@ -50,7 +30,9 @@ class ConbusDatapointResponse:
         """Convert to dictionary for JSON serialization"""
         return {
             "success": self.success,
-            "request": self.request.to_dict(),
+            "serial_number": self.serial_number,
+            "datapoint_type": self.datapoint_type,
+            "datapoint": self.datapoint,
             "sent_telegram": self.sent_telegram,
             "received_telegrams": self.received_telegrams,
             "error": self.error,

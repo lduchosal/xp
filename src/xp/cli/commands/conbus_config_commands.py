@@ -5,8 +5,8 @@ import click
 from xp.cli.utils.decorators import handle_service_errors
 from xp.cli.utils.error_handlers import CLIErrorHandler
 from xp.cli.utils.formatters import OutputFormatter
-from xp.services.conbus_datapoint_service import ConbusDatapointService
 from .conbus import conbus
+from ...services.conbus_service import ConbusService
 
 
 @conbus.command("config")
@@ -20,12 +20,11 @@ def show_config():
     \b
         xp conbus config
     """
-    service = ConbusDatapointService()
+    service = ConbusService()
     OutputFormatter(True)
 
     try:
         config = service.get_config()
-
         click.echo(json.dumps(config.to_dict(), indent=2))
 
     except Exception as e:

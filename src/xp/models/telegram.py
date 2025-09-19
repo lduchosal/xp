@@ -14,6 +14,3 @@ class Telegram:
     raw_telegram: str
     checksum_validated: Optional[bool] = None
     timestamp: Optional[datetime] = None
-
-    def __init__(self):
-        self.raw_telegram = "some telegram data"
