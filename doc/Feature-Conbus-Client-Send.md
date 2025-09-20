@@ -23,7 +23,7 @@ The client supports sending the following telegram types:
 - **Type**: `version`
 - **Description**: Sends current client version information to the server
 
-### 3. Voltage
+### 3. VOLTAGE
 - **Purpose**: Report voltage measurements
 - **Type**: `voltage`
 - **Description**: Transmits voltage sensor readings

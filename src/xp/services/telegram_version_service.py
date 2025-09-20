@@ -164,8 +164,8 @@ class VersionService:
                 )
 
             is_version_request = (
-                telegram.system_function == SystemFunction.READ_DATAPOINT
-                and telegram.data_point_id == DataPointType.VERSION
+                    telegram.system_function == SystemFunction.READ_DATAPOINT
+                    and telegram.datapoint_type == DataPointType.SW_VERSION
             )
 
             return Response(
@@ -179,10 +179,10 @@ class VersionService:
                         else None
                     ),
                     "data_point": (
-                        telegram.data_point_id.value if telegram.data_point_id else None
+                        telegram.datapoint_type.value if telegram.datapoint_type else None
                     ),
-                    "function_description": telegram.function_description,
-                    "data_point_description": telegram.data_point_description,
+                    "function_description": telegram.system_function.name,
+                    "data_point_description": telegram.datapoint_type.name,
                 },
                 error=None,
             )
@@ -213,11 +213,11 @@ class VersionService:
                 )
 
             # Check if this is a version reply
-            if telegram.data_point_id != DataPointType.VERSION:
+            if telegram.datapoint_type != DataPointType.SW_VERSION:
                 return Response(
                     success=False,
                     data=None,
-                    error=f"Not a version reply telegram. Data point: {telegram.data_point_description}",
+                    error=f"Not a version reply telegram. Data point: {telegram.datapoint_type.name}",
                 )
 
             # Parse the version using the telegram's built-in parser

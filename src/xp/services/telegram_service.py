@@ -200,7 +200,7 @@ class TelegramService:
             telegram = SystemTelegram(
                 serial_number=serial_number,
                 system_function=system_function,
-                data_point_id=data_point_type,
+                datapoint_type=data_point_type,
                 checksum=checksum,
                 raw_telegram=raw_telegram,
             )
@@ -268,7 +268,7 @@ class TelegramService:
             telegram = ReplyTelegram(
                 serial_number=serial_number,
                 system_function=system_function,
-                data_point_id=data_point_type,
+                datapoint_type=data_point_type,
                 data_value=data_value,
                 checksum=checksum,
                 raw_telegram=raw_telegram,

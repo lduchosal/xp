@@ -221,8 +221,8 @@ def demo_version_parsing():
         parsed = telegram_service.parse_system_telegram(version_system_telegram)
         print(f"Raw: {parsed.raw_telegram}")
         print(f"Serial: {parsed.serial_number}")
-        print(f"Function: {parsed.function_description}")
-        print(f"Data Point: {parsed.data_point_description}")
+        print(f"Function: {parsed.system_function.name}")
+        print(f"Data Point: {parsed.datapoint_type.name}")
         print(
             f"Checksum: {parsed.checksum} {'✓' if parsed.checksum_validated else '✗'}"
         )
@@ -292,7 +292,7 @@ def demo_version_parsing():
             elif hasattr(parsed, "data_value"):  # ReplyTelegram
                 telegram_type = "reply"
                 print(f"Auto-detected: {telegram_type.upper()}")
-                if parsed.data_point_id == DataPointType.VERSION:
+                if parsed.datapoint_type == DataPointType.SW_VERSION:
                     version_info = parsed.parsed_value
                     if version_info["parsed"]:
                         print(
@@ -310,7 +310,7 @@ def demo_version_parsing():
             elif hasattr(parsed, "system_function"):  # SystemTelegram
                 telegram_type = "system"
                 print(f"Auto-detected: {telegram_type.upper()}")
-                if parsed.data_point_id == DataPointType.VERSION:
+                if parsed.datapoint_type == DataPointType.SW_VERSION:
                     print(f"  → Version request from device {parsed.serial_number}")
                 else:
                     print(

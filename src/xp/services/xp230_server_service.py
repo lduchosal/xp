@@ -36,7 +36,7 @@ class XP230ServerService(BaseServerService):
         """Generate temperature response telegram (simulated)"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.TEMPERATURE
+            and request.datapoint_type == DataPointType.TEMPERATURE
         ):
             # Simulate temperature reading: +50.5°C (from ConReport.log)
             temperature_value = "+50,5§C"
@@ -51,7 +51,7 @@ class XP230ServerService(BaseServerService):
         self, request: SystemTelegram
     ) -> Optional[str]:
         """Handle XP230-specific data requests"""
-        if request.data_point_id == DataPointType.TEMPERATURE:
+        if request.datapoint_type == DataPointType.TEMPERATURE:
             return self.generate_temperature_response(request)
 
         return None

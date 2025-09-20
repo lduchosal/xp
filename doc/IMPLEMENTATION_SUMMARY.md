@@ -58,7 +58,7 @@ The Telegram Event feature has been successfully implemented according to the sp
  │ │  │  │ │└─ Checksum (2 chars)
  │ │  │  │ └── Event Type (M=press, B=release)
  │ │  │  └──── Input Number (00-90)
- │ │  └─────── Link Number (00-99) 
+ │ │  └─────── LINK_NUMBER (00-99) 
  │ └────────── Module Type (1-99)
  └─────────── Event Identifier
 ```

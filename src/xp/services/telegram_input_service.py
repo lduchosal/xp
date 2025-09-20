@@ -129,7 +129,7 @@ class TelegramInputService:
         # Validate inputs
         self.validate_serial_number(serial_number)
         function_code = SystemFunction.READ_DATAPOINT.value
-        datapoint_code = DataPointType.CHANNEL_STATES.value
+        datapoint_code = DataPointType.MODULE_OUTPUT_STATE.value
 
         # Build data part without checksum
         data_part = f"S{serial_number}F{function_code}D{datapoint_code}"

@@ -36,7 +36,7 @@ class XP20ServerService(BaseServerService):
         """Generate humidity response telegram (simulated)"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.HUMIDITY
+            and request.datapoint_type == DataPointType.SW_TOP_VERSION
         ):
             # Simulate humidity reading: +65.5%RH
             humidity_value = "+65,5§RH"
@@ -51,7 +51,7 @@ class XP20ServerService(BaseServerService):
         """Generate voltage response telegram (simulated)"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.VOLTAGE
+            and request.datapoint_type == DataPointType.VOLTAGE
         ):
             # Simulate voltage reading: +12.5V
             voltage_value = "+12,5§V"
@@ -66,9 +66,9 @@ class XP20ServerService(BaseServerService):
         self, request: SystemTelegram
     ) -> Optional[str]:
         """Handle XP20-specific data requests"""
-        if request.data_point_id == DataPointType.HUMIDITY:
+        if request.datapoint_type == DataPointType.SW_TOP_VERSION:
             return self.generate_humidity_response(request)
-        elif request.data_point_id == DataPointType.VOLTAGE:
+        elif request.datapoint_type == DataPointType.VOLTAGE:
             return self.generate_voltage_response(request)
 
         return None

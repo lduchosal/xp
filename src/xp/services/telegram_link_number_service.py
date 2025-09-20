@@ -103,7 +103,7 @@ class LinkNumberService:
                 f"Serial number must contain only digits: {serial_number}"
             )
 
-        # Build the data part for reading (F03D04 - Read Configuration, Link Number)
+        # Build the data part for reading (F03D04 - READ_CONFIG, LINK_NUMBER)
         data_part = f"S{serial_number}F03D04"
 
         # Calculate checksum
@@ -140,7 +140,7 @@ class LinkNumberService:
         telegram = SystemTelegram(
             serial_number=serial_number,
             system_function=SystemFunction.WRITE_CONFIG,
-            data_point_id=DataPointType.LINK_NUMBER,
+            datapoint_type=DataPointType.LINK_NUMBER,
             checksum=checksum,
             raw_telegram=raw_telegram,
         )
@@ -170,7 +170,7 @@ class LinkNumberService:
         telegram = SystemTelegram(
             serial_number=serial_number,
             system_function=SystemFunction.READ_CONFIG,
-            data_point_id=DataPointType.LINK_NUMBER,
+            datapoint_type=DataPointType.LINK_NUMBER,
             checksum=checksum,
             raw_telegram=raw_telegram,
         )
@@ -191,7 +191,7 @@ class LinkNumberService:
             Link number if successfully parsed, None otherwise
         """
         if (
-            reply_telegram.data_point_id != DataPointType.LINK_NUMBER
+            reply_telegram.datapoint_type != DataPointType.LINK_NUMBER
             or not reply_telegram.data_value
         ):
             return None

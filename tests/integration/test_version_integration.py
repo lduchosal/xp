@@ -24,7 +24,7 @@ class TestVersionIntegration(unittest.TestCase):
 
         self.assertEqual(parsed.serial_number, "0020030837")
         self.assertEqual(parsed.system_function, SystemFunction.READ_DATAPOINT)
-        self.assertEqual(parsed.data_point_id, DataPointType.VERSION)
+        self.assertEqual(parsed.datapoint_type, DataPointType.SW_VERSION)
         self.assertEqual(parsed.checksum, "FM")
         self.assertEqual(parsed.raw_telegram, raw_telegram)
 
@@ -55,7 +55,7 @@ class TestVersionIntegration(unittest.TestCase):
 
                 # Verify basic parsing
                 self.assertEqual(parsed.system_function, SystemFunction.READ_DATAPOINT)
-                self.assertEqual(parsed.data_point_id, DataPointType.VERSION)
+                self.assertEqual(parsed.datapoint_type, DataPointType.SW_VERSION)
                 self.assertEqual(parsed.raw_telegram, raw_telegram)
 
                 # Verify version parsing using built-in reply telegram parser
@@ -118,7 +118,7 @@ class TestVersionIntegration(unittest.TestCase):
         # Verify it parsed correctly
         self.assertEqual(parsed.serial_number, serial_number)
         self.assertEqual(parsed.system_function, SystemFunction.READ_DATAPOINT)
-        self.assertEqual(parsed.data_point_id, DataPointType.VERSION)
+        self.assertEqual(parsed.datapoint_type, DataPointType.SW_VERSION)
 
         # Verify it's recognized as a version request
         validation = self.version_service.validate_version_telegram(parsed)
@@ -140,7 +140,7 @@ class TestVersionIntegration(unittest.TestCase):
                     parsed = self.telegram_service.parse_telegram(raw_telegram)
 
                     if hasattr(parsed, "data_value"):  # Reply telegram
-                        if parsed.data_point_id == DataPointType.VERSION:
+                        if parsed.datapoint_type == DataPointType.SW_VERSION:
                             version_result = self.version_service.parse_version_reply(
                                 parsed
                             )
@@ -157,7 +157,7 @@ class TestVersionIntegration(unittest.TestCase):
                             parsed
                         )
                         self.assertTrue(validation.success)
-                        if parsed.data_point_id != DataPointType.VERSION:
+                        if parsed.datapoint_type != DataPointType.SW_VERSION:
                             self.assertFalse(validation.data["is_version_request"])
 
                 except TelegramParsingError:
@@ -220,7 +220,7 @@ class TestVersionIntegration(unittest.TestCase):
         summary = self.telegram_service.format_reply_telegram_summary(parsed)
 
         self.assertIn(
-            "Reply Telegram: Data Response for Version = XP230 v1.00.04", summary
+            "Reply Telegram: READ_DATAPOINT for Version = XP230 v1.00.04", summary
         )
         self.assertIn("from device 0020030837", summary)
         self.assertIn("Data: XP230 v1.00.04", summary)

@@ -82,7 +82,7 @@ class TestDiscoveryService:
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0000000000"
         assert telegram.system_function == SystemFunction.DISCOVERY
-        assert telegram.data_point_id == DataPointType.NONE
+        assert telegram.datapoint_type == DataPointType.MODULE_TYPE
         assert telegram.checksum == "FA"
         assert telegram.raw_telegram == "<S0000000000F01D00FA>"
 

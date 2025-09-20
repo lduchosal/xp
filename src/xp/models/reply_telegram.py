@@ -17,13 +17,13 @@ class ReplyTelegram(Telegram):
     """
     Represents a parsed reply telegram from the console bus.
 
-    Format: <R{serial_number}F{function_code}D{data_point_id}{data_value}{checksum}>
+    Format: <R{serial_number}F{function_code}D{datapoint_type}{data_value}{checksum}>
     Examples: <R0020012521F02D18+26,0§CIL>
     """
 
     serial_number: str = ""
     system_function: Optional[SystemFunction] = None
-    data_point_id: Optional[DataPointType] = None
+    datapoint_type: Optional[DataPointType] = None
     data_value: str = ""
 
     def __post_init__(self):
@@ -31,48 +31,19 @@ class ReplyTelegram(Telegram):
             self.timestamp = datetime.now()
 
     @property
-    def function_description(self) -> str:
-        """Get human-readable function description"""
-        descriptions = {
-            SystemFunction.READ_DATAPOINT: "Data Response",
-            SystemFunction.DISCOVERY: "Discover Response",
-            SystemFunction.READ_CONFIG: "Configuration Response",
-            SystemFunction.WRITE_CONFIG: "Write Configuration Response",
-            SystemFunction.BLINK: "Blink Response",
-            SystemFunction.UNBLINK: "Unblink Response",
-            SystemFunction.ACK: "Acknowledge Response",
-            SystemFunction.NAK: "Rejected Response",
-        }
-        return descriptions.get(self.system_function, "Unknown Response")
-
-    @property
-    def data_point_description(self) -> str:
-        """Get human-readable data point description"""
-        descriptions = {
-            DataPointType.TEMPERATURE: "Temperature",
-            DataPointType.HUMIDITY: "Humidity",
-            DataPointType.VOLTAGE: "Voltage",
-            DataPointType.CURRENT: "Current",
-            DataPointType.NONE: "None",
-            DataPointType.VERSION: "Version",
-            DataPointType.LINK_NUMBER: "Link Number",
-        }
-        return descriptions.get(self.data_point_id, "Unknown Data Point")
-
-    @property
     def parsed_value(self) -> dict:
         """Parse the data value based on data point type"""
-        if self.data_point_id == DataPointType.TEMPERATURE:
+        if self.datapoint_type == DataPointType.TEMPERATURE:
             return self._parse_temperature_value()
-        elif self.data_point_id == DataPointType.HUMIDITY:
+        elif self.datapoint_type == DataPointType.SW_TOP_VERSION:
             return self._parse_humidity_value()
-        elif self.data_point_id == DataPointType.VOLTAGE:
+        elif self.datapoint_type == DataPointType.VOLTAGE:
             return self._parse_voltage_value()
-        elif self.data_point_id == DataPointType.CURRENT:
+        elif self.datapoint_type == DataPointType.MODULE_ENERGY_LEVEL:
             return self._parse_current_value()
-        elif self.data_point_id == DataPointType.NONE:
+        elif self.datapoint_type == DataPointType.MODULE_TYPE:
             return self._parse_status_value()
-        elif self.data_point_id == DataPointType.VERSION:
+        elif self.datapoint_type == DataPointType.SW_VERSION:
             return self._parse_version_value()
         else:
             return {"raw_value": self.data_value, "parsed": False}
@@ -222,11 +193,11 @@ class ReplyTelegram(Telegram):
             "serial_number": self.serial_number,
             "system_function": {
                 "code": self.system_function.value,
-                "description": self.function_description,
+                "description": self.system_function.name,
             },
-            "data_point_id": {
-                "code": self.data_point_id.value,
-                "description": self.data_point_description,
+            "datapoint_type": {
+                "code": self.datapoint_type.value,
+                "description": self.datapoint_type.name,
             },
             "data_value": {"raw": self.data_value, "parsed": parsed_data},
             "checksum": self.checksum,

@@ -70,7 +70,7 @@ class XP33ServerService(BaseServerService):
         """Generate channel states response telegram"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.CHANNEL_STATES
+            and request.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
         ):
             # Format: xxxxx000 (3 channels + padding)
             # Each channel: 00-64 hex (0-100%)
@@ -108,16 +108,16 @@ class XP33ServerService(BaseServerService):
         """Generate individual channel control response"""
         # Check for individual channel data points
         channel_mapping = {
-            DataPointType.CHANNEL_1: 1,
-            DataPointType.CHANNEL_2: 2,
-            DataPointType.CHANNEL_3: 3,
+            DataPointType.MODULE_FW_CRC: 1,
+            DataPointType.MODULE_ACTION_TABLE_CRC: 2,
+            DataPointType.MODULE_LIGHT_LEVEL: 3,
         }
 
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id in channel_mapping
+            and request.datapoint_type in channel_mapping
         ):
-            channel = channel_mapping[request.data_point_id]
+            channel = channel_mapping[request.datapoint_type]
 
             # Return current channel state in 5-hex format
             ch1_hex = f"{int(self.channel_states[0] * 100 / 100):02X}"
@@ -126,7 +126,7 @@ class XP33ServerService(BaseServerService):
 
             channel_data = f"{ch1_hex}{ch2_hex}{ch3_hex}00"
             data_part = (
-                f"R{self.serial_number}F02D{request.data_point_id.value}{channel_data}"
+                f"R{self.serial_number}F02D{request.datapoint_type.value}{channel_data}"
             )
             telegram = self._build_response_telegram(data_part)
             self._log_response(f"channel {channel}", telegram)
@@ -138,14 +138,14 @@ class XP33ServerService(BaseServerService):
         self, request: SystemTelegram
     ) -> Optional[str]:
         """Handle XP33-specific data requests"""
-        if request.data_point_id == DataPointType.STATUS_QUERY:
-            return self.generate_status_response(request, DataPointType.STATUS_QUERY)
-        elif request.data_point_id == DataPointType.CHANNEL_STATES:
+        if request.datapoint_type == DataPointType.MODULE_ERROR_CODE:
+            return self.generate_status_response(request, DataPointType.MODULE_ERROR_CODE)
+        elif request.datapoint_type == DataPointType.MODULE_OUTPUT_STATE:
             return self.generate_channel_states_response(request)
-        elif request.data_point_id in [
-            DataPointType.CHANNEL_1,
-            DataPointType.CHANNEL_2,
-            DataPointType.CHANNEL_3,
+        elif request.datapoint_type in [
+            DataPointType.MODULE_FW_CRC,
+            DataPointType.MODULE_ACTION_TABLE_CRC,
+            DataPointType.MODULE_LIGHT_LEVEL,
         ]:
             return self.generate_channel_control_response(request)
 
@@ -154,12 +154,12 @@ class XP33ServerService(BaseServerService):
     def generate_status_response(
         self,
         request: SystemTelegram,
-        status_data_point: DataPointType = DataPointType.STATUS_QUERY,
+        status_data_point: DataPointType = DataPointType.MODULE_ERROR_CODE,
     ) -> Optional[str]:
         """Generate status response telegram for XP33 (uses STATUS_QUERY)"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == status_data_point
+            and request.datapoint_type == status_data_point
         ):
             # Format: <R{serial}F02D10{status}{checksum}>
             data_part = f"R{self.serial_number}F02D10{self.device_status}"

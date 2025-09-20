@@ -52,7 +52,7 @@ xp/services/blink_service.py
 
 ## Implementation Notes
 
-### 🔗 Similarity to Link Number Functionality
+### 🔗 Similarity to LINK_NUMBER Functionality
 
 The blink/unblink feature implementation follows a very similar pattern to the existing `link_number` functionality:
 
@@ -81,7 +81,7 @@ The blink/unblink feature implementation follows a very similar pattern to the e
 
 ### 💡 Implementation Strategy
 
-**Phase 1: Copy & Adapt Link Number Structure**
+**Phase 1: Copy & Adapt LINK_NUMBER Structure**
 - Copy `link_number_service.py` → `blink_service.py`
 - Copy `linknumber_commands.py` → `blink_commands.py`
 - Adapt telegram generation methods for F05/F06 functions

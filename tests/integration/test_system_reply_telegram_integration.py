@@ -30,8 +30,8 @@ class TestSystemTelegramCLI:
         output_data = json.loads(result.output)
 
         assert output_data["serial_number"] == "0020012521"
-        assert output_data["system_function"]["description"] == "Read Data point"
-        assert output_data["data_point_id"]["description"] == "Temperature"
+        assert output_data["system_function"]["description"] == "READ_DATAPOINT"
+        assert output_data["datapoint_type"]["description"] == "TEMPERATURE"
         assert output_data["checksum"] == "FN"
         assert output_data["telegram_type"] == "system"
 
@@ -48,9 +48,9 @@ class TestSystemTelegramCLI:
 
         assert output_data["serial_number"] == "0020012521"
         assert output_data["system_function"]["code"] == "02"
-        assert output_data["system_function"]["description"] == "Read Data point"
-        assert output_data["data_point_id"]["code"] == "18"
-        assert output_data["data_point_id"]["description"] == "Temperature"
+        assert output_data["system_function"]["description"] == "READ_DATAPOINT"
+        assert output_data["datapoint_type"]["code"] == "18"
+        assert output_data["datapoint_type"]["description"] == "TEMPERATURE"
         assert output_data["checksum"] == "FN"
         assert output_data["telegram_type"] == "system"
         assert "timestamp" in output_data
@@ -64,7 +64,7 @@ class TestSystemTelegramCLI:
 
         assert result.exit_code == 0
         output_data = json.loads(result.output)
-        assert output_data["system_function"]["description"] == "Discovery"
+        assert output_data["system_function"]["description"] == "DISCOVERY"
 
         # Read config
         result = self.runner.invoke(
@@ -73,7 +73,7 @@ class TestSystemTelegramCLI:
 
         assert result.exit_code == 0
         output_data = json.loads(result.output)
-        assert output_data["system_function"]["description"] == "Read Configuration"
+        assert output_data["system_function"]["description"] == "READ_CONFIG"
 
     def test_parse_system_telegram_different_data_points(self):
         """Test parsing different data point types."""
@@ -84,7 +84,7 @@ class TestSystemTelegramCLI:
 
         assert result.exit_code == 0
         output_data = json.loads(result.output)
-        assert output_data["data_point_id"]["description"] == "Humidity"
+        assert output_data["datapoint_type"]["description"] == "SW_TOP_VERSION"
 
         # Status
         result = self.runner.invoke(
@@ -93,7 +93,7 @@ class TestSystemTelegramCLI:
 
         assert result.exit_code == 0
         output_data = json.loads(result.output)
-        assert output_data["data_point_id"]["description"] == "None"
+        assert output_data["datapoint_type"]["description"] == "MODULE_TYPE"
 
     def test_parse_system_telegram_invalid_format(self):
         """Test parsing invalid system telegram format."""
@@ -151,8 +151,8 @@ class TestReplyTelegramCLI:
         output_data = json.loads(result.output)
 
         assert output_data["serial_number"] == "0020012521"
-        assert output_data["system_function"]["description"] == "Data Response"
-        assert output_data["data_point_id"]["description"] == "Temperature"
+        assert output_data["system_function"]["description"] == "READ_DATAPOINT"
+        assert output_data["datapoint_type"]["description"] == "TEMPERATURE"
         assert output_data["data_value"]["parsed"]["value"] == 26.0
         assert output_data["data_value"]["parsed"]["unit"] == "°C"
         assert output_data["checksum"] == "IL"
@@ -176,9 +176,9 @@ class TestReplyTelegramCLI:
 
         assert output_data["serial_number"] == "0020012521"
         assert output_data["system_function"]["code"] == "02"
-        assert output_data["system_function"]["description"] == "Data Response"
-        assert output_data["data_point_id"]["code"] == DataPointType.TEMPERATURE.value
-        assert output_data["data_point_id"]["description"] == "Temperature"
+        assert output_data["system_function"]["description"] == "READ_DATAPOINT"
+        assert output_data["datapoint_type"]["code"] == DataPointType.TEMPERATURE.value
+        assert output_data["datapoint_type"]["description"] == "TEMPERATURE"
         assert output_data["data_value"]["raw"] == "+26,0§C"
         assert output_data["data_value"]["parsed"]["parsed"] is True
         assert output_data["data_value"]["parsed"]["value"] == 26.0
@@ -202,7 +202,7 @@ class TestReplyTelegramCLI:
         assert output_data["data_value"]["parsed"]["value"] == 65.5
         assert output_data["data_value"]["parsed"]["unit"] == "%RH"
 
-        # Voltage
+        # VOLTAGE
         result = self.runner.invoke(
             cli, # type: ignore
             [
@@ -303,8 +303,8 @@ class TestAutoDetectTelegramCLI:
 
         # Should use system telegram formatting
         assert output_data["telegram_type"] == "system"
-        assert output_data["system_function"]["description"] == "Read Data point"
-        assert output_data["data_point_id"]["description"] == "Temperature"
+        assert output_data["system_function"]["description"] == "READ_DATAPOINT"
+        assert output_data["datapoint_type"]["description"] == "TEMPERATURE"
 
     def test_parse_telegram_reply(self):
         """Test parse command with reply telegram."""

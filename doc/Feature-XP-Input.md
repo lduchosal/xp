@@ -55,7 +55,7 @@ XP24 modules are remote switch devices that can be commanded via the conbus. Eac
 **Example**: `<E07L06I80BAL>`
 - **Type**: Event (E)
 - **Module Type**: 07 (XP24)
-- **Link Number**: 06
+- **LINK_NUMBER**: 06
 - **Input Number**: 80 (input 0)
 - **Button**: B (Break/release), M (Make/press)
 

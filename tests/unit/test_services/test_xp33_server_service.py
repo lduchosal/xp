@@ -62,7 +62,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D02FN>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,
+            datapoint_type=DataPointType.SW_VERSION,
         )
 
         response = self.xp33lr_service.generate_version_response(request)
@@ -77,7 +77,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042797F02D02FN>",
             serial_number="0020042797",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,
+            datapoint_type=DataPointType.SW_VERSION,
         )
 
         response = self.xp33led_service.generate_version_response(request)
@@ -92,7 +92,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D07FI>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp33lr_service.generate_module_type_response(request)
@@ -108,7 +108,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D10FO>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.STATUS_QUERY,
+            datapoint_type=DataPointType.MODULE_ERROR_CODE,
         )
 
         response = self.xp33lr_service.generate_status_response(request)
@@ -124,7 +124,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D12FM>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.CHANNEL_STATES,
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
         )
 
         response = self.xp33lr_service.generate_channel_states_response(request)
@@ -140,7 +140,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D04FL>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.LINK_NUMBER,
+            datapoint_type=DataPointType.LINK_NUMBER,
         )
 
         response = self.xp33lr_service.generate_link_number_response(request)
@@ -156,7 +156,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D04FL>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.LINK_NUMBER,
+            datapoint_type=DataPointType.LINK_NUMBER,
         )
 
         response = self.xp33lr_service.generate_link_number_response(request)
@@ -220,7 +220,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D13FN>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.CHANNEL_1,
+            datapoint_type=DataPointType.MODULE_FW_CRC,
         )
 
         response = self.xp33lr_service.generate_channel_control_response(request)
@@ -236,7 +236,7 @@ class TestXP33ServerService:
             raw_telegram="<S0000000000F01D00FA>",
             serial_number="0000000000",
             system_function=SystemFunction.DISCOVERY,
-            data_point_id=DataPointType.NONE,
+            datapoint_type=DataPointType.MODULE_TYPE,
         )
 
         response = self.xp33lr_service.process_system_telegram(request)
@@ -250,7 +250,7 @@ class TestXP33ServerService:
             raw_telegram="<S1234567890F02D02FN>",
             serial_number="1234567890",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,
+            datapoint_type=DataPointType.SW_VERSION,
         )
 
         response = self.xp33lr_service.process_system_telegram(request)
@@ -264,7 +264,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D02FN>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,
+            datapoint_type=DataPointType.SW_VERSION,
         )
 
         response = self.xp33lr_service.process_system_telegram(request)
@@ -274,14 +274,14 @@ class TestXP33ServerService:
     def test_process_system_telegram_all_data_points(self):
         """Test processing all supported data point requests"""
         test_cases = [
-            (DataPointType.VERSION, "F02D02"),
+            (DataPointType.SW_VERSION, "F02D02"),
             (DataPointType.MODULE_TYPE_CODE, "F02D07"),
-            (DataPointType.STATUS_QUERY, "F02D10"),
-            (DataPointType.CHANNEL_STATES, "F02D12"),
+            (DataPointType.MODULE_ERROR_CODE, "F02D10"),
+            (DataPointType.MODULE_OUTPUT_STATE, "F02D12"),
             (DataPointType.LINK_NUMBER, "F02D04"),
-            (DataPointType.CHANNEL_1, "F02D13"),
-            (DataPointType.CHANNEL_2, "F02D14"),
-            (DataPointType.CHANNEL_3, "F02D15"),
+            (DataPointType.MODULE_FW_CRC, "F02D13"),
+            (DataPointType.MODULE_ACTION_TABLE_CRC, "F02D14"),
+            (DataPointType.MODULE_LIGHT_LEVEL, "F02D15"),
         ]
 
         for data_point, expected_code in test_cases:
@@ -290,7 +290,7 @@ class TestXP33ServerService:
                 raw_telegram=f"<S0020042796{expected_code}FN>",
                 serial_number="0020042796",
                 system_function=SystemFunction.READ_DATAPOINT,
-                data_point_id=data_point,
+                datapoint_type=data_point,
             )
 
             response = self.xp33lr_service.process_system_telegram(request)
@@ -366,7 +366,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D12FM>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.CHANNEL_STATES,
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
         )
 
         response = self.xp33lr_service.generate_channel_states_response(request)

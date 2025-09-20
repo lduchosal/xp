@@ -42,7 +42,7 @@ class XP130ServerService(BaseServerService):
         """Generate IP configuration response telegram"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.VOLTAGE
+            and request.datapoint_type == DataPointType.VOLTAGE
         ):
             # Format: <R{serial}F02D20{ip_config}{checksum}>
             # IP config includes IP, subnet, gateway separated by commas
@@ -58,7 +58,7 @@ class XP130ServerService(BaseServerService):
         """Generate temperature response telegram (simulated)"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.TEMPERATURE
+            and request.datapoint_type == DataPointType.TEMPERATURE
         ):
             # Simulate temperature reading: +21.0°C (network equipment runs cooler)
             temperature_value = "+21,0§C"
@@ -73,9 +73,9 @@ class XP130ServerService(BaseServerService):
         self, request: SystemTelegram
     ) -> Optional[str]:
         """Handle XP130-specific data requests"""
-        if request.data_point_id == DataPointType.TEMPERATURE:
+        if request.datapoint_type == DataPointType.TEMPERATURE:
             return self.generate_temperature_response(request)
-        elif request.data_point_id == DataPointType.VOLTAGE:
+        elif request.datapoint_type == DataPointType.VOLTAGE:
             return self.generate_ip_config_response(request)
 
         return None

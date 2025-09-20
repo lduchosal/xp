@@ -105,7 +105,7 @@ class TestLinkNumberService:
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0020044974"
         assert telegram.system_function == SystemFunction.WRITE_CONFIG
-        assert telegram.data_point_id == DataPointType.LINK_NUMBER
+        assert telegram.datapoint_type == DataPointType.LINK_NUMBER
         assert telegram.raw_telegram == "<S0020044974F04D0425FO>"
         assert telegram.checksum == "FO"
 
@@ -118,7 +118,7 @@ class TestLinkNumberService:
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0020044974"
         assert telegram.system_function == SystemFunction.READ_CONFIG
-        assert telegram.data_point_id == DataPointType.LINK_NUMBER
+        assert telegram.datapoint_type == DataPointType.LINK_NUMBER
         assert telegram.raw_telegram.startswith("<S0020044974F03D04")
         assert len(telegram.checksum) == 2
 
@@ -128,7 +128,7 @@ class TestLinkNumberService:
 
         # Create a mock reply telegram with link number data
         reply_telegram = Mock(spec=ReplyTelegram)
-        reply_telegram.data_point_id = DataPointType.LINK_NUMBER
+        reply_telegram.datapoint_type = DataPointType.LINK_NUMBER
         reply_telegram.data_value = "25"
 
         result = service.parse_link_number_from_reply(reply_telegram)
@@ -150,14 +150,14 @@ class TestLinkNumberService:
 
         # Wrong data point type
         reply_telegram = Mock(spec=ReplyTelegram)
-        reply_telegram.data_point_id = DataPointType.TEMPERATURE
+        reply_telegram.datapoint_type = DataPointType.TEMPERATURE
         reply_telegram.data_value = "25"
 
         result = service.parse_link_number_from_reply(reply_telegram)
         assert result is None
 
         # No data value
-        reply_telegram.data_point_id = DataPointType.LINK_NUMBER
+        reply_telegram.datapoint_type = DataPointType.LINK_NUMBER
         reply_telegram.data_value = None
 
         result = service.parse_link_number_from_reply(reply_telegram)

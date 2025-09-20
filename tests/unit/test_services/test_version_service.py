@@ -122,7 +122,7 @@ class TestVersionService(unittest.TestCase):
         telegram = SystemTelegram(
             serial_number="0020030837",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,
+            datapoint_type=DataPointType.SW_VERSION,
             checksum="FM",
             raw_telegram="<S0020030837F02D02FM>",
             timestamp=datetime.now(),
@@ -137,15 +137,15 @@ class TestVersionService(unittest.TestCase):
         self.assertEqual(result.data["serial_number"], "0020030837")
         self.assertEqual(result.data["function"], "02")
         self.assertEqual(result.data["data_point"], "02")
-        self.assertEqual(result.data["function_description"], "Read Data point")
-        self.assertEqual(result.data["data_point_description"], "Version")
+        self.assertEqual(result.data["function_description"], "READ_DATAPOINT")
+        self.assertEqual(result.data["data_point_description"], "SW_VERSION")
 
     def test_validate_version_telegram_not_version(self):
         """Test validating non-version request telegrams."""
         telegram = SystemTelegram(
             serial_number="0020030837",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             checksum="XX",
             raw_telegram="<S0020030837F02D18XX>",
             timestamp=datetime.now(),
@@ -157,7 +157,7 @@ class TestVersionService(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertIsNone(result.error)
         self.assertFalse(result.data["is_version_request"])
-        self.assertEqual(result.data["data_point_description"], "Temperature")
+        self.assertEqual(result.data["data_point_description"], "TEMPERATURE")
 
     def test_parse_version_reply_valid(self):
         """Test parsing valid version reply telegrams."""
@@ -173,7 +173,7 @@ class TestVersionService(unittest.TestCase):
                 telegram = ReplyTelegram(
                     serial_number=serial_number,
                     system_function=SystemFunction.READ_DATAPOINT,
-                    data_point_id=DataPointType.VERSION,
+                    datapoint_type=DataPointType.SW_VERSION,
                     data_value=data_value,
                     checksum="XX",
                     raw_telegram=f"<R{serial_number}F02D02{data_value}XX>",
@@ -200,7 +200,7 @@ class TestVersionService(unittest.TestCase):
         telegram = ReplyTelegram(
             serial_number="0020000000",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,
+            datapoint_type=DataPointType.SW_VERSION,
             data_value="INVALID_FORMAT",
             checksum="XX",
             raw_telegram="<R0020000000F02D02INVALID_FORMATXX>",
@@ -220,7 +220,7 @@ class TestVersionService(unittest.TestCase):
         telegram = ReplyTelegram(
             serial_number="0020000000",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+25.0§C",
             checksum="XX",
             raw_telegram="<R0020000000F02D18+25.0§CXX>",

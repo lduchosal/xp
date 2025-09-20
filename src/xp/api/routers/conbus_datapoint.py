@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
     },
 )
 async def datapoint_devices(
-        datapoint: DataPointType = DataPointType.VERSION,
+        datapoint: DataPointType = DataPointType.SW_VERSION,
         serial_number: str = "1702033007"
     ) -> Union[DatapointResponse, DatapointErrorResponse, JSONResponse]:
     """
@@ -52,5 +52,5 @@ async def datapoint_devices(
     return DatapointResponse(
         success = True,
         result = response.datapoint_telegram.data_value,
-        description = response.datapoint_telegram.data_point_description,
+        description = response.datapoint_telegram.datapoint_type.name,
     )

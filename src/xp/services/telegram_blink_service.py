@@ -88,7 +88,7 @@ class BlinkService:
         telegram = SystemTelegram(
             serial_number=serial_number,
             system_function=SystemFunction.BLINK,
-            data_point_id=DataPointType.NONE,
+            datapoint_type=DataPointType.MODULE_TYPE,
             checksum=checksum,
             raw_telegram=raw_telegram,
         )
@@ -116,7 +116,7 @@ class BlinkService:
         telegram = SystemTelegram(
             serial_number=serial_number,
             system_function=SystemFunction.UNBLINK,
-            data_point_id=DataPointType.NONE,
+            datapoint_type=DataPointType.MODULE_TYPE,
             checksum=checksum,
             raw_telegram=raw_telegram,
         )

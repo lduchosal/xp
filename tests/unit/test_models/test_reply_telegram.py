@@ -19,7 +19,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020042796",
             system_function=SystemFunction.ACK,
-            data_point_id=DataPointType.NONE,
+            datapoint_type=DataPointType.MODULE_TYPE,
             data_value="",
             checksum="FF",
             raw_telegram="<R0020042796F18DFF>",
@@ -27,7 +27,7 @@ class TestReplyTelegram:
 
         assert telegram.serial_number == "0020042796"
         assert telegram.system_function == SystemFunction.ACK
-        assert telegram.data_point_id == DataPointType.NONE
+        assert telegram.datapoint_type == DataPointType.MODULE_TYPE
         assert telegram.checksum == "FF"
         assert telegram.raw_telegram == "<R0020042796F18DFF>"
         assert telegram.timestamp is not None
@@ -39,7 +39,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
@@ -47,7 +47,7 @@ class TestReplyTelegram:
 
         assert telegram.serial_number == "0020012521"
         assert telegram.system_function == SystemFunction.READ_DATAPOINT
-        assert telegram.data_point_id == DataPointType.TEMPERATURE
+        assert telegram.datapoint_type == DataPointType.TEMPERATURE
         assert telegram.data_value == "+26,0§C"
         assert telegram.checksum == "IL"
         assert telegram.raw_telegram == "<R0020012521F02D18+26,0§CIL>"
@@ -60,7 +60,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
@@ -74,47 +74,47 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
         )
 
-        assert telegram.function_description == "Data Response"
+        assert telegram.system_function.name == "READ_DATAPOINT"
 
         # Test other functions
         telegram.system_function = SystemFunction.WRITE_CONFIG
-        assert telegram.function_description == "Write Configuration Response"
+        assert telegram.system_function.name == "WRITE_CONFIG"
 
         telegram.system_function = SystemFunction.READ_CONFIG
-        assert telegram.function_description == "Configuration Response"
+        assert telegram.system_function.name == "READ_CONFIG"
 
     def test_data_point_description(self):
         """Test data point description property."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
         )
 
-        assert telegram.data_point_description == "Temperature"
+        assert telegram.datapoint_type.name == "TEMPERATURE"
 
         # Test other data points
-        telegram.data_point_id = DataPointType.HUMIDITY
-        assert telegram.data_point_description == "Humidity"
+        telegram.datapoint_type = DataPointType.SW_TOP_VERSION
+        assert telegram.datapoint_type.name == "SW_TOP_VERSION"
 
-        telegram.data_point_id = DataPointType.VOLTAGE
-        assert telegram.data_point_description == "Voltage"
+        telegram.datapoint_type = DataPointType.VOLTAGE
+        assert telegram.datapoint_type.name == "VOLTAGE"
 
     def test_parse_temperature_value(self):
         """Test temperature value parsing."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
@@ -133,7 +133,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="-15,5§C",
             checksum="AB",
             raw_telegram="<R0020012521F02D18-15,5§CAB>",
@@ -151,7 +151,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.HUMIDITY,
+            datapoint_type=DataPointType.SW_TOP_VERSION,
             data_value="+65,5§RH",
             checksum="XY",
             raw_telegram="<R0020012521F02D19+65,5§RHXY>",
@@ -170,7 +170,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VOLTAGE,
+            datapoint_type=DataPointType.VOLTAGE,
             data_value="+12,5§V",
             checksum="VW",
             raw_telegram="<R0020012521F02D20+12,5§VVW>",
@@ -189,7 +189,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.CURRENT,
+            datapoint_type=DataPointType.MODULE_ENERGY_LEVEL,
             data_value="+0,25§A",
             checksum="CD",
             raw_telegram="<R0020012521F02D21+0,25§ACD>",
@@ -208,7 +208,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.NONE,
+            datapoint_type=DataPointType.MODULE_TYPE,
             data_value="OK",
             checksum="ST",
             raw_telegram="<R0020012521F02D00OKST>",
@@ -225,7 +225,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="invalid§C",
             checksum="ER",
             raw_telegram="<R0020012521F02D18invalid§CER>",
@@ -242,7 +242,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="nounit",
             checksum="ER",
             raw_telegram="<R0020012521F02D18nounitER>",
@@ -258,7 +258,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
@@ -269,9 +269,9 @@ class TestReplyTelegram:
         assert isinstance(result, dict)
         assert result["serial_number"] == "0020012521"
         assert result["system_function"]["code"] == "02"
-        assert result["system_function"]["description"] == "Data Response"
-        assert result["data_point_id"]["code"] == "18"
-        assert result["data_point_id"]["description"] == "Temperature"
+        assert result["system_function"]["description"] == "READ_DATAPOINT"
+        assert result["datapoint_type"]["code"] == "18"
+        assert result["datapoint_type"]["description"] == "TEMPERATURE"
         assert result["data_value"]["raw"] == "+26,0§C"
         assert result["data_value"]["parsed"]["parsed"] is True
         assert result["data_value"]["parsed"]["value"] == 26.0
@@ -285,7 +285,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
@@ -294,8 +294,8 @@ class TestReplyTelegram:
         str_repr = str(telegram)
 
         assert "Reply Telegram" in str_repr
-        assert "Data Response" in str_repr
-        assert "Temperature" in str_repr
+        assert "READ_DATAPOINT" in str_repr
+        assert "TEMPERATURE" in str_repr
         assert "26.0°C" in str_repr
         assert "0020012521" in str_repr
 
@@ -304,7 +304,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.NONE,
+            datapoint_type=DataPointType.MODULE_TYPE,
             data_value="CUSTOM_STATUS",
             checksum="CS",
             raw_telegram="<R0020012521F02D00CUSTOM_STATUSCS>",
@@ -331,7 +331,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value=data_value,
             checksum="AB",
             raw_telegram=f"<R0020012521F02D18{data_value}AB>",
@@ -357,7 +357,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.HUMIDITY,
+            datapoint_type=DataPointType.SW_TOP_VERSION,
             data_value=data_value,
             checksum="AB",
             raw_telegram=f"<R0020012521F02D19{data_value}AB>",
@@ -378,7 +378,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VOLTAGE,
+            datapoint_type=DataPointType.VOLTAGE,
             data_value=data_value,
             checksum="AB",
             raw_telegram=f"<R0020012521F02D20{data_value}AB>",
@@ -399,7 +399,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.CURRENT,
+            datapoint_type=DataPointType.MODULE_ENERGY_LEVEL,
             data_value=data_value,
             checksum="AB",
             raw_telegram=f"<R0020012521F02D21{data_value}AB>",
@@ -418,7 +418,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.NONE,  # Using status for custom data
+            datapoint_type=DataPointType.MODULE_TYPE,  # Using status for custom data
             data_value="UNKNOWN_DATA_FORMAT",
             checksum="UN",
             raw_telegram="<R0020012521F02D00UNKNOWN_DATA_FORMATUN>",
@@ -437,7 +437,7 @@ class TestReplyTelegram:
         telegram1 = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
@@ -447,7 +447,7 @@ class TestReplyTelegram:
         telegram2 = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
@@ -464,7 +464,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",

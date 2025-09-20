@@ -36,7 +36,7 @@ class XP24ServerService(BaseServerService):
         """Generate temperature response telegram (simulated)"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.TEMPERATURE
+            and request.datapoint_type == DataPointType.TEMPERATURE
         ):
             # Simulate temperature reading: +23.5°C
             temperature_value = "+23,5§C"
@@ -52,11 +52,11 @@ class XP24ServerService(BaseServerService):
     ) -> Optional[str]:
         """Handle XP24-specific data requests"""
         if request.system_function == SystemFunction.READ_DATAPOINT:
-            if request.data_point_id == DataPointType.TEMPERATURE:
+            if request.datapoint_type == DataPointType.TEMPERATURE:
                 return self.generate_temperature_response(request)
 
         if request.system_function == SystemFunction.ACTION:
-            if request.data_point_id == DataPointType.TEMPERATURE:
+            if request.datapoint_type == DataPointType.TEMPERATURE:
                 return self.generate_temperature_response(request)
 
         return None

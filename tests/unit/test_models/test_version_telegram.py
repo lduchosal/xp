@@ -17,7 +17,7 @@ class TestVersionSystemTelegram(unittest.TestCase):
         self.version_system_telegram = SystemTelegram(
             serial_number="0020030837",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,
+            datapoint_type=DataPointType.SW_VERSION,
             checksum="FM",
             raw_telegram="<S0020030837F02D02FM>",
             timestamp=datetime.now(),
@@ -31,7 +31,7 @@ class TestVersionSystemTelegram(unittest.TestCase):
             self.version_system_telegram.system_function, SystemFunction.READ_DATAPOINT
         )
         self.assertEqual(
-            self.version_system_telegram.data_point_id, DataPointType.VERSION
+            self.version_system_telegram.datapoint_type, DataPointType.SW_VERSION
         )
         self.assertEqual(self.version_system_telegram.checksum, "FM")
         self.assertTrue(self.version_system_telegram.checksum_validated)
@@ -39,9 +39,9 @@ class TestVersionSystemTelegram(unittest.TestCase):
     def test_version_system_telegram_descriptions(self):
         """Test human-readable descriptions for version telegram."""
         self.assertEqual(
-            self.version_system_telegram.function_description, "Read Data point"
+            self.version_system_telegram.system_function.name, "READ_DATAPOINT"
         )
-        self.assertEqual(self.version_system_telegram.data_point_description, "Version")
+        self.assertEqual(self.version_system_telegram.datapoint_type.name, "SW_VERSION")
 
     def test_version_system_telegram_to_dict(self):
         """Test converting version system telegram to dictionary."""
@@ -49,16 +49,16 @@ class TestVersionSystemTelegram(unittest.TestCase):
 
         self.assertEqual(result["serial_number"], "0020030837")
         self.assertEqual(result["system_function"]["code"], "02")
-        self.assertEqual(result["system_function"]["description"], "Read Data point")
-        self.assertEqual(result["data_point_id"]["code"], "02")
-        self.assertEqual(result["data_point_id"]["description"], "Version")
+        self.assertEqual(result["system_function"]["description"], "READ_DATAPOINT")
+        self.assertEqual(result["datapoint_type"]["code"], "02")
+        self.assertEqual(result["datapoint_type"]["description"], "SW_VERSION")
         self.assertEqual(result["checksum"], "FM")
         self.assertTrue(result["checksum_validated"])
         self.assertEqual(result["telegram_type"], "system")
 
     def test_version_system_telegram_str(self):
         """Test string representation of version system telegram."""
-        expected = "System Telegram: Read Data point for Version from device 0020030837"
+        expected = "System Telegram: READ_DATAPOINT for SW_VERSION from device 0020030837"
         self.assertEqual(str(self.version_system_telegram), expected)
 
 
@@ -70,7 +70,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
         self.version_reply_telegram = ReplyTelegram(
             serial_number="0020030837",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,
+            datapoint_type=DataPointType.SW_VERSION,
             data_value="XP230_V1.00.04",
             checksum="FI",
             raw_telegram="<R0020030837F02D02XP230_V1.00.04FI>",
@@ -81,7 +81,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
         self.invalid_version_reply = ReplyTelegram(
             serial_number="0020044966",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,
+            datapoint_type=DataPointType.SW_VERSION,
             data_value="INVALID_FORMAT",
             checksum="XX",
             raw_telegram="<R0020044966F02D02INVALID_FORMATXX>",
@@ -96,7 +96,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
             self.version_reply_telegram.system_function, SystemFunction.READ_DATAPOINT
         )
         self.assertEqual(
-            self.version_reply_telegram.data_point_id, DataPointType.VERSION
+            self.version_reply_telegram.datapoint_type, DataPointType.SW_VERSION
         )
         self.assertEqual(self.version_reply_telegram.data_value, "XP230_V1.00.04")
         self.assertEqual(self.version_reply_telegram.checksum, "FI")
@@ -105,9 +105,9 @@ class TestVersionReplyTelegram(unittest.TestCase):
     def test_version_reply_telegram_descriptions(self):
         """Test human-readable descriptions for version reply telegram."""
         self.assertEqual(
-            self.version_reply_telegram.function_description, "Data Response"
+            self.version_reply_telegram.system_function.name, "READ_DATAPOINT"
         )
-        self.assertEqual(self.version_reply_telegram.data_point_description, "Version")
+        self.assertEqual(self.version_reply_telegram.datapoint_type.name, "SW_VERSION")
 
     def test_version_reply_telegram_parsed_value_valid(self):
         """Test parsing valid version value."""
@@ -136,9 +136,9 @@ class TestVersionReplyTelegram(unittest.TestCase):
 
         self.assertEqual(result["serial_number"], "0020030837")
         self.assertEqual(result["system_function"]["code"], "02")
-        self.assertEqual(result["system_function"]["description"], "Data Response")
-        self.assertEqual(result["data_point_id"]["code"], "02")
-        self.assertEqual(result["data_point_id"]["description"], "Version")
+        self.assertEqual(result["system_function"]["description"], "READ_DATAPOINT")
+        self.assertEqual(result["datapoint_type"]["code"], "02")
+        self.assertEqual(result["datapoint_type"]["description"], "Version")
         self.assertEqual(result["data_value"]["raw"], "XP230_V1.00.04")
         self.assertTrue(result["data_value"]["parsed"]["parsed"])
         self.assertEqual(result["data_value"]["parsed"]["product"], "XP230")
@@ -148,12 +148,12 @@ class TestVersionReplyTelegram(unittest.TestCase):
 
     def test_version_reply_telegram_str_valid(self):
         """Test string representation of version reply telegram with valid version."""
-        expected = "Reply Telegram: Data Response for Version = XP230 v1.00.04 from device 0020030837"
+        expected = "Reply Telegram: READ_DATAPOINT for Version = XP230 v1.00.04 from device 0020030837"
         self.assertEqual(str(self.version_reply_telegram), expected)
 
     def test_version_reply_telegram_str_invalid(self):
         """Test string representation of version reply telegram with invalid version."""
-        expected = "Reply Telegram: Data Response for Version = INVALID_FORMAT from device 0020044966"
+        expected = "Reply Telegram: READ_DATAPOINT for Version = INVALID_FORMAT from device 0020044966"
         self.assertEqual(str(self.invalid_version_reply), expected)
 
     def test_version_formats(self):
@@ -184,7 +184,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
                 telegram = ReplyTelegram(
                     serial_number="0020000000",
                     system_function=SystemFunction.READ_DATAPOINT,
-                    data_point_id=DataPointType.VERSION,
+                    datapoint_type=DataPointType.SW_VERSION,
                     data_value=data_value,
                     checksum="XX",
                     raw_telegram=f"<R0020000000F02D02{data_value}XX>",

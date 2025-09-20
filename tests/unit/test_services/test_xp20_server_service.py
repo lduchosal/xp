@@ -39,7 +39,7 @@ class TestXP20ServerService:
             raw_telegram="<S0020037487F02D07FJ>",
             serial_number="0020037487",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp20_service.generate_module_type_response(request)
@@ -57,7 +57,7 @@ class TestXP20ServerService:
             raw_telegram="<S0020037487F01D07FJ>",
             serial_number="0020037487",
             system_function=SystemFunction.DISCOVERY,  # Wrong function
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp20_service.generate_module_type_response(request)
@@ -70,7 +70,7 @@ class TestXP20ServerService:
             raw_telegram="<S0020037487F02D07FJ>",
             serial_number="0020037487",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp20_service.process_system_telegram(request)
@@ -87,7 +87,7 @@ class TestXP20ServerService:
             raw_telegram="<S0000000000F02D07FJ>",
             serial_number="0000000000",  # Broadcast
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp20_service.process_system_telegram(request)

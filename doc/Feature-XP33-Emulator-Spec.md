@@ -47,7 +47,7 @@ XP33 3-channel light dimmer module emulator for Conbus system testing. Responds 
 **Request**: `<S0020042796F02D12FM>`  
 **Response**: `<R0020042796F02D12xxxxx000BF>` (3 channels at 0% dimming)
 
-### 04 - Link Number
+### 04 - LINK_NUMBER
 **Request**: `<S0020042796F02D04FL>`  
 **Response**: `<R0020042796F02D0404FO>` (links 4 configured)
 

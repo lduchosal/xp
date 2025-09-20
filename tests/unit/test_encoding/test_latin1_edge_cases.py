@@ -85,7 +85,7 @@ class Latin1TestServer:
         latin1_responses = {
             # Temperature request with § symbol (0xa7)
             "<S0020012521F02D18FN>": "<R0020012521F02D18+31,5§CIE>",
-            # Voltage request with © symbol (0xa9)
+            # VOLTAGE request with © symbol (0xa9)
             "<S0020030837F02D20FM>": "<R0020030837F02D20+12,5V©OK>",
             # Current request with ® symbol (0xae)
             "<S0020044966F02D21FL>": "<R0020044966F02D21+2,3A®OK>",

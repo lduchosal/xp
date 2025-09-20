@@ -38,7 +38,7 @@ class BaseServerService(ABC):
         """Generate module type response telegram"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.MODULE_TYPE_CODE
+            and request.datapoint_type == DataPointType.MODULE_TYPE_CODE
         ):
             if self.module_type_code is None:
                 self.logger.error(f"Module type code not set for {self.device_type}")
@@ -85,7 +85,7 @@ class BaseServerService(ABC):
         """Generate version response telegram"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.VERSION
+            and request.datapoint_type == DataPointType.SW_VERSION
         ):
             data_part = f"R{self.serial_number}F02D02{self.firmware_version}"
             telegram = self._build_response_telegram(data_part)
@@ -97,12 +97,12 @@ class BaseServerService(ABC):
     def generate_status_response(
         self,
         request: SystemTelegram,
-        status_data_point: DataPointType = DataPointType.NONE,
+        status_data_point: DataPointType = DataPointType.MODULE_TYPE,
     ) -> Optional[str]:
         """Generate status response telegram"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == status_data_point
+            and request.datapoint_type == status_data_point
         ):
             data_part = f"R{self.serial_number}F02D00{self.device_status}"
             telegram = self._build_response_telegram(data_part)
@@ -115,7 +115,7 @@ class BaseServerService(ABC):
         """Generate link number response telegram"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.LINK_NUMBER
+            and request.datapoint_type == DataPointType.LINK_NUMBER
         ):
             link_hex = f"{self.link_number:02X}"
             data_part = f"R{self.serial_number}F02D04{link_hex}"
@@ -131,7 +131,7 @@ class BaseServerService(ABC):
         """Set link number and generate ACK response"""
         if (
             request.system_function == SystemFunction.WRITE_CONFIG
-            and request.data_point_id == DataPointType.LINK_NUMBER
+            and request.datapoint_type == DataPointType.LINK_NUMBER
         ):
             # Update internal link number
             self.link_number = new_link_number
@@ -166,15 +166,15 @@ class BaseServerService(ABC):
 
     def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
         """Handle RETURN_DATA requests - can be overridden by subclasses"""
-        if request.data_point_id == DataPointType.VERSION:
+        if request.datapoint_type == DataPointType.SW_VERSION:
             return self.generate_version_response(request)
-        elif request.data_point_id == DataPointType.NONE:
-            return self.generate_status_response(request, DataPointType.NONE)
-        elif request.data_point_id == DataPointType.STATUS_QUERY:
-            return self.generate_status_response(request, DataPointType.STATUS_QUERY)
-        elif request.data_point_id == DataPointType.LINK_NUMBER:
+        elif request.datapoint_type == DataPointType.MODULE_TYPE:
+            return self.generate_status_response(request, DataPointType.MODULE_TYPE)
+        elif request.datapoint_type == DataPointType.MODULE_ERROR_CODE:
+            return self.generate_status_response(request, DataPointType.MODULE_ERROR_CODE)
+        elif request.datapoint_type == DataPointType.LINK_NUMBER:
             return self.generate_link_number_response(request)
-        elif request.data_point_id == DataPointType.MODULE_TYPE_CODE:
+        elif request.datapoint_type == DataPointType.MODULE_TYPE_CODE:
             return self.generate_module_type_response(request)
 
         # Allow device-specific handlers
@@ -188,7 +188,7 @@ class BaseServerService(ABC):
 
     def _handle_write_config_request(self, request: SystemTelegram) -> Optional[str]:
         """Handle WRITE_CONFIG requests"""
-        if request.data_point_id == DataPointType.LINK_NUMBER:
+        if request.datapoint_type == DataPointType.LINK_NUMBER:
             return self.set_link_number(request, 1)  # Default implementation
 
         return self._handle_device_specific_config_request()

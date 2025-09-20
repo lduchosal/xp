@@ -102,7 +102,7 @@ class TestBlinkService:
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0020044964"
         assert telegram.system_function == SystemFunction.BLINK
-        assert telegram.data_point_id == DataPointType.NONE
+        assert telegram.datapoint_type == DataPointType.MODULE_TYPE
         assert telegram.raw_telegram == "<S0020044964F05D00FN>"
         assert telegram.checksum == "FN"
 
@@ -115,7 +115,7 @@ class TestBlinkService:
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0020030837"
         assert telegram.system_function == SystemFunction.UNBLINK
-        assert telegram.data_point_id == DataPointType.NONE
+        assert telegram.datapoint_type == DataPointType.MODULE_TYPE
         assert telegram.raw_telegram == "<S0020030837F06D00FK>"
         assert telegram.checksum == "FK"
 

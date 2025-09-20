@@ -56,7 +56,7 @@ class ConbusInputService:
         # Send status query using custom telegram method
         response = self.datapoint_service.send_telegram(
             serial_number,
-            DataPointType.CHANNEL_STATES  # "12"
+            DataPointType.MODULE_OUTPUT_STATE  # "12"
         )
 
         return response

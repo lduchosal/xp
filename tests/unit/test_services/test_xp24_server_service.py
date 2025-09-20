@@ -39,7 +39,7 @@ class TestXP24ServerService:
             raw_telegram="<S0020044991F02D07FH>",
             serial_number="0020044991",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp24_service.generate_module_type_response(request)
@@ -55,7 +55,7 @@ class TestXP24ServerService:
             raw_telegram="<S0020044991F01D07FH>",
             serial_number="0020044991",
             system_function=SystemFunction.DISCOVERY,  # Wrong function
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp24_service.generate_module_type_response(request)
@@ -68,7 +68,7 @@ class TestXP24ServerService:
             raw_telegram="<S0020044991F02D02FH>",
             serial_number="0020044991",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.VERSION,  # Wrong data point
+            datapoint_type=DataPointType.SW_VERSION,  # Wrong data point
         )
 
         response = self.xp24_service.generate_module_type_response(request)
@@ -81,7 +81,7 @@ class TestXP24ServerService:
             raw_telegram="<S0020044991F02D07FH>",
             serial_number="0020044991",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp24_service.process_system_telegram(request)
@@ -97,7 +97,7 @@ class TestXP24ServerService:
             raw_telegram="<S9999999999F02D07FH>",
             serial_number="9999999999",  # Different serial
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp24_service.process_system_telegram(request)
@@ -110,7 +110,7 @@ class TestXP24ServerService:
             raw_telegram="<S0000000000F02D07FH>",
             serial_number="0000000000",  # Broadcast
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp24_service.process_system_telegram(request)

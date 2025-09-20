@@ -83,5 +83,5 @@ async def input_status(serial: str) -> Union[DatapointResponse, InputErrorRespon
     return DatapointResponse(
         success = True,
         result = response.datapoint_telegram.data_value,
-        description = response.datapoint_telegram.data_point_description,
+        description = response.datapoint_telegram.datapoint_type.name,
     )

@@ -28,7 +28,7 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
   ```python
   def generate_version_response(self, request: SystemTelegram) -> Optional[str]:
       if (request.system_function == SystemFunction.READ_DATAPOINT and
-          request.data_point_id == DataPointType.VERSION):
+          request.datapoint_type == DataPointType.SW_VERSION):
           data_part = f"R{self.serial_number}F02D02{self.firmware_version}"
           checksum = calculate_checksum(data_part)
           telegram = f"<{data_part}{checksum}>"
@@ -45,7 +45,7 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
   ```python
   def generate_status_response(self, request: SystemTelegram) -> Optional[str]:
       if (request.system_function == SystemFunction.READ_DATAPOINT and
-          request.data_point_id == DataPointType.NONE):  # or STATUS_QUERY for XP33
+          request.datapoint_type == DataPointType.MODULE_TYPE):  # or STATUS_QUERY for XP33
           data_part = f"R{self.serial_number}F02D00{self.device_status}"
           checksum = calculate_checksum(data_part)
           telegram = f"<{data_part}{checksum}>"
@@ -54,14 +54,14 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
       return None
   ```
 
-#### 4. **Link Number Response Generation** (95% identical)
+#### 4. **LINK_NUMBER Response Generation** (95% identical)
 - **Files**: All 5 XP services
 - **Method**: `generate_link_number_response(request: SystemTelegram)`
 - **Pattern**:
   ```python
   def generate_link_number_response(self, request: SystemTelegram) -> Optional[str]:
       if (request.system_function == SystemFunction.READ_DATAPOINT and
-          request.data_point_id == DataPointType.LINK_NUMBER):
+          request.datapoint_type == DataPointType.LINK_NUMBER):
           link_hex = f"{self.link_number:02X}"
           data_part = f"R{self.serial_number}F02D04{link_hex}"
           checksum = calculate_checksum(data_part)
@@ -71,14 +71,14 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
       return None
   ```
 
-#### 5. **Link Number Setting** (100% identical)
+#### 5. **LINK_NUMBER Setting** (100% identical)
 - **Files**: All 5 XP services
 - **Method**: `set_link_number(request: SystemTelegram, new_link_number: int)`
 - **Pattern**:
   ```python
   def set_link_number(self, request: SystemTelegram, new_link_number: int) -> Optional[str]:
       if (request.system_function == SystemFunction.WRITE_CONFIG and
-          request.data_point_id == DataPointType.LINK_NUMBER):
+          request.datapoint_type == DataPointType.LINK_NUMBER):
           self.link_number = new_link_number
           data_part = f"R{self.serial_number}F18D"
           checksum = calculate_checksum(data_part)
@@ -135,17 +135,12 @@ Move the following methods to `BaseServerService`:
 
 ```python
 def generate_discovery_response(self) -> str:
-
-
     def generate_version_response(self, request: SystemTelegram) -> Optional[str]
 
-
     def generate_status_response(self, request: SystemTelegram,
-                                 status_data_point: DataPointType = DataPointType.NONE) -> Optional[str]
-
+                                 status_data_point: DataPointType = DataPointType.MODULE_TYPE) -> Optional[str]
 
     def generate_link_number_response(self, request: SystemTelegram) -> Optional[str]
-
 
     def set_link_number(self, request: SystemTelegram, new_link_number: int) -> Optional[str]
 ```
@@ -197,13 +192,13 @@ def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
 
 def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
     """Handle RETURN_DATA requests - can be overridden by subclasses"""
-    if request.data_point_id == DataPointType.VERSION:
+    if request.datapoint_type == DataPointType.SW_VERSION:
         return self.generate_version_response(request)
-    elif request.data_point_id in [DataPointType.NONE, DataPointType.STATUS_QUERY]:
-        return self.generate_status_response(request, request.data_point_id)
-    elif request.data_point_id == DataPointType.LINK_NUMBER:
+    elif request.datapoint_type in [DataPointType.MODULE_TYPE, DataPointType.MODULE_ERROR_CODE]:
+        return self.generate_status_response(request, request.datapoint_type)
+    elif request.datapoint_type == DataPointType.LINK_NUMBER:
         return self.generate_link_number_response(request)
-    elif request.data_point_id == DataPointType.MODULE_TYPE_CODE:
+    elif request.datapoint_type == DataPointType.MODULE_TYPE_CODE:
         return self.generate_module_type_response(request)
 
     # Allow device-specific handlers
@@ -217,7 +212,7 @@ def _handle_device_specific_data_request(self, request: SystemTelegram) -> Optio
 
 def _handle_write_config_request(self, request: SystemTelegram) -> Optional[str]:
     """Handle WRITE_CONFIG requests"""
-    if request.data_point_id == DataPointType.LINK_NUMBER:
+    if request.datapoint_type == DataPointType.LINK_NUMBER:
         return self.set_link_number(request, 1)  # Default implementation
 
     return self._handle_device_specific_config_request(request)

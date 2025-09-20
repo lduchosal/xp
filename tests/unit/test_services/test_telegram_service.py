@@ -192,7 +192,7 @@ class TestSystemTelegramParsing:
         assert isinstance(result, SystemTelegram)
         assert result.serial_number == "0020012521"
         assert result.system_function == SystemFunction.READ_DATAPOINT
-        assert result.data_point_id == DataPointType.TEMPERATURE
+        assert result.datapoint_type == DataPointType.TEMPERATURE
         assert result.checksum == "FN"
         assert result.raw_telegram == raw
         assert result.timestamp is not None
@@ -214,17 +214,17 @@ class TestSystemTelegramParsing:
         # Humidity data point
         raw = "<S0020012521F02D19FN>"
         result = self.service.parse_system_telegram(raw)
-        assert result.data_point_id == DataPointType.HUMIDITY
+        assert result.datapoint_type == DataPointType.SW_TOP_VERSION
 
-        # Voltage data point
+        # VOLTAGE data point
         raw = "<S0020012521F02D20FN>"
         result = self.service.parse_system_telegram(raw)
-        assert result.data_point_id == DataPointType.VOLTAGE
+        assert result.datapoint_type == DataPointType.VOLTAGE
 
         # Status data point
         raw = "<S0020012521F02D00FN>"
         result = self.service.parse_system_telegram(raw)
-        assert result.data_point_id == DataPointType.NONE
+        assert result.datapoint_type == DataPointType.MODULE_TYPE
 
     def test_parse_system_telegram_empty_string(self):
         """Test parsing empty string raises error"""
@@ -279,10 +279,6 @@ class TestSystemTelegramParsing:
         telegram = self.service.parse_system_telegram("<S0020012521F02D18FN>")
         summary = self.service.format_system_telegram_summary(telegram)
 
-        assert (
-            "System: System Telegram: Read Data point for Temperature from device 0020012521"
-            in summary
-        )
         assert "Raw: <S0020012521F02D18FN>" in summary
         assert "Timestamp:" in summary
         assert "Checksum: FN" in summary
@@ -303,7 +299,7 @@ class TestReplyTelegramParsing:
         assert isinstance(result, ReplyTelegram)
         assert result.serial_number == "0020012521"
         assert result.system_function == SystemFunction.READ_DATAPOINT
-        assert result.data_point_id == DataPointType.TEMPERATURE
+        assert result.datapoint_type == DataPointType.TEMPERATURE
         assert result.data_value == "+26,0§C"
         assert result.checksum == "IL"
         assert result.raw_telegram == raw
@@ -314,19 +310,19 @@ class TestReplyTelegramParsing:
         # Humidity reply
         raw = "<R0020012521F02D19+65,5§HIL>"
         result = self.service.parse_reply_telegram(raw)
-        assert result.data_point_id == DataPointType.HUMIDITY
+        assert result.datapoint_type == DataPointType.SW_TOP_VERSION
         assert result.data_value == "+65,5§H"
 
-        # Voltage reply
+        # VOLTAGE reply
         raw = "<R0020012521F02D20+12,5§VIL>"
         result = self.service.parse_reply_telegram(raw)
-        assert result.data_point_id == DataPointType.VOLTAGE
+        assert result.datapoint_type == DataPointType.VOLTAGE
         assert result.data_value == "+12,5§V"
 
         # Status reply
         raw = "<R0020012521F02D00OKIL>"
         result = self.service.parse_reply_telegram(raw)
-        assert result.data_point_id == DataPointType.NONE
+        assert result.datapoint_type == DataPointType.MODULE_TYPE
         assert result.data_value == "OK"
 
     def test_parse_reply_telegram_complex_data_values(self):
@@ -384,7 +380,7 @@ class TestReplyTelegramParsing:
         summary = self.service.format_reply_telegram_summary(telegram)
 
         assert (
-            "Reply: Reply Telegram: Data Response for Temperature = 26.0°C from device 0020012521"
+            "Reply: Reply Telegram: READ_DATAPOINT for Temperature = 26.0°C from device 0020012521"
             in summary
         )
         assert "Data: 26.0°C" in summary

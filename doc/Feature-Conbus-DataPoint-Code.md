@@ -12,11 +12,11 @@ The following datapoints are already implemented in the codebase:
 
 - **00**: Status - General device status (`DataPointType.STATUS`)
 - **02**: Version - Firmware version information (`DataPointType.VERSION`)
-- **04**: Link Number - Device link configuration (`DataPointType.LINK_NUMBER`)
+- **04**: LINK_NUMBER - Device link configuration (`DataPointType.LINK_NUMBER`)
 - **17**: Current - Current measurement data (`DataPointType.CURRENT`)
 - **18**: Temperature - Temperature sensor data (`DataPointType.TEMPERATURE`)
 - **19**: Humidity - Humidity sensor data (`DataPointType.HUMIDITY`)
-- **20**: Voltage - Voltage measurement data (`DataPointType.VOLTAGE`)
+- **20**: VOLTAGE - VOLTAGE measurement data (`DataPointType.VOLTAGE`)
 
 ## Missing Datapoints Requiring Implementation
 
@@ -157,7 +157,7 @@ class DataPointType(Enum):
     CURRENT = "17"          # Current data point (implemented)
     TEMPERATURE = "18"      # Temperature data point (implemented)
     HUMIDITY = "19"         # Humidity data point (implemented)
-    VOLTAGE = "20"          # Voltage data point (implemented)
+    VOLTAGE = "20"          # VOLTAGE data point (implemented)
 ```
 
 ### 2. Update Response Generation Services
@@ -169,7 +169,7 @@ Add response methods for each new datapoint in both XP24 and XP20 server service
 def generate_device_type_response(self, request: SystemTelegram) -> Optional[str]:
     """Generate device type response telegram"""
     if (request.system_function == SystemFunction.READ_DATAPOINT and
-            request.data_point_id == DataPointType.DEVICE_TYPE):
+            request.datapoint_type == DataPointType.DEVICE_TYPE):
         data_part = f"R{self.serial_number}F02D01{self.device_type}"
         checksum = calculate_checksum(data_part)
         telegram = f"<{data_part}{checksum}>"

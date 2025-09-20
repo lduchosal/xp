@@ -78,7 +78,7 @@ class TestLogEntry:
         system_telegram = SystemTelegram(
             serial_number="0020044964",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             checksum="FN",
             raw_telegram="<S0020044964F02D18FN>",
         )
@@ -99,7 +99,7 @@ class TestLogEntry:
         reply_telegram = ReplyTelegram(
             serial_number="0020044964",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.TEMPERATURE,
+            datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020044964F02D18+26,0§CIL>",
