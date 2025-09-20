@@ -4,6 +4,7 @@ from typing import Union
 from ..models import EventType
 from ..models.datapoint_type import DataPointType
 from ..models.event_telegram import EventTelegram
+from ..models.output_telegram import OutputTelegram
 from ..models.reply_telegram import ReplyTelegram
 from ..models.system_function import SystemFunction
 from ..models.system_telegram import SystemTelegram
@@ -21,19 +22,23 @@ class TelegramService:
     Service for parsing event telegrams from the console bus.
 
     Handles parsing of telegrams in the format:
-    <E{module_type}L{link_number}I{output_number}{event_type}{checksum}>
+    <[EO]{module_type}L{link_number}I{output_number}{event_type}{checksum}>
     """
 
-    # Regex patterns for different telegram types
+    # <O06L00I07MAG>
+    # <O06L00I07BAJ>
+    # <E13L12I02BAB>
     EVENT_TELEGRAM_PATTERN = re.compile(
-        r"^<E(\d{1,2})L(\d{2})I(\d{2})([MB])([A-Z0-9]{2})>$"
+        r"^<([EO])(\d{1,2})L(\d{2})I(\d{2})([MB])([A-Z0-9]{2})>$"
     )
 
     SYSTEM_TELEGRAM_PATTERN = re.compile(
         r"^<S(\d{10})F(\d{2})D(\d{2})(.*?)([A-Z0-9]{2})>$"
     )
 
-    REPLY_TELEGRAM_PATTERN = re.compile(r"^<R(\d{10})F(\d{2})(.+?)([A-Z0-9]{2})>$")
+    REPLY_TELEGRAM_PATTERN = re.compile(
+        r"^<R(\d{10})F(\d{2})(.+?)([A-Z0-9]{2})>$"
+    )
 
     def __init__(self):
         """Initialize the telegram service"""
@@ -61,13 +66,20 @@ class TelegramService:
             raise TelegramParsingError(f"Invalid telegram format: {raw_telegram}")
 
         try:
-            module_type = int(match.group(1))
-            link_number = int(match.group(2))
-            output_number = int(match.group(3))
-            event_type_char = match.group(4)
-            checksum = match.group(5)
+            event_telegram_type = match.group(1)
+            module_type = int(match.group(2))
+            link_number = int(match.group(3))
+            output_number = int(match.group(4))
+            event_type_char = match.group(5)
+            checksum = match.group(6)
 
             # Validate ranges
+            if event_telegram_type not in ["E", "O"]:
+                raise TelegramParsingError(
+                    f"Event telegram type (E or O): {event_telegram_type}"
+                )
+
+
             if not (0 <= link_number <= 99):
                 raise TelegramParsingError(
                     f"Link number out of range (0-99): {link_number}"
@@ -103,7 +115,7 @@ class TelegramService:
             raise TelegramParsingError(f"Invalid numeric values in telegram: {e}")
 
     @staticmethod
-    def validate_checksum(telegram: Union[EventTelegram, ReplyTelegram, SystemTelegram]) -> bool:
+    def validate_checksum(telegram: Union[EventTelegram, ReplyTelegram, SystemTelegram, OutputTelegram]) -> bool:
         """
         Validate the checksum of a parsed telegram.
 

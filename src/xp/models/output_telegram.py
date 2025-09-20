@@ -1,6 +1,6 @@
 """XP input telegram model for console bus communication.
 
-XP input telegrams are used for controlling relay inputs on XP modules.
+XP output telegrams are used for controlling relay inputs on XP modules.
 Each XP24 module has 4 inputs (0-3) that can be pressed or released.
 Each XP33 module has 3 inputs (0-2) that can be pressed or released.
 Each XP31 module has 1 inputs (0-0) that can be pressed or released.

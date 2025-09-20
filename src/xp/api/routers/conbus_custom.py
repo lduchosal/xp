@@ -7,26 +7,26 @@ from fastapi.responses import JSONResponse
 
 from .conbus import router
 from .errors import handle_service_error
-from ..models.custom import CustomResponse, CustomErrorResponse
+from ..models.api import ApiResponse, ApiErrorResponse
 from ...services.conbus_custom_service import ConbusCustomService
 
 logger = logging.getLogger(__name__)
 
 @router.get(
     "/custom/{serial_number}/{function_code}/{data}",
-    response_model=Union[CustomResponse, CustomErrorResponse],
+    response_model=Union[ApiResponse, ApiErrorResponse],
     responses={
-        200: {"model": CustomResponse, "description": "Datapoint completed successfully"},
-        400: {"model": CustomErrorResponse, "description": "Connection or request error"},
-        408: {"model": CustomErrorResponse, "description": "Request timeout"},
-        500: {"model": CustomErrorResponse, "description": "Internal server error"},
+        200: {"model": ApiResponse, "description": "Datapoint completed successfully"},
+        400: {"model": ApiErrorResponse, "description": "Connection or request error"},
+        408: {"model": ApiErrorResponse, "description": "Request timeout"},
+        500: {"model": ApiErrorResponse, "description": "Internal server error"},
     },
 )
 async def custom_function(
         serial_number: str = "1702033007",
         function_code: str = "02",
         data = "00"
-    ) -> Union[CustomResponse, CustomErrorResponse, JSONResponse]:
+    ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate a Datapoint operation to find devices on the network.
 
@@ -41,13 +41,13 @@ async def custom_function(
         return handle_service_error(response.error)
 
     if response.reply_telegram is None:
-        return CustomErrorResponse(
+        return ApiErrorResponse(
             success=False,
             error=response.error,
         )
 
     # Build successful response
-    return CustomResponse(
+    return ApiResponse(
         success = True,
         result = response.reply_telegram.data_value,
         description = response.reply_telegram.datapoint_type.name,

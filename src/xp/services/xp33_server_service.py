@@ -102,55 +102,6 @@ class XP33ServerService(BaseServerService):
             return True
         return False
 
-    def generate_channel_control_response(
-        self, request: SystemTelegram
-    ) -> Optional[str]:
-        """Generate individual channel control response"""
-        # Check for individual channel data points
-        channel_mapping = {
-            DataPointType.MODULE_FW_CRC: 1,
-            DataPointType.MODULE_ACTION_TABLE_CRC: 2,
-            DataPointType.MODULE_LIGHT_LEVEL: 3,
-        }
-
-        if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type in channel_mapping
-        ):
-            channel = channel_mapping[request.datapoint_type]
-
-            # Return current channel state in 5-hex format
-            ch1_hex = f"{int(self.channel_states[0] * 100 / 100):02X}"
-            ch2_hex = f"{int(self.channel_states[1] * 100 / 100):02X}"
-            ch3_hex = f"{int(self.channel_states[2] * 100 / 100):02X}"
-
-            channel_data = f"{ch1_hex}{ch2_hex}{ch3_hex}00"
-            data_part = (
-                f"R{self.serial_number}F02D{request.datapoint_type.value}{channel_data}"
-            )
-            telegram = self._build_response_telegram(data_part)
-            self._log_response(f"channel {channel}", telegram)
-            return telegram
-
-        return None
-
-    def _handle_device_specific_data_request(
-        self, request: SystemTelegram
-    ) -> Optional[str]:
-        """Handle XP33-specific data requests"""
-        if request.datapoint_type == DataPointType.MODULE_ERROR_CODE:
-            return self.generate_status_response(request, DataPointType.MODULE_ERROR_CODE)
-        elif request.datapoint_type == DataPointType.MODULE_OUTPUT_STATE:
-            return self.generate_channel_states_response(request)
-        elif request.datapoint_type in [
-            DataPointType.MODULE_FW_CRC,
-            DataPointType.MODULE_ACTION_TABLE_CRC,
-            DataPointType.MODULE_LIGHT_LEVEL,
-        ]:
-            return self.generate_channel_control_response(request)
-
-        return None
-
     def generate_status_response(
         self,
         request: SystemTelegram,

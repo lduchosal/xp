@@ -207,28 +207,6 @@ class TestXP33ServerService:
         assert self.xp33lr_service.activate_scene(5) is False
         assert self.xp33lr_service.activate_scene(-1) is False
 
-    def test_generate_channel_control_response(self):
-        """Test individual channel control responses"""
-        # Set some channel levels first
-        self.xp33lr_service.set_channel_dimming(1, 32)
-        self.xp33lr_service.set_channel_dimming(2, 64)
-        self.xp33lr_service.set_channel_dimming(3, 16)
-
-        # Test channel 1 control
-        request = SystemTelegram(
-            checksum="FN",
-            raw_telegram="<S0020042796F02D13FN>",
-            serial_number="0020042796",
-            system_function=SystemFunction.READ_DATAPOINT,
-            datapoint_type=DataPointType.MODULE_FW_CRC,
-        )
-
-        response = self.xp33lr_service.generate_channel_control_response(request)
-
-        assert response is not None
-        assert "F02D13" in response
-        assert "20401000" in response  # 32, 64, 16 in hex + padding
-
     def test_process_system_telegram_discovery(self):
         """Test processing discovery system telegram"""
         request = SystemTelegram(

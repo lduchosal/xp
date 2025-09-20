@@ -3,8 +3,9 @@ import click
 from xp.models.system_function import SystemFunction
 
 
+# noinspection DuplicatedCode
 class SystemFunctionChoice(click.ParamType):
-    name = "telegram_type"
+    name = "system_function"
 
     def __init__(self):
         self.choices = [key.lower() for key in SystemFunction.__members__.keys()]
@@ -25,4 +26,4 @@ class SystemFunctionChoice(click.ParamType):
                   f'Choose from: {", ".join(self.choices)}',
                   param, ctx)
 
-SYSTEMFUNCTION = SystemFunctionChoice()
+SYSTEM_FUNCTION = SystemFunctionChoice()

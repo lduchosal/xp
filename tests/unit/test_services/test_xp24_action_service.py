@@ -158,58 +158,6 @@ class TestXP24ActionService:
 
     # Checksum validation tests
 
-    @patch("xp.services.telegram_input_service.calculate_checksum")
-    def test_validate_checksum_valid(self, mock_checksum):
-        """Test validate_checksum with valid checksum."""
-        mock_checksum.return_value = "FN"
-
-        telegram = OutputTelegram(checksum="FN", raw_telegram="<S0020044964F27D00AAFN>")
-
-        result = self.service.validate_checksum(telegram)
-
-        assert result is True
-        mock_checksum.assert_called_once_with("S0020044964F27D00AA")
-
-    @patch("xp.services.telegram_input_service.calculate_checksum")
-    def test_validate_checksum_invalid(self, mock_checksum):
-        """Test validate_checksum with invalid checksum."""
-        mock_checksum.return_value = "FN"
-
-        telegram = OutputTelegram(checksum="XX", raw_telegram="<S0020044964F27D00AAXX>")
-
-        result = self.service.validate_checksum(telegram)
-
-        assert result is False
-
-    def test_validate_checksum_malformed_telegram(self):
-        """Test validate_checksum with malformed telegram."""
-        telegram = OutputTelegram(checksum="FN", raw_telegram="invalid_telegram")
-
-        result = self.service.validate_checksum(telegram)
-
-        assert result is False
-
-    def test_validate_checksum_empty_checksum(self):
-        """Test validate_checksum with empty checksum."""
-        telegram = OutputTelegram(checksum="", raw_telegram="<S0020044964F27D00AA>")
-
-        result = self.service.validate_checksum(telegram)
-
-        assert result is False
-
-    def test_validate_checksum_wrong_length(self):
-        """Test validate_checksum with wrong checksum length."""
-        telegram = OutputTelegram(
-            checksum="F",
-            raw_telegram="<S0020044964F27D00AAF>",  # Only 1 character
-        )
-
-        result = self.service.validate_checksum(telegram)
-
-        assert result is False
-
-    # Status parsing tests
-
     def test_parse_status_response_valid(self):
         """Test parse_status_response with valid response."""
         result = self.service.parse_status_response("<R0020044964F02D12xxxx1110FJ>")

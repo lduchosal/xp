@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from .conbus import router
 from .errors import handle_service_error
-from ..models.datapoint import DatapointResponse, DatapointErrorResponse
+from ..models.api import ApiResponse, ApiErrorResponse
 from ...services.conbus_datapoint_service import ConbusDatapointService
 from xp.models.datapoint_type import DataPointType
 
@@ -15,18 +15,18 @@ logger = logging.getLogger(__name__)
 
 @router.get(
     "/datapoint/{datapoint}/{serial_number}",
-    response_model=Union[DatapointResponse, DatapointErrorResponse],
+    response_model=Union[ApiResponse, ApiErrorResponse],
     responses={
-        200: {"model": DatapointResponse, "description": "Datapoint completed successfully"},
-        400: {"model": DatapointErrorResponse, "description": "Connection or request error"},
-        408: {"model": DatapointErrorResponse, "description": "Request timeout"},
-        500: {"model": DatapointErrorResponse, "description": "Internal server error"},
+        200: {"model": ApiResponse, "description": "Datapoint completed successfully"},
+        400: {"model": ApiErrorResponse, "description": "Connection or request error"},
+        408: {"model": ApiErrorResponse, "description": "Request timeout"},
+        500: {"model": ApiErrorResponse, "description": "Internal server error"},
     },
 )
 async def datapoint_devices(
         datapoint: DataPointType = DataPointType.SW_VERSION,
         serial_number: str = "1702033007"
-    ) -> Union[DatapointResponse, DatapointErrorResponse, JSONResponse]:
+    ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate a Datapoint operation to find devices on the network.
 
@@ -43,13 +43,13 @@ async def datapoint_devices(
         return handle_service_error(response.error)
 
     if response.datapoint_telegram is None:
-        return DatapointErrorResponse(
+        return ApiErrorResponse(
             success=False,
             error=response.error,
         )
 
     # Build successful response
-    return DatapointResponse(
+    return ApiResponse(
         success = True,
         result = response.datapoint_telegram.data_value,
         description = response.datapoint_telegram.datapoint_type.name,

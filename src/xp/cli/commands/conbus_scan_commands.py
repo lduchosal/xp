@@ -44,6 +44,7 @@ def scan_module(
     successful_count = 0
     failed_count = 0
 
+    # noinspection PyUnusedLocal
     def progress_callback(response, total, count):
         nonlocal successful_count, failed_count
         results.append(response)

@@ -138,9 +138,39 @@ class ConbusService:
             last_activity=self.last_activity,
         )
 
+    @staticmethod
+    def _parse_telegrams(raw_data: str) -> List[str]:
+        """Parse raw data and extract telegrams using < and > delimiters"""
+        telegrams = []
+        if not raw_data:
+            return telegrams
+
+        # Find all telegram patterns <...>
+        start_pos = 0
+        while True:
+            # Find the start of next telegram
+            start_idx = raw_data.find('<', start_pos)
+            if start_idx == -1:
+                break
+
+            # Find the end of this telegram
+            end_idx = raw_data.find('>', start_idx)
+            if end_idx == -1:
+                # Incomplete telegram at the end
+                break
+
+            # Extract telegram including < and >
+            telegram = raw_data[start_idx:end_idx + 1]
+            if telegram.strip():
+                telegrams.append(telegram.strip())
+
+            start_pos = end_idx + 1
+
+        return telegrams
+
     def _receive_responses(self) -> List[str]:
-        """Receive responses from the server"""
-        responses = []
+        """Receive responses from the server and properly split telegrams"""
+        accumulated_data = ""
 
         try:
             # Set a shorter timeout for receiving responses
@@ -153,11 +183,10 @@ class ConbusService:
                     if not data:
                         break
 
-                    message = data.decode("latin-1").strip()
-                    if message:
-                        responses.append(message)
-                        self.logger.info(f"Received: {message}")
-                        self.last_activity = datetime.now()
+                    # Accumulate all received data
+                    message = data.decode("latin-1")
+                    accumulated_data += message
+                    self.last_activity = datetime.now()
 
                 except socket.timeout:
                     # No more data available
@@ -169,7 +198,12 @@ class ConbusService:
         except Exception as e:
             self.logger.error(f"Error receiving responses: {e}")
 
-        return responses
+        # Parse telegrams from accumulated data
+        telegrams = self._parse_telegrams(accumulated_data)
+        for telegram in telegrams:
+            self.logger.info(f"Received telegram: {telegram}")
+
+        return telegrams
 
     def send_telegram(
         self, serial_number: str, system_function: SystemFunction, data: str
@@ -180,8 +214,8 @@ class ConbusService:
         telegram_body = f"S{serial_number}F{function_code}D{data}"
         checksum = calculate_checksum(telegram_body)
         telegram = f"<{telegram_body}{checksum}>"
-        response = self.send_raw_telegram(telegram)
-        return response
+
+        return  self.send_raw_telegram(telegram)
 
     def send_telegram_body(
         self, telegram_body: str
@@ -189,8 +223,8 @@ class ConbusService:
         """Send custom telegram with specified function and data point codes"""
         checksum = calculate_checksum(telegram_body)
         telegram = f"<{telegram_body}{checksum}>"
-        response = self.send_raw_telegram(telegram)
-        return response
+
+        return self.send_raw_telegram(telegram)
 
     def send_raw_telegram(
             self, telegram: str

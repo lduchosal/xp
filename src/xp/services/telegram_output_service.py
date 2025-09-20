@@ -3,6 +3,7 @@
 import re
 from typing import Dict
 
+from . import TelegramService
 from ..models.action_type import ActionType
 from ..models.datapoint_type import DataPointType
 from ..models.output_telegram import OutputTelegram
@@ -25,6 +26,8 @@ class TelegramOutputService:
     """
 
     MAX_INPUTS = 99
+
+    telegram_service = TelegramService()
 
     # Regex pattern for XP24 action telegrams
     XP_OUTPUT_PATTERN = re.compile(r"^<S(\d{10})F27D(\d{2})(A[AB])([A-Z0-9]{2})>$")
@@ -181,7 +184,7 @@ class TelegramOutputService:
             )
 
             # Validate checksum
-            telegram.checksum_validated = self.validate_checksum(telegram)
+            telegram.checksum_validated = self.telegram_service.validate_checksum(telegram)
 
             return telegram
 
@@ -234,39 +237,12 @@ class TelegramOutputService:
             )
 
             # Validate checksum
-            telegram.checksum_validated = self.validate_checksum(telegram)
+            telegram.checksum_validated = self.telegram_service.validate_checksum(telegram)
 
             return telegram
 
         except ValueError as e:
             raise XPOutputError(f"Invalid values in XP24 action telegram: {e}")
-
-    @staticmethod
-    def validate_checksum(telegram: OutputTelegram) -> bool:
-        """
-        Validate the checksum of a parsed XP24 action telegram.
-
-        Args:
-            telegram: The parsed telegram
-
-        Returns:
-            True if checksum is valid, False otherwise
-        """
-        if not telegram.checksum or len(telegram.checksum) != 2:
-            return False
-
-        # Extract the data part (everything between < and checksum)
-        raw = telegram.raw_telegram
-        if not raw.startswith("<") or not raw.endswith(">"):
-            return False
-
-        # Get the data part without brackets and checksum
-        data_part = raw[1:-3]  # Remove '<' and last 2 chars (checksum) + '>'
-
-        # Calculate expected checksum
-        expected_checksum = calculate_checksum(data_part)
-
-        return telegram.checksum == expected_checksum
 
     @staticmethod
     def parse_status_response(raw_telegram: str) -> Dict[int, bool]:

@@ -3,6 +3,7 @@ import click
 from xp.models.datapoint_type import DataPointType
 
 
+# noinspection DuplicatedCode
 class DatapointTypeChoice(click.ParamType):
     name = "telegram_type"
 

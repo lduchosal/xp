@@ -13,13 +13,14 @@ class EventTelegram(Telegram):
     """
     Represents a parsed event telegram from the console bus.
 
-    Format: <E{module_type}L{link_number}I{input_number}{event_type}{checksum}>
+    Format: <[EO]{module_type}L{link_number}I{input_number}{event_type}{checksum}>
     Examples:
 
         \b
         <E14L00I02MAK>
     """
 
+    event_telegram_type: str = "E" # E or O
     module_type: int = 0
     link_number: int = 0
     input_number: int = 0

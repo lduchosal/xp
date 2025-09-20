@@ -4,14 +4,14 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-class OutputResponse(BaseModel):
+class ApiResponse(BaseModel):
     """Response model for successful Input operation."""
 
     success: bool = Field(default=True, description="Operation success status")
-    result: Optional[str] = Field(default=str, description="Input result string")
-    description: Optional[str]  = Field(default=str, description="Input description")
+    result: Optional[str] = Field(default=str, description="Result")
+    description: Optional[str]  = Field(default=str, description="Description")
 
-class OutputErrorResponse(BaseModel):
+class ApiErrorResponse(BaseModel):
     """Response model for failed Input operation."""
 
     success: bool = Field(default=False, description="Operation success status")
