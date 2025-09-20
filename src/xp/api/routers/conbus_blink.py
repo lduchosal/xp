@@ -44,7 +44,7 @@ async def blink_on(serial_number: str = "1702033007") -> Union[ApiResponse, ApiE
         success = True,
         result = response.system_function.name,
         description = response.reply_telegram.system_function.get_description(),
-        # raw_telegram = response.input_telegram.raw_telegram,
+        # raw_telegram = response.output_telegram.raw_telegram,
     )
 
 
@@ -82,5 +82,5 @@ async def blink_off(
         success = True,
         result = response.system_function.name,
         description = response.reply_telegram.system_function.get_description(),
-        # raw_telegram = response.input_telegram.raw_telegram,
+        # raw_telegram = response.output_telegram.raw_telegram,
     )

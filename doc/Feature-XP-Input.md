@@ -146,7 +146,7 @@ def xp_action(serial_number: str, output_number: int, action: str, json_output: 
 ## Tests
 
 ### Unit Tests
-- `tests/unit/test_models/test_input_telegram.py`
+- `tests/unit/test_models/test_output_telegram.py`
 - `tests/unit/test_services/test_xp24_action_service.py`
 - `tests/unit/test_cli/test_action_commands.py`
 

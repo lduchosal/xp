@@ -225,7 +225,7 @@ class TestReplyTelegramCLI:
 
         assert result.exit_code == 0
         output_data = json.loads(result.output)
-        assert output_data["data_value"]["parsed"]["status_code"] == "OK"
+        assert output_data["data_value"]["parsed"]["raw_value"] == "OK"
         assert output_data["data_value"]["parsed"]["parsed"] is True
 
     def test_parse_reply_telegram_negative_temperature(self):

@@ -36,7 +36,7 @@ class ConbusOutputService:
 
         # Service dependencies
         self.telegram_service = TelegramService()
-        self.telegram_input_service = TelegramOutputService()
+        self.telegram_output_service = TelegramOutputService()
         self.datapoint_service = ConbusDatapointService()
         self.conbus_service = ConbusService(config_path)
 
@@ -64,7 +64,7 @@ class ConbusOutputService:
     def send_action(self, serial_number:str, output_number:int, action_type:ActionType) -> ConbusOutputResponse:
 
         # Parse input number and send action
-        self.telegram_input_service.validate_output_number(output_number)
+        self.telegram_output_service.validate_output_number(output_number)
 
         # Send action telegram using custom telegram method
         # Format: F27D{input:02d}AA (Function 27, input number, PRESS action)
@@ -88,13 +88,13 @@ class ConbusOutputService:
             )
 
         telegram = response.received_telegrams[0]
-        input_telegram = self.telegram_input_service.parse_reply_telegram(telegram)
+        output_telegram = self.telegram_output_service.parse_reply_telegram(telegram)
 
         return ConbusOutputResponse(
             success=response.success,
             serial_number=serial_number,
             output_number=output_number,
             action_type=action_type,
-            output_telegram=input_telegram,
+            output_telegram=output_telegram,
             timestamp=response.timestamp,
         )

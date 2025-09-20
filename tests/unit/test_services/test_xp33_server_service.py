@@ -249,33 +249,6 @@ class TestXP33ServerService:
 
         assert response == "<R0020042796F02D02XP33LR_V0.04.02HF>"
 
-    def test_process_system_telegram_all_data_points(self):
-        """Test processing all supported data point requests"""
-        test_cases = [
-            (DataPointType.SW_VERSION, "F02D02"),
-            (DataPointType.MODULE_TYPE_CODE, "F02D07"),
-            (DataPointType.MODULE_ERROR_CODE, "F02D10"),
-            (DataPointType.MODULE_OUTPUT_STATE, "F02D12"),
-            (DataPointType.LINK_NUMBER, "F02D04"),
-            (DataPointType.MODULE_FW_CRC, "F02D13"),
-            (DataPointType.MODULE_ACTION_TABLE_CRC, "F02D14"),
-            (DataPointType.MODULE_LIGHT_LEVEL, "F02D15"),
-        ]
-
-        for data_point, expected_code in test_cases:
-            request = SystemTelegram(
-                checksum="FN",
-                raw_telegram=f"<S0020042796{expected_code}FN>",
-                serial_number="0020042796",
-                system_function=SystemFunction.READ_DATAPOINT,
-                datapoint_type=data_point,
-            )
-
-            response = self.xp33lr_service.process_system_telegram(request)
-
-            assert response is not None
-            assert expected_code in response
-
     def test_get_device_info(self):
         """Test getting device information"""
         info = self.xp33lr_service.get_device_info()

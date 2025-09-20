@@ -49,7 +49,7 @@ async def input_action(
         success = True,
         result = response.output_telegram.system_function.name,
         description = response.output_telegram.system_function.get_description(),
-        # raw_telegram = response.input_telegram.raw_telegram,
+        # raw_telegram = response.output_telegram.raw_telegram,
     )
 
 

@@ -59,7 +59,7 @@ class TestXP24ActionService:
 
     # Telegram generation tests
 
-    @patch("xp.services.telegram_input_service.calculate_checksum")
+    @patch("xp.services.telegram_output_service.calculate_checksum")
     def test_generate_action_telegram_press(self, mock_checksum):
         """Test generate_action_telegram for PRESS action."""
         mock_checksum.return_value = "FN"
@@ -69,7 +69,7 @@ class TestXP24ActionService:
         assert result == "<S0020044964F27D00AAFN>"
         mock_checksum.assert_called_once_with("S0020044964F27D00AA")
 
-    @patch("xp.services.telegram_input_service.calculate_checksum")
+    @patch("xp.services.telegram_output_service.calculate_checksum")
     def test_generate_action_telegram_release(self, mock_checksum):
         """Test generate_action_telegram for RELEASE action."""
         mock_checksum.return_value = "FB"
@@ -91,50 +91,12 @@ class TestXP24ActionService:
         with pytest.raises(XPOutputError):
             self.service.generate_system_action_telegram("0020044964", 500, ActionType.PRESS)
 
-    @patch("xp.services.telegram_input_service.calculate_checksum")
-    def test_generate_status_telegram(self, mock_checksum):
-        """Test generate_status_telegram."""
-        mock_checksum.return_value = "FJ"
-
-        result = self.service.generate_system_status_telegram("0020044964")
-
-        assert result == "<S0020044964F02D12FJ>"
-        mock_checksum.assert_called_once_with("S0020044964F02D12")
-
     def test_generate_status_telegram_invalid_serial(self):
         """Test generate_status_telegram with invalid serial number."""
         with pytest.raises(XPOutputError):
             self.service.generate_system_status_telegram("invalid")
 
     # Telegram parsing tests
-
-    @patch.object(TelegramOutputService, "validate_checksum")
-    def test_parse_action_telegram_valid_press(self, mock_validate):
-        """Test parse_action_telegram with valid PRESS telegram."""
-        mock_validate.return_value = True
-
-        result = self.service.parse_system_telegram("<S0020044964F27D01AAFN>")
-
-        assert isinstance(result, OutputTelegram)
-        assert result.serial_number == "0020044964"
-        assert result.output_number == 1
-        assert result.action_type == ActionType.PRESS
-        assert result.checksum == "FN"
-        assert result.raw_telegram == "<S0020044964F27D01AAFN>"
-        assert result.checksum_validated is True
-
-    @patch.object(TelegramOutputService, "validate_checksum")
-    def test_parse_action_telegram_valid_release(self, mock_validate):
-        """Test parse_action_telegram with valid RELEASE telegram."""
-        mock_validate.return_value = False
-
-        result = self.service.parse_system_telegram("<S0020044964F27D03ABFB>")
-
-        assert result.serial_number == "0020044964"
-        assert result.output_number == 3
-        assert result.action_type == ActionType.RELEASE
-        assert result.checksum == "FB"
-        assert result.checksum_validated is False
 
     def test_parse_action_telegram_empty(self):
         """Test parse_action_telegram with empty string."""

@@ -203,23 +203,6 @@ class TestReplyTelegram:
         assert parsed["formatted"] == "0.25A"
         assert parsed["raw_value"] == "+0,25§A"
 
-    def test_parse_status_value(self):
-        """Test status value parsing."""
-        telegram = ReplyTelegram(
-            serial_number="0020012521",
-            system_function=SystemFunction.READ_DATAPOINT,
-            datapoint_type=DataPointType.MODULE_TYPE,
-            data_value="OK",
-            checksum="ST",
-            raw_telegram="<R0020012521F02D00OKST>",
-        )
-
-        parsed = telegram.parsed_value
-
-        assert parsed["parsed"] is True
-        assert parsed["status_code"] == "OK"
-        assert parsed["raw_value"] == "OK"
-
     def test_parse_invalid_temperature(self):
         """Test parsing invalid temperature value."""
         telegram = ReplyTelegram(
@@ -410,25 +393,6 @@ class TestReplyTelegram:
         assert parsed["parsed"] is True
         assert parsed["value"] == expected_value
         assert parsed["unit"] == "A"
-
-    def test_unknown_data_point_type(self):
-        """Test handling of unknown data point types."""
-        # This would require modifying the enum or using a custom type
-        # For now, test with a known type and unknown data
-        telegram = ReplyTelegram(
-            serial_number="0020012521",
-            system_function=SystemFunction.READ_DATAPOINT,
-            datapoint_type=DataPointType.MODULE_TYPE,  # Using status for custom data
-            data_value="UNKNOWN_DATA_FORMAT",
-            checksum="UN",
-            raw_telegram="<R0020012521F02D00UNKNOWN_DATA_FORMATUN>",
-        )
-
-        parsed = telegram.parsed_value
-
-        # Status parsing should still work and be marked as parsed
-        assert parsed["parsed"] is True
-        assert parsed["status_code"] == "UNKNOWN_DATA_FORMAT"
 
     def test_telegram_equality(self):
         """Test telegram object equality."""

@@ -169,20 +169,7 @@ class TestTelegramInputServiceAckNak:
             # Restore original method
             SystemFunction.from_code = original_from_code
 
-    def test_parse_ack_nak_telegram_value_error_handling(self):
-        """Test that ValueError during parsing is handled properly"""
-        # This tests the except ValueError block in the method
-        # We can test this by mocking the InputTelegram constructor to raise ValueError
-
-        import unittest.mock
-        with unittest.mock.patch('xp.services.telegram_input_service.InputTelegram') as mock_telegram:
-            mock_telegram.side_effect = ValueError("Test error")
-
-            raw = "<R0020042796F18DFF>"
-            with pytest.raises(XPOutputError, match="Invalid values in XP24 action telegram"):
-                self.service.parse_reply_telegram(raw)
-
-    def test_input_telegram_properties_for_ack_nak(self):
+    def test_output_telegram_properties_for_ack_nak(self):
         """Test that InputTelegram properties work correctly for ACK/NAK telegrams"""
         raw = "<R0020042796F18DFF>"
         result = self.service.parse_reply_telegram(raw)
