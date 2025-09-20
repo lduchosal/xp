@@ -23,6 +23,7 @@ class ReplyTelegram(Telegram):
 
     serial_number: str = ""
     system_function: Optional[SystemFunction] = None
+    data: str = ""
     datapoint_type: Optional[DataPointType] = None
     data_value: str = ""
 
@@ -42,9 +43,9 @@ class ReplyTelegram(Telegram):
         elif self.datapoint_type == DataPointType.MODULE_ENERGY_LEVEL:
             return self._parse_current_value()
         elif self.datapoint_type == DataPointType.MODULE_TYPE:
-            return self._parse_status_value()
+            return self._parse_module_type_value()
         elif self.datapoint_type == DataPointType.SW_VERSION:
-            return self._parse_version_value()
+            return self._parse_sw_version_value()
         else:
             return {"raw_value": self.data_value, "parsed": False}
 
@@ -140,16 +141,16 @@ class ReplyTelegram(Telegram):
                 "error": "Failed to parse current",
             }
 
-    def _parse_status_value(self) -> dict:
+    def _parse_module_type_value(self) -> dict:
         """Parse status value"""
         # Status values are typically alphanumeric codes
         return {
-            "status_code": self.data_value,
+            "module_type": self.data_value,
             "raw_value": self.data_value,
             "parsed": True,
         }
 
-    def _parse_version_value(self) -> dict:
+    def _parse_sw_version_value(self) -> dict:
         """Parse version value like 'XP230_V1.00.04'"""
         try:
             # Version format: {PRODUCT}_{VERSION}

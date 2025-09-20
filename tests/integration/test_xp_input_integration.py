@@ -4,7 +4,7 @@ import pytest
 
 from xp.models.action_type import ActionType
 from xp.services.conbus_datapoint_service import ConbusDatapointService
-from xp.services.telegram_input_service import TelegramInputService, XPInputError
+from xp.services.telegram_output_service import TelegramOutputService, XPOutputError
 
 
 class TestXPInputIntegration:
@@ -12,7 +12,7 @@ class TestXPInputIntegration:
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.input_service = TelegramInputService()
+        self.input_service = TelegramOutputService()
         self.conbus_service = ConbusDatapointService()
 
     def test_end_to_end_action_generation_and_parsing(self):
@@ -27,7 +27,7 @@ class TestXPInputIntegration:
 
         # Verify parsed data matches original
         assert parsed.serial_number == "0020044964"
-        assert parsed.input_number == 2
+        assert parsed.output_number == 2
         assert parsed.action_type == ActionType.RELEASE
         assert parsed.raw_telegram == original_telegram
         assert parsed.checksum_validated is True
@@ -65,7 +65,7 @@ class TestXPInputIntegration:
 
                 # Verify consistency
                 assert parsed.serial_number == "1234567890"
-                assert parsed.input_number == input_num
+                assert parsed.output_number == input_num
                 assert parsed.action_type == action
                 assert parsed.checksum_validated is True
 
@@ -121,17 +121,17 @@ class TestXPInputIntegration:
     def test_error_handling_integration(self):
         """Test error handling across service layers."""
         # Test invalid input number
-        with pytest.raises(XPInputError, match="Invalid input number: 100"):
+        with pytest.raises(XPOutputError, match="Invalid input number: 100"):
             self.input_service.generate_system_action_telegram(
                 "0020044964", 100, ActionType.PRESS
             )
 
         # Test invalid serial number
-        with pytest.raises(XPInputError, match="Invalid serial number: 123"):
+        with pytest.raises(XPOutputError, match="Invalid serial number: 123"):
             self.input_service.generate_system_status_telegram("123")
 
         # Test invalid telegram parsing
-        with pytest.raises(XPInputError, match="Invalid XP24 action telegram format"):
+        with pytest.raises(XPOutputError, match="Invalid XP24 action telegram format"):
             self.input_service.parse_system_telegram("<E14L00I02MAK>")
 
     def test_performance_requirements(self):

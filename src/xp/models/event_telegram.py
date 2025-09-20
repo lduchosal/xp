@@ -61,7 +61,7 @@ class EventTelegram(Telegram):
         result: dict[str, Any] = {
             "module_type": self.module_type,
             "link_number": self.link_number,
-            "input_number": self.input_number,
+            "output_number": self.input_number,
             "event_type": self.event_type.value,
             "event_type_name": (
                 "button_press" if self.is_button_press else "button_release"

@@ -154,7 +154,7 @@ class TestTimeUtils:
         dt = datetime(2023, 1, 1, 12, 0, 0, 0)
         assert calculate_duration_ms(dt, dt) == 0
 
-        # One millisecond difference
+        # One-millisecond difference
         start = datetime(2023, 1, 1, 12, 0, 0, 0)
         end = datetime(2023, 1, 1, 12, 0, 0, 1000)
         assert calculate_duration_ms(start, end) == 1

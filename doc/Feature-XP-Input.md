@@ -93,7 +93,7 @@ xp conbus xp24 0020044964 status
 class XP24ActionTelegram(Telegram):
     """XP24 action telegram model"""
     serial_number: str
-    input_number: int  # 0-3
+    output_number: int  # 0-3
     action_type: ActionType  # PRESS/RELEASE
     checksum: str
 ```
@@ -124,10 +124,10 @@ class XP24ActionService:
 ```python
 @conbus.command("xp24")
 @click.argument('serial_number')
-@click.argument('input_number_or_status', type=click.IntRange(0, 3))
+@click.argument('output_number_or_status', type=click.IntRange(0, 3))
 @connection_command()
 @handle_service_errors(ConbusClientSendError)
-def xp_action(serial_number: str, input_number: int, action: str, json_output: bool):
+def xp_action(serial_number: str, output_number: int, action: str, json_output: bool):
     """
     Send action command to XP24 module or query status.
     

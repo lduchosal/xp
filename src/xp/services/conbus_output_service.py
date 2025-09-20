@@ -8,22 +8,22 @@ import logging
 
 from .conbus_datapoint_service import ConbusDatapointService
 from .conbus_service import ConbusService
-from .telegram_input_service import TelegramInputService
+from .telegram_output_service import TelegramOutputService
 from ..models import ConbusDatapointResponse
 from ..models.action_type import ActionType
-from ..models.conbus_input import ConbusInputResponse
+from ..models.conbus_output import ConbusOutputResponse
 from ..models.datapoint_type import DataPointType
 from ..models.system_function import SystemFunction
 from ..services.telegram_service import TelegramService
 
 
-class ConbusInputError(Exception):
+class ConbusOutputError(Exception):
     """Raised when Conbus client send operations fail"""
 
     pass
 
 
-class ConbusInputService:
+class ConbusOutputService:
     """
     TCP client service for sending telegrams to Conbus servers.
 
@@ -36,7 +36,7 @@ class ConbusInputService:
 
         # Service dependencies
         self.telegram_service = TelegramService()
-        self.telegram_input_service = TelegramInputService()
+        self.telegram_input_service = TelegramOutputService()
         self.datapoint_service = ConbusDatapointService()
         self.conbus_service = ConbusService(config_path)
 
@@ -55,22 +55,22 @@ class ConbusInputService:
 
         # Send status query using custom telegram method
         response = self.datapoint_service.send_telegram(
-            serial_number,
-            DataPointType.MODULE_OUTPUT_STATE  # "12"
+            serial_number=serial_number,
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE  # "12"
         )
 
         return response
 
-    def send_action(self, serial_number:str, input_number:int, action_type:ActionType) -> ConbusInputResponse:
+    def send_action(self, serial_number:str, output_number:int, action_type:ActionType) -> ConbusOutputResponse:
 
         # Parse input number and send action
-        self.telegram_input_service.validate_input_number(input_number)
+        self.telegram_input_service.validate_output_number(output_number)
 
         # Send action telegram using custom telegram method
         # Format: F27D{input:02d}AA (Function 27, input number, PRESS action)
         action_value = action_type.value
 
-        input_action = f"{input_number:02d}{action_value}"
+        input_action = f"{output_number:02d}{action_value}"
         response = self.conbus_service.send_telegram(
             serial_number,
             SystemFunction.ACTION,  # "27"
@@ -78,10 +78,10 @@ class ConbusInputService:
         )
 
         if not response.success or not len(response.received_telegrams) > 0:
-            return ConbusInputResponse(
+            return ConbusOutputResponse(
                 success=response.success,
                 serial_number=serial_number,
-                input_number=input_number,
+                output_number=output_number,
                 action_type=action_type,
                 error=response.error,
                 timestamp=response.timestamp,
@@ -90,11 +90,11 @@ class ConbusInputService:
         telegram = response.received_telegrams[0]
         input_telegram = self.telegram_input_service.parse_reply_telegram(telegram)
 
-        return ConbusInputResponse(
+        return ConbusOutputResponse(
             success=response.success,
             serial_number=serial_number,
-            input_number=input_number,
+            output_number=output_number,
             action_type=action_type,
-            input_telegram=input_telegram,
+            output_telegram=input_telegram,
             timestamp=response.timestamp,
         )

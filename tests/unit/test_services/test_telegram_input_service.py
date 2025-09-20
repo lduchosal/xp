@@ -1,6 +1,6 @@
 import pytest
-from xp.services.telegram_input_service import TelegramInputService, XPInputError
-from xp.models.input_telegram import InputTelegram
+from xp.services.telegram_output_service import TelegramOutputService, XPOutputError
+from xp.models.output_telegram import OutputTelegram
 from xp.models.system_function import SystemFunction
 
 
@@ -9,20 +9,20 @@ class TestTelegramInputServiceAckNak:
 
     def setup_method(self):
         """Setup test fixtures"""
-        self.service = TelegramInputService()
+        self.service = TelegramOutputService()
 
     def test_parse_valid_ack_telegram(self):
         """Test parsing a valid ACK telegram"""
         raw = "<R0020042796F18DFF>"
         result = self.service.parse_reply_telegram(raw)
 
-        assert isinstance(result, InputTelegram)
+        assert isinstance(result, OutputTelegram)
         assert result.serial_number == "0020042796"
         assert result.system_function == SystemFunction.ACK
         assert result.checksum == "FF"
         assert result.raw_telegram == raw
         assert result.timestamp is not None
-        assert result.input_number is None  # ACK/NAK telegrams don't have input numbers
+        assert result.output_number is None  # ACK/NAK telegrams don't have input numbers
         assert result.action_type is None  # ACK/NAK telegrams don't have action types
 
     def test_parse_valid_nak_telegram(self):
@@ -30,7 +30,7 @@ class TestTelegramInputServiceAckNak:
         raw = "<R0020042796F19DAB>"
         result = self.service.parse_reply_telegram(raw)
 
-        assert isinstance(result, InputTelegram)
+        assert isinstance(result, OutputTelegram)
         assert result.serial_number == "0020042796"
         assert result.system_function == SystemFunction.NAK
         assert result.checksum == "AB"
@@ -70,7 +70,7 @@ class TestTelegramInputServiceAckNak:
 
     def test_parse_empty_telegram_raises_error(self):
         """Test that empty telegram raises XPInputError"""
-        with pytest.raises(XPInputError, match="Empty telegram string"):
+        with pytest.raises(XPOutputError, match="Empty telegram string"):
             self.service.parse_reply_telegram("")
 
     def test_parse_invalid_format_raises_error(self):
@@ -91,7 +91,7 @@ class TestTelegramInputServiceAckNak:
         ]
 
         for invalid in invalid_telegrams:
-            with pytest.raises(XPInputError, match="Invalid XP24 response telegram format"):
+            with pytest.raises(XPOutputError, match="Invalid XP24 response telegram format"):
                 print(f"Telegram {invalid}")
                 self.service.parse_reply_telegram(invalid)
 
@@ -102,7 +102,7 @@ class TestTelegramInputServiceAckNak:
 
         for func_code in invalid_function_codes:
             raw = f"<R0020042796F{func_code}DFF>"
-            with pytest.raises(XPInputError, match="Invalid XP24 response telegram format"):
+            with pytest.raises(XPOutputError, match="Invalid XP24 response telegram format"):
                 self.service.parse_reply_telegram(raw)
 
     def test_parse_with_whitespace(self):
@@ -128,7 +128,7 @@ class TestTelegramInputServiceAckNak:
         """Test that parsing only accepts uppercase checksums"""
         # The regex pattern expects uppercase checksums [A-Z0-9]
         raw = "<R0020042796F18Dff>"  # lowercase checksum should fail
-        with pytest.raises(XPInputError, match="Invalid XP24 response telegram format"):
+        with pytest.raises(XPOutputError, match="Invalid XP24 response telegram format"):
             self.service.parse_reply_telegram(raw)
 
     def test_parse_ack_nak_telegram_system_function_validation(self):
@@ -163,7 +163,7 @@ class TestTelegramInputServiceAckNak:
 
         try:
             raw = "<R0020042796F18DFF>"
-            with pytest.raises(XPInputError, match="Unknown system_function"):
+            with pytest.raises(XPOutputError, match="Unknown system_function"):
                 self.service.parse_reply_telegram(raw)
         finally:
             # Restore original method
@@ -179,7 +179,7 @@ class TestTelegramInputServiceAckNak:
             mock_telegram.side_effect = ValueError("Test error")
 
             raw = "<R0020042796F18DFF>"
-            with pytest.raises(XPInputError, match="Invalid values in XP24 action telegram"):
+            with pytest.raises(XPOutputError, match="Invalid values in XP24 action telegram"):
                 self.service.parse_reply_telegram(raw)
 
     def test_input_telegram_properties_for_ack_nak(self):
@@ -188,7 +188,7 @@ class TestTelegramInputServiceAckNak:
         result = self.service.parse_reply_telegram(raw)
 
         # Test that ACK/NAK telegrams have None for input-specific properties
-        assert result.input_number is None
+        assert result.output_number is None
         assert result.action_type is None
 
         # Test that system_function is properly set

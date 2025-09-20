@@ -4,6 +4,9 @@ from typing import Optional
 class DataPointType(str, Enum):
     """Data point types for system telegrams"""
 
+    # XP24 00:000[%],01:000[%],02:000[%],03:000[%]
+    # XP33 00:000[%],01:000[%],02:000[%]
+
     MODULE_TYPE = "00"  # General status
     HW_VERSION = "01"  # Hardware version information
     SW_VERSION = "02"  # Software version information
@@ -19,10 +22,21 @@ class DataPointType(str, Enum):
     MODULE_OUTPUT_STATE = "12"  # Channel states (XP33)
     MODULE_FW_CRC = "13"  # Module Firmware CRC
     MODULE_ACTION_TABLE_CRC = "14"  # Module Action Table CRC
+
+    # XP24 00:000[%],01:000[%],02:000[%],03:000[%]
+    # XP33 00:000[%],01:000[%],02:000[%]
     MODULE_LIGHT_LEVEL = "15"  # Module Light Level
+
+    # XP24 00:000[H],01:000[H],02:000[H],03:000[H]
     MODULE_OPERATING_HOURS = "16"  # Module Operating Hours
+
+    # XP24 00:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]
     MODULE_ENERGY_LEVEL = "17"  # Current data point
+
+    # XP24 +34,0C
+    # XP33 -20,0C
     TEMPERATURE = "18"  # Temperature data point
+
     SW_TOP_VERSION = "19"  # Software Top Version
     VOLTAGE = "20"  # VOLTAGE data point
     AUTO_REPORT_STATUS = "21"  # Auto Report Status

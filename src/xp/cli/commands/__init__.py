@@ -5,7 +5,7 @@ from .conbus_blink_commands import *
 from .conbus_config_commands import *
 from .conbus_custom_commands import *
 from .conbus_discover_commands import *
-from .conbus_input_commands import *
+from .conbus_output_commands import *
 from .conbus_scan_commands import *
 from .conbus_datapoint_commands import *
 

@@ -16,7 +16,7 @@ from .telegram import Telegram
 
 
 @dataclass
-class InputTelegram(Telegram):
+class OutputTelegram(Telegram):
     """
     Represents a parsed XP input telegram from the console bus.
 
@@ -25,7 +25,7 @@ class InputTelegram(Telegram):
     """
 
     serial_number: str = ""
-    input_number: Optional[int] = None  # 0-3 for XP24 modules, 0-2 for XP33, 0 for XP31
+    output_number: Optional[int] = None  # 0-3 for XP24 modules, 0-2 for XP33, 0 for XP31
     action_type: Optional[ActionType] = None
     system_function: SystemFunction = SystemFunction.ACTION
 
@@ -45,14 +45,14 @@ class InputTelegram(Telegram):
     @property
     def input_description(self) -> str:
         """Get human-readable input description"""
-        return f"Input {self.input_number}"
+        return f"Input {self.output_number}"
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization"""
         return {
             "serial_number": self.serial_number,
             "system_function": self.system_function,
-            "input_number": self.input_number,
+            "output_number": self.output_number,
             "input_description": self.input_description,
             "action_type": {
                 "code": self.action_type.value if self.action_type else None,

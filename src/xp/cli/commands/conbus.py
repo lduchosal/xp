@@ -18,12 +18,12 @@ def conbus_blink():
     pass
 
 
-@click.group(name="input", cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def conbus_input():
+@click.group(name="output", cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
+def conbus_output():
     """
     Conbus input operations to remote servers
     """
     pass
 
 conbus.add_command(conbus_blink)
-conbus.add_command(conbus_input)
+conbus.add_command(conbus_output)

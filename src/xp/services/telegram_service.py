@@ -21,7 +21,7 @@ class TelegramService:
     Service for parsing event telegrams from the console bus.
 
     Handles parsing of telegrams in the format:
-    <E{module_type}L{link_number}I{input_number}{event_type}{checksum}>
+    <E{module_type}L{link_number}I{output_number}{event_type}{checksum}>
     """
 
     # Regex patterns for different telegram types
@@ -63,7 +63,7 @@ class TelegramService:
         try:
             module_type = int(match.group(1))
             link_number = int(match.group(2))
-            input_number = int(match.group(3))
+            output_number = int(match.group(3))
             event_type_char = match.group(4)
             checksum = match.group(5)
 
@@ -73,9 +73,9 @@ class TelegramService:
                     f"Link number out of range (0-99): {link_number}"
                 )
 
-            if not (0 <= input_number <= 90):
+            if not (0 <= output_number <= 90):
                 raise TelegramParsingError(
-                    f"Input number out of range (0-90): {input_number}"
+                    f"Input number out of range (0-90): {output_number}"
                 )
 
             # Parse event type
@@ -88,7 +88,7 @@ class TelegramService:
             telegram = EventTelegram(
                 module_type=module_type,
                 link_number=link_number,
-                input_number=input_number,
+                input_number=output_number,
                 event_type=event_type,
                 checksum=checksum,
                 raw_telegram=raw_telegram,
@@ -178,7 +178,7 @@ class TelegramService:
         try:
             serial_number = match.group(1)
             function_code = match.group(2)
-            datapoint_code = match.group(3)
+            data = match.group(3)
             match.group(4)  # Optional data value
             checksum = match.group(5)
 
@@ -190,16 +190,13 @@ class TelegramService:
                 )
 
             # Parse data point type
-            data_point_type = DataPointType.from_code(datapoint_code)
-            if data_point_type is None:
-                raise TelegramParsingError(
-                    f"Unknown data point code: {datapoint_code}"
-                )
+            data_point_type = DataPointType.from_code(data)
 
             # Create the telegram object
             telegram = SystemTelegram(
                 serial_number=serial_number,
                 system_function=system_function,
+                data=data,
                 datapoint_type=data_point_type,
                 checksum=checksum,
                 raw_telegram=raw_telegram,
@@ -250,24 +247,21 @@ class TelegramService:
             # Parse data point and data value from full_data_value
             if full_data_value.startswith("D") and len(full_data_value) >= 3:
                 # Regular reply format: D{data_point}{data}
-                datapoint_code = full_data_value[1:3]
+                data = full_data_value[1:3]
                 data_value = full_data_value[3:] if len(full_data_value) > 3 else ""
             else:
                 # ACK/NAK format: just data (like "D" for ACK/NAK)
-                datapoint_code = "00"  # Default to STATUS
+                data = "00"  # Default to STATUS
                 data_value = full_data_value
 
             # Parse data point type
-            data_point_type = DataPointType.from_code(datapoint_code)
-            if data_point_type is None:
-                raise TelegramParsingError(
-                    f"Unknown data point code: {datapoint_code}"
-                )
+            data_point_type = DataPointType.from_code(data)
 
             # Create the telegram object
             telegram = ReplyTelegram(
                 serial_number=serial_number,
                 system_function=system_function,
+                data=data,
                 datapoint_type=data_point_type,
                 data_value=data_value,
                 checksum=checksum,

@@ -20,7 +20,7 @@ class TestEventTelegramIntegration:
         output = json.loads(result.output)
         assert output["module_type"] == 14
         assert output["link_number"] == 0
-        assert output["input_number"] == 2
+        assert output["output_number"] == 2
         assert output["event_type"] == "M"
         assert output["event_type_name"] == "button_press"
         assert output["input_type"] == "push_button"
@@ -39,7 +39,7 @@ class TestEventTelegramIntegration:
         output = json.loads(result.output)
         assert output["module_type"] == 14
         assert output["link_number"] == 0
-        assert output["input_number"] == 2
+        assert output["output_number"] == 2
         assert output["event_type"] == "M"
         assert output["event_type_name"] == "button_press"
         assert output["input_type"] == "push_button"
@@ -138,7 +138,7 @@ class TestEventTelegramIntegration:
         output = json.loads(result.output)
         assert output["module_type"] == 14
         assert output["link_number"] == 1
-        assert output["input_number"] == 3
+        assert output["output_number"] == 3
         assert output["event_type_name"] == "button_release"
 
     def test_parse_event_telegram_ir_remote(self):
@@ -151,7 +151,7 @@ class TestEventTelegramIntegration:
         output = json.loads(result.output)
         assert output["module_type"] == 14
         assert output["link_number"] == 0
-        assert output["input_number"] == 25
+        assert output["output_number"] == 25
         assert output["input_type"] == "ir_remote"
 
     def test_parse_event_telegram_proximity_sensor(self):
@@ -164,7 +164,7 @@ class TestEventTelegramIntegration:
         output = json.loads(result.output)
         assert output["module_type"] == 14
         assert output["link_number"] == 0
-        assert output["input_number"] == 90
+        assert output["output_number"] == 90
         assert output["input_type"] == "proximity_sensor"
 
     def test_end_to_end_workflow(self):

@@ -66,7 +66,7 @@ EXPECTED_PARSED_DATA = {
     "<E14L00I02MAK>": {
         "module_type": 14,
         "link_number": 0,
-        "input_number": 2,
+        "output_number": 2,
         "event_type": "M",
         "event_type_name": "button_press",
         "input_type": "push_button",
@@ -75,7 +75,7 @@ EXPECTED_PARSED_DATA = {
     "<E14L01I03BB1>": {
         "module_type": 14,
         "link_number": 1,
-        "input_number": 3,
+        "output_number": 3,
         "event_type": "B",
         "event_type_name": "button_release",
         "input_type": "push_button",
@@ -84,7 +84,7 @@ EXPECTED_PARSED_DATA = {
     "<E14L00I25MIR>": {
         "module_type": 14,
         "link_number": 0,
-        "input_number": 25,
+        "output_number": 25,
         "event_type": "M",
         "event_type_name": "button_press",
         "input_type": "ir_remote",
@@ -93,7 +93,7 @@ EXPECTED_PARSED_DATA = {
     "<E14L00I90MPS>": {
         "module_type": 14,
         "link_number": 0,
-        "input_number": 90,
+        "output_number": 90,
         "event_type": "M",
         "event_type_name": "button_press",
         "input_type": "proximity_sensor",
@@ -133,17 +133,17 @@ CLI_TEST_CASES = [
 def create_test_telegram(
     module_type=14,
     link_number=0,
-    input_number=2,
+    output_number=2,
     event_type=EventType.BUTTON_PRESS,
     checksum="AK",
 ):
     """Create a test EventTelegram object with specified parameters"""
-    raw_telegram = f"<E{module_type}L{link_number:02d}I{input_number:02d}{event_type.value}{checksum}>"
+    raw_telegram = f"<E{module_type}L{link_number:02d}I{output_number:02d}{event_type.value}{checksum}>"
 
     return EventTelegram(
         module_type=module_type,
         link_number=link_number,
-        input_number=input_number,
+        input_number=output_number,
         event_type=event_type,
         checksum=checksum,
         raw_telegram=raw_telegram,

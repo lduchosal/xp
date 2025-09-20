@@ -8,20 +8,20 @@ from ...models.action_type import ActionType
 from ...services.conbus_datapoint_service import (
     ConbusDatapointError,
 )
-from ...services.conbus_input_service import ConbusInputService
+from ...services.conbus_output_service import ConbusOutputService
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from .conbus import conbus_input
+from .conbus import conbus_output
 
-@conbus_input.command("on")
+@conbus_output.command("on")
 @click.argument("serial_number", type=SERIAL)
-@click.argument("input_number", type=int)
+@click.argument("output_number", type=int)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def xp_input_on(
-    serial_number: str, input_number: int
+def xp_output_on(
+    serial_number: str, output_number: int
 ):
     """Send input command to XP module or query status.
 
@@ -30,20 +30,20 @@ def xp_input_on(
     \b
         xp conbus input on 0011223344 0  # Toggle input 0
     """
-    service = ConbusInputService()
+    service = ConbusOutputService()
 
     with service:
 
-        response = service.send_action(serial_number, input_number, ActionType.RELEASE)
+        response = service.send_action(serial_number, output_number, ActionType.RELEASE)
         click.echo(json.dumps(response.to_dict(), indent=2))
 
-@conbus_input.command("off")
+@conbus_output.command("off")
 @click.argument("serial_number", type=SERIAL)
-@click.argument("input_number", type=int)
+@click.argument("output_number", type=int)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def xp_input_off(
-    serial_number: str, input_number: int
+def xp_output_off(
+    serial_number: str, output_number: int
 ):
     """Send input command to XP module or query status.
 
@@ -52,18 +52,18 @@ def xp_input_off(
     \b
         xp conbus input off 0011223344 1    # Toggle input 1
     """
-    service = ConbusInputService()
+    service = ConbusOutputService()
 
     with service:
 
-        response = service.send_action(serial_number, input_number, ActionType.RELEASE)
-        click.echo(json.dumps(response, indent=2))
+        response = service.send_action(serial_number, output_number, ActionType.PRESS)
+        click.echo(json.dumps(response.to_dict(), indent=2))
 
-@conbus_input.command("status")
+@conbus_output.command("status")
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def xp_input_status(
+def xp_output_status(
     serial_number: str
 ):
     """Send input command to XP module or query status.
@@ -73,9 +73,9 @@ def xp_input_status(
     \b
         xp conbus input status 0011223344    # Query status
     """
-    service = ConbusInputService()
+    service = ConbusOutputService()
 
     with service:
 
         response = service.send_status(serial_number)
-        click.echo(json.dumps(response, indent=2))
+        click.echo(json.dumps(response.to_dict(), indent=2))

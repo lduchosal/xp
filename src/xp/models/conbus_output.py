@@ -2,19 +2,21 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-from .datapoint_type import DataPointType
+from .action_type import ActionType
+from .output_telegram import OutputTelegram
 from .reply_telegram import ReplyTelegram
-from .system_function import SystemFunction
 
 
 @dataclass
-class ConbusDatapointResponse:
+class ConbusOutputResponse:
     """Represents a response from Conbus send operation"""
 
     success: bool
-    serial_number : Optional[str] = None,
-    system_function : Optional[SystemFunction] = None,
-    datapoint_type : Optional[DataPointType] = None,
+    serial_number: str
+    output_number: int
+    action_type: ActionType
+    timestamp: datetime
+    output_telegram: Optional[OutputTelegram] = None
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
     datapoint_telegram: Optional[ReplyTelegram] = None
@@ -31,12 +33,8 @@ class ConbusDatapointResponse:
         """Convert to dictionary for JSON serialization"""
         return {
             "success": self.success,
-            "serial_number": self.serial_number,
-            "system_function": self.system_function,
-            "datapoint_type": self.datapoint_type,
             "sent_telegram": self.sent_telegram,
             "received_telegrams": self.received_telegrams,
-            "datapoint_telegram": self.datapoint_telegram.to_dict(),
             "error": self.error,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
         }

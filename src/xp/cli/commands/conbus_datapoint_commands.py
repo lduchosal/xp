@@ -5,7 +5,7 @@ import json
 import click
 
 from .conbus import conbus
-from ..utils.datapoint_type_name_choice import DATAPOINT
+from ..utils.datapoint_type_choice import DATAPOINT
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,

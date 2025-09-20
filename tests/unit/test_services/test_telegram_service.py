@@ -261,11 +261,6 @@ class TestSystemTelegramParsing:
         ):
             self.service.parse_system_telegram("<S0020012521F99D18FN>")
 
-    def test_parse_system_telegram_unknown_data_point(self):
-        """Test parsing system telegram with unknown data point code"""
-        with pytest.raises(TelegramParsingError, match="Unknown data point code: 99"):
-            self.service.parse_system_telegram("<S0020012521F02D99FN>")
-
     def test_parse_system_telegram_with_whitespace(self):
         """Test parsing system telegram with surrounding whitespace"""
         raw = "  <S0020012521F02D18FN>  "
@@ -360,11 +355,6 @@ class TestReplyTelegramParsing:
             TelegramParsingError, match="Unknown system function code: 99"
         ):
             self.service.parse_reply_telegram("<R0020012521F99D18+26,0§CIL>")
-
-    def test_parse_reply_telegram_unknown_data_point(self):
-        """Test parsing reply telegram with unknown data point code"""
-        with pytest.raises(TelegramParsingError, match="Unknown data point code: 99"):
-            self.service.parse_reply_telegram("<R0020012521F02D99+26,0§CIL>")
 
     def test_parse_reply_telegram_with_whitespace(self):
         """Test parsing reply telegram with surrounding whitespace"""

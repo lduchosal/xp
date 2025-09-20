@@ -8,7 +8,6 @@ import click
 from .conbus import conbus
 from ..utils.decorators import connection_command, handle_service_errors
 from ..utils.serial_number_type import SERIAL
-from ...models.system_function import SystemFunction
 from ...services.conbus_datapoint_service import (
     ConbusDatapointError,
 )
@@ -17,7 +16,7 @@ from ...services.conbus_scan_service import ConbusScanService
 
 @conbus.command("scan")
 @click.argument("serial_number", type=SERIAL)
-@click.argument("system_function", type=int)
+@click.argument("function_code", type=str)
 @click.option(
     "--background",
     "-b",
@@ -28,7 +27,7 @@ from ...services.conbus_scan_service import ConbusScanService
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
 def scan_module(
-    serial_number: str, system_function: SystemFunction, background: bool
+    serial_number: str, function_code: str, background: bool
 ):
     """
     Scan all datapoints of a function_code for a module.
@@ -45,7 +44,7 @@ def scan_module(
     successful_count = 0
     failed_count = 0
 
-    def progress_callback(response):
+    def progress_callback(response, total, count):
         nonlocal successful_count, failed_count
         results.append(response)
 
@@ -66,7 +65,7 @@ def scan_module(
                 def background_scan():
                     try:
                         service.scan_module(
-                            serial_number, system_function, progress_callback
+                            serial_number, function_code, progress_callback
                         )
                     except (ValueError, KeyError, ConnectionError):
                         pass  # Will be handled by outer error handling
@@ -102,7 +101,7 @@ def scan_module(
                 # Traditional synchronous scanning
                 results = service.scan_module(
                     serial_number,
-                    system_function,
+                    function_code,
                     progress_callback,
                 )
                 successful_count = len([r for r in results if r.success])

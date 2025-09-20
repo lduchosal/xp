@@ -23,7 +23,8 @@ class SystemTelegram(Telegram):
 
     serial_number: str = ""
     system_function: Optional[SystemFunction] = None
-    datapoint_type: DataPointType = DataPointType.MODULE_TYPE
+    data: str = ""
+    datapoint_type: Optional[DataPointType] = None
 
     def __post_init__(self):
         if self.timestamp is None:

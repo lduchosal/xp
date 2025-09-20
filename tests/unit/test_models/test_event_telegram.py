@@ -69,7 +69,7 @@ class TestEventTelegram:
 
         assert telegram.input_type == InputType.PROXIMITY_SENSOR
 
-    def test_invalid_input_number_raises_error(self):
+    def test_invalid_output_number_raises_error(self):
         """Test that invalid input numbers raise ValueError"""
         telegram = EventTelegram(
             module_type=14,
@@ -102,7 +102,7 @@ class TestEventTelegram:
         expected = {
             "module_type": 14,
             "link_number": 0,
-            "input_number": 2,
+            "output_number": 2,
             "event_type": "M",
             "event_type_name": "button_press",
             "input_type": "push_button",

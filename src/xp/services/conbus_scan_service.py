@@ -12,7 +12,6 @@ from ..models import (
     ConbusResponse,
     ConbusRequest,
 )
-from ..models.system_function import SystemFunction
 from ..services.telegram_service import TelegramService
 
 
@@ -41,21 +40,20 @@ class ConbusScanService:
         self.logger = logging.getLogger(__name__)
 
     def scan_module(
-        self, serial_number: str, system_function: SystemFunction, progress_callback=None
+        self, serial_number: str, function_code: str, progress_callback=None
     ) -> List[ConbusResponse]:
         """Scan all functions and datapoints for a module with live output"""
         results = []
-        total_combinations = 256 * 256  # 65536 combinations
+        total_combinations = 100  # 65536 combinations
         count = 0
 
-        for datapoint_hex in range(256):
-            data = f"{datapoint_hex:02X}"
+        for datapoint_hex in range(99):
+            data = f"{datapoint_hex:02d}"
             count += 1
 
             try:
-                response = self.conbus_service.send_telegram(
-                    serial_number, system_function, data
-                )
+                telegram_body = f"S{serial_number}F{function_code}D{data}"
+                response = self.conbus_service.send_telegram_body(telegram_body)
                 results.append(response)
 
                 # Call progress callback with live results
@@ -73,10 +71,10 @@ class ConbusScanService:
                     success=False,
                     request=ConbusRequest(
                         serial_number=serial_number,
-                        function_code=system_function.value,
+                        function_code=function_code,
                         data=data,
                     ),
-                    error=f"Scan failed for F{system_function.value}D{data}: {e}",
+                    error=f"Scan failed for F{function_code}D{data}: {e}",
                 )
                 results.append(error_response)
 
@@ -86,12 +84,12 @@ class ConbusScanService:
 
         return results
 
-    def scan_module_background(self, serial_number: str, progress_callback=None):
+    def scan_module_background(self, serial_number: str, function_code: str, progress_callback=None):
         """Scan module in background with immediate output via callback"""
         import threading
 
         def background_scan():
-            return self.scan_module(serial_number, progress_callback)
+            return self.scan_module(serial_number, function_code, progress_callback)
 
         # Start background thread
         scan_thread = threading.Thread(target=background_scan, daemon=True)
@@ -99,3 +97,9 @@ class ConbusScanService:
 
         return scan_thread
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+      # Cleanup logic if needed
+        pass

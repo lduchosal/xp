@@ -183,6 +183,15 @@ class ConbusService:
         response = self.send_raw_telegram(telegram)
         return response
 
+    def send_telegram_body(
+        self, telegram_body: str
+    ) -> ConbusResponse:
+        """Send custom telegram with specified function and data point codes"""
+        checksum = calculate_checksum(telegram_body)
+        telegram = f"<{telegram_body}{checksum}>"
+        response = self.send_raw_telegram(telegram)
+        return response
+
     def send_raw_telegram(
             self, telegram: str
     ) -> ConbusResponse:
