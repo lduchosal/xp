@@ -1,13 +1,13 @@
 import click
 
-from xp.models import DatapointTypeName
+from xp.models.datapoint_type import DataPointType
 
 
-class DatapointTypeNameChoice(click.ParamType):
+class DatapointTypeChoice(click.ParamType):
     name = "telegram_type"
 
     def __init__(self):
-        self.choices = [key.lower() for key in DatapointTypeName.__members__.keys()]
+        self.choices = [key.lower() for key in DataPointType.__members__.keys()]
 
     def convert(self, value, param, ctx):
         if value is None:
@@ -18,11 +18,11 @@ class DatapointTypeNameChoice(click.ParamType):
 
         if normalized_value in self.choices:
             # Return the actual enum member
-            return DatapointTypeName[normalized_value.upper()]
+            return DataPointType[normalized_value.upper()] # type: ignore
 
         # If not found, show error with available choices
         self.fail(f'{value!r} is not a valid choice. '
                   f'Choose from: {", ".join(self.choices)}',
                   param, ctx)
 
-DATAPOINT = DatapointTypeNameChoice()
+DATAPOINT = DatapointTypeChoice()

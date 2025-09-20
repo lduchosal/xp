@@ -3,36 +3,11 @@ from xp.models import (
     ConbusClientConfig,
     ConbusConnectionStatus,
 )
-from xp.models import ConbusDatapointResponse, DatapointTypeName
+from xp.models import ConbusDatapointResponse
 
 
 class TestTelegramType:
     """Test cases for TelegramType enum"""
-
-    def test_telegram_type_values(self):
-        """Test that TelegramType enum has correct values"""
-        assert DatapointTypeName.UNKNOWN.value == "unknown"
-        assert DatapointTypeName.VERSION.value == "version"
-        assert DatapointTypeName.VOLTAGE.value == "voltage"
-        assert DatapointTypeName.TEMPERATURE.value == "temperature"
-        assert DatapointTypeName.CURRENT.value == "current"
-        assert DatapointTypeName.HUMIDITY.value == "humidity"
-
-    def test_telegram_type_count(self):
-        """Test that all expected telegram types are present"""
-        expected_types = {
-            "channelstates",
-            "link_number",
-            "version",
-            "voltage",
-            "temperature",
-            "current",
-            "humidity",
-            "unknown",
-        }
-        actual_types = {t.value for t in DatapointTypeName}
-        assert actual_types == expected_types
-
 
 class TestConbusClientConfig:
     """Test cases for ConbusClientConfig model"""

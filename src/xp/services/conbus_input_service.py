@@ -9,9 +9,10 @@ import logging
 from .conbus_datapoint_service import ConbusDatapointService
 from .conbus_service import ConbusService
 from .telegram_input_service import TelegramInputService
-from ..models import DatapointTypeName, ConbusDatapointResponse
+from ..models import ConbusDatapointResponse
 from ..models.action_type import ActionType
 from ..models.conbus_input import ConbusInputResponse
+from ..models.datapoint_type import DataPointType
 from ..models.system_function import SystemFunction
 from ..services.telegram_service import TelegramService
 
@@ -53,9 +54,9 @@ class ConbusInputService:
     def send_status(self, serial_number) -> ConbusDatapointResponse:
 
         # Send status query using custom telegram method
-        response = self.datapoint_service.send_datapoint_request(
+        response = self.datapoint_service.send_telegram(
             serial_number,
-            DatapointTypeName.CHANNEL_STATES  # "12"
+            DataPointType.CHANNEL_STATES  # "12"
         )
 
         return response

@@ -6,7 +6,6 @@ from .module_type_code import ModuleTypeCode
 from .module_type import ModuleType, get_all_module_types, is_valid_module_code
 from .log_entry import LogEntry
 from .conbus_connection_status import ConbusConnectionStatus
-from .datapoint_type import DatapointTypeName
 from .conbus_client_config import ConbusClientConfig
 from .conbus import ConbusRequest, ConbusResponse
 from .conbus_datapoint import ConbusDatapointResponse
@@ -22,7 +21,6 @@ __all__ = [
     "get_all_module_types",
     "is_valid_module_code",
     "LogEntry",
-    "DatapointTypeName",
     "ConbusClientConfig",
     "ConbusRequest",
     "ConbusResponse",

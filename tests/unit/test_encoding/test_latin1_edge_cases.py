@@ -70,12 +70,12 @@ class Latin1TestServer:
 
         except socket.timeout:
             pass
-        except Exception:
+        except (ValueError, KeyError, ConnectionError):
             pass
         finally:
             try:
                 client_socket.close()
-            except Exception:
+            except (ValueError, KeyError, ConnectionError):
                 pass
 
     @staticmethod

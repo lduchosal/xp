@@ -48,8 +48,9 @@ async def input_action(
     # Build successful response
     return InputResponse(
         success = True,
-        result = response.input_telegram.raw_telegram,
-        description = response.input_telegram.input_description,
+        result = response.input_telegram.system_function.name,
+        description = response.input_telegram.system_function.get_description(),
+        # raw_telegram = response.input_telegram.raw_telegram,
     )
 
 

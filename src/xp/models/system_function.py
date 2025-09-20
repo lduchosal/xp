@@ -15,6 +15,21 @@ class SystemFunction(str, Enum):
     NAK = "19"  # Not acknowledge response
     ACTION = "27"  # Action function
 
+    def get_description(self) -> str:
+        """Get the description of the SystemFunction"""
+        descriptions = {
+            self.DISCOVERY: "Discovery function",
+            self.READ_DATAPOINT: "Read datapoint",
+            self.READ_CONFIG: "Read configuration",
+            self.WRITE_CONFIG: "Write configuration",
+            self.BLINK: "Blink LED function",
+            self.UNBLINK: "Unblink LED function",
+            self.ACK: "Acknowledge response",
+            self.NAK: "Not acknowledge response",
+            self.ACTION: "Action function",
+        }
+        return descriptions.get(self, "Unknown function")
+
     @classmethod
     def from_code(cls, code: str) -> Optional["SystemFunction"]:
         """Get SystemFunction from code string"""

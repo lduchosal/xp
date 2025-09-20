@@ -8,8 +8,8 @@ from fastapi.responses import JSONResponse
 from .conbus import router
 from .errors import handle_service_error
 from ..models.datapoint import DatapointResponse, DatapointErrorResponse
-from ...models.datapoint_type import DatapointTypeName
 from ...services.conbus_datapoint_service import ConbusDatapointService
+from xp.models.datapoint_type import DataPointType
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
     },
 )
 async def datapoint_devices(
-        datapoint: DatapointTypeName = DatapointTypeName.VERSION,
+        datapoint: DataPointType = DataPointType.VERSION,
         serial_number: str = "1702033007"
     ) -> Union[DatapointResponse, DatapointErrorResponse, JSONResponse]:
     """
@@ -33,11 +33,10 @@ async def datapoint_devices(
     Sends a broadcastDatapoint telegram and collects responses from all connected devices.
     """
     service = ConbusDatapointService()
-
     # SendDatapoint telegram and receive responses
     with service:
         response = service.send_telegram(
-            datapoint_type=DatapointTypeName(datapoint),
+            datapoint_type=datapoint,
             serial_number=serial_number)
 
     if not response.success:

@@ -15,12 +15,6 @@ class TestXP24ActionService:
         """Set up test fixtures."""
         self.service = TelegramInputService()
 
-    def test_constants(self):
-        """Test service constants."""
-        assert self.service.MAX_INPUTS == 4
-
-    # Input validation tests
-
     def test_validate_input_number_valid(self):
         """Test validate_input_number with valid inputs."""
         # Should not raise for valid inputs
@@ -34,11 +28,11 @@ class TestXP24ActionService:
         with pytest.raises(XPInputError, match="Invalid input number: -1"):
             self.service.validate_input_number(-1)
 
-        with pytest.raises(XPInputError, match="Invalid input number: 4"):
-            self.service.validate_input_number(4)
+        with pytest.raises(XPInputError, match="Invalid input number: 500"):
+            self.service.validate_input_number(500)
 
-        with pytest.raises(XPInputError, match="Invalid input number: 10"):
-            self.service.validate_input_number(10)
+        with pytest.raises(XPInputError, match="Invalid input number: 100"):
+            self.service.validate_input_number(100)
 
     def test_validate_serial_number_valid(self):
         """Test validate_serial_number with valid serial numbers."""
@@ -95,7 +89,7 @@ class TestXP24ActionService:
     def test_generate_action_telegram_invalid_input(self):
         """Test generate_action_telegram with invalid input number."""
         with pytest.raises(XPInputError):
-            self.service.generate_system_action_telegram("0020044964", 5, ActionType.PRESS)
+            self.service.generate_system_action_telegram("0020044964", 500, ActionType.PRESS)
 
     @patch("xp.services.telegram_input_service.calculate_checksum")
     def test_generate_status_telegram(self, mock_checksum):
@@ -154,8 +148,8 @@ class TestXP24ActionService:
 
     def test_parse_action_telegram_invalid_input_range(self):
         """Test parse_action_telegram with invalid input number."""
-        with pytest.raises(XPInputError, match="Invalid input number: 5"):
-            self.service.parse_system_telegram("<S0020044964F27D05AAFN>")
+        with pytest.raises(XPInputError, match="Invalid XP24 action telegram format: <S0020044964F27D500AAFN>"):
+            self.service.parse_system_telegram("<S0020044964F27D500AAFN>")
 
     def test_parse_action_telegram_invalid_action_code(self):
         """Test parse_action_telegram with invalid action code."""

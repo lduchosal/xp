@@ -24,8 +24,7 @@ class TelegramInputService:
     status queries, and action command generation.
     """
 
-    # XP24 specific constants
-    MAX_INPUTS = 4  # XP24 has exactly 4 inputs (0-3)
+    MAX_INPUTS = 99
 
     # Regex pattern for XP24 action telegrams
     XP_INPUT_PATTERN = re.compile(r"^<S(\d{10})F27D(\d{2})(A[AB])([A-Z0-9]{2})>$")
@@ -50,10 +49,10 @@ class TelegramInputService:
                 f"Input number must be integer, got {type(input_number)}"
             )
 
-        if not (0 <= input_number < self.MAX_INPUTS):
+        if not (0 <= input_number <= self.MAX_INPUTS):
             raise XPInputError(
                 f"Invalid input number: {input_number}. "
-                f"XP24 supports inputs 0-{self.MAX_INPUTS - 1}"
+                f"XP24 supports inputs 0-{self.MAX_INPUTS}"
             )
 
     @staticmethod

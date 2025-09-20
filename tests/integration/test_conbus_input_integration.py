@@ -21,7 +21,7 @@ class TestConbusInputIntegration:
     def test_conbus_input_on_serial_1(self):
         """Test telegram parse command."""
         result = self.runner.invoke(
-            cli, ["conbus", "input", "on", "0020012521", "1"]
+            cli, ["conbus", "input", "on", "0020012521", "1"] # type: ignore
         )
 
         assert result.exit_code == 0

@@ -12,7 +12,7 @@ from ..utils.decorators import (
 )
 from ..utils.formatters import OutputFormatter
 from ..utils.serial_number_type import SERIAL
-from ...models import DatapointTypeName
+from ...models.datapoint_type import DataPointType
 from ...services.conbus_datapoint_service import (
     ConbusDatapointService,
     ConbusDatapointError,
@@ -24,7 +24,7 @@ from ...services.conbus_datapoint_service import (
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def datapoint_telegram(serial_number: str, datapoint: DatapointTypeName):
+def datapoint_telegram(serial_number: str, datapoint: DataPointType):
     """
     Send telegram to Conbus server.
 

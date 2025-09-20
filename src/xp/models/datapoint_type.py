@@ -33,15 +33,3 @@ class DataPointType(str, Enum):
             if dp_type.value == code:
                 return dp_type
         return None
-
-class DatapointTypeName(str, Enum):
-    """Supported telegram types for Conbus client send operations"""
-
-    UNKNOWN = "unknown"
-    VERSION = "version"
-    VOLTAGE = "voltage"
-    TEMPERATURE = "temperature"
-    CURRENT = "current"
-    HUMIDITY = "humidity"
-    LINK_NUMBER = "link_number"
-    CHANNEL_STATES = "channelstates"

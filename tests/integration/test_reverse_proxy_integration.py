@@ -66,7 +66,7 @@ class MockConbusServer:
                     response = self.responses.pop(0)
                     client_socket.send(response.encode("latin-1"))
 
-        except Exception:
+        except (ValueError, KeyError, ConnectionError):
             pass
         finally:
             client_socket.close()
