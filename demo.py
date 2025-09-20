@@ -304,7 +304,7 @@ def demo_version_parsing():
                         )
                 else:
                     print(
-                        f"  → {parsed.data_point_description} reply from device {parsed.serial_number}"
+                        f"  → {parsed.datapoint_type.name} reply from device {parsed.serial_number}"
                     )
 
             elif hasattr(parsed, "system_function"):  # SystemTelegram
@@ -314,7 +314,7 @@ def demo_version_parsing():
                     print(f"  → Version request from device {parsed.serial_number}")
                 else:
                     print(
-                        f"  → {parsed.data_point_description} request from device {parsed.serial_number}"
+                        f"  → {parsed.datapoint_type.name} request from device {parsed.serial_number}"
                     )
             else:
                 telegram_type = "unknown"

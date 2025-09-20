@@ -216,7 +216,7 @@ class ReplyTelegram(Telegram):
             value_display = self.data_value
 
         return (
-            f"Reply Telegram: {self.function_description} "
-            f"for {self.data_point_description} = {value_display} "
+            f"Reply Telegram: {self.system_function.name}\n "
+            f"for {self.system_function.name} = {value_display} "
             f"from device {self.serial_number}"
         )
