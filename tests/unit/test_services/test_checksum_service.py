@@ -36,15 +36,6 @@ class TestChecksumService:
         assert isinstance(result.data["checksum"], str)
         assert len(result.data["checksum"]) == 2
 
-    def test_calculate_simple_checksum_invalid_input(self):
-        """Test simple checksum with invalid input type."""
-        result = self.service.calculate_simple_checksum("123")
-
-        assert isinstance(result, Response)
-        assert result.success is False
-        assert result.data is None
-        assert "Data must be a string" in result.error
-
     def test_calculate_simple_checksum_empty_string(self):
         """Test simple checksum with empty string."""
         result = self.service.calculate_simple_checksum("")
@@ -85,15 +76,6 @@ class TestChecksumService:
         assert result.data["input_length"] == 4
         assert result.data["algorithm"] == "crc32"
 
-    def test_calculate_crc32_checksum_invalid_input(self):
-        """Test CRC32 checksum with invalid input type."""
-        result = self.service.calculate_crc32_checksum("123")
-
-        assert isinstance(result, Response)
-        assert result.success is False
-        assert result.data is None
-        assert "Data must be string or bytes" in result.error
-
     def test_validate_checksum_valid(self):
         """Test checksum validation with valid checksum."""
         data = "test"
@@ -130,22 +112,6 @@ class TestChecksumService:
         assert result.data["is_valid"] is False
         assert result.data["expected_checksum"] == wrong_checksum
         assert result.data["calculated_checksum"] != wrong_checksum
-
-    def test_validate_checksum_invalid_data_type(self):
-        """Test checksum validation with invalid data type."""
-        result = self.service.validate_checksum("123", "AA")
-
-        assert isinstance(result, Response)
-        assert result.success is False
-        assert "Data and expected checksum must be strings" in result.error
-
-    def test_validate_checksum_invalid_expected_type(self):
-        """Test checksum validation with invalid expected checksum type."""
-        result = self.service.validate_checksum("test", "123")
-
-        assert isinstance(result, Response)
-        assert result.success is False
-        assert "Data and expected checksum must be strings" in result.error
 
     def test_validate_crc32_checksum_valid_string(self):
         """Test CRC32 validation with valid checksum (string input)."""
@@ -187,22 +153,6 @@ class TestChecksumService:
         assert isinstance(result, Response)
         assert result.success is True
         assert result.data["is_valid"] is False
-
-    def test_validate_crc32_checksum_invalid_data_type(self):
-        """Test CRC32 validation with invalid data type."""
-        result = self.service.validate_crc32_checksum("123", "AAAAAAAA")
-
-        assert isinstance(result, Response)
-        assert result.success is False
-        assert "Data must be string or bytes" in result.error
-
-    def test_validate_crc32_checksum_invalid_expected_type(self):
-        """Test CRC32 validation with invalid expected checksum type."""
-        result = self.service.validate_crc32_checksum("test", "123")
-
-        assert isinstance(result, Response)
-        assert result.success is False
-        assert "Expected checksum must be a string" in result.error
 
     def test_response_has_timestamp(self):
         """Test that all responses include timestamp."""

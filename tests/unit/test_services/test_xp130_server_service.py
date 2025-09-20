@@ -106,7 +106,7 @@ class TestXP130ServerService:
         request = SystemTelegram(
             serial_number="0019664896",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.NETWORK_CONFIG,
+            data_point_id=DataPointType.VOLTAGE,
             checksum="GH",
             raw_telegram="<S0019664896F02D20GH>",
         )

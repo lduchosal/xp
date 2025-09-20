@@ -74,6 +74,7 @@ class TestDiscoveryIntegration:
             "<R0020030837F01DFM>",
             "<R0020044966F01DFK>",
             "<R0020042796F01DFN>",
+            "<R0020042796F18DFF>"
         ]
 
         for response_str in test_responses:

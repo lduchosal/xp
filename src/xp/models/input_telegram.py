@@ -11,6 +11,7 @@ from datetime import datetime
 from typing import Optional
 
 from .action_type import ActionType
+from .system_function import SystemFunction
 from .telegram import Telegram
 
 
@@ -24,8 +25,9 @@ class InputTelegram(Telegram):
     """
 
     serial_number: str = ""
-    input_number: int = 0  # 0-3 for XP24 modules, 0-2 for XP33, 0 for XP31
+    input_number: Optional[int] = None  # 0-3 for XP24 modules, 0-2 for XP33, 0 for XP31
     action_type: Optional[ActionType] = None
+    system_function: SystemFunction = SystemFunction.ACTION
 
     def __post_init__(self):
         if self.timestamp is None:
@@ -49,6 +51,7 @@ class InputTelegram(Telegram):
         """Convert to dictionary for JSON serialization"""
         return {
             "serial_number": self.serial_number,
+            "system_function": self.system_function,
             "input_number": self.input_number,
             "input_description": self.input_description,
             "action_type": {
@@ -59,7 +62,6 @@ class InputTelegram(Telegram):
             "checksum_validated": self.checksum_validated,
             "raw_telegram": self.raw_telegram,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
-            "telegram_type": "xp_input",
         }
 
     def __str__(self) -> str:

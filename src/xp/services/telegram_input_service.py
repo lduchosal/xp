@@ -28,7 +28,8 @@ class TelegramInputService:
     MAX_INPUTS = 4  # XP24 has exactly 4 inputs (0-3)
 
     # Regex pattern for XP24 action telegrams
-    XP_INPUT_PATTERN = re.compile(r"^<S(\d{10})F27D(\d{2})([A-Z0-9]{2})([A-Z0-9]{2})>$")
+    XP_INPUT_PATTERN = re.compile(r"^<S(\d{10})F27D(\d{2})(A[AB])([A-Z0-9]{2})>$")
+    XP_ACK_NAK_PATTERN = re.compile(r"^<R(\d{10})F(1[89])D([A-Z0-9]{2})>$")
 
     def __init__(self):
         """Initialize the XP input service"""
@@ -77,7 +78,7 @@ class TelegramInputService:
                 "Serial number must be exactly 10 digits"
             )
 
-    def generate_input_telegram(
+    def generate_system_action_telegram(
         self, serial_number: str, input_number: int, action: ActionType
     ) -> str:
         """
@@ -113,7 +114,7 @@ class TelegramInputService:
         # Return complete telegram
         return f"<{data_part}{checksum}>"
 
-    def generate_input_status_telegram(self, serial_number: str) -> str:
+    def generate_system_status_telegram(self, serial_number: str) -> str:
         """
         Generate XP input status query telegram.
 
@@ -140,7 +141,56 @@ class TelegramInputService:
         # Return complete telegram
         return f"<{data_part}{checksum}>"
 
-    def parse_input_telegram(self, raw_telegram: str) -> InputTelegram:
+
+    def parse_reply_telegram(self, raw_telegram: str) -> InputTelegram:
+        """
+        Parse a raw XP input response telegram string.
+
+        Args:
+            raw_telegram: The raw telegram string (e.g., "<R0020042796F18DFF>")
+
+        Returns:
+            XPInputTelegram object with parsed data
+
+        Raises:
+            XPInputError: If telegram format is invalid
+        """
+        if not raw_telegram:
+            raise XPInputError("Empty telegram string")
+
+        # Validate and parse using regex
+        match = self.XP_ACK_NAK_PATTERN.match(raw_telegram.strip())
+        if not match:
+            raise XPInputError(f"Invalid XP24 response telegram format: {raw_telegram}")
+
+        try:
+            serial_number = match.group(1)
+            ack_nak = match.group(2)
+            checksum = match.group(3)
+
+            # Parse action type
+            system_function = SystemFunction.from_code(ack_nak)
+            if system_function is None:
+                raise XPInputError(f"Unknown system_function: {ack_nak}")
+
+            # Create telegram object
+            telegram = InputTelegram(
+                serial_number=serial_number,
+                system_function=system_function,
+                checksum=checksum,
+                raw_telegram=raw_telegram,
+            )
+
+            # Validate checksum
+            telegram.checksum_validated = self.validate_checksum(telegram)
+
+            return telegram
+
+        except ValueError as e:
+            raise XPInputError(f"Invalid values in XP24 action telegram: {e}")
+
+
+    def parse_system_telegram(self, raw_telegram: str) -> InputTelegram:
         """
         Parse a raw XP input telegram string.
 

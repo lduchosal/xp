@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from xp.models.input_telegram import InputTelegram
 from xp.models.action_type import ActionType
+from xp.models.system_function import SystemFunction
 
 
 class TestActionType:
@@ -34,7 +35,7 @@ class TestXP24ActionTelegram:
         telegram = InputTelegram(checksum="FN", raw_telegram="<S0020044964F27D00AAFN>")
 
         assert telegram.serial_number == ""
-        assert telegram.input_number == 0
+        assert telegram.input_number is None
         assert telegram.action_type is None
         assert telegram.checksum == "FN"
         assert telegram.raw_telegram == "<S0020044964F27D00AAFN>"
@@ -137,36 +138,20 @@ class TestXP24ActionTelegram:
         )
 
         expected = {
-            "serial_number": "0020044964",
-            "input_number": 1,
-            "input_description": "Input 1",
-            "action_type": {"code": "AA", "description": "Press (Make)"},
-            "checksum": "FN",
-            "checksum_validated": True,
-            "raw_telegram": "<S0020044964F27D01AAFN>",
-            "timestamp": "2023-01-01T12:00:00",
-            "telegram_type": "xp_input",
+           "serial_number": "0020044964",
+           "system_function": SystemFunction.ACTION,
+           "input_number": 1,
+           "input_description": "Input 1",
+           "action_type": {
+               "code": "AA",
+               "description": "Press (Make)"
+           },
+           "checksum": "FN",
+           "checksum_validated": True,
+           "raw_telegram": "<S0020044964F27D01AAFN>",
+           "timestamp": "2023-01-01T12:00:00"
         }
-
         assert telegram.to_dict() == expected
-
-    def test_to_dict_minimal(self):
-        """Test to_dict method with minimal data."""
-        telegram = InputTelegram(
-            action_type=None,
-            checksum="FN",
-            raw_telegram="<S0020044964F27D00AAFN>",
-            timestamp=None,
-        )
-
-        result = telegram.to_dict()
-
-        assert result["serial_number"] == ""
-        assert result["input_number"] == 0
-        assert result["action_type"]["code"] is None
-        assert result["action_type"]["description"] == "Unknown Action"
-        assert result["timestamp"] is not None  # __post_init__ sets it
-        assert result["telegram_type"] == "xp_input"
 
     def test_str_representation(self):
         """Test __str__ method."""

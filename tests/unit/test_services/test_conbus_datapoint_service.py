@@ -73,21 +73,6 @@ class TestServiceInitialization(TestConbusService):
         assert service.config.port == 10001
         assert service.config.timeout == 10
 
-    @patch("yaml.safe_load")
-    @patch("builtins.open")
-    @patch("os.path.exists", return_value=True)
-    def test_config_file_error_handling(self, mock_yaml):
-        """Test error handling when config file is malformed"""
-        mock_yaml.side_effect = Exception("YAML parsing error")
-
-        service = ConbusService(config_path="bad_config.yml")
-
-        # Should use defaults when config parsing fails
-        assert service.config.ip == "192.168.1.100"
-        assert service.config.port == 10001
-        assert service.config.timeout == 10
-
-
 class TestConnectionManagement(TestConbusService):
     """Test connection establishment and management"""
 

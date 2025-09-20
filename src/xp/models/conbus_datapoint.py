@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 
 from .reply_telegram import ReplyTelegram
+from .system_function import SystemFunction
 from ..models.datapoint_type import DatapointTypeName
 
 
@@ -12,6 +13,7 @@ class ConbusDatapointResponse:
 
     success: bool
     serial_number : Optional[str] = None,
+    system_function : Optional[SystemFunction] = None,
     datapoint_type : Optional[DatapointTypeName] = None,
     datapoint: Optional[str] = None,
     sent_telegram: Optional[str] = None
@@ -31,6 +33,7 @@ class ConbusDatapointResponse:
         return {
             "success": self.success,
             "serial_number": self.serial_number,
+            "system_function": self.system_function,
             "datapoint_type": self.datapoint_type,
             "datapoint": self.datapoint,
             "sent_telegram": self.sent_telegram,

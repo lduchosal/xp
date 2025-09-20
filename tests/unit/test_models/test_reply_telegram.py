@@ -14,6 +14,26 @@ from xp.models.system_function import SystemFunction
 class TestReplyTelegram:
     """Test ReplyTelegram model."""
 
+    def test_reply_telegram_ack(self):
+        """Test basic reply telegram creation."""
+        telegram = ReplyTelegram(
+            serial_number="0020042796",
+            system_function=SystemFunction.ACK,
+            data_point_id=DataPointType.NONE,
+            data_value="",
+            checksum="FF",
+            raw_telegram="<R0020042796F18DFF>",
+        )
+
+        assert telegram.serial_number == "0020042796"
+        assert telegram.system_function == SystemFunction.ACK
+        assert telegram.data_point_id == DataPointType.NONE
+        assert telegram.checksum == "FF"
+        assert telegram.raw_telegram == "<R0020042796F18DFF>"
+        assert telegram.timestamp is not None
+        assert isinstance(telegram.timestamp, datetime)
+
+
     def test_reply_telegram_creation(self):
         """Test basic reply telegram creation."""
         telegram = ReplyTelegram(

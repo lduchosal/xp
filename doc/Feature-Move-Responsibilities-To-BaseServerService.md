@@ -119,7 +119,7 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
 - `get_technical_specs()` - Variant-specific specs
 
 #### XP130 Specific
-- `generate_ip_config_response()` - DataPointType.NETWORK_CONFIG
+- `generate_ip_config_response()` - DataPointType.VOLTAGE
 - `generate_temperature_response()` - Custom temperature simulation
 
 #### XP230 Specific

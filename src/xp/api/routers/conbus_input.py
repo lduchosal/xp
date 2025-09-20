@@ -15,7 +15,7 @@ from ...services.conbus_input_service import ConbusInputService
 logger = logging.getLogger(__name__)
 
 @router.get(
-    "/input/{action}/{serial}/{input}",
+    "/input/{action}/{serial}/{device_input}",
     response_model=Union[InputResponse, InputErrorResponse],
     responses={
         200: {"model": InputResponse, "description": "Input completed successfully"},
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
     },
 )
 async def input_action(
-        action: str = "on",
+        action: ActionType = ActionType.PRESS,
         serial: str = "1702033007",
         device_input: int = 0
 ) -> Union[InputResponse, InputErrorResponse, JSONResponse]:
@@ -35,12 +35,10 @@ async def input_action(
     Sends a broadcastInput telegram and collects responses from all connected devices.
     """
     service = ConbusInputService()
-    action_type = ActionType.PRESS
-    if action.lower() == "on" : action_type = ActionType.RELEASE
 
     # SendInput telegram and receive responses
     with service:
-        response = service.send_action(serial, device_input, action_type)
+        response = service.send_action(serial, device_input, action)
 
     if not response.success:
         return handle_service_error(response.error)

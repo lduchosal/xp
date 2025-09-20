@@ -87,7 +87,7 @@ class ConbusInputService:
             )
 
         telegram = response.received_telegrams[0]
-        input_telegram = self.telegram_input_service.parse_input_telegram(telegram)
+        input_telegram = self.telegram_input_service.parse_reply_telegram(telegram)
 
         return ConbusInputResponse(
             success=response.success,

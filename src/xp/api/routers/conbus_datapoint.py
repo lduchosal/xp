@@ -44,10 +44,9 @@ async def datapoint_devices(
         return handle_service_error(response.error)
 
     if response.datapoint_telegram is None:
-        return DatapointResponse(
+        return DatapointErrorResponse(
             success=False,
-            result=None,
-            description=None,
+            error=response.error,
         )
 
     # Build successful response

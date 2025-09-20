@@ -11,7 +11,7 @@ class TestConbusBlinkCommands:
     def test_conbus_blink_help(self):
         """Test help text for conbus blink command"""
         runner = CliRunner()
-        result = runner.invoke(conbus(), ["blink", "--help"])
+        result = runner.invoke(conbus, ["blink", "--help"])
 
         assert result.exit_code == 0
         assert "Send blink command to start blinking module LED" in result.output
@@ -21,7 +21,7 @@ class TestConbusBlinkCommands:
     def test_conbus_unblink_help(self):
         """Test help text for conbus unblink command"""
         runner = CliRunner()
-        result = runner.invoke(conbus(), ["blink", "--help"])
+        result = runner.invoke(conbus, ["blink", "--help"])
 
         assert result.exit_code == 0
         assert "Usage: conbus blink [OPTIONS] COMMAND [ARGS]" in result.output
@@ -31,7 +31,7 @@ class TestConbusBlinkCommands:
     def test_conbus_blink_invalid_serial_json(self):
         """Test blink command with invalid serial number and JSON output"""
         runner = CliRunner()
-        result = runner.invoke(conbus(), ["blink", "on", "invalid"])
+        result = runner.invoke(conbus, ["blink", "on", "invalid"])
 
         assert result.exit_code == 2
         assert (

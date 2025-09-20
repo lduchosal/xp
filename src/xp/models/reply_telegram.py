@@ -40,6 +40,8 @@ class ReplyTelegram(Telegram):
             SystemFunction.WRITE_CONFIG: "Write Configuration Response",
             SystemFunction.BLINK: "Blink Response",
             SystemFunction.UNBLINK: "Unblink Response",
+            SystemFunction.ACK: "Acknowledge Response",
+            SystemFunction.NAK: "Rejected Response",
         }
         return descriptions.get(self.system_function, "Unknown Response")
 
@@ -53,6 +55,7 @@ class ReplyTelegram(Telegram):
             DataPointType.CURRENT: "Current",
             DataPointType.NONE: "None",
             DataPointType.VERSION: "Version",
+            DataPointType.LINK_NUMBER: "Link Number",
         }
         return descriptions.get(self.data_point_id, "Unknown Data Point")
 

@@ -51,26 +51,29 @@ class ConbusDatapointService:
             DatapointTypeName.TEMPERATURE: DataPointType.TEMPERATURE.value,  # Temperature data point
             DatapointTypeName.CURRENT: DataPointType.CURRENT.value,  # Current data point
             DatapointTypeName.HUMIDITY: DataPointType.HUMIDITY.value,  # Humidity data point
+            DatapointTypeName.LINK_NUMBER: DataPointType.LINK_NUMBER.value,  # Humidity data point
         }
 
-        function_code = SystemFunction.READ_DATAPOINT
+        system_function = SystemFunction.READ_DATAPOINT
         datapoint = sensor_data_points.get(datapoint_type)
 
         # Send telegram
-        response = self.conbus_service.send_telegram(serial_number, function_code, datapoint)
+        response = self.conbus_service.send_telegram(serial_number, system_function, datapoint)
         datapoint_telegram = None
         if len(response.received_telegrams) > 0:
             telegram = response.received_telegrams[0]
             datapoint_telegram = self.telegram_service.parse_telegram(telegram)
 
         return ConbusDatapointResponse(
-            success=True,
+            success=response.success,
             serial_number=serial_number,
+            system_function=system_function,
             datapoint_type=datapoint_type,
             datapoint=datapoint,
             sent_telegram=response.sent_telegram,
             received_telegrams=response.received_telegrams,
             datapoint_telegram=datapoint_telegram,
+            error=response.error,
         )
 
     def send_datapoint_request(

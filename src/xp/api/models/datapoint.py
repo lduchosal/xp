@@ -12,6 +12,7 @@ class DatapointResponse(BaseModel):
     result: Optional[str] = Field(default=str, description="Datapoint result string")
     description: Optional[str]  = Field(default=str, description="Datapoint description")
 
+
 class DatapointErrorResponse(BaseModel):
     """Response model for failed Datapoint operation."""
 

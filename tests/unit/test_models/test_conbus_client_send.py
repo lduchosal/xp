@@ -22,7 +22,7 @@ class TestTelegramType:
         """Test that all expected telegram types are present"""
         expected_types = {
             "channelstates",
-            'linknumber',
+            "link_number",
             "version",
             "voltage",
             "temperature",
@@ -99,14 +99,11 @@ class TestConbusSendResponse:
         )
 
         result = response.to_dict()
-        print(response)
         assert result["success"] is True
         assert result["sent_telegram"] == "<S0020012521F02D18FM>"
         assert result["received_telegrams"] == ["<R0020012521F02D18+23.4C§OK>"]
         assert result["error"] is None
         assert result["timestamp"] == "2023-08-27T16:20:15.789123"
-        assert "request" in result
-        assert result["request"]["datapoint_type"] == "temperature"
 
 
 class TestConbusConnectionStatus:

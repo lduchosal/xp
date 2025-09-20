@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional
 
 
-class SystemFunction(Enum):
+class SystemFunction(str, Enum):
     """System function codes for system telegrams"""
 
     DISCOVERY = "01"  # Discovery function
