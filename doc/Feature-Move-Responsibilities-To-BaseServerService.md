@@ -203,7 +203,7 @@ def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
         return self.generate_status_response(request, request.data_point_id)
     elif request.data_point_id == DataPointType.LINK_NUMBER:
         return self.generate_link_number_response(request)
-    elif request.data_point_id == DataPointType.MODULE_TYPE:
+    elif request.data_point_id == DataPointType.MODULE_TYPE_CODE:
         return self.generate_module_type_response(request)
 
     # Allow device-specific handlers

@@ -51,7 +51,7 @@ class TestDataPointType:
         assert DataPointType.from_code("00") == DataPointType.NONE
         assert DataPointType.from_code("02") == DataPointType.VERSION
         assert DataPointType.from_code("04") == DataPointType.LINK_NUMBER
-        assert DataPointType.from_code("07") == DataPointType.MODULE_TYPE
+        assert DataPointType.from_code("07") == DataPointType.MODULE_TYPE_CODE
         assert DataPointType.from_code("10") == DataPointType.STATUS_QUERY
         assert DataPointType.from_code("12") == DataPointType.CHANNEL_STATES
         assert DataPointType.from_code("13") == DataPointType.CHANNEL_1
@@ -73,7 +73,7 @@ class TestDataPointType:
         assert DataPointType.NONE.value == "00"
         assert DataPointType.VERSION.value == "02"
         assert DataPointType.LINK_NUMBER.value == "04"
-        assert DataPointType.MODULE_TYPE.value == "07"
+        assert DataPointType.MODULE_TYPE_CODE.value == "07"
         assert DataPointType.STATUS_QUERY.value == "10"
         assert DataPointType.CHANNEL_STATES.value == "12"
         assert DataPointType.CHANNEL_1.value == "13"
@@ -235,7 +235,7 @@ class TestSystemTelegram:
             (DataPointType.NONE, "None"),
             (DataPointType.VERSION, "Version"),
             (DataPointType.LINK_NUMBER, "Link Number"),
-            (DataPointType.MODULE_TYPE, "Module Type"),
+            (DataPointType.MODULE_TYPE_CODE, "Module Type"),
             (DataPointType.STATUS_QUERY, "Status Query"),
             (DataPointType.CHANNEL_STATES, "Channel States"),
             (DataPointType.CHANNEL_1, "Channel 1 Control"),

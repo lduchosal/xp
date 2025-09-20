@@ -92,7 +92,7 @@ class TestXP33ServerService:
             raw_telegram="<S0020042796F02D07FI>",
             serial_number="0020042796",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE,
+            data_point_id=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp33lr_service.generate_module_type_response(request)
@@ -275,7 +275,7 @@ class TestXP33ServerService:
         """Test processing all supported data point requests"""
         test_cases = [
             (DataPointType.VERSION, "F02D02"),
-            (DataPointType.MODULE_TYPE, "F02D07"),
+            (DataPointType.MODULE_TYPE_CODE, "F02D07"),
             (DataPointType.STATUS_QUERY, "F02D10"),
             (DataPointType.CHANNEL_STATES, "F02D12"),
             (DataPointType.LINK_NUMBER, "F02D04"),

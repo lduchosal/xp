@@ -52,7 +52,7 @@ class SystemTelegram(Telegram):
             DataPointType.NONE: "None",
             DataPointType.VERSION: "Version",
             DataPointType.LINK_NUMBER: "Link Number",
-            DataPointType.MODULE_TYPE: "Module Type",
+            DataPointType.MODULE_TYPE_CODE: "Module Type",
             DataPointType.STATUS_QUERY: "Status Query",
             DataPointType.CHANNEL_STATES: "Channel States",
             DataPointType.CHANNEL_1: "Channel 1 Control",

@@ -4,31 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: refactor / Input">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: refactor / clean">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus_datapoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_datapoint.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus_input.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_input.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/datapoint_type_name_choice.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/datapoint_type_name_choice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_datapoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_datapoint.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/datapoint_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/datapoint_type.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/system_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/system_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_input_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_input_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_input_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_input_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_checksum_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_checksum_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_input_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_input_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_module_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_module_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -347,15 +325,7 @@
       <workItem from="1757752097335" duration="35847000" />
       <workItem from="1758124896525" duration="15519000" />
       <workItem from="1758194876724" duration="12743000" />
-      <workItem from="1758234469139" duration="36921000" />
-    </task>
-    <task id="LOCAL-00029" summary="Refactore: XP24 action into XP input">
-      <option name="closed" value="true" />
-      <created>1757616978681</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1757616978681</updated>
+      <workItem from="1758234469139" duration="38917000" />
     </task>
     <task id="LOCAL-00030" summary="Refactore: XP24 action into XP input">
       <option name="closed" value="true" />
@@ -741,7 +711,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758353623675</updated>
     </task>
-    <option name="localTasksCounter" value="78" />
+    <task id="LOCAL-00078" summary="Feat: refactor / clean">
+      <option name="closed" value="true" />
+      <created>1758356881561</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1758356881561</updated>
+    </task>
+    <option name="localTasksCounter" value="79" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -795,7 +773,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Chore: refactor cli, extract commands" />
     <MESSAGE value="Feat: XP24-Action" />
     <MESSAGE value="Feat: XP33 Emulator" />
     <MESSAGE value="Feat: ModuleType query" />
@@ -820,7 +797,8 @@
     <MESSAGE value="Feat: refactor / ConbusService" />
     <MESSAGE value="Feat: refactor / Telegram" />
     <MESSAGE value="Feat: refactor / Input" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feat: refactor / Input" />
+    <MESSAGE value="Feat: refactor / clean" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: refactor / clean" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

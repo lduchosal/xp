@@ -140,7 +140,7 @@ class TestXP130ServerService:
         request = SystemTelegram(
             serial_number="0019664896",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE,
+            data_point_id=DataPointType.MODULE_TYPE_CODE,
             checksum="FN",
             raw_telegram="<S0019664896F02D07FN>",
         )
@@ -157,7 +157,7 @@ class TestXP130ServerService:
         request = SystemTelegram(
             serial_number="0019664896",
             system_function=SystemFunction.DISCOVERY,  # Wrong function
-            data_point_id=DataPointType.MODULE_TYPE,
+            data_point_id=DataPointType.MODULE_TYPE_CODE,
             checksum="FN",
             raw_telegram="<S0019664896F01D07FN>",
         )
@@ -170,7 +170,7 @@ class TestXP130ServerService:
         request = SystemTelegram(
             serial_number="0019664896",
             system_function=SystemFunction.READ_DATAPOINT,
-            data_point_id=DataPointType.MODULE_TYPE,
+            data_point_id=DataPointType.MODULE_TYPE_CODE,
             checksum="FN",
             raw_telegram="<S0019664896F02D07FN>",
         )

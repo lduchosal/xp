@@ -38,7 +38,7 @@ class BaseServerService(ABC):
         """Generate module type response telegram"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
-            and request.data_point_id == DataPointType.MODULE_TYPE
+            and request.data_point_id == DataPointType.MODULE_TYPE_CODE
         ):
             if self.module_type_code is None:
                 self.logger.error(f"Module type code not set for {self.device_type}")
@@ -174,7 +174,7 @@ class BaseServerService(ABC):
             return self.generate_status_response(request, DataPointType.STATUS_QUERY)
         elif request.data_point_id == DataPointType.LINK_NUMBER:
             return self.generate_link_number_response(request)
-        elif request.data_point_id == DataPointType.MODULE_TYPE:
+        elif request.data_point_id == DataPointType.MODULE_TYPE_CODE:
             return self.generate_module_type_response(request)
 
         # Allow device-specific handlers
