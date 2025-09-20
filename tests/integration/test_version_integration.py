@@ -219,9 +219,8 @@ class TestVersionIntegration(unittest.TestCase):
         parsed = self.telegram_service.parse_reply_telegram(raw_telegram)
         summary = self.telegram_service.format_reply_telegram_summary(parsed)
 
-        self.assertIn(
-            "Reply Telegram: READ_DATAPOINT for Version = XP230 v1.00.04", summary
-        )
+        self.assertIn("Reply Telegram: READ_DATAPOINT", summary)
+        self.assertIn("for SW_VERSION = XP230 v1.00.04", summary)
         self.assertIn("from device 0020030837", summary)
         self.assertIn("Data: XP230 v1.00.04", summary)
         self.assertIn(f"Raw: {raw_telegram}", summary)

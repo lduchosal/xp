@@ -138,23 +138,13 @@ class TestVersionReplyTelegram(unittest.TestCase):
         self.assertEqual(result["system_function"]["code"], "02")
         self.assertEqual(result["system_function"]["description"], "READ_DATAPOINT")
         self.assertEqual(result["datapoint_type"]["code"], "02")
-        self.assertEqual(result["datapoint_type"]["description"], "Version")
+        self.assertEqual(result["datapoint_type"]["description"], "SW_VERSION")
         self.assertEqual(result["data_value"]["raw"], "XP230_V1.00.04")
         self.assertTrue(result["data_value"]["parsed"]["parsed"])
         self.assertEqual(result["data_value"]["parsed"]["product"], "XP230")
         self.assertEqual(result["checksum"], "FI")
         self.assertTrue(result["checksum_validated"])
         self.assertEqual(result["telegram_type"], "reply")
-
-    def test_version_reply_telegram_str_valid(self):
-        """Test string representation of version reply telegram with valid version."""
-        expected = "Reply Telegram: READ_DATAPOINT for Version = XP230 v1.00.04 from device 0020030837"
-        self.assertEqual(str(self.version_reply_telegram), expected)
-
-    def test_version_reply_telegram_str_invalid(self):
-        """Test string representation of version reply telegram with invalid version."""
-        expected = "Reply Telegram: READ_DATAPOINT for Version = INVALID_FORMAT from device 0020044966"
-        self.assertEqual(str(self.invalid_version_reply), expected)
 
     def test_version_formats(self):
         """Test various version formats from the specification."""

@@ -379,10 +379,9 @@ class TestReplyTelegramParsing:
         telegram = self.service.parse_reply_telegram("<R0020012521F02D18+26,0§CIL>")
         summary = self.service.format_reply_telegram_summary(telegram)
 
-        assert (
-            "Reply: Reply Telegram: READ_DATAPOINT for Temperature = 26.0°C from device 0020012521"
-            in summary
-        )
+        assert "Reply Telegram: READ_DATAPOINT" in summary
+        assert "for TEMPERATURE = 26.0" in summary
+        assert "from device 0020012521" in summary
         assert "Data: 26.0°C" in summary
         assert "Raw: <R0020012521F02D18+26,0§CIL>" in summary
         assert "Timestamp:" in summary
