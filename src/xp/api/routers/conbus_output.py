@@ -84,3 +84,36 @@ async def output_status(serial_number: str) -> Union[ApiResponse, ApiErrorRespon
         result = response.datapoint_telegram.data_value,
         description = response.datapoint_telegram.datapoint_type.name,
     )
+
+
+@router.get(
+    "/output/state/{serial_number}",
+    response_model=Union[ApiResponse, ApiErrorResponse],
+    responses={
+        200: {"model": ApiResponse, "description": "Query completed successfully"},
+        400: {"model": ApiErrorResponse, "description": "Connection or request error"},
+        408: {"model": ApiErrorResponse, "description": "Request timeout"},
+        500: {"model": ApiErrorResponse, "description": "Internal server error"},
+    },
+)
+async def output_state(serial_number: str) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
+    """
+    Initiate Input operation to find devices on the network.
+
+    Sends a broadcastInput telegram and collects responses from all connected devices.
+    """
+    service = ConbusOutputService()
+
+    # SendInput telegram and receive responses
+    with service:
+        response = service.send_module_state(serial_number)
+
+    if not response.success:
+        return handle_service_error(response.error)
+
+    # Build successful response
+    return ApiResponse(
+        success = True,
+        result = response.datapoint_telegram.data_value,
+        description = response.datapoint_telegram.datapoint_type.name,
+    )

@@ -79,3 +79,25 @@ def xp_output_status(
 
         response = service.send_status(serial_number)
         click.echo(json.dumps(response.to_dict(), indent=2))
+
+
+@conbus_output.command("state")
+@click.argument("serial_number", type=SERIAL)
+@connection_command()
+@handle_service_errors(ConbusDatapointError)
+def xp_module_state(
+    serial_number: str
+):
+    """Send input command to XP module or query status.
+
+    Examples:
+
+    \b
+        xp conbus input status 0011223344    # Query status
+    """
+    service = ConbusOutputService()
+
+    with service:
+
+        response = service.send_module_state(serial_number)
+        click.echo(json.dumps(response.to_dict(), indent=2))

@@ -3,6 +3,7 @@
 import click
 from click_help_colors import HelpColorsGroup
 
+from xp.cli.commands import homekit
 from xp.cli.utils.click_tree import add_tree_command
 from .commands.api import api
 from .commands.conbus import conbus
@@ -22,11 +23,12 @@ def cli():
     pass
 
 # Register all command groups
+cli.add_command(conbus)         # type: ignore
+cli.add_command(homekit)        # type: ignore
 cli.add_command(telegram)       # type: ignore
 cli.add_command(module)         # type: ignore
 cli.add_command(file)           # type: ignore
 cli.add_command(server)         # type: ignore
-cli.add_command(conbus)         # type: ignore
 cli.add_command(api)            # type: ignore
 cli.add_command(reverse_proxy)  # type: ignore
 

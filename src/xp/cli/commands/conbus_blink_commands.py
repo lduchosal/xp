@@ -51,8 +51,6 @@ def send_blink_off_telegram(serial_number: str):
     \b
         xp conbus blink off 0020044964
     """
-
-
     service = ConbusBlinkService()
 
     with service:

@@ -24,3 +24,6 @@ from .telegram_checksum_commands import *
 
 from .api import *
 from .api_start_commands import *
+
+from .homekit import *
+from .homekit_start_commands import *
