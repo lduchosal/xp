@@ -39,7 +39,7 @@ class ConbusDiscoverService:
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def send_telegram(self) -> ConbusDiscoverResponse:
+    def send_discover_telegram(self) -> ConbusDiscoverResponse:
         """Send a telegram to the Conbus server"""
 
         # Generate telegram based on type

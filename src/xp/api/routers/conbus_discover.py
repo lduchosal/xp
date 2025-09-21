@@ -34,7 +34,7 @@ async def discover_devices() -> Union[DiscoveryResponse, JSONResponse]:
 
     # Send discovery telegram and receive responses
     with service:
-        response = service.send_telegram()
+        response = service.send_discover_telegram()
 
     if not response.success:
         return handle_service_error(response.error)
