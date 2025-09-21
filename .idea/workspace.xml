@@ -5,9 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Chore: cleanup">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-HomeKit-Config-Validator.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-HomeKit-Config-Validator.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/homekit.yml.example" beforeDir="false" afterPath="$PROJECT_DIR$/homekit.yml.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Fix-TestUnits.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Fix-TestUnits.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_link_number_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_link_number_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_blink_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_checksum_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_checksum_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_link_number_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_link_number_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp20_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp20_server_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp230_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp230_server_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_server_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp33_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp33_server_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -379,15 +390,7 @@
       <workItem from="1758234469139" duration="92415000" />
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
-      <workItem from="1758468596803" duration="22276000" />
-    </task>
-    <task id="LOCAL-00057" summary="fix: refactor">
-      <option name="closed" value="true" />
-      <created>1758111188393</created>
-      <option name="number" value="00057" />
-      <option name="presentableId" value="LOCAL-00057" />
-      <option name="project" value="LOCAL" />
-      <updated>1758111188393</updated>
+      <workItem from="1758468596803" duration="22956000" />
     </task>
     <task id="LOCAL-00058" summary="fix: refactor">
       <option name="closed" value="true" />
@@ -773,7 +776,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758494489538</updated>
     </task>
-    <option name="localTasksCounter" value="106" />
+    <task id="LOCAL-00106" summary="Chore: cleanup">
+      <option name="closed" value="true" />
+      <created>1758494713826</created>
+      <option name="number" value="00106" />
+      <option name="presentableId" value="LOCAL-00106" />
+      <option name="project" value="LOCAL" />
+      <updated>1758494713826</updated>
+    </task>
+    <option name="localTasksCounter" value="107" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

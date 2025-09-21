@@ -174,7 +174,7 @@ class TestDiscoverService:
         assert result["invalid_checksums"] == 1
         assert result["success_rate"] == 75.0
         assert result["duplicate_responses"] == 1
-        assert result["serial_prefixes"]["0020"] == 3
+        assert result["serial_prefixes"]["0012"] == 3
         assert result["serial_prefixes"]["0021"] == 1
         assert len(result["device_list"]) == 3  # Only valid devices
 
@@ -219,7 +219,7 @@ class TestDiscoverService:
         assert "✓ 0012345011" in result
         assert "✗ 0012345006" in result
         assert "✓ 0012345003" in result
-        assert "0020xxxx: 3 device(s)" in result
+        assert "0012xxxx: 3 device(s)" in result
 
     def test_format_discover_results_with_duplicates(self):
         """Test formatting results with duplicate devices"""

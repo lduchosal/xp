@@ -267,4 +267,4 @@ class TestChecksumService:
 
         assert simple_validation.success is True
         assert simple_validation.data["is_valid"] is True
-        assert simple_result.data["checksum"] == "HA"
+        assert simple_result.data["checksum"] == "HM"

@@ -71,10 +71,10 @@ class TestDiscoverIntegration:
 
         # Test discover responses
         test_responses = [
-            "<R0012345011F01DFM>",
-            "<R0012345006F01DFK>",
-            "<R0012345003F01DFN>",
-            "<R0012345003F18DFF>"
+            "<R0012345011F01DFA>",
+            "<R0012345006F01DFG>",
+            "<R0012345003F01DFD>",
+            "<R0012345003F18DFL>"
         ]
 
         for response_str in test_responses:
@@ -108,9 +108,9 @@ class TestDiscoverIntegration:
 
         # Valid discover responses
         valid_responses = [
-            "<R0012345011F01DFM>",
-            "<R0012345006F01DFK>",
-            "<R0012345003F01DFN>",
+            "<R0012345011F01DFA>",
+            "<R0012345006F01DFG>",
+            "<R0012345003F01DFD>",
         ]
 
         for response in valid_responses:

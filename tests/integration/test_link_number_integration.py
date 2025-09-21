@@ -24,7 +24,7 @@ class TestLinkNumberIntegration:
         generated_telegram = link_service.generate_set_link_number_telegram(
             serial, link_num
         )
-        assert generated_telegram == "<S0012345005F04D0425FO>"
+        assert generated_telegram == "<S0012345005F04D0425FC>"
 
         # Parse the generated telegram
         parsed_telegram = telegram_service.parse_system_telegram(generated_telegram)
@@ -33,7 +33,7 @@ class TestLinkNumberIntegration:
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.WRITE_CONFIG
         assert parsed_telegram.datapoint_type == DataPointType.LINK_NUMBER
-        assert parsed_telegram.checksum == "FO"
+        assert parsed_telegram.checksum == "FC"
         assert parsed_telegram.checksum_validated is True  # Should auto-validate
 
     def test_complete_read_link_number_workflow(self):
@@ -63,11 +63,11 @@ class TestLinkNumberIntegration:
         # Test telegrams from the specification
         test_cases = [
             "<S0012345005F04D0409FA>",
-            "<R0012345005F18DFB>",
-            "<R0012345005F19DFA>",
-            "<S0012345005F04D0425FO>",
-            "<R0012345005F18DFB>",
-            "<R0012345005F19DFA>",
+            "<R0012345005F18DFN>"
+            "<R0012345005F19DFM>",
+            "<S0012345005F04D0425FC>",
+            "<R0012345005F18DFN>"
+            "<R0012345005F19DFM>",
         ]
 
         for telegram_str in test_cases:
@@ -171,10 +171,10 @@ class TestLinkNumberIntegration:
 
         # Generate set command
         set_command = link_service.generate_set_link_number_telegram("0012345005", 25)
-        assert set_command == "<S0012345005F04D0425FO>"
+        assert set_command == "<S0012345005F04D0425FC>"
 
         # Parse ACK reply from specification
-        ack_reply_str = "<R0012345005F18DFB>"
+        ack_reply_str = "<R0012345005F18DFN>"
         ack_reply = telegram_service.parse_reply_telegram(ack_reply_str)
 
         # Verify it's properly identified as ACK
@@ -182,7 +182,7 @@ class TestLinkNumberIntegration:
         assert link_service.is_nak_response(ack_reply) is False
 
         # Parse NAK reply from specification
-        nak_reply_str = "<R0012345005F19DFA>"
+        nak_reply_str = "<R0012345005F19DFM>"
         nak_reply = telegram_service.parse_reply_telegram(nak_reply_str)
 
         # Verify it's properly identified as NAK

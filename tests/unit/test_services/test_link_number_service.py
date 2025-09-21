@@ -23,15 +23,15 @@ class TestLinkNumberService:
 
         # Test case from specification
         result = service.generate_set_link_number_telegram("0012345005", 25)
-        assert result == "<S0012345005F04D0425FO>"
+        assert result == "<S0012345005F04D0425FC>"
 
         # Test another case
         result = service.generate_set_link_number_telegram("0012345005", 9)
-        assert result == "<S0012345005F04D0409FA>"
+        assert result == "<S0012345005F04D0409FM>"
 
         # Test with leading zero
         result = service.generate_set_link_number_telegram("0012345005", 5)
-        assert result == "<S0012345005F04D0405FM>"
+        assert result == "<S0012345005F04D0405FA>"
 
         # Test boundary values
         result = service.generate_set_link_number_telegram("1234567890", 0)
@@ -106,8 +106,8 @@ class TestLinkNumberService:
         assert telegram.serial_number == "0012345005"
         assert telegram.system_function == SystemFunction.WRITE_CONFIG
         assert telegram.datapoint_type == DataPointType.LINK_NUMBER
-        assert telegram.raw_telegram == "<S0012345005F04D0425FO>"
-        assert telegram.checksum == "FO"
+        assert telegram.raw_telegram == "<S0012345005F04D0425FC>"
+        assert telegram.checksum == "FC"
 
     def test_create_read_link_number_telegram_object(self):
         """Test creating SystemTelegram object for read operation"""

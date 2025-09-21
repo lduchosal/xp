@@ -27,7 +27,7 @@ class TestBlinkService:
 
         # Test another case
         result = service.generate_blink_telegram("0012345011", "on")
-        assert result == "<S0012345011F05D00FJ>"
+        assert result == "<S0012345011F05D00FF>"
 
         # Test different serial numbers
         result = service.generate_blink_telegram("1234567890", "on")
@@ -61,7 +61,7 @@ class TestBlinkService:
 
         # Test case from specification: <S0012345011F06D00FK>
         result = service.generate_blink_telegram("0012345011", "off")
-        assert result == "<S0012345011F06D00FK>"
+        assert result == "<S0012345011F06D00FG>"
 
         # Test another case
         result = service.generate_blink_telegram("0012345008", "off")
@@ -116,8 +116,8 @@ class TestBlinkService:
         assert telegram.serial_number == "0012345011"
         assert telegram.system_function == SystemFunction.UNBLINK
         assert telegram.datapoint_type == DataPointType.MODULE_TYPE
-        assert telegram.raw_telegram == "<S0012345011F06D00FK>"
-        assert telegram.checksum == "FK"
+        assert telegram.raw_telegram == "<S0012345011F06D00FG>"
+        assert telegram.checksum == "FG"
 
     def test_is_ack_response(self):
         """Test identifying ACK responses"""

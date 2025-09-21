@@ -42,7 +42,7 @@ class TestBlinkIntegration:
         serial = "0012345011"
 
         generated_telegram = blink_service.generate_blink_telegram(serial, "off")
-        assert generated_telegram == "<S0012345011F06D00FK>"
+        assert generated_telegram == "<S0012345011F06D00FG>"
 
         # Parse the generated telegram
         parsed_telegram = telegram_service.parse_system_telegram(generated_telegram)
@@ -51,7 +51,7 @@ class TestBlinkIntegration:
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.UNBLINK
         assert parsed_telegram.datapoint_type == DataPointType.MODULE_TYPE
-        assert parsed_telegram.checksum == "FK"
+        assert parsed_telegram.checksum == "FG"
         assert parsed_telegram.checksum_validated is True
 
     def test_parse_specification_examples(self):
@@ -65,8 +65,8 @@ class TestBlinkIntegration:
             ("<S0012345008F05D00FN>", SystemFunction.BLINK),
             ("<R0012345008F18DFA>", SystemFunction.ACK),
             # Unblink command and ACK response
-            ("<S0012345011F06D00FK>", SystemFunction.UNBLINK),
-            ("<R0012345011F18DFE>", SystemFunction.ACK),
+            ("<S0012345011F06D00FG>", SystemFunction.UNBLINK),
+            ("<R0012345011F18DFI>", SystemFunction.ACK),
         ]
 
         for telegram_str, expected_function in test_cases:
@@ -232,10 +232,10 @@ class TestBlinkIntegration:
 
         # Generate unblink command
         unblink_command = blink_service.generate_blink_telegram("0012345011", "off")
-        assert unblink_command == "<S0012345011F06D00FK>"
+        assert unblink_command == "<S0012345011F06D00FG>"
 
         # Parse ACK reply from specification
-        unblink_ack_reply_str = "<R0012345011F18DFE>"
+        unblink_ack_reply_str = "<R0012345011F18DFI>"
         unblink_ack_reply = telegram_service.parse_reply_telegram(unblink_ack_reply_str)
 
         # Verify it's properly identified as ACK

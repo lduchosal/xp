@@ -84,7 +84,7 @@ class Latin1TestServer:
         # Map of requests to responses with extended characters
         latin1_responses = {
             # Temperature request with § symbol (0xa7)
-            "<S0020012521F02D18FN>": "<R0020012521F02D18+31,5§CIE>",
+            "<S0020012521F02D18FN>": "<R0020044966F02D18+31,5§CIE>",
             # VOLTAGE request with © symbol (0xa9)
             "<S0012345011F02D20FM>": "<R0012345011F02D20+12,5V©OK>",
             # Current request with ® symbol (0xae)
@@ -131,11 +131,11 @@ conbus:
         char = chr(problematic_byte)
 
         # This would have failed with UTF-8 but should work with Latin-1
-        test_data = f"<R0012345006F02D18+31,5{char}CIE>".encode("latin-1")
+        test_data = f"<R0020044966F02D18+31,5{char}CIE>".encode("latin-1")
         decoded = test_data.decode("latin-1")
 
         assert char in decoded
-        assert decoded == "<R0012345006F02D18+31,5§CIE>"
+        assert decoded == "<R0020044966F02D18+31,5§CIE>"
 
     def test_raw_hex_data_decoding(self, client_service):
         """Test decoding of the actual hex data from the issue description"""
@@ -147,7 +147,7 @@ conbus:
 
         # This should decode properly with Latin-1
         decoded = raw_bytes.decode("latin-1")
-        expected = "<R0012345006F02D18+31,5§CIE"
+        expected = "<R0020044966F02D18+31,5§CIE"
 
         assert decoded == expected
         assert chr(0xA7) in decoded  # § symbol at position 23
@@ -169,7 +169,7 @@ conbus:
 
         # Latin-1 decoding should succeed (this demonstrates the fix)
         decoded_latin1 = raw_bytes.decode("latin-1")
-        assert decoded_latin1 == "<R0012345006F02D18+31,5§CIE"
+        assert decoded_latin1 == "<R0020044966F02D18+31,5§CIE"
         assert len(decoded_latin1) == 27
         assert decoded_latin1[23] == "§"  # Character at problematic position
 

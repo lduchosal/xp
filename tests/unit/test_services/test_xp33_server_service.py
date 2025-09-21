@@ -48,7 +48,7 @@ class TestXP33ServerService:
         """Test discover response generation"""
         response = self.xp33lr_service.generate_discover_response()
 
-        assert response == "<R0012345003F01DFN>"
+        assert response == "<R0012345003F01DFD>"
         assert response.startswith("<R")
         assert response.endswith(">")
         assert "0012345003" in response
@@ -67,7 +67,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.generate_version_response(request)
 
-        assert response == "<R0012345003F02D02XP33LR_V0.00.00HD>"
+        assert response == "<R0012345003F02D02XP33LR_V0.00.00HN>"
         assert "XP33LR_V0.00.00" in response
 
     def test_generate_version_response_led_variant(self):
@@ -97,7 +97,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.generate_module_type_response(request)
 
-        assert response == "<R0012345003F02D0730FK>"
+        assert response == "<R0012345003F02D0730FE>"
         assert "F02D07" in response
         assert "30" in response  # 30 decimal = 0x1E
 
@@ -113,7 +113,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.generate_status_response(request)
 
-        assert response == "<R0012345003F02D1000FP>"
+        assert response == "<R0012345003F02D1000FB>"
         assert "F02D10" in response
         assert "00" in response  # Normal status
 
@@ -129,7 +129,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.generate_channel_states_response(request)
 
-        assert response == "<R0012345003F02D10012345012GN>"
+        assert response == "<R0012345003F02D12000000000GD>"
         assert "F02D12" in response
         assert "00000000" in response  # All channels at 0%
 
@@ -145,7 +145,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.generate_link_number_response(request)
 
-        assert response == "<R0012345003F02D0404FO>"
+        assert response == "<R0012345003F02D0404FA>"
         assert "F02D04" in response
         assert "04" in response  # 4 links configured
 
@@ -161,7 +161,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.generate_link_number_response(request)
 
-        assert response == "<R0012345003F02D0404FO>"
+        assert response == "<R0012345003F02D0404FA>"
 
     def test_set_channel_dimming_valid(self):
         """Test setting channel dimming levels within valid range"""
@@ -219,7 +219,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.process_system_telegram(request)
 
-        assert response == "<R0012345003F01DFN>"
+        assert response == "<R0012345003F01DFD>"
 
     def test_process_system_telegram_wrong_serial(self):
         """Test processing telegram for wrong serial number"""
@@ -247,7 +247,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.process_system_telegram(request)
 
-        assert response == "<R0012345003F02D02XP33LR_V0.00.00HD>"
+        assert response == "<R0012345003F02D02XP33LR_V0.00.00HN>"
 
     def test_get_device_info(self):
         """Test getting device information"""
@@ -322,7 +322,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.generate_channel_states_response(request)
 
-        assert response == "<R0012345003F02D12324B19000BC>"
+        assert response == "<R0012345003F02D12324B19000BM>"
         assert "324B19000" in response  # 50%, 75%, 25% + padding
 
     def test_scene_configuration(self):
@@ -349,7 +349,7 @@ class TestXP33ServerService:
         response = self.xp33lr_service.process_system_telegram(parsed)
 
         assert response is not None
-        assert response == "<R0012345003F02D02XP33LR_V0.00.00HD>"
+        assert response == "<R0012345003F02D02XP33LR_V0.00.00HN>"
 
         # Verify response can be parsed as reply telegram
         reply = self.telegram_service.parse_reply_telegram(response)

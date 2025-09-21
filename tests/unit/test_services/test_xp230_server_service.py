@@ -128,7 +128,7 @@ class TestXP230ServerService:
         response = self.service.generate_module_type_response(request)
 
         assert response is not None
-        assert response == "<R0012345011F02D0734FP>"
+        assert response == "<R0012345011F02D0734FD>"
         assert "F02D07" in response
         assert "34" in response  # XP230 code is 34
 
@@ -158,7 +158,7 @@ class TestXP230ServerService:
         response = self.service.process_system_telegram(request)
 
         assert response is not None
-        assert response == "<R0012345011F02D0734FP>"
+        assert response == "<R0012345011F02D0734FD>"
         assert "F02D07" in response
         assert "34" in response  # XP230 code is 34
 

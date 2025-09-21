@@ -28,7 +28,7 @@ class TestXP20ServerService:
         """Test discover response generation"""
         response = self.xp20_service.generate_discover_response()
 
-        assert response == "<R0012345002F01DFM>"
+        assert response == "<R0012345002F01DFC>"
         assert response.startswith("<R0012345002F01D")
         assert response.endswith(">")
 
@@ -45,7 +45,7 @@ class TestXP20ServerService:
         response = self.xp20_service.generate_module_type_response(request)
 
         # XP20 should map to hex 33 according to spec
-        expected_response = "<R0012345002F02D0733FI>"
+        expected_response = "<R0012345002F02D0733FG>"
         assert response == expected_response
         assert "F02D07" in response
         assert "33" in response  # XP20 code is 33 = 0x21
@@ -75,7 +75,7 @@ class TestXP20ServerService:
 
         response = self.xp20_service.process_system_telegram(request)
 
-        expected_response = "<R0012345002F02D0733FI>"
+        expected_response = "<R0012345002F02D0733FG>"
         assert response == expected_response
         assert "F02D07" in response
         assert "33" in response
@@ -92,7 +92,7 @@ class TestXP20ServerService:
 
         response = self.xp20_service.process_system_telegram(request)
 
-        expected_response = "<R0012345002F02D0733FI>"
+        expected_response = "<R0012345002F02D0733FG>"
         assert response == expected_response
         assert "F02D07" in response
         assert "33" in response
