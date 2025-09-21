@@ -23,7 +23,7 @@ def homekit_start():
 
     """
     # Validate workers and reload options
-    click.echo(f"Starting XP Protocol HomeKit server...")
+    click.echo("Starting XP Protocol HomeKit server...")
 
     try:
 

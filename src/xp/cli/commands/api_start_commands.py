@@ -83,7 +83,7 @@ def start_api_server(host, port, reload, workers, log_level, access_log):
         )
         workers = 1
 
-    click.echo(f"Starting XP Protocol API server...")
+    click.echo("Starting XP Protocol API server...")
     click.echo(f"Server will be available at: https://{host}:{port}")
     click.echo(f"API documentation at: https://{host}:{port}/docs")
     click.echo(f"Health check at: https://{host}:{port}/health")

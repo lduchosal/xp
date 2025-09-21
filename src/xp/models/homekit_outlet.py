@@ -26,7 +26,7 @@ class Outlet(Accessory):
 
         super().__init__(driver, display_name)
         self.logger = logging.getLogger(__name__)
-        self.logger.info(f"Creating outlet {{ serial_number : %s, output_number: %s }}", serial_number, output_number)
+        self.logger.info("Creating outlet { serial_number : %s, output_number: %s }", serial_number, output_number)
 
         self.serial_number: str = serial_number
         self.output_number: int = output_number

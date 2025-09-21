@@ -26,7 +26,7 @@ class LightBulb(Accessory):
         super().__init__(driver, display_name)
 
         self.logger = logging.getLogger(__name__)
-        self.logger.info(f"Creating lightbulb {{ serial_number : %s, output_number: %s }}", serial_number, output_number)
+        self.logger.info("Creating lightbulb { serial_number : %s, output_number: %s }", serial_number, output_number)
 
         self.serial_number = serial_number
         self.output_number = output_number

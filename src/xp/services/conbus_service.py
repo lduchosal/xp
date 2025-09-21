@@ -246,7 +246,7 @@ class ConbusService:
                     )
 
             # Send telegram
-            if not telegram is None:
+            if telegram is not None:
                 self.socket.send(telegram.encode("latin-1"))
                 self.logger.info(f"Sent custom telegram: {telegram}")
 

@@ -10,10 +10,10 @@ def add_tree_command(cli_group, command_name='help'):
 
             if isinstance(cmd, click.Group):
                 # print(f"")
-                print(f"")
+                print("")
                 print(f"{suffix} {name}")
                 print_command_tree(cmd, ctx, f"{suffix} {name}")
-                print(f"")
+                print("")
             else:
                 print(f"{suffix} {name}")
 
@@ -22,7 +22,7 @@ def add_tree_command(cli_group, command_name='help'):
     def tree_command(ctx):
         """Show complete command tree"""
         root = ctx.find_root().command
-        print(f"")
+        print("")
         print(f"{ctx.find_root().info_name}")
         if root.short_help:
             print(f"{root.short_help}")
