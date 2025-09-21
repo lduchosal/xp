@@ -12,14 +12,14 @@ XP33 3-channel light dimmer module emulator for Conbus system testing. Responds 
 ## Module Variants
 
 ### XP33LR - 3-Channel Resistive/Inductive Dimmer
-- **EAN**: 5703513058982
+- **EAN**: 1234567890124 (Test code for interoperability)
 - **Power**: Total 640VA, max 500VA per channel
 - **Load Types**: Resistive and inductive loads
 - **Dimming**: Leading edge, logarithmic control
 - **Channels**: 3 independent channels
 
-### XP33LED - 3-Channel LED Dimmer  
-- **EAN**: 5703513058999
+### XP33LED - 3-Channel LED Dimmer
+- **EAN**: 1234567890123 (Test code for interoperability)
 - **Power**: 3 x 100VA (100VA per channel)
 - **Load Types**: LED lamps, resistive and capacitive
 - **Dimming**: Leading/Trailing edge configurable per channel

@@ -21,8 +21,8 @@ class TestXP33ServerService:
         assert service.serial_number == "0020042796"
         assert service.variant == "XP33LR"
         assert service.device_type == "XP33"
-        assert service.firmware_version == "XP33LR_V0.04.02"
-        assert service.ean_code == "5703513058982"
+        assert service.firmware_version == "XP33LR_V0.00.00"
+        assert service.ean_code == "1234567890124"
         assert service.max_power == 640
         assert service.device_status == "00"
         assert service.link_number == 4
@@ -37,8 +37,8 @@ class TestXP33ServerService:
         assert service.serial_number == "0020042797"
         assert service.variant == "XP33LED"
         assert service.device_type == "XP33"
-        assert service.firmware_version == "XP33LED_V0.04.02"
-        assert service.ean_code == "5703513058999"
+        assert service.firmware_version == "XP33LED_V0.00.00"
+        assert service.ean_code == "1234567890123"
         assert service.max_power == 300
         assert service.device_status == "00"
         assert service.link_number == 4
@@ -67,8 +67,8 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.generate_version_response(request)
 
-        assert response == "<R0020042796F02D02XP33LR_V0.04.02HF>"
-        assert "XP33LR_V0.04.02" in response
+        assert response == "<R0020042796F02D02XP33LR_V0.00.00HF>"
+        assert "XP33LR_V0.00.00" in response
 
     def test_generate_version_response_led_variant(self):
         """Test version response for XP33LED variant"""
@@ -83,7 +83,7 @@ class TestXP33ServerService:
         response = self.xp33led_service.generate_version_response(request)
 
         assert response is not None
-        assert "XP33LED_V0.04.02" in response
+        assert "XP33LED_V0.00.00" in response
 
     def test_generate_module_type_response(self):
         """Test module type response generation"""
@@ -247,7 +247,7 @@ class TestXP33ServerService:
 
         response = self.xp33lr_service.process_system_telegram(request)
 
-        assert response == "<R0020042796F02D02XP33LR_V0.04.02HF>"
+        assert response == "<R0020042796F02D02XP33LR_V0.00.00HF>"
 
     def test_get_device_info(self):
         """Test getting device information"""
@@ -349,7 +349,7 @@ class TestXP33ServerService:
         response = self.xp33lr_service.process_system_telegram(parsed)
 
         assert response is not None
-        assert response == "<R0020042796F02D02XP33LR_V0.04.02HF>"
+        assert response == "<R0020042796F02D02XP33LR_V0.00.00HF>"
 
         # Verify response can be parsed as reply telegram
         reply = self.telegram_service.parse_reply_telegram(response)

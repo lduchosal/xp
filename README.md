@@ -364,3 +364,7 @@ xp/
 ## License
 
 MIT License - see LICENSE file for details.
+
+## Notice
+
+This software is developed for **interoperability purposes only** under fair use provisions and EU Software Directive Article 6. See NOTICE.md for full details on intellectual property compliance.

@@ -1,7 +1,11 @@
-"""Checksum utility functions for telegram protocol.
+"""Checksum utility functions for protocol interoperability.
 
-This module provides checksum calculation functions equivalent to the Java implementation,
-including both simple XOR checksum and CRC32 checksum with custom polynomial.
+This module provides standard checksum calculation functions for protocol
+communication compatibility, including XOR checksum and IEEE 802.3 CRC32.
+Implemented for interoperability purposes under fair use provisions.
+
+Copyright (c) 2025 lduchosal
+Licensed under MIT License - see LICENSE file for details.
 """
 
 
@@ -87,10 +91,11 @@ def a_byte_to_int_no_sign(byte_val: int) -> int:
 
 
 def calculate_checksum32(buffer: bytes) -> str:
-    """Calculate CRC32 checksum with custom polynomial.
+    """Calculate CRC32 checksum for protocol interoperability.
 
-    This implements the same CRC32 algorithm as the Java version,
-    using polynomial 0xEDB88320.
+    Implements standard CRC32 algorithm using IEEE 802.3 polynomial 0xEDB88320
+    for interoperability with XP protocol communications. This is a standard
+    algorithm implementation for protocol compatibility purposes.
 
     Args:
         buffer: Byte array to calculate checksum for

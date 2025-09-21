@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Refactor: discovery / discover">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Chore: doc">
+      <change beforePath="$PROJECT_DIR$/src/xp/services/xp33_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp33_server_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/utils/checksum.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/utils/checksum.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -366,15 +365,7 @@
       <workItem from="1758234469139" duration="92415000" />
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
-      <workItem from="1758468596803" duration="20285000" />
-    </task>
-    <task id="LOCAL-00053" summary="Feat: json only">
-      <option name="closed" value="true" />
-      <created>1758108370941</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1758108370941</updated>
+      <workItem from="1758468596803" duration="20502000" />
     </task>
     <task id="LOCAL-00054" summary="fix: lint">
       <option name="closed" value="true" />
@@ -760,7 +751,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758491949646</updated>
     </task>
-    <option name="localTasksCounter" value="102" />
+    <task id="LOCAL-00102" summary="Chore: doc">
+      <option name="closed" value="true" />
+      <created>1758492706390</created>
+      <option name="number" value="00102" />
+      <option name="presentableId" value="LOCAL-00102" />
+      <option name="project" value="LOCAL" />
+      <updated>1758492706390</updated>
+    </task>
+    <option name="localTasksCounter" value="103" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -789,7 +788,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor: conbus_commands" />
     <MESSAGE value="Refactor: blink_command" />
     <MESSAGE value="Refactor: cleanup code" />
     <MESSAGE value="Fix: after code cleanup" />
@@ -814,7 +812,8 @@
     <MESSAGE value="Feat: Cli / conbus receive" />
     <MESSAGE value="Feat: Cli / conbus blink all" />
     <MESSAGE value="Refactor: discovery / discover" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor: discovery / discover" />
+    <MESSAGE value="Chore: doc" />
+    <option name="LAST_COMMIT_MESSAGE" value="Chore: doc" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

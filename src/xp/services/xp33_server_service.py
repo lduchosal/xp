@@ -33,20 +33,20 @@ class XP33ServerService(BaseServerService):
         self.device_type = "XP33"
         self.module_type_code = 11  # XP33 module type
 
-        # XP33 device characteristics
+        # XP33 device characteristics (anonymized for interoperability testing)
         if variant == "XP33LED":
-            self.firmware_version = "XP33LED_V0.04.02"
-            self.ean_code = "5703513058999"
+            self.firmware_version = "XP33LED_V0.00.00"
+            self.ean_code = "1234567890123"  # Test EAN - not a real product code
             self.max_power = 300  # 3 x 100VA
             self.module_type_code = 31  # XP33LR module type
         elif variant == "XP33LR":  # XP33LR
-            self.firmware_version = "XP33LR_V0.04.02"
-            self.ean_code = "5703513058982"
+            self.firmware_version = "XP33LR_V0.00.00"
+            self.ean_code = "1234567890124"  # Test EAN - not a real product code
             self.max_power = 640  # Total 640VA
             self.module_type_code = 30  # XP33LR module type
         else:  # XP33
             self.firmware_version = "XP33_V0.04.02"
-            self.ean_code = "5703513058981"
+            self.ean_code = "1234567890125"  # Test EAN - not a real product code
             self.max_power = 100  # Total 640VA
             self.module_type_code = 11  # XP33 module type
 
