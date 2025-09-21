@@ -124,7 +124,7 @@ class TestXP24ActionService:
         """Test parse_status_response with valid response."""
         result = self.service.parse_status_response("<R0020044964F02D12xxxx1110FJ>")
 
-        expected = {0: True, 1: True, 2: True, 3: False}
+        expected = {0: False, 1: True, 2: True, 3: True}
         assert result == expected
 
     def test_parse_status_response_all_on(self):

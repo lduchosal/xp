@@ -273,7 +273,7 @@ class TelegramOutputService:
         # Map each bit to input state
         status = {}
         for i in range(4):
-            status[i] = status_bits[i] == "1"
+            status[3 - i] = status_bits[i] == "1"
 
         return status
 

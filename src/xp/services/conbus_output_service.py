@@ -61,7 +61,6 @@ class ConbusOutputService:
 
         return response
 
-
     def get_module_state(self, serial_number) -> ConbusDatapointResponse:
 
         # Send status query using custom telegram method

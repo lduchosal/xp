@@ -46,8 +46,6 @@ class ReplyTelegram(Telegram):
             return self._parse_module_type_value()
         elif self.datapoint_type == DataPointType.SW_VERSION:
             return self._parse_sw_version_value()
-        elif self.datapoint_type == DataPointType.MODULE_OUTPUT_STATE:
-            return self._parse_module_output_state_value()
         else:
             return {"raw_value": self.data_value, "parsed": False}
 
@@ -226,6 +224,3 @@ class ReplyTelegram(Telegram):
             f"for {self.datapoint_type.name} = {value_display} "
             f"from device {self.serial_number}"
         )
-
-    def _parse_module_output_state_value(self)-> dict:
-        pass

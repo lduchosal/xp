@@ -62,6 +62,6 @@ class LightBulb(Accessory):
             serial_number=self.serial_number,
             oputput=self.output,
         )
-        # Return first response or default to Trueœ
+        # Return first response or default to True
         response = get_first_response(responses)
         return response

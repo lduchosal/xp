@@ -48,7 +48,7 @@ class TestXPInputIntegration:
         mock_response = "<R0020044964F02D12xxxx1010FJ>"
         status = self.input_service.parse_status_response(mock_response)
 
-        expected = {0: True, 1: False, 2: True, 3: False}
+        expected = {0: False, 1: True, 2: False, 3: True}
         assert status == expected
 
     def test_all_input_combinations(self):
@@ -79,7 +79,7 @@ class TestXPInputIntegration:
 
             # Verify each bit is correctly parsed
             for i in range(4):
-                expected_state = binary_str[i] == "1"
+                expected_state = binary_str[3-i] == "1"
                 assert status[i] == expected_state
 
     def test_checksum_validation_integration(self):
