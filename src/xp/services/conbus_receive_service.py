@@ -1,7 +1,7 @@
 """Conbus Receive Service for receiving telegrams from Conbus servers.
 
-This service extends the base ConbusService to provide receive-only functionality,
-allowing clients to receive waiting event telegrams without sending any data.
+This service uses composition with ConbusService to provide receive-only functionality,
+allowing clients to receive waiting event telegrams using empty telegram sends.
 """
 
 import logging
@@ -15,44 +15,42 @@ class ConbusReceiveError(ConbusError):
     pass
 
 
-class ConbusReceiveService(ConbusService):
+class ConbusReceiveService:
     """
     Service for receiving telegrams from Conbus servers.
 
-    Extends the base ConbusService to provide receive-only functionality
+    Uses composition with ConbusService to provide receive-only functionality
     for collecting waiting event telegrams from the server.
     """
 
     def __init__(self, config_path: str = "cli.yml"):
         """Initialize the Conbus receive service"""
-        super().__init__(config_path)
+        self.conbus_service = ConbusService(config_path)
         self.logger = logging.getLogger(__name__)
 
     def receive_telegrams(self) -> ConbusReceiveResponse:
         """
         Receive waiting telegrams from the Conbus server.
 
-        Connects to the server and receives any waiting event telegrams
-        without sending any data first.
+        Uses send_raw_telegram with empty string to connect and receive
+        any waiting event telegrams from the server.
 
         Returns:
             ConbusReceiveResponse: Response containing received telegrams or error
         """
         try:
-            if not self.is_connected:
-                connect_result = self.connect()
-                if not connect_result.success:
-                    return ConbusReceiveResponse(
-                        success=False,
-                        error=f"Failed to connect to server: {connect_result.error}",
-                    )
+            # Send empty telegram to trigger receive operation
+            response = self.conbus_service.send_raw_telegram("")
 
-            # Receive responses without sending anything
-            responses = self._receive_responses()
+            if not response.success:
+                return ConbusReceiveResponse(
+                    success=False,
+                    error=response.error,
+                )
 
             return ConbusReceiveResponse(
                 success=True,
-                received_telegrams=responses,
+                received_telegrams=response.received_telegrams or [],
             )
 
         except Exception as e:
@@ -69,4 +67,3 @@ class ConbusReceiveService(ConbusService):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit - ensure connection is closed"""
-        self.disconnect()

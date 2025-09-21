@@ -227,7 +227,7 @@ class ConbusService:
         return self.send_raw_telegram(telegram)
 
     def send_raw_telegram(
-            self, telegram: str
+            self, telegram: Optional[str] = None
     ) -> ConbusResponse:
         """Send custom telegram with specified function and data point codes"""
         # Generate custom system telegram: <S{serial}F{function}{data_point}{checksum}>
@@ -246,9 +246,11 @@ class ConbusService:
                     )
 
             # Send telegram
-            self.socket.send(telegram.encode("latin-1"))
+            if not telegram is None:
+                self.socket.send(telegram.encode("latin-1"))
+                self.logger.info(f"Sent custom telegram: {telegram}")
+
             self.last_activity = datetime.now()
-            self.logger.info(f"Sent custom telegram: {telegram}")
 
             # Receive responses
             responses = self._receive_responses()
