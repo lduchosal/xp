@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: Cli / conbus raw">
-      <change afterPath="$PROJECT_DIR$/doc/Feat-Conbus-Background-State-Sync.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/Feat-Conbus-Receive-Events.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-Conbus-Raw-Telegram.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Conbus-Raw-Telegram.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_config_validator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_config_validator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_conson_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_conson_config_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_homekit_config_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_homekit_config_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_conson_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_conson_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -373,15 +364,7 @@
       <workItem from="1758234469139" duration="92415000" />
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
-      <workItem from="1758468596803" duration="14072000" />
-    </task>
-    <task id="LOCAL-00045" summary="Fix: fine tuning">
-      <option name="closed" value="true" />
-      <created>1758089395008</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1758089395008</updated>
+      <workItem from="1758468596803" duration="14555000" />
     </task>
     <task id="LOCAL-00046" summary="Fix: fine tuning">
       <option name="closed" value="true" />
@@ -767,7 +750,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758477492932</updated>
     </task>
-    <option name="localTasksCounter" value="94" />
+    <task id="LOCAL-00094" summary="Feat: Cli / conbus raw">
+      <option name="closed" value="true" />
+      <created>1758486701286</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1758486701286</updated>
+    </task>
+    <option name="localTasksCounter" value="95" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
