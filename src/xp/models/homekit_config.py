@@ -1,31 +1,32 @@
-from typing import List, Optional
+from typing import List
 
 import yaml
 from pydantic import BaseModel, IPvAnyAddress
 
-
 class NetworkConfig(BaseModel):
     ip: IPvAnyAddress  # Validates IP addresses
     port: int
-    name: Optional[str]
 
-class Room(BaseModel):
+class RoomConfig(BaseModel):
     name: str
     accessories: List[str]
+
+class BridgeConfig(BaseModel):
+    name: str
+    rooms: List[RoomConfig]
 
 class HomekitAccessoryConfig(BaseModel):
     name: str
     id: str
-    module: str
+    module: int
     output: int
     description: str
-    location: str
     service: str
 
 class HomekitConfig(BaseModel):
     homekit: NetworkConfig
     conson: NetworkConfig
-    rooms: List[Room]
+    bridge: BridgeConfig
     accessories: List[HomekitAccessoryConfig]
 
     @classmethod

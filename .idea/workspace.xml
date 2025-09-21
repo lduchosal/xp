@@ -5,27 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: refactor / input output">
-      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations/xp_homekit_start.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/conson.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/homekit.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/cli/commands/homekit.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/cli/commands/homekit_start_commands.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/models/homekit_accessory.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/models/homekit_config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/models/homekit_module_config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/models/write_config_type.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/services/homekit_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/discover.txt" beforeDir="false" afterPath="$PROJECT_DIR$/discover.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/accessory.state" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/homekit.yml" beforeDir="false" afterPath="$PROJECT_DIR$/homekit.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus_output.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_output.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_output_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_output_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_accessory.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_accessory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_module_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_conson_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +132,7 @@
     "Python.test_discovery_integration.executor": "Run",
     "Python.test_event_telegram.executor": "Run",
     "Python.xp conbus input on 1231231230 1.executor": "Debug",
-    "Python.xp homekit start.executor": "Debug",
+    "Python.xp homekit start.executor": "Run",
     "Python.xp.cli.executor": "Debug",
     "Python.xp.cli.main.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -158,7 +147,7 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "run.code.analysis.last.selected.profile": "aDefault",
-    "settings.editor.selected.configurable": "Errors",
+    "settings.editor.selected.configurable": "terminal",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -353,15 +342,7 @@
       <workItem from="1757752097335" duration="35847000" />
       <workItem from="1758124896525" duration="15519000" />
       <workItem from="1758194876724" duration="12743000" />
-      <workItem from="1758234469139" duration="78437000" />
-    </task>
-    <task id="LOCAL-00037" summary="Refactor: cleanup code">
-      <option name="closed" value="true" />
-      <created>1758049269476</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1758049269476</updated>
+      <workItem from="1758234469139" duration="85600000" />
     </task>
     <task id="LOCAL-00038" summary="Refactor: cleanup code">
       <option name="closed" value="true" />
@@ -747,7 +728,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758385340666</updated>
     </task>
-    <option name="localTasksCounter" value="86" />
+    <task id="LOCAL-00086" summary="Feat: refactor / input output">
+      <option name="closed" value="true" />
+      <created>1758440442592</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1758440442592</updated>
+    </task>
+    <option name="localTasksCounter" value="87" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -932,7 +921,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_encoding_test_latin1_edge_cases_TestLatin1EdgeCases.coverage" NAME="pytest for tests.unit.test_encoding.test_latin1_edge_cases.TestLatin1EdgeCases Coverage Results" MODIFIED="1758260700357" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_models_test_xp24_action_telegram_TestXP24ActionTelegram_test_to_dict_minimal.coverage" NAME="pytest for tests.unit.test_models.test_xp24_action_telegram.TestXP24ActionTelegram.test_to_dict_minimal Coverage Results" MODIFIED="1758352695045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_input_integration_TestConbusInputIntegration_test_conbus_input_on_serial_1.coverage" NAME="pytest for tests.integration.test_conbus_input_integration.TestConbusInputIntegration.test_conbus_input_on_serial_1 Coverage Results" MODIFIED="1758288879403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$xp_cli_main.coverage" NAME="xp homekit start Coverage Results" MODIFIED="1758440407222" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/xp$xp_cli_main.coverage" NAME="xp homekit start Coverage Results" MODIFIED="1758443422207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_voltage_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request Coverage Results" MODIFIED="1758222746913" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$test_discovery_integration.coverage" NAME="test_discovery_integration Coverage Results" MODIFIED="1758146716057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/integration" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_services_test_telegram_input_service_TestTelegramInputServiceAckNak_test_parse_invalid_format_raises_error.coverage" NAME="pytest for tests.unit.test_services.test_telegram_input_service.TestTelegramInputServiceAckNak.test_parse_invalid_format_raises_error Coverage Results" MODIFIED="1758353384920" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

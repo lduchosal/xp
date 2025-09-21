@@ -1,7 +1,7 @@
 import logging
 from typing import Optional, List
 
-from xp.models.homekit_module_config import ConsonModule, HomekitModuleConfig
+from xp.models.homekit_conson_config import ConsonModule, HomekitModuleConfig
 
 
 class HomekitModuleService:

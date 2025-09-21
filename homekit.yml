@@ -1,52 +1,51 @@
 homekit:
   ip: 0.0.0.0
-  port: 55678
-  name: "Conson 2.1.13"
+  port: 51826
 
 conson:
   ip: 10.0.3.26
   port: 10001
-  name: "XP130"
 
-rooms:
+bridge:
+  name: "Maison"
+  rooms:
+    - name: "Salon"
+      accessories:
+      - lumiere_salon
+      - lumiere_salle_a_manger
+      - lumiere_cuisine
+      - prise_salon
+      - prise_couloir_cuisine
+      - prise_couloir_cuisine_2
+      - lumiere_blacon
 
-  - name: salon
-    accessories:
-    - lumiere_salon
-    - lumiere_salle_a_manger
-    - lumiere_cuisine
-    - prise_salon
-    - prise_couloir_cuisine
-    - prise_couloir_cuisine_2
-    - lumiere_blacon
+    - name: "Nathan"
+      accessories:
+      - lumiere_nathan
+      - prise_nathan
 
-  - name: nathan
-    accessories:
-    - lumiere_nathan
-    - prise_nathan
+    - name: "Emma"
+      accessories:
+      - lumiere_emma
+      - prise_emma
 
-  - name: emma
-    accessories:
-    - lumiere_emma
-    - prise_emma
+    - name: "Parents"
+      accessories:
+      - lumiere_dressing
+      - lumiere_parents
+      - lumiere_mirroir_douche
+      - lumiere_douche
+      - prise_parents_1
+      - prise_parents_2
 
-  - name: parents
-    accessories:
-    - lumiere_dressing
-    - lumiere_parents
-    - lumiere_mirroir_douche
-    - lumiere_douche
-    - prise_parents_1
-    - prise_parents_2
-
-  - name: divers
-    accessories:
-    - lumiere_couloir
-    - lumiere_entree
-    - lumiere_mirroir_sdb
-    - lumiere_sdb
-    - prise_all
-    - prise_na
+    - name: "Divers"
+      accessories:
+      - lumiere_couloir
+      - lumiere_entree
+      - lumiere_mirroir_sdb
+      - lumiere_sdb
+      - prise_all
+      - prise_na
 
 accessories:
 
@@ -54,121 +53,106 @@ accessories:
     id: A4R2
     module: "0020040101"
     output: 02
-    description: Lumière Salon
-    location: Salon
+    description: Salon
     service: lightbulb
 
   - name: lumiere_salle_a_manger
     id: A4R3
     module: "0020040101"
     output: 03
-    description: Lumière Salle à manger
-    location: Salle à manger
+    description: Salle à manger
     service: lightbulb
 
   - name: lumiere_cuisine
     id: A4R4
     module: "0020040101"
     output: 04
-    description: Lumière Cuisine
+    description: Cuisine
     service: lightbulb
-    location: Cuisine
 
   - name: prise_salon
     id: A5R2
     module: "5555555555"
     output: 02
-    description: Prise Salon
+    description: Salon
     service: outlet
-    location: Salon
 
   - name: lumiere_couloir
     id: A5R1
     module: "5555555555"
     output: 01
-    description: Lumière Couloir cuisine
+    description: Couloir cuisine
     service: lightbulb
-    location: Couloir cuisine
 
   - name: prise_couloir_cuisine
     id: A5R3
     module: "5555555555"
     output: 03
-    description: Prise Couloir cuisine 1
+    description: Couloir cuisine 1
     service: outlet
-    location: Couloir cuisine 1
 
   - name: prise_couloir_cuisine_2
     id: A5R4
     module: "5555555555"
     output: 04
-    description: Prise Couloir cuisine 2
+    description: Couloir cuisine 2
     service: outlet
-    location: Couloir cuisine 2
 
   - name: lumiere_nathan
     id: A4R1
     module: "0020040101"
     output: 01
-    description: Lumière Nathan
+    description: Nathan
     service: lightbulb
-    location: Nathan
 
   - name: lumiere_dressing
     id: A6R1
     module: "6666666666"
     output: 01
-    description: Lumière Dressing
+    description: Dressing
     service: lightbulb
-    location: Dressing
 
   - name: lumiere_mirroir_douche
     id: A6R2
     module: "6666666666"
     output: 02
-    description: Lumière Mirroir Douche
+    description: Mirroir Douche
     service: lightbulb
-    location: Mirroir Douche
 
   - name: lumiere_parents
     id: A6R3
     module: "6666666666"
     output: 03
-    description: Lumière Parents
+    description: Parents
     service: lightbulb
-    location: Parents
 
   - name: lumiere_blacon
     id: A6R4
     module: "6666666666"
     output: 04
-    description: Lumière Balcon 1
+    description: Balcon 1
     service: lightbulb
-    location: Balcon 1
 
   - name: lumiere_douche
     id: A7R1
     module: "7777777777"
     output: 01
-    description: Lumière Douche
+    description: Douche
     service: lightbulb
-    location: Douche
 
   - name: prise_parents_1
     id: A7R2
     module: "7777777777"
     output: 02
-    description: Prise Parents 1
+    description: Parents 1
     service: outlet
-    location: Parents
 
   - name: prise_parents_2
     id: A7R3
     module: "7777777777"
     output: 03
-    description: Prise Parents 2
+    description: Parents 2
     service: outlet
-    location: Parents
 
   - name: prise_na
     id: A7R4
@@ -176,40 +160,34 @@ accessories:
     output: 04
     description: Prise NA
     service: outlet
-    location: NA
 
   - name: lumiere_entree
     id: A8R1
     module: "8888888888"
     output: 01
-    description: Lumière Entrée
+    description: Entrée
     service: lightbulb
-    location: Entrée
 
   - name: lumiere_mirroir_sdb
     id: A8R2
     module: "8888888888"
     output: 02
-    description: Lumière Mirroir salle de bain
+    description: Mirroir salle de bain
     service: lightbulb
-    location: Mirroir salle de bain
 
   - name: lumiere_sdb
     id: A8R3
     module: "8888888888"
     output: 03
-    description: Lumière Salle de bain
+    description: Salle de bain
     service: lightbulb
-    location: Salle de bain
 
   - name: lumiere_emma
     id: A8R4
     module: "8888888888"
     output: 04
-    description: Lumière Emma
+    description: Emma
     service: lightbulb
-    location: Emma
-
 
   - name: prise_all
     id: A4A1
@@ -217,15 +195,13 @@ accessories:
     output: 01
     description: Prise All
     service: outlet
-    location: All
 
   - name: prise_emma
     id: A9R1
     module: "9999999999"
     output: 01
-    description: Lumière Emma
-    service: lightbulb
-    location: Emma
+    description: Prise Emma
+    service: outlet
 
   - name: prise_nathan
     id: A9R2
@@ -233,4 +209,3 @@ accessories:
     output: 02
     description: Prise Nathan
     service: outlet
-    location: NA
