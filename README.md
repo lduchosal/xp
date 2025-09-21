@@ -1,6 +1,6 @@
 # XP Protocol Communication Tool
 
-A comprehensive Python CLI and API tool for XP Protocol operations, including console bus (Conbus) communication, telegram parsing, HomeKit integration, and module management.
+A comprehensive Python CLI and API tool for CONSON XP Protocol operations, including console bus (Conbus) communication, telegram parsing, HomeKit integration, and module management.
 
 ## Features
 
