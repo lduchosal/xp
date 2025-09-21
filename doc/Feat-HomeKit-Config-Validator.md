@@ -112,10 +112,10 @@ bridge:
       - lumiere_cuisine
       - prise_salon
 
-    - name: "Nathan"
+    - name: "Chambre1"
       accessories:
-      - lumiere_nathan
-      - prise_nathan
+      - lumiere_chambre1
+      - prise_chambre1
 ```
 
 ---

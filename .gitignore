@@ -5,7 +5,10 @@
 /src/xp.egg-info/
 /pdm.lock
 /.pdm-python
-/.coverage
 .coverage
 accessory.state
-/private/
+cli.yml
+config.yml
+conson.yml
+homekit.yml
+rp.yml

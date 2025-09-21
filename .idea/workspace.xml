@@ -4,90 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Chore: doc">
-      <change afterPath="$PROJECT_DIR$/cli.yml.example" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config.yml.example" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/conson.yml.example" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/homekit.yml.example" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rp.yml.example" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Chore: cleanup">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accessory.state" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/conbus.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/conbus2.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/conson.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/discover.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/8718699774097.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/ConReport.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/ConbusLog-discover.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/ConbusLog.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/ConsonXPServiceTool.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-Conbus-Raw-Telegram.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Conbus-Raw-Telegram.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-FastAPI-discover.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-FastAPI-discover.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/Feat-HomeKit-Config-Validator.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-HomeKit-Config-Validator.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Blink-Unblink.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Blink-Unblink.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Conbus-Client-Send.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-Client-Send.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Conbus-DataPoint-Code.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-DataPoint-Code.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Conbus-Results.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-Results.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Conbus-ReverseProxy.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-ReverseProxy.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Conbus-Scan.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Conbus-Scan.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Discover-System-And-Reply-Telegram.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Discover-System-And-Reply-Telegram.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-File-Decode-Telegrams.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-File-Decode-Telegrams.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-LinkNumber-System-Telegram.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-LinkNumber-System-Telegram.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Parse-Version.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Parse-Version.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Query-ModuleType.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-Query-ModuleType.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-XP-Output.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-XP-Output.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-XP33-Emulator-Spec.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-XP33-Emulator-Spec.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Fix-Encoding-Issue.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Fix-Encoding-Issue.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/concept2000xp-manual-fr.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/homekit.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rp.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_custom_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_custom_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_raw_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_raw_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_linknumber_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_linknumber_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_parse_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_parse_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_version_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_version_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/log_entry.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/log_entry.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/output_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/output_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_blink_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_reverse_proxy_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_reverse_proxy_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_link_number_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_link_number_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_output_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_output_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_blink_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_blink_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_discovery_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_link_number_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_link_number_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_output_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_output_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_version_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_version_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_log_entry.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_log_entry.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram_enhancements.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram_enhancements.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_version_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_version_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_xp24_action_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_xp24_action_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_blink_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_checksum_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_checksum_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_link_number_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_link_number_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_log_file_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_log_file_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_telegram_input_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_telegram_input_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_version_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_version_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp20_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp20_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp230_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp230_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp33_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp33_server_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/homekit.yml.example" beforeDir="false" afterPath="$PROJECT_DIR$/homekit.yml.example" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -459,15 +379,7 @@
       <workItem from="1758234469139" duration="92415000" />
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
-      <workItem from="1758468596803" duration="22063000" />
-    </task>
-    <task id="LOCAL-00056" summary="fix: test units">
-      <option name="closed" value="true" />
-      <created>1758110865730</created>
-      <option name="number" value="00056" />
-      <option name="presentableId" value="LOCAL-00056" />
-      <option name="project" value="LOCAL" />
-      <updated>1758110865730</updated>
+      <workItem from="1758468596803" duration="22276000" />
     </task>
     <task id="LOCAL-00057" summary="fix: refactor">
       <option name="closed" value="true" />
@@ -853,7 +765,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758493333759</updated>
     </task>
-    <option name="localTasksCounter" value="105" />
+    <task id="LOCAL-00105" summary="Chore: cleanup">
+      <option name="closed" value="true" />
+      <created>1758494489538</created>
+      <option name="number" value="00105" />
+      <option name="presentableId" value="LOCAL-00105" />
+      <option name="project" value="LOCAL" />
+      <updated>1758494489538</updated>
+    </task>
+    <option name="localTasksCounter" value="106" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -882,7 +802,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor: blink_command" />
     <MESSAGE value="Refactor: cleanup code" />
     <MESSAGE value="Fix: after code cleanup" />
     <MESSAGE value="Fix: formatting of help" />
@@ -907,7 +826,8 @@
     <MESSAGE value="Feat: Cli / conbus blink all" />
     <MESSAGE value="Refactor: discovery / discover" />
     <MESSAGE value="Chore: doc" />
-    <option name="LAST_COMMIT_MESSAGE" value="Chore: doc" />
+    <MESSAGE value="Chore: cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="Chore: cleanup" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

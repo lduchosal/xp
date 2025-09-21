@@ -19,15 +19,15 @@ bridge:
       - prise_couloir_cuisine_2
       - lumiere_blacon
 
-    - name: "Nathan"
+    - name: "Chambre1"
       accessories:
-      - lumiere_nathan
-      - prise_nathan
+      - lumiere_chambre1
+      - prise_chambre1
 
-    - name: "Emma"
+    - name: "Chambre2"
       accessories:
-      - lumiere_emma
-      - prise_emma
+      - lumiere_chambre2
+      - prise_chambre2
 
     - name: "Parents"
       accessories:
@@ -49,11 +49,11 @@ bridge:
 
 accessories:
 
-  - name: lumiere_nathan
+  - name: lumiere_chambre1
     id: A4R1
     serial_number: "0012345004"
     output_number: 0
-    description: Nathan
+    description: Chambre1
     service: lightbulb
 
   - name: lumiere_salon
@@ -182,11 +182,11 @@ accessories:
     description: Salle de bain
     service: lightbulb
 
-  - name: lumiere_emma
+  - name: lumiere_chambre2
     id: A8R4
     serial_number: "0012345008"
     output_number: 3
-    description: Emma
+    description: Chambre2
     service: lightbulb
 
   - name: prise_all
@@ -196,16 +196,16 @@ accessories:
     description: Prise All
     service: outlet
 
-  - name: prise_emma
+  - name: prise_chambre2
     id: A9R1
     serial_number: "0012345009"
     output_number: 0
-    description: Prise Emma
+    description: Prise Chambre2
     service: outlet
 
-  - name: prise_nathan
+  - name: prise_chambre1
     id: A9R2
     serial_number: "0012345009"
     output_number: 1
-    description: Prise Nathan
+    description: Prise Chambre1
     service: outlet
