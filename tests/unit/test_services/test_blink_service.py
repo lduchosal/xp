@@ -1,7 +1,7 @@
 """Tests for BlinkService"""
 
 import pytest
-from xp.services.telegram_blink_service import BlinkService, BlinkError
+from xp.services.telegram_blink_service import TelegramBlinkService, BlinkError
 from xp.models.system_telegram import SystemTelegram
 from xp.models.datapoint_type import DataPointType
 from xp.models.system_function import SystemFunction
@@ -14,12 +14,12 @@ class TestBlinkService:
 
     def test_init(self):
         """Test initialization"""
-        service = BlinkService()
-        assert isinstance(service, BlinkService)
+        service = TelegramBlinkService()
+        assert isinstance(service, TelegramBlinkService)
 
     def test_generate_blink_telegram_valid(self):
         """Test generating valid blink telegram"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         # Test case from specification: <S0020044964F05D00FN>
         result = service.generate_blink_telegram("0020044964", "on")
@@ -37,7 +37,7 @@ class TestBlinkService:
 
     def test_generate_blink_telegram_invalid_serial(self):
         """Test generating blink telegram with invalid serial number"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         # Test empty serial
         with pytest.raises(BlinkError, match="Serial number must be 10 digits"):
@@ -57,7 +57,7 @@ class TestBlinkService:
 
     def test_generate_unblink_telegram_valid(self):
         """Test generating valid unblink telegram"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         # Test case from specification: <S0020030837F06D00FK>
         result = service.generate_blink_telegram("0020030837", "off")
@@ -75,7 +75,7 @@ class TestBlinkService:
 
     def test_generate_unblink_telegram_invalid_serial(self):
         """Test generating unblink telegram with invalid serial number"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         # Test empty serial
         with pytest.raises(BlinkError, match="Serial number must be 10 digits"):
@@ -95,7 +95,7 @@ class TestBlinkService:
 
     def test_create_blink_telegram_object(self):
         """Test creating SystemTelegram object for blink operation"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         telegram = service.create_blink_telegram_object("0020044964")
 
@@ -108,7 +108,7 @@ class TestBlinkService:
 
     def test_create_unblink_telegram_object(self):
         """Test creating SystemTelegram object for unblink operation"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         telegram = service.create_unblink_telegram_object("0020030837")
 
@@ -121,7 +121,7 @@ class TestBlinkService:
 
     def test_is_ack_response(self):
         """Test identifying ACK responses"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         # Create mock ACK response (F18D from spec)
         ack_reply = Mock(spec=ReplyTelegram)
@@ -143,7 +143,7 @@ class TestBlinkService:
 
     def test_is_nak_response(self):
         """Test identifying NAK responses"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         # Create mock NAK response (F19D from spec)
         nak_reply = Mock(spec=ReplyTelegram)
@@ -165,7 +165,7 @@ class TestBlinkService:
 
     def test_blink_unblink_telegram_format(self):
         """Test that generated telegrams follow correct format"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         # Test blink telegram structure
         blink_telegram = service.generate_blink_telegram("0020044964", "on")
@@ -181,7 +181,7 @@ class TestBlinkService:
 
     def test_different_serial_numbers(self):
         """Test blink/unblink with various serial numbers"""
-        service = BlinkService()
+        service = TelegramBlinkService()
 
         test_serials = [
             "0000000000",

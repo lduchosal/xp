@@ -3,7 +3,7 @@
 import click
 import json
 
-from ...services.telegram_blink_service import BlinkService, BlinkError
+from ...services.telegram_blink_service import TelegramBlinkService, BlinkError
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
@@ -23,7 +23,7 @@ def blink_on(serial_number: str):
         xp blink on 0020044964
         xp blink on 0020044964
     """
-    service = BlinkService()
+    service = TelegramBlinkService()
     OutputFormatter(True)
 
     try:
@@ -54,7 +54,7 @@ def blink_off(serial_number: str):
     \b
         xp blink off 0020030837
     """
-    service = BlinkService()
+    service = TelegramBlinkService()
     OutputFormatter(True)
 
     try:

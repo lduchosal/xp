@@ -33,8 +33,8 @@ All devices blink turned on
 - Validate blink command responses
 
 Key methods:
-- `blink_all_off() -> ConbusBlinkResponse`
-- `blink_all_on() -> ConbusBlinkResponse`
+- `blink_all('off') -> ConbusBlinkResponse`
+- `blink_all('on') -> ConbusBlinkResponse`
 
 **Implementation checklist:**
 - [ ] Create or reuse `ConbusBlinkService` class in `src/xp/services/conbus_blink_service.py`
@@ -49,8 +49,8 @@ Key methods:
 
 CLI integration tests in `tests/integration/test_conbus_blink_integration.py`:
 
-- `test_conbus_blink_all_off()` - Test turning all device blinks off
-- `test_conbus_blink_all_on()` - Test turning all device blinks on
+- `test_conbus_blink_all('off')` - Test turning all device blinks off
+- `test_conbus_blink_all('on')` - Test turning all device blinks on
 - `test_conbus_blink_connection_error()` - Handle network failures
 - `test_conbus_blink_invalid_response()` - Handle invalid responses
 

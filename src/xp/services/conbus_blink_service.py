@@ -8,7 +8,8 @@ import logging
 
 from . import TelegramService
 from .conbus_service import ConbusService
-from .telegram_blink_service import BlinkService
+from .conbus_discover_service import ConbusDiscoverService
+from .telegram_blink_service import TelegramBlinkService
 from ..models.conbus_blink import ConbusBlinkResponse
 from ..models.system_function import SystemFunction
 
@@ -25,8 +26,10 @@ class ConbusBlinkService:
 
         # Service dependencies
         self.conbus_service = ConbusService(config_path)
-        self.blink_service = BlinkService()
+        self.discover_service = ConbusDiscoverService(config_path)
+        self.blink_service = TelegramBlinkService()
         self.telegram_service = TelegramService()
+        self.telegram_blink_service = TelegramBlinkService()
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -78,3 +81,56 @@ class ConbusBlinkService:
                 success=response.success,
                 timestamp=response.timestamp,
             )
+
+    def blink_all(self, on_or_off: str) -> ConbusBlinkResponse:
+        """
+        Send blink command to all discovered devices.
+
+        Args:
+            on_or_off: "on" or "off" to control blink state
+
+        Returns:
+            ConbusBlinkResponse: Aggregated response for all devices
+        """
+        # First discover all devices
+        with self.discover_service:
+            discover_response = self.discover_service.send_discover_telegram()
+
+        if not discover_response.success:
+            return ConbusBlinkResponse(
+                success=False,
+                serial_number="all",
+                operation=on_or_off,
+                system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
+                error="Failed to discover devices",
+            )
+
+        # If no devices discovered, return success with appropriate message
+        if not discover_response.discovered_devices:
+            return ConbusBlinkResponse(
+                success=True,
+                serial_number="all",
+                operation=on_or_off,
+                system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
+                error="No devices discovered",
+            )
+
+        # Send blink command to each discovered device
+        all_success = True
+        all_blink_telegram = []
+
+        for serial_number in discover_response.discovered_devices:
+            blink_telegram = self.telegram_blink_service.generate_blink_telegram(serial_number, on_or_off)
+            all_blink_telegram.append(blink_telegram)
+
+        response = self.conbus_service.send_raw_telegrams(all_blink_telegram)
+        if not response.success:
+            all_success = False
+
+        return ConbusBlinkResponse(
+            success=all_success,
+            serial_number="all",
+            operation=on_or_off,
+            system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
+            received_telegrams=response.received_telegrams,
+        )

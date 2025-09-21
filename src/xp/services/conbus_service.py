@@ -271,6 +271,10 @@ class ConbusService:
                 error=error_msg,
             )
 
+    def send_raw_telegrams(self, telegrams: List[str]) -> ConbusResponse:
+        all_telegrams = "".join(telegrams)
+        return self.send_raw_telegram(all_telegrams)
+
     def __enter__(self):
         """Context manager entry"""
         return self
@@ -278,3 +282,4 @@ class ConbusService:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit - ensure connection is closed"""
         self.disconnect()
+

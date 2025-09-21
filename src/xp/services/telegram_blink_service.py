@@ -16,7 +16,7 @@ class BlinkError(Exception):
     pass
 
 
-class BlinkService:
+class TelegramBlinkService:
     """
     Service for generating and handling blink/unblink system telegrams.
 
