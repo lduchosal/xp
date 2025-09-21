@@ -27,9 +27,9 @@ class TestXP130ServerService:
         assert service.subnet_mask == "255.255.255.0"
         assert service.gateway == "192.168.1.1"
 
-    def test_generate_discovery_response(self):
-        """Test discovery response generation"""
-        response = self.service.generate_discovery_response()
+    def test_generate_discover_response(self):
+        """Test discover response generation"""
+        response = self.service.generate_discover_response()
 
         # Should generate <R{serial}F01D{checksum}>
         assert response.startswith("<R0019664896F01D")
@@ -199,8 +199,8 @@ class TestXP130ServerService:
         assert response.startswith("<R0019664896F18D")
         assert response.endswith(">")
 
-    def test_process_system_telegram_discovery(self):
-        """Test processing discovery request"""
+    def test_process_system_telegram_discover(self):
+        """Test processing discover request"""
         request = SystemTelegram(
             serial_number="0019664896",
             system_function=SystemFunction.DISCOVERY,

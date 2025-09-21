@@ -20,7 +20,7 @@ from ...services.conbus_discover_service import (
 @handle_service_errors(ConbusDiscoverError)
 def send_discover_telegram():
     """
-    Send discovery telegram to Conbus server.
+    Send discover telegram to Conbus server.
 
     Examples:
 

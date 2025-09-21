@@ -1,8 +1,8 @@
-"""Tests for DiscoveryService"""
+"""Tests for DiscoverService"""
 
 from unittest.mock import Mock
-from xp.services.telegram_discovery_service import (
-    TelegramDiscoveryService,
+from xp.services.telegram_discover_service import (
+    TelegramDiscoverService,
     DeviceInfo,
 )
 from xp.models.system_telegram import SystemTelegram
@@ -58,26 +58,26 @@ class TestDeviceInfo:
         assert result == expected
 
 
-class TestDiscoveryService:
-    """Test cases for DiscoveryService"""
+class TestDiscoverService:
+    """Test cases for DiscoverService"""
 
     def test_init(self):
         """Test initialization"""
-        service = TelegramDiscoveryService()
-        assert isinstance(service, TelegramDiscoveryService)
+        service = TelegramDiscoverService()
+        assert isinstance(service, TelegramDiscoverService)
 
-    def test_generate_discovery_telegram(self):
-        """Test generating discovery broadcast telegram"""
-        service = TelegramDiscoveryService()
+    def test_generate_discover_telegram(self):
+        """Test generating discover broadcast telegram"""
+        service = TelegramDiscoverService()
 
-        result = service.generate_discovery_telegram()
+        result = service.generate_discover_telegram()
         assert result == "<S0000000000F01D00FA>"
 
-    def test_create_discovery_telegram_object(self):
-        """Test creating SystemTelegram object for discovery"""
-        service = TelegramDiscoveryService()
+    def test_create_discover_telegram_object(self):
+        """Test creating SystemTelegram object for discover"""
+        service = TelegramDiscoverService()
 
-        telegram = service.create_discovery_telegram_object()
+        telegram = service.create_discover_telegram_object()
 
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0000000000"
@@ -86,25 +86,25 @@ class TestDiscoveryService:
         assert telegram.checksum == "FA"
         assert telegram.raw_telegram == "<S0000000000F01D00FA>"
 
-    def test_is_discovery_response(self):
-        """Test identifying discovery responses"""
-        service = TelegramDiscoveryService()
+    def test_is_discover_response(self):
+        """Test identifying discover responses"""
+        service = TelegramDiscoverService()
 
-        # Create mock discovery response
-        discovery_reply = Mock(spec=ReplyTelegram)
-        discovery_reply.system_function = SystemFunction.DISCOVERY
+        # Create mock discover response
+        discover_reply = Mock(spec=ReplyTelegram)
+        discover_reply.system_function = SystemFunction.DISCOVERY
 
-        assert service.is_discovery_response(discovery_reply) is True
+        assert service.is_discover_response(discover_reply) is True
 
-        # Create mock non-discovery response
+        # Create mock non-discover response
         other_reply = Mock(spec=ReplyTelegram)
         other_reply.system_function = SystemFunction.READ_DATAPOINT
 
-        assert service.is_discovery_response(other_reply) is False
+        assert service.is_discover_response(other_reply) is False
 
     def test_get_unique_devices(self):
         """Test filtering unique devices"""
-        service = TelegramDiscoveryService()
+        service = TelegramDiscoverService()
 
         devices = [
             DeviceInfo("0020030837"),
@@ -122,9 +122,9 @@ class TestDiscoveryService:
         assert "0020044966" in serials
         assert "0020042796" in serials
 
-    def test_validate_discovery_response_format_valid(self):
-        """Test validating valid discovery response format"""
-        service = TelegramDiscoveryService()
+    def test_validate_discover_response_format_valid(self):
+        """Test validating valid discover response format"""
+        service = TelegramDiscoverService()
 
         valid_telegrams = [
             "<R0020030837F01DFM>",
@@ -134,11 +134,11 @@ class TestDiscoveryService:
         ]
 
         for telegram in valid_telegrams:
-            assert service.validate_discovery_response_format(telegram) is True
+            assert service.validate_discover_response_format(telegram) is True
 
-    def test_validate_discovery_response_format_invalid(self):
-        """Test validating invalid discovery response format"""
-        service = TelegramDiscoveryService()
+    def test_validate_discover_response_format_invalid(self):
+        """Test validating invalid discover response format"""
+        service = TelegramDiscoverService()
 
         invalid_telegrams = [
             "<R002003083F01DFM>",  # Serial too short
@@ -152,11 +152,11 @@ class TestDiscoveryService:
         ]
 
         for telegram in invalid_telegrams:
-            assert service.validate_discovery_response_format(telegram) is False
+            assert service.validate_discover_response_format(telegram) is False
 
-    def test_generate_discovery_summary(self):
-        """Test generating discovery summary"""
-        service = TelegramDiscoveryService()
+    def test_generate_discover_summary(self):
+        """Test generating discover summary"""
+        service = TelegramDiscoverService()
 
         devices = [
             DeviceInfo("0020030837", checksum_valid=True),
@@ -166,7 +166,7 @@ class TestDiscoveryService:
             DeviceInfo("0021044966", checksum_valid=True),  # Different prefix
         ]
 
-        result = service.generate_discovery_summary(devices)
+        result = service.generate_discover_summary(devices)
 
         assert result["total_responses"] == 5
         assert result["unique_devices"] == 4
@@ -178,11 +178,11 @@ class TestDiscoveryService:
         assert result["serial_prefixes"]["0021"] == 1
         assert len(result["device_list"]) == 3  # Only valid devices
 
-    def test_generate_discovery_summary_empty(self):
+    def test_generate_discover_summary_empty(self):
         """Test generating summary for empty device list"""
-        service = TelegramDiscoveryService()
+        service = TelegramDiscoverService()
 
-        result = service.generate_discovery_summary([])
+        result = service.generate_discover_summary([])
 
         assert result["total_responses"] == 0
         assert result["unique_devices"] == 0
@@ -193,16 +193,16 @@ class TestDiscoveryService:
         assert result["serial_prefixes"] == {}
         assert result["device_list"] == []
 
-    def test_format_discovery_results_empty(self):
+    def test_format_discover_results_empty(self):
         """Test formatting results for empty device list"""
-        service = TelegramDiscoveryService()
+        service = TelegramDiscoverService()
 
-        result = service.format_discovery_results([])
+        result = service.format_discover_results([])
         assert result == "No devices discovered"
 
-    def test_format_discovery_results_with_devices(self):
+    def test_format_discover_results_with_devices(self):
         """Test formatting results with devices"""
-        service = TelegramDiscoveryService()
+        service = TelegramDiscoverService()
 
         devices = [
             DeviceInfo("0020030837", checksum_valid=True),
@@ -210,9 +210,9 @@ class TestDiscoveryService:
             DeviceInfo("0020042796", checksum_valid=True),
         ]
 
-        result = service.format_discovery_results(devices)
+        result = service.format_discover_results(devices)
 
-        assert "=== Device Discovery Results ===" in result
+        assert "=== Device Discover Results ===" in result
         assert "Total Responses: 3" in result
         assert "Unique Devices: 3" in result
         assert "Valid Checksums: 2/3 (66.7%)" in result
@@ -221,9 +221,9 @@ class TestDiscoveryService:
         assert "✓ 0020042796" in result
         assert "0020xxxx: 3 device(s)" in result
 
-    def test_format_discovery_results_with_duplicates(self):
+    def test_format_discover_results_with_duplicates(self):
         """Test formatting results with duplicate devices"""
-        service = TelegramDiscoveryService()
+        service = TelegramDiscoverService()
 
         devices = [
             DeviceInfo("0020030837", checksum_valid=True),
@@ -231,7 +231,7 @@ class TestDiscoveryService:
             DeviceInfo("0020044966", checksum_valid=True),
         ]
 
-        result = service.format_discovery_results(devices)
+        result = service.format_discover_results(devices)
 
         assert "Total Responses: 3" in result
         assert "Unique Devices: 2" in result

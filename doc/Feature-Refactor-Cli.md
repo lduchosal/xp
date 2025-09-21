@@ -42,7 +42,7 @@ src/xp/cli/
 │   ├── checksum_commands.py    # ~150 lines → 75 lines
 │   ├── linknumber_commands.py  # ~200 lines → 100 lines
 │   ├── version_commands.py     # ~150 lines → 75 lines
-│   ├── discovery_commands.py   # ~350 lines → 175 lines
+│   ├── discover_commands.py   # ~350 lines → 175 lines
 │   ├── file_commands.py        # ~400 lines → 200 lines
 │   ├── server_commands.py      # ~200 lines → 100 lines
 │   └── conbus_commands.py      # ~400 lines → 200 lines
@@ -168,7 +168,7 @@ class TestTelegramCommands:
 - [ ] Implement error handlers utility
 
 ### Week 3: Complex Commands
-- [ ] Extract discovery_commands.py (complex parsing logic)
+- [ ] Extract discover_commands.py (complex parsing logic)
 - [ ] Extract file_commands.py (multiple helper functions)
 - [ ] Create base command classes
 

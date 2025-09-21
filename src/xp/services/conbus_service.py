@@ -1,7 +1,7 @@
 """Conbus Client Send Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
-various types of telegrams including discovery, version, and sensor data requests.
+various types of telegrams including discover, version, and sensor data requests.
 """
 
 import socket
@@ -272,6 +272,7 @@ class ConbusService:
             )
 
     def send_raw_telegrams(self, telegrams: List[str]) -> ConbusResponse:
+        self.logger.info(f"send_raw_telegrams: {telegrams}")
         all_telegrams = "".join(telegrams)
         return self.send_raw_telegram(all_telegrams)
 

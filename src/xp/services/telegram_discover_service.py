@@ -1,6 +1,6 @@
-"""Service for device discovery telegram operations.
+"""Service for device discover telegram operations.
 
-This service handles generation and parsing of device discovery system telegrams
+This service handles generation and parsing of device discover system telegrams
 used for enumerating all connected devices on the console bus.
 """
 
@@ -13,8 +13,8 @@ from ..models.system_telegram import SystemTelegram
 from ..utils.checksum import calculate_checksum
 
 
-class DiscoveryError(Exception):
-    """Raised when discovery operations fail"""
+class DiscoverError(Exception):
+    """Raised when discover operations fail"""
 
     pass
 
@@ -45,29 +45,29 @@ class DeviceInfo:
         }
 
 
-class TelegramDiscoveryService:
+class TelegramDiscoverService:
     """
-    Service for generating and handling device discovery telegrams.
+    Service for generating and handling device discover telegrams.
 
-    Handles discovery broadcasting and response parsing:
-    - Discovery request: <S0000000000F01D00{checksum}>
-    - Discovery responses: <R{serial}F01D{checksum}>
+    Handles discover broadcasting and response parsing:
+    - Discover request: <S0000000000F01D00{checksum}>
+    - Discover responses: <R{serial}F01D{checksum}>
     """
 
     def __init__(self):
-        """Initialize the discovery service"""
+        """Initialize the discover service"""
         pass
 
     @staticmethod
-    def generate_discovery_telegram() -> str:
+    def generate_discover_telegram() -> str:
         """
-        Generate a broadcast discovery telegram to enumerate all devices.
+        Generate a broadcast discover telegram to enumerate all devices.
 
         Returns:
-            Formatted discovery telegram string: "<S0000000000F01D00FA>"
+            Formatted discover telegram string: "<S0000000000F01D00FA>"
         """
         # Build the data part of the telegram
-        # S0000000000F01D00 - Broadcast (all zeros) discovery command
+        # S0000000000F01D00 - Broadcast (all zeros) discover command
         data_part = "S0000000000F01D00"
 
         # Calculate checksum
@@ -78,14 +78,14 @@ class TelegramDiscoveryService:
 
         return telegram
 
-    def create_discovery_telegram_object(self) -> SystemTelegram:
+    def create_discover_telegram_object(self) -> SystemTelegram:
         """
-        Create a SystemTelegram object for discovery broadcast.
+        Create a SystemTelegram object for discover broadcast.
 
         Returns:
-            SystemTelegram object representing the discovery command
+            SystemTelegram object representing the discover command
         """
-        raw_telegram = self.generate_discovery_telegram()
+        raw_telegram = self.generate_discover_telegram()
 
         # Extract checksum from the generated telegram
         checksum = raw_telegram[-3:-1]  # Get checksum before closing >
@@ -101,21 +101,21 @@ class TelegramDiscoveryService:
         return telegram
 
     @staticmethod
-    def is_discovery_response(reply_telegram: ReplyTelegram) -> bool:
+    def is_discover_response(reply_telegram: ReplyTelegram) -> bool:
         """
-        Check if a reply telegram is a discovery response.
+        Check if a reply telegram is a discover response.
 
         Args:
             reply_telegram: Reply telegram to check
 
         Returns:
-            True if this is a discovery response, False otherwise
+            True if this is a discover response, False otherwise
         """
         return reply_telegram.system_function == SystemFunction.DISCOVERY
 
     @staticmethod
-    def _generate_discovery_response(serial_number: str) -> str:
-        """Generate discovery response telegram for a device"""
+    def _generate_discover_response(serial_number: str) -> str:
+        """Generate discover response telegram for a device"""
         # Format: <R{serial}F01D{checksum}>
         data_part = f"R{serial_number}F01D"
         checksum = calculate_checksum(data_part)
@@ -144,17 +144,17 @@ class TelegramDiscoveryService:
         return unique_devices
 
     @staticmethod
-    def validate_discovery_response_format(raw_telegram: str) -> bool:
+    def validate_discover_response_format(raw_telegram: str) -> bool:
         """
-        Validate if a raw telegram matches discovery response format.
+        Validate if a raw telegram matches discover response format.
 
         Args:
             raw_telegram: Raw telegram string to validate
 
         Returns:
-            True if format matches discovery response pattern
+            True if format matches discover response pattern
         """
-        # Discovery response format: <R{10-digit-serial}F01D{2-char-checksum}>
+        # Discover response format: <R{10-digit-serial}F01D{2-char-checksum}>
         import re
 
         pattern = re.compile(r"^<R(\d{10})F01D([A-Z0-9]{2})>$")
@@ -162,15 +162,15 @@ class TelegramDiscoveryService:
 
         return match is not None
 
-    def generate_discovery_summary(self, devices: List[DeviceInfo]) -> dict:
+    def generate_discover_summary(self, devices: List[DeviceInfo]) -> dict:
         """
-        Generate a summary of discovery results.
+        Generate a summary of a discover results.
 
         Args:
             devices: List of discovered devices
 
         Returns:
-            Dictionary with discovery statistics
+            Dictionary with discover statistics
         """
         unique_devices = self.get_unique_devices(devices)
         valid_devices = [d for d in unique_devices if d.checksum_valid]
@@ -199,9 +199,9 @@ class TelegramDiscoveryService:
             "device_list": [device.serial_number for device in valid_devices],
         }
 
-    def format_discovery_results(self, devices: List[DeviceInfo]) -> str:
+    def format_discover_results(self, devices: List[DeviceInfo]) -> str:
         """
-        Format discovery results for human-readable output.
+        Format discover results for human-readable output.
 
         Args:
             devices: List of discovered devices
@@ -212,11 +212,11 @@ class TelegramDiscoveryService:
         if not devices:
             return "No devices discovered"
 
-        summary = self.generate_discovery_summary(devices)
+        summary = self.generate_discover_summary(devices)
         unique_devices = self.get_unique_devices(devices)
 
         lines = [
-            "=== Device Discovery Results ===",
+            "=== Device Discover Results ===",
             f"Total Responses: {summary['total_responses']}",
             f"Unique Devices: {summary['unique_devices']}",
             f"Valid Checksums: {summary['valid_checksums']}/{summary['unique_devices']} ({summary['success_rate']:.1f}%)",
@@ -240,8 +240,8 @@ class TelegramDiscoveryService:
         return "\n".join(lines)
 
     @staticmethod
-    def is_discovery_request(telegram: SystemTelegram) -> bool:
-        """Check if telegram is a discovery request"""
+    def is_discover_request(telegram: SystemTelegram) -> bool:
+        """Check if telegram is a discover request"""
         return (
             telegram.system_function == SystemFunction.DISCOVERY
             and telegram.serial_number == "0000000000"

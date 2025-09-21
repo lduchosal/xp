@@ -5,7 +5,7 @@ from typing import Optional
 class SystemFunction(str, Enum):
     """System function codes for system telegrams"""
 
-    DISCOVERY = "01"  # Discovery function
+    DISCOVERY = "01"  # Discover function
     READ_DATAPOINT = "02"  # Read datapoint
     READ_CONFIG = "03"  # Read configuration
     WRITE_CONFIG = "04"  # Write configuration
@@ -18,7 +18,7 @@ class SystemFunction(str, Enum):
     def get_description(self) -> str:
         """Get the description of the SystemFunction"""
         descriptions = {
-            self.DISCOVERY: "Discovery function",
+            self.DISCOVERY: "Discover function",
             self.READ_DATAPOINT: "Read datapoint",
             self.READ_CONFIG: "Read configuration",
             self.WRITE_CONFIG: "Write configuration",

@@ -133,16 +133,16 @@ conbus:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client_socket.connect(("127.0.0.1", self.proxy_port))
 
-            # Send discovery telegram
-            discovery_telegram = "<S0000000000F01D00FA>"
-            client_socket.send(discovery_telegram.encode("latin-1"))
+            # Send discover telegram
+            discover_telegram = "<S0000000000F01D00FA>"
+            client_socket.send(discover_telegram.encode("latin-1"))
 
             # Receive response
             response = client_socket.recv(1024).decode("latin-1").strip()
 
             # Verify end-to-end communication
             assert response == "<R0020030837F01DFM>"
-            assert discovery_telegram in self.mock_server.received_messages
+            assert discover_telegram in self.mock_server.received_messages
 
             client_socket.close()
 

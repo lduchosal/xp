@@ -93,7 +93,7 @@ class Latin1TestServer:
             "<S0020042796F02D19FH>": "<R0020042796F02D19+65,2%±OK>",
             # Custom request with multiple extended chars
             "<S0020030837F02DE2CJ>": "<R0020030837F02DE2COUCOU§©®±FM>",
-            # Discovery with extended chars in device name
+            # Discover with extended chars in device name
             "<S0000000000F01D00FA>": "<R0020030837F01D©XP24®>",
         }
 

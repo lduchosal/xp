@@ -1,7 +1,7 @@
 """Conbus Client Send Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
-various types of telegrams including discovery, version, and sensor data requests.
+various types of telegrams including discover, version, and sensor data requests.
 """
 
 import logging

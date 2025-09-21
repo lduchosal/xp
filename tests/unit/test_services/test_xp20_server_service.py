@@ -24,9 +24,9 @@ class TestXP20ServerService:
         assert service.link_number == 1
         assert service.module_type_code == 33  # XP20 code
 
-    def test_generate_discovery_response(self):
-        """Test discovery response generation"""
-        response = self.xp20_service.generate_discovery_response()
+    def test_generate_discover_response(self):
+        """Test discover response generation"""
+        response = self.xp20_service.generate_discover_response()
 
         assert response == "<R0020037487F01DFM>"
         assert response.startswith("<R0020037487F01D")

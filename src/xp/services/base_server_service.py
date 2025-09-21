@@ -74,11 +74,11 @@ class BaseServerService(ABC):
             f"Generated {self.device_type} {response_type} response: {telegram}"
         )
 
-    def generate_discovery_response(self) -> str:
-        """Generate discovery response telegram"""
+    def generate_discover_response(self) -> str:
+        """Generate discover response telegram"""
         data_part = f"R{self.serial_number}F01D"
         telegram = self._build_response_telegram(data_part)
-        self._log_response("discovery", telegram)
+        self._log_response("discover", telegram)
         return telegram
 
     def generate_version_response(self, request: SystemTelegram) -> Optional[str]:
@@ -153,7 +153,7 @@ class BaseServerService(ABC):
 
         # Handle different system functions
         if request.system_function == SystemFunction.DISCOVERY:
-            return self.generate_discovery_response()
+            return self.generate_discover_response()
 
         elif request.system_function == SystemFunction.READ_DATAPOINT:
             return self._handle_return_data_request(request)

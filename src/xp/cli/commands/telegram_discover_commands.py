@@ -1,0 +1,40 @@
+"""Device discover operations CLI commands."""
+
+import json
+
+import click
+
+from .telegram import telegram
+from ..utils.decorators import handle_service_errors
+from ..utils.error_handlers import CLIErrorHandler
+from ..utils.formatters import OutputFormatter
+from ...services.telegram_discover_service import TelegramDiscoverService, DiscoverError
+
+
+@telegram.command("discover")
+@handle_service_errors(DiscoverError)
+def generate_discover():
+    """
+    Generate a discover telegram for device enumeration.
+
+    Examples:
+
+    \b
+        xp telegram discover
+    """
+    service = TelegramDiscoverService()
+    OutputFormatter(True)
+
+    try:
+        discover = service.generate_discover_telegram()
+
+        output = {
+            "success": True,
+            "telegram": discover,
+            "operation": "discover_broadcast",
+            "broadcast_address": "0000000000",
+        }
+        click.echo(json.dumps(output, indent=2))
+
+    except DiscoverError as e:
+        CLIErrorHandler.handle_service_error(e, "discover telegram generation")

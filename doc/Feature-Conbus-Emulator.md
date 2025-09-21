@@ -1,7 +1,7 @@
 # Conbus Emulator
 
 ## Overview
-TCP server that emulates Conbus device behavior for testing and development purposes. Listens on port 1000 and responds to Discovery Requests with configurable device information.
+TCP server that emulates Conbus device behavior for testing and development purposes. Listens on port 1000 and responds to Discover Requests with configurable device information.
 
 ## TCP Server
 - **Protocol**: TCP
@@ -10,8 +10,8 @@ TCP server that emulates Conbus device behavior for testing and development purp
 - **Connection**: Accept a single connections
 - **Timeout**: 30 seconds for idle connections
 
-## Discovery Request Handling
-The emulator responds to incoming Discovery Request telegrams with the format:
+## Discover Request Handling
+The emulator responds to incoming Discover Request telegrams with the format:
 ```
 <S0000000000F01D00FA>
 ```
@@ -34,11 +34,11 @@ devices:
 - **Key**: Device identifier/name (e.g., XP20, XP24)
 - **Value**: 10-digit serial number string
 - Multiple devices can be configured
-- Each device responds individually to Discovery Requests
+- Each device responds individually to Discover Requests
 
 ## Protocol Behavior
 1. **Listen**: TCP server accepts connections on port 10001
-2. **Receive**: Parse incoming Discovery Request telegram
+2. **Receive**: Parse incoming Discover Request telegram
 3. **Validate**: Check telegram format and checksum
 4. **Respond**: Send response for each configured device
 5. **Close**: Maintain connection for additional requests
@@ -58,7 +58,7 @@ For each configured device:
 
 ## Logging
 - Connection establishment/termination
-- Discovery requests received
+- Discover requests received
 - Responses sent (device serial numbers)
 - Configuration file loading
 - Error conditions
@@ -69,7 +69,7 @@ For each configured device:
 - **services/conbus_server_service.py**: Main TCP server implementation
   - Manages TCP socket lifecycle
   - Handles client connections
-  - Parses Discovery Request telegrams
+  - Parses Discover Request telegrams
   - Coordinates device responses
   
 - **services/xp24_server_service.py**: XP24 device emulation

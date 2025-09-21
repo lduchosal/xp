@@ -13,10 +13,10 @@ The Conbus Client is a network client that connects to a Conbus server to send v
 
 The client supports sending the following telegram types:
 
-### 1. Discovery
+### 1. Discover
 - **Purpose**: Announce client presence to the server
-- **Type**: `discovery`
-- **Description**: Used for service discovery and client registration
+- **Type**: `discover`
+- **Description**: Used for service discover and client registration
 
 ### 2. Version
 - **Purpose**: Report client software version
@@ -80,8 +80,8 @@ conbus:
 
 ### Basic Usage
 ```bash
-# Connect to server and send discovery telegram
-xp conbus send discovery
+# Connect to server and send discover telegram
+xp conbus send discover
 
 # Request version information
 xp conbus send 0020030837 version
@@ -112,9 +112,9 @@ $ xp conbus config
   timeout: 10 miliseconds
 ```
 
-### Discovery Command
+### Discover Command
 ```bash
-$ xp conbus send discovery
+$ xp conbus send discover
 22:48:38,646 [TX] <S0000000000F01D00FA>
 22:48:38,672 [RX] <R0020030837F01DFM>
 22:48:38,726 [RX] <R0020044966F01DFK>
@@ -155,7 +155,7 @@ $ xp conbus send 0020030837 custom fuction 02 datapoint E2
 
 ### Error Handling
 ```bash
-$ xp conbus send discovery
+$ xp conbus send discover
 Connecting to 192.168.1.100:10001...
 Error: Connection timeout after 10 seconds
 Failed to connect to server

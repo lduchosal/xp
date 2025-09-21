@@ -18,7 +18,7 @@ from ...services.telegram_service import TelegramService, TelegramParsingError
 @handle_service_errors(TelegramParsingError)
 def parse_any_telegram(telegram_string: str):
     """
-    Auto-detect and parse any type of telegram (event, system, reply, or discovery).
+    Auto-detect and parse any type of telegram (event, system, reply, or discover).
 
     Examples:
 

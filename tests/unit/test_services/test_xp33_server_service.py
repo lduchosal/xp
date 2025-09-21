@@ -44,9 +44,9 @@ class TestXP33ServerService:
         assert service.link_number == 4
         assert service.module_type_code == 31
 
-    def test_generate_discovery_response(self):
-        """Test discovery response generation"""
-        response = self.xp33lr_service.generate_discovery_response()
+    def test_generate_discover_response(self):
+        """Test discover response generation"""
+        response = self.xp33lr_service.generate_discover_response()
 
         assert response == "<R0020042796F01DFN>"
         assert response.startswith("<R")
@@ -207,8 +207,8 @@ class TestXP33ServerService:
         assert self.xp33lr_service.activate_scene(5) is False
         assert self.xp33lr_service.activate_scene(-1) is False
 
-    def test_process_system_telegram_discovery(self):
-        """Test processing discovery system telegram"""
+    def test_process_system_telegram_discover(self):
+        """Test processing discover system telegram"""
         request = SystemTelegram(
             checksum="FA",
             raw_telegram="<S0000000000F01D00FA>",

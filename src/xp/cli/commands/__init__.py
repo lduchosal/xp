@@ -19,7 +19,7 @@ from .server_commands import *
 from .telegram import *
 from .telegram_blink_commands import *
 from .telegram_parse_commands import *
-from .telegram_discovery_commands import *
+from .telegram_discover_commands import *
 from .telegram_linknumber_commands import *
 from .telegram_version_commands import *
 from .telegram_checksum_commands import *

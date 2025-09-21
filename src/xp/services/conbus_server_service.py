@@ -1,7 +1,7 @@
-"""Conbus Server Service for emulating device discovery responses.
+"""Conbus Server Service for emulating device discover responses.
 
 This service implements a TCP server that listens on port 10001 and responds to
-Discovery Request telegrams with configurable device information.
+Discover Request telegrams with configurable device information.
 """
 
 import socket
@@ -13,7 +13,7 @@ from typing import Dict, List, Optional, Union
 
 from .base_server_service import BaseServerService
 from ..services.telegram_service import TelegramService
-from ..services.telegram_discovery_service import TelegramDiscoveryService
+from ..services.telegram_discover_service import TelegramDiscoverService
 from ..services.cp20_server_service import CP20ServerService
 from ..services.xp24_server_service import XP24ServerService
 from ..services.xp33_server_service import XP33ServerService
@@ -33,7 +33,7 @@ class ConbusServerService:
     Main TCP server implementation for Conbus device emulation.
 
     Manages TCP socket lifecycle, handles client connections,
-    parses Discovery Request telegrams, and coordinates device responses.
+    parses Discover Request telegrams, and coordinates device responses.
     """
 
     def __init__(self, config_path: str = "config.yml", port: int = 10001):
@@ -47,7 +47,7 @@ class ConbusServerService:
             str, Union[BaseServerService, XP33ServerService, XP20ServerService, XP130ServerService]
         ] = {}  # serial -> device service instance
         self.telegram_service = TelegramService()
-        self.discovery_service = TelegramDiscoveryService()
+        self.discover_service = TelegramDiscoverService()
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -198,7 +198,7 @@ class ConbusServerService:
                 message = data.decode("latin-1").strip()
                 self.logger.info(f"Received from {client_address}: {message}")
 
-                # Process request (discovery or data request)
+                # Process request (discover or data request)
                 responses = self._process_request(message)
 
                 # Send responses
@@ -229,10 +229,10 @@ class ConbusServerService:
                 self.logger.warning(f"Failed to parse telegram: {message}")
                 return responses
 
-            # Handle discovery requests
-            if self.discovery_service.is_discovery_request(parsed_telegram):
+            # Handle discover requests
+            if self.discover_service.is_discover_request(parsed_telegram):
                 for serial_number, device_service in self.device_services.items():
-                    response = device_service.generate_discovery_response()
+                    response = device_service.generate_discover_response()
                     responses.append(response)
                     responses.append("\n")
             else:

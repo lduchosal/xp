@@ -24,9 +24,9 @@ class TestXP230ServerService:
         assert service.link_number == 1
         assert service.module_type_code == 34  # XP230 module type
 
-    def test_generate_discovery_response(self):
-        """Test discovery response generation"""
-        response = self.service.generate_discovery_response()
+    def test_generate_discover_response(self):
+        """Test discover response generation"""
+        response = self.service.generate_discover_response()
 
         # Should generate <R{serial}F01D{checksum}>
         assert response.startswith("<R0020030837F01D")
@@ -179,8 +179,8 @@ class TestXP230ServerService:
         assert response.startswith("<R0020030837F18D")
         assert response.endswith(">")
 
-    def test_process_system_telegram_discovery(self):
-        """Test processing discovery request"""
+    def test_process_system_telegram_discover(self):
+        """Test processing discover request"""
         request = SystemTelegram(
             serial_number="0020030837",
             system_function=SystemFunction.DISCOVERY,

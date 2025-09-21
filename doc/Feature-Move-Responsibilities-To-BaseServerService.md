@@ -8,16 +8,16 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
 
 ### Duplicate Code Patterns Identified
 
-#### 1. **Discovery Response Generation** (100% identical across all services)
+#### 1. **Discover Response Generation** (100% identical across all services)
 - **Files**: All 5 XP services
-- **Method**: `generate_discovery_response()`
+- **Method**: `generate_discover_response()`
 - **Pattern**: 
   ```python
-  def generate_discovery_response(self) -> str:
+  def generate_discover_response(self) -> str:
       data_part = f"R{self.serial_number}F01D"
       checksum = calculate_checksum(data_part)
       telegram = f"<{data_part}{checksum}>"
-      self.logger.debug(f"Generated {device_type} discovery response: {telegram}")
+      self.logger.debug(f"Generated {device_type} discover response: {telegram}")
       return telegram
   ```
 
@@ -98,7 +98,7 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
 - **Method**: `process_system_telegram(request: SystemTelegram)`
 - **Common patterns**:
   - Device request validation via `_check_request_for_device()`
-  - Discovery handling
+  - Discover handling
   - RETURN_DATA function routing
   - WRITE_CONFIG function routing
   - Module type response generation
@@ -134,7 +134,7 @@ Move the following methods to `BaseServerService`:
 #### 1. Core Response Generators
 
 ```python
-def generate_discovery_response(self) -> str:
+def generate_discover_response(self) -> str:
     def generate_version_response(self, request: SystemTelegram) -> Optional[str]
 
     def generate_status_response(self, request: SystemTelegram,
@@ -178,7 +178,7 @@ def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
         return None
 
     if request.system_function == SystemFunction.DISCOVERY:
-        return self.generate_discovery_response()
+        return self.generate_discover_response()
 
     elif request.system_function == SystemFunction.READ_DATAPOINT:
         return self._handle_return_data_request(request)
@@ -265,7 +265,7 @@ def _handle_device_specific_config_request(self, request: SystemTelegram) -> Opt
 ## Risk Assessment
 
 ### Low Risk
-- Discovery response generation (100% identical)
+- Discover response generation (100% identical)
 - Version response generation (single template parameter)
 - Link number operations (100% identical)
 

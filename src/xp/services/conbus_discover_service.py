@@ -1,16 +1,16 @@
 """Conbus Client Send Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
-various types of telegrams including discovery, version, and sensor data requests.
+various types of telegrams including discover, version, and sensor data requests.
 """
 
 import logging
 
 from .conbus_service import ConbusService
 from ..models import (
-    ConbusDiscoverResponse,
+    ConbusDiscoverResponse, ConbusResponse,
 )
-from ..services.telegram_discovery_service import TelegramDiscoveryService
+from ..services.telegram_discover_service import TelegramDiscoverService
 from ..services.telegram_service import TelegramService
 
 
@@ -33,7 +33,7 @@ class ConbusDiscoverService:
 
         # Service dependencies
         self.telegram_service = TelegramService()
-        self.discovery_service = TelegramDiscoveryService()
+        self.telegram_discover_service = TelegramDiscoverService()
         self.conbus_service = ConbusService(config_path)
 
         # Set up logging
@@ -43,13 +43,23 @@ class ConbusDiscoverService:
         """Send a telegram to the Conbus server"""
 
         # Generate telegram based on type
-        telegram = self.discovery_service.generate_discovery_telegram()
+        telegram = self.telegram_discover_service.generate_discover_telegram()
 
         # Receive responses (with timeout)
         responses = self.conbus_service.send_raw_telegram(telegram)
 
         # Parse received telegrams to extract device information
-        discovered_devices = []
+        discovered_devices = self.parse_discovered_devices(responses)
+
+        return ConbusDiscoverResponse(
+            success=True,
+            sent_telegram=telegram,
+            received_telegrams=responses.received_telegrams,
+            discovered_devices=discovered_devices,
+        )
+
+    def parse_discovered_devices(self, responses: ConbusResponse) -> list[str]:
+        discovered_devices: list[str] = []
         for telegrams_str in responses.received_telegrams:
             for telegram_str in telegrams_str.split("\n"):
                 try:
@@ -60,18 +70,13 @@ class ConbusDiscoverService:
                 except Exception as e:
                     self.logger.warning(f"Failed to parse telegram '{telegram_str}': {e}")
                     continue
-
-        return ConbusDiscoverResponse(
-            success=True,
-            sent_telegram=telegram,
-            received_telegrams=responses.received_telegrams,
-            discovered_devices=discovered_devices,
-        )
+        return discovered_devices
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-      # Cleanup logic if needed
+        # Cleanup logic if needed
+        self.conbus_service.disconnect()
         pass
 

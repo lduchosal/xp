@@ -1,6 +1,6 @@
-# Conson Bus Discovery Telegram Specification
+# Conson Bus Discover Telegram Specification
 
-## Discovery Request
+## Discover Request
 
 **Format:** `<S0000000000F01D00FA>`
 
@@ -8,11 +8,11 @@
 |-------|----------|--------|-------|-------------|
 | Start | 0 | 1 | S | Send command indicator |
 | Source Address | 1-10 | 10 | 0000000000 | Master/broadcast source (all zeros) |
-| Command | 11-16 | 6 | F01D00 | Discovery command |
+| Command | 11-16 | 6 | F01D00 | Discover command |
 | Checksum | 17-18 | 2 | FA | Message integrity check |
 
 ### Command Details
-- **F01D00**: Discovery command to enumerate all connected devices
+- **F01D00**: Discover command to enumerate all connected devices
 - Broadcast message (source address all zeros indicates broadcast)
 - All devices on the bus must respond if operational
 
@@ -45,7 +45,7 @@
 4. Serial numbers are factory-assigned and immutable
 
 ## Protocol Behavior
-- **Master** sends discovery broadcast
+- **Master** sends discover broadcast
 - **All devices** respond with their serial identification
 - **Master** compiles device inventory from responses
 - Used for network topology mapping and device enumeration

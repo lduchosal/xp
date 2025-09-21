@@ -79,7 +79,7 @@ For complete module type registry, see `src/xp/models/module_type.py`.
 
 ## Implementation Notes
 
-1. **Module Identification**: This query is essential for system discovery and configuration
+1. **Module Identification**: This query is essential for system discover and configuration
 2. **Address Validation**: Ensure destination addresses correspond to valid, connected modules
 3. **Error Handling**: Modules that don't respond indicate disconnection or communication issues
 4. **Checksum Verification**: All telegrams must include valid checksums for data integrity

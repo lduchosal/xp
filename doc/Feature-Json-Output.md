@@ -37,7 +37,7 @@ Convert CLI commands to output only JSON format by removing text output and the 
 - Conbus commands (all `conbus_*.py` files)
 - Server commands (`server_commands.py`)
 - File commands (`file_commands.py`)
-- Discovery commands (`telegram_discovery_commands.py`)
+- Discover commands (`telegram_discover_commands.py`)
 
 **Changes per command:**
 - Remove `json_output: bool` parameter
@@ -64,7 +64,7 @@ Convert CLI commands to output only JSON format by removing text output and the 
 - [ ] Convert conbus operation commands to JSON-only output
 - [ ] Convert server management commands to JSON-only output
 - [ ] Convert file operation commands to JSON-only output
-- [ ] Convert discovery commands to JSON-only output
+- [ ] Convert discover commands to JSON-only output
 - [ ] Update error handlers for JSON-only responses
 - [ ] Remove text formatters, keep JSON formatters
 - [ ] Update all service command decorators

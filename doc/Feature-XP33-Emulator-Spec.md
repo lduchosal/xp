@@ -1,7 +1,7 @@
 # XP33 Module Emulator Specification
 
 ## Overview
-XP33 3-channel light dimmer module emulator for Conbus system testing. Responds to discovery requests and all standard Conbus data point queries.
+XP33 3-channel light dimmer module emulator for Conbus system testing. Responds to discover requests and all standard Conbus data point queries.
 
 ## Module Identity
 - **Module Type**: XP33 (Code 11)
@@ -25,7 +25,7 @@ XP33 3-channel light dimmer module emulator for Conbus system testing. Responds 
 - **Dimming**: Leading/Trailing edge configurable per channel
 - **Channels**: 3 independent channels, short-circuit proof
 
-## Discovery Response
+## Discover Response
 **Request**: `<S0000000000F01D00FA>`  
 **Response**: `<R0020042796F01DFN>`
 

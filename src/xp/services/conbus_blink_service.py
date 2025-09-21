@@ -1,7 +1,7 @@
 """Conbus Client Send Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
-various types of telegrams including discovery, version, and sensor data requests.
+various types of telegrams including discover, version, and sensor data requests.
 """
 
 import logging
@@ -92,45 +92,48 @@ class ConbusBlinkService:
         Returns:
             ConbusBlinkResponse: Aggregated response for all devices
         """
-        # First discover all devices
-        with self.discover_service:
-            discover_response = self.discover_service.send_discover_telegram()
+        # Use a single ConbusService instance for both discover and blinking
+        # to avoid connection conflicts
+        with self.conbus_service:
+            # First discover all devices using the same connection
+            telegram = self.discover_service.telegram_discover_service.generate_discover_telegram()
+            discover_responses = self.conbus_service.send_raw_telegram(telegram)
 
-        if not discover_response.success:
+            if not discover_responses.success:
+                return ConbusBlinkResponse(
+                    success=False,
+                    serial_number="all",
+                    operation=on_or_off,
+                    system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
+                    error="Failed to discover devices",
+                )
+
+            # Parse received telegrams to extract device information
+            discovered_devices = self.discover_service.parse_discovered_devices(discover_responses)
+
+            # If no devices discovered, return success with appropriate message
+            if not discovered_devices:
+                return ConbusBlinkResponse(
+                    success=True,
+                    serial_number="all",
+                    operation=on_or_off,
+                    system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
+                    error="No devices discovered",
+                )
+
+            # Send blink command to each discovered device
+            all_blink_telegram = []
+            for serial_number in discovered_devices:
+                blink_telegram = self.telegram_blink_service.generate_blink_telegram(serial_number, on_or_off)
+                all_blink_telegram.append(blink_telegram)
+
+            # Send all blink telegrams using the same connection
+            response = self.conbus_service.send_raw_telegrams(all_blink_telegram)
+
             return ConbusBlinkResponse(
-                success=False,
+                success=response.success,
                 serial_number="all",
                 operation=on_or_off,
                 system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
-                error="Failed to discover devices",
+                received_telegrams=response.received_telegrams,
             )
-
-        # If no devices discovered, return success with appropriate message
-        if not discover_response.discovered_devices:
-            return ConbusBlinkResponse(
-                success=True,
-                serial_number="all",
-                operation=on_or_off,
-                system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
-                error="No devices discovered",
-            )
-
-        # Send blink command to each discovered device
-        all_success = True
-        all_blink_telegram = []
-
-        for serial_number in discover_response.discovered_devices:
-            blink_telegram = self.telegram_blink_service.generate_blink_telegram(serial_number, on_or_off)
-            all_blink_telegram.append(blink_telegram)
-
-        response = self.conbus_service.send_raw_telegrams(all_blink_telegram)
-        if not response.success:
-            all_success = False
-
-        return ConbusBlinkResponse(
-            success=all_success,
-            serial_number="all",
-            operation=on_or_off,
-            system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
-            received_telegrams=response.received_telegrams,
-        )

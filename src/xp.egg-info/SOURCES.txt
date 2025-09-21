@@ -14,7 +14,7 @@ src/xp/cli/commands/__init__.py
 src/xp/cli/commands/blink_commands.py
 src/xp/cli/commands/checksum_commands.py
 src/xp/cli/commands/conbus_commands.py
-src/xp/cli/commands/discovery_commands.py
+src/xp/cli/commands/discover_commands.py
 src/xp/cli/commands/file_commands.py
 src/xp/cli/commands/linknumber_commands.py
 src/xp/cli/commands/module_commands.py
@@ -46,7 +46,7 @@ src/xp/services/conbus_datapoint_service.py
 src/xp/services/conbus_reverse_proxy_service.py
 src/xp/services/conbus_server_service.py
 src/xp/services/cp20_server_service.py
-src/xp/services/discovery_service.py
+src/xp/services/discover_service.py
 src/xp/services/output_service.py
 src/xp/services/link_number_service.py
 src/xp/services/log_file_service.py

@@ -162,7 +162,7 @@ xp rp status   # Show proxy status and active connections
 ## Integration Testing
 
 ### Test Scenarios
-1. **Discovery Request**: Verify discovery telegrams are properly relayed
+1. **Discover Request**: Verify discover telegrams are properly relayed
 2. **Version Requests**: Test version query forwarding and responses  
 3. **Sensor Data**: Validate sensor telegram relay functionality
 4. **XP Output**: Ensure XP24 action commands work through proxy

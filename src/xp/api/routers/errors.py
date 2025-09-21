@@ -1,7 +1,7 @@
 from starlette import status
 from starlette.responses import JSONResponse
 
-from xp.api.models.discovery import DiscoveryErrorResponse
+from xp.api.models.discover import DiscoverErrorResponse
 
 
 def handle_service_error(error: str, default_status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR) -> JSONResponse:
@@ -31,5 +31,5 @@ def handle_service_error(error: str, default_status_code: int = status.HTTP_500_
 
     return JSONResponse(
         status_code=status_code,
-        content=DiscoveryErrorResponse(error=error_msg).model_dump()
+        content=DiscoverErrorResponse(error=error_msg).model_dump()
     )

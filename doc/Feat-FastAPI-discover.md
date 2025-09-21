@@ -1,14 +1,14 @@
-# FastAPI Conbus Discovery Endpoint Specification
+# FastAPI Conbus Discover Endpoint Specification
 
 ## Overview
 
-This specification defines a REST API endpoint for performing Conbus device discovery operations using FastAPI, building on the existing CLI discovery functionality.
+This specification defines a REST API endpoint for performing Conbus device discover operations using FastAPI, building on the existing CLI discover functionality.
 
 ## Endpoint Specification
 
 ### POST /api/xp/conbus/discover
 
-Initiates a Conbus discovery operation to find devices on the network.
+Initiates a Conbus discover operation to find devices on the network.
 
 #### Request
 
@@ -76,8 +76,8 @@ POST /api/xp/conbus/discover
 ### Core Components
 
 1. **API Models** (`src/xp/api/models/`)
-   - `DiscoveryRequest`: Pydantic model for request validation
-   - `DiscoveryResponse`: Pydantic model for response formatting
+   - `DiscoverRequest`: Pydantic model for request validation
+   - `DiscoverResponse`: Pydantic model for response formatting
    - `DeviceInfo`: Model for discovered device information
 
 2. **API Router** (`src/xp/api/routers/conbus.py`)
@@ -95,7 +95,7 @@ POST /api/xp/conbus/discover
 The endpoint leverages existing functionality:
 - `ConbusDatapointService` for TCP communication
 - `TelegramService` for telegram parsing
-- `DiscoveryService` for response processing
+- `DiscoverService` for response processing
 - Existing error handling patterns from CLI commands
 
 ### Error Handling
@@ -113,7 +113,7 @@ The endpoint leverages existing functionality:
 ### Security Considerations
 
 - Input validation via Pydantic models
-- Rate limiting for discovery operations
+- Rate limiting for discover operations
 - Network access controls (firewall rules)
 - No authentication required for internal network usage
 
@@ -122,7 +122,7 @@ The endpoint leverages existing functionality:
 - Unit tests for API models and validation
 - Integration tests with mock Conbus server
 - End-to-end tests with real hardware (if available)
-- Performance tests for concurrent discovery operations
+- Performance tests for concurrent discover operations
 
 ## Future Enhancements
 
