@@ -18,7 +18,7 @@ class BridgeConfig(BaseModel):
 class HomekitAccessoryConfig(BaseModel):
     name: str
     id: str
-    module: int
+    serial_number: int
     output: int
     description: str
     service: str

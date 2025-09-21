@@ -23,7 +23,7 @@ from .conbus import conbus_output
 def xp_output_on(
     serial_number: str, output_number: int
 ):
-    """Send input command to XP module or query status.
+    """Send ON command for output_number XP module serial_number
 
     Examples:
 
@@ -45,7 +45,7 @@ def xp_output_on(
 def xp_output_off(
     serial_number: str, output_number: int
 ):
-    """Send input command to XP module or query status.
+    """Send OFF command for output_number XP module serial_number
 
     Examples:
 
@@ -66,18 +66,18 @@ def xp_output_off(
 def xp_output_status(
     serial_number: str
 ):
-    """Send input command to XP module or query status.
+    """Query output state command to XP module serial_number.
 
     Examples:
 
     \b
-        xp conbus input status 0011223344    # Query status
+        xp conbus output status 0011223344    # Query output status
     """
     service = ConbusOutputService()
 
     with service:
 
-        response = service.send_status(serial_number)
+        response = service.get_output_state(serial_number)
         click.echo(json.dumps(response.to_dict(), indent=2))
 
 
@@ -88,16 +88,16 @@ def xp_output_status(
 def xp_module_state(
     serial_number: str
 ):
-    """Send input command to XP module or query status.
+    """Query module state of the XP module serial_number
 
     Examples:
 
     \b
-        xp conbus input status 0011223344    # Query status
+        xp conbus output state 0011223344    # Query module state
     """
     service = ConbusOutputService()
 
     with service:
 
-        response = service.send_module_state(serial_number)
+        response = service.get_module_state(serial_number)
         click.echo(json.dumps(response.to_dict(), indent=2))

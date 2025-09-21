@@ -4,10 +4,10 @@ from typing import List, Optional
 
 class ConsonModule(BaseModel):
     name: str
-    serial_number: Optional[str] = None
+    serial_number: int
     module_type: str
-    module_type_code: Optional[int] = None
-    link_number: Optional[int] = None
+    module_type_code: int
+    link_number: int
     module_number: Optional[str] = None
     conbus_ip: Optional[IPvAnyAddress] = None
     conbus_port: Optional[int] = None

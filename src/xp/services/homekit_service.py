@@ -8,7 +8,9 @@ from pyhap.accessory_driver import AccessoryDriver
 from typing_extensions import Union
 
 import xp
-from xp.models.homekit_accessory import LightBulb, Outlet, TemperatureSensor
+from xp.models.homekit_accessory import TemperatureSensor
+from xp.models.homekit_outlet import Outlet
+from xp.models.homekit_lightbulb import LightBulb
 from xp.models.homekit_config import HomekitConfig, HomekitAccessoryConfig, RoomConfig
 from xp.services.homekit_module_service import HomekitModuleService
 
@@ -79,31 +81,30 @@ class HomekitService:
     def get_accessory(self, homekit_accessory: HomekitAccessoryConfig) \
             -> Union[Accessory, LightBulb, Outlet, None]:
         """Call this method to get a standalone Accessory."""
-        module = f'{homekit_accessory.module:010d}'
-        output = f'{homekit_accessory.output:02d}'
-        serial = f"{module}.{output}"
         manufacturer = "Conson"
         description = homekit_accessory.description
         version = homekit_accessory.id
 
         if homekit_accessory.service == "lightbulb":
             return LightBulb(
-                self.driver,
-                description,
-                version,
-                manufacturer,
-                "XP24_lightbulb",
-                serial,
+                driver=self.driver,
+                display_name=description,
+                version=version,
+                manufacturer=manufacturer,
+                model="XP24_lightbulb",
+                serial_number=homekit_accessory.serial_number,
+                output=homekit_accessory.output,
             )
 
         if homekit_accessory.service == "outlet":
             return Outlet(
-                self.driver,
-                description,
-                version,
-                manufacturer,
-                "XP24_outlet",
-                serial,
+                driver=self.driver,
+                display_name=description,
+                version=version,
+                manufacturer=manufacturer,
+                model="XP24_outlet",
+                serial_number=homekit_accessory.serial_number,
+                output=homekit_accessory.output,
             )
 
         self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))

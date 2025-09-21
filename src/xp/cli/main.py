@@ -1,4 +1,5 @@
 """XP CLI tool entry point with modular command structure."""
+import logging
 
 import click
 from click_help_colors import HelpColorsGroup
@@ -20,6 +21,12 @@ from .commands.telegram_parse_commands import telegram
 @click.version_option()
 def cli():
     """XP CLI tool for remote console bus operations"""
+    logging.basicConfig(level=logging.DEBUG)
+    # Suppress pyhap.hap_protocol logs
+    logging.getLogger('pyhap.hap_protocol').setLevel(logging.WARNING)
+    logging.getLogger('pyhap.hap_handler').setLevel(logging.WARNING)
+    logging.getLogger('pyhap.accessory_driver').setLevel(logging.WARNING)
+
     pass
 
 # Register all command groups

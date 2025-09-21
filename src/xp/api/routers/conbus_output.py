@@ -73,7 +73,7 @@ async def output_status(serial_number: str) -> Union[ApiResponse, ApiErrorRespon
 
     # SendInput telegram and receive responses
     with service:
-        response = service.send_status(serial_number)
+        response = service.get_output_state(serial_number)
 
     if not response.success:
         return handle_service_error(response.error)
@@ -106,7 +106,7 @@ async def output_state(serial_number: str) -> Union[ApiResponse, ApiErrorRespons
 
     # SendInput telegram and receive responses
     with service:
-        response = service.send_module_state(serial_number)
+        response = service.get_module_state(serial_number)
 
     if not response.success:
         return handle_service_error(response.error)

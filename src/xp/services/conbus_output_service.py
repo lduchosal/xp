@@ -51,7 +51,7 @@ class ConbusOutputService:
       # Cleanup logic if needed
         pass
 
-    def send_status(self, serial_number) -> ConbusDatapointResponse:
+    def get_output_state(self, serial_number) -> ConbusDatapointResponse:
 
         # Send status query using custom telegram method
         response = self.datapoint_service.send_telegram(
@@ -62,7 +62,7 @@ class ConbusOutputService:
         return response
 
 
-    def send_module_state(self, serial_number) -> ConbusDatapointResponse:
+    def get_module_state(self, serial_number) -> ConbusDatapointResponse:
 
         # Send status query using custom telegram method
         response = self.datapoint_service.send_telegram(

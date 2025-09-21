@@ -1,108 +1,117 @@
 modules:
 
   - name: A1
-    serial_number: "0020041013"
+    serial_number: 0020041013
     module_type: XP130
     module_type_code: 13
     link_number: 12
-    module_number: "0001"
+    module_number: 0001
     conbus_ip: 10.0.3.26
     conbus_port: 10001
     sw_version: XP130_V0.10.04
     hw_version: XP130_HW_Rev B
 
   - name: A2
-    serial_number: "0020044989"
+    serial_number: 0020044989
     module_type: XP24
     module_type_code: 07
     link_number: 08
-    module_number: "0008"
+    module_number: 0008
 
   - name: A3
-    serial_number: "0020042796"
+    serial_number: 0020042796
     module_type: XP33LR
     module_type_code: 30
     link_number: 04
-    module_number: "0004"
+    module_number: 0004
 
   - name: A4
-    serial_number: "0020044991"
+    serial_number: 0020044991
     module_type: XP24
     module_type_code: 07
     link_number: 02
-    module_number: "0002"
+    module_number: 0002
 
   - name: A5
-    serial_number: "0020044974"
+    serial_number: 0020044974
     module_type: XP24
     module_type_code: 07
     link_number: 09
-    module_number: "0009"
+    module_number: 0009
 
   - name: A6
-    serial_number: "0020044966"
+    serial_number: 0020044966
     module_type: XP24
     module_type_code: 07
     link_number: 07
-    module_number: "0007"
+    module_number: 0007
 
   - name: A7
-    serial_number: "0020037487"
+    serial_number: 0020037487
     module_type: XP20
     module_type_code: 33
     link_number: 11
-    module_number: "0011"
+    module_number: 0011
 
   - name: A8
-    serial_number: "0020044964"
+    serial_number: 0020044964
     module_type: XP24
     module_type_code: 07
     link_number: 06
-    module_number: "0006"
+    module_number: 0006
 
   - name: A9
-    serial_number: "0020044986"
+    serial_number: 0020044986
     module_type: XP24
     module_type_code: 07
     link_number: 03
-    module_number: "0003"
+    module_number: 0003
 
   - name: A10
-    serial_number: "0020041824"
+    serial_number: 0020041824
     module_type: XP20
     module_type_code: 33
     link_number: 10
-    module_number: "0010"
+    module_number: 0010
 
   - name: A11
-    serial_number: "0020030837"
+    serial_number: 0020030837
     module_type: XP130
     module_type_real: XP230
     module_type_code: 34
     link_number: 13
-    module_number: "0005"
+    module_number: 0005
     conbus_ip: 10.0.3.162
     conbus_port: 10001
     sw_version: XP230_V1.00.04
     hw_version: XP130_HW_Rev B
 
   - name: A12
-    serial_number: "2000000000"
+    serial_number: 2000000000
     module_type: XP33LED
     module_type_code: 36
     link_number: 14
 
   - name: A13
-    serial_number: "2000000001"
+    serial_number: 2000000001
     module_type: XP33LED
     link_number: 15
     module_type_code: 36
 
   - name: A14
+    serial_number: 9900000001
+    link_number: 91
     module_type: XP11
+    module_type_code: 99
 
   - name: A15
+    serial_number: 9900000002
+    link_number: 92
     module_type: XP11
+    module_type_code: 99
 
   - name: A16
+    serial_number: 9900000003
+    link_number: 93
     module_type: XP11
+    module_type_code: 99
