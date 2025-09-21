@@ -67,10 +67,17 @@ class LightBulb(Accessory):
             serial)
 
         self.char_on = serv_light.configure_char(
-            'On', setter_callback=self.set_on)
+            'On',
+            getter_callback=self.get_on,
+            setter_callback=self.set_on
+        )
 
     def set_on(self, value):
-        self.logger.info("Bulb on: %s", value)
+        self.logger.info("Bulb set_on: %s", value)
+
+    def get_on(self, value):
+        self.logger.info("Bulb get_on: %s", value)
+        return True
 
 
 class TemperatureSensor(Accessory):

@@ -4,17 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: refactor / input output">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: homekit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accessory.state" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/homekit.yml" beforeDir="false" afterPath="$PROJECT_DIR$/homekit.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_accessory.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_accessory.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_module_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_conson_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -342,15 +334,7 @@
       <workItem from="1757752097335" duration="35847000" />
       <workItem from="1758124896525" duration="15519000" />
       <workItem from="1758194876724" duration="12743000" />
-      <workItem from="1758234469139" duration="85600000" />
-    </task>
-    <task id="LOCAL-00038" summary="Refactor: cleanup code">
-      <option name="closed" value="true" />
-      <created>1758050640659</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1758050640659</updated>
+      <workItem from="1758234469139" duration="86310000" />
     </task>
     <task id="LOCAL-00039" summary="Refactor: cleanup code">
       <option name="closed" value="true" />
@@ -736,7 +720,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758440442592</updated>
     </task>
-    <option name="localTasksCounter" value="87" />
+    <task id="LOCAL-00087" summary="Feat: homekit">
+      <option name="closed" value="true" />
+      <created>1758447789478</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1758447789478</updated>
+    </task>
+    <option name="localTasksCounter" value="88" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -790,7 +782,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: XP33 Emulator" />
     <MESSAGE value="Feat: ModuleType query" />
     <MESSAGE value="Feat: BaseModule" />
     <MESSAGE value="Refactore: XP24 action into XP input" />
@@ -815,7 +806,8 @@
     <MESSAGE value="Feat: refactor / Input" />
     <MESSAGE value="Feat: refactor / clean" />
     <MESSAGE value="Feat: refactor / input output" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feat: refactor / input output" />
+    <MESSAGE value="Feat: homekit" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: homekit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
