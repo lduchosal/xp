@@ -5,20 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: homekit">
-      <change afterPath="$PROJECT_DIR$/doc/Feat-HomeKit-Config-Validator.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conson.yml" beforeDir="false" afterPath="$PROJECT_DIR$/conson.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/ConbusLog-discover.txt" beforeDir="false" afterPath="$PROJECT_DIR$/doc/ConbusLog-discover.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/homekit.yml" beforeDir="false" afterPath="$PROJECT_DIR$/homekit.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_conson_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_conson_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_lightbulb.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_lightbulb.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_output_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_output_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_xp_input_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-HomeKit-Config-Validator.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-HomeKit-Config-Validator.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -348,15 +336,7 @@
       <workItem from="1758234469139" duration="92415000" />
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
-      <workItem from="1758468596803" duration="878000" />
-    </task>
-    <task id="LOCAL-00041" summary="Refactor: cleanup code">
-      <option name="closed" value="true" />
-      <created>1758051863631</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1758051863631</updated>
+      <workItem from="1758468596803" duration="1358000" />
     </task>
     <task id="LOCAL-00042" summary="Fix: after code cleanup">
       <option name="closed" value="true" />
@@ -742,7 +722,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758461713879</updated>
     </task>
-    <option name="localTasksCounter" value="90" />
+    <task id="LOCAL-00090" summary="Feat: homekit">
+      <option name="closed" value="true" />
+      <created>1758469707561</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1758469707561</updated>
+    </task>
+    <option name="localTasksCounter" value="91" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -898,12 +886,12 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_models_test_xp24_action_telegram_TestXP24ActionTelegram_test_to_dict_minimal.coverage" NAME="pytest for tests.unit.test_models.test_xp24_action_telegram.TestXP24ActionTelegram.test_to_dict_minimal Coverage Results" MODIFIED="1758352695045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_input_integration_TestConbusInputIntegration_test_conbus_input_on_serial_1.coverage" NAME="pytest for tests.integration.test_conbus_input_integration.TestConbusInputIntegration.test_conbus_input_on_serial_1 Coverage Results" MODIFIED="1758288879403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$xp_cli_main.coverage" NAME="xp homekit start Coverage Results" MODIFIED="1758443422207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_services_test_telegram_input_service_TestTelegramInputServiceAckNak_test_parse_invalid_format_raises_error.coverage" NAME="pytest for tests.unit.test_services.test_telegram_input_service.TestTelegramInputServiceAckNak.test_parse_invalid_format_raises_error Coverage Results" MODIFIED="1758353384920" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$test_discovery_integration.coverage" NAME="test_discovery_integration Coverage Results" MODIFIED="1758146716057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/integration" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_voltage_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_voltage_request Coverage Results" MODIFIED="1758222746913" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$test_discovery_integration.coverage" NAME="test_discovery_integration Coverage Results" MODIFIED="1758146716057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/integration" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_services_test_telegram_input_service_TestTelegramInputServiceAckNak_test_parse_invalid_format_raises_error.coverage" NAME="pytest for tests.unit.test_services.test_telegram_input_service.TestTelegramInputServiceAckNak.test_parse_invalid_format_raises_error Coverage Results" MODIFIED="1758353384920" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_end_to_end_status_generation_and_parsing.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_end_to_end_status_generation_and_parsing Coverage Results" MODIFIED="1758268717823" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestBasicConnectivity_test_connection_failure_no_server.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestBasicConnectivity.test_connection_failure_no_server Coverage Results" MODIFIED="1757520242034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp24_action_integration_TestXP24ActionIntegration_test_telegram_service_integration.coverage" NAME="pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration.test_telegram_service_integration Coverage Results" MODIFIED="1757052205585" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestBasicConnectivity_test_connection_failure_no_server.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestBasicConnectivity.test_connection_failure_no_server Coverage Results" MODIFIED="1757520242034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_models_test_xp24_action_telegram_TestXP24ActionTelegram_test_post_init_sets_timestamp.coverage" NAME="pytest for tests.unit.test_models.test_xp24_action_telegram.TestXP24ActionTelegram.test_post_init_sets_timestamp Coverage Results" MODIFIED="1757617048003" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$test_blink_integration.coverage" NAME="test_blink_integration Coverage Results" MODIFIED="1758209443616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/integration" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestErrorScenarios_test_multiple_concurrent_connections.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestErrorScenarios.test_multiple_concurrent_connections Coverage Results" MODIFIED="1756891785454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
@@ -913,7 +901,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_api_test_discovery_endpoint_TestDiscoveryEndpoint_test_successful_discovery.coverage" NAME="pytest for tests.integration.test_api.test_discovery_endpoint.TestDiscoveryEndpoint.test_successful_discovery Coverage Results" MODIFIED="1758210784045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_all_input_combinations.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_all_input_combinations Coverage Results" MODIFIED="1758320668412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp24_action_integration_TestXP24ActionIntegration.coverage" NAME="pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration Coverage Results" MODIFIED="1757433614255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758464846186" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758469714453" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_temperature_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_temperature_request Coverage Results" MODIFIED="1756890926271" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_system_reply_telegram_integration.coverage" NAME="pytest for tests.integration.test_system_reply_telegram_integration Coverage Results" MODIFIED="1756485080075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestConnectionStatusIntegration_test_connection_status_lifecycle.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestConnectionStatusIntegration.test_connection_status_lifecycle Coverage Results" MODIFIED="1756891211230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

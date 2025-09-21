@@ -16,9 +16,7 @@ Validates conson module definitions in `conson.yml`.
 **Validation Rules:**
 - [ ] Module names must be unique
 - [ ] Serial numbers must be unique
-- [ ] Required fields present: name, serial_number, module_type, module_type_code
-- [ ] Valid module_type_code ranges
-- [ ] IP/port format validation
+- [ ] Pydantic v2 automatic validation for required fields
 
 **Implementation:**
 - Model: `src/xp/models/homekit_conson_config.py` (Pydantic v2)
@@ -57,8 +55,8 @@ Validates accessory definitions in `homekit.yml`.
 - [ ] Accessory names must be unique
 - [ ] Serial numbers must exist in conson.yml
 - [ ] Valid output numbers for module type
-- [ ] Required fields: name, id, serial_number, output, service
-- [ ] Valid service types (lightbulb, outlet, etc.)
+- [ ] Pydantic v2 automatic validation for required fields
+- [ ] Valid service types (lightbulb, outlet)
 
 **Cross-Reference Checks:**
 - [ ] Serial numbers match conson.yml entries
@@ -94,6 +92,7 @@ Validates room-accessory mappings in `homekit.yml`.
 - [ ] All referenced accessories must exist in accessories section
 - [ ] No orphaned accessories (accessories not assigned to any room)
 - [ ] No duplicate accessory assignments across rooms
+- [ ] Pydantic v2 automatic validation for required fields
 
 **Cross-Reference Checks:**
 - [ ] All room.accessories[] exist in accessories section
@@ -121,6 +120,39 @@ bridge:
 
 ---
 
+## CLI Implementation
+
+**Commands:**
+- `xp homekit config validate` - Validate configuration files
+- `xp homekit config print` - Display parsed configuration
+
+**Implementation Details:**
+- Add `config` subgroup to existing `homekit` command group
+- Follow project patterns: `src/xp/cli/commands/homekit.py`
+- Use Click decorators and HelpColorsGroup
+- Leverage existing service decorators: `@service_command()`
+- Register in `cli.main.py` (already imports homekit)
+
+**Command Structure:**
+```python
+@homekit.group()
+def config():
+    """HomeKit configuration management"""
+
+@config.command()
+@service_command()
+def validate():
+    """Validate homekit.yml and conson.yml coherence"""
+
+@config.command()
+@service_command()
+def print():
+    """Print parsed configuration"""
+```
+
+
+---
+
 ## Implementation Checklist
 
 **Core Components:**
@@ -134,4 +166,3 @@ bridge:
 **Error Handling:**
 - [ ] Clear error messages with file/line references
 - [ ] Validation summary report
-- [ ] Exit codes for CI/CD integration
