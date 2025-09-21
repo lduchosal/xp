@@ -32,13 +32,13 @@ class TestXP24ActionTelegram:
 
     def test_init_default_values(self):
         """Test XP24ActionTelegram initialization with default values."""
-        telegram = OutputTelegram(checksum="FN", raw_telegram="<S0020044964F27D00AAFN>")
+        telegram = OutputTelegram(checksum="FN", raw_telegram="<S0012345008F27D00AAFN>")
 
         assert telegram.serial_number == ""
         assert telegram.output_number is None
         assert telegram.action_type is None
         assert telegram.checksum == "FN"
-        assert telegram.raw_telegram == "<S0020044964F27D00AAFN>"
+        assert telegram.raw_telegram == "<S0012345008F27D00AAFN>"
         assert telegram.checksum_validated is None
         assert telegram.timestamp is not None
 
@@ -47,20 +47,20 @@ class TestXP24ActionTelegram:
         test_time = datetime(2023, 1, 1, 12, 0, 0)
 
         telegram = OutputTelegram(
-            serial_number="0020044964",
+            serial_number="0012345008",
             output_number=2,
             action_type=ActionType.PRESS,
             checksum="FN",
-            raw_telegram="<S0020044964F27D02AAFN>",
+            raw_telegram="<S0012345008F27D02AAFN>",
             checksum_validated=True,
             timestamp=test_time,
         )
 
-        assert telegram.serial_number == "0020044964"
+        assert telegram.serial_number == "0012345008"
         assert telegram.output_number == 2
         assert telegram.action_type == ActionType.PRESS
         assert telegram.checksum == "FN"
-        assert telegram.raw_telegram == "<S0020044964F27D02AAFN>"
+        assert telegram.raw_telegram == "<S0012345008F27D02AAFN>"
         assert telegram.checksum_validated is True
         assert telegram.timestamp == test_time
 
@@ -70,7 +70,7 @@ class TestXP24ActionTelegram:
         mock_now = datetime(2023, 1, 1, 12, 0, 0)
         mock_datetime.now.return_value = mock_now
 
-        telegram = OutputTelegram(checksum="FN", raw_telegram="<S0020044964F27D00AAFN>")
+        telegram = OutputTelegram(checksum="FN", raw_telegram="<S0012345008F27D00AAFN>")
 
         assert telegram.timestamp == mock_now
         mock_datetime.now.assert_called_once()
@@ -81,7 +81,7 @@ class TestXP24ActionTelegram:
 
         telegram = OutputTelegram(
             checksum="FN",
-            raw_telegram="<S0020044964F27D00AAFN>",
+            raw_telegram="<S0012345008F27D00AAFN>",
             timestamp=existing_time,
         )
 
@@ -92,7 +92,7 @@ class TestXP24ActionTelegram:
         telegram = OutputTelegram(
             action_type=ActionType.PRESS,
             checksum="FN",
-            raw_telegram="<S0020044964F27D00AAFN>",
+            raw_telegram="<S0012345008F27D00AAFN>",
         )
 
         assert telegram.action_description == "Press (Make)"
@@ -102,7 +102,7 @@ class TestXP24ActionTelegram:
         telegram = OutputTelegram(
             action_type=ActionType.RELEASE,
             checksum="FN",
-            raw_telegram="<S0020044964F27D00ABFN>",
+            raw_telegram="<S0012345008F27D00ABFN>",
         )
 
         assert telegram.action_description == "Release (Break)"
@@ -110,7 +110,7 @@ class TestXP24ActionTelegram:
     def test_action_description_none(self):
         """Test action_description property when action_type is None."""
         telegram = OutputTelegram(
-            action_type=None, checksum="FN", raw_telegram="<S0020044964F27D00AAFN>"
+            action_type=None, checksum="FN", raw_telegram="<S0012345008F27D00AAFN>"
         )
 
         assert telegram.action_description == "Unknown Action"
@@ -118,7 +118,7 @@ class TestXP24ActionTelegram:
     def test_input_description(self):
         """Test input_description property."""
         telegram = OutputTelegram(
-            output_number=2, checksum="FN", raw_telegram="<S0020044964F27D02AAFN>"
+            output_number=2, checksum="FN", raw_telegram="<S0012345008F27D02AAFN>"
         )
 
         assert telegram.input_description == "Input 2"
@@ -128,17 +128,17 @@ class TestXP24ActionTelegram:
         test_time = datetime(2023, 1, 1, 12, 0, 0)
 
         telegram = OutputTelegram(
-            serial_number="0020044964",
+            serial_number="0012345008",
             output_number=1,
             action_type=ActionType.PRESS,
             checksum="FN",
-            raw_telegram="<S0020044964F27D01AAFN>",
+            raw_telegram="<S0012345008F27D01AAFN>",
             checksum_validated=True,
             timestamp=test_time,
         )
 
         expected = {
-           "serial_number": "0020044964",
+           "serial_number": "0012345008",
            "system_function": SystemFunction.ACTION,
            "output_number": 1,
            "input_description": "Input 1",
@@ -148,7 +148,7 @@ class TestXP24ActionTelegram:
            },
            "checksum": "FN",
            "checksum_validated": True,
-           "raw_telegram": "<S0020044964F27D01AAFN>",
+           "raw_telegram": "<S0012345008F27D01AAFN>",
            "timestamp": "2023-01-01T12:00:00"
         }
         assert telegram.to_dict() == expected
@@ -156,25 +156,25 @@ class TestXP24ActionTelegram:
     def test_str_representation(self):
         """Test __str__ method."""
         telegram = OutputTelegram(
-            serial_number="0020044964",
+            serial_number="0012345008",
             output_number=3,
             action_type=ActionType.RELEASE,
             checksum="FN",
-            raw_telegram="<S0020044964F27D03ABFN>",
+            raw_telegram="<S0012345008F27D03ABFN>",
         )
 
-        expected = "XP Output: Release (Break) on Input 3 for device 0020044964"
+        expected = "XP Output: Release (Break) on Input 3 for device 0012345008"
         assert str(telegram) == expected
 
     def test_str_representation_unknown_action(self):
         """Test __str__ method with unknown action."""
         telegram = OutputTelegram(
-            serial_number="0020044964",
+            serial_number="0012345008",
             output_number=0,
             action_type=None,
             checksum="FN",
-            raw_telegram="<S0020044964F27D00AAFN>",
+            raw_telegram="<S0012345008F27D00AAFN>",
         )
 
-        expected = "XP Output: Unknown Action on Input 0 for device 0020044964"
+        expected = "XP Output: Unknown Action on Input 0 for device 0012345008"
         assert str(telegram) == expected

@@ -26,105 +26,105 @@ Based on the test data analysis, the following datapoints are missing from the c
 **Purpose**: Returns the device type identifier for the module
 - **Request**: `<S{serial}F02D01{checksum}>`
 - **Response**: `<R{serial}F02D01{device_type}{checksum}>`
-- **Example**: `<R0020044989F02D01XP24FH>`
+- **Example**: `<R0012345007F02D01XP24FH>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `DEVICE_TYPE = "01"`
 
 ### Datapoint 03 - Serial Number
 **Purpose**: Returns the device serial number
 - **Request**: `<S{serial}F02D03{checksum}>`
 - **Response**: `<R{serial}F02D03{serial_number}{checksum}>`
-- **Example**: `<R0020044989F02D030020044989FB>`
+- **Example**: `<R0012345007F02D030012345007FB>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `SERIAL_NUMBER = "03"`
 
 ### Datapoint 05 - Error Status
 **Purpose**: Returns error status information from the device
 - **Request**: `<S{serial}F02D05{checksum}>`
 - **Response**: `<R{serial}F02D05{error_code}{checksum}>`
-- **Example**: `<R0020044989F02D050008FF>`
+- **Example**: `<R0012345007F02D050008FF>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `ERROR_STATUS = "05"`
 
 ### Datapoint 06 - Operating Mode
 **Purpose**: Returns current operating mode configuration
 - **Request**: `<S{serial}F02D06{checksum}>`
 - **Response**: `<R{serial}F02D06{mode}{checksum}>`
-- **Example**: `<R0020044989F02D0600FO>`
+- **Example**: `<R0012345007F02D0600FO>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `OPERATING_MODE = "06"`
 
 ### Datapoint 07 - Measurement Mode
 **Purpose**: Returns measurement mode settings
 - **Request**: `<S{serial}F02D07{checksum}>`
 - **Response**: `<R{serial}F02D07{mode_config}{checksum}>`
-- **Example**: `<R0020044989F02D0707FI>`
+- **Example**: `<R0012345007F02D0707FI>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `MEASUREMENT_MODE = "07"`
 
 ### Datapoint 08 - Module Information
 **Purpose**: Returns module-specific information
 - **Request**: `<S{serial}F02D08{checksum}>`
 - **Response**: `<R{serial}F02D08{module_info}{checksum}>`
-- **Example**: `<R0020044989F02D08MIFE>`
+- **Example**: `<R0012345007F02D08MIFE>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `MODULE_INFO = "08"`
 
 ### Datapoint 09 - Offset Calibration Data
 **Purpose**: Returns offset calibration values
 - **Request**: `<S{serial}F02D09{checksum}>`
 - **Response**: `<R{serial}F02D09{offset_data}{checksum}>`
-- **Example**: `<R0020044989F02D09OFFBO>`
+- **Example**: `<R0012345007F02D09OFFBO>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `OFFSET_DATA = "09"`
 
 ### Datapoint 10 - Range Configuration
 **Purpose**: Returns measurement range configuration
 - **Request**: `<S{serial}F02D10{checksum}>`
 - **Response**: `<R{serial}F02D10{range_config}{checksum}>`
-- **Example**: `<R0020044989F02D1000FJ>`
+- **Example**: `<R0012345007F02D1000FJ>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `RANGE_DATA = "10"`
 
 ### Datapoint 11 - Reserved Data (Type 1)
 **Purpose**: Reserved datapoint for future use
 - **Request**: `<S{serial}F02D11{checksum}>`
 - **Response**: `<R{serial}F02D11{reserved_data}{checksum}>`
-- **Example**: `<R0020044989F02D11xxxx0000FI>`
+- **Example**: `<R0012345007F02D11xxxx0000FI>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `RESERVED_11 = "11"`
 
 ### Datapoint 12 - Reserved Data (Type 2)
 **Purpose**: Reserved datapoint for future use
 - **Request**: `<S{serial}F02D12{checksum}>`
 - **Response**: `<R{serial}F02D12{reserved_data}{checksum}>`
-- **Example**: `<R0020044989F02D12xxxx0000FL>`
+- **Example**: `<R0012345007F02D12xxxx0000FL>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `RESERVED_12 = "12"`
 
 ### Datapoint 13 - Module Type Information
 **Purpose**: Returns detailed module type and capabilities
 - **Request**: `<S{serial}F02D13{checksum}>`
 - **Response**: `<R{serial}F02D13{module_type_info}{checksum}>`
-- **Example**: `<R0020044989F02D13EIDCDONMFJ>`
+- **Example**: `<R0012345007F02D13EIDCDONMFJ>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `MODULE_TYPE = "13"`
 
 ### Datapoint 14 - Module Name
 **Purpose**: Returns human-readable module name
 - **Request**: `<S{serial}F02D14{checksum}>`
 - **Response**: `<R{serial}F02D14{module_name}{checksum}>`
-- **Example**: `<R0020044989F02D14MFAELCIIFN>`
+- **Example**: `<R0012345007F02D14MFAELCIIFN>`
 - **Implementation Location**: `src/xp/models/system_telegram.py` - Add `MODULE_NAME = "14"`
 
 ### Datapoint 15 - Measurement Data Format
 **Purpose**: Returns measurement data in formatted output with units
 - **Request**: `<S{serial}F02D15{checksum}>`
 - **Response**: `<R{serial}F02D15{formatted_data}{checksum}>`
-- **Example**: `<R0020044989F02D1500:000[%],01:000[%],02:000[%],03:000[%]HA>`
+- **Example**: `<R0012345007F02D1500:000[%],01:000[%],02:000[%],03:000[%]HA>`
 - **Data Format**: Channel-based data with units in brackets
 
 ### Datapoint 16 - Operating Hours Counter
 **Purpose**: Returns operating hours in formatted output
 - **Request**: `<S{serial}F02D16{checksum}>`
 - **Response**: `<R{serial}F02D16{hours_data}{checksum}>`
-- **Example**: `<R0020044989F02D1600:000[H],01:000[H],02:000[H],03:000[H]HD>`
+- **Example**: `<R0012345007F02D1600:000[H],01:000[H],02:000[H],03:000[H]HD>`
 - **Data Format**: Multi-channel hour counters with [H] unit indicator
 
 ### Datapoint 17 - Counter Data
 **Purpose**: Returns counter data in numeric array format
 - **Request**: `<S{serial}F02D17{checksum}>`
 - **Response**: `<R{serial}F02D17{counter_data}{checksum}>`
-- **Example**: `<R0020044989F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]HC>`
+- **Example**: `<R0012345007F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]HC>`
 - **Data Format**: Multi-channel counters with [NA] indicating not available
 
 ## Implementation Requirements
@@ -190,10 +190,10 @@ Update the `process_system_telegram` methods in both server services to handle t
 The implementation should handle the following test cases based on captured data:
 
 ```
-Serial: 0020044989, Function: 02 (Read Data point)
+Serial: 0012345007, Function: 02 (Read Data point)
 
 D01 → XP24           (Device Type)
-D03 → 0020044989     (Serial Number)
+D03 → 0012345007     (Serial Number)
 D05 → 0008           (Error Status)
 D06 → 00             (Operating Mode)
 D07 → 07             (Measurement Mode)

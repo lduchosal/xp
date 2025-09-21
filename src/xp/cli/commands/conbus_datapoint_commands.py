@@ -31,11 +31,11 @@ def datapoint_telegram(serial_number: str, datapoint: DataPointType):
     Examples:
 
     \b
-        xp conbus datapoint version 0020030837
-        xp conbus datapoint voltage 0020030837
-        xp conbus datapoint temperature 0020030837
-        xp conbus datapoint current 0020030837
-        xp conbus datapoint humidity 0020030837
+        xp conbus datapoint version 0012345011
+        xp conbus datapoint voltage 0012345011
+        xp conbus datapoint temperature 0012345011
+        xp conbus datapoint current 0012345011
+        xp conbus datapoint humidity 0012345011
     """
     service = ConbusDatapointService()
     formatter = OutputFormatter(True)

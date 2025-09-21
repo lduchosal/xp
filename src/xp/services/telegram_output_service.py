@@ -149,7 +149,7 @@ class TelegramOutputService:
         Parse a raw XP output response telegram string.
 
         Args:
-            raw_telegram: The raw telegram string (e.g., "<R0020042796F18DFF>")
+            raw_telegram: The raw telegram string (e.g., "<R0012345003F18DFF>")
 
         Returns:
             XPOutputTelegram object with parsed data
@@ -197,7 +197,7 @@ class TelegramOutputService:
         Parse a raw XP output telegram string.
 
         Args:
-            raw_telegram: The raw telegram string (e.g., "<S0020044964F27D00AAFN>")
+            raw_telegram: The raw telegram string (e.g., "<S0012345008F27D00AAFN>")
 
         Returns:
             XPOutputTelegram object with parsed data
@@ -250,7 +250,7 @@ class TelegramOutputService:
         Parse XP24 status response telegram to extract output states.
 
         Args:
-            raw_telegram: Raw reply telegram (e.g., "<R0020044964F02D12xxxx1110FJ>")
+            raw_telegram: Raw reply telegram (e.g., "<R0012345008F02D12xxxx1110FJ>")
 
         Returns:
             Dictionary mapping output numbers (0-3) to their states (True=ON, False=OFF)

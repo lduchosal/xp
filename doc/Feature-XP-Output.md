@@ -7,7 +7,7 @@ XP24 modules are remote switch devices that can be commanded via the conbus. Eac
 ## Module Information
 
 - **Module Type**: XP24 (Module Type Code: 07)
-- **Example Serial**: 0020044964
+- **Example Serial**: 0012345008
 - **Inputs**: 4 inputs (0-3) that control 4 corresponding relays
 - **Communication**: Console bus telegrams
 
@@ -16,36 +16,36 @@ XP24 modules are remote switch devices that can be commanded via the conbus. Eac
 ### Action Command (System Telegram)
 **Format**: `<S{serial_number}F27D{input}{action}{checksum}>`
 
-**Example**: `<S0020044964F27D00AAFN>`
+**Example**: `<S0012345008F27D00AAFN>`
 - **Type**: System (S)
-- **Module**: 0020044964 
+- **Module**: 0012345008 
 - **Function**: 27 (action on output)
 - **DataPoint**: 00AA (input 0, action AA)
 
 ### Acknowledgment (Reply Telegram)
 **Format**: `<R{serial_number}F18D{checksum}>`
 
-**Example**: `<R0020044964F18DFA>`
+**Example**: `<R0012345008F18DFA>`
 - **Type**: Reply (R)
-- **Module**: 0020044964 
+- **Module**: 0012345008 
 - **Function**: 18 (Acknowledge)
 - **DataPoint**: NULL
 
 ### Status Query (System Telegram)
 **Format**: `<S{serial_number}F02D12{checksum}>`
 
-**Example**: `<S0020044964F02D12FJ>`
+**Example**: `<S0012345008F02D12FJ>`
 - **Type**: System (S)
-- **Module**: 0020044964 
+- **Module**: 0012345008 
 - **Function**: 02 (Read Data point)
 - **DataPoint**: 12 (inputs status)
 
 ### Status Response (Reply Telegram)
 **Format**: `<R{serial_number}F02D12xxxx{status}{checksum}>`
 
-**Example**: `<R0020044964F02D12xxxx1110FJ>`
+**Example**: `<R0012345008F02D12xxxx1110FJ>`
 - **Type**: Reply (R)
-- **Module**: 0020044964 
+- **Module**: 0012345008 
 - **Function**: 02 (Read Data point)
 - **DataPoint**: 12xxxx1110 (inputs status: ON ON ON OFF)
 
@@ -63,24 +63,24 @@ XP24 modules are remote switch devices that can be commanded via the conbus. Eac
 
 ```bash
 # Send action command to XP24 module
-xp conbus xp24 0020044964 0
-xp conbus xp24 0020044964 1
-xp conbus xp24 0020044964 2
-xp conbus xp24 0020044964 3
+xp conbus xp24 0012345008 0
+xp conbus xp24 0012345008 1
+xp conbus xp24 0012345008 2
+xp conbus xp24 0012345008 3
 
 # Query status of XP24 module
-xp conbus xp24 0020044964 status
+xp conbus xp24 0012345008 status
 
 ```
 
 ## Communication Flow Example
 
 ```conbus
-[TX] <S0020044964F27D00AAFN>      # Send action to input 0 (press)
-[RX] <R0020044964F18DFA>          # Receive acknowledgment
-[TX] <S0020044964F02D12FJ>        # Query status
+[TX] <S0012345008F27D00AAFN>      # Send action to input 0 (press)
+[RX] <R0012345008F18DFA>          # Receive acknowledgment
+[TX] <S0012345008F02D12FJ>        # Query status
 [RX] <E07L06I80BAL>               # Event: input 0 released
-[RX] <R0020044964F02D12xxxx1110FJ> # Status: inputs 1110 (ON ON ON OFF)
+[RX] <R0012345008F02D12xxxx1110FJ> # Status: inputs 1110 (ON ON ON OFF)
 ```
 
 ## Implementation
@@ -134,12 +134,12 @@ def xp_action(serial_number: str, output_number: int, action: str, json_output: 
     Examples:
 
     \b
-    xp conbus xp24 0020044964 0        # Toggle input 0
-    xp conbus xp24 0020044964 1        # Toggle input 1  
-    xp conbus xp24 0020044964 2        # Toggle input 2
-    xp conbus xp24 0020044964 3        # Toggle input 3
+    xp conbus xp24 0012345008 0        # Toggle input 0
+    xp conbus xp24 0012345008 1        # Toggle input 1  
+    xp conbus xp24 0012345008 2        # Toggle input 2
+    xp conbus xp24 0012345008 3        # Toggle input 3
     
-    xp conbus xp24 0020044964 status   # Toggle ON ON ON OFF
+    xp conbus xp24 0012345008 status   # Toggle ON ON ON OFF
     """
 ```
 

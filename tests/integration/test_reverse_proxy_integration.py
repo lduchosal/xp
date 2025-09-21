@@ -121,7 +121,7 @@ conbus:
         time.sleep(0.1)  # Give server time to start
 
         # Add expected response
-        self.mock_server.add_response("<R0020030837F01DFM>")
+        self.mock_server.add_response("<R0012345011F01DFM>")
 
         # Start proxy
         result = self.proxy.start_proxy()
@@ -141,7 +141,7 @@ conbus:
             response = client_socket.recv(1024).decode("latin-1").strip()
 
             # Verify end-to-end communication
-            assert response == "<R0020030837F01DFM>"
+            assert response == "<R0012345011F01DFM>"
             assert discover_telegram in self.mock_server.received_messages
 
             client_socket.close()
@@ -191,9 +191,9 @@ conbus:
 
         # Add multiple responses to simulate conversation
         responses = [
-            "<R0020030837F01DFM>",
-            "<R0020030837F02D02XP230_V1.00.04FI>",
-            "<R0020030837F02D20+12.5V§OK>",
+            "<R0012345011F01DFM>",
+            "<R0012345011F02D02XP230_V1.00.04FI>",
+            "<R0012345011F02D20+12.5V§OK>",
         ]
         for response in responses:
             self.mock_server.add_response(response)
@@ -211,8 +211,8 @@ conbus:
             # Send multiple telegrams
             telegrams = [
                 "<S0000000000F01D00FA>",
-                "<S0020030837F02D02FM>",
-                "<S0020030837F02D20FM>",
+                "<S0012345011F02D02FM>",
+                "<S0012345011F02D20FM>",
             ]
 
             received_responses = []

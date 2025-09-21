@@ -27,8 +27,8 @@ def parse_any_telegram(telegram_string: str):
         xp telegram parse "<S0020012521F02D18FN>"
         xp telegram parse "<R0020012521F02D18+26,0§CIL>"
         xp telegram parse "<S0000000000F01D00FA>"
-        xp telegram parse "<R0020030837F01DFM>"
-        xp telegram parse "<R0020042796F18DFF>"
+        xp telegram parse "<R0012345011F01DFM>"
+        xp telegram parse "<R0012345003F18DFF>"
 
     """
     service = TelegramService()

@@ -41,7 +41,7 @@ class ConbusReverseProxyService:
         self.connection_counter = 0
 
         # Target server configuration
-        self.target_ip = "10.0.3.162"
+        self.target_ip = "127.0.0.1"
         self.target_port = 10001
         self.target_timeout = 10
 

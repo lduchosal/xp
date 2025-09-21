@@ -18,10 +18,10 @@ class TestBlinkIntegration:
         telegram_service = TelegramService()
 
         # Generate blink telegram
-        serial = "0020044964"
+        serial = "0012345008"
 
         generated_telegram = blink_service.generate_blink_telegram(serial, "on")
-        assert generated_telegram == "<S0020044964F05D00FN>"
+        assert generated_telegram == "<S0012345008F05D00FN>"
 
         # Parse the generated telegram
         parsed_telegram = telegram_service.parse_system_telegram(generated_telegram)
@@ -39,10 +39,10 @@ class TestBlinkIntegration:
         telegram_service = TelegramService()
 
         # Generate unblink telegram
-        serial = "0020030837"
+        serial = "0012345011"
 
         generated_telegram = blink_service.generate_blink_telegram(serial, "off")
-        assert generated_telegram == "<S0020030837F06D00FK>"
+        assert generated_telegram == "<S0012345011F06D00FK>"
 
         # Parse the generated telegram
         parsed_telegram = telegram_service.parse_system_telegram(generated_telegram)
@@ -62,11 +62,11 @@ class TestBlinkIntegration:
         # Test telegrams from the specification
         test_cases = [
             # Blink command and ACK response
-            ("<S0020044964F05D00FN>", SystemFunction.BLINK),
-            ("<R0020044964F18DFA>", SystemFunction.ACK),
+            ("<S0012345008F05D00FN>", SystemFunction.BLINK),
+            ("<R0012345008F18DFA>", SystemFunction.ACK),
             # Unblink command and ACK response
-            ("<S0020030837F06D00FK>", SystemFunction.UNBLINK),
-            ("<R0020030837F18DFE>", SystemFunction.ACK),
+            ("<S0012345011F06D00FK>", SystemFunction.UNBLINK),
+            ("<R0012345011F18DFE>", SystemFunction.ACK),
         ]
 
         for telegram_str, expected_function in test_cases:
@@ -79,10 +79,10 @@ class TestBlinkIntegration:
             if telegram_str.startswith("<S"):  # System telegram
                 assert isinstance(parsed, SystemTelegram)
                 if expected_function == SystemFunction.BLINK:
-                    assert parsed.serial_number == "0020044964"
+                    assert parsed.serial_number == "0012345008"
                     assert parsed.datapoint_type == DataPointType.MODULE_TYPE
                 elif expected_function == SystemFunction.UNBLINK:
-                    assert parsed.serial_number == "0020030837"
+                    assert parsed.serial_number == "0012345011"
                     assert parsed.datapoint_type == DataPointType.MODULE_TYPE
 
             elif telegram_str.startswith("<R"):  # Reply telegram
@@ -100,7 +100,7 @@ class TestBlinkIntegration:
 
         # Test blink telegram object
         created_blink_telegram = blink_service.create_blink_telegram_object(
-            "0020044964"
+            "0012345008"
         )
         parsed_blink_telegram = telegram_service.parse_system_telegram(
             created_blink_telegram.raw_telegram
@@ -122,7 +122,7 @@ class TestBlinkIntegration:
 
         # Test unblink telegram object
         created_unblink_telegram = blink_service.create_unblink_telegram_object(
-            "0020030837"
+            "0012345011"
         )
         parsed_unblink_telegram = telegram_service.parse_system_telegram(
             created_unblink_telegram.raw_telegram
@@ -154,8 +154,8 @@ class TestBlinkIntegration:
 
         # Test multiple serial numbers
         test_serials = [
-            "0020044964",
-            "0020030837",
+            "0012345008",
+            "0012345011",
             "1234567890",
             "0000000000",
             "9999999999",
@@ -205,11 +205,11 @@ class TestBlinkIntegration:
             telegram_service.parse_system_telegram("<INVALID>")
 
         # Test that error doesn't occur for valid input
-        valid_blink_telegram = blink_service.generate_blink_telegram("0020044964", "on")
+        valid_blink_telegram = blink_service.generate_blink_telegram("0012345008", "on")
         parsed_blink = telegram_service.parse_system_telegram(valid_blink_telegram)
         assert parsed_blink is not None
 
-        valid_unblink_telegram = blink_service.generate_blink_telegram("0020030837", "off")
+        valid_unblink_telegram = blink_service.generate_blink_telegram("0012345011", "off")
         parsed_unblink = telegram_service.parse_system_telegram(valid_unblink_telegram)
         assert parsed_unblink is not None
 
@@ -219,11 +219,11 @@ class TestBlinkIntegration:
         telegram_service = TelegramService()
 
         # Generate blink command
-        blink_command = blink_service.generate_blink_telegram("0020044964", "on")
-        assert blink_command == "<S0020044964F05D00FN>"
+        blink_command = blink_service.generate_blink_telegram("0012345008", "on")
+        assert blink_command == "<S0012345008F05D00FN>"
 
         # Parse ACK reply from specification
-        ack_reply_str = "<R0020044964F18DFA>"
+        ack_reply_str = "<R0012345008F18DFA>"
         ack_reply = telegram_service.parse_reply_telegram(ack_reply_str)
 
         # Verify it's properly identified as ACK
@@ -231,11 +231,11 @@ class TestBlinkIntegration:
         assert blink_service.is_nak_response(ack_reply) is False
 
         # Generate unblink command
-        unblink_command = blink_service.generate_blink_telegram("0020030837", "off")
-        assert unblink_command == "<S0020030837F06D00FK>"
+        unblink_command = blink_service.generate_blink_telegram("0012345011", "off")
+        assert unblink_command == "<S0012345011F06D00FK>"
 
         # Parse ACK reply from specification
-        unblink_ack_reply_str = "<R0020030837F18DFE>"
+        unblink_ack_reply_str = "<R0012345011F18DFE>"
         unblink_ack_reply = telegram_service.parse_reply_telegram(unblink_ack_reply_str)
 
         # Verify it's properly identified as ACK
@@ -255,8 +255,8 @@ class TestBlinkIntegration:
         boundary_serials = [
             "0000000000",  # Minimum serial
             "9999999999",  # Maximum serial
-            "0020044964",  # From spec (blink)
-            "0020030837",  # From spec (unblink)
+            "0012345008",  # From spec (blink)
+            "0012345011",  # From spec (unblink)
         ]
 
         for serial in boundary_serials:

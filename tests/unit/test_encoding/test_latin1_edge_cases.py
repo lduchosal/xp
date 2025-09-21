@@ -86,15 +86,15 @@ class Latin1TestServer:
             # Temperature request with § symbol (0xa7)
             "<S0020012521F02D18FN>": "<R0020012521F02D18+31,5§CIE>",
             # VOLTAGE request with © symbol (0xa9)
-            "<S0020030837F02D20FM>": "<R0020030837F02D20+12,5V©OK>",
+            "<S0012345011F02D20FM>": "<R0012345011F02D20+12,5V©OK>",
             # Current request with ® symbol (0xae)
-            "<S0020044966F02D21FL>": "<R0020044966F02D21+2,3A®OK>",
+            "<S0012345006F02D21FL>": "<R0012345006F02D21+2,3A®OK>",
             # Humidity request with ± symbol (0xb1)
-            "<S0020042796F02D19FH>": "<R0020042796F02D19+65,2%±OK>",
+            "<S0012345003F02D19FH>": "<R0012345003F02D19+65,2%±OK>",
             # Custom request with multiple extended chars
-            "<S0020030837F02DE2CJ>": "<R0020030837F02DE2COUCOU§©®±FM>",
+            "<S0012345011F02DE2CJ>": "<R0012345011F02DE2COUCOU§©®±FM>",
             # Discover with extended chars in device name
-            "<S0000000000F01D00FA>": "<R0020030837F01D©XP24®>",
+            "<S0000000000F01D00FA>": "<R0012345011F01D©XP24®>",
         }
 
         return latin1_responses.get(message)
@@ -131,11 +131,11 @@ conbus:
         char = chr(problematic_byte)
 
         # This would have failed with UTF-8 but should work with Latin-1
-        test_data = f"<R0020044966F02D18+31,5{char}CIE>".encode("latin-1")
+        test_data = f"<R0012345006F02D18+31,5{char}CIE>".encode("latin-1")
         decoded = test_data.decode("latin-1")
 
         assert char in decoded
-        assert decoded == "<R0020044966F02D18+31,5§CIE>"
+        assert decoded == "<R0012345006F02D18+31,5§CIE>"
 
     def test_raw_hex_data_decoding(self, client_service):
         """Test decoding of the actual hex data from the issue description"""
@@ -147,7 +147,7 @@ conbus:
 
         # This should decode properly with Latin-1
         decoded = raw_bytes.decode("latin-1")
-        expected = "<R0020044966F02D18+31,5§CIE"
+        expected = "<R0012345006F02D18+31,5§CIE"
 
         assert decoded == expected
         assert chr(0xA7) in decoded  # § symbol at position 23
@@ -169,7 +169,7 @@ conbus:
 
         # Latin-1 decoding should succeed (this demonstrates the fix)
         decoded_latin1 = raw_bytes.decode("latin-1")
-        assert decoded_latin1 == "<R0020044966F02D18+31,5§CIE"
+        assert decoded_latin1 == "<R0012345006F02D18+31,5§CIE"
         assert len(decoded_latin1) == 27
         assert decoded_latin1[23] == "§"  # Character at problematic position
 
@@ -182,9 +182,9 @@ class TestEncodingConsistency:
         test_messages = [
             "<S0020012521F02D18FN>",  # Normal ASCII message
             "<R0020012521F02D18+31,5§CIE>",  # Message with § symbol
-            "<R0020030837F02D20+12,5V©OK>",  # Message with © symbol
-            "<R0020044966F02D21+2,3A®OK>",  # Message with ® symbol
-            "<R0020042796F02D19+65,2%±OK>",  # Message with ± symbol
+            "<R0012345011F02D20+12,5V©OK>",  # Message with © symbol
+            "<R0012345006F02D21+2,3A®OK>",  # Message with ® symbol
+            "<R0012345003F02D19+65,2%±OK>",  # Message with ± symbol
         ]
 
         for message in test_messages:

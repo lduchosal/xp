@@ -18,11 +18,11 @@ class TestVersionIntegration(unittest.TestCase):
 
     def test_parse_version_system_telegram_from_spec(self):
         """Test parsing version system telegram from specification example."""
-        raw_telegram = "<S0020030837F02D02FM>"
+        raw_telegram = "<S0012345011F02D02FM>"
 
         parsed = self.telegram_service.parse_system_telegram(raw_telegram)
 
-        self.assertEqual(parsed.serial_number, "0020030837")
+        self.assertEqual(parsed.serial_number, "0012345011")
         self.assertEqual(parsed.system_function, SystemFunction.READ_DATAPOINT)
         self.assertEqual(parsed.datapoint_type, DataPointType.SW_VERSION)
         self.assertEqual(parsed.checksum, "FM")
@@ -36,16 +36,16 @@ class TestVersionIntegration(unittest.TestCase):
     def test_parse_version_reply_telegrams_from_spec(self):
         """Test parsing version reply telegrams from specification examples."""
         test_cases = [
-            ("<R0020030837F02D02XP230_V1.00.04FI>", "XP230", "1.00.04"),
-            ("<R0020037487F02D02XP20_V0.01.05GK>", "XP20", "0.01.05"),
-            ("<R0020042796F02D02XP33LR_V0.04.02HF>", "XP33LR", "0.04.02"),
-            ("<R0020044991F02D02XP24_V0.34.03GA>", "XP24", "0.34.03"),
-            ("<R0020044964F02D02XP24_V0.34.03GK>", "XP24", "0.34.03"),
-            ("<R0020044986F02D02XP24_V0.34.03GG>", "XP24", "0.34.03"),
-            ("<R0020044989F02D02XP24_V0.34.03GJ>", "XP24", "0.34.03"),
-            ("<R0020041824F02D02XP20_V0.01.05GO>", "XP20", "0.01.05"),
-            ("<R0020044966F02D02XP24_V0.34.03GI>", "XP24", "0.34.03"),
-            ("<R0020044974F02D02XP24_V0.34.03GL>", "XP24", "0.34.03"),
+            ("<R0012345011F02D02XP230_V1.00.04FI>", "XP230", "1.00.04"),
+            ("<R0012345002F02D02XP20_V0.01.05GK>", "XP20", "0.01.05"),
+            ("<R0012345003F02D02XP33LR_V0.04.02HF>", "XP33LR", "0.04.02"),
+            ("<R0012345004F02D02XP24_V0.34.03GA>", "XP24", "0.34.03"),
+            ("<R0012345008F02D02XP24_V0.34.03GK>", "XP24", "0.34.03"),
+            ("<R0012345009F02D02XP24_V0.34.03GG>", "XP24", "0.34.03"),
+            ("<R0012345007F02D02XP24_V0.34.03GJ>", "XP24", "0.34.03"),
+            ("<R0012345010F02D02XP20_V0.01.05GO>", "XP20", "0.01.05"),
+            ("<R0012345006F02D02XP24_V0.34.03GI>", "XP24", "0.34.03"),
+            ("<R0012345005F02D02XP24_V0.34.03GL>", "XP24", "0.34.03"),
         ]
 
         for raw_telegram, expected_product, expected_version in test_cases:
@@ -81,8 +81,8 @@ class TestVersionIntegration(unittest.TestCase):
     def test_auto_detect_version_telegrams(self):
         """Test auto-detecting version telegrams using the generic parse method."""
         test_cases = [
-            ("<S0020030837F02D02FM>", "system"),
-            ("<R0020030837F02D02XP230_V1.00.04FI>", "reply"),
+            ("<S0012345011F02D02FM>", "system"),
+            ("<R0012345011F02D02XP230_V1.00.04FI>", "reply"),
         ]
 
         for raw_telegram, expected_type in test_cases:
@@ -102,7 +102,7 @@ class TestVersionIntegration(unittest.TestCase):
 
     def test_generate_and_parse_version_request(self):
         """Test generating version request and then parsing it back."""
-        serial_number = "0020030837"
+        serial_number = "0012345011"
 
         # Generate version request telegram
         generation_result = self.version_service.generate_version_request_telegram(
@@ -128,9 +128,9 @@ class TestVersionIntegration(unittest.TestCase):
     def test_invalid_version_telegram_handling(self):
         """Test handling of invalid version telegrams."""
         invalid_cases = [
-            "<R0020030837F02D02INVALID_FORMATXX>",  # Invalid version format
-            "<R0020030837F02D18+25.0§CXX>",  # Not a version telegram (temperature)
-            "<S0020030837F02D18XX>",  # System telegram but not version
+            "<R0012345011F02D02INVALID_FORMATXX>",  # Invalid version format
+            "<R0012345011F02D18+25.0§CXX>",  # Not a version telegram (temperature)
+            "<S0012345011F02D18XX>",  # System telegram but not version
             "<INVALID>",  # Invalid telegram format
         ]
 
@@ -166,7 +166,7 @@ class TestVersionIntegration(unittest.TestCase):
 
     def test_version_telegram_formatting(self):
         """Test formatting of version telegrams for display."""
-        raw_telegram = "<R0020030837F02D02XP230_V1.00.04FI>"
+        raw_telegram = "<R0012345011F02D02XP230_V1.00.04FI>"
 
         # Parse telegram
         parsed = self.telegram_service.parse_reply_telegram(raw_telegram)
@@ -179,7 +179,7 @@ class TestVersionIntegration(unittest.TestCase):
         summary = self.version_service.format_version_summary(version_result.data)
 
         self.assertIn("Device Version Information:", summary)
-        self.assertIn("Serial Number: 0020030837", summary)
+        self.assertIn("Serial Number: 0012345011", summary)
         self.assertIn("Product: XP230", summary)
         self.assertIn("Version: 1.00.04", summary)
         self.assertIn("Full Version: XP230_V1.00.04", summary)
@@ -214,14 +214,14 @@ class TestVersionIntegration(unittest.TestCase):
 
     def test_telegram_service_format_version_reply(self):
         """Test that telegram service correctly formats version reply summaries."""
-        raw_telegram = "<R0020030837F02D02XP230_V1.00.04FI>"
+        raw_telegram = "<R0012345011F02D02XP230_V1.00.04FI>"
 
         parsed = self.telegram_service.parse_reply_telegram(raw_telegram)
         summary = self.telegram_service.format_reply_telegram_summary(parsed)
 
         self.assertIn("Reply Telegram: READ_DATAPOINT", summary)
         self.assertIn("for SW_VERSION = XP230 v1.00.04", summary)
-        self.assertIn("from device 0020030837", summary)
+        self.assertIn("from device 0012345011", summary)
         self.assertIn("Data: XP230 v1.00.04", summary)
         self.assertIn(f"Raw: {raw_telegram}", summary)
 

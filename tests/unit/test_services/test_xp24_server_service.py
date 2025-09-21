@@ -10,14 +10,14 @@ class TestXP24ServerService:
 
     def setup_method(self):
         """Setup test fixtures"""
-        self.xp24_service = XP24ServerService("0020044991")
+        self.xp24_service = XP24ServerService("0012345004")
         self.telegram_service = TelegramService()
 
     def test_init(self):
         """Test XP24ServerService initialization"""
-        service = XP24ServerService("0020044991")
+        service = XP24ServerService("0012345004")
 
-        assert service.serial_number == "0020044991"
+        assert service.serial_number == "0012345004"
         assert service.device_type == "XP24"
         assert service.firmware_version == "XP24_V0.34.03"
         assert service.device_status == "OK"
@@ -28,23 +28,23 @@ class TestXP24ServerService:
         """Test discover response generation"""
         response = self.xp24_service.generate_discover_response()
 
-        assert response == "<R0020044991F01DFC>"
-        assert response.startswith("<R0020044991F01D")
+        assert response == "<R0012345004F01DFC>"
+        assert response.startswith("<R0012345004F01D")
         assert response.endswith(">")
 
     def test_generate_module_type_response(self):
         """Test module type response generation"""
         request = SystemTelegram(
             checksum="FH",
-            raw_telegram="<S0020044991F02D07FH>",
-            serial_number="0020044991",
+            raw_telegram="<S0012345004F02D07FH>",
+            serial_number="0012345004",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp24_service.generate_module_type_response(request)
 
-        assert response == "<R0020044991F02D077GB>"
+        assert response == "<R0012345004F02D077GB>"
         assert "F02D07" in response
         assert "07" in response  # XP24 code is 7 = 0x07
 
@@ -52,8 +52,8 @@ class TestXP24ServerService:
         """Test module type response with wrong function returns None"""
         request = SystemTelegram(
             checksum="FH",
-            raw_telegram="<S0020044991F01D07FH>",
-            serial_number="0020044991",
+            raw_telegram="<S0012345004F01D07FH>",
+            serial_number="0012345004",
             system_function=SystemFunction.DISCOVERY,  # Wrong function
             datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
@@ -65,8 +65,8 @@ class TestXP24ServerService:
         """Test module type response with wrong data point returns None"""
         request = SystemTelegram(
             checksum="FH",
-            raw_telegram="<S0020044991F02D02FH>",
-            serial_number="0020044991",
+            raw_telegram="<S0012345004F02D02FH>",
+            serial_number="0012345004",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.SW_VERSION,  # Wrong data point
         )
@@ -78,15 +78,15 @@ class TestXP24ServerService:
         """Test processing module type query through main handler"""
         request = SystemTelegram(
             checksum="FH",
-            raw_telegram="<S0020044991F02D07FH>",
-            serial_number="0020044991",
+            raw_telegram="<S0012345004F02D07FH>",
+            serial_number="0012345004",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp24_service.process_system_telegram(request)
 
-        assert response == "<R0020044991F02D077GB>"
+        assert response == "<R0012345004F02D077GB>"
         assert "F02D07" in response
         assert "07" in response
 
@@ -115,6 +115,6 @@ class TestXP24ServerService:
 
         response = self.xp24_service.process_system_telegram(request)
 
-        assert response == "<R0020044991F02D077GB>"
+        assert response == "<R0012345004F02D077GB>"
         assert "F02D07" in response
         assert "07" in response

@@ -23,42 +23,42 @@ ModuleType queries use the standard XP telegram format with specific function an
 ## Protocol Examples
 
 ### Example 1: XP230 Module Query
-**Query**: `<S0020030837F02D07FJ>`
-- Serial: `0020030837` 
+**Query**: `<S0012345011F02D07FJ>`
+- Serial: `0012345011` 
 - Function: `02` (Query)
 - DataType: `07` (ModuleType)
 - Checksum: `FJ`
 
-**Response**: `<R0020030837F02D0734FP>`
-- Serial: `0020030837` 
+**Response**: `<R0012345011F02D0734FP>`
+- Serial: `0012345011` 
 - Function: `02` (Query response)
 - DataType: `07` (ModuleType)
 - ModuleType: `34` (24 decimal = XP230)
 - Checksum: `FP`
 
 ### Example 2: XP24 Module Query
-**Query**: `<S0020044991F02D07FH>`
-- Serial: `0020044991`
+**Query**: `<S0012345004F02D07FH>`
+- Serial: `0012345004`
 - Function: `02` (Query)
 - DataType: `07` (ModuleType)
 - Checksum: `FH`
 
-**Response**: `<R0020044991F02D0707FB>`
-- Serial: `0020044991`
+**Response**: `<R0012345004F02D0707FB>`
+- Serial: `0012345004`
 - Function: `02` (Query response)
 - DataType: `07` (ModuleType)
 - ModuleType: `07` (07 decimal = XP24)
 - Checksum: `FB`
 
 ### Example 3: XP33 Module Query
-**Query**: `<S0020037487F02D07FJ>`
-- Serial: `0020037487`
+**Query**: `<S0012345002F02D07FJ>`
+- Serial: `0012345002`
 - Function: `02` (Query)
 - DataType: `07` (ModuleType)
 - Checksum: `FJ`
 
-**Response**: `<R0020037487F02D0733FI>`
-- Serial: `0020037487`
+**Response**: `<R0012345002F02D0733FI>`
+- Serial: `0012345002`
 - Function: `02` (Query response)
 - DataType: `07` (ModuleType)
 - ModuleType: `33` (33 = XP33LR)
@@ -95,10 +95,10 @@ For complete module type registry, see `src/xp/models/module_type.py`.
 
 ```bash
 # Parse a module type query
-xp telegram parse '<S0020030837F02D07FJ>'
+xp telegram parse '<S0012345011F02D07FJ>'
 
 # Parse the response to see module information
-xp telegram parse '<R0020030837F02D0734FP>'
+xp telegram parse '<R0012345011F02D0734FP>'
 
 ```
 

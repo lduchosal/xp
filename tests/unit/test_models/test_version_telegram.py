@@ -15,18 +15,18 @@ class TestVersionSystemTelegram(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.version_system_telegram = SystemTelegram(
-            serial_number="0020030837",
+            serial_number="0012345011",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.SW_VERSION,
             checksum="FM",
-            raw_telegram="<S0020030837F02D02FM>",
+            raw_telegram="<S0012345011F02D02FM>",
             timestamp=datetime.now(),
             checksum_validated=True,
         )
 
     def test_version_system_telegram_creation(self):
         """Test creating a version system telegram."""
-        self.assertEqual(self.version_system_telegram.serial_number, "0020030837")
+        self.assertEqual(self.version_system_telegram.serial_number, "0012345011")
         self.assertEqual(
             self.version_system_telegram.system_function, SystemFunction.READ_DATAPOINT
         )
@@ -47,7 +47,7 @@ class TestVersionSystemTelegram(unittest.TestCase):
         """Test converting version system telegram to dictionary."""
         result = self.version_system_telegram.to_dict()
 
-        self.assertEqual(result["serial_number"], "0020030837")
+        self.assertEqual(result["serial_number"], "0012345011")
         self.assertEqual(result["system_function"]["code"], "02")
         self.assertEqual(result["system_function"]["description"], "READ_DATAPOINT")
         self.assertEqual(result["datapoint_type"]["code"], "02")
@@ -58,7 +58,7 @@ class TestVersionSystemTelegram(unittest.TestCase):
 
     def test_version_system_telegram_str(self):
         """Test string representation of version system telegram."""
-        expected = "System Telegram: READ_DATAPOINT for SW_VERSION from device 0020030837"
+        expected = "System Telegram: READ_DATAPOINT for SW_VERSION from device 0012345011"
         self.assertEqual(str(self.version_system_telegram), expected)
 
 
@@ -68,30 +68,30 @@ class TestVersionReplyTelegram(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.version_reply_telegram = ReplyTelegram(
-            serial_number="0020030837",
+            serial_number="0012345011",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.SW_VERSION,
             data_value="XP230_V1.00.04",
             checksum="FI",
-            raw_telegram="<R0020030837F02D02XP230_V1.00.04FI>",
+            raw_telegram="<R0012345011F02D02XP230_V1.00.04FI>",
             timestamp=datetime.now(),
             checksum_validated=True,
         )
 
         self.invalid_version_reply = ReplyTelegram(
-            serial_number="0020044966",
+            serial_number="0012345006",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.SW_VERSION,
             data_value="INVALID_FORMAT",
             checksum="XX",
-            raw_telegram="<R0020044966F02D02INVALID_FORMATXX>",
+            raw_telegram="<R0012345006F02D02INVALID_FORMATXX>",
             timestamp=datetime.now(),
             checksum_validated=False,
         )
 
     def test_version_reply_telegram_creation(self):
         """Test creating a version reply telegram."""
-        self.assertEqual(self.version_reply_telegram.serial_number, "0020030837")
+        self.assertEqual(self.version_reply_telegram.serial_number, "0012345011")
         self.assertEqual(
             self.version_reply_telegram.system_function, SystemFunction.READ_DATAPOINT
         )
@@ -134,7 +134,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
         """Test converting version reply telegram to dictionary."""
         result = self.version_reply_telegram.to_dict()
 
-        self.assertEqual(result["serial_number"], "0020030837")
+        self.assertEqual(result["serial_number"], "0012345011")
         self.assertEqual(result["system_function"]["code"], "02")
         self.assertEqual(result["system_function"]["description"], "READ_DATAPOINT")
         self.assertEqual(result["datapoint_type"]["code"], "02")

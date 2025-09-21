@@ -7,3 +7,5 @@
 /.pdm-python
 /.coverage
 .coverage
+accessory.state
+/private/

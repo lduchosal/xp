@@ -10,14 +10,14 @@ class TestXP20ServerService:
 
     def setup_method(self):
         """Setup test fixtures"""
-        self.xp20_service = XP20ServerService("0020037487")
+        self.xp20_service = XP20ServerService("0012345002")
         self.telegram_service = TelegramService()
 
     def test_init(self):
         """Test XP20ServerService initialization"""
-        service = XP20ServerService("0020037487")
+        service = XP20ServerService("0012345002")
 
-        assert service.serial_number == "0020037487"
+        assert service.serial_number == "0012345002"
         assert service.device_type == "XP20"
         assert service.firmware_version == "XP20_V0.01.05"
         assert service.device_status == "OK"
@@ -28,16 +28,16 @@ class TestXP20ServerService:
         """Test discover response generation"""
         response = self.xp20_service.generate_discover_response()
 
-        assert response == "<R0020037487F01DFM>"
-        assert response.startswith("<R0020037487F01D")
+        assert response == "<R0012345002F01DFM>"
+        assert response.startswith("<R0012345002F01D")
         assert response.endswith(">")
 
     def test_generate_module_type_response(self):
         """Test module type response generation"""
         request = SystemTelegram(
             checksum="FJ",
-            raw_telegram="<S0020037487F02D07FJ>",
-            serial_number="0020037487",
+            raw_telegram="<S0012345002F02D07FJ>",
+            serial_number="0012345002",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
@@ -45,7 +45,7 @@ class TestXP20ServerService:
         response = self.xp20_service.generate_module_type_response(request)
 
         # XP20 should map to hex 33 according to spec
-        expected_response = "<R0020037487F02D0733FI>"
+        expected_response = "<R0012345002F02D0733FI>"
         assert response == expected_response
         assert "F02D07" in response
         assert "33" in response  # XP20 code is 33 = 0x21
@@ -54,8 +54,8 @@ class TestXP20ServerService:
         """Test module type response with wrong function returns None"""
         request = SystemTelegram(
             checksum="FJ",
-            raw_telegram="<S0020037487F01D07FJ>",
-            serial_number="0020037487",
+            raw_telegram="<S0012345002F01D07FJ>",
+            serial_number="0012345002",
             system_function=SystemFunction.DISCOVERY,  # Wrong function
             datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
@@ -67,15 +67,15 @@ class TestXP20ServerService:
         """Test processing module type query through main handler"""
         request = SystemTelegram(
             checksum="FJ",
-            raw_telegram="<S0020037487F02D07FJ>",
-            serial_number="0020037487",
+            raw_telegram="<S0012345002F02D07FJ>",
+            serial_number="0012345002",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.MODULE_TYPE_CODE,
         )
 
         response = self.xp20_service.process_system_telegram(request)
 
-        expected_response = "<R0020037487F02D0733FI>"
+        expected_response = "<R0012345002F02D0733FI>"
         assert response == expected_response
         assert "F02D07" in response
         assert "33" in response
@@ -92,7 +92,7 @@ class TestXP20ServerService:
 
         response = self.xp20_service.process_system_telegram(request)
 
-        expected_response = "<R0020037487F02D0733FI>"
+        expected_response = "<R0012345002F02D0733FI>"
         assert response == expected_response
         assert "F02D07" in response
         assert "33" in response

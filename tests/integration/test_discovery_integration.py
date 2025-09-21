@@ -71,10 +71,10 @@ class TestDiscoverIntegration:
 
         # Test discover responses
         test_responses = [
-            "<R0020030837F01DFM>",
-            "<R0020044966F01DFK>",
-            "<R0020042796F01DFN>",
-            "<R0020042796F18DFF>"
+            "<R0012345011F01DFM>",
+            "<R0012345006F01DFK>",
+            "<R0012345003F01DFN>",
+            "<R0012345003F18DFF>"
         ]
 
         for response_str in test_responses:
@@ -108,9 +108,9 @@ class TestDiscoverIntegration:
 
         # Valid discover responses
         valid_responses = [
-            "<R0020030837F01DFM>",
-            "<R0020044966F01DFK>",
-            "<R0020042796F01DFN>",
+            "<R0012345011F01DFM>",
+            "<R0012345006F01DFK>",
+            "<R0012345003F01DFN>",
         ]
 
         for response in valid_responses:
@@ -128,9 +128,9 @@ class TestDiscoverIntegration:
 
         # Invalid formats
         invalid_responses = [
-            "<R0020030837F02DFM>",  # Wrong function
+            "<R0012345011F02DFM>",  # Wrong function
             "<R002003083F01DFM>",  # Wrong serial length
-            "<S0020030837F01DFM>",  # System telegram, not reply
+            "<S0012345011F01DFM>",  # System telegram, not reply
         ]
 
         for response in invalid_responses:

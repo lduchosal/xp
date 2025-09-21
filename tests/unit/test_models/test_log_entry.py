@@ -19,13 +19,13 @@ class TestLogEntry:
         entry = LogEntry(
             timestamp=timestamp,
             direction="TX",
-            raw_telegram="<S0020044964F27D00AAFN>",
+            raw_telegram="<S0012345008F27D00AAFN>",
             line_number=1,
         )
 
         assert entry.timestamp == timestamp
         assert entry.direction == "TX"
-        assert entry.raw_telegram == "<S0020044964F27D00AAFN>"
+        assert entry.raw_telegram == "<S0012345008F27D00AAFN>"
         assert entry.line_number == 1
         assert entry.parsed_telegram is None
         assert entry.parse_error is None
@@ -76,17 +76,17 @@ class TestLogEntry:
     def test_telegram_type_with_system_telegram(self):
         """Test telegram_type property with system telegram"""
         system_telegram = SystemTelegram(
-            serial_number="0020044964",
+            serial_number="0012345008",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.TEMPERATURE,
             checksum="FN",
-            raw_telegram="<S0020044964F02D18FN>",
+            raw_telegram="<S0012345008F02D18FN>",
         )
 
         entry = LogEntry(
             timestamp=datetime.now(),
             direction="TX",
-            raw_telegram="<S0020044964F02D18FN>",
+            raw_telegram="<S0012345008F02D18FN>",
             parsed_telegram=system_telegram,
             line_number=1,
         )
@@ -97,18 +97,18 @@ class TestLogEntry:
     def test_telegram_type_with_reply_telegram(self):
         """Test telegram_type property with reply telegram"""
         reply_telegram = ReplyTelegram(
-            serial_number="0020044964",
+            serial_number="0012345008",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
-            raw_telegram="<R0020044964F02D18+26,0§CIL>",
+            raw_telegram="<R0012345008F02D18+26,0§CIL>",
         )
 
         entry = LogEntry(
             timestamp=datetime.now(),
             direction="RX",
-            raw_telegram="<R0020044964F02D18+26,0§CIL>",
+            raw_telegram="<R0012345008F02D18+26,0§CIL>",
             parsed_telegram=reply_telegram,
             line_number=1,
         )

@@ -21,13 +21,13 @@ class TestBlinkService:
         """Test generating valid blink telegram"""
         service = TelegramBlinkService()
 
-        # Test case from specification: <S0020044964F05D00FN>
-        result = service.generate_blink_telegram("0020044964", "on")
-        assert result == "<S0020044964F05D00FN>"
+        # Test case from specification: <S0012345008F05D00FN>
+        result = service.generate_blink_telegram("0012345008", "on")
+        assert result == "<S0012345008F05D00FN>"
 
         # Test another case
-        result = service.generate_blink_telegram("0020030837", "on")
-        assert result == "<S0020030837F05D00FJ>"
+        result = service.generate_blink_telegram("0012345011", "on")
+        assert result == "<S0012345011F05D00FJ>"
 
         # Test different serial numbers
         result = service.generate_blink_telegram("1234567890", "on")
@@ -59,13 +59,13 @@ class TestBlinkService:
         """Test generating valid unblink telegram"""
         service = TelegramBlinkService()
 
-        # Test case from specification: <S0020030837F06D00FK>
-        result = service.generate_blink_telegram("0020030837", "off")
-        assert result == "<S0020030837F06D00FK>"
+        # Test case from specification: <S0012345011F06D00FK>
+        result = service.generate_blink_telegram("0012345011", "off")
+        assert result == "<S0012345011F06D00FK>"
 
         # Test another case
-        result = service.generate_blink_telegram("0020044964", "off")
-        assert result == "<S0020044964F06D00FO>"
+        result = service.generate_blink_telegram("0012345008", "off")
+        assert result == "<S0012345008F06D00FO>"
 
         # Test different serial numbers
         result = service.generate_blink_telegram("1234567890", "off")
@@ -97,26 +97,26 @@ class TestBlinkService:
         """Test creating SystemTelegram object for blink operation"""
         service = TelegramBlinkService()
 
-        telegram = service.create_blink_telegram_object("0020044964")
+        telegram = service.create_blink_telegram_object("0012345008")
 
         assert isinstance(telegram, SystemTelegram)
-        assert telegram.serial_number == "0020044964"
+        assert telegram.serial_number == "0012345008"
         assert telegram.system_function == SystemFunction.BLINK
         assert telegram.datapoint_type == DataPointType.MODULE_TYPE
-        assert telegram.raw_telegram == "<S0020044964F05D00FN>"
+        assert telegram.raw_telegram == "<S0012345008F05D00FN>"
         assert telegram.checksum == "FN"
 
     def test_create_unblink_telegram_object(self):
         """Test creating SystemTelegram object for unblink operation"""
         service = TelegramBlinkService()
 
-        telegram = service.create_unblink_telegram_object("0020030837")
+        telegram = service.create_unblink_telegram_object("0012345011")
 
         assert isinstance(telegram, SystemTelegram)
-        assert telegram.serial_number == "0020030837"
+        assert telegram.serial_number == "0012345011"
         assert telegram.system_function == SystemFunction.UNBLINK
         assert telegram.datapoint_type == DataPointType.MODULE_TYPE
-        assert telegram.raw_telegram == "<S0020030837F06D00FK>"
+        assert telegram.raw_telegram == "<S0012345011F06D00FK>"
         assert telegram.checksum == "FK"
 
     def test_is_ack_response(self):
@@ -168,13 +168,13 @@ class TestBlinkService:
         service = TelegramBlinkService()
 
         # Test blink telegram structure
-        blink_telegram = service.generate_blink_telegram("0020044964", "on")
+        blink_telegram = service.generate_blink_telegram("0012345008", "on")
         assert blink_telegram.startswith("<S")
         assert "F05D00" in blink_telegram
         assert blink_telegram.endswith(">")
 
         # Test unblink telegram structure
-        unblink_telegram = service.generate_blink_telegram("0020030837", "off")
+        unblink_telegram = service.generate_blink_telegram("0012345011", "off")
         assert unblink_telegram.startswith("<S")
         assert "F06D00" in unblink_telegram
         assert unblink_telegram.endswith(">")
@@ -185,8 +185,8 @@ class TestBlinkService:
 
         test_serials = [
             "0000000000",
-            "0020044964",
-            "0020030837",
+            "0012345008",
+            "0012345011",
             "1234567890",
             "9999999999",
         ]

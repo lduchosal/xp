@@ -32,8 +32,8 @@ def send_custom_telegram(
     Examples:
 
     \b
-        xp conbus custom 0020030837 02 E2
-        xp conbus custom 0020030837 17 AA
+        xp conbus custom 0012345011 02 E2
+        xp conbus custom 0012345011 17 AA
     """
     service = ConbusCustomService()
 

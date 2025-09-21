@@ -11,7 +11,7 @@ class TestConbusBlinkIntegration:
     """Integration test cases for Conbus blink operations"""
 
     @staticmethod
-    def _create_mock_conbus_response(success=True, serial_number="0020044964", error=None, telegrams=None):
+    def _create_mock_conbus_response(success=True, serial_number="0012345008", error=None, telegrams=None):
         """Helper to create a properly formed ConbusResponse"""
         mock_request = ConbusRequest(serial_number=serial_number, function_code="F05", data="D00")
         if telegrams is None:
@@ -28,7 +28,7 @@ class TestConbusBlinkIntegration:
     def _create_mock_conbus_service(self, discover_devices=None, discover_success=True, blink_success=True):
         """Helper to create a properly mocked ConbusService"""
         if discover_devices is None:
-            discover_devices = ["0020044964", "0020030837"]
+            discover_devices = ["0012345008", "0012345011"]
 
         mock_conbus_instance = Mock()
         mock_conbus_instance.__enter__ = Mock(return_value=mock_conbus_instance)
@@ -165,7 +165,7 @@ class TestConbusBlinkIntegration:
     @patch('xp.services.conbus_blink_service.ConbusService')
     def test_conbus_blink_all_multiple_devices(self, mock_conbus_service):
         """Test blinking multiple devices successfully"""
-        devices = ["0020044964", "0020030837", "1234567890", "9876543210"]
+        devices = ["0012345008", "0012345011", "1234567890", "9876543210"]
         mock_conbus_instance = self._create_mock_conbus_service(discover_devices=devices)
         mock_conbus_service.return_value = mock_conbus_instance
 

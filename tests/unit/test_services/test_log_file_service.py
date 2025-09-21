@@ -27,7 +27,7 @@ class TestLogFileService:
     def test_parse_log_line_valid(self):
         """Test parsing a valid log line"""
         service = LogFileService()
-        line = "22:44:20,352 [TX] <S0020044964F27D00AAFN>"
+        line = "22:44:20,352 [TX] <S0012345008F27D00AAFN>"
 
         # Mock telegram service
         mock_telegram = Mock(spec=SystemTelegram)
@@ -38,13 +38,13 @@ class TestLogFileService:
         assert result is not None
         assert result.line_number == 1
         assert result.direction == "TX"
-        assert result.raw_telegram == "<S0020044964F27D00AAFN>"
+        assert result.raw_telegram == "<S0012345008F27D00AAFN>"
         assert result.parsed_telegram == mock_telegram
         assert result.parse_error is None
 
         # Verify telegram service was called
         service.telegram_service.parse_telegram.assert_called_once_with(
-            "<S0020044964F27D00AAFN>"
+            "<S0012345008F27D00AAFN>"
         )
 
     def test_parse_log_line_telegram_parsing_error(self):
@@ -85,8 +85,8 @@ class TestLogFileService:
         """Test parsing multiple valid log lines"""
         service = LogFileService()
         lines = [
-            "22:44:20,352 [TX] <S0020044964F27D00AAFN>",
-            "22:44:20,420 [RX] <R0020044964F18DFA>",
+            "22:44:20,352 [TX] <S0012345008F27D00AAFN>",
+            "22:44:20,420 [RX] <R0012345008F18DFA>",
             "22:44:20,467 [RX] <E07L06I80BAL>",
             "",  # Empty line should be skipped
             "  ",  # Whitespace-only line should be skipped
@@ -107,13 +107,13 @@ class TestLogFileService:
         # Check first entry
         assert results[0].line_number == 1
         assert results[0].direction == "TX"
-        assert results[0].raw_telegram == "<S0020044964F27D00AAFN>"
+        assert results[0].raw_telegram == "<S0012345008F27D00AAFN>"
         assert results[0].parsed_telegram == mock_telegrams[0]
 
         # Check second entry
         assert results[1].line_number == 2
         assert results[1].direction == "RX"
-        assert results[1].raw_telegram == "<R0020044964F18DFA>"
+        assert results[1].raw_telegram == "<R0012345008F18DFA>"
 
         # Check third entry
         assert results[2].line_number == 3
@@ -298,7 +298,7 @@ class TestLogFileService:
 
         # Create a simple object with only serial_number
         class SystemTelegramMock:
-            serial_number = "0020044964"
+            serial_number = "0012345008"
 
         system_entry.parsed_telegram = SystemTelegramMock()
         entries.append(system_entry)
@@ -344,7 +344,7 @@ class TestLogFileService:
         assert stats["time_range"]["duration_seconds"] == 5.148
 
         # Check devices
-        assert "0020044964" in stats["devices"]
+        assert "0012345008" in stats["devices"]
         assert "Module_14" in stats["devices"]
 
     def test_filter_entries_by_type(self):

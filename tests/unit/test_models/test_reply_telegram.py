@@ -17,19 +17,19 @@ class TestReplyTelegram:
     def test_reply_telegram_ack(self):
         """Test basic reply telegram creation."""
         telegram = ReplyTelegram(
-            serial_number="0020042796",
+            serial_number="0012345003",
             system_function=SystemFunction.ACK,
             datapoint_type=DataPointType.MODULE_TYPE,
             data_value="",
             checksum="FF",
-            raw_telegram="<R0020042796F18DFF>",
+            raw_telegram="<R0012345003F18DFF>",
         )
 
-        assert telegram.serial_number == "0020042796"
+        assert telegram.serial_number == "0012345003"
         assert telegram.system_function == SystemFunction.ACK
         assert telegram.datapoint_type == DataPointType.MODULE_TYPE
         assert telegram.checksum == "FF"
-        assert telegram.raw_telegram == "<R0020042796F18DFF>"
+        assert telegram.raw_telegram == "<R0012345003F18DFF>"
         assert telegram.timestamp is not None
         assert isinstance(telegram.timestamp, datetime)
 

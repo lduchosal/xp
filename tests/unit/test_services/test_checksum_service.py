@@ -251,9 +251,9 @@ class TestChecksumService:
     def test_telegram_crash1(self):
         """Test with actual telegram format example."""
         telegram_data = (
-            "R0020044974F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]"
+            "R0012345005F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]"
         )
-        # <R0020044974F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]HA>
+        # <R0012345005F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]HA>
 
         # Calculate both types of checksums
         simple_result = self.service.calculate_simple_checksum(telegram_data)

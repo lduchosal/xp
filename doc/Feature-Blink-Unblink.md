@@ -6,30 +6,30 @@ The function of a "Blink" of a conson modules control LED on the front panel:
 - Identify module, see physical LED activity
 
 ## Blink function: 05 
-Telegram:<S0020044964F05D00FN>
+Telegram:<S0012345008F05D00FN>
 Type: System
-Serial: 0020044964
+Serial: 0012345008
 Function: 05
 DataPoint: 00
 
-Telegram:<R0020044964F18DFA>
+Telegram:<R0012345008F18DFA>
 Type: Response
-Serial: 0020044964
+Serial: 0012345008
 Function: 18 (ACK)
 DataPoint:  
 
 
 ## Unblink function: 06
 
-Telegram:<S0020030837F06D00FJ>
+Telegram:<S0012345011F06D00FJ>
 Type: System
-Serial: 0020030837
+Serial: 0012345011
 Function: 06
 DataPoint: 00
 
-Telegram:<R0020030837F18DFA>
+Telegram:<R0012345011F18DFA>
 Type: Response
-Serial: 0020030837
+Serial: 0012345011
 Function: 18 (ACK)
 DataPoint:  
 

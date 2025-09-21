@@ -67,7 +67,7 @@ conbus:
         service = ConbusReverseProxyService(config_path="nonexistent.yml")
 
         # Should use defaults
-        assert service.target_ip == "10.0.3.162"
+        assert service.target_ip == "127.0.0.1"
         assert service.target_port == 10001
         assert service.target_timeout == 10
 
@@ -82,7 +82,7 @@ conbus:
         try:
             service = ConbusReverseProxyService(config_path=temp_invalid.name)
             # Should use defaults when config is invalid
-            assert service.target_ip == "10.0.3.162"
+            assert service.target_ip == "127.0.0.1"
             assert service.target_port == 10001
         finally:
             os.unlink(temp_invalid.name)

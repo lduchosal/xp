@@ -20,8 +20,8 @@ def blink_on(serial_number: str):
     Examples:
 
     \b
-        xp blink on 0020044964
-        xp blink on 0020044964
+        xp blink on 0012345008
+        xp blink on 0012345008
     """
     service = TelegramBlinkService()
     OutputFormatter(True)
@@ -52,7 +52,7 @@ def blink_off(serial_number: str):
     Examples:
 
     \b
-        xp blink off 0020030837
+        xp blink off 0012345011
     """
     service = TelegramBlinkService()
     OutputFormatter(True)

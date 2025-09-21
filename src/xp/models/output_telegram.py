@@ -21,7 +21,7 @@ class OutputTelegram(Telegram):
     Represents a parsed XP output telegram from the console bus.
 
     Format: <S{serial_number}F27D{input:02d}{action}{checksum}>
-    Examples: <S0020044964F27D00AAFN>
+    Examples: <S0012345008F27D00AAFN>
     """
 
     serial_number: str = ""

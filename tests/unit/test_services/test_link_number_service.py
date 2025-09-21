@@ -22,16 +22,16 @@ class TestLinkNumberService:
         service = LinkNumberService()
 
         # Test case from specification
-        result = service.generate_set_link_number_telegram("0020044974", 25)
-        assert result == "<S0020044974F04D0425FO>"
+        result = service.generate_set_link_number_telegram("0012345005", 25)
+        assert result == "<S0012345005F04D0425FO>"
 
         # Test another case
-        result = service.generate_set_link_number_telegram("0020044974", 9)
-        assert result == "<S0020044974F04D0409FA>"
+        result = service.generate_set_link_number_telegram("0012345005", 9)
+        assert result == "<S0012345005F04D0409FA>"
 
         # Test with leading zero
-        result = service.generate_set_link_number_telegram("0020044974", 5)
-        assert result == "<S0020044974F04D0405FM>"
+        result = service.generate_set_link_number_telegram("0012345005", 5)
+        assert result == "<S0012345005F04D0405FM>"
 
         # Test boundary values
         result = service.generate_set_link_number_telegram("1234567890", 0)
@@ -68,18 +68,18 @@ class TestLinkNumberService:
 
         # Test negative link number
         with pytest.raises(LinkNumberError, match="Link number must be between 0-99"):
-            service.generate_set_link_number_telegram("0020044974", -1)
+            service.generate_set_link_number_telegram("0012345005", -1)
 
         # Test link number too high
         with pytest.raises(LinkNumberError, match="Link number must be between 0-99"):
-            service.generate_set_link_number_telegram("0020044974", 100)
+            service.generate_set_link_number_telegram("0012345005", 100)
 
     def test_generate_read_link_number_telegram_valid(self):
         """Test generating valid read link number telegram"""
         service = LinkNumberService()
 
-        result = service.generate_read_link_number_telegram("0020044974")
-        assert result.startswith("<S0020044974F03D04")
+        result = service.generate_read_link_number_telegram("0012345005")
+        assert result.startswith("<S0012345005F03D04")
         assert result.endswith(">")
         assert len(result) == 21  # <S{10}F03D04{2}> = 21 chars
 
@@ -100,26 +100,26 @@ class TestLinkNumberService:
         """Test creating SystemTelegram object for set operation"""
         service = LinkNumberService()
 
-        telegram = service.create_set_link_number_telegram_object("0020044974", 25)
+        telegram = service.create_set_link_number_telegram_object("0012345005", 25)
 
         assert isinstance(telegram, SystemTelegram)
-        assert telegram.serial_number == "0020044974"
+        assert telegram.serial_number == "0012345005"
         assert telegram.system_function == SystemFunction.WRITE_CONFIG
         assert telegram.datapoint_type == DataPointType.LINK_NUMBER
-        assert telegram.raw_telegram == "<S0020044974F04D0425FO>"
+        assert telegram.raw_telegram == "<S0012345005F04D0425FO>"
         assert telegram.checksum == "FO"
 
     def test_create_read_link_number_telegram_object(self):
         """Test creating SystemTelegram object for read operation"""
         service = LinkNumberService()
 
-        telegram = service.create_read_link_number_telegram_object("0020044974")
+        telegram = service.create_read_link_number_telegram_object("0012345005")
 
         assert isinstance(telegram, SystemTelegram)
-        assert telegram.serial_number == "0020044974"
+        assert telegram.serial_number == "0012345005"
         assert telegram.system_function == SystemFunction.READ_CONFIG
         assert telegram.datapoint_type == DataPointType.LINK_NUMBER
-        assert telegram.raw_telegram.startswith("<S0020044974F03D04")
+        assert telegram.raw_telegram.startswith("<S0012345005F03D04")
         assert len(telegram.checksum) == 2
 
     def test_parse_link_number_from_reply_valid(self):

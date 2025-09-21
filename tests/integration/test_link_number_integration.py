@@ -18,13 +18,13 @@ class TestLinkNumberIntegration:
         telegram_service = TelegramService()
 
         # Generate set link number telegram
-        serial = "0020044974"
+        serial = "0012345005"
         link_num = 25
 
         generated_telegram = link_service.generate_set_link_number_telegram(
             serial, link_num
         )
-        assert generated_telegram == "<S0020044974F04D0425FO>"
+        assert generated_telegram == "<S0012345005F04D0425FO>"
 
         # Parse the generated telegram
         parsed_telegram = telegram_service.parse_system_telegram(generated_telegram)
@@ -41,7 +41,7 @@ class TestLinkNumberIntegration:
         link_service = LinkNumberService()
         telegram_service = TelegramService()
 
-        serial = "0020044974"
+        serial = "0012345005"
 
         # Generate read link number telegram
         generated_telegram = link_service.generate_read_link_number_telegram(serial)
@@ -62,12 +62,12 @@ class TestLinkNumberIntegration:
 
         # Test telegrams from the specification
         test_cases = [
-            "<S0020044974F04D0409FA>",
-            "<R0020044974F18DFB>",
-            "<R0020044974F19DFA>",
-            "<S0020044974F04D0425FO>",
-            "<R0020044974F18DFB>",
-            "<R0020044974F19DFA>",
+            "<S0012345005F04D0409FA>",
+            "<R0012345005F18DFB>",
+            "<R0012345005F19DFA>",
+            "<S0012345005F04D0425FO>",
+            "<R0012345005F18DFB>",
+            "<R0012345005F19DFA>",
         ]
 
         for telegram_str in test_cases:
@@ -78,13 +78,13 @@ class TestLinkNumberIntegration:
 
             if telegram_str.startswith("<S"):  # System telegram
                 assert isinstance(parsed, SystemTelegram)
-                assert parsed.serial_number == "0020044974"
+                assert parsed.serial_number == "0012345005"
                 assert parsed.system_function == SystemFunction.WRITE_CONFIG
                 assert parsed.datapoint_type == DataPointType.LINK_NUMBER
 
             elif telegram_str.startswith("<R"):  # Reply telegram
                 assert isinstance(parsed, ReplyTelegram)
-                assert parsed.serial_number == "0020044974"
+                assert parsed.serial_number == "0012345005"
 
                 # Check if it's ACK or NAK
                 if "F18D" in telegram_str:  # ACK
@@ -101,7 +101,7 @@ class TestLinkNumberIntegration:
 
         # Create telegram object
         created_telegram = link_service.create_set_link_number_telegram_object(
-            "0020044974", 25
+            "0012345005", 25
         )
 
         # Parse the raw telegram from the created object
@@ -159,7 +159,7 @@ class TestLinkNumberIntegration:
 
         # Test that error doesn't occur for valid input
         valid_telegram = link_service.generate_set_link_number_telegram(
-            "0020044974", 25
+            "0012345005", 25
         )
         parsed = telegram_service.parse_system_telegram(valid_telegram)
         assert parsed is not None
@@ -170,11 +170,11 @@ class TestLinkNumberIntegration:
         telegram_service = TelegramService()
 
         # Generate set command
-        set_command = link_service.generate_set_link_number_telegram("0020044974", 25)
-        assert set_command == "<S0020044974F04D0425FO>"
+        set_command = link_service.generate_set_link_number_telegram("0012345005", 25)
+        assert set_command == "<S0012345005F04D0425FO>"
 
         # Parse ACK reply from specification
-        ack_reply_str = "<R0020044974F18DFB>"
+        ack_reply_str = "<R0012345005F18DFB>"
         ack_reply = telegram_service.parse_reply_telegram(ack_reply_str)
 
         # Verify it's properly identified as ACK
@@ -182,7 +182,7 @@ class TestLinkNumberIntegration:
         assert link_service.is_nak_response(ack_reply) is False
 
         # Parse NAK reply from specification
-        nak_reply_str = "<R0020044974F19DFA>"
+        nak_reply_str = "<R0012345005F19DFA>"
         nak_reply = telegram_service.parse_reply_telegram(nak_reply_str)
 
         # Verify it's properly identified as NAK
@@ -202,8 +202,8 @@ class TestLinkNumberIntegration:
         boundary_cases = [
             ("0000000000", 0),  # Minimum serial and link number
             ("9999999999", 99),  # Maximum serial and link number
-            ("0020044974", 0),  # From spec with min link number
-            ("0020044974", 99),  # From spec with max link number
+            ("0012345005", 0),  # From spec with min link number
+            ("0012345005", 99),  # From spec with max link number
         ]
 
         for serial, link_num in boundary_cases:

@@ -30,27 +30,27 @@ class TestSystemTelegramEnhancements:
     def test_system_telegram_with_write_config_link_number(self):
         """Test SystemTelegram with write config for link number"""
         telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.WRITE_CONFIG,
             datapoint_type=DataPointType.LINK_NUMBER,
             checksum="FO",
-            raw_telegram="<S0020044974F04D0425FO>",
+            raw_telegram="<S0012345005F04D0425FO>",
         )
 
-        assert telegram.serial_number == "0020044974"
+        assert telegram.serial_number == "0012345005"
         assert telegram.system_function == SystemFunction.WRITE_CONFIG
         assert telegram.datapoint_type == DataPointType.LINK_NUMBER
         assert telegram.checksum == "FO"
-        assert telegram.raw_telegram == "<S0020044974F04D0425FO>"
+        assert telegram.raw_telegram == "<S0012345005F04D0425FO>"
 
     def test_system_telegram_with_read_config_link_number(self):
         """Test SystemTelegram with read config for link number"""
         telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.READ_CONFIG,
             datapoint_type=DataPointType.LINK_NUMBER,
             checksum="AB",
-            raw_telegram="<S0020044974F03D04AB>",
+            raw_telegram="<S0012345005F03D04AB>",
         )
 
         assert telegram.system_function.name == "READ_CONFIG"
@@ -60,42 +60,42 @@ class TestSystemTelegramEnhancements:
         """Test human-readable function descriptions"""
         # Test existing functions
         write_config_telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.WRITE_CONFIG,
             datapoint_type=DataPointType.LINK_NUMBER,
             checksum="FO",
-            raw_telegram="<S0020044974F04D0425FO>",
+            raw_telegram="<S0012345005F04D0425FO>",
         )
 
         assert write_config_telegram.system_function.name == "WRITE_CONFIG"
 
         read_config_telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.READ_CONFIG,
             datapoint_type=DataPointType.LINK_NUMBER,
             checksum="AB",
-            raw_telegram="<S0020044974F03D04AB>",
+            raw_telegram="<S0012345005F03D04AB>",
         )
 
         assert read_config_telegram.system_function.name == "READ_CONFIG"
 
         # Test new ACK/NAK functions
         ack_telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.ACK,
             datapoint_type=DataPointType.MODULE_TYPE,
             checksum="FB",
-            raw_telegram="<R0020044974F18DFB>",
+            raw_telegram="<R0012345005F18DFB>",
         )
 
         assert ack_telegram.system_function.name == "ACK"
 
         nak_telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.NAK,
             datapoint_type=DataPointType.MODULE_TYPE,
             checksum="FA",
-            raw_telegram="<R0020044974F19DFA>",
+            raw_telegram="<R0012345005F19DFA>",
         )
 
         assert nak_telegram.system_function.name == "NAK"
@@ -103,22 +103,22 @@ class TestSystemTelegramEnhancements:
     def test_data_point_descriptions(self):
         """Test human-readable data point descriptions"""
         telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.WRITE_CONFIG,
             datapoint_type=DataPointType.LINK_NUMBER,
             checksum="FO",
-            raw_telegram="<S0020044974F04D0425FO>",
+            raw_telegram="<S0012345005F04D0425FO>",
         )
 
         assert telegram.datapoint_type.name == "LINK_NUMBER"
 
         # Test that existing data points still work
         temp_telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.READ_CONFIG,
             datapoint_type=DataPointType.TEMPERATURE,
             checksum="AB",
-            raw_telegram="<S0020044974F03D18AB>",
+            raw_telegram="<S0012345005F03D18AB>",
         )
 
         assert temp_telegram.datapoint_type.name == "TEMPERATURE"
@@ -126,40 +126,40 @@ class TestSystemTelegramEnhancements:
     def test_to_dict_with_link_number(self):
         """Test dictionary conversion with link number data"""
         telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.WRITE_CONFIG,
             datapoint_type=DataPointType.LINK_NUMBER,
             checksum="FO",
-            raw_telegram="<S0020044974F04D0425FO>",
+            raw_telegram="<S0012345005F04D0425FO>",
         )
         telegram.checksum_validated = True
 
         result = telegram.to_dict()
 
-        assert result["serial_number"] == "0020044974"
+        assert result["serial_number"] == "0012345005"
         assert result["system_function"]["code"] == "04"
         assert result["system_function"]["description"] == "WRITE_CONFIG"
         assert result["datapoint_type"]["code"] == "04"
         assert result["datapoint_type"]["description"] == "LINK_NUMBER"
         assert result["checksum"] == "FO"
         assert result["checksum_validated"] is True
-        assert result["raw_telegram"] == "<S0020044974F04D0425FO>"
+        assert result["raw_telegram"] == "<S0012345005F04D0425FO>"
         assert result["telegram_type"] == "system"
 
     def test_str_representation_with_link_number(self):
         """Test string representation with link number"""
         telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.WRITE_CONFIG,
             datapoint_type=DataPointType.LINK_NUMBER,
             checksum="FO",
-            raw_telegram="<S0020044974F04D0425FO>",
+            raw_telegram="<S0012345005F04D0425FO>",
         )
 
         str_repr = str(telegram)
         assert "WRITE_CONFIG" in str_repr
         assert "LINK_NUMBER" in str_repr
-        assert "0020044974" in str_repr
+        assert "0012345005" in str_repr
 
     def test_all_system_functions_from_code(self):
         """Test that all system functions can be retrieved by code"""
@@ -206,11 +206,11 @@ class TestSystemTelegramEnhancements:
         before_creation = datetime.now()
 
         telegram = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.WRITE_CONFIG,
             datapoint_type=DataPointType.LINK_NUMBER,
             checksum="FO",
-            raw_telegram="<S0020044974F04D0425FO>",
+            raw_telegram="<S0012345005F04D0425FO>",
         )
 
         after_creation = datetime.now()
@@ -221,11 +221,11 @@ class TestSystemTelegramEnhancements:
         # Test with explicit timestamp
         explicit_time = datetime(2023, 1, 1, 12, 0, 0)
         telegram_with_time = SystemTelegram(
-            serial_number="0020044974",
+            serial_number="0012345005",
             system_function=SystemFunction.WRITE_CONFIG,
             datapoint_type=DataPointType.LINK_NUMBER,
             checksum="FO",
-            raw_telegram="<S0020044974F04D0425FO>",
+            raw_telegram="<S0012345005F04D0425FO>",
             timestamp=explicit_time,
         )
 

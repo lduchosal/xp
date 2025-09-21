@@ -42,7 +42,7 @@ class LinkNumberService:
             link_number: The link number to set (0-99)
 
         Returns:
-            Formatted telegram string (e.g., "<S0020044974F04D0425FO>")
+            Formatted telegram string (e.g., "<S0012345005F04D0425FO>")
 
         Raises:
             LinkNumberError: If parameters are invalid

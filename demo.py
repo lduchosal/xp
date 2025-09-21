@@ -202,7 +202,7 @@ def demo_version_parsing():
     print("-" * 32)
 
     # Generate version request telegrams
-    serial_numbers = ["0020030837", "0020044966", "0020041824"]
+    serial_numbers = ["0012345011", "0012345006", "0012345010"]
 
     for serial in serial_numbers:
         result = version_service.generate_version_request_telegram(serial)
@@ -215,7 +215,7 @@ def demo_version_parsing():
     print("-" * 48)
 
     # Parse version request telegram from specification
-    version_system_telegram = "<S0020030837F02D02FM>"
+    version_system_telegram = "<S0012345011F02D02FM>"
 
     try:
         parsed = telegram_service.parse_system_telegram(version_system_telegram)
@@ -240,12 +240,12 @@ def demo_version_parsing():
 
     # Version reply telegrams from the specification
     version_replies = [
-        "<R0020030837F02D02XP230_V1.00.04FI>",
-        "<R0020037487F02D02XP20_V0.01.05GK>",
-        "<R0020042796F02D02XP33LR_V0.04.02HF>",
-        "<R0020044991F02D02XP24_V0.34.03GA>",
-        "<R0020044964F02D02XP24_V0.34.03GK>",
-        "<R0020041824F02D02XP20_V0.01.05GO>",
+        "<R0012345011F02D02XP230_V1.00.04FI>",
+        "<R0012345002F02D02XP20_V0.01.05GK>",
+        "<R0012345003F02D02XP33LR_V0.04.02HF>",
+        "<R0012345004F02D02XP24_V0.34.03GA>",
+        "<R0012345008F02D02XP24_V0.34.03GK>",
+        "<R0012345010F02D02XP20_V0.01.05GO>",
     ]
 
     for telegram_str in version_replies[:4]:  # Show first 4 examples
@@ -271,10 +271,10 @@ def demo_version_parsing():
 
     # Test auto-detection of version telegrams
     mixed_telegrams = [
-        "<S0020030837F02D02FM>",  # Version request
-        "<R0020030837F02D02XP230_V1.00.04FI>",  # Version reply
+        "<S0012345011F02D02FM>",  # Version request
+        "<R0012345011F02D02XP230_V1.00.04FI>",  # Version reply
         "<E14L00I02MAK>",  # Event telegram
-        "<R0020030837F02D18+26.0§CIL>",  # Temperature reply
+        "<R0012345011F02D18+26.0§CIL>",  # Temperature reply
     ]
 
     for telegram_str in mixed_telegrams:
@@ -331,7 +331,7 @@ def demo_version_parsing():
     print("-" * 31)
 
     # Demonstrate version service functionality
-    raw_reply = "<R0020030837F02D02XP230_V1.00.04FI>"
+    raw_reply = "<R0012345011F02D02XP230_V1.00.04FI>"
 
     try:
         parsed_reply = telegram_service.parse_reply_telegram(raw_reply)
@@ -445,13 +445,13 @@ if __name__ == "__main__":
     )
     print("python -m xp.cli.main telegram validate '<E14L00I02MAK>'")
     print("\n--- Version Commands ---")
-    print("python -m xp.cli.main version request 0020030837")
-    print("python -m xp.cli.main version parse '<R0020030837F02D02XP230_V1.00.04FI>'")
-    print("python -m xp.cli.main telegram parse '<S0020030837F02D02FM>'")
+    print("python -m xp.cli.main version request 0012345011")
+    print("python -m xp.cli.main version parse '<R0012345011F02D02XP230_V1.00.04FI>'")
+    print("python -m xp.cli.main telegram parse '<S0012345011F02D02FM>'")
     print("\n--- System & Reply Telegram Commands ---")
-    print("python -m xp.cli.main telegram parse '<S0020030837F02D02FM>'")
-    print("python -m xp.cli.main telegram parse '<R0020030837F02D18+26.0§CIL>'")
-    print("python -m xp.cli.main telegram parse '<R0020030837F02D02XP230_V1.00.04FI>'")
+    print("python -m xp.cli.main telegram parse '<S0012345011F02D02FM>'")
+    print("python -m xp.cli.main telegram parse '<R0012345011F02D18+26.0§CIL>'")
+    print("python -m xp.cli.main telegram parse '<R0012345011F02D02XP230_V1.00.04FI>'")
     print("\n--- Module Type Commands ---")
     print("python -m xp.cli.main module info 14")
     print("python -m xp.cli.main module list --group-by-category")

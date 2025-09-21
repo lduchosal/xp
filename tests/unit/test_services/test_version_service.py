@@ -78,7 +78,7 @@ class TestVersionService(unittest.TestCase):
 
     def test_generate_version_request_telegram_valid(self):
         """Test generating valid version request telegrams."""
-        test_cases = ["0020030837", "0020044966", "0020041824", "0000000000"]
+        test_cases = ["0012345011", "0012345006", "0012345010", "0000000000"]
 
         for serial_number in test_cases:
             with self.subTest(serial_number=serial_number):
@@ -120,11 +120,11 @@ class TestVersionService(unittest.TestCase):
     def test_validate_version_telegram_valid(self):
         """Test validating valid version request telegrams."""
         telegram = SystemTelegram(
-            serial_number="0020030837",
+            serial_number="0012345011",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.SW_VERSION,
             checksum="FM",
-            raw_telegram="<S0020030837F02D02FM>",
+            raw_telegram="<S0012345011F02D02FM>",
             timestamp=datetime.now(),
             checksum_validated=True,
         )
@@ -134,7 +134,7 @@ class TestVersionService(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertIsNone(result.error)
         self.assertTrue(result.data["is_version_request"])
-        self.assertEqual(result.data["serial_number"], "0020030837")
+        self.assertEqual(result.data["serial_number"], "0012345011")
         self.assertEqual(result.data["function"], "02")
         self.assertEqual(result.data["data_point"], "02")
         self.assertEqual(result.data["function_description"], "READ_DATAPOINT")
@@ -143,11 +143,11 @@ class TestVersionService(unittest.TestCase):
     def test_validate_version_telegram_not_version(self):
         """Test validating non-version request telegrams."""
         telegram = SystemTelegram(
-            serial_number="0020030837",
+            serial_number="0012345011",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.TEMPERATURE,
             checksum="XX",
-            raw_telegram="<S0020030837F02D18XX>",
+            raw_telegram="<S0012345011F02D18XX>",
             timestamp=datetime.now(),
             checksum_validated=True,
         )
@@ -162,10 +162,10 @@ class TestVersionService(unittest.TestCase):
     def test_parse_version_reply_valid(self):
         """Test parsing valid version reply telegrams."""
         test_cases = [
-            ("0020030837", "XP230_V1.00.04"),
-            ("0020044966", "XP20_V0.01.05"),
-            ("0020041824", "XP33LR_V0.04.02"),
-            ("0020044989", "XP24_V0.34.03"),
+            ("0012345011", "XP230_V1.00.04"),
+            ("0012345006", "XP20_V0.01.05"),
+            ("0012345010", "XP33LR_V0.04.02"),
+            ("0012345007", "XP24_V0.34.03"),
         ]
 
         for serial_number, data_value in test_cases:
@@ -237,7 +237,7 @@ class TestVersionService(unittest.TestCase):
     def test_format_version_summary_valid(self):
         """Test formatting valid version summary."""
         version_data = {
-            "serial_number": "0020030837",
+            "serial_number": "0012345011",
             "version_info": {
                 "parsed": True,
                 "product": "XP230",
@@ -250,7 +250,7 @@ class TestVersionService(unittest.TestCase):
         summary = self.service.format_version_summary(version_data)
 
         self.assertIn("Device Version Information:", summary)
-        self.assertIn("Serial Number: 0020030837", summary)
+        self.assertIn("Serial Number: 0012345011", summary)
         self.assertIn("Product: XP230", summary)
         self.assertIn("Version: 1.00.04", summary)
         self.assertIn("Full Version: XP230_V1.00.04", summary)
@@ -259,7 +259,7 @@ class TestVersionService(unittest.TestCase):
     def test_format_version_summary_invalid_checksum(self):
         """Test formatting version summary with invalid checksum."""
         version_data = {
-            "serial_number": "0020030837",
+            "serial_number": "0012345011",
             "version_info": {
                 "parsed": True,
                 "product": "XP230",
@@ -276,14 +276,14 @@ class TestVersionService(unittest.TestCase):
     def test_format_version_summary_parse_error(self):
         """Test formatting version summary with parse error."""
         version_data = {
-            "serial_number": "0020030837",
+            "serial_number": "0012345011",
             "version_info": {"parsed": False, "error": "Invalid format"},
         }
 
         summary = self.service.format_version_summary(version_data)
 
         self.assertIn("Version parsing failed", summary)
-        self.assertIn("0020030837", summary)
+        self.assertIn("0012345011", summary)
         self.assertIn("Invalid format", summary)
 
     def test_format_version_summary_invalid_input(self):

@@ -43,14 +43,14 @@ class TestConbusSendResponse:
         response = ConbusDatapointResponse(
             success=True,
             sent_telegram="<S0000000000F01D00FA>",
-            received_telegrams=["<R0020030837F01DFM>", "<R0020044966F01DFK>"],
+            received_telegrams=["<R0012345011F01DFM>", "<R0012345006F01DFK>"],
         )
 
         assert response.success is True
         assert response.sent_telegram == "<S0000000000F01D00FA>"
         assert len(response.received_telegrams) == 2
-        assert "<R0020030837F01DFM>" in response.received_telegrams
-        assert "<R0020044966F01DFK>" in response.received_telegrams
+        assert "<R0012345011F01DFM>" in response.received_telegrams
+        assert "<R0012345006F01DFK>" in response.received_telegrams
         assert response.error is None
         assert isinstance(response.timestamp, datetime)
 
@@ -158,9 +158,9 @@ class TestModelIntegration:
             success=True,
             sent_telegram="<S0000000000F01D00FA>",
             received_telegrams=[
-                "<R0020030837F01DFM>",
-                "<R0020044966F01DFK>",
-                "<R0020042796F01DFN>",
+                "<R0012345011F01DFM>",
+                "<R0012345006F01DFK>",
+                "<R0012345003F01DFN>",
             ],
         )
 

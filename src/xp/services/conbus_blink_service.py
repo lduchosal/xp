@@ -49,8 +49,8 @@ class ConbusBlinkService:
         Examples:
 
         \b
-            xp conbus blink 0020044964 on
-            xp conbus blink 0020044964 off
+            xp conbus blink 0012345008 on
+            xp conbus blink 0012345008 off
         """
         # Blink is 05, Unblink is 06
         system_function = SystemFunction.UNBLINK

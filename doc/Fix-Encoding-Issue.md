@@ -20,11 +20,11 @@ Error receiving responses: 'utf-8' codec can't decode byte 0xa7 in position 23: 
 ```
 Sent message:
 Hex: 3c53 3030 3230 3034 3439 3636 4630 3244 3138 4642 3e 
-Latin-1: <S0020044966F02D18FB>
+Latin-1: <S0012345006F02D18FB>
 
 Problem response:
 Hex: 3c52 3030 3230 3034 3439 3636 4630 3244 3138 2b33 312c 35a7 4349 453e  
-Latin-1: <R0020044966F02D18+31,5§CIE>
+Latin-1: <R0012345006F02D18+31,5§CIE>
 Problem byte: 0xa7 at position 23 (§ symbol)
 ```
 
@@ -63,8 +63,8 @@ Implement **Option 1** (Direct Latin-1 decoding) because:
 
 ## Testing Requirements
 
-1. Test with normal Latin-1 messages: `<S0020044966F02D18FB>`
-2. Test with extended characters: `<R0020044966F02D18+31,5§CIE>` (0xa7)
+1. Test with normal Latin-1 messages: `<S0012345006F02D18FB>`
+2. Test with extended characters: `<R0012345006F02D18+31,5§CIE>` (0xa7)
 3. Test with various Latin-1 characters (128-255 range)
 4. Ensure telegram parsing continues to work correctly
 5. Test both sent (`<S...>`) and received (`<R...>`) message formats

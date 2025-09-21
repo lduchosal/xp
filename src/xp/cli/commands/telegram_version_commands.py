@@ -21,7 +21,7 @@ def generate_version_request(serial_number: str):
     Examples:
 
     \b
-        xp telegram version 0020030837
+        xp telegram version 0012345011
     """
     service = VersionService()
     formatter = OutputFormatter(True)

@@ -5,7 +5,7 @@ XP33 3-channel light dimmer module emulator for Conbus system testing. Responds 
 
 ## Module Identity
 - **Module Type**: XP33 (Code 11)
-- **Serial Number**: Configurable (default: 0020042796)
+- **Serial Number**: Configurable (default: 0012345003)
 - **Product ID**: XP33LR or XP33LED
 - **Firmware**: V0.04.02
 
@@ -27,29 +27,29 @@ XP33 3-channel light dimmer module emulator for Conbus system testing. Responds 
 
 ## Discover Response
 **Request**: `<S0000000000F01D00FA>`  
-**Response**: `<R0020042796F01DFN>`
+**Response**: `<R0012345003F01DFN>`
 
 ## Data Point Responses
 
 ### 02 - Version Information
-**Request**: `<S0020042796F02D02FN>`  
-**Response**: `<R0020042796F02D02XP33LR_V0.04.02HF>`
+**Request**: `<S0012345003F02D02FN>`  
+**Response**: `<R0012345003F02D02XP33LR_V0.04.02HF>`
 
 ### 07 - Module Type
-**Request**: `<S0020042796F02D07FI>`  
-**Response**: `<R0020042796F02D0730FK>` (30 hex = 48 decimal = XP33 code 11 + offset)
+**Request**: `<S0012345003F02D07FI>`  
+**Response**: `<R0012345003F02D0730FK>` (30 hex = 48 decimal = XP33 code 11 + offset)
 
 ### 10 - Status Query
-**Request**: `<S0020042796F02D10FO>`  
-**Response**: `<R0020042796F02D1000FP>` (00 = normal status)
+**Request**: `<S0012345003F02D10FO>`  
+**Response**: `<R0012345003F02D1000FP>` (00 = normal status)
 
 ### 12 - Channel States  
-**Request**: `<S0020042796F02D12FM>`  
-**Response**: `<R0020042796F02D12xxxxx000BF>` (3 channels at 0% dimming)
+**Request**: `<S0012345003F02D12FM>`  
+**Response**: `<R0012345003F02D12xxxxx000BF>` (3 channels at 0% dimming)
 
 ### 04 - LINK_NUMBER
-**Request**: `<S0020042796F02D04FL>`  
-**Response**: `<R0020042796F02D0404FO>` (links 4 configured)
+**Request**: `<S0012345003F02D04FL>`  
+**Response**: `<R0012345003F02D0404FO>` (links 4 configured)
 
 ## Channel Control Data Points
 
@@ -68,7 +68,7 @@ XP33 3-channel light dimmer module emulator for Conbus system testing. Responds 
 ```yaml
 # config.yml
 devices:
-  0020042796: XP33
+  0012345003: XP33
 ```
 
 ### Response Generation

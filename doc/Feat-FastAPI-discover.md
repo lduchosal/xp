@@ -30,18 +30,18 @@ POST /api/xp/conbus/discover
   },
   "sent_telegram": "<S0000000000F01D00FA>",
   "received_telegrams": [
-    "<R0020030837F01DFM>",
-    "<R0020044966F01DFK>",
-    "<R0020042796F01DFN>"
+    "<R0012345011F01DFM>",
+    "<R0012345006F01DFK>",
+    "<R0012345003F01DFN>"
   ],
   "discovered_devices": [
     {
-      "serial": "0020030837",
-      "telegram": "<R0020030837F01DFM>"
+      "serial": "0012345011",
+      "telegram": "<R0012345011F01DFM>"
     },
     {
-      "serial": "0020044966",
-      "telegram": "<R0020044966F01DFK>"
+      "serial": "0012345006",
+      "telegram": "<R0012345006F01DFK>"
     }
   ],
   "timestamp": "2024-01-15T10:30:45.123Z"

@@ -26,18 +26,18 @@ Validates conson module definitions in `conson.yml`.
 
 ```yaml
 - name: A1
-  serial_number: 0020041013
+  serial_number: 0012345001
   module_type: XP130
   module_type_code: 13
   link_number: 12
   module_number: 0001
-  conbus_ip: 10.0.3.26
+  conbus_ip: 127.0.0.1
   conbus_port: 10001
   sw_version: XP130_V0.10.04
   hw_version: XP130_HW_Rev B
 
 - name: A2
-  serial_number: 0020037487
+  serial_number: 0012345002
   module_type: XP20
   module_type_code: 33
   link_number: 11
@@ -68,14 +68,14 @@ Validates accessory definitions in `homekit.yml`.
 accessories:
   - name: lumiere_salon
     id: A4R2
-    serial_number: 0020044991
+    serial_number: 0012345004
     output: 01
     description: Salon
     service: lightbulb
 
   - name: lumiere_salle_a_manger
     id: A4R3
-    serial_number: 0020044991
+    serial_number: 0012345004
     output: 02
     description: Salle à manger
     service: lightbulb

@@ -38,7 +38,7 @@ class TelegramBlinkService:
             serial_number: The 10-digit module serial number
 
         Returns:
-            Formatted telegram string (e.g., "<S0020044964F05D00FN>")
+            Formatted telegram string (e.g., "<S0012345008F05D00FN>")
 
         Raises:
             BlinkError: If parameters are invalid

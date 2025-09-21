@@ -35,7 +35,7 @@ def scan_module(
     Examples:
 
     \b
-        xp conbus scan 0020030837 02 # Scan all datapoints of function Read data points (02)
+        xp conbus scan 0012345011 02 # Scan all datapoints of function Read data points (02)
     """
     service = ConbusScanService()
 

@@ -22,7 +22,7 @@ def generate_set_link_number(serial_number: str, link_number: int):
     Examples:
 
     \b
-        xp telegram linknumber write 0020044974 25
+        xp telegram linknumber write 0012345005 25
     """
     service = LinkNumberService()
     OutputFormatter(True)
@@ -55,7 +55,7 @@ def generate_read_link_number(serial_number: str):
     Examples:
 
     \b
-        xp telegram linknumber read 0020044974
+        xp telegram linknumber read 0012345005
     """
     service = LinkNumberService()
     OutputFormatter(True)

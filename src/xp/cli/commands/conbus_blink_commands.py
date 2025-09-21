@@ -28,7 +28,7 @@ def send_blink_on_telegram(serial_number: str):
     Examples:
 
     \b
-        xp conbus blink on 0020044964
+        xp conbus blink on 0012345008
     """
     service = ConbusBlinkService()
 
@@ -49,7 +49,7 @@ def send_blink_off_telegram(serial_number: str):
     Examples:
 
     \b
-        xp conbus blink off 0020044964
+        xp conbus blink off 0012345008
     """
     service = ConbusBlinkService()
 
