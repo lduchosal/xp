@@ -20,15 +20,17 @@ class Outlet(Accessory):
             version: str,
             manufacturer: str,
             model: str,
-            serial_number: int,
-            output: int
+            serial_number: str,
+            output_number: int
         ):
 
         super().__init__(driver, display_name)
         self.logger = logging.getLogger(__name__)
-        self.serial_number: int = serial_number
-        self.output: int = output
-        serial = f"{serial_number:010d}.{output:02d}"
+        self.logger.info(f"Creating outlet {{ serial_number : %s, output_number: %s }}", serial_number, output_number)
+
+        self.serial_number: str = serial_number
+        self.output_number: int = output_number
+        serial = f"{serial_number}.{output_number:02d}"
         serv_outlet = self.add_preload_service('Outlet') # type: ignore
 
         self.set_info_service(
@@ -53,7 +55,7 @@ class Outlet(Accessory):
             signal='outlet_set_outlet_in_use',
             sender=self,
             serial_number=self.serial_number,
-            output=self.output,
+            output_number=self.output_number,
             value=value,
         )
 
@@ -62,7 +64,7 @@ class Outlet(Accessory):
             signal='outlet_get_outlet_in_use',
             sender=self,
             serial_number=self.serial_number,
-            output=self.output,
+            output_number=self.output_number,
         )
 
         response = get_first_response(responses)
@@ -74,7 +76,7 @@ class Outlet(Accessory):
             signal='accessory_set_on',
             sender=self,
             serial_number=self.serial_number,
-            output=self.output,
+            output_number=self.output_number,
             value=value,
         )
 
@@ -83,7 +85,7 @@ class Outlet(Accessory):
         responses = dispatcher.send(signal='accessory_get_on',
             sender=self,
             serial_number=self.serial_number,
-            output=self.output,
+            output_number=self.output_number,
         )
         response = get_first_response(responses)
         return response

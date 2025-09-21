@@ -49,163 +49,163 @@ bridge:
 
 accessories:
 
+  - name: lumiere_nathan
+    id: A4R1
+    serial_number: "0020044991"
+    output_number: 0
+    description: Nathan
+    service: lightbulb
+
   - name: lumiere_salon
     id: A4R2
-    serial_number: 0020044991
-    output: 01
+    serial_number: "0020044991"
+    output_number: 1
     description: Salon
     service: lightbulb
 
   - name: lumiere_salle_a_manger
     id: A4R3
-    serial_number: 0020044991
-    output: 02
+    serial_number: "0020044991"
+    output_number: 2
     description: Salle à manger
     service: lightbulb
 
   - name: lumiere_cuisine
     id: A4R4
-    serial_number: 0020044991
-    output: 03
+    serial_number: "0020044991"
+    output_number: 3
     description: Cuisine
     service: lightbulb
 
   - name: prise_salon
     id: A5R2
-    serial_number: 0020044974
-    output: 01
+    serial_number: "0020044974"
+    output_number: 1
     description: Salon
     service: outlet
 
   - name: lumiere_couloir
     id: A5R1
-    serial_number: 0020044974
-    output: 00
+    serial_number: "0020044974"
+    output_number: 0
     description: Couloir cuisine
     service: lightbulb
 
   - name: prise_couloir_cuisine
     id: A5R3
-    serial_number: 0020044974
-    output: 02
+    serial_number: "0020044974"
+    output_number: 2
     description: Couloir cuisine 1
     service: outlet
 
   - name: prise_couloir_cuisine_2
     id: A5R4
-    serial_number: 0020044974
-    output: 03
+    serial_number: "0020044974"
+    output_number: 3
     description: Couloir cuisine 2
     service: outlet
 
-  - name: lumiere_nathan
-    id: A4R1
-    serial_number: 0020040101
-    output: 00
-    description: Nathan
-    service: lightbulb
-
   - name: lumiere_dressing
     id: A6R1
-    serial_number: 0020044966
-    output: 00
+    serial_number: "0020044966"
+    output_number: 0
     description: Dressing
     service: lightbulb
 
   - name: lumiere_mirroir_douche
     id: A6R2
-    serial_number: 0020044966
-    output: 01
+    serial_number: "0020044966"
+    output_number: 1
     description: Mirroir Douche
     service: lightbulb
 
   - name: lumiere_parents
     id: A6R3
-    serial_number: 0020044966
-    output: 02
+    serial_number: "0020044966"
+    output_number: 2
     description: Parents
     service: lightbulb
 
   - name: lumiere_blacon
     id: A6R4
-    serial_number: 0020044966
-    output: 03
+    serial_number: "0020044966"
+    output_number: 3
     description: Balcon 1
     service: lightbulb
 
   - name: lumiere_douche
     id: A7R1
-    serial_number: 0020044989
-    output: 00
+    serial_number: "0020044989"
+    output_number: 0
     description: Douche
     service: lightbulb
 
   - name: prise_parents_1
     id: A7R2
-    serial_number: 0020044989
-    output: 01
+    serial_number: "0020044989"
+    output_number: 1
     description: Parents 1
     service: outlet
 
   - name: prise_parents_2
     id: A7R3
-    serial_number: 0020044989
-    output: 02
+    serial_number: "0020044989"
+    output_number: 2
     description: Parents 2
     service: outlet
 
   - name: prise_na
     id: A7R4
-    serial_number: 0020044989
-    output: 03
+    serial_number: "0020044989"
+    output_number: 3
     description: Prise NA
     service: outlet
 
   - name: lumiere_entree
     id: A8R1
-    serial_number: 0020044964
-    output: 00
+    serial_number: "0020044964"
+    output_number: 0
     description: Entrée
     service: lightbulb
 
   - name: lumiere_mirroir_sdb
     id: A8R2
-    serial_number: 0020044964
-    output: 01
+    serial_number: "0020044964"
+    output_number: 1
     description: Mirroir salle de bain
     service: lightbulb
 
   - name: lumiere_sdb
     id: A8R3
-    serial_number: 0020044964
-    output: 02
+    serial_number: "0020044964"
+    output_number: 2
     description: Salle de bain
     service: lightbulb
 
   - name: lumiere_emma
     id: A8R4
-    serial_number: 0020044964
-    output: 03
+    serial_number: "0020044964"
+    output_number: 3
     description: Emma
     service: lightbulb
 
   - name: prise_all
     id: A4A1
-    serial_number: 0020044991
-    output: 00
+    serial_number: "0020044991"
+    output_number: 0
     description: Prise All
     service: outlet
 
   - name: prise_emma
     id: A9R1
-    serial_number: 0020044986
-    output: 00
+    serial_number: "0020044986"
+    output_number: 0
     description: Prise Emma
     service: outlet
 
   - name: prise_nathan
     id: A9R2
-    serial_number: 0020044986
-    output: 01
+    serial_number: "0020044986"
+    output_number: 1
     description: Prise Nathan
     service: outlet

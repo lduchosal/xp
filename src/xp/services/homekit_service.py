@@ -93,7 +93,7 @@ class HomekitService:
                 manufacturer=manufacturer,
                 model="XP24_lightbulb",
                 serial_number=homekit_accessory.serial_number,
-                output=homekit_accessory.output,
+                output_number=homekit_accessory.output_number,
             )
 
         if homekit_accessory.service == "outlet":
@@ -104,7 +104,7 @@ class HomekitService:
                 manufacturer=manufacturer,
                 model="XP24_outlet",
                 serial_number=homekit_accessory.serial_number,
-                output=homekit_accessory.output,
+                output_number=homekit_accessory.output_number,
             )
 
         self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))

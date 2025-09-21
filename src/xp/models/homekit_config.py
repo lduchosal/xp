@@ -1,10 +1,11 @@
-from typing import List
+from ipaddress import IPv6Address, IPv4Address
+from typing import List, Union
 
 import yaml
 from pydantic import BaseModel, IPvAnyAddress
 
 class NetworkConfig(BaseModel):
-    ip: IPvAnyAddress  # Validates IP addresses
+    ip: Union[IPvAnyAddress, IPv4Address, IPv6Address, str]  # Validates IP addresses
     port: int
 
 class RoomConfig(BaseModel):
@@ -18,8 +19,8 @@ class BridgeConfig(BaseModel):
 class HomekitAccessoryConfig(BaseModel):
     name: str
     id: str
-    serial_number: int
-    output: int
+    serial_number: str
+    output_number: int
     description: str
     service: str
 

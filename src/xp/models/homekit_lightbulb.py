@@ -20,16 +20,17 @@ class LightBulb(Accessory):
             version: str,
             manufacturer: str,
             model: str,
-            serial_number: int,
-            output: int
+            serial_number: str,
+            output_number: int
         ):
         super().__init__(driver, display_name)
 
         self.logger = logging.getLogger(__name__)
+        self.logger.info(f"Creating lightbulb {{ serial_number : %s, output_number: %s }}", serial_number, output_number)
 
         self.serial_number = serial_number
-        self.output = output
-        serial = f"{serial_number:010d}.{output:02d}"
+        self.output_number = output_number
+        serial = f"{serial_number}.{output_number:02d}"
 
         serv_light = self.add_preload_service('Lightbulb') # type: ignore
         self.set_info_service(
@@ -50,7 +51,7 @@ class LightBulb(Accessory):
             signal='accessory_set_on',
             sender=self,
             serial_number=self.serial_number,
-            oputput=self.output,
+            output_number=self.output_number,
             value=value,
         )
 
@@ -60,7 +61,7 @@ class LightBulb(Accessory):
             signal='accessory_get_on',
             sender=self,
             serial_number=self.serial_number,
-            oputput=self.output,
+            output_number=self.output_number,
         )
         # Return first response or default to True
         response = get_first_response(responses)

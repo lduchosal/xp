@@ -29,7 +29,7 @@ class HomekitModuleService:
         self.logger.debug(f"Module search by name '{name}': {'found' if module else 'not found'}")
         return module
 
-    def get_module_by_serial(self, serial_number: int) -> Optional[ConsonModuleConfig]:
+    def get_module_by_serial(self, serial_number: str) -> Optional[ConsonModuleConfig]:
         """Get a module by its serial number"""
         module = next((module for module in self.conson_modules_config.root if module.serial_number == serial_number), None)
         self.logger.debug(f"Module search by serial '{serial_number}': {'found' if module else 'not found'}")
@@ -50,19 +50,26 @@ class HomekitModuleService:
         dispatcher.connect(self._on_accessory_get_on, signal='accessory_get_on')
 
     def _outlet_set_outlet_in_use(self, sender, **kwargs):
-        pass
+        serial_number: str = kwargs.get('serial_number')
+        output_number: int = kwargs.get('output_number')
+        value: bool = kwargs.get('value')
+
+        self.logger.info(f"_outlet_set_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}, value: {value} }}")
 
     def _on_outlet_get_outlet_in_use(self, sender, **kwargs):
-        pass
+        serial_number: str = kwargs.get('serial_number')
+        output_number: int = kwargs.get('output_number')
+
+        self.logger.info(f"_on_outlet_get_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}}}")
 
     # noinspection PyUnusedLocal
     def _on_accessory_set_on(self, sender, **kwargs):
         """Handle accessory set_on events from PyDispatcher"""
-        serial_number: int = kwargs.get('serial_number')
-        output: int = kwargs.get('output')
+        serial_number: str = kwargs.get('serial_number')
+        output_number: int = kwargs.get('output_number')
         value: bool = kwargs.get('value')
 
-        self.logger.info(f"Module {serial_number}.{output}: {value}")
+        self.logger.info(f"_on_accessory_set_on {{ serial_number: {serial_number} output_number: {output_number} }}")
 
         module = self.get_module_by_serial(serial_number)
         if not module:
@@ -70,22 +77,22 @@ class HomekitModuleService:
             return
 
         action_type = ActionType.RELEASE
-        if value == "on":
+        if value:
             action_type = ActionType.PRESS
 
         self.output_service.send_action(
-            serial_number=f"{serial_number:010d}",
-            output_number=output,
+            serial_number=serial_number,
+            output_number=output_number,
             action_type=action_type
         )
 
     # noinspection PyUnusedLocal
     def _on_accessory_get_on(self, sender, **kwargs):
         """Handle accessory get_on events from PyDispatcher"""
-        serial_number: int = kwargs.get('serial_number')
-        output: int = kwargs.get('output')
+        serial_number: str = kwargs.get('serial_number')
+        output_number: int = kwargs.get('output_number')
 
-        self.logger.info(f"Module serial_number: {serial_number} output: {output}")
+        self.logger.info(f"_on_accessory_get_on {{ serial_number: {serial_number}, output_number: {output_number}}}")
 
         module = self.get_module_by_serial(serial_number)
         if not module:
@@ -98,6 +105,6 @@ class HomekitModuleService:
             return False
 
         result = self.telegram_output_service.parse_status_response(response.datapoint_telegram.raw_telegram)
-        return result[output]
+        return result[output_number]
 
 

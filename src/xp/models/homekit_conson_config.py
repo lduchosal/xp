@@ -4,7 +4,7 @@ from typing import List, Optional
 
 class ConsonModuleConfig(BaseModel):
     name: str
-    serial_number: int
+    serial_number: str
     module_type: str
     module_type_code: int
     link_number: int
