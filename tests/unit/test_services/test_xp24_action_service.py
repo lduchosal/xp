@@ -25,13 +25,13 @@ class TestXP24ActionService:
 
     def test_validate_output_number_invalid_range(self):
         """Test validate_output_number with invalid ranges."""
-        with pytest.raises(XPOutputError, match="Invalid input number: -1"):
+        with pytest.raises(XPOutputError, match="Invalid output number: -1"):
             self.service.validate_output_number(-1)
 
-        with pytest.raises(XPOutputError, match="Invalid input number: 500"):
+        with pytest.raises(XPOutputError, match="Invalid output number: 500"):
             self.service.validate_output_number(500)
 
-        with pytest.raises(XPOutputError, match="Invalid input number: 100"):
+        with pytest.raises(XPOutputError, match="Invalid output number: 100"):
             self.service.validate_output_number(100)
 
     def test_validate_serial_number_valid(self):
@@ -167,11 +167,11 @@ class TestXP24ActionService:
         result = self.service.format_status_summary(status)
 
         expected = (
-            "XP24 Input Status:\n"
-            "  Input 0: ON\n"
-            "  Input 1: OFF\n"
-            "  Input 2: ON\n"
-            "  Input 3: OFF"
+            "XP24 Output Status:\n"
+            "  Output 0: ON\n"
+            "  Output 1: OFF\n"
+            "  Output 2: ON\n"
+            "  Output 3: OFF"
         )
         assert result == expected
 
@@ -189,7 +189,7 @@ class TestXP24ActionService:
         result = self.service.format_action_summary(telegram)
 
         assert (
-            "XP Input: XP Input: Press (Make) on Input 1 for device 0020044964"
+            "XP Output: XP Output: Press (Make) on Input 1 for device 0020044964"
             in result
         )
         assert "Raw: <S0020044964F27D01AAFN>" in result

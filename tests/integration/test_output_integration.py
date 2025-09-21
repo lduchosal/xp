@@ -7,23 +7,23 @@ from xp.services.conbus_datapoint_service import ConbusDatapointService
 from xp.services.telegram_output_service import TelegramOutputService, XPOutputError
 
 
-class TestXPInputIntegration:
+class TestOutputIntegration:
     """Integration tests for XP24 action functionality."""
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.input_service = TelegramOutputService()
+        self.output_service = TelegramOutputService()
         self.conbus_service = ConbusDatapointService()
 
     def test_end_to_end_action_generation_and_parsing(self):
         """Test complete flow: generate telegram, parse it back."""
         # Generate action telegram
-        original_telegram = self.input_service.generate_system_action_telegram(
+        original_telegram = self.output_service.generate_system_action_telegram(
             "0020044964", 2, ActionType.RELEASE
         )
 
         # Parse the generated telegram
-        parsed = self.input_service.parse_system_telegram(original_telegram)
+        parsed = self.output_service.parse_system_telegram(original_telegram)
 
         # Verify parsed data matches original
         assert parsed.serial_number == "0020044964"
@@ -35,7 +35,7 @@ class TestXPInputIntegration:
     def test_end_to_end_status_generation_and_parsing(self):
         """Test complete flow: generate status query, parse response."""
         # Generate status query telegram
-        status_telegram = self.input_service.generate_system_status_telegram(
+        status_telegram = self.output_service.generate_system_status_telegram(
             "0020044964"
         )
 
@@ -46,22 +46,22 @@ class TestXPInputIntegration:
 
         # Simulate status response and parse
         mock_response = "<R0020044964F02D12xxxx1010FJ>"
-        status = self.input_service.parse_status_response(mock_response)
+        status = self.output_service.parse_status_response(mock_response)
 
         expected = {0: False, 1: True, 2: False, 3: True}
         assert status == expected
 
-    def test_all_input_combinations(self):
-        """Test telegram generation and parsing for all input combinations."""
+    def test_all_output_combinations(self):
+        """Test telegram generation and parsing for all output combinations."""
         for output_number in range(4):
             for action in [ActionType.PRESS, ActionType.RELEASE]:
                 # Generate telegram
-                telegram = self.input_service.generate_system_action_telegram(
+                telegram = self.output_service.generate_system_action_telegram(
                     "1234567890", output_number, action
                 )
 
                 # Parse it back
-                parsed = self.input_service.parse_system_telegram(telegram)
+                parsed = self.output_service.parse_system_telegram(telegram)
 
                 # Verify consistency
                 assert parsed.serial_number == "1234567890"
@@ -75,7 +75,7 @@ class TestXPInputIntegration:
             binary_str = format(status_bits, "04b")
             mock_response = f"<R0020044964F02D12xxxx{binary_str}FJ>"
 
-            status = self.input_service.parse_status_response(mock_response)
+            status = self.output_service.parse_status_response(mock_response)
 
             # Verify each bit is correctly parsed
             for i in range(4):
@@ -85,17 +85,17 @@ class TestXPInputIntegration:
     def test_checksum_validation_integration(self):
         """Test checksum validation with real checksums."""
         # Generate telegram with valid checksum
-        valid_telegram = self.input_service.generate_system_action_telegram(
+        valid_telegram = self.output_service.generate_system_action_telegram(
             "0020044964", 1, ActionType.PRESS
         )
 
         # Parse and verify checksum is valid
-        parsed = self.input_service.parse_system_telegram(valid_telegram)
+        parsed = self.output_service.parse_system_telegram(valid_telegram)
         assert parsed.checksum_validated is True
 
         # Create telegram with invalid checksum
         invalid_telegram = valid_telegram[:-3] + "XX>"
-        parsed_invalid = self.input_service.parse_system_telegram(invalid_telegram)
+        parsed_invalid = self.output_service.parse_system_telegram(invalid_telegram)
         assert parsed_invalid.checksum_validated is False
 
     def test_telegram_service_integration(self):
@@ -105,7 +105,7 @@ class TestXPInputIntegration:
         telegram_service = TelegramService()
 
         # Generate XP24 action telegram
-        xp24_telegram = self.input_service.generate_system_action_telegram(
+        xp24_telegram = self.output_service.generate_system_action_telegram(
             "0020044964", 0, ActionType.PRESS
         )
 
@@ -120,19 +120,19 @@ class TestXPInputIntegration:
 
     def test_error_handling_integration(self):
         """Test error handling across service layers."""
-        # Test invalid input number
-        with pytest.raises(XPOutputError, match="Invalid input number: 100"):
-            self.input_service.generate_system_action_telegram(
+        # Test invalid output number
+        with pytest.raises(XPOutputError, match="Invalid output number: 100"):
+            self.output_service.generate_system_action_telegram(
                 "0020044964", 100, ActionType.PRESS
             )
 
         # Test invalid serial number
         with pytest.raises(XPOutputError, match="Invalid serial number: 123"):
-            self.input_service.generate_system_status_telegram("123")
+            self.output_service.generate_system_status_telegram("123")
 
         # Test invalid telegram parsing
         with pytest.raises(XPOutputError, match="Invalid XP24 action telegram format"):
-            self.input_service.parse_system_telegram("<E14L00I02MAK>")
+            self.output_service.parse_system_telegram("<E14L00I02MAK>")
 
     def test_performance_requirements(self):
         """Test performance characteristics."""
@@ -141,7 +141,7 @@ class TestXPInputIntegration:
         # Test telegram generation performance
         start_time = time.time()
         for _ in range(1000):
-            self.input_service.generate_system_action_telegram(
+            self.output_service.generate_system_action_telegram(
                 "0020044964", 0, ActionType.PRESS
             )
         generation_time = time.time() - start_time
@@ -153,7 +153,7 @@ class TestXPInputIntegration:
         test_telegram = "<S0020044964F27D01AAFN>"
         start_time = time.time()
         for _ in range(1000):
-            self.input_service.parse_system_telegram(test_telegram)
+            self.output_service.parse_system_telegram(test_telegram)
         parsing_time = time.time() - start_time
 
         # Should parse 1000 telegrams in under 1 second

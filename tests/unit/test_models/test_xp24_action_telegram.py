@@ -163,7 +163,7 @@ class TestXP24ActionTelegram:
             raw_telegram="<S0020044964F27D03ABFN>",
         )
 
-        expected = "XP Input: Release (Break) on Input 3 for device 0020044964"
+        expected = "XP Output: Release (Break) on Input 3 for device 0020044964"
         assert str(telegram) == expected
 
     def test_str_representation_unknown_action(self):
@@ -176,5 +176,5 @@ class TestXP24ActionTelegram:
             raw_telegram="<S0020044964F27D00AAFN>",
         )
 
-        expected = "XP Input: Unknown Action on Input 0 for device 0020044964"
+        expected = "XP Output: Unknown Action on Input 0 for device 0020044964"
         assert str(telegram) == expected

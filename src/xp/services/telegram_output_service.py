@@ -1,4 +1,4 @@
-"""XP input service for handling XP input device operations."""
+"""XP output service for handling XP output device operations."""
 
 import re
 from typing import Dict
@@ -25,7 +25,7 @@ class TelegramOutputService:
     status queries, and action command generation.
     """
 
-    MAX_INPUTS = 99
+    MAX_OUTPUTS = 99
 
     telegram_service = TelegramService()
 
@@ -34,28 +34,28 @@ class TelegramOutputService:
     XP_ACK_NAK_PATTERN = re.compile(r"^<R(\d{10})F(1[89])D([A-Z0-9]{2})>$")
 
     def __init__(self):
-        """Initialize the XP input service"""
+        """Initialize the XP output service"""
         pass
 
     def validate_output_number(self, output_number: int) -> None:
         """
-        Validate XP24 input number according to architecture constraints.
+        Validate XP24 output number according to architecture constraints.
 
         Args:
-            output_number: Input number to validate (0-3)
+            output_number: Output number to validate (0-3)
 
         Raises:
-            XPInputError: If input number is invalid
+            XPOutputError: If output number is invalid
         """
         if not isinstance(output_number, int):
             raise XPOutputError(
-                f"Input number must be integer, got {type(output_number)}"
+                f"Output number must be integer, got {type(output_number)}"
             )
 
-        if not (0 <= output_number <= self.MAX_INPUTS):
+        if not (0 <= output_number <= self.MAX_OUTPUTS):
             raise XPOutputError(
-                f"Invalid input number: {output_number}. "
-                f"XP24 supports inputs 0-{self.MAX_INPUTS}"
+                f"Invalid output number: {output_number}. "
+                f"XP24 supports outputs 0-{self.MAX_OUTPUTS}"
             )
 
     @staticmethod
@@ -88,7 +88,7 @@ class TelegramOutputService:
 
         Args:
             serial_number: Target module serial number
-            output_number: Input number (0-3)
+            output_number: Output number (0-3)
             action: Action type (PRESS/RELEASE)
 
         Returns:
@@ -97,7 +97,7 @@ class TelegramOutputService:
         Raises:
             XP24ActionError: If parameters are invalid
         """
-        # Validate inputs according to architecture constraints
+        # Validate outputs according to architecture constraints
         self.validate_serial_number(serial_number)
         self.validate_output_number(output_number)
 
@@ -118,7 +118,7 @@ class TelegramOutputService:
 
     def generate_system_status_telegram(self, serial_number: str) -> str:
         """
-        Generate XP input status query telegram.
+        Generate XP output status query telegram.
 
         Args:
             serial_number: Target module serial number
@@ -127,9 +127,9 @@ class TelegramOutputService:
             Complete status query telegram string
 
         Raises:
-            XPInputError: If serial number is invalid
+            XPOutputError: If serial number is invalid
         """
-        # Validate inputs
+        # Validate outputs
         self.validate_serial_number(serial_number)
         function_code = SystemFunction.READ_DATAPOINT.value
         datapoint_code = DataPointType.MODULE_OUTPUT_STATE.value
@@ -146,16 +146,16 @@ class TelegramOutputService:
 
     def parse_reply_telegram(self, raw_telegram: str) -> OutputTelegram:
         """
-        Parse a raw XP input response telegram string.
+        Parse a raw XP output response telegram string.
 
         Args:
             raw_telegram: The raw telegram string (e.g., "<R0020042796F18DFF>")
 
         Returns:
-            XPInputTelegram object with parsed data
+            XPOutputTelegram object with parsed data
 
         Raises:
-            XPInputError: If telegram format is invalid
+            XPOutputError: If telegram format is invalid
         """
         if not raw_telegram:
             raise XPOutputError("Empty telegram string")
@@ -194,16 +194,16 @@ class TelegramOutputService:
 
     def parse_system_telegram(self, raw_telegram: str) -> OutputTelegram:
         """
-        Parse a raw XP input telegram string.
+        Parse a raw XP output telegram string.
 
         Args:
             raw_telegram: The raw telegram string (e.g., "<S0020044964F27D00AAFN>")
 
         Returns:
-            XPInputTelegram object with parsed data
+            XPOutputTelegram object with parsed data
 
         Raises:
-            XPInputError: If telegram format is invalid
+            XPOutputError: If telegram format is invalid
         """
         if not raw_telegram:
             raise XPOutputError("Empty telegram string")
@@ -219,7 +219,7 @@ class TelegramOutputService:
             action_code = match.group(3)
             checksum = match.group(4)
 
-            # Validate input number
+            # Validate output number
             self.validate_output_number(output_number)
 
             # Parse action type
@@ -247,13 +247,13 @@ class TelegramOutputService:
     @staticmethod
     def parse_status_response(raw_telegram: str) -> Dict[int, bool]:
         """
-        Parse XP24 status response telegram to extract input states.
+        Parse XP24 status response telegram to extract output states.
 
         Args:
             raw_telegram: Raw reply telegram (e.g., "<R0020044964F02D12xxxx1110FJ>")
 
         Returns:
-            Dictionary mapping input numbers (0-3) to their states (True=ON, False=OFF)
+            Dictionary mapping output numbers (0-3) to their states (True=ON, False=OFF)
 
         Raises:
             XP24ActionError: If telegram format is invalid
@@ -270,7 +270,7 @@ class TelegramOutputService:
         if len(status_bits) != 4:
             raise XPOutputError(f"Invalid status bits length: {status_bits}")
 
-        # Map each bit to input state
+        # Map each bit to output state
         status = {}
         for i in range(4):
             status[3 - i] = status_bits[i] == "1"
@@ -283,15 +283,15 @@ class TelegramOutputService:
         Format status dictionary into human-readable summary.
 
         Args:
-            status: Dictionary mapping input numbers to states
+            status: Dictionary mapping output numbers to states
 
         Returns:
             Formatted status summary string
         """
-        lines = ["XP24 Input Status:"]
-        for input_num in sorted(status.keys()):
-            state = "ON" if status[input_num] else "OFF"
-            lines.append(f"  Input {input_num}: {state}")
+        lines = ["XP24 Output Status:"]
+        for output_num in sorted(status.keys()):
+            state = "ON" if status[output_num] else "OFF"
+            lines.append(f"  Output {output_num}: {state}")
 
         return "\n".join(lines)
 
@@ -312,7 +312,7 @@ class TelegramOutputService:
             checksum_status = f" ({status_indicator})"
 
         return (
-            f"XP Input: {telegram}\n"
+            f"XP Output: {telegram}\n"
             f"Raw: {telegram.raw_telegram}\n"
             f"Timestamp: {telegram.timestamp}\n"
             f"Checksum: {telegram.checksum}{checksum_status}"

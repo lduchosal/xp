@@ -1,4 +1,4 @@
-"""XP input telegram model for console bus communication.
+"""XP output telegram model for console bus communication.
 
 XP output telegrams are used for controlling relay inputs on XP modules.
 Each XP24 module has 4 inputs (0-3) that can be pressed or released.
@@ -18,7 +18,7 @@ from .telegram import Telegram
 @dataclass
 class OutputTelegram(Telegram):
     """
-    Represents a parsed XP input telegram from the console bus.
+    Represents a parsed XP output telegram from the console bus.
 
     Format: <S{serial_number}F27D{input:02d}{action}{checksum}>
     Examples: <S0020044964F27D00AAFN>
@@ -67,7 +67,7 @@ class OutputTelegram(Telegram):
     def __str__(self) -> str:
         """Human-readable string representation"""
         return (
-            f"XP Input: {self.action_description} "
+            f"XP Output: {self.action_description} "
             f"on {self.input_description} "
             f"for device {self.serial_number}"
         )
