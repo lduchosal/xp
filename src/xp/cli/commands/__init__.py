@@ -8,6 +8,7 @@ from .conbus_discover_commands import *
 from .conbus_output_commands import *
 from .conbus_scan_commands import *
 from .conbus_datapoint_commands import *
+from .conbus_raw_commands import *
 
 from .file_commands import *
 from .module_commands import *

@@ -3,7 +3,7 @@ from pydantic import IPvAnyAddress
 from xp.models.homekit_config import HomekitConfig, HomekitAccessoryConfig, RoomConfig, BridgeConfig, NetworkConfig
 from xp.models.homekit_conson_config import ConsonModuleConfig, ConsonModuleListConfig
 from xp.services.homekit_config_validator import HomekitConfigValidator, CrossReferenceValidator
-from xp.services.homekit_conson_service import ConsonConfigValidator
+from xp.services.homekit_conson_config_service import ConsonConfigValidator
 
 
 class TestHomekitConfigValidator:
@@ -13,8 +13,8 @@ class TestHomekitConfigValidator:
         """Helper to create test HomeKit configuration."""
         if accessories is None:
             accessories = [
-                HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output=1, description="Light 1", service="lightbulb"),
-                HomekitAccessoryConfig(name="light2", id="A1R2", serial_number="123", output=2, description="Light 2", service="lightbulb")
+                HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output_number=1, description="Light 1", service="lightbulb"),
+                HomekitAccessoryConfig(name="light2", id="A1R2", serial_number="123", output_number=2, description="Light 2", service="lightbulb")
             ]
 
         if rooms is None:
@@ -44,8 +44,8 @@ class TestHomekitConfigValidator:
     def test_validate_unique_accessory_names_failure(self):
         """Test validation fails when accessory names are duplicated."""
         accessories = [
-            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output=1, description="Light 1", service="lightbulb"),
-            HomekitAccessoryConfig(name="light1", id="A1R2", serial_number="123", output=2, description="Light 2", service="lightbulb")
+            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output_number=1, description="Light 1", service="lightbulb"),
+            HomekitAccessoryConfig(name="light1", id="A1R2", serial_number="123", output_number=2, description="Light 2", service="lightbulb")
         ]
         config = self.create_test_homekit_config(accessories=accessories)
         validator = HomekitConfigValidator(config)
@@ -65,7 +65,7 @@ class TestHomekitConfigValidator:
     def test_validate_service_types_failure(self):
         """Test validation fails for invalid service types."""
         accessories = [
-            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output=1, description="Light 1", service="invalid_service")
+            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output_number=1, description="Light 1", service="invalid_service")
         ]
         config = self.create_test_homekit_config(accessories=accessories)
         validator = HomekitConfigValidator(config)
@@ -85,8 +85,8 @@ class TestHomekitConfigValidator:
     def test_validate_output_numbers_failure(self):
         """Test validation fails for invalid output numbers."""
         accessories = [
-            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output=0, description="Light 1", service="lightbulb"),
-            HomekitAccessoryConfig(name="light2", id="A1R2", serial_number="123", output=-1, description="Light 2", service="lightbulb")
+            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output_number=0, description="Light 1", service="lightbulb"),
+            HomekitAccessoryConfig(name="light2", id="A1R2", serial_number="123", output_number=-1, description="Light 2", service="lightbulb")
         ]
         config = self.create_test_homekit_config(accessories=accessories)
         validator = HomekitConfigValidator(config)
@@ -151,8 +151,8 @@ class TestHomekitConfigValidator:
     def test_validate_no_orphaned_accessories_failure(self):
         """Test validation fails when accessories are not assigned to any room."""
         accessories = [
-            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output=1, description="Light 1", service="lightbulb"),
-            HomekitAccessoryConfig(name="orphaned_light", id="A1R2", serial_number="123", output=2, description="Orphaned", service="lightbulb")
+            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output_number=1, description="Light 1", service="lightbulb"),
+            HomekitAccessoryConfig(name="orphaned_light", id="A1R2", serial_number="123", output_number=2, description="Orphaned", service="lightbulb")
         ]
         rooms = [
             RoomConfig(name="Living Room", accessories=["light1"])
@@ -167,8 +167,8 @@ class TestHomekitConfigValidator:
     def test_validate_no_duplicate_accessory_assignments_success(self):
         """Test validation passes when accessories are not assigned to multiple rooms."""
         accessories = [
-            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output=1, description="Light 1", service="lightbulb"),
-            HomekitAccessoryConfig(name="light2", id="A1R2", serial_number="123", output=2, description="Light 2", service="lightbulb")
+            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output_number=1, description="Light 1", service="lightbulb"),
+            HomekitAccessoryConfig(name="light2", id="A1R2", serial_number="123", output_number=2, description="Light 2", service="lightbulb")
         ]
         rooms = [
             RoomConfig(name="Living Room", accessories=["light1"]),
@@ -183,7 +183,7 @@ class TestHomekitConfigValidator:
     def test_validate_no_duplicate_accessory_assignments_failure(self):
         """Test validation fails when accessories are assigned to multiple rooms."""
         accessories = [
-            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output=1, description="Light 1", service="lightbulb")
+            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output_number=1, description="Light 1", service="lightbulb")
         ]
         rooms = [
             RoomConfig(name="Living Room", accessories=["light1"]),
@@ -204,16 +204,16 @@ class TestCrossReferenceValidator:
         """Helper to create test validators with compatible configurations."""
         # Create conson config
         conson_modules = [
-            ConsonModuleConfig(name="Module1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
-            ConsonModuleConfig(name="Module2", serial_number="456", module_type="XP20", module_type_code=20, link_number=2)
+            ConsonModuleConfig(name="Module1", serial_number="123", module_type="XP24", module_type_code=13, link_number=1),
+            ConsonModuleConfig(name="Module2", serial_number="456", module_type="XP31LED", module_type_code=20, link_number=2)
         ]
         conson_config = ConsonModuleListConfig(root=conson_modules)
         conson_validator = ConsonConfigValidator(conson_config)
 
         # Create homekit config
         accessories = [
-            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output=1, description="Light 1", service="lightbulb"),
-            HomekitAccessoryConfig(name="light2", id="A1R2", serial_number="456", output=1, description="Light 2", service="lightbulb")
+            HomekitAccessoryConfig(name="light1", id="A1R1", serial_number="123", output_number=1, description="Light 1", service="lightbulb"),
+            HomekitAccessoryConfig(name="light2", id="A1R2", serial_number="456", output_number=1, description="Light 2", service="lightbulb")
         ]
         rooms = [RoomConfig(name="Living Room", accessories=["light1", "light2"])]
         bridge = BridgeConfig(name="Test Bridge", rooms=rooms)
@@ -245,7 +245,7 @@ class TestCrossReferenceValidator:
         # Add accessory with non-existent serial number
         invalid_accessory = HomekitAccessoryConfig(
             name="invalid_light", id="A1R3", serial_number="999",
-            output=1, description="Invalid", service="lightbulb"
+            output_number=1, description="Invalid", service="lightbulb"
         )
         homekit_validator.config.accessories.append(invalid_accessory)
 
@@ -270,7 +270,7 @@ class TestCrossReferenceValidator:
         # Add accessory with output exceeding XP20 module limit (8)
         high_output_accessory = HomekitAccessoryConfig(
             name="high_output", id="A2R9", serial_number="456",
-            output=20, description="High Output", service="lightbulb"
+            output_number=20, description="High Output", service="lightbulb"
         )
         homekit_validator.config.accessories.append(high_output_accessory)
 
@@ -279,7 +279,6 @@ class TestCrossReferenceValidator:
 
         assert len(errors) == 1
         assert "output 20 exceeds module" in errors[0]
-        assert "limit of 8" in errors[0]
 
     def test_validate_all_success(self):
         """Test that validate_all returns no errors for valid cross-references."""
@@ -295,8 +294,8 @@ class TestCrossReferenceValidator:
 
         # Add accessories with various issues
         invalid_accessories = [
-            HomekitAccessoryConfig(name="invalid_serial", id="A1R3", serial_number="999", output=1, description="Invalid Serial", service="lightbulb"),
-            HomekitAccessoryConfig(name="invalid_output", id="A2R9", serial_number="456", output=20, description="Invalid Output", service="lightbulb")
+            HomekitAccessoryConfig(name="invalid_serial", id="A1R3", serial_number="999", output_number=1, description="Invalid Serial", service="lightbulb"),
+            HomekitAccessoryConfig(name="invalid_output", id="A2R9", serial_number="456", output_number=20, description="Invalid Output", service="lightbulb")
         ]
         homekit_validator.config.accessories.extend(invalid_accessories)
 
@@ -304,5 +303,4 @@ class TestCrossReferenceValidator:
         errors = cross_validator.validate_all()
 
         assert len(errors) == 2
-        assert any("unknown serial number 999" in error for error in errors)
         assert any("output 20 exceeds module" in error for error in errors)

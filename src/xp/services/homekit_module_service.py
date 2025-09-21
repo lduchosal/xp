@@ -49,6 +49,7 @@ class HomekitModuleService:
         dispatcher.connect(self._on_accessory_set_on, signal='accessory_set_on')
         dispatcher.connect(self._on_accessory_get_on, signal='accessory_get_on')
 
+    # noinspection PyUnusedLocal
     def _outlet_set_outlet_in_use(self, sender, **kwargs):
         serial_number: str = kwargs.get('serial_number')
         output_number: int = kwargs.get('output_number')
@@ -56,6 +57,7 @@ class HomekitModuleService:
 
         self.logger.info(f"_outlet_set_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}, value: {value} }}")
 
+    # noinspection PyUnusedLocal
     def _on_outlet_get_outlet_in_use(self, sender, **kwargs):
         serial_number: str = kwargs.get('serial_number')
         output_number: int = kwargs.get('output_number')

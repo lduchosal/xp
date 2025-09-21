@@ -53,11 +53,11 @@ class TestXPInputIntegration:
 
     def test_all_input_combinations(self):
         """Test telegram generation and parsing for all input combinations."""
-        for input_num in range(4):
+        for output_number in range(4):
             for action in [ActionType.PRESS, ActionType.RELEASE]:
                 # Generate telegram
                 telegram = self.input_service.generate_system_action_telegram(
-                    "1234567890", input_num, action
+                    "1234567890", output_number, action
                 )
 
                 # Parse it back
@@ -65,7 +65,7 @@ class TestXPInputIntegration:
 
                 # Verify consistency
                 assert parsed.serial_number == "1234567890"
-                assert parsed.output_number == input_num
+                assert parsed.output_number == output_number
                 assert parsed.action_type == action
                 assert parsed.checksum_validated is True
 

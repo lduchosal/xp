@@ -1,7 +1,7 @@
 from typing import List, Set
 
 from xp.models.homekit_config import HomekitConfig
-from xp.services.homekit_conson_service import ConsonConfigValidator
+from xp.services.homekit_conson_config_service import ConsonConfigValidator
 
 
 class HomekitConfigValidator:
@@ -38,8 +38,8 @@ class HomekitConfigValidator:
         errors = []
 
         for accessory in self.config.accessories:
-            if accessory.output < 0:
-                errors.append(f"Invalid output number {accessory.output} for accessory '{accessory.name}'. Must be positive.")
+            if accessory.output_number < 0:
+                errors.append(f"Invalid output number {accessory.output_number} for accessory '{accessory.name}'. Must be positive.")
 
         return errors
 
@@ -148,8 +148,8 @@ class CrossReferenceValidator:
 
                 max_outputs = output_limits.get(module.module_type, 4)  # Default to 8
 
-                if accessory.output > max_outputs:
-                    errors.append(f"Accessory '{accessory.name}' output {accessory.output} exceeds module '{module.name}' ({module.module_type}) limit of {max_outputs}")
+                if accessory.output_number > max_outputs:
+                    errors.append(f"Accessory '{accessory.name}' output {accessory.output_number} exceeds module '{module.name}' ({module.module_type}) limit of {max_outputs}")
 
             except ValueError:
                 # Serial number validation error already caught by validate_serial_number_references

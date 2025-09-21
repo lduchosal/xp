@@ -38,7 +38,7 @@ class TestHomekitConfigIntegration:
             {
                 'name': 'ModuleA',
                 'serial_number': '1234567890',
-                'module_type': 'XP130',
+                'module_type': 'XP24',
                 'module_type_code': 13,
                 'link_number': 1,
                 'module_number': 1,
@@ -50,7 +50,7 @@ class TestHomekitConfigIntegration:
             {
                 'name': 'ModuleB',
                 'serial_number': '9876543210',
-                'module_type': 'XP20',
+                'module_type': 'XP24',
                 'module_type_code': 20,
                 'link_number': 2,
                 'module_number': 2,
@@ -87,7 +87,7 @@ class TestHomekitConfigIntegration:
                     'name': 'main_light',
                     'id': 'A1R1',
                     'serial_number': '1234567890',
-                    'output': 1,
+                    'output_number': 1,
                     'description': 'Main Living Room Light',
                     'service': 'lightbulb'
                 },
@@ -95,7 +95,7 @@ class TestHomekitConfigIntegration:
                     'name': 'side_lamp',
                     'id': 'A1R2',
                     'serial_number': '1234567890',
-                    'output': 2,
+                    'output_number': 2,
                     'description': 'Side Lamp',
                     'service': 'lightbulb'
                 },
@@ -103,7 +103,7 @@ class TestHomekitConfigIntegration:
                     'name': 'kitchen_light',
                     'id': 'A2R1',
                     'serial_number': '9876543210',
-                    'output': 1,
+                    'output_number': 1,
                     'description': 'Kitchen Light',
                     'service': 'lightbulb'
                 }
@@ -182,7 +182,7 @@ class TestHomekitConfigIntegration:
                     'name': 'main_light',
                     'id': 'A1R1',
                     'serial_number': '9999999999',  # Non-existent serial
-                    'output': 0,  # Invalid output
+                    'output_number': 0,  # Invalid output
                     'description': 'Main Light',
                     'service': 'invalid_service'  # Invalid service
                 },
@@ -190,7 +190,7 @@ class TestHomekitConfigIntegration:
                     'name': 'main_light',  # Duplicate accessory name
                     'id': 'A1R2',
                     'serial_number': '1234567890',
-                    'output': 50,  # Output exceeds module capability
+                    'output_number': 50,  # Output exceeds module capability
                     'description': 'Duplicate Light',
                     'service': 'lightbulb'
                 },
@@ -198,7 +198,7 @@ class TestHomekitConfigIntegration:
                     'name': 'orphaned_light',  # Not assigned to any room
                     'id': 'A1R3',
                     'serial_number': '1234567890',
-                    'output': 3,
+                    'output_number': 3,
                     'description': 'Orphaned Light',
                     'service': 'lightbulb'
                 }
