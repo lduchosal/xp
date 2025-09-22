@@ -43,8 +43,8 @@ src/xp/services/base_server_service.py
 src/xp/services/blink_service.py
 src/xp/services/checksum_service.py
 src/xp/services/conbus_datapoint_service.py
-src/xp/services/conbus_reverse_proxy_service.py
-src/xp/services/conbus_server_service.py
+src/xp/services/reverse_proxy_service.py
+src/xp/services/server_service.py
 src/xp/services/cp20_server_service.py
 src/xp/services/discover_service.py
 src/xp/services/output_service.py

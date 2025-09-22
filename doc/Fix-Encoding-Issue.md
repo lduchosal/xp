@@ -40,7 +40,7 @@ The received data contains extended characters (specifically 0xa7 = § symbol) t
 ## Affected Files
 
 - `/src/xp/services/conbus_datapoint_service.py:266`
-- `/src/xp/services/conbus_server_service.py:135`
+- `/src/xp/services/server_service.py:135`
 - `/tests/integration/test_conbus_client_send_integration.py:70`
 
 ## Proposed Solution

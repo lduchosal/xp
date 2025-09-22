@@ -8,9 +8,9 @@ from click_help_colors import HelpColorsGroup
 
 from typing import Optional
 
-from ...services.conbus_reverse_proxy_service import (
-    ConbusReverseProxyService,
-    ConbusReverseProxyError,
+from ...services.reverse_proxy_service import (
+    ReverseProxyService,
+    ReverseProxyError,
 )
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
@@ -18,7 +18,7 @@ from ..utils.error_handlers import CLIErrorHandler
 
 
 # Global proxy instance
-global_proxy_instance: Optional[ConbusReverseProxyService] = None
+global_proxy_instance: Optional[ReverseProxyService] = None
 
 
 @click.group(name="rp", cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
@@ -35,7 +35,7 @@ def reverse_proxy():
 )
 @click.option("--config", "-c", default="rp.yml", help="Configuration file path")
 
-@handle_service_errors(ConbusReverseProxyError)
+@handle_service_errors(ReverseProxyError)
 def start_proxy(port: int, config: str):
     """
     Start the Conbus reverse proxy server.
@@ -63,7 +63,7 @@ def start_proxy(port: int, config: str):
             raise SystemExit(1)
 
         # Create proxy instance
-        global_proxy_instance = ConbusReverseProxyService(
+        global_proxy_instance = ReverseProxyService(
             config_path=config, listen_port=port
         )
 
@@ -84,7 +84,7 @@ def start_proxy(port: int, config: str):
         if result.success:
             global_proxy_instance.run_blocking()
 
-    except ConbusReverseProxyError as e:
+    except ReverseProxyError as e:
         CLIErrorHandler.handle_service_error(e, "reverse proxy startup", {"port": port, "config": config})
     except KeyboardInterrupt:
         shutdown_response = {
@@ -96,7 +96,7 @@ def start_proxy(port: int, config: str):
 
 @reverse_proxy.command("stop")
 
-@handle_service_errors(ConbusReverseProxyError)
+@handle_service_errors(ReverseProxyError)
 def stop_proxy():
     """
     Stop the running Conbus reverse proxy server.
@@ -122,7 +122,7 @@ def stop_proxy():
 
         click.echo(json.dumps(result.to_dict(), indent=2))
 
-    except ConbusReverseProxyError as e:
+    except ReverseProxyError as e:
         CLIErrorHandler.handle_service_error(e, "reverse proxy stop")
 
 

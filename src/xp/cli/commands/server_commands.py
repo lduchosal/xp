@@ -5,14 +5,14 @@ import click
 import json
 from click_help_colors import HelpColorsGroup
 
-from ...services.conbus_server_service import ConbusServerService, ConbusServerError
+from ...services.server_service import ServerService, ServerError
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import ServerErrorHandler
 
 
 # Global server instance
-_server_instance: Optional[ConbusServerService] = None
+_server_instance: Optional[ServerService] = None
 
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
@@ -29,7 +29,7 @@ def server():
 )
 @click.option("--config", "-c", default="config.yml", help="Configuration file path")
 
-@handle_service_errors(ConbusServerError)
+@handle_service_errors(ServerError)
 def start_server(port: int, config: str):
     """
     Start the Conbus emulator server.
@@ -53,7 +53,7 @@ def start_server(port: int, config: str):
             raise SystemExit(1)
 
         # Create and start server
-        _server_instance = ConbusServerService(config_path=config, port=port)
+        _server_instance = ServerService(config_path=config, port=port)
 
         status = _server_instance.get_server_status()
         click.echo(json.dumps(status, indent=2))
@@ -61,7 +61,7 @@ def start_server(port: int, config: str):
         # This will block until server is stopped
         _server_instance.start_server()
 
-    except ConbusServerError as e:
+    except ServerError as e:
         ServerErrorHandler.handle_server_startup_error(e, port, config)
     except KeyboardInterrupt:
         shutdown_response = {"success": True, "message": "Server shutdown by user"}
@@ -70,7 +70,7 @@ def start_server(port: int, config: str):
 
 @server.command("stop")
 
-@handle_service_errors(ConbusServerError)
+@handle_service_errors(ServerError)
 def stop_server():
     """
     Stop the running Conbus emulator server.
@@ -92,7 +92,7 @@ def stop_server():
         response = {"success": True, "message": "Server stopped successfully"}
         click.echo(json.dumps(response, indent=2))
 
-    except ConbusServerError as e:
+    except ServerError as e:
         ServerErrorHandler.handle_server_startup_error(e, 0, "")
 
 

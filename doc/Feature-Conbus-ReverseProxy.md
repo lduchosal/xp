@@ -59,7 +59,7 @@ HH:MM:SS,mmm [PROXY→CLIENT] <telegram>
 ## Implementation Requirements
 
 ### Core Components
-- **services/conbus_reverse_proxy_service.py**: Main proxy implementation
+- **services/reverse_proxy_service.py**: Main proxy implementation
   - TCP server socket management
   - Client connection handling
   - Server connection establishment

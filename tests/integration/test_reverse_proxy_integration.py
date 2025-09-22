@@ -8,10 +8,10 @@ import os
 
 import pytest
 
-from xp.services.conbus_reverse_proxy_service import ConbusReverseProxyService
+from xp.services.reverse_proxy_service import ReverseProxyService
 
 
-class MockConbusServer:
+class MockServer:
     """Mock Conbus server for testing reverse proxy integration"""
 
     def __init__(self, port: int):
@@ -84,7 +84,7 @@ class TestReverseProxyIntegration:
         self.server_port = 19002
 
         # Create mock server
-        self.mock_server = MockConbusServer(self.server_port)
+        self.mock_server = MockServer(self.server_port)
 
         # Create temporary config for proxy
         self.temp_config = tempfile.NamedTemporaryFile(
@@ -101,7 +101,7 @@ conbus:
         self.temp_config.close()
 
         # Create reverse proxy
-        self.proxy = ConbusReverseProxyService(
+        self.proxy = ReverseProxyService(
             config_path=self.temp_config.name, listen_port=self.proxy_port
         )
 
@@ -292,7 +292,7 @@ class TestReverseProxyErrorHandling:
 
         try:
             # Try to start proxy on the same port
-            proxy = ConbusReverseProxyService(listen_port=19003)
+            proxy = ReverseProxyService(listen_port=19003)
             result = proxy.start_proxy()
 
             # Should fail due to port conflict
@@ -321,7 +321,7 @@ conbus:
         temp_config.close()
 
         try:
-            proxy = ConbusReverseProxyService(
+            proxy = ReverseProxyService(
                 config_path=temp_config.name, listen_port=19004
             )
 

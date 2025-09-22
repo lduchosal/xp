@@ -4,7 +4,7 @@ This module provides standard checksum calculation functions for protocol
 communication compatibility, including XOR checksum and IEEE 802.3 CRC32.
 Implemented for interoperability purposes under fair use provisions.
 
-Copyright (c) 2025 lduchosal
+Copyright (c) 2025 ld
 Licensed under MIT License - see LICENSE file for details.
 """
 

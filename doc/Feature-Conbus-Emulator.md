@@ -66,7 +66,7 @@ For each configured device:
 ## Implementation Architecture
 
 ### Services
-- **services/conbus_server_service.py**: Main TCP server implementation
+- **services/server_service.py**: Main TCP server implementation
   - Manages TCP socket lifecycle
   - Handles client connections
   - Parses Discover Request telegrams

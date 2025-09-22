@@ -1,4 +1,4 @@
-"""Unit tests for ConbusReverseProxyService."""
+"""Unit tests for ReverseProxyService."""
 
 import os
 import socket
@@ -7,14 +7,14 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from xp.services.conbus_reverse_proxy_service import (
-    ConbusReverseProxyService,
-    ConbusReverseProxyError,
+from xp.services.reverse_proxy_service import (
+    ReverseProxyService,
+    ReverseProxyError,
 )
 
 
-class TestConbusReverseProxyService:
-    """Test cases for ConbusReverseProxyService"""
+class TestReverseProxyService:
+    """Test cases for ReverseProxyService"""
 
     def setup_method(self):
         """Set up test fixtures"""
@@ -32,7 +32,7 @@ conbus:
         )
         self.temp_config.close()
 
-        self.service = ConbusReverseProxyService(
+        self.service = ReverseProxyService(
             config_path=self.temp_config.name, listen_port=10003
         )
 
@@ -47,7 +47,7 @@ conbus:
 
     def test_init_with_defaults(self):
         """Test service initialization with default values"""
-        service = ConbusReverseProxyService()
+        service = ReverseProxyService()
         assert service.config_path == "cli.yml"
         assert service.listen_port == 10001
         assert not service.is_running
@@ -64,7 +64,7 @@ conbus:
 
     def test_load_config_file_not_found(self):
         """Test configuration loading when file doesn't exist"""
-        service = ConbusReverseProxyService(config_path="nonexistent.yml")
+        service = ReverseProxyService(config_path="nonexistent.yml")
 
         # Should use defaults
         assert service.target_ip == "127.0.0.1"
@@ -80,7 +80,7 @@ conbus:
         temp_invalid.close()
 
         try:
-            service = ConbusReverseProxyService(config_path=temp_invalid.name)
+            service = ReverseProxyService(config_path=temp_invalid.name)
             # Should use defaults when config is invalid
             assert service.target_ip == "127.0.0.1"
             assert service.target_port == 10001
@@ -241,8 +241,8 @@ conbus:
         assert conn_id not in self.service.active_connections
 
 
-class TestConbusReverseProxyServiceIntegration:
-    """Integration tests for ConbusReverseProxyService"""
+class TestReverseProxyServiceIntegration:
+    """Integration tests for ReverseProxyService"""
 
     def setup_method(self):
         """Set up integration test fixtures"""
@@ -264,7 +264,7 @@ conbus:
         )
         self.temp_config.close()
 
-        self.service = ConbusReverseProxyService(
+        self.service = ReverseProxyService(
             config_path=self.temp_config.name, listen_port=self.listen_port
         )
 
@@ -301,5 +301,5 @@ conbus:
             mock_start.return_value.success = False
             mock_start.return_value.error = "Test error"
 
-            with pytest.raises(ConbusReverseProxyError, match="Test error"):
+            with pytest.raises(ReverseProxyError, match="Test error"):
                 self.service.run_blocking()
