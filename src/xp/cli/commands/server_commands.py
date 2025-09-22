@@ -27,7 +27,7 @@ def server():
 @click.option(
     "--port", "-p", default=10001, type=int, help="Port to listen on (default: 10001)"
 )
-@click.option("--config", "-c", default="config.yml", help="Configuration file path")
+@click.option("--config", "-c", default="server.yml", help="Configuration file path")
 
 @handle_service_errors(ServerError)
 def start_server(port: int, config: str):
