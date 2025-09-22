@@ -7,11 +7,11 @@ Discover Request telegrams with configurable device information.
 import socket
 import threading
 import logging
-import yaml
 import os
 from typing import Dict, List, Optional, Union
 
 from .base_server_service import BaseServerService
+from ..models.homekit_conson_config import ConsonModuleListConfig, ConsonModuleConfig
 from ..services.telegram_service import TelegramService
 from ..services.telegram_discover_service import TelegramDiscoverService
 from ..services.cp20_server_service import CP20ServerService
@@ -36,13 +36,13 @@ class ServerService:
     parses Discover Request telegrams, and coordinates device responses.
     """
 
-    def __init__(self, config_path: str = "config.yml", port: int = 10001):
+    def __init__(self, config_path: str = "server.yml", port: int = 10001):
         """Initialize the Conbus server service"""
         self.config_path = config_path
         self.port = port
         self.server_socket: Optional[socket.socket] = None
         self.is_running = False
-        self.devices: Dict[str, str] = {}
+        self.devices: List[ConsonModuleConfig] = []
         self.device_services: Dict[
             str, Union[BaseServerService, XP33ServerService, XP20ServerService, XP130ServerService]
         ] = {}  # serial -> device service instance
@@ -56,12 +56,12 @@ class ServerService:
         self._load_device_config()
 
     def _load_device_config(self):
-        """Load device configurations from config.yml"""
+        """Load device configurations from server.yml"""
         try:
             if os.path.exists(self.config_path):
                 with open(self.config_path, "r") as file:
-                    config = yaml.safe_load(file)
-                    self.devices = config.get("devices", {})
+                    config = ConsonModuleListConfig.from_yaml(self.config_path)
+                    self.devices = config.root
                     self._create_device_services()
                     self.logger.info(f"Loaded {len(self.devices)} devices from config")
             else:
@@ -79,44 +79,48 @@ class ServerService:
         """Create device service instances based on device configuration"""
         self.device_services = {}
 
-        for serial_number, device_type in self.devices.items():
+        for module in self.devices:
+            module_type = module.module_type
+            serial_number = module.serial_number
+
             try:
+
                 # Serial number is already a string from config
-                if device_type.upper() == "CP20":
+                if module_type == "CP20":
                     self.device_services[serial_number] = CP20ServerService(
                         serial_number
                     )
-                if device_type.upper() == "XP24":
+                if module_type == "XP24":
                     self.device_services[serial_number] = XP24ServerService(
                         serial_number
                     )
-                elif device_type.upper() == "XP33":
+                elif module_type == "XP33":
                     self.device_services[serial_number] = XP33ServerService(
                         serial_number, "XP33"
                     )
-                elif device_type.upper() == "XP33LR":
+                elif module_type == "XP33LR":
                     self.device_services[serial_number] = XP33ServerService(
                         serial_number, "XP33LR"
                     )
-                elif device_type.upper() == "XP33LED":
+                elif module_type == "XP33LED":
                     self.device_services[serial_number] = XP33ServerService(
                         serial_number, "XP33LED"
                     )
-                elif device_type.upper() == "XP20":
+                elif module_type == "XP20":
                     self.device_services[serial_number] = XP20ServerService(
                         serial_number
                     )
-                elif device_type.upper() == "XP130":
+                elif module_type == "XP130":
                     self.device_services[serial_number] = XP130ServerService(
                         serial_number
                     )
-                elif device_type.upper() == "XP230":
+                elif module_type == "XP230":
                     self.device_services[serial_number] = XP230ServerService(
                         serial_number
                     )
                 else:
                     self.logger.warning(
-                        f"Unknown device type '{device_type}' for serial {serial_number}"
+                        f"Unknown device type '{module_type}' for serial {serial_number}"
                     )
 
             except Exception as e:
@@ -140,7 +144,7 @@ class ServerService:
 
             self.is_running = True
             self.logger.info(f"Conbus emulator server started on port {self.port}")
-            self.logger.info(f"Configured devices: {list(self.devices.keys())}")
+            self.logger.info(f"Configured devices: {list([device.serial_number for device in self.devices])}")
 
             # Start accepting connections
             self._accept_connections()
@@ -274,7 +278,7 @@ class ServerService:
             "running": self.is_running,
             "port": self.port,
             "devices_configured": len(self.devices),
-            "device_list": list(self.devices.keys()),
+            "device_list": list([device.serial_number for device in self.devices]),
         }
 
     def reload_config(self):

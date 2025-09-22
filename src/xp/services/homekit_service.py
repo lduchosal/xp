@@ -12,6 +12,7 @@ from xp.models.homekit_accessory import TemperatureSensor
 from xp.models.homekit_outlet import Outlet
 from xp.models.homekit_lightbulb import LightBulb
 from xp.models.homekit_config import HomekitConfig, HomekitAccessoryConfig, RoomConfig
+from xp.services.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit_module_service import HomekitModuleService
 
 
@@ -77,7 +78,6 @@ class HomekitService:
             accessory = self.get_accessory(homekit_accessory)
             bridge.add_accessory(accessory)
 
-
     def get_accessory(self, homekit_accessory: HomekitAccessoryConfig) \
             -> Union[Accessory, LightBulb, Outlet, None]:
         """Call this method to get a standalone Accessory."""
@@ -112,5 +112,3 @@ class HomekitService:
 
     def get_accessory_by_name(self, name) -> Optional[HomekitAccessoryConfig]:
         return next((module for module in self.config.accessories if module.name == name), None)
-
-

@@ -6,6 +6,7 @@ from pydispatch import dispatcher
 from xp.models.action_type import ActionType
 from xp.models.homekit_conson_config import ConsonModuleConfig, ConsonModuleListConfig
 from xp.services.conbus_output_service import ConbusOutputService
+from xp.services.homekit_cache_service import HomeKitCacheService
 from xp.services.telegram_output_service import TelegramOutputService
 
 
@@ -19,6 +20,7 @@ class HomekitModuleService:
         self.conson_modules_config = ConsonModuleListConfig.from_yaml(config_path)
         self.output_service = ConbusOutputService()
         self.telegram_output_service = TelegramOutputService()
+        self.cache_service = HomeKitCacheService()
 
         # Connect to PyDispatcher events
         self._setup_event_listeners()
@@ -101,12 +103,10 @@ class HomekitModuleService:
             self.logger.warning(f"Module not found for serial {serial_number}")
             return False
 
-        response = self.output_service.get_output_state(serial_number=serial_number)
-        if not response or not response.success:
-            self.logger.warning(f"Invalid response from conbus {response.error}")
-            return False
-
-        result = self.telegram_output_service.parse_status_response(response.datapoint_telegram.raw_telegram)
+        # tag = f"E{module.module_type_code}L{module.link_number}I{output_number}"
+        tag = f"E{module.module_type_code}L{module.link_number}"
+        response = self.cache_service.get(key=serial_number, tag=tag)
+        result = self.telegram_output_service.parse_status_response(response.data)
         return result[output_number]
 
 

@@ -66,7 +66,7 @@ XP33 3-channel light dimmer module emulator for Conbus system testing. Responds 
 ## Implementation
 
 ```yaml
-# config.yml
+# server.yml
 devices:
   0012345003: XP33
 ```

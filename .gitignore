@@ -8,7 +8,8 @@
 .coverage
 accessory.state
 cli*.yml
-config.yml
+server.yml
 conson.yml
 homekit.yml
 rp.yml
+.homekit_cache.json
