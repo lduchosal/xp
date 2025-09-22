@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: cache">
-      <change beforePath="$PROJECT_DIR$/.homekit_cache.json" beforeDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: connection pool">
+      <change beforePath="$PROJECT_DIR$/doc/Feat-ConsonConnectionPool.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-ConsonConnectionPool.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -381,22 +381,6 @@
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
       <workItem from="1758468596803" duration="27068000" />
-    </task>
-    <task id="LOCAL-00069" summary="Feat: refactor / TelegramType -&gt; DatapointNameType">
-      <option name="closed" value="true" />
-      <created>1758209194861</created>
-      <option name="number" value="00069" />
-      <option name="presentableId" value="LOCAL-00069" />
-      <option name="project" value="LOCAL" />
-      <updated>1758209194861</updated>
-    </task>
-    <task id="LOCAL-00070" summary="Feat: refactor / TelegramType -&gt; DatapointNameType">
-      <option name="closed" value="true" />
-      <created>1758235055092</created>
-      <option name="number" value="00070" />
-      <option name="presentableId" value="LOCAL-00070" />
-      <option name="project" value="LOCAL" />
-      <updated>1758235055092</updated>
     </task>
     <task id="LOCAL-00071" summary="Feat: refactor / TelegramType -&gt; DatapointNameType">
       <option name="closed" value="true" />
@@ -774,7 +758,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758575654003</updated>
     </task>
-    <option name="localTasksCounter" value="118" />
+    <task id="LOCAL-00118" summary="Feat: connection pool">
+      <option name="closed" value="true" />
+      <created>1758576444107</created>
+      <option name="number" value="00118" />
+      <option name="presentableId" value="LOCAL-00118" />
+      <option name="project" value="LOCAL" />
+      <updated>1758576444107</updated>
+    </task>
+    <task id="LOCAL-00119" summary="Feat: connection pool">
+      <option name="closed" value="true" />
+      <created>1758576466455</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1758576466455</updated>
+    </task>
+    <option name="localTasksCounter" value="120" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -803,7 +803,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix: fine tuning" />
     <MESSAGE value="Fix: learning about click" />
     <MESSAGE value="Feat: serial number" />
     <MESSAGE value="Feat: json only" />
@@ -828,7 +827,8 @@
     <MESSAGE value="Fix: ci" />
     <MESSAGE value="Fix: rename" />
     <MESSAGE value="Feat: cache" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feat: cache" />
+    <MESSAGE value="Feat: connection pool" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: connection pool" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
