@@ -1,6 +1,6 @@
 [project]
 name = "xp"
-version = "0.6.0"
+version = "0.9.1"
 description = "XP Protocol Communication Tool"
 authors = [
     {name = "lduchosal", email = "luc+github@2113.ch"},
@@ -14,7 +14,7 @@ dependencies = [
     "uvicorn>=0.24.0",
     "pydantic>=2.0.0",
     "HAP-python[QRCode]>=5.0.0",
-    "PyDispatcher>=2.0.5"
+    "PyDispatcher>=2.0.5",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
@@ -48,6 +48,12 @@ addopts = [
     "--cov-report=html",
     "--cov-report=term-missing",
     "--cov-fail-under=90"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "reverseproxy: marks tests as unit tests",
 ]
 
 [tool.coverage.run]
@@ -113,6 +119,7 @@ distribution = true
 
 [tool.pdm.scripts]
 test = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing"
+test-quick = "env PYTHONPATH=src python -m pytest tests/ --tb=no -q"
 test-ci = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing -m 'not reverseproxy'"
 test-unit = "env PYTHONPATH=src python -m pytest tests/unit/ -v"
 test-integration = "env PYTHONPATH=src python -m pytest tests/integration/ -v"

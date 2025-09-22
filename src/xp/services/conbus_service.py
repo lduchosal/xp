@@ -20,6 +20,7 @@ from ..models import (
 from ..models.response import Response
 from ..models.system_function import SystemFunction
 from ..utils.checksum import calculate_checksum
+from .conbus_connection_pool import ConbusConnectionPool
 
 
 class ConbusError(Exception):
@@ -50,6 +51,10 @@ class ConbusService:
         # Load configuration
         self._load_config()
 
+        # Initialize connection pool
+        self._connection_pool = ConbusConnectionPool.get_instance()
+        self._connection_pool.initialize(self.config)
+
     def _load_config(self):
         """Load client configuration from cli.yml"""
         try:
@@ -77,57 +82,42 @@ class ConbusService:
         return self.config
 
     def connect(self) -> Response:
-        """Establish TCP connection to the Conbus server"""
-        if self.is_connected:
-            return Response(
-                success=True,
-                data={"message": "Already connected", "config": self.config.to_dict()},
-                error=None,
-            )
-
+        """Test connection using the connection pool"""
         try:
-            # Create TCP socket
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.settimeout(self.config.timeout)
+            # Test connection by acquiring and immediately releasing
+            with self._connection_pool:
+                self.is_connected = True
+                self.last_activity = datetime.now()
 
-            # Connect to server
-            self.socket.connect((self.config.ip, self.config.port))
-            self.is_connected = True
-            self.last_activity = datetime.now()
+                self.logger.info(
+                    f"Connection pool ready for {self.config.ip}:{self.config.port}"
+                )
 
-            self.logger.info(
-                f"Connected to Conbus server at {self.config.ip}:{self.config.port}"
-            )
+                return Response(
+                    success=True,
+                    data={
+                        "message": f"Connection pool ready for {self.config.ip}:{self.config.port}",
+                        "config": self.config.to_dict(),
+                    },
+                    error=None,
+                )
 
-            return Response(
-                success=True,
-                data={
-                    "message": f"Connected to {self.config.ip}:{self.config.port}",
-                    "config": self.config.to_dict(),
-                },
-                error=None,
-            )
-
-        except socket.timeout:
-            error_msg = f"Connection timeout after {self.config.timeout} seconds"
-            self.logger.error(error_msg)
-            return Response(success=False, data=None, error=error_msg)
         except Exception as e:
-            error_msg = f"Failed to connect to {self.config.ip}:{self.config.port}: {e}"
+            error_msg = f"Failed to establish connection pool to {self.config.ip}:{self.config.port}: {e}"
             self.logger.error(error_msg)
+            self.is_connected = False
             return Response(success=False, data=None, error=error_msg)
 
     def disconnect(self):
-        """Close TCP connection to the server"""
-        if self.socket:
-            try:
-                self.socket.close()
-                self.logger.info("Disconnected from Conbus server")
-            except Exception as e:
-                self.logger.error(f"Error closing connection: {e}")
-            finally:
-                self.socket = None
-                self.is_connected = False
+        """Close connection pool (graceful shutdown)"""
+        try:
+            self._connection_pool.close()
+            self.logger.info("Connection pool closed")
+        except Exception as e:
+            self.logger.error(f"Error closing connection pool: {e}")
+        finally:
+            self.socket = None
+            self.is_connected = False
 
     def get_connection_status(self) -> ConbusConnectionStatus:
         """Get current connection status"""
@@ -175,7 +165,7 @@ class ConbusService:
         try:
             # Set a shorter timeout for receiving responses
             original_timeout = self.socket.gettimeout()
-            self.socket.settimeout(2.0)  # 2 second timeout for responses
+            self.socket.settimeout(0.1)  # 1 second timeout for responses
 
             while True:
                 try:
@@ -194,6 +184,43 @@ class ConbusService:
 
             # Restore original timeout
             self.socket.settimeout(original_timeout)
+
+        except Exception as e:
+            self.logger.error(f"Error receiving responses: {e}")
+
+        # Parse telegrams from accumulated data
+        telegrams = self._parse_telegrams(accumulated_data)
+        for telegram in telegrams:
+            self.logger.info(f"Received telegram: {telegram}")
+
+        return telegrams
+
+    def _receive_responses_with_connection(self, connection: socket.socket) -> List[str]:
+        """Receive responses from the server using a specific connection"""
+        accumulated_data = ""
+
+        try:
+            # Set a shorter timeout for receiving responses
+            original_timeout = connection.gettimeout()
+            connection.settimeout(0.1)  # 2 second timeout for responses
+
+            while True:
+                try:
+                    data = connection.recv(1024)
+                    if not data:
+                        break
+
+                    # Accumulate all received data
+                    message = data.decode("latin-1")
+                    accumulated_data += message
+                    self.last_activity = datetime.now()
+
+                except socket.timeout:
+                    # No more data available
+                    break
+
+            # Restore original timeout
+            connection.settimeout(original_timeout)
 
         except Exception as e:
             self.logger.error(f"Error receiving responses: {e}")
@@ -229,42 +256,35 @@ class ConbusService:
     def send_raw_telegram(
             self, telegram: Optional[str] = None
     ) -> ConbusResponse:
-        """Send custom telegram with specified function and data point codes"""
-        # Generate custom system telegram: <S{serial}F{function}{data_point}{checksum}>
+        """Send telegram using connection pool with automatic acquire/release"""
+        request = ConbusRequest(telegram=telegram)
 
-        request = ConbusRequest(
-            telegram=telegram,
-        )
         try:
-            if not self.is_connected:
-                connect_result = self.connect()
-                if not connect_result.success:
-                    return ConbusResponse(
-                        success=False,
-                        request=request,
-                        error=f"Not connected to server: {connect_result.error}",
-                    )
+            # Use context manager for automatic connection management
+            with self._connection_pool as connection:
+                # Send telegram
+                if telegram is not None:
+                    connection.send(telegram.encode("latin-1"))
+                    self.logger.info(f"Sent telegram: {telegram}")
 
-            # Send telegram
-            if telegram is not None:
-                self.socket.send(telegram.encode("latin-1"))
-                self.logger.info(f"Sent custom telegram: {telegram}")
+                self.last_activity = datetime.now()
+                self.is_connected = True  # Update connection status
 
-            self.last_activity = datetime.now()
+                # Receive responses
+                responses = self._receive_responses_with_connection(connection)
 
-            # Receive responses
-            responses = self._receive_responses()
-
-            return ConbusResponse(
-                success=True,
-                request=request,
-                sent_telegram=telegram,
-                received_telegrams=responses,
-            )
+                return ConbusResponse(
+                    success=True,
+                    request=request,
+                    sent_telegram=telegram,
+                    received_telegrams=responses,
+                )
+                # Connection automatically released here
 
         except Exception as e:
-            error_msg = f"Failed to send custom telegram: {e}"
+            error_msg = f"Failed to send telegram: {e}"
             self.logger.error(error_msg)
+            self.is_connected = False  # Update connection status on error
             return ConbusResponse(
                 success=False,
                 request=request,

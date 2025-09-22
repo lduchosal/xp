@@ -1,6 +1,6 @@
 import socket
 from datetime import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 
 import pytest
 
@@ -76,68 +76,100 @@ class TestServiceInitialization(TestConbusService):
 class TestConnectionManagement(TestConbusService):
     """Test connection establishment and management"""
 
-    @patch("socket.socket")
-    def test_successful_connection(self, mock_socket_class, service, mock_socket):
+    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    def test_successful_connection(self, mock_pool_class, service):
         """Test successful connection establishment"""
-        mock_socket_class.return_value = mock_socket
+        mock_pool_instance = MagicMock()
+        mock_pool_class.get_instance.return_value = mock_pool_instance
+        mock_connection = Mock()
+        mock_pool_instance.__enter__.return_value = mock_connection
+        mock_pool_instance.__exit__.return_value = None
+
+        # Replace the service's connection pool with our mock
+        service._connection_pool = mock_pool_instance
 
         result = service.connect()
 
         assert result.success is True
         assert service.is_connected is True
-        assert service.socket == mock_socket
-        mock_socket.settimeout.assert_called_with(15)  # Service timeout
-        mock_socket.connect.assert_called_with(("10.0.0.1", 8080))
+        mock_pool_instance.__enter__.assert_called_once()
+        mock_pool_instance.__exit__.assert_called_once()
 
-    @patch("socket.socket")
-    def test_connection_timeout(self, mock_socket_class, service, mock_socket):
+    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    def test_connection_timeout(self, mock_pool_class, service):
         """Test connection timeout handling"""
-        mock_socket_class.return_value = mock_socket
-        mock_socket.connect.side_effect = socket.timeout()
+        mock_pool_instance = MagicMock()
+        mock_pool_class.get_instance.return_value = mock_pool_instance
+        mock_pool_instance.__enter__.side_effect = socket.timeout()
+
+        # Replace the service's connection pool with our mock
+        service._connection_pool = mock_pool_instance
 
         result = service.connect()
 
         assert result.success is False
-        assert "Connection timeout after 15 seconds" in result.error
+        assert "Failed to establish connection pool" in result.error
         assert service.is_connected is False
 
-    @patch("socket.socket")
-    def test_connection_error(self, mock_socket_class, service, mock_socket):
+    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    def test_connection_error(self, mock_pool_class, service):
         """Test connection error handling"""
-        mock_socket_class.return_value = mock_socket
-        mock_socket.connect.side_effect = ConnectionRefusedError("Connection refused")
+        mock_pool_instance = MagicMock()
+        mock_pool_class.get_instance.return_value = mock_pool_instance
+        mock_pool_instance.__enter__.side_effect = ConnectionRefusedError("Connection refused")
+
+        # Replace the service's connection pool with our mock
+        service._connection_pool = mock_pool_instance
 
         result = service.connect()
 
         assert result.success is False
-        assert "Failed to connect to 10.0.0.1:8080" in result.error
+        assert "Failed to establish connection pool to 10.0.0.1:8080" in result.error
         assert service.is_connected is False
 
-    def test_already_connected(self, service):
-        """Test connecting when already connected"""
-        service.is_connected = True
+    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    def test_already_connected(self, mock_pool_class, service):
+        """Test connecting - pool will handle repeated connections gracefully"""
+        mock_pool_instance = MagicMock()
+        mock_pool_class.get_instance.return_value = mock_pool_instance
+        mock_connection = Mock()
+        mock_pool_instance.__enter__.return_value = mock_connection
+        mock_pool_instance.__exit__.return_value = None
+
+        # Replace the service's connection pool with our mock
+        service._connection_pool = mock_pool_instance
 
         result = service.connect()
 
         assert result.success is True
-        assert "Already connected" in result.data["message"]
+        assert "Connection pool ready for 10.0.0.1:8080" in result.data["message"]
 
-    def test_disconnect(self, service, mock_socket):
+    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    def test_disconnect(self, mock_pool_class, service):
         """Test disconnection"""
-        service.socket = mock_socket
+        mock_pool_instance = MagicMock()
+        mock_pool_class.get_instance.return_value = mock_pool_instance
         service.is_connected = True
+
+        # Replace the service's connection pool with our mock
+        service._connection_pool = mock_pool_instance
 
         service.disconnect()
 
         assert service.is_connected is False
         assert service.socket is None
-        mock_socket.close.assert_called_once()
+        mock_pool_instance.close.assert_called_once()
 
-    def test_disconnect_with_error(self, service, mock_socket):
-        """Test disconnection with socket error"""
-        service.socket = mock_socket
+    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    def test_disconnect_with_error(self, mock_pool_class, service):
+        """Test disconnection with connection pool error"""
+        mock_pool_instance = MagicMock()
+        mock_pool_class.get_instance.return_value = mock_pool_instance
         service.is_connected = True
-        mock_socket.close.side_effect = Exception("Close error")
+        mock_pool_instance.close.side_effect = Exception("Close error")
+
+        # Replace the service's connection pool with our mock
+        service._connection_pool = mock_pool_instance
 
         service.disconnect()  # Should not raise exception
 
@@ -172,17 +204,22 @@ class TestConnectionStatus(TestConbusService):
 class TestContextManager(TestConbusService):
     """Test context manager functionality"""
 
-    def test_context_manager_enter_exit(self, service, mock_socket):
+    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    def test_context_manager_enter_exit(self, mock_pool_class, service):
         """Test context manager enter and exit"""
-        service.socket = mock_socket
+        mock_pool_instance = MagicMock()
+        mock_pool_class.get_instance.return_value = mock_pool_instance
         service.is_connected = True
+
+        # Replace the service's connection pool with our mock
+        service._connection_pool = mock_pool_instance
 
         with service as ctx_service:
             assert ctx_service == service
 
         # Should disconnect on exit
         assert service.is_connected is False
-        mock_socket.close.assert_called_once()
+        mock_pool_instance.close.assert_called_once()
 
 
 class TestErrorHandling(TestConbusService):

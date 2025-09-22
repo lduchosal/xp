@@ -7,7 +7,7 @@ class ConbusClientConfig:
 
     ip: str = "192.168.1.100"
     port: int = 10001
-    timeout: int = 10
+    timeout: float = 0.1
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""

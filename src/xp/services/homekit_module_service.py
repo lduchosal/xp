@@ -80,9 +80,9 @@ class HomekitModuleService:
             self.logger.warning(f"Module not found for serial {serial_number}")
             return
 
-        action_type = ActionType.RELEASE
+        action_type = ActionType.PRESS
         if value:
-            action_type = ActionType.PRESS
+            action_type = ActionType.RELEASE
 
         self.output_service.send_action(
             serial_number=serial_number,

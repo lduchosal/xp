@@ -43,7 +43,7 @@ class ReverseProxyService:
         # Target server configuration
         self.target_ip = "127.0.0.1"
         self.target_port = 10001
-        self.target_timeout = 10
+        self.target_timeout = 0.1
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
