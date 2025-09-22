@@ -31,7 +31,7 @@ jobs:
         pdm install -G dev
     - name: Test with pytest
       run: |
-        pdm test
-    - name: Build poackage
+        pdm test-ci
+    - name: Build package
       run: |
         pdm build

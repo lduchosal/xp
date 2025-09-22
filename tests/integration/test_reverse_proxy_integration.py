@@ -6,6 +6,8 @@ import time
 import tempfile
 import os
 
+import pytest
+
 from xp.services.conbus_reverse_proxy_service import ConbusReverseProxyService
 
 
@@ -114,6 +116,7 @@ conbus:
         if os.path.exists(self.temp_config.name):
             os.unlink(self.temp_config.name)
 
+    @pytest.mark.reverseproxy
     def test_end_to_end_telegram_relay(self):
         """Test complete telegram relay from client through proxy to server"""
         # Start mock server
@@ -150,6 +153,7 @@ conbus:
             self.proxy.stop_proxy()
             self.mock_server.stop()
 
+    @pytest.mark.reverseproxy
     def test_proxy_connection_failure_handling(self):
         """Test proxy behavior when target server is unavailable"""
         # Don't start mock server - simulate server unavailable
@@ -183,6 +187,7 @@ conbus:
         finally:
             self.proxy.stop_proxy()
 
+    @pytest.mark.reverseproxy
     def test_bidirectional_data_relay(self):
         """Test bidirectional data relay between client and server"""
         # Start mock server with multiple responses
@@ -237,6 +242,7 @@ conbus:
             self.proxy.stop_proxy()
             self.mock_server.stop()
 
+    @pytest.mark.reverseproxy
     def test_proxy_status_tracking(self):
         """Test proxy status tracking during connections"""
         # Start mock server
@@ -275,6 +281,7 @@ conbus:
 class TestReverseProxyErrorHandling:
     """Test error handling scenarios for reverse proxy"""
 
+    @pytest.mark.reverseproxy
     def test_proxy_start_port_already_in_use(self):
         """Test proxy startup when port is already in use"""
         # Create a socket to occupy the port
@@ -298,6 +305,7 @@ class TestReverseProxyErrorHandling:
         finally:
             blocking_socket.close()
 
+    @pytest.mark.reverseproxy
     def test_invalid_configuration_handling(self):
         """Test proxy behavior with invalid configuration"""
         # Create config with invalid target
