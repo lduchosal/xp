@@ -20,12 +20,10 @@ class ModuleTypeCode(Enum):
     CP485 = 12  # CP RS485 interface module
     XP130 = 13  # Ethernet/TCPIP interface module
     XP2606 = 14  # 5 way push button panel with sesam, L-Team design
-    XP2606A = (
-        15  # 5 way push button panel with sesam, L-Team design and 38kHz IR receiver
-    )
-    XP2606B = (
-        16  # 5 way push button panel with sesam, L-Team design and B&O IR receiver
-    )
+    XP2606A = 15  # 5 way push button panel with sesam,
+                  # L-Team design and 38kHz IR receiver
+    XP2606B = 16  # 5 way push button panel with sesam,
+                  # L-Team design and B&O IR receiver
     XP26X1 = 17  # Reserved
     XP26X2 = 18  # Reserved
     XP2506 = 19  # 5 way push button panel with sesam, Conson design

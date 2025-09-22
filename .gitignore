@@ -7,7 +7,7 @@
 /.pdm-python
 .coverage
 accessory.state
-cli.yml
+cli*.yml
 config.yml
 conson.yml
 homekit.yml

@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Chore: cleanup">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/python-app.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/python-app.yml" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Fix: ci">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/module_type_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/module_type_code.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -380,15 +379,7 @@
       <workItem from="1758234469139" duration="92415000" />
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
-      <workItem from="1758468596803" duration="25008000" />
-    </task>
-    <task id="LOCAL-00060" summary="fix: refactor">
-      <option name="closed" value="true" />
-      <created>1758123082689</created>
-      <option name="number" value="00060" />
-      <option name="presentableId" value="LOCAL-00060" />
-      <option name="project" value="LOCAL" />
-      <updated>1758123082689</updated>
+      <workItem from="1758468596803" duration="27068000" />
     </task>
     <task id="LOCAL-00061" summary="fix: refactor">
       <option name="closed" value="true" />
@@ -774,7 +765,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758496232493</updated>
     </task>
-    <option name="localTasksCounter" value="109" />
+    <task id="LOCAL-00109" summary="Fix: ci">
+      <option name="closed" value="true" />
+      <created>1758527265912</created>
+      <option name="number" value="00109" />
+      <option name="presentableId" value="LOCAL-00109" />
+      <option name="project" value="LOCAL" />
+      <updated>1758527265912</updated>
+    </task>
+    <option name="localTasksCounter" value="110" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -803,7 +802,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor: cleanup code" />
     <MESSAGE value="Fix: after code cleanup" />
     <MESSAGE value="Fix: formatting of help" />
     <MESSAGE value="Fix: fine tuning" />
@@ -828,7 +826,8 @@
     <MESSAGE value="Refactor: discovery / discover" />
     <MESSAGE value="Chore: doc" />
     <MESSAGE value="Chore: cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="Chore: cleanup" />
+    <MESSAGE value="Fix: ci" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix: ci" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
