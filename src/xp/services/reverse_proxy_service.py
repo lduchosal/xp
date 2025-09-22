@@ -16,13 +16,13 @@ from datetime import datetime
 from ..models.response import Response
 
 
-class ConbusReverseProxyError(Exception):
+class ReverseProxyError(Exception):
     """Raised when Conbus reverse proxy operations fail"""
 
     pass
 
 
-class ConbusReverseProxyService:
+class ReverseProxyService:
     """
     TCP reverse proxy for Conbus communications.
 
@@ -368,7 +368,7 @@ class ConbusReverseProxyService:
         """Run the proxy in blocking mode (for CLI usage)"""
         result = self.start_proxy()
         if not result.success:
-            raise ConbusReverseProxyError(result.error)
+            raise ReverseProxyError(result.error)
 
         try:
             # Keep running until interrupted

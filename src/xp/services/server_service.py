@@ -22,13 +22,13 @@ from ..services.xp130_server_service import XP130ServerService
 from ..services.xp230_server_service import XP230ServerService
 
 
-class ConbusServerError(Exception):
+class ServerError(Exception):
     """Raised when Conbus server operations fail"""
 
     pass
 
 
-class ConbusServerService:
+class ServerService:
     """
     Main TCP server implementation for Conbus device emulation.
 
@@ -127,7 +127,7 @@ class ConbusServerService:
     def start_server(self):
         """Start the TCP server on port 10001"""
         if self.is_running:
-            raise ConbusServerError("Server is already running")
+            raise ServerError("Server is already running")
 
         try:
             # Create TCP socket
@@ -147,7 +147,7 @@ class ConbusServerService:
 
         except Exception as e:
             self.logger.error(f"Failed to start server: {e}")
-            raise ConbusServerError(f"Failed to start server: {e}")
+            raise ServerError(f"Failed to start server: {e}")
 
     def stop_server(self):
         """Stop the TCP server"""
