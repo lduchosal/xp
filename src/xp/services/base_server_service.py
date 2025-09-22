@@ -166,6 +166,7 @@ class BaseServerService(ABC):
 
     def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
         """Handle RETURN_DATA requests - can be overridden by subclasses"""
+        self.logger.warning(f"_handle_return_data_request {self.device_type} request: {request}")
         if request.datapoint_type == DataPointType.SW_VERSION:
             return self.generate_version_response(request)
         elif request.datapoint_type == DataPointType.MODULE_TYPE:
