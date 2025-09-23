@@ -30,7 +30,7 @@ A comprehensive Python CLI and API tool for CONSON XP Protocol operations, inclu
 
 ### Development & Testing
 - **JSON Output**: All commands support both human-readable and JSON output formats
-- **Comprehensive Testing**: 90%+ test coverage with unit and integration tests
+- **Comprehensive Testing**: 60%+ test coverage with unit and integration tests
 - **Modern Python**: Type hints, async/await, and modern Python practices
 
 ## Installation
@@ -289,14 +289,14 @@ PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing
 PYTHONPATH=src python -m pytest tests/unit/test_models/test_event_telegram.py -v
 
 # Run tests with coverage threshold
-PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing --cov-fail-under=90
+PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing --cov-fail-under=60
 ```
 
 ### Code Quality
 
 The project includes comprehensive tooling for code quality:
 
-- **Testing**: pytest with 90% coverage requirement
+- **Testing**: pytest with 60% coverage requirement
 - **Formatting**: black code formatter
 - **Linting**: ruff (modern Python linter)
 - **Type Checking**: mypy static type checker

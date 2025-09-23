@@ -54,7 +54,7 @@ class TestServiceInitialization(TestConbusService):
 
         assert service.config.ip == "192.168.1.100"
         assert service.config.port == 10001
-        assert service.config.timeout == 10
+        assert service.config.timeout == 0.1
         assert service.is_connected is False
         assert service.socket is None
 
@@ -71,7 +71,7 @@ class TestServiceInitialization(TestConbusService):
         # Should use defaults when config file doesn't exist
         assert service.config.ip == "192.168.1.100"
         assert service.config.port == 10001
-        assert service.config.timeout == 10
+        assert service.config.timeout == 0.1
 
 class TestConnectionManagement(TestConbusService):
     """Test connection establishment and management"""

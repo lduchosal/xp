@@ -17,7 +17,7 @@ class TestConbusClientConfig:
         config = ConbusClientConfig()
         assert config.ip == "192.168.1.100"
         assert config.port == 10001
-        assert config.timeout == 10
+        assert config.timeout == 0.1
 
     def test_custom_config(self):
         """Test custom configuration values"""
