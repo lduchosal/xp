@@ -39,7 +39,6 @@ def decode_log_file(
 
     \b
         xp file decode conbus.log
-        xp file decode conbus.log --filter-type event --json-output
     """
     from ...services.log_file_service import LogFileService
     from ...utils.time_utils import parse_time_range, TimeParsingError

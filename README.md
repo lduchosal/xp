@@ -227,17 +227,6 @@ xp file process-log logfile.txt
 xp file extract-telegrams mixed-data.txt
 ```
 
-### JSON Output
-
-Add `--json-output` or `-j` to any command for JSON formatted output:
-
-```bash
-xp telegram parse "<E14L00I02MAK>" --json-output
-xp module info 14 -j
-xp checksum calculate "E14L00I02M" -j
-xp conbus discover -j
-```
-
 ## Architecture
 
 The project follows a layered architecture with clear separation of concerns:

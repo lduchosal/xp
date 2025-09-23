@@ -4,12 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Cleanup">
-      <change afterPath="$PROJECT_DIR$/.github/workflows/python-publish.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/python-app.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/python-package.yml" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: pypi">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/file_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/file_commands.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -385,15 +386,7 @@
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
       <workItem from="1758468596803" duration="27068000" />
-      <workItem from="1758604567711" duration="1661000" />
-    </task>
-    <task id="LOCAL-00074" summary="Feat: refactor / Telegram">
-      <option name="closed" value="true" />
-      <created>1758267142160</created>
-      <option name="number" value="00074" />
-      <option name="presentableId" value="LOCAL-00074" />
-      <option name="project" value="LOCAL" />
-      <updated>1758267142160</updated>
+      <workItem from="1758604567711" duration="2806000" />
     </task>
     <task id="LOCAL-00075" summary="Feat: refactor / Telegram">
       <option name="closed" value="true" />
@@ -779,7 +772,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758604558052</updated>
     </task>
-    <option name="localTasksCounter" value="123" />
+    <task id="LOCAL-00123" summary="Feat: pypi">
+      <option name="closed" value="true" />
+      <created>1758606382487</created>
+      <option name="number" value="00123" />
+      <option name="presentableId" value="LOCAL-00123" />
+      <option name="project" value="LOCAL" />
+      <updated>1758606382487</updated>
+    </task>
+    <option name="localTasksCounter" value="124" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -808,7 +809,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: json only" />
     <MESSAGE value="fix: lint" />
     <MESSAGE value="fix: test units" />
     <MESSAGE value="fix: refactor" />
@@ -833,7 +833,8 @@
     <MESSAGE value="Feat: connection pool" />
     <MESSAGE value="Feat: fully working prototype" />
     <MESSAGE value="Cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cleanup" />
+    <MESSAGE value="Feat: pypi" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: pypi" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

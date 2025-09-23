@@ -1,6 +1,6 @@
 [project]
 name = "conson-xp"
-version = "0.9.2"
+version = "0.9.5"
 description = "XP Protocol Communication Tools"
 authors = [
     {name = "ldvchosal", email = "ldvchosal@github.com"},
@@ -136,10 +136,12 @@ format = "black src/ tests/"
 format-check = "black --check src/ tests/"
 typecheck = "mypy src/"
 check = ["lint", "format-check", "typecheck", "test"]
+bump-version = "pdm bump -v patch"
 install = "pdm install"
 install-dev = "pdm install -G dev"
 clean = "rm -rf .coverage htmlcov/ .pytest_cache/ __pycache__/ src/xp/__pycache__/"
-publish = "python -m twine upload dist/* --verbose"
+upload = "python -m twine upload dist/* --verbose"
+publish = ["clean", "install", "install-dev", "bump-version", "build", "test", "upload" ]
 
 [tool.vulture]
 exclude = ["src/xp/cli"]
@@ -149,3 +151,12 @@ min_confidence = 80
 paths = ["src", "tests"]
 sort_by_size = true
 verbose = false
+
+[tool.pdm-bump]
+# Commit message template
+commit-message = "chore: bump version to {new_version}"
+
+# Files to update (beyond pyproject.toml)
+version-files = [
+    "src/xp/__init__.py:__version__",
+]
