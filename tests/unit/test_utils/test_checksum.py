@@ -1,7 +1,7 @@
 """Unit tests for checksum utility functions.
 
 Tests the checksum calculation functions to ensure they match
-the expected behavior of the Java implementation.
+the expected behavior
 """
 
 import pytest
@@ -20,7 +20,6 @@ class TestChecksumUtilities:
 
     def test_calculate_checksum_simple(self):
         """Test simple XOR checksum calculation."""
-        # Test case from Java implementation
         result = calculate_checksum("E14L00I02M")
         assert isinstance(result, str)
         assert len(result) == 2
@@ -171,7 +170,6 @@ class TestChecksumUtilities:
 
     def test_telegram_example(self):
         """Test with actual telegram example from documentation."""
-        # Based on the Java example, this should work with telegram data
         telegram_data = "E14L00I02M"
         checksum = calculate_checksum(telegram_data)
 

@@ -2,17 +2,8 @@
 
 generate a linknumber telegram to get a module linknumber given its serial
 
-```java
-public String getLinkNumberTelegram(String serial) {
-  Checksum cc = new Checksum();
-
-  
-  String strLinkNo = (this.linkNo < 10) ? ("0" + this.linkNo) : ("" + this.linkNo);
-  String data = "S" + serial + "F04D04" + strLinkNo;
-  String tg = "<" + data + cc.calculateChecksum(data) + ">";
-  
-  return tg;
-}
+```
+S0012345005F04D0409FA
 ```
 
 Set the LinkNumber (action F04D04) to value 25 on module serial 0012345005 : <S0012345005F04D0425FO>

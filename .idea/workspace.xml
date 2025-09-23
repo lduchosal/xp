@@ -4,14 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: connection pool">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: fully working prototype">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feature-Checksum.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feature-LinkNumber-System-Telegram.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-LinkNumber-System-Telegram.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_client_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_client_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/reverse_proxy_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/reverse_proxy_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pytest.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -387,14 +386,6 @@
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
       <workItem from="1758468596803" duration="27068000" />
-    </task>
-    <task id="LOCAL-00072" summary="Feat: refactor / TelegramType -&gt; DatapointNameType">
-      <option name="closed" value="true" />
-      <created>1758261682056</created>
-      <option name="number" value="00072" />
-      <option name="presentableId" value="LOCAL-00072" />
-      <option name="project" value="LOCAL" />
-      <updated>1758261682056</updated>
     </task>
     <task id="LOCAL-00073" summary="Feat: refactor / ConbusService">
       <option name="closed" value="true" />
@@ -780,7 +771,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758577494903</updated>
     </task>
-    <option name="localTasksCounter" value="121" />
+    <task id="LOCAL-00121" summary="Feat: fully working prototype">
+      <option name="closed" value="true" />
+      <created>1758579941391</created>
+      <option name="number" value="00121" />
+      <option name="presentableId" value="LOCAL-00121" />
+      <option name="project" value="LOCAL" />
+      <updated>1758579941391</updated>
+    </task>
+    <option name="localTasksCounter" value="122" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -809,7 +808,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix: learning about click" />
     <MESSAGE value="Feat: serial number" />
     <MESSAGE value="Feat: json only" />
     <MESSAGE value="fix: lint" />
@@ -834,7 +832,8 @@
     <MESSAGE value="Fix: rename" />
     <MESSAGE value="Feat: cache" />
     <MESSAGE value="Feat: connection pool" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feat: connection pool" />
+    <MESSAGE value="Feat: fully working prototype" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: fully working prototype" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
