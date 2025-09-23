@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: publish">
-      <change afterPath="$PROJECT_DIR$/publish.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: cleanup">
+      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -178,11 +173,11 @@
       <recent name="$PROJECT_DIR$/src/xp/models" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/config" />
       <recent name="$PROJECT_DIR$/private" />
       <recent name="$PROJECT_DIR$/doc" />
       <recent name="$PROJECT_DIR$/src/xp/models" />
       <recent name="$PROJECT_DIR$/tests/integration" />
-      <recent name="$PROJECT_DIR$/Specs" />
     </key>
   </component>
   <component name="RunManager" selected="Python tests.Python tests in tests">
@@ -389,23 +384,7 @@
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
       <workItem from="1758468596803" duration="27068000" />
-      <workItem from="1758604567711" duration="6176000" />
-    </task>
-    <task id="LOCAL-00076" summary="Feat: refactor / Telegram">
-      <option name="closed" value="true" />
-      <created>1758314135718</created>
-      <option name="number" value="00076" />
-      <option name="presentableId" value="LOCAL-00076" />
-      <option name="project" value="LOCAL" />
-      <updated>1758314135718</updated>
-    </task>
-    <task id="LOCAL-00077" summary="Feat: refactor / Input">
-      <option name="closed" value="true" />
-      <created>1758353623675</created>
-      <option name="number" value="00077" />
-      <option name="presentableId" value="LOCAL-00077" />
-      <option name="project" value="LOCAL" />
-      <updated>1758353623675</updated>
+      <workItem from="1758604567711" duration="7714000" />
     </task>
     <task id="LOCAL-00078" summary="Feat: refactor / clean">
       <option name="closed" value="true" />
@@ -783,7 +762,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758610245309</updated>
     </task>
-    <option name="localTasksCounter" value="125" />
+    <task id="LOCAL-00125" summary="chore: publish 0.9.15">
+      <option name="closed" value="true" />
+      <created>1758627754027</created>
+      <option name="number" value="00125" />
+      <option name="presentableId" value="LOCAL-00125" />
+      <option name="project" value="LOCAL" />
+      <updated>1758627754027</updated>
+    </task>
+    <task id="LOCAL-00126" summary="chore: cleanup">
+      <option name="closed" value="true" />
+      <created>1758627849700</created>
+      <option name="number" value="00126" />
+      <option name="presentableId" value="LOCAL-00126" />
+      <option name="project" value="LOCAL" />
+      <updated>1758627849700</updated>
+    </task>
+    <option name="localTasksCounter" value="127" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -812,8 +807,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix: test units" />
-    <MESSAGE value="fix: refactor" />
     <MESSAGE value="Feat: FastAPI" />
     <MESSAGE value="Feat: FastAPI / conbus / discover" />
     <MESSAGE value="Feat: refactor / TelegramType -&gt; DatapointNameType" />
@@ -837,7 +830,9 @@
     <MESSAGE value="Cleanup" />
     <MESSAGE value="Feat: pypi" />
     <MESSAGE value="chore: publish" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: publish" />
+    <MESSAGE value="chore: publish 0.9.15" />
+    <MESSAGE value="chore: cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore: cleanup" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -1,354 +1,210 @@
-# XP Protocol Communication Tool
+# 🔌 XP Protocol Communication Tool
 
-A comprehensive Python CLI and API tool for CONSON XP Protocol operations, including console bus (Conbus) communication, telegram parsing, HomeKit integration, and module management.
+> **A powerful Python CLI and API toolkit for CONSON XP Protocol operations**
 
-## Features
+Control and communicate with XP devices through console bus (Conbus), parse telegrams in real-time, and integrate with smart home systems like Apple HomeKit.
 
-### Core Communication
-- **Conbus Operations**: Send and receive telegrams via TCP connections to XP130 and XP230 servers
-- **Telegram Parsing**: Parse event, system, and reply telegrams from remote console bus devices
-- **Real-time Communication**: Bidirectional communication with XP protocol devices
-- **Server Discovery**: Automatic discovery of XP servers on the network
+---
 
-### Protocol Support
-- **Multiple XP Modules Types**: XP20, XP24, XP33, XP130, XP230, CP20 server support
-- **Telegram Types**: Event, system, reply, output, and blink telegrams
-- **Checksum Validation**: Multiple checksum algorithms for data integrity
-- **Link Number Management**: Handle telegram versioning and link numbers
+## ✨ Key Features
 
-### Device Management
-- **Module Type Database**: Comprehensive module type information and search
-- **Datapoint Operations**: Read/write datapoints on connected devices
-- **Output Control**: Control outputs on XP devices
-- **Blink Operations**: Visual feedback and device identification
+🚀 **Real-time Communication**
+Connect directly to XP130/XP230 servers with bidirectional TCP communication
 
-### Integration & APIs
-- **REST API**: FastAPI-based REST endpoints for all operations
-- **HomeKit Integration**: Apple HomeKit bridge for smart home integration
-- **Configuration Management**: YAML-based configuration with validation
-- **Reverse Proxy**: Proxy server for device communication
+📡 **Smart Telegram Processing**
+Parse and validate event, system, and reply telegrams with built-in checksum verification
 
-### Development & Testing
-- **JSON Output**: All commands support both human-readable and JSON output formats
-- **Comprehensive Testing**: 60%+ test coverage with unit and integration tests
-- **Modern Python**: Type hints, async/await, and modern Python practices
+🏠 **HomeKit Integration**
+Bridge XP devices to Apple HomeKit for seamless smart home control
 
-## Installation
+🔍 **Device Discovery**
+Automatically discover XP servers and scan connected modules on your network
 
-### Using PDM (Recommended)
+⚡ **Modern Architecture**
+FastAPI REST endpoints and comprehensive type safety
+
+---
+
+## 🚀 Quick Start
+
 ```bash
-git clone <repository-url>
-cd xp
-pdm install
+# Install with PIP (recommended)
+pip install conson-xp
+
+# Parse a telegram
+xp telegram parse "<E14L00I02MAK>"
+
+# Discover XP servers on your network
+xp conbus discover
+
+# Start the REST API server
+xp api start
 ```
 
-### Using pip
+## 📦 Installation
+
+### Using PIP (Recommended)
 ```bash
-git clone <repository-url>
-cd xp
-pip install -e .
+pip install conson-xp
 ```
 
 ### Development Installation
 ```bash
 # Using PDM
+
+git clone <repository-url>
+
+pip install pdm
+
 pdm install -G dev
 
-# Using pip
-pip install -e ".[dev]"
 ```
 
-## Usage
+## 📚 Usage
 
-### Telegram Operations
+### 🎯 Core Operations
 
-Parse different types of telegrams:
-
+**Telegram Processing**
 ```bash
-# Parse event telegram
+# Parse any telegram (auto-detect type)
 xp telegram parse "<E14L00I02MAK>"
-
-# Parse system telegram
 xp telegram parse "<S0020012521F02D18FN>"
-
-# Parse reply telegram
 xp telegram parse "<R0020012521F02D18+26,0§CIL>"
 
-# Auto-detect telegram type
-xp telegram parse "<E14L00I02MAK>"
-
-# Parse multiple telegrams from data stream
-xp telegram parse-multiple "Data <E14L00I02MAK> more <E14L01I03BB1>"
-
-# Validate telegram format and checksum
+# Validate telegram integrity
 xp telegram validate "<E14L00I02MAK>"
 ```
 
-### Module Type Operations
-
-Manage and query module types:
-
+**Device Communication**
 ```bash
-# Get module information by ID or name
-xp module info 14
-xp module info XP2606
-
-# List all modules
-xp module list
-
-# List modules by category
-xp module list --category "Interface Panels"
-
-# Group modules by category
-xp module list --group-by-category
-
-# Search modules
-xp module search "push button"
-xp module search --field name "XP"
-
-# List available categories
-xp module categories
-```
-
-### Checksum Operations
-
-Calculate and validate checksums:
-
-```bash
-# Calculate simple checksum
-xp checksum calculate "E14L00I02M"
-
-# Calculate CRC32 checksum
-xp checksum calculate "E14L00I02M" --algorithm crc32
-
-# Validate checksum
-xp checksum validate "E14L00I02M" "AK"
-
-# Validate CRC32 checksum
-xp checksum validate "E14L00I02M" "ABCDABCD" --algorithm crc32
-```
-
-### Conbus Operations
-
-Connect to XP servers and perform real-time operations:
-
-```bash
-# Send custom telegrams to server
-xp conbus custom <host> <port> <telegram>
-
-# Discover XP servers on network
+# Discover XP servers on your network
 xp conbus discover
 
-# Send blink commands
-xp conbus blink <host> <port> <module_id> <datapoint>
-xp conbus blink all <host> <port>  # Blink all modules
+# Connect and scan for modules
+xp conbus scan <host> <port>
 
-# Control outputs
+# Control device outputs
 xp conbus output <host> <port> <module_id> <datapoint> <value>
+
+# Blink device for identification
+xp conbus blink <host> <port> <module_id> <datapoint>
+```
+
+**Module Information**
+```bash
+# Get module details
+xp module info 14
+xp module search "push button"
+
+# List available modules
+xp module list --group-by-category
+```
+
+### 🔧 Advanced Features
+
+<details>
+<summary><b>Real-time Operations</b></summary>
+
+```bash
+# Listen for real-time telegrams
+xp conbus receive <host> <port>
+
+# Send custom telegrams
+xp conbus custom <host> <port> <telegram>
 
 # Read/write datapoints
 xp conbus datapoint read <host> <port> <module_id> <datapoint>
 xp conbus datapoint write <host> <port> <module_id> <datapoint> <value>
-
-# Receive real-time telegrams
-xp conbus receive <host> <port>
-
-# Send raw telegrams
-xp conbus raw <host> <port> <raw_data>
-
-# Scan for connected modules
-xp conbus scan <host> <port>
 ```
+</details>
 
-### API Server
-
-Start the FastAPI REST server:
+<details>
+<summary><b>Checksum Operations</b></summary>
 
 ```bash
-# Start API server (default: localhost:8000)
-xp api start
-
-# Start with custom host and port
-xp api start --host 0.0.0.0 --port 8080
-
-# Start with auto-reload for development
-xp api start --reload
+# Calculate and validate checksums
+xp checksum calculate "E14L00I02M"
+xp checksum validate "E14L00I02M" "AK"
+xp checksum calculate "E14L00I02M" --algorithm crc32
 ```
+</details>
 
-API endpoints are available at:
-- `/docs` - Interactive API documentation
-- `/health` - Health check endpoint
-- `/conbus/*` - Conbus operation endpoints
-
-### HomeKit Integration
-
-Manage HomeKit bridge for smart home integration:
+<details>
+<summary><b>File Processing</b></summary>
 
 ```bash
-# Validate HomeKit and Conson configuration
-xp homekit config validate
-
-# Show configuration summary
-xp homekit config show
-
-# Start HomeKit bridge
-xp homekit start
-
-# Start with custom configuration files
-xp homekit start --conson-config custom-conson.yml --homekit-config custom-homekit.yml
-```
-
-### Server Management
-
-Manage XP protocol servers:
-
-```bash
-# Start different server types
-xp server start --type xp130 --port 10001
-xp server start --type xp230 --port 10002
-xp server start --type cp20 --port 10003
-
-# Start reverse proxy
-xp reverse-proxy start --target-host 192.168.1.100 --target-port 10001
-```
-
-### File Operations
-
-Process telegram files and logs:
-
-```bash
-# Parse telegrams from file
+# Process telegram files
 xp file parse telegrams.txt
-
-# Process log files
-xp file process-log logfile.txt
-
-# Extract telegrams from mixed content
 xp file extract-telegrams mixed-data.txt
 ```
+</details>
 
-## Architecture
+### 🌐 API & Integration
 
-The project follows a layered architecture with clear separation of concerns:
+**REST API Server**
+```bash
+# Start API server with interactive docs at /docs
+xp api start
+```
 
-### Core Layers
-- **CLI Layer** (`cli/`): Command-line interface with modular command structure
-- **API Layer** (`api/`): FastAPI REST endpoints with CORS support
-- **Services Layer** (`services/`): Business logic and protocol implementations
-- **Models Layer** (`models/`): Pydantic data models and response structures
-- **Utils Layer** (`utils/`): Utility functions and helpers
-- **Connection Layer** (`connection/`): Network communication and protocol handling
+**HomeKit Smart Home Bridge**
+```bash
+# Set up HomeKit integration
+xp homekit config validate
+xp homekit start
+```
 
-### Key Components
-- **Telegram Processing**: Parse and validate XP protocol telegrams
-- **Conbus Communication**: Real-time TCP/UDP communication with XP servers
-- **HomeKit Bridge**: Apple HomeKit integration for smart home connectivity
-- **Server Implementations**: Multiple XP server type support (XP130, XP230, etc.)
-- **Configuration Management**: YAML-based configuration with validation
-
-## Development
-
-### Using PDM Scripts
-
-The project uses PDM for dependency management with convenient scripts:
+<details>
+<summary><b>Module emulators</b></summary>
 
 ```bash
-# Run all tests with coverage
+# Start XP protocol servers
+xp server start
+xp reverse-proxy start
+```
+</details>
+
+---
+
+## 🏗️ Architecture
+
+**Layered Design**
+```
+CLI Layer → API Layer → Services → Models → Connection Layer
+```
+
+**Key Components**: Telegram processing • Real-time Conbus communication • HomeKit bridge • Multiple XP server support • Configuration management
+
+---
+
+## 🛠️ Development
+
+**Quick Development Setup**
+```bash
+# Run tests with coverage
 pdm run test
 
-# Run only unit tests
-pdm run test-unit
-
-# Run only integration tests
-pdm run test-integration
-
-# Run tests with HTML coverage report
-pdm run test-cov
-
 # Code quality checks
-pdm run lint           # Check code with ruff
-pdm run lint-fix       # Fix linting issues automatically
-pdm run format         # Format code with black
-pdm run format-check   # Check formatting
-pdm run typecheck      # Type checking with mypy
+pdm run lint && pdm run format && pdm run typecheck
 
-# Run all quality checks
+# All quality checks at once
 pdm run check
-
-# Clean up build artifacts
-pdm run clean
 ```
 
-### Manual Testing Commands
+<details>
+<summary><b>Project Structure</b></summary>
 
-```bash
-# Run all tests with coverage (manual)
-PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing
-
-# Run specific test file
-PYTHONPATH=src python -m pytest tests/unit/test_models/test_event_telegram.py -v
-
-# Run tests with coverage threshold
-PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing --cov-fail-under=60
+``` 
+src/xp/
+├── api/           # FastAPI REST endpoints
+├── cli/           # Command-line interface
+├── models/        # Core data models
+├── services/      # Business logic
+└── utils/         # Utility functions
 ```
+</details>
 
-### Code Quality
-
-The project includes comprehensive tooling for code quality:
-
-- **Testing**: pytest with 60% coverage requirement
-- **Formatting**: black code formatter
-- **Linting**: ruff (modern Python linter)
-- **Type Checking**: mypy static type checker
-- **Dead Code Detection**: vulture
-- **Dependency Management**: PDM
-
-### Project Structure
-
-```
-xp/
-├── src/xp/
-│   ├── api/           # FastAPI REST endpoints
-│   │   ├── models/    # API data models
-│   │   └── routers/   # API route handlers
-│   ├── cli/           # Command-line interface
-│   │   ├── commands/  # CLI command modules
-│   │   └── utils/     # CLI utilities
-│   ├── connection/    # Network communication
-│   ├── models/        # Core data models
-│   ├── services/      # Business logic
-│   └── utils/         # Utility functions
-├── tests/
-│   ├── unit/          # Unit tests
-│   ├── integration/   # Integration tests
-│   └── fixtures/      # Test data and fixtures
-├── pyproject.toml     # Project configuration
-└── pdm.lock          # Dependency lock file
-```
-
-## Requirements
-
-### Runtime Dependencies
-
-- **Python 3.10+** (Required)
-- **click >= 8.0** - CLI framework with colored help
-- **click-help-colors >= 0.9** - Colored CLI help text
-- **pyyaml >= 6.0** - YAML configuration support
-- **structlog >= 22.0** - Structured logging
-- **fastapi >= 0.104.0** - REST API framework
-- **uvicorn >= 0.24.0** - ASGI server
-- **pydantic >= 2.0.0** - Data validation and serialization
-- **HAP-python[QRCode] >= 5.0.0** - HomeKit integration
-
-### Development Dependencies
-
-- **pytest >= 7.0** - Testing framework
-- **pytest-cov >= 4.0** - Coverage reporting
-- **black >= 22.0** - Code formatting
-- **ruff >= 0.1.0** - Modern Python linting
-- **mypy >= 1.0** - Static type checking
-- **vulture >= 2.14** - Dead code detection
-- **httpx >= 0.24.0** - HTTP client for testing
+**Requirements**: Python 3.10+ • FastAPI • Pydantic • Click • HAP-python
 
 ## License
 
