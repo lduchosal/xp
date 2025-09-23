@@ -81,13 +81,20 @@ xp telegram validate "<E14L00I02MAK>"
 xp conbus discover
 
 # Connect and scan for modules
-xp conbus scan <host> <port>
+xp conbus scan <serial_number> <function_code>
+xp conbus scan 0123450001 02
 
 # Control device outputs
-xp conbus output <host> <port> <module_id> <datapoint> <value>
+xp conbus output <action> <serial_number> <ouput_number>
+xp conbus output off 0123450001 00
+xp conbus output on 0123450001 01
+xp conbus output status 0123450001
 
 # Blink device for identification
-xp conbus blink <host> <port> <module_id> <datapoint>
+xp conbus blink <action> <serial_number>
+xp conbus blink on 0123450001
+xp conbus blink all on
+xp conbus blink all off
 ```
 
 **Module Information**
@@ -99,6 +106,8 @@ xp module search "push button"
 # List available modules
 xp module list --group-by-category
 ```
+
+
 
 ### 🔧 Advanced Features
 
@@ -194,6 +203,112 @@ src/xp/
 ├── models/        # Core data models
 ├── services/      # Business logic
 └── utils/         # Utility functions
+```
+</details>
+
+<details>
+<summary><b>Functionalities</b></summary>
+
+``` 
+xp
+
+xp help
+
+xp api
+xp api start
+
+
+xp cache
+xp cache clear
+xp cache get
+xp cache items
+xp cache set
+xp cache stats
+
+
+xp conbus
+
+xp conbus blink
+
+xp conbus blink all
+xp conbus blink all off
+xp conbus blink all on
+
+xp conbus blink off
+xp conbus blink on
+
+xp conbus config
+xp conbus custom
+xp conbus datapoint
+xp conbus discover
+
+xp conbus output
+xp conbus output off
+xp conbus output on
+xp conbus output state
+xp conbus output status
+
+xp conbus raw
+xp conbus receive
+xp conbus scan
+
+
+xp file
+xp file analyze
+xp file decode
+xp file validate
+
+xp help
+
+xp homekit
+
+xp homekit config
+xp homekit config show
+xp homekit config validate
+
+xp homekit start
+
+
+xp module
+xp module categories
+xp module info
+xp module list
+xp module search
+
+
+xp rp
+xp rp start
+xp rp status
+xp rp stop
+
+
+xp server
+xp server start
+xp server status
+xp server stop
+
+
+xp telegram
+
+xp telegram blink
+xp telegram blink off
+xp telegram blink on
+
+
+xp telegram checksum
+xp telegram checksum calculate
+xp telegram checksum validate
+
+xp telegram discover
+
+xp telegram linknumber
+xp telegram linknumber read
+xp telegram linknumber write
+
+xp telegram parse
+xp telegram validate
+xp telegram version
+
 ```
 </details>
 

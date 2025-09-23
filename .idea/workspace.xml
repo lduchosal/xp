@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: publish 0.9.16">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: clean doc">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
@@ -383,15 +383,7 @@
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
       <workItem from="1758468596803" duration="27068000" />
-      <workItem from="1758604567711" duration="8036000" />
-    </task>
-    <task id="LOCAL-00080" summary="Feat: refactor / clean">
-      <option name="closed" value="true" />
-      <created>1758363899777</created>
-      <option name="number" value="00080" />
-      <option name="presentableId" value="LOCAL-00080" />
-      <option name="project" value="LOCAL" />
-      <updated>1758363899777</updated>
+      <workItem from="1758604567711" duration="8406000" />
     </task>
     <task id="LOCAL-00081" summary="Feat: refactor / clean">
       <option name="closed" value="true" />
@@ -777,7 +769,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758641259681</updated>
     </task>
-    <option name="localTasksCounter" value="129" />
+    <task id="LOCAL-00129" summary="chore: clean doc">
+      <option name="closed" value="true" />
+      <created>1758641526605</created>
+      <option name="number" value="00129" />
+      <option name="presentableId" value="LOCAL-00129" />
+      <option name="project" value="LOCAL" />
+      <updated>1758641526605</updated>
+    </task>
+    <option name="localTasksCounter" value="130" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -806,7 +806,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: FastAPI / conbus / discover" />
     <MESSAGE value="Feat: refactor / TelegramType -&gt; DatapointNameType" />
     <MESSAGE value="Feat: refactor / ConbusService" />
     <MESSAGE value="Feat: refactor / Telegram" />
@@ -831,7 +830,8 @@
     <MESSAGE value="chore: publish 0.9.15" />
     <MESSAGE value="chore: cleanup" />
     <MESSAGE value="chore: publish 0.9.16" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: publish 0.9.16" />
+    <MESSAGE value="chore: clean doc" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore: clean doc" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
