@@ -106,16 +106,19 @@ xp module list --group-by-category
 <summary><b>Real-time Operations</b></summary>
 
 ```bash
-# Listen for real-time telegrams
-xp conbus receive <host> <port>
+# Listen for event telegrams
+xp conbus receive
 
 # Send custom telegrams
-xp conbus custom <host> <port> <telegram>
+xp conbus custom <serial_number> <function_code> <action_code>
+xp conbus custom 01234500001 02 02
 
 # Read/write datapoints
-xp conbus datapoint read <host> <port> <module_id> <datapoint>
-xp conbus datapoint write <host> <port> <module_id> <datapoint> <value>
-```
+xp conbus datapoint <datapoint> <serial_number>
+xp conbus datapoint hw_version 01234500001
+xp conbus datapoint auto_report_status 01234500001
+xp conbus datapoint voltage 01234500001
+ ```
 </details>
 
 <details>
@@ -126,16 +129,6 @@ xp conbus datapoint write <host> <port> <module_id> <datapoint> <value>
 xp checksum calculate "E14L00I02M"
 xp checksum validate "E14L00I02M" "AK"
 xp checksum calculate "E14L00I02M" --algorithm crc32
-```
-</details>
-
-<details>
-<summary><b>File Processing</b></summary>
-
-```bash
-# Process telegram files
-xp file parse telegrams.txt
-xp file extract-telegrams mixed-data.txt
 ```
 </details>
 
