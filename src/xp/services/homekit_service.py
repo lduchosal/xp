@@ -12,7 +12,6 @@ from xp.models.homekit_accessory import TemperatureSensor
 from xp.models.homekit_outlet import Outlet
 from xp.models.homekit_lightbulb import LightBulb
 from xp.models.homekit_config import HomekitConfig, HomekitAccessoryConfig, RoomConfig
-from xp.services.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit_module_service import HomekitModuleService
 
 

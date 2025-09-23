@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: clean doc">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: version 0.9.17">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_connection_pool.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_connection_pool.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/server_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -383,15 +386,7 @@
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
       <workItem from="1758468596803" duration="27068000" />
-      <workItem from="1758604567711" duration="8406000" />
-    </task>
-    <task id="LOCAL-00081" summary="Feat: refactor / clean">
-      <option name="closed" value="true" />
-      <created>1758363958948</created>
-      <option name="number" value="00081" />
-      <option name="presentableId" value="LOCAL-00081" />
-      <option name="project" value="LOCAL" />
-      <updated>1758363958948</updated>
+      <workItem from="1758604567711" duration="8872000" />
     </task>
     <task id="LOCAL-00082" summary="Feat: refactor / clean">
       <option name="closed" value="true" />
@@ -777,7 +772,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758641526605</updated>
     </task>
-    <option name="localTasksCounter" value="130" />
+    <task id="LOCAL-00130" summary="chore: version 0.9.17">
+      <option name="closed" value="true" />
+      <created>1758641929076</created>
+      <option name="number" value="00130" />
+      <option name="presentableId" value="LOCAL-00130" />
+      <option name="project" value="LOCAL" />
+      <updated>1758641929076</updated>
+    </task>
+    <option name="localTasksCounter" value="131" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -806,7 +809,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: refactor / TelegramType -&gt; DatapointNameType" />
     <MESSAGE value="Feat: refactor / ConbusService" />
     <MESSAGE value="Feat: refactor / Telegram" />
     <MESSAGE value="Feat: refactor / Input" />
@@ -831,7 +833,8 @@
     <MESSAGE value="chore: cleanup" />
     <MESSAGE value="chore: publish 0.9.16" />
     <MESSAGE value="chore: clean doc" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: clean doc" />
+    <MESSAGE value="chore: version 0.9.17" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore: version 0.9.17" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

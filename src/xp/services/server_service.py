@@ -59,11 +59,10 @@ class ServerService:
         """Load device configurations from server.yml"""
         try:
             if os.path.exists(self.config_path):
-                with open(self.config_path, "r") as file:
-                    config = ConsonModuleListConfig.from_yaml(self.config_path)
-                    self.devices = config.root
-                    self._create_device_services()
-                    self.logger.info(f"Loaded {len(self.devices)} devices from config")
+                config = ConsonModuleListConfig.from_yaml(self.config_path)
+                self.devices = config.root
+                self._create_device_services()
+                self.logger.info(f"Loaded {len(self.devices)} devices from config")
             else:
                 self.logger.warning(
                     f"Config file {self.config_path} not found, using empty device list"

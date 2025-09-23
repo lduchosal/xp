@@ -38,7 +38,8 @@ class ConbusSocketConnectionManager:
         except Exception as e:
             self.logger.warning(f"Error disposing connection: {e}")
 
-    def check_aliveness(self, connection: socket.socket) -> bool:
+    @staticmethod
+    def check_aliveness(connection: socket.socket) -> bool:
         """Verify if connection is still alive"""
         try:
             # Use socket error checking rather than sending empty data
@@ -130,6 +131,7 @@ class ConbusConnectionPool:
             self.logger.debug("Acquired connection from pool")
             return self._connection
 
+    # noinspection PyUnusedLocal
     def release_connection(self, connection: socket.socket) -> None:
         """Release a connection back to the pool (no-op for single connection pool)"""
         self.logger.debug("Released connection back to pool")
@@ -158,6 +160,7 @@ class ConbusConnectionPool:
             if cls._instance:
                 # Clean up existing connection
                 if hasattr(cls._instance, '_connection') and cls._instance._connection:
+                    # noinspection PyBroadException
                     try:
                         cls._instance._connection.close()
                     except Exception:
