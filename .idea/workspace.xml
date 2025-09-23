@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: fully working prototype">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Cleanup">
+      <change afterPath="$PROJECT_DIR$/.github/workflows/python-publish.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/python-app.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/python-package.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-Checksum.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feature-LinkNumber-System-Telegram.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feature-LinkNumber-System-Telegram.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytest.ini" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +154,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/q/Projects/xp",
+    "last_opened_file_path": "/Users/q/Projects/xp/.github/workflows",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -168,11 +167,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/.github/workflows" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/doc" />
       <recent name="$PROJECT_DIR$/src/xp/services" />
       <recent name="$PROJECT_DIR$/src/xp/models" />
-      <recent name="$PROJECT_DIR$/src/xp/cli/commands" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/private" />
@@ -386,14 +385,7 @@
       <workItem from="1758457806335" duration="3871000" />
       <workItem from="1758461707042" duration="4264000" />
       <workItem from="1758468596803" duration="27068000" />
-    </task>
-    <task id="LOCAL-00073" summary="Feat: refactor / ConbusService">
-      <option name="closed" value="true" />
-      <created>1758266298274</created>
-      <option name="number" value="00073" />
-      <option name="presentableId" value="LOCAL-00073" />
-      <option name="project" value="LOCAL" />
-      <updated>1758266298274</updated>
+      <workItem from="1758604567711" duration="1661000" />
     </task>
     <task id="LOCAL-00074" summary="Feat: refactor / Telegram">
       <option name="closed" value="true" />
@@ -779,7 +771,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758579941391</updated>
     </task>
-    <option name="localTasksCounter" value="122" />
+    <task id="LOCAL-00122" summary="Cleanup">
+      <option name="closed" value="true" />
+      <created>1758604558052</created>
+      <option name="number" value="00122" />
+      <option name="presentableId" value="LOCAL-00122" />
+      <option name="project" value="LOCAL" />
+      <updated>1758604558052</updated>
+    </task>
+    <option name="localTasksCounter" value="123" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -808,7 +808,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: serial number" />
     <MESSAGE value="Feat: json only" />
     <MESSAGE value="fix: lint" />
     <MESSAGE value="fix: test units" />
@@ -833,7 +832,8 @@
     <MESSAGE value="Feat: cache" />
     <MESSAGE value="Feat: connection pool" />
     <MESSAGE value="Feat: fully working prototype" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feat: fully working prototype" />
+    <MESSAGE value="Cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cleanup" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -1,9 +1,9 @@
 [project]
-name = "xp"
+name = "conson-xp"
 version = "0.9.2"
-description = "XP Protocol Communication Tool"
+description = "XP Protocol Communication Tools"
 authors = [
-    {name = "lduchosal", email = "luc+github@2113.ch"},
+    {name = "ldvchosal", email = "ldvchosal@github.com"},
 ]
 dependencies = [
     "click>=8.0",
@@ -18,7 +18,12 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 readme = "README.md"
-license = {text = "MIT"}
+license = {file = "LICENSE"}
+
+[project.urls]
+"Homepage" = "https://github.com/lduchosal/xp"
+"Bug Reports" = "https://github.com/lduchosal/xp/issues"
+"Source" = "https://github.com/lduchosal/xp"
 
 [project.scripts]
 xp = "xp.cli:cli"
@@ -32,7 +37,8 @@ dev = [
     "mypy>=1.0",
     "ruff>=0.1.0",
     "vulture>=2.14",
-    "httpx>=0.24.0"
+    "httpx>=0.24.0",
+    "twine>=6.2.0",
 ]
 
 [tool.pytest.ini_options]
@@ -133,6 +139,7 @@ check = ["lint", "format-check", "typecheck", "test"]
 install = "pdm install"
 install-dev = "pdm install -G dev"
 clean = "rm -rf .coverage htmlcov/ .pytest_cache/ __pycache__/ src/xp/__pycache__/"
+publish = "python -m twine upload dist/* --verbose"
 
 [tool.vulture]
 exclude = ["src/xp/cli"]
