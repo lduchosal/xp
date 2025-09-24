@@ -52,25 +52,28 @@ echo "╚═╝      ╚═════╝ ╚═════╝ ╚════
 echo "${NC}"
 echo "${BOLD}Starting XP Package Publishing Process...${NC}"
 
-print_step "1/7 Cleaning Previous Build"
+print_step "1/8 Cleaning Previous Build"
 run_command "pdm run clean" "Clean"
 
-print_step "2/7 Installing Dependencies"
+print_step "2/8 Installing Dependencies"
 run_command "pdm run install" "Dependencies installation"
 
-print_step "3/7 Installing Development Dependencies"
+print_step "3/8 Installing Development Dependencies"
 run_command "pdm run install-dev" "Development dependencies installation"
 
-print_step "4/7 Bumping Version"
-run_command "pdm run bump-version" "Version bump"
+print_step "4/8 Type Checking"
+run_command "pdm run typecheck" "Type checking"
 
-print_step "5/7 Building Package"
-run_command "pdm build" "Package build"
-
-print_step "6/7 Running Tests"
+print_step "5/8 Running Tests"
 run_command "pdm run test-quick" "Tests"
 
-print_step "7/7 Publishing Package"
+print_step "6/8 Bumping Version"
+run_command "pdm run bump-version" "Version bump"
+
+print_step "7/8 Building Package"
+run_command "pdm build" "Package build"
+
+print_step "8/8 Publishing Package"
 run_command "pdm publish" "Package publishing"
 
 echo ""

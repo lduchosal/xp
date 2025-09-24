@@ -54,6 +54,10 @@ class TestModuleType:
         reserved2 = ModuleType.from_code(18)  # XP26X2
         not_reserved = ModuleType.from_code(14)  # XP2606
 
+        assert reserved1 is not None
+        assert reserved2 is not None
+        assert not_reserved is not None
+
         assert reserved1.is_reserved is True
         assert reserved2.is_reserved is True
         assert not_reserved.is_reserved is False
@@ -64,6 +68,11 @@ class TestModuleType:
         panel2 = ModuleType.from_code(19)  # XP2506
         panel3 = ModuleType.from_code(22)  # XPX1_8
         not_panel = ModuleType.from_code(7)  # XP24
+
+        assert panel1 is not None
+        assert panel2 is not None
+        assert panel3 is not None
+        assert not_panel is not None
 
         assert panel1.is_push_button_panel is True
         assert panel2.is_push_button_panel is True
@@ -77,6 +86,12 @@ class TestModuleType:
         ir_capable3 = ModuleType.from_code(15)  # XP2606A
         not_ir_capable = ModuleType.from_code(14)  # XP2606
 
+
+        assert ir_capable1 is not None
+        assert ir_capable2 is not None
+        assert ir_capable3 is not None
+        assert not_ir_capable is not None
+
         assert ir_capable1.is_ir_capable is True
         assert ir_capable2.is_ir_capable is True
         assert ir_capable3.is_ir_capable is True
@@ -89,6 +104,11 @@ class TestModuleType:
         xp_module = ModuleType.from_code(7)  # XP24 - XP Control Modules
         interface_module = ModuleType.from_code(14)  # XP2606 - Interface Panels
 
+        assert system_module is not None
+        assert cp_module is not None
+        assert xp_module is not None
+        assert interface_module is not None
+
         assert system_module.category == "System"
         assert cp_module.category == "CP Link Modules"
         assert xp_module.category == "XP Control Modules"
@@ -97,6 +117,8 @@ class TestModuleType:
     def test_to_dict(self):
         """Test dictionary serialization"""
         module = ModuleType.from_code(14)  # XP2606
+
+        assert module is not None
         result = module.to_dict()
 
         expected_keys = {

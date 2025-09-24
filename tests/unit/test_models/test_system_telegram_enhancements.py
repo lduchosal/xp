@@ -53,6 +53,9 @@ class TestSystemTelegramEnhancements:
             raw_telegram="<S0012345005F03D04AB>",
         )
 
+        assert telegram.system_function is not None
+        assert telegram.datapoint_type is not None
+
         assert telegram.system_function.name == "READ_CONFIG"
         assert telegram.datapoint_type.name == "LINK_NUMBER"
 
@@ -67,6 +70,7 @@ class TestSystemTelegramEnhancements:
             raw_telegram="<S0012345005F04D0425FO>",
         )
 
+        assert write_config_telegram.system_function is not None
         assert write_config_telegram.system_function.name == "WRITE_CONFIG"
 
         read_config_telegram = SystemTelegram(
@@ -77,6 +81,7 @@ class TestSystemTelegramEnhancements:
             raw_telegram="<S0012345005F03D04AB>",
         )
 
+        assert read_config_telegram.system_function is not None
         assert read_config_telegram.system_function.name == "READ_CONFIG"
 
         # Test new ACK/NAK functions
@@ -88,6 +93,7 @@ class TestSystemTelegramEnhancements:
             raw_telegram="<R0012345005F18DFB>",
         )
 
+        assert ack_telegram.system_function is not None
         assert ack_telegram.system_function.name == "ACK"
 
         nak_telegram = SystemTelegram(
@@ -98,6 +104,7 @@ class TestSystemTelegramEnhancements:
             raw_telegram="<R0012345005F19DFA>",
         )
 
+        assert nak_telegram.system_function is not None
         assert nak_telegram.system_function.name == "NAK"
 
     def test_data_point_descriptions(self):
@@ -110,6 +117,7 @@ class TestSystemTelegramEnhancements:
             raw_telegram="<S0012345005F04D0425FO>",
         )
 
+        assert telegram.datapoint_type is not None
         assert telegram.datapoint_type.name == "LINK_NUMBER"
 
         # Test that existing data points still work
@@ -121,6 +129,7 @@ class TestSystemTelegramEnhancements:
             raw_telegram="<S0012345005F03D18AB>",
         )
 
+        assert temp_telegram.datapoint_type is not None
         assert temp_telegram.datapoint_type.name == "TEMPERATURE"
 
     def test_to_dict_with_link_number(self):

@@ -37,7 +37,7 @@ class TestConbusRawIntegration:
         mock_service.send_raw_telegrams.return_value = mock_response
 
         result = self.runner.invoke(
-            cli, ["conbus", "raw", "<S2113010000F02D12>"]  # type: ignore
+            cli, ["conbus", "raw", "<S2113010000F02D12>"] 
         )
 
         assert result.exit_code == 0
@@ -63,7 +63,7 @@ class TestConbusRawIntegration:
 
         raw_input = "<S2113010000F02D12><S2113010001F02D12><S2113010002F02D12>"
         result = self.runner.invoke(
-            cli, ["conbus", "raw", raw_input]  # type: ignore
+            cli, ["conbus", "raw", raw_input] 
         )
 
         assert result.exit_code == 0
@@ -90,7 +90,7 @@ class TestConbusRawIntegration:
         mock_service.send_raw_telegrams.return_value = mock_response
 
         result = self.runner.invoke(
-            cli, ["conbus", "raw", "<S2113010000F02D12>"]  # type: ignore
+            cli, ["conbus", "raw", "<S2113010000F02D12>"] 
         )
 
         assert result.exit_code == 0  # CLI doesn't exit with error code, but shows error
@@ -114,7 +114,7 @@ class TestConbusRawIntegration:
         mock_service.send_raw_telegrams.return_value = mock_response
 
         result = self.runner.invoke(
-            cli, ["conbus", "raw", "<S2113010000F02D12>"]  # type: ignore
+            cli, ["conbus", "raw", "<S2113010000F02D12>"] 
         )
 
         assert result.exit_code == 0
@@ -122,7 +122,7 @@ class TestConbusRawIntegration:
 
     def test_conbus_raw_help_command(self):
         """Test conbus raw help command."""
-        result = self.runner.invoke(cli, ["conbus", "raw", "--help"])  # type: ignore
+        result = self.runner.invoke(cli, ["conbus", "raw", "--help"]) 
 
         assert result.exit_code == 0
         output = result.output
@@ -132,7 +132,7 @@ class TestConbusRawIntegration:
 
     def test_conbus_raw_missing_arguments(self):
         """Test conbus raw command with missing arguments."""
-        result = self.runner.invoke(cli, ["conbus", "raw"])  # type: ignore
+        result = self.runner.invoke(cli, ["conbus", "raw"]) 
 
         assert result.exit_code != 0
         assert "Usage: cli conbus raw [OPTIONS] RAW_TELEGRAMS" in result.output
@@ -150,7 +150,7 @@ class TestConbusRawIntegration:
         mock_service.send_raw_telegrams.side_effect = ConbusRawError("Service error")
 
         result = self.runner.invoke(
-            cli, ["conbus", "raw", "<S2113010000F02D12>"]  # type: ignore
+            cli, ["conbus", "raw", "<S2113010000F02D12>"] 
         )
 
         # The CLI should handle the exception gracefully
@@ -158,7 +158,7 @@ class TestConbusRawIntegration:
 
     def test_conbus_raw_command_registration(self):
         """Test that conbus raw command is properly registered."""
-        result = self.runner.invoke(cli, ["conbus", "--help"])  # type: ignore
+        result = self.runner.invoke(cli, ["conbus", "--help"]) 
 
         assert result.exit_code == 0
         assert "raw" in result.output

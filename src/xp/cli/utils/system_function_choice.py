@@ -20,7 +20,7 @@ class SystemFunctionChoice(click.ParamType):
 
         if normalized_value in self.choices:
             # Return the actual enum member
-            return SystemFunction[normalized_value]
+            return SystemFunction[normalized_value.upper()]
 
         # If not found, show error with available choices
         self.fail(f'{value!r} is not a valid choice. '

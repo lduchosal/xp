@@ -127,6 +127,7 @@ class TestSystemTelegram:
             raw_telegram="<S0020012521F02D18FN>",
         )
 
+        assert telegram.system_function is not None
         assert telegram.system_function.name == "READ_DATAPOINT"
 
         # Test other functions
@@ -146,6 +147,7 @@ class TestSystemTelegram:
             raw_telegram="<S0020012521F02D18FN>",
         )
 
+        assert telegram.datapoint_type is not None
         assert telegram.datapoint_type.name == "TEMPERATURE"
 
         # Test other data points
@@ -223,6 +225,7 @@ class TestSystemTelegram:
             raw_telegram="<S0020012521F02D18FN>",
         )
 
+        assert telegram.system_function is not None
         assert telegram.system_function.name == description
 
     def test_telegram_equality(self):
@@ -286,4 +289,5 @@ class TestSystemTelegram:
 
         after = datetime.now()
 
+        assert telegram.timestamp is not None
         assert before <= telegram.timestamp <= after

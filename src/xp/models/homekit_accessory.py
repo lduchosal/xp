@@ -16,6 +16,6 @@ class TemperatureSensor(Accessory):
         serv_temp = self.add_preload_service('TemperatureSensor')
         self.char_temp = serv_temp.configure_char('CurrentTemperature')
 
-    @Accessory.run_at_interval(30)  # type: ignore[misc]
+    @Accessory.run_at_interval(30)
     async def run(self) -> None:
         self.char_temp.set_value(random.randint(-25, 25))

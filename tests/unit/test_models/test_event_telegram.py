@@ -146,4 +146,5 @@ class TestEventTelegram:
         )
         after = datetime.now()
 
+        assert telegram.timestamp is not None
         assert before <= telegram.timestamp <= after

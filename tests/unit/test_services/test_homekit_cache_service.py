@@ -144,8 +144,10 @@ class TestHomeKitCacheService:
             response = service.get("test_device", "test_tag")
 
             # Should return error response
+            assert response is not None
             assert response.hit is False
             assert response.data is None
+            assert response.error is not None
             assert "Device timeout" in response.error
 
     def test_device_query_exception(self):
@@ -159,8 +161,10 @@ class TestHomeKitCacheService:
             response = service.get("test_device", "test_tag")
 
             # Should return error response
+            assert response is not None
             assert response.hit is False
             assert response.data is None
+            assert response.error is not None
             assert "Connection error" in response.error
 
     def test_set_cache_entry(self):

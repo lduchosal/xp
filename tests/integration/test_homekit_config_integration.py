@@ -1,7 +1,11 @@
+from typing import List
+
 import pytest
 import tempfile
 import os
 import yaml
+
+from xp.models.homekit_conson_config import ConsonModuleConfig
 from xp.services.homekit_config_validator import ConfigValidationService
 
 
@@ -270,7 +274,7 @@ class TestHomekitConfigIntegration:
 
     def test_empty_configuration_integration(self):
         """Test validation with empty but valid configuration files."""
-        conson_data = []
+        conson_data: List[ConsonModuleConfig] = []
         homekit_data = {
             'homekit': {'ip': '192.168.1.50', 'port': 51827},
             'conson': {'ip': '192.168.1.200', 'port': 10001},

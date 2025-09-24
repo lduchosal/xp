@@ -32,7 +32,7 @@ class LightBulb(Accessory):
         self.output_number = output_number
         serial = f"{serial_number}.{output_number:02d}"
 
-        serv_light = self.add_preload_service('Lightbulb') # type: ignore
+        serv_light = self.add_preload_service('Lightbulb')
         self.set_info_service(
             version,
             manufacturer,

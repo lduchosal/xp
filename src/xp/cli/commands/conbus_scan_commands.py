@@ -12,6 +12,7 @@ from ...services.conbus_datapoint_service import (
     ConbusDatapointError,
 )
 from ...services.conbus_scan_service import ConbusScanService
+from ...models import ConbusResponse
 
 
 @conbus.command("scan")
@@ -44,10 +45,12 @@ def scan_module(
     successful_count = 0
     failed_count = 0
 
-    # noinspection PyUnusedLocal
-    def progress_callback(response, total, count) -> None:
+    def progress_callback(response: ConbusResponse, total: int, count: int) -> None:
         nonlocal successful_count, failed_count
         results.append(response)
+
+        if count % 10 == 0:
+            click.echo(f"{count}/{total} datapoints scanned.")
 
         # Count results for JSON output
         if response.success:

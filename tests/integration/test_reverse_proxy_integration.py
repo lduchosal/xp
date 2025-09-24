@@ -5,6 +5,7 @@ import threading
 import time
 import tempfile
 import os
+from typing import Optional
 
 import pytest
 
@@ -16,10 +17,10 @@ class MockServer:
 
     def __init__(self, port: int):
         self.port = port
-        self.socket = None
+        self.socket: Optional[socket.socket] = None
         self.is_running = False
-        self.received_messages = []
-        self.responses = []
+        self.received_messages: list[str] = []
+        self.responses: list[str] = []
 
     def start(self):
         """Start the mock server"""
@@ -39,7 +40,7 @@ class MockServer:
         if self.socket:
             self.socket.close()
 
-    def add_response(self, response: str):
+    def add_response(self, response: str) -> None:
         """Add a response to send when receiving messages"""
         self.responses.append(response)
 
@@ -47,6 +48,8 @@ class MockServer:
         """Accept and handle client connections"""
         while self.is_running:
             try:
+                if not self.socket:
+                    raise socket.error
                 client_socket, address = self.socket.accept()
                 self._handle_client(client_socket)
             except (OSError, socket.error):
@@ -298,8 +301,10 @@ class TestReverseProxyErrorHandling:
             # Should fail due to port conflict
             assert not result.success
             assert (
-                "Address already in use" in result.error
-                or "permission" in result.error.lower()
+                result.error is not None and (
+                    "Address already in use" in result.error
+                    or "permission" in result.error.lower()
+                )
             )
 
         finally:

@@ -116,6 +116,7 @@ conbus:
         result = self.service.start_proxy()
 
         assert not result.success
+        assert result.error is not None
         assert "already running" in result.error
 
     @patch("socket.socket")
@@ -128,6 +129,7 @@ conbus:
         result = self.service.start_proxy()
 
         assert not result.success
+        assert result.error is not None
         assert "Address already in use" in result.error
         assert not self.service.is_running
 
@@ -136,6 +138,7 @@ conbus:
         result = self.service.stop_proxy()
 
         assert not result.success
+        assert result.error is not None
         assert "not running" in result.error
 
     def test_get_status_not_running(self):

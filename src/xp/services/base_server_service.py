@@ -40,10 +40,6 @@ class BaseServerService(ABC):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.datapoint_type == DataPointType.MODULE_TYPE_CODE
         ):
-            if self.module_type_code is None:
-                self.logger.error(f"Module type code not set for {self.device_type}")
-                return None
-
             data_part = f"R{self.serial_number}F02D07{self.module_type_code}"
             checksum = calculate_checksum(data_part)
             telegram = f"<{data_part}{checksum}>"

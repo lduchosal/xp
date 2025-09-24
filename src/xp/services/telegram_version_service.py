@@ -37,11 +37,6 @@ class VersionService:
             Response object with parsed version information
         """
         try:
-            if not isinstance(version_string, str):
-                return Response(
-                    success=False, data=None, error="Version string must be a string"
-                )
-
             # Version format: {PRODUCT}_{VERSION}
             # Examples: XP230_V1.00.04, XP20_V0.01.05, XP33LR_V0.04.02, XP24_V0.34.03
             if "_V" in version_string:
@@ -103,11 +98,6 @@ class VersionService:
             Response object with generated telegram
         """
         try:
-            if not isinstance(serial_number, str):
-                return Response(
-                    success=False, data=None, error="Serial number must be a string"
-                )
-
             if len(serial_number) != 10 or not serial_number.isdigit():
                 return Response(
                     success=False,
@@ -156,13 +146,6 @@ class VersionService:
             Response object with validation result
         """
         try:
-            if not isinstance(telegram, SystemTelegram):
-                return Response(
-                    success=False,
-                    data=None,
-                    error="Input must be a SystemTelegram object",
-                )
-
             is_version_request = (
                     telegram.system_function == SystemFunction.READ_DATAPOINT
                     and telegram.datapoint_type == DataPointType.SW_VERSION
@@ -205,13 +188,6 @@ class VersionService:
             Response object with version information
         """
         try:
-            if not isinstance(telegram, ReplyTelegram):
-                return Response(
-                    success=False,
-                    data=None,
-                    error="Input must be a ReplyTelegram object",
-                )
-
             # Check if this is a version reply
             if telegram.datapoint_type != DataPointType.SW_VERSION:
                 return Response(
@@ -266,9 +242,6 @@ class VersionService:
             Formatted string summary
         """
         try:
-            if not isinstance(version_data, dict):
-                return "Invalid version data format"
-
             if "version_info" in version_data:
                 version_info = version_data["version_info"]
                 serial = version_data.get("serial_number", "Unknown")

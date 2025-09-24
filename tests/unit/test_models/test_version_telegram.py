@@ -2,6 +2,7 @@
 
 import unittest
 from datetime import datetime
+from typing import List, Dict, Any, Tuple
 
 from xp.models.system_telegram import SystemTelegram
 from xp.models.datapoint_type import DataPointType
@@ -38,6 +39,9 @@ class TestVersionSystemTelegram(unittest.TestCase):
 
     def test_version_system_telegram_descriptions(self):
         """Test human-readable descriptions for version telegram."""
+
+        assert self.version_system_telegram.system_function is not None
+        assert self.version_system_telegram.datapoint_type is not None
         self.assertEqual(
             self.version_system_telegram.system_function.name, "READ_DATAPOINT"
         )
@@ -104,9 +108,12 @@ class TestVersionReplyTelegram(unittest.TestCase):
 
     def test_version_reply_telegram_descriptions(self):
         """Test human-readable descriptions for version reply telegram."""
+
+        assert self.version_reply_telegram.system_function is not None
         self.assertEqual(
             self.version_reply_telegram.system_function.name, "READ_DATAPOINT"
         )
+        assert self.version_reply_telegram.datapoint_type is not None
         self.assertEqual(self.version_reply_telegram.datapoint_type.name, "SW_VERSION")
 
     def test_version_reply_telegram_parsed_value_valid(self):
@@ -148,7 +155,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
 
     def test_version_formats(self):
         """Test various version formats from the specification."""
-        test_cases = [
+        test_cases: List[Tuple[str, Dict[str, Any]]] = [
             (
                 "XP230_V1.00.04",
                 {"product": "XP230", "version": "1.00.04", "parsed": True},

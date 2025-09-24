@@ -7,6 +7,7 @@ import sys
 from click_help_colors import HelpColorsGroup
 
 from typing import Optional, Dict, Any
+from types import FrameType
 
 from ...services.reverse_proxy_service import (
     ReverseProxyService,
@@ -68,15 +69,15 @@ def start_proxy(port: int, config: str) -> None:
         )
 
         # Handle graceful shutdown on SIGINT
-        def signal_handler() -> None:
+        def signal_handler(signum: int, frame: Optional[FrameType]) -> None:
             if global_proxy_instance and global_proxy_instance.is_running:
                 print(
-                    f"\n{global_proxy_instance.timestamp()} [SHUTDOWN] Received interrupt signal"
+                    f"\n{global_proxy_instance.timestamp()} [SHUTDOWN] Received interrupt signal ({signum})"
                 )
                 global_proxy_instance.stop_proxy()
             sys.exit(0)
 
-        signal.signal(signal.SIGINT, signal_handler())
+        signal.signal(signal.SIGINT, signal_handler)
 
         # Start proxy (this will block)
         result = global_proxy_instance.start_proxy()

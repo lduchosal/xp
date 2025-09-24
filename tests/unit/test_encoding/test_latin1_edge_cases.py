@@ -8,6 +8,7 @@ where UTF-8 decoding fails on Latin-1 characters like 0xa7 (§ symbol).
 import socket
 import threading
 import time
+from typing import Optional
 
 import pytest
 
@@ -19,7 +20,7 @@ class Latin1TestServer:
 
     def __init__(self, port=10003):
         self.port = port
-        self.server_socket = None
+        self.server_socket : Optional[socket.socket] = None
         self.is_running = False
         self.received_messages = []
 
@@ -45,6 +46,8 @@ class Latin1TestServer:
         """Accept and handle client connections"""
         while self.is_running:
             try:
+                if not self.server_socket:
+                    raise socket.error
                 client_socket, addr = self.server_socket.accept()
                 self._handle_client(client_socket)
             except (socket.error, OSError):

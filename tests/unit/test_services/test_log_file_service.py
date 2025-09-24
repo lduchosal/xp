@@ -3,6 +3,7 @@
 import pytest
 from datetime import datetime
 from unittest.mock import Mock, patch, mock_open
+from typing import cast
 from xp.services.log_file_service import LogFileService, LogFileParsingError
 from xp.services.telegram_service import TelegramService, TelegramParsingError
 from xp.models.log_entry import LogEntry
@@ -242,7 +243,8 @@ class TestLogFileService:
         result = service.validate_log_format("/path/to/log.txt")
         assert result is False
 
-    def test_extract_telegrams(self):
+    @patch.object(LogFileService, 'parse_log_file')
+    def test_extract_telegrams(self, mock_parse):
         """Test extracting telegrams from log file"""
         service = LogFileService()
 
@@ -252,7 +254,7 @@ class TestLogFileService:
             Mock(raw_telegram="<telegram2>"),
             Mock(raw_telegram="<telegram3>"),
         ]
-        service.parse_log_file = Mock(return_value=entries)
+        mock_parse.return_value = entries
 
         result = service.extract_telegrams("/path/to/log.txt")
         expected = ["<telegram1>", "<telegram2>", "<telegram3>"]
@@ -313,7 +315,7 @@ class TestLogFileService:
         invalid_entry.parsed_telegram = None
         entries.append(invalid_entry)
 
-        stats = service.get_file_statistics(entries)
+        stats = service.get_file_statistics(cast(list[LogEntry], entries))
 
         # Check basic counts
         assert stats["total_entries"] == 3
@@ -358,7 +360,7 @@ class TestLogFileService:
             Mock(telegram_type="event"),
         ]
 
-        result = service.filter_entries(entries, telegram_type="event")
+        result = service.filter_entries(cast(list[LogEntry], entries), telegram_type="event")
         assert len(result) == 2
         assert all(entry.telegram_type == "event" for entry in result)
 
@@ -373,7 +375,7 @@ class TestLogFileService:
             Mock(direction="RX"),
         ]
 
-        result = service.filter_entries(entries, direction="TX")
+        result = service.filter_entries(cast(list[LogEntry], entries), direction="TX")
         assert len(result) == 2
         assert all(entry.direction == "TX" for entry in result)
 
@@ -394,7 +396,7 @@ class TestLogFileService:
         end_time = base_time.replace(second=32)
 
         result = service.filter_entries(
-            entries, start_time=start_time, end_time=end_time
+            cast(list[LogEntry], entries), start_time=start_time, end_time=end_time
         )
         assert len(result) == 2  # Should include 22:44:25 and 22:44:30
 
@@ -429,7 +431,7 @@ class TestLogFileService:
         # Filter for event telegrams, TX direction, after 22:44:22
         start_time = base_time.replace(second=22)
         result = service.filter_entries(
-            entries, telegram_type="event", direction="TX", start_time=start_time
+            cast(list[LogEntry], entries), telegram_type="event", direction="TX", start_time=start_time
         )
 
         assert len(result) == 1  # Only the last entry matches all criteria

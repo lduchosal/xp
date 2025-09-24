@@ -36,7 +36,7 @@ class TestConbusReceiveIntegration:
         mock_service.receive_telegrams.return_value = mock_response
 
         result = self.runner.invoke(
-            cli, ["conbus", "receive"]  # type: ignore
+            cli, ["conbus", "receive"] 
         )
 
         assert result.exit_code == 0
@@ -65,7 +65,7 @@ class TestConbusReceiveIntegration:
         mock_service.receive_telegrams.return_value = mock_response
 
         result = self.runner.invoke(
-            cli, ["conbus", "receive"]  # type: ignore
+            cli, ["conbus", "receive"] 
         )
 
         assert result.exit_code == 0
@@ -93,7 +93,7 @@ class TestConbusReceiveIntegration:
         mock_service.receive_telegrams.return_value = mock_response
 
         result = self.runner.invoke(
-            cli, ["conbus", "receive"]  # type: ignore
+            cli, ["conbus", "receive"] 
         )
 
         assert result.exit_code == 0  # CLI doesn't exit with error code, but shows error
@@ -116,7 +116,7 @@ class TestConbusReceiveIntegration:
         mock_service.receive_telegrams.return_value = mock_response
 
         result = self.runner.invoke(
-            cli, ["conbus", "receive"]  # type: ignore
+            cli, ["conbus", "receive"] 
         )
 
         assert result.exit_code == 0
@@ -125,7 +125,7 @@ class TestConbusReceiveIntegration:
 
     def test_conbus_receive_help_command(self):
         """Test conbus receive help command."""
-        result = self.runner.invoke(cli, ["conbus", "receive", "--help"])  # type: ignore
+        result = self.runner.invoke(cli, ["conbus", "receive", "--help"]) 
 
         assert result.exit_code == 0
         output = result.output
@@ -146,7 +146,7 @@ class TestConbusReceiveIntegration:
         mock_service.receive_telegrams.side_effect = ConbusReceiveError("Service error")
 
         result = self.runner.invoke(
-            cli, ["conbus", "receive"]  # type: ignore
+            cli, ["conbus", "receive"] 
         )
 
         # The CLI should handle the exception gracefully
@@ -154,7 +154,7 @@ class TestConbusReceiveIntegration:
 
     def test_conbus_receive_command_registration(self):
         """Test that conbus receive command is properly registered."""
-        result = self.runner.invoke(cli, ["conbus", "--help"])  # type: ignore
+        result = self.runner.invoke(cli, ["conbus", "--help"]) 
 
         assert result.exit_code == 0
         assert "receive" in result.output

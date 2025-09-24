@@ -46,6 +46,8 @@ class TestConbusSendResponse:
             received_telegrams=["<R0012345011F01DFM>", "<R0012345006F01DFK>"],
         )
 
+        assert response.received_telegrams is not None
+
         assert response.success is True
         assert response.sent_telegram == "<S0000000000F01D00FA>"
         assert len(response.received_telegrams) == 2
@@ -173,6 +175,7 @@ class TestModelIntegration:
         assert config.ip == status.ip
         assert config.port == status.port
         assert response.success is True
+        assert response.received_telegrams is not None
         assert len(response.received_telegrams) == 3
         assert status.connected is True
 

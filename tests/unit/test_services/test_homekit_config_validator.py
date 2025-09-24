@@ -23,8 +23,8 @@ class TestHomekitConfigValidator:
             ]
 
         bridge = BridgeConfig(name="Test Bridge", rooms=rooms)
-        homekit_net = NetworkConfig(ip=IPvAnyAddress("192.168.1.100"), port=51827)
-        conson_net = NetworkConfig(ip=IPvAnyAddress("192.168.1.200"), port=10001)
+        homekit_net = NetworkConfig(ip="192.168.1.100", port=51827)
+        conson_net = NetworkConfig(ip="192.168.1.200", port=10001)
 
         return HomekitConfig(
             homekit=homekit_net,

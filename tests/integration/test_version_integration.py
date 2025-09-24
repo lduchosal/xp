@@ -2,6 +2,8 @@
 
 import unittest
 
+from xp.models.reply_telegram import ReplyTelegram
+from xp.models.system_telegram import SystemTelegram
 from xp.services.telegram_service import TelegramService, TelegramParsingError
 from xp.services.telegram_version_service import VersionService
 from xp.models.datapoint_type import DataPointType
@@ -92,10 +94,12 @@ class TestVersionIntegration(unittest.TestCase):
                 self.assertEqual(parsed.to_dict()["telegram_type"], expected_type)
 
                 if expected_type == "system":
+                    assert isinstance(parsed, SystemTelegram)
                     validation = self.version_service.validate_version_telegram(parsed)
                     self.assertTrue(validation.success)
                     self.assertTrue(validation.data["is_version_request"])
                 elif expected_type == "reply":
+                    assert isinstance(parsed, ReplyTelegram)
                     version_result = self.version_service.parse_version_reply(parsed)
                     self.assertTrue(version_result.success)
                     self.assertTrue(version_result.data["version_info"]["parsed"])
@@ -140,6 +144,7 @@ class TestVersionIntegration(unittest.TestCase):
                     parsed = self.telegram_service.parse_telegram(raw_telegram)
 
                     if hasattr(parsed, "data_value"):  # Reply telegram
+                        assert isinstance(parsed, ReplyTelegram)
                         if parsed.datapoint_type == DataPointType.SW_VERSION:
                             version_result = self.version_service.parse_version_reply(
                                 parsed
@@ -148,15 +153,18 @@ class TestVersionIntegration(unittest.TestCase):
                                 self.assertFalse(version_result.success)
                         else:
                             # Not a version telegram - should fail version parsing
+                            assert isinstance(parsed, ReplyTelegram)
                             version_result = self.version_service.parse_version_reply(
                                 parsed
                             )
                             self.assertFalse(version_result.success)
                     elif hasattr(parsed, "system_function"):  # System telegram
+                        assert isinstance(parsed, SystemTelegram)
                         validation = self.version_service.validate_version_telegram(
                             parsed
                         )
                         self.assertTrue(validation.success)
+                        assert hasattr(parsed, "datapoint_type")
                         if parsed.datapoint_type != DataPointType.SW_VERSION:
                             self.assertFalse(validation.data["is_version_request"])
 

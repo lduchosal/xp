@@ -32,7 +32,7 @@ class ReplyTelegram(Telegram):
             self.timestamp = datetime.now()
 
     @property
-    def parsed_value(self) -> dict:
+    def parsed_value(self) -> dict[str, Any]:
         """Parse the data value based on data point type"""
         if self.datapoint_type == DataPointType.TEMPERATURE:
             return self._parse_temperature_value()

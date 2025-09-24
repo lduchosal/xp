@@ -74,10 +74,10 @@ class TestBlinkIntegration:
 
             # Verify checksum validation
             assert parsed.checksum_validated is not None
-            assert parsed.system_function == expected_function
 
             if telegram_str.startswith("<S"):  # System telegram
                 assert isinstance(parsed, SystemTelegram)
+                assert parsed.system_function == expected_function
                 if expected_function == SystemFunction.BLINK:
                     assert parsed.serial_number == "0012345008"
                     assert parsed.datapoint_type == DataPointType.MODULE_TYPE
@@ -87,6 +87,7 @@ class TestBlinkIntegration:
 
             elif telegram_str.startswith("<R"):  # Reply telegram
                 assert isinstance(parsed, ReplyTelegram)
+                assert parsed.system_function == expected_function
 
                 # Check if it's ACK response
                 if expected_function == SystemFunction.ACK:
@@ -306,7 +307,6 @@ class TestBlinkIntegration:
         # They should be different functions
         assert parsed_blink.system_function == SystemFunction.BLINK
         assert parsed_unblink.system_function == SystemFunction.UNBLINK
-        assert parsed_blink.system_function != parsed_unblink.system_function
 
         # Both should use STATUS data point
         assert parsed_blink.datapoint_type == DataPointType.MODULE_TYPE

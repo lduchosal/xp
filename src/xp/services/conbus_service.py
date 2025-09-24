@@ -171,8 +171,6 @@ class ConbusService:
 
             while True:
                 try:
-                    if self.socket is None:
-                        break
                     data = self.socket.recv(1024)
                     if not data:
                         break

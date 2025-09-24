@@ -20,7 +20,7 @@ class DatapointTypeChoice(click.ParamType):
 
         if normalized_value in self.choices:
             # Return the actual enum member
-            return DataPointType[normalized_value.upper()] # type: ignore
+            return DataPointType[normalized_value.upper()]
 
         # If not found, show error with available choices
         self.fail(f'{value!r} is not a valid choice. '

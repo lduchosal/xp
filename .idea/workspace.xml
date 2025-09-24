@@ -5,94 +5,47 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: cleanup">
-      <change afterPath="$PROJECT_DIR$/.idea/MypyPlugin.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/doc/Feat-Refactor-TelegramService.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/publish.sh" beforeDir="false" afterPath="$PROJECT_DIR$/publish.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/models/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/models/api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus_blink.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_blink.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus_custom.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_custom.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus_datapoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_datapoint.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus_discover.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_discover.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/conbus_output.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/conbus_output.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/api_start_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/api_start_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/cache_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/cache_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_config_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_config_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_custom_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_custom_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_discover_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_discover_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_output_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_output_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_raw_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_raw_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_receive_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_receive_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_scan_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/file_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/file_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/homekit.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/homekit.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/homekit_start_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/homekit_start_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/module_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/module_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/reverse_proxy_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/reverse_proxy_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/server_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/server_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_blink_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_checksum_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_checksum_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_discover_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_discover_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_linknumber_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_linknumber_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_parse_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_parse_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/telegram_version_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/telegram_version_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/click_tree.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/click_tree.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/datapoint_type_choice.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/datapoint_type_choice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/decorators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/decorators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/formatters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/formatters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/serial_number_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/serial_number_type.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/system_function_choice.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/system_function_choice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_blink.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_blink.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_custom.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_custom.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_datapoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_datapoint.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_discover.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_discover.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_output.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_output.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_raw.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_raw.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_receive.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_receive.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/event_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/event_telegram.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_accessory.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_accessory.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_conson_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_conson_config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_lightbulb.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_lightbulb.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/homekit_outlet.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/homekit_outlet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/module_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/module_type.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/output_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/output_telegram.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/system_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/system_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/system_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/system_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_blink_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_connection_pool.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_connection_pool.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_custom_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_custom_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_discover_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_discover_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_raw_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_raw_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_receive_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_receive_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_scan_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_scan_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/base_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/base_server_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_cache_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_cache_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_config_validator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_config_validator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/module_type_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/module_type_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/reverse_proxy_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/reverse_proxy_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_blink_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_checksum_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_checksum_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_discover_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_discover_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_link_number_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_link_number_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_output_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_output_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_version_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_version_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/utils/time_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/utils/time_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_blink_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_cache_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_cache_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_checksum_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_checksum_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_raw_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_raw_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_receive_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_receive_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_event_telegram_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_homekit_config_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_homekit_config_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_module_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_module_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_reverse_proxy_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_system_reply_telegram_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_version_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_version_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_event_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_event_telegram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_log_entry.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_log_entry.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_module_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_module_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram_enhancements.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram_enhancements.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_version_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_version_telegram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_reverse_proxy_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_cache_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_cache_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_log_file_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_log_file_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_version_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_version_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -158,11 +111,13 @@
     "Python tests.Python tests for tests.unit.test_models.test_system_telegram.TestSystemFunction.executor": "Run",
     "Python tests.Python tests for tests.unit.test_models.test_system_telegram.TestSystemFunction.test_from_code_valid.executor": "Run",
     "Python tests.Python tests for tests.unit.test_services.test_checksum_service.TestChecksumService.test_telegram_crash1.executor": "Run",
+    "Python tests.Python tests for unit.test_cli.test_conbus_blink_commands.TestConbusBlinkCommands.test_conbus_blink_help.executor": "Debug",
     "Python tests.Python tests for unit.test_models.test_module_type.TestModuleType.test_module_registry_completeness.executor": "Run",
     "Python tests.Python tests for unit.test_models.test_module_type.TestModuleTypeFunctions.test_is_valid_module_code.executor": "Run",
     "Python tests.Python tests for unit.test_models.test_reply_telegram.TestReplyTelegram.test_module_output_state_parsing_variations.executor": "Run",
     "Python tests.Python tests for unit.test_models.test_reply_telegram.TestReplyTelegram.test_reply_telegram_ack.executor": "Run",
     "Python tests.Python tests for unit.test_models.test_system_telegram.TestSystemTelegram.test_function_descriptions.executor": "Run",
+    "Python tests.Python tests for unit.test_services.test_version_service.TestVersionService.test_generate_version_request_telegram_invalid.executor": "Debug",
     "Python tests.Python tests for unit.test_services.test_xp24_action_service.TestXP24ActionService.test_format_action_summary_with_validation.executor": "Run",
     "Python tests.Python tests in integration.executor": "Run",
     "Python tests.Python tests in test_checksum.py.executor": "Run",
@@ -313,7 +268,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for integration.test_conbus_blink_integration.TestConbusBlinkIntegration.test_conbus_blink_all_off" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for unit.test_cli.test_conbus_blink_commands.TestConbusBlinkCommands.test_conbus_blink_help" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -325,7 +280,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;integration.test_conbus_blink_integration.TestConbusBlinkIntegration.test_conbus_blink_all_off&quot;" />
+      <option name="_new_target" value="&quot;unit.test_cli.test_conbus_blink_commands.TestConbusBlinkCommands.test_conbus_blink_help&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for unit.test_services.test_version_service.TestVersionService.test_generate_version_request_telegram_invalid" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="xp" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;unit.test_services.test_version_service.TestVersionService.test_generate_version_request_telegram_invalid&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -379,24 +350,6 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for tests.integration.test_homekit_config_integration.TestHomekitConfigIntegration.test_valid_configuration_integration" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
-      <module name="xp" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_parameters" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.integration.test_homekit_config_integration.TestHomekitConfigIntegration.test_valid_configuration_integration&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <configuration name="pytest in tests" type="tests" factoryName="py.test" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
@@ -421,19 +374,19 @@
       <item itemvalue="Python.xp homekit start" />
       <item itemvalue="Python.xp homekit config validate" />
       <item itemvalue="Python tests.pytest in tests" />
+      <item itemvalue="Python tests.Python tests for unit.test_cli.test_conbus_blink_commands.TestConbusBlinkCommands.test_conbus_blink_help" />
+      <item itemvalue="Python tests.Python tests for unit.test_services.test_version_service.TestVersionService.test_generate_version_request_telegram_invalid" />
       <item itemvalue="Python tests.pytest for tests.integration.test_cache_integration.TestCacheIntegration.test_service_cache_functionality" />
       <item itemvalue="Python tests.Python tests in test_reverse_proxy_integration.py" />
-      <item itemvalue="Python tests.Python tests for integration.test_conbus_blink_integration.TestConbusBlinkIntegration.test_conbus_blink_all_off" />
-      <item itemvalue="Python tests.pytest for tests.integration.test_homekit_config_integration.TestHomekitConfigIntegration.test_valid_configuration_integration" />
       <item itemvalue="Python tests.Python tests in tests" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python tests.Python tests in tests" />
+        <item itemvalue="Python tests.Python tests for unit.test_cli.test_conbus_blink_commands.TestConbusBlinkCommands.test_conbus_blink_help" />
+        <item itemvalue="Python tests.Python tests for unit.test_services.test_version_service.TestVersionService.test_generate_version_request_telegram_invalid" />
         <item itemvalue="Python tests.pytest for tests.integration.test_cache_integration.TestCacheIntegration.test_service_cache_functionality" />
         <item itemvalue="Python tests.Python tests in test_reverse_proxy_integration.py" />
-        <item itemvalue="Python tests.Python tests for integration.test_conbus_blink_integration.TestConbusBlinkIntegration.test_conbus_blink_all_off" />
-        <item itemvalue="Python tests.pytest for tests.integration.test_homekit_config_integration.TestHomekitConfigIntegration.test_valid_configuration_integration" />
       </list>
     </recent_temporary>
   </component>
@@ -470,15 +423,7 @@
       <workItem from="1758461707042" duration="4264000" />
       <workItem from="1758468596803" duration="27068000" />
       <workItem from="1758604567711" duration="10337000" />
-      <workItem from="1758645289123" duration="10120000" />
-    </task>
-    <task id="LOCAL-00083" summary="Feat: refactor / input output">
-      <option name="closed" value="true" />
-      <created>1758370430168</created>
-      <option name="number" value="00083" />
-      <option name="presentableId" value="LOCAL-00083" />
-      <option name="project" value="LOCAL" />
-      <updated>1758370430168</updated>
+      <workItem from="1758645289123" duration="20131000" />
     </task>
     <task id="LOCAL-00084" summary="Feat: refactor / input output">
       <option name="closed" value="true" />
@@ -864,7 +809,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758643812500</updated>
     </task>
-    <option name="localTasksCounter" value="132" />
+    <task id="LOCAL-00132" summary="chore: cleanup">
+      <option name="closed" value="true" />
+      <created>1758693412040</created>
+      <option name="number" value="00132" />
+      <option name="presentableId" value="LOCAL-00132" />
+      <option name="project" value="LOCAL" />
+      <updated>1758693412040</updated>
+    </task>
+    <option name="localTasksCounter" value="133" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -965,7 +918,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/xp/services/conbus_service.py</url>
-          <line>262</line>
+          <line>260</line>
           <option name="timeStamp" value="49" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1004,9 +957,14 @@
           <option name="timeStamp" value="57" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/xp/services/server_service.py</url>
-          <line>6</line>
-          <option name="timeStamp" value="63" />
+          <url>file://$PROJECT_DIR$/tests/unit/test_services/test_version_service.py</url>
+          <line>112</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py</url>
+          <line>12</line>
+          <option name="timeStamp" value="65" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -1042,7 +1000,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_api_test_discovery_endpoint_TestDiscoveryEndpoint_test_successful_discovery.coverage" NAME="pytest for tests.integration.test_api.test_discovery_endpoint.TestDiscoveryEndpoint.test_successful_discovery Coverage Results" MODIFIED="1758210784045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_all_input_combinations.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_all_input_combinations Coverage Results" MODIFIED="1758320668412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp24_action_integration_TestXP24ActionIntegration.coverage" NAME="pytest for tests.integration.test_xp24_action_integration.TestXP24ActionIntegration Coverage Results" MODIFIED="1757433614255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758692774413" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$.coverage" NAME=" Coverage Results" MODIFIED="1758696548446" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestSensorTelegrams_test_temperature_request.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestSensorTelegrams.test_temperature_request Coverage Results" MODIFIED="1756890926271" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$xp_homekit_config_validate.coverage" NAME="xp homekit config validate Coverage Results" MODIFIED="1758470948719" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_system_reply_telegram_integration.coverage" NAME="pytest for tests.integration.test_system_reply_telegram_integration Coverage Results" MODIFIED="1756485080075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

@@ -167,11 +167,8 @@ class TestLogEntry:
 
         # Test with invalid checksum
         event_telegram.checksum_validated = False
-        assert entry.checksum_validated is False
-
-        # Test with no parsed telegram
-        entry.parsed_telegram = None
-        assert entry.checksum_validated is None
+        checksum_result = entry.checksum_validated
+        assert checksum_result is False
 
     def test_to_dict(self):
         """Test to_dict serialization"""

@@ -34,7 +34,7 @@ class TestCacheIntegration:
             mock_service = Mock()
             mock_service_class.return_value = mock_service
 
-            result = self.runner.invoke(cli, [ # type: ignore
+            result = self.runner.invoke(cli, [
                 "cache", "set", "2113010000", "output_state", "ON"
             ])
 
@@ -59,7 +59,7 @@ class TestCacheIntegration:
             mock_response = CacheResponse(data="ON", hit=True)
             mock_service.get.return_value = mock_response
 
-            result = self.runner.invoke(cli, [ # type: ignore
+            result = self.runner.invoke(cli, [
                 "cache", "get", "2113010000", "output_state"
             ])
 
@@ -84,7 +84,7 @@ class TestCacheIntegration:
             mock_response = CacheResponse(data="OFF", hit=False)
             mock_service.get.return_value = mock_response
 
-            result = self.runner.invoke(cli, [ # type: ignore
+            result = self.runner.invoke(cli, [
                 "cache", "get", "2113010000", "output_state"
             ])
 
@@ -109,7 +109,7 @@ class TestCacheIntegration:
             mock_response = CacheResponse(data=None, hit=False, error="Device not found")
             mock_service.get.return_value = mock_response
 
-            result = self.runner.invoke(cli, [ # type: ignore
+            result = self.runner.invoke(cli, [
                 "cache", "get", "invalid_device", "output_state"
             ])
 
@@ -128,7 +128,7 @@ class TestCacheIntegration:
             mock_service = Mock()
             mock_service_class.return_value = mock_service
 
-            result = self.runner.invoke(cli, [ # type: ignore
+            result = self.runner.invoke(cli, [
                 "cache", "clear", "2113010000"
             ])
 
@@ -146,7 +146,7 @@ class TestCacheIntegration:
             mock_service = Mock()
             mock_service_class.return_value = mock_service
 
-            result = self.runner.invoke(cli, [ # type: ignore
+            result = self.runner.invoke(cli, [
                 "cache", "clear", "all"
             ])
 
@@ -177,7 +177,7 @@ class TestCacheIntegration:
             mock_service.items.return_value = mock_items
             mock_service.get_cache_stats.return_value = mock_stats
 
-            result = self.runner.invoke(cli, ["cache", "items"]) # type: ignore
+            result = self.runner.invoke(cli, ["cache", "items"])
 
             assert result.exit_code == 0
             mock_service.items.assert_called_once()
@@ -206,7 +206,7 @@ class TestCacheIntegration:
             }
             mock_service.get_cache_stats.return_value = mock_stats
 
-            result = self.runner.invoke(cli, ["cache", "stats"]) # type: ignore
+            result = self.runner.invoke(cli, ["cache", "stats"])
 
             assert result.exit_code == 0
             mock_service.get_cache_stats.assert_called_once()
@@ -293,7 +293,7 @@ class TestCacheIntegration:
 
     def test_cache_help_command(self):
         """Test cache help command"""
-        result = self.runner.invoke(cli, ["cache", "--help"]) # type: ignore
+        result = self.runner.invoke(cli, ["cache", "--help"])
 
         assert result.exit_code == 0
         assert "Cache operations for HomeKit device states" in result.output
@@ -305,7 +305,7 @@ class TestCacheIntegration:
 
     def test_cache_subcommand_help(self):
         """Test cache subcommand help"""
-        result = self.runner.invoke(cli, ["cache", "get", "--help"]) # type: ignore
+        result = self.runner.invoke(cli, ["cache", "get", "--help"])
 
         assert result.exit_code == 0
         assert "Get cached data for a device key" in result.output

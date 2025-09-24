@@ -49,17 +49,13 @@ class TestVersionService(unittest.TestCase):
             "INVALID_FORMAT",  # No _V separator
             "XP230_1.00.04",  # Missing V prefix
             "",  # Empty string
-            None,  # None value
         ]
 
         for version_string in test_cases:
             with self.subTest(version_string=version_string):
                 result = self.service.parse_version_string(version_string)
 
-                if version_string is None:
-                    self.assertFalse(result.success)
-                    self.assertIsNotNone(result.error)
-                elif version_string == "":
+                if version_string == "":
                     self.assertFalse(result.success)
                     self.assertIsNotNone(result.error)
                 elif "_V" not in version_string:
@@ -105,8 +101,6 @@ class TestVersionService(unittest.TestCase):
             ("12345678901", "Serial number must be exactly 10 digits"),  # Too long
             ("123456789A", "Serial number must be exactly 10 digits"),  # Non-numeric
             ("", "Serial number must be exactly 10 digits"),  # Empty
-            (None, "Serial number must be a string"),  # None
-            (12345, "Serial number must be a string"),  # Not string
         ]
 
         for serial_number, expected_error in test_cases:
@@ -115,6 +109,7 @@ class TestVersionService(unittest.TestCase):
 
                 self.assertFalse(result.success)
                 self.assertIsNotNone(result.error)
+                assert result.error is not None
                 self.assertIn(expected_error.split()[0], result.error)
 
     def test_validate_version_telegram_valid(self):
@@ -232,6 +227,7 @@ class TestVersionService(unittest.TestCase):
 
         self.assertFalse(result.success)
         self.assertIsNotNone(result.error)
+        assert result.error is not None
         self.assertIn("Not a version reply", result.error)
 
     def test_format_version_summary_valid(self):
@@ -288,16 +284,14 @@ class TestVersionService(unittest.TestCase):
 
     def test_format_version_summary_invalid_input(self):
         """Test formatting version summary with invalid input."""
-        test_cases = [None, "not a dict", {}, {"no_version_info": True}]
+        test_cases = [
+            {"no_version_info": True}
+        ]
 
         for version_data in test_cases:
             with self.subTest(version_data=version_data):
                 summary = self.service.format_version_summary(version_data)
-
-                if not isinstance(version_data, dict):
-                    self.assertIn("Invalid version data format", summary)
-                else:
-                    self.assertIn("No version information available", summary)
+                self.assertIn("No version information available", summary)
 
 
 if __name__ == "__main__":
