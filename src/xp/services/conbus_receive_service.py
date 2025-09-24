@@ -5,6 +5,7 @@ allowing clients to receive waiting event telegrams using empty telegram sends.
 """
 
 import logging
+from typing import Optional, Any
 
 from .conbus_service import ConbusService, ConbusError
 from ..models.conbus_receive import ConbusReceiveResponse
@@ -61,9 +62,9 @@ class ConbusReceiveService:
                 error=error_msg,
             )
 
-    def __enter__(self):
+    def __enter__(self) -> 'ConbusReceiveService':
         """Context manager entry"""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
         """Context manager exit - ensure connection is closed"""

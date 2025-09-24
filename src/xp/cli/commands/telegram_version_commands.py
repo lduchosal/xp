@@ -14,7 +14,7 @@ from .telegram import telegram
 @click.argument("serial_number", type=SERIAL)
 
 @handle_service_errors(VersionParsingError)
-def generate_version_request(serial_number: str):
+def generate_version_request(serial_number: str) -> None:
     """
     Generate a telegram to request version information from a device.
 
@@ -31,7 +31,7 @@ def generate_version_request(serial_number: str):
 
         if not result.success:
             error_response = formatter.error_response(
-                result.error, {"serial_number": serial_number}
+                result.error or "Unknown error", {"serial_number": serial_number}
             )
             click.echo(error_response)
             raise SystemExit(1)

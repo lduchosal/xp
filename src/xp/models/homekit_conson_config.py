@@ -8,7 +8,7 @@ class ConsonModuleConfig(BaseModel):
     module_type: str
     module_type_code: int
     link_number: int
-    module_number: int = None
+    module_number: Optional[int] = None
     conbus_ip: Optional[IPvAnyAddress] = None
     conbus_port: Optional[int] = None
     sw_version: Optional[str] = None
@@ -19,7 +19,7 @@ class ConsonModuleListConfig(BaseModel):
     root: List[ConsonModuleConfig]
 
     @classmethod
-    def from_yaml(cls, file_path: str):
+    def from_yaml(cls, file_path: str) -> 'ConsonModuleListConfig':
         import yaml
         with open(file_path, 'r') as file:
             data = yaml.safe_load(file)

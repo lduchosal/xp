@@ -8,7 +8,7 @@ import threading
 import socket
 import logging
 import time
-from typing import Optional
+from typing import Optional, Any
 
 from ..models import ConbusClientConfig
 
@@ -63,13 +63,14 @@ class ConbusConnectionPool:
                     cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         if hasattr(self, '_initialized'):
             return
 
         self._initialized = True
         self._config: Optional[ConbusClientConfig] = None
         self._connection: Optional[socket.socket] = None
+        self._current_connection: Optional[socket.socket] = None
         self._connection_manager: Optional[ConbusSocketConnectionManager] = None
         self._connection_created_at: Optional[float] = None
         self._lock = threading.Lock()
@@ -79,7 +80,7 @@ class ConbusConnectionPool:
         self.idle_timeout = 21600  # 6 hours
         self.max_lifetime = 21600  # 6 hours
 
-    def initialize(self, config: ConbusClientConfig):
+    def initialize(self, config: ConbusClientConfig) -> None:
         """Initialize the connection pool with configuration"""
         if self._config is not None:
             self.logger.info("Connection pool already initialized")
@@ -102,7 +103,7 @@ class ConbusConnectionPool:
 
     def _is_connection_alive(self) -> bool:
         """Check if connection is still alive"""
-        if self._connection is None:
+        if self._connection is None or self._connection_manager is None:
             return False
 
         return self._connection_manager.check_aliveness(self._connection)
@@ -137,12 +138,12 @@ class ConbusConnectionPool:
         self.logger.debug("Released connection back to pool")
         # For single connection pool, we just log but don't actually close the connection
 
-    def __enter__(self):
+    def __enter__(self) -> socket.socket:
         """Context manager entry - acquire connection"""
         self._current_connection = self.acquire_connection()
         return self._current_connection
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[Exception], exc_tb: Optional[Any]) -> None:
         """Context manager exit - release connection"""
         if hasattr(self, '_current_connection') and self._current_connection:
             self.release_connection(self._current_connection)
@@ -154,7 +155,7 @@ class ConbusConnectionPool:
         return cls()
 
     @classmethod
-    def reset_instance(cls):
+    def reset_instance(cls) -> None:
         """Reset singleton for testing"""
         with cls._lock:
             if cls._instance:
@@ -167,10 +168,10 @@ class ConbusConnectionPool:
                         pass
             cls._instance = None
 
-    def close(self):
+    def close(self) -> None:
         """Close the connection pool and cleanup resources"""
         with self._lock:
-            if self._connection:
+            if self._connection and self._connection_manager is not None:
                 try:
                     self._connection_manager.dispose(self._connection)
                     self.logger.info("Connection pool closed")

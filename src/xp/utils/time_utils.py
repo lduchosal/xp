@@ -55,11 +55,11 @@ def parse_log_timestamp(
 
         # Use base date or today
         if base_date is None:
-            base_date = datetime.now().date()
+            date_part = datetime.now().date()
         else:
-            base_date = base_date.date()
+            date_part = base_date.date()
 
-        return datetime.combine(base_date, time_obj)
+        return datetime.combine(date_part, time_obj)
 
     except ValueError as e:
         raise TimeParsingError(f"Error parsing timestamp {timestamp_str}: {e}")

@@ -15,7 +15,7 @@ from ...services.conbus_raw_service import ConbusRawService, ConbusRawError
 @click.argument("raw_telegrams")
 @connection_command()
 @handle_service_errors(ConbusRawError)
-def send_raw_telegrams(raw_telegrams: str):
+def send_raw_telegrams(raw_telegrams: str) -> None:
     """
     Send raw telegram sequence to Conbus server.
 

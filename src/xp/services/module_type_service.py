@@ -19,7 +19,7 @@ class ModuleTypeService:
     Provides lookup, validation, and search functionality for XP system module types.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the module type service"""
         pass
 

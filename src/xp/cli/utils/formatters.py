@@ -75,14 +75,14 @@ class TelegramFormatter(OutputFormatter):
     """Specialized formatter for telegram-related output."""
 
     def format_telegram_summary(
-        self, telegram_data: Dict[str, Any], service_formatter_method=None
+        self, telegram_data: Dict[str, Any], service_formatter_method: Any = None
     ) -> str:
         """Format telegram summary using service method when available."""
         if self.json_output:
             return json.dumps(telegram_data, indent=2)
 
         if service_formatter_method:
-            return service_formatter_method
+            return str(service_formatter_method)
 
         # Fallback formatting
         lines = []
@@ -115,7 +115,7 @@ class TelegramFormatter(OutputFormatter):
 class ListFormatter(OutputFormatter):
     """Specialized formatter for list-based output."""
 
-    def format_list_response(self, items: list, title: str, item_formatter=None) -> str:
+    def format_list_response(self, items: list, title: str, item_formatter: Any = None) -> str:
         """Format a list of items with optional custom formatter."""
         if self.json_output:
             return json.dumps(

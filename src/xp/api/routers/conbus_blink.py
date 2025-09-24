@@ -35,7 +35,7 @@ async def blink_on(serial_number: str = "1702033007") -> Union[ApiResponse, ApiE
         response = service.send_blink_telegram(serial_number=serial_number, on_or_off="on")
 
     if not response.success:
-        return handle_service_error(response.error)
+        return handle_service_error(response.error or "Unknown error")
 
     logger.debug(json.dumps(response.to_dict(), indent=2))
 
@@ -43,7 +43,7 @@ async def blink_on(serial_number: str = "1702033007") -> Union[ApiResponse, ApiE
     return ApiResponse(
         success = True,
         result = response.system_function.name,
-        description = response.reply_telegram.system_function.get_description(),
+        description = response.reply_telegram.system_function.get_description() if response.reply_telegram and response.reply_telegram.system_function else None,
         # raw_telegram = response.output_telegram.raw_telegram,
     )
 
@@ -73,7 +73,7 @@ async def blink_off(
         response = service.send_blink_telegram(serial_number=serial_number, on_or_off="off")
 
     if not response.success:
-        return handle_service_error(response.error)
+        return handle_service_error(response.error or "Unknown error")
 
     logger.debug(json.dumps(response.to_dict(), indent=2))
 
@@ -81,6 +81,6 @@ async def blink_off(
     return ApiResponse(
         success = True,
         result = response.system_function.name,
-        description = response.reply_telegram.system_function.get_description(),
+        description = response.reply_telegram.system_function.get_description() if response.reply_telegram and response.reply_telegram.system_function else None,
         # raw_telegram = response.output_telegram.raw_telegram,
     )

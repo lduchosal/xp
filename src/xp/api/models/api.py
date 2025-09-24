@@ -8,8 +8,8 @@ class ApiResponse(BaseModel):
     """Response model for successful Input operation."""
 
     success: bool = Field(default=True, description="Operation success status")
-    result: Optional[str] = Field(default=str, description="Result")
-    description: Optional[str]  = Field(default=str, description="Description")
+    result: Optional[str] = Field(default=None, description="Result")
+    description: Optional[str]  = Field(default=None, description="Description")
 
 class ApiErrorResponse(BaseModel):
     """Response model for failed Input operation."""

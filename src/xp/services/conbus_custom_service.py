@@ -8,6 +8,7 @@ import logging
 
 from .conbus_service import ConbusService
 from ..models.conbus_custom import ConbusCustomResponse
+from ..models.reply_telegram import ReplyTelegram
 from ..services.telegram_service import TelegramService
 
 
@@ -34,7 +35,7 @@ class ConbusCustomService:
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def send_custom_telegram(self, serial_number, function_code, data) -> ConbusCustomResponse:
+    def send_custom_telegram(self, serial_number: str, function_code: str, data: str) -> ConbusCustomResponse:
 
         """Send a telegram to the Conbus server"""
         # Generate custom system telegram: <S{serial}F{function}{data}{checksum}>
@@ -43,9 +44,11 @@ class ConbusCustomService:
         # Send telegram
         response = self.conbus_service.send_telegram_body(telegram_body)
         reply_telegram = None
-        if len(response.received_telegrams) > 0:
+        if response.received_telegrams is not None and len(response.received_telegrams) > 0:
             telegram = response.received_telegrams[0]
-            reply_telegram = self.telegram_service.parse_telegram(telegram)
+            parsed_telegram = self.telegram_service.parse_telegram(telegram)
+            if isinstance(parsed_telegram, ReplyTelegram):
+                reply_telegram = parsed_telegram
 
         return ConbusCustomResponse(
             success=response.success,
@@ -58,10 +61,10 @@ class ConbusCustomService:
             error=response.error,
         )
 
-    def __enter__(self):
+    def __enter__(self) -> 'ConbusCustomService':
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: object | None) -> None:
       # Cleanup logic if needed
         pass
 

@@ -25,7 +25,7 @@ from ...services.conbus_datapoint_service import (
 @handle_service_errors(ConbusDatapointError)
 def send_custom_telegram(
     serial_number: str, function_code: str, datapoint_code: str
-):
+) -> None:
     """
     Send custom telegram with specified function and data point codes.
 

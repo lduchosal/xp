@@ -27,7 +27,7 @@ class ReplyTelegram(Telegram):
     datapoint_type: Optional[DataPointType] = None
     data_value: str = ""
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
 
@@ -193,13 +193,13 @@ class ReplyTelegram(Telegram):
         return {
             "serial_number": self.serial_number,
             "system_function": {
-                "code": self.system_function.value,
-                "description": self.system_function.name,
-            },
+                "code": self.system_function.value if self.system_function else None,
+                "description": self.system_function.name if self.system_function else None,
+            } if self.system_function else None,
             "datapoint_type": {
-                "code": self.datapoint_type.value,
-                "description": self.datapoint_type.name,
-            },
+                "code": self.datapoint_type.value if self.datapoint_type else None,
+                "description": self.datapoint_type.name if self.datapoint_type else None,
+            } if self.datapoint_type else None,
             "data_value": {
                 "raw": self.data_value,
                 "parsed": parsed_data
@@ -219,8 +219,10 @@ class ReplyTelegram(Telegram):
         else:
             value_display = self.data_value
 
+        system_func_name = self.system_function.name if self.system_function else "Unknown"
+        datapoint_name = self.datapoint_type.name if self.datapoint_type else "Unknown"
         return (
-            f"Reply Telegram: {self.system_function.name}\n "
-            f"for {self.datapoint_type.name} = {value_display} "
+            f"Reply Telegram: {system_func_name}\n "
+            f"for {datapoint_name} = {value_display} "
             f"from device {self.serial_number}"
         )

@@ -40,17 +40,24 @@ async def input_action(
         response = service.send_action(serial, device_input, action)
 
     if not response.success:
-        return handle_service_error(response.error)
+        return handle_service_error(response.error or "Unknown error")
 
     logger.debug(json.dumps(response.to_dict(), indent=2))
 
     # Build successful response
-    return ApiResponse(
-        success = True,
-        result = response.output_telegram.system_function.name,
-        description = response.output_telegram.system_function.get_description(),
-        # raw_telegram = response.output_telegram.raw_telegram,
-    )
+    if response.output_telegram and response.output_telegram.system_function:
+        return ApiResponse(
+            success = True,
+            result = response.output_telegram.system_function.name,
+            description = response.output_telegram.system_function.get_description(),
+            # raw_telegram = response.output_telegram.raw_telegram,
+        )
+    else:
+        return ApiResponse(
+            success = True,
+            result = "Output command sent",
+            description = "Output command was sent successfully",
+        )
 
 
 @router.get(
@@ -76,14 +83,21 @@ async def output_status(serial_number: str) -> Union[ApiResponse, ApiErrorRespon
         response = service.get_output_state(serial_number)
 
     if not response.success:
-        return handle_service_error(response.error)
+        return handle_service_error(response.error or "Unknown error")
 
     # Build successful response
-    return ApiResponse(
-        success = True,
-        result = response.datapoint_telegram.data_value,
-        description = response.datapoint_telegram.datapoint_type.name,
-    )
+    if response.datapoint_telegram and response.datapoint_telegram.datapoint_type:
+        return ApiResponse(
+            success = True,
+            result = response.datapoint_telegram.data_value,
+            description = response.datapoint_telegram.datapoint_type.name,
+        )
+    else:
+        return ApiResponse(
+            success = True,
+            result = "No data available",
+            description = "Output status retrieved but no data available",
+        )
 
 
 @router.get(
@@ -109,11 +123,18 @@ async def output_state(serial_number: str) -> Union[ApiResponse, ApiErrorRespons
         response = service.get_module_state(serial_number)
 
     if not response.success:
-        return handle_service_error(response.error)
+        return handle_service_error(response.error or "Unknown error")
 
     # Build successful response
-    return ApiResponse(
-        success = True,
-        result = response.datapoint_telegram.data_value,
-        description = response.datapoint_telegram.datapoint_type.name,
-    )
+    if response.datapoint_telegram and response.datapoint_telegram.datapoint_type:
+        return ApiResponse(
+            success = True,
+            result = response.datapoint_telegram.data_value,
+            description = response.datapoint_telegram.datapoint_type.name,
+        )
+    else:
+        return ApiResponse(
+            success = True,
+            result = "No data available",
+            description = "Module state retrieved but no data available",
+        )

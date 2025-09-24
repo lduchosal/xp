@@ -51,7 +51,7 @@ class ReverseProxyService:
         # Load configuration
         self._load_config()
 
-    def _load_config(self):
+    def _load_config(self) -> None:
         """Load target server configuration from cli.yml"""
         try:
             if os.path.exists(self.config_path):
@@ -173,11 +173,13 @@ class ReverseProxyService:
             error=None,
         )
 
-    def _accept_connections(self):
+    def _accept_connections(self) -> None:
         """Accept and handle client connections"""
         while self.is_running:
             try:
                 # Accept connection
+                if self.server_socket is None:
+                    break
                 client_socket, client_address = self.server_socket.accept()
 
                 # Generate connection ID
@@ -203,8 +205,8 @@ class ReverseProxyService:
                 break
 
     def _handle_client(
-        self, client_socket: socket.socket, client_address, conn_id: str
-    ):
+        self, client_socket: socket.socket, client_address: tuple, conn_id: str
+    ) -> None:
         """Handle individual client connection with server relay"""
         try:
             # Connect to target server
@@ -280,7 +282,7 @@ class ReverseProxyService:
         source_label: str,
         dest_label: str,
         conn_id: str,
-    ):
+    ) -> None:
         """Relay data between sockets with telegram monitoring"""
         try:
             while self.is_running:
@@ -324,7 +326,7 @@ class ReverseProxyService:
             if self.is_running:
                 self.logger.error(f"Error in data relay: {e} [{conn_id}]")
 
-    def _close_connection_pair(self, conn_id: str):
+    def _close_connection_pair(self, conn_id: str) -> None:
         """Close both client and server sockets for a connection"""
         if conn_id not in self.active_connections:
             return
@@ -364,7 +366,7 @@ class ReverseProxyService:
         """Generate timestamp string for logging"""
         return datetime.now().strftime("%H:%M:%S,%f")[:-3]
 
-    def run_blocking(self):
+    def run_blocking(self) -> None:
         """Run the proxy in blocking mode (for CLI usage)"""
         result = self.start_proxy()
         if not result.success:

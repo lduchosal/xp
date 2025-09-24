@@ -34,6 +34,6 @@ class SystemFunction(str, Enum):
     def from_code(cls, code: str) -> Optional["SystemFunction"]:
         """Get SystemFunction from code string"""
         for func in cls:
-            if func.value == code:
+            if func.value.lower() == code.lower():
                 return func
         return None

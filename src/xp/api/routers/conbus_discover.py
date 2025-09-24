@@ -37,10 +37,10 @@ async def discover_devices() -> Union[DiscoverResponse, JSONResponse]:
         response = service.send_discover_telegram()
 
     if not response.success:
-        return handle_service_error(response.error)
+        return handle_service_error(response.error or "Unknown error")
 
     # Build successful response
     return DiscoverResponse(
-        devices=response.discovered_devices,
+        devices=response.discovered_devices or [],
     )
 

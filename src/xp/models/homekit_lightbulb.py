@@ -45,7 +45,7 @@ class LightBulb(Accessory):
             setter_callback=self.set_on
         )
 
-    def set_on(self, value):
+    def set_on(self, value: bool) -> None:
         # Emit event using PyDispatcher
         dispatcher.send(
             signal='accessory_set_on',
@@ -64,5 +64,5 @@ class LightBulb(Accessory):
             output_number=self.output_number,
         )
         # Return first response or default to True
-        response = get_first_response(responses)
-        return response
+        response = get_first_response(responses, default=True)
+        return bool(response)

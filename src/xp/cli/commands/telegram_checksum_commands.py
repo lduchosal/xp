@@ -20,7 +20,7 @@ from .telegram import checksum
     help="Checksum algorithm to use",
 )
 @handle_service_errors(Exception)
-def calculate_checksum(data: str, algorithm: str):
+def calculate_checksum(data: str, algorithm: str) -> None:
     """
     Calculate checksum for given data string.
 
@@ -40,7 +40,7 @@ def calculate_checksum(data: str, algorithm: str):
             result = service.calculate_crc32_checksum(data)
 
         if not result.success:
-            error_response = formatter.error_response(result.error, {"input": data})
+            error_response = formatter.error_response(result.error or "Unknown error", {"input": data})
             click.echo(error_response)
             raise SystemExit(1)
 
@@ -63,7 +63,7 @@ def calculate_checksum(data: str, algorithm: str):
 @handle_service_errors(Exception)
 def validate_checksum(
     data: str, expected_checksum: str, algorithm: str
-):
+) -> None:
     """
     Validate data against expected checksum.
 
@@ -84,7 +84,7 @@ def validate_checksum(
 
         if not result.success:
             error_response = formatter.error_response(
-                result.error, {"input": data, "expected_checksum": expected_checksum}
+                result.error or "Unknown error", {"input": data, "expected_checksum": expected_checksum}
             )
             click.echo(error_response)
             raise SystemExit(1)

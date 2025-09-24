@@ -13,7 +13,7 @@ from ..utils.error_handlers import CLIErrorHandler
 
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def file():
+def file() -> None:
     """
     File operations for console bus logs
     """
@@ -31,7 +31,7 @@ def decode_log_file(
     filter_direction: str,
     time_range: str,
     summary: bool,
-):
+) -> None:
     """
     Decode and parse console bus log file.
 
@@ -102,7 +102,7 @@ def decode_log_file(
 @click.argument("log_file_path")
 
 @handle_service_errors(Exception)
-def analyze_log_file(log_file_path: str):
+def analyze_log_file(log_file_path: str) -> None:
     """
     Analyze console bus log file for patterns and statistics.
 
@@ -134,7 +134,7 @@ def analyze_log_file(log_file_path: str):
 @click.argument("log_file_path")
 
 @handle_service_errors(Exception)
-def validate_log_file(log_file_path: str):
+def validate_log_file(log_file_path: str) -> None:
     """
     Validate console bus log file format and telegram checksums.
 

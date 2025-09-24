@@ -33,7 +33,7 @@ class TelegramOutputService:
     XP_OUTPUT_PATTERN = re.compile(r"^<S(\d{10})F27D(\d{2})(A[AB])([A-Z0-9]{2})>$")
     XP_ACK_NAK_PATTERN = re.compile(r"^<R(\d{10})F(1[89])D([A-Z0-9]{2})>$")
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the XP output service"""
         pass
 

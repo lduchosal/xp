@@ -5,6 +5,8 @@ various types of telegrams including discover, version, and sensor data requests
 """
 
 import logging
+from datetime import datetime
+from typing import Any, Optional
 
 from .conbus_datapoint_service import ConbusDatapointService
 from .conbus_service import ConbusService
@@ -44,14 +46,14 @@ class ConbusOutputService:
         self.logger = logging.getLogger(__name__)
 
 
-    def __enter__(self):
+    def __enter__(self) -> "ConbusOutputService":
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[Exception], exc_tb: Optional[Any]) -> None:
       # Cleanup logic if needed
         pass
 
-    def get_output_state(self, serial_number) -> ConbusDatapointResponse:
+    def get_output_state(self, serial_number: str) -> ConbusDatapointResponse:
 
         # Send status query using custom telegram method
         response = self.datapoint_service.send_telegram(
@@ -61,7 +63,7 @@ class ConbusOutputService:
 
         return response
 
-    def get_module_state(self, serial_number) -> ConbusDatapointResponse:
+    def get_module_state(self, serial_number: str) -> ConbusDatapointResponse:
 
         # Send status query using custom telegram method
         response = self.datapoint_service.send_telegram(
@@ -87,14 +89,14 @@ class ConbusOutputService:
             input_action,  # "00AA", "01AA", etc.
         )
 
-        if not response.success or not len(response.received_telegrams) > 0:
+        if not response.success or response.received_telegrams is None or not len(response.received_telegrams) > 0:
             return ConbusOutputResponse(
                 success=response.success,
                 serial_number=serial_number,
                 output_number=output_number,
                 action_type=action_type,
                 error=response.error,
-                timestamp=response.timestamp,
+                timestamp=response.timestamp or datetime.now(),
                 received_telegrams=response.received_telegrams,
             )
 
@@ -107,6 +109,6 @@ class ConbusOutputService:
             output_number=output_number,
             action_type=action_type,
             output_telegram=output_telegram,
-            timestamp=response.timestamp,
+            timestamp=response.timestamp or datetime.now(),
             received_telegrams=response.received_telegrams,
         )

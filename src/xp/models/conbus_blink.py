@@ -16,14 +16,14 @@ class ConbusBlinkResponse:
     serial_number: str
     operation: str
     system_function: SystemFunction
-    response: ConbusResponse = None
-    reply_telegram: ReplyTelegram = None
+    response: Optional[ConbusResponse] = None
+    reply_telegram: Optional[ReplyTelegram] = None
     sent_telegram: Optional[SystemTelegram] = None
     received_telegrams: Optional[list] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
         if self.received_telegrams is None:

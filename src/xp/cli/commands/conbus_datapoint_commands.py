@@ -24,7 +24,7 @@ from ...services.conbus_datapoint_service import (
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def datapoint_telegram(serial_number: str, datapoint: DataPointType):
+def datapoint_telegram(serial_number: str, datapoint: DataPointType) -> None:
     """
     Send telegram to Conbus server.
 

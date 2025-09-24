@@ -11,7 +11,7 @@ from ...services.conbus_service import ConbusService
 
 @conbus.command("config")
 @handle_service_errors(Exception)
-def show_config():
+def show_config() -> None:
     """
     Display current Conbus client configuration.
 

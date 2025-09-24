@@ -200,7 +200,7 @@ class ConfigValidationService:
                    f"HomeKit Rooms: {len(self.homekit_config.bridge.rooms)}"]
 
         # Count accessories by service type
-        service_counts = {}
+        service_counts: dict[str, int] = {}
         for acc in self.homekit_config.accessories:
             service_counts[acc.service] = service_counts.get(acc.service, 0) + 1
 

@@ -25,7 +25,7 @@ class TelegramBlinkService:
     - Unblink: <S{serial_number}F06D00{checksum}>
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the blink service"""
         pass
 

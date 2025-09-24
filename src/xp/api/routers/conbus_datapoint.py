@@ -40,17 +40,24 @@ async def datapoint_devices(
             serial_number=serial_number)
 
     if not response.success:
-        return handle_service_error(response.error)
+        return handle_service_error(response.error or "Unknown error")
 
     if response.datapoint_telegram is None:
         return ApiErrorResponse(
             success=False,
-            error=response.error,
+            error=response.error or "Unknown error",
         )
 
     # Build successful response
-    return ApiResponse(
-        success = True,
-        result = response.datapoint_telegram.data_value,
-        description = response.datapoint_telegram.datapoint_type.name,
-    )
+    if response.datapoint_telegram and response.datapoint_telegram.datapoint_type:
+        return ApiResponse(
+            success = True,
+            result = response.datapoint_telegram.data_value,
+            description = response.datapoint_telegram.datapoint_type.name,
+        )
+    else:
+        return ApiResponse(
+            success = True,
+            result = response.datapoint_telegram.data_value,
+            description = "Datapoint value retrieved",
+        )

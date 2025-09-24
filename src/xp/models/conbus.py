@@ -12,7 +12,7 @@ class ConbusRequest:
     telegram: Optional[str] = None
     timestamp: Optional[datetime] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
 
@@ -37,7 +37,7 @@ class ConbusResponse:
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
         if self.received_telegrams is None:

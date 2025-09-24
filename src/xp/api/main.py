@@ -3,6 +3,7 @@
 import logging
 import os
 import yaml
+from typing import Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -13,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def load_api_config():
+def load_api_config() -> dict[str, Any]:
     """Load API configuration from api.yml or environment variables."""
     config = {
         "title": "XP Protocol API",
@@ -41,12 +42,15 @@ def load_api_config():
     config["version"] = os.getenv("API_VERSION", config["version"])
 
     # CORS configuration from environment
-    if os.getenv("CORS_ORIGINS"):
-        config["cors_origins"] = os.getenv("CORS_ORIGINS").split(",")
-    if os.getenv("CORS_METHODS"):
-        config["cors_methods"] = os.getenv("CORS_METHODS").split(",")
-    if os.getenv("CORS_HEADERS"):
-        config["cors_headers"] = os.getenv("CORS_HEADERS").split(",")
+    cors_origins = os.getenv("CORS_ORIGINS")
+    if cors_origins is not None:
+        config["cors_origins"] = cors_origins.split(",")
+    cors_methods = os.getenv("CORS_METHODS")
+    if cors_methods is not None:
+        config["cors_methods"] = cors_methods.split(",")
+    cors_headers = os.getenv("CORS_HEADERS")
+    if cors_headers is not None:
+        config["cors_headers"] = cors_headers.split(",")
 
     return config
 
@@ -77,13 +81,13 @@ def create_app() -> FastAPI:
 
     # Health check endpoint
     @fastapi.get("/health")
-    async def health_check():
+    async def health_check() -> dict[str, str]:
         """Health check endpoint."""
         return {"status": "healthy", "service": "xp-api"}
 
     # Root endpoint
     @fastapi.get("/")
-    async def root():
+    async def root() -> dict[str, str]:
         """Root endpoint with API information."""
         return {
             "message": "XP Protocol API",

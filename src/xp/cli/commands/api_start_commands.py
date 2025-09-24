@@ -47,7 +47,7 @@ from .api import api
     default=True,
     help="Enable/disable access log (default: enabled)",
 )
-def start_api_server(host, port, reload, workers, log_level, access_log):
+def start_api_server(host: str, port: int, reload: bool, workers: int, log_level: str, access_log: bool) -> None:
     """
     Start the FastAPI server.
 

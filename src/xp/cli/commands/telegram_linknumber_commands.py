@@ -15,7 +15,7 @@ from .telegram import linknumber
 @click.argument("serial_number", type=SERIAL)
 @click.argument("link_number", type=int)
 @handle_service_errors(LinkNumberError)
-def generate_set_link_number(serial_number: str, link_number: int):
+def generate_set_link_number(serial_number: str, link_number: int) -> None:
     """
     Generate a telegram to set module link number.
 
@@ -48,7 +48,7 @@ def generate_set_link_number(serial_number: str, link_number: int):
 @click.argument("serial_number", type=SERIAL)
 
 @handle_service_errors(LinkNumberError)
-def generate_read_link_number(serial_number: str):
+def generate_read_link_number(serial_number: str) -> None:
     """
     Generate a telegram to read module link number.
 

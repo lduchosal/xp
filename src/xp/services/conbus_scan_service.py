@@ -5,7 +5,8 @@ various types of telegrams including discover, version, and sensor data requests
 """
 
 import logging
-from typing import List
+from typing import List, Optional, Callable, Any
+import threading
 
 from .conbus_service import ConbusService
 from ..models import (
@@ -40,7 +41,7 @@ class ConbusScanService:
         self.logger = logging.getLogger(__name__)
 
     def scan_module(
-        self, serial_number: str, function_code: str, progress_callback=None
+        self, serial_number: str, function_code: str, progress_callback: Optional[Callable[[ConbusResponse, int, int], Any]] = None
     ) -> List[ConbusResponse]:
         """Scan all functions and datapoints for a module with live output"""
         results = []
@@ -84,11 +85,11 @@ class ConbusScanService:
 
         return results
 
-    def scan_module_background(self, serial_number: str, function_code: str, progress_callback=None):
+    def scan_module_background(self, serial_number: str, function_code: str, progress_callback: Optional[Callable[[ConbusResponse, int, int], Any]] = None) -> threading.Thread:
         """Scan module in background with immediate output via callback"""
         import threading
 
-        def background_scan():
+        def background_scan() -> List[ConbusResponse]:
             return self.scan_module(serial_number, function_code, progress_callback)
 
         # Start background thread
@@ -97,9 +98,9 @@ class ConbusScanService:
 
         return scan_thread
 
-    def __enter__(self):
+    def __enter__(self) -> 'ConbusScanService':
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
       # Cleanup logic if needed
         pass

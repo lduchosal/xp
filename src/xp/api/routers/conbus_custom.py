@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 async def custom_function(
         serial_number: str = "1702033007",
         function_code: str = "02",
-        data = "00"
+        data: str = "00"
     ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate a Datapoint operation to find devices on the network.
@@ -38,17 +38,24 @@ async def custom_function(
         response = service.send_custom_telegram(serial_number, function_code, data)
 
     if not response.success:
-        return handle_service_error(response.error)
+        return handle_service_error(response.error or "Unknown error")
 
     if response.reply_telegram is None:
         return ApiErrorResponse(
             success=False,
-            error=response.error,
+            error=response.error or "Unknown error",
         )
 
     # Build successful response
-    return ApiResponse(
-        success = True,
-        result = response.reply_telegram.data_value,
-        description = response.reply_telegram.datapoint_type.name,
-    )
+    if response.reply_telegram and response.reply_telegram.datapoint_type:
+        return ApiResponse(
+            success = True,
+            result = response.reply_telegram.data_value,
+            description = response.reply_telegram.datapoint_type.name,
+        )
+    else:
+        return ApiResponse(
+            success = True,
+            result = response.reply_telegram.data_value,
+            description = "Custom command executed successfully",
+        )

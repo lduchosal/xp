@@ -20,7 +20,7 @@ from .commands.telegram_parse_commands import telegram
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
 @click.version_option()
-def cli():
+def cli() -> None:
     """XP CLI tool for remote console bus operations"""
     logging.basicConfig(level=logging.DEBUG)
     # Suppress pyhap.hap_protocol logs

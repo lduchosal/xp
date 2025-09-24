@@ -14,7 +14,7 @@ from ...services.conbus_receive_service import ConbusReceiveService, ConbusRecei
 @conbus.command("receive")
 @connection_command()
 @handle_service_errors(ConbusReceiveError)
-def receive_telegrams():
+def receive_telegrams() -> None:
     """
     Receive waiting event telegrams from Conbus server.
 

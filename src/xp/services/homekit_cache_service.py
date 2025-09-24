@@ -67,7 +67,7 @@ class HomeKitCacheService:
         try:
             response = self.conbus_output_service.get_output_state(key)
 
-            if response.success and response.datapoint_telegram.raw_telegram:
+            if response.success and response.datapoint_telegram and response.datapoint_telegram.raw_telegram:
                 data = response.datapoint_telegram.raw_telegram
                 # Store in cache
                 self.cache[cache_key] = CacheEntry(

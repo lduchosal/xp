@@ -4,11 +4,11 @@ import sys
 
 import click
 
-from . import homekit
+from .homekit import homekit
 from ...services.homekit_service import HomekitService
 
 @homekit.command("start")
-def homekit_start():
+def homekit_start() -> None:
     """
     Start the HomeKit server.
 

@@ -22,7 +22,7 @@ class VersionParsingError(Exception):
 class VersionService:
     """Service class for version-related operations."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the version service."""
         pass
 
@@ -181,8 +181,8 @@ class VersionService:
                     "data_point": (
                         telegram.datapoint_type.value if telegram.datapoint_type else None
                     ),
-                    "function_description": telegram.system_function.name,
-                    "data_point_description": telegram.datapoint_type.name,
+                    "function_description": telegram.system_function.name if telegram.system_function else None,
+                    "data_point_description": telegram.datapoint_type.name if telegram.datapoint_type else None,
                 },
                 error=None,
             )
@@ -217,7 +217,7 @@ class VersionService:
                 return Response(
                     success=False,
                     data=None,
-                    error=f"Not a version reply telegram. Data point: {telegram.datapoint_type.name}",
+                    error=f"Not a version reply telegram. Data point: {telegram.datapoint_type.name if telegram.datapoint_type else 'Unknown'}",
                 )
 
             # Parse the version using the telegram's built-in parser

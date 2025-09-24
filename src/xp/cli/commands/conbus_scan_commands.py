@@ -28,7 +28,7 @@ from ...services.conbus_scan_service import ConbusScanService
 @handle_service_errors(ConbusDatapointError)
 def scan_module(
     serial_number: str, function_code: str, background: bool
-):
+) -> None:
     """
     Scan all datapoints of a function_code for a module.
 
@@ -45,7 +45,7 @@ def scan_module(
     failed_count = 0
 
     # noinspection PyUnusedLocal
-    def progress_callback(response, total, count):
+    def progress_callback(response, total, count) -> None:
         nonlocal successful_count, failed_count
         results.append(response)
 
@@ -63,7 +63,7 @@ def scan_module(
                 # Use background scanning with progress callback
                 scan_complete = threading.Event()
 
-                def background_scan():
+                def background_scan() -> None:
                     try:
                         service.scan_module(
                             serial_number, function_code, progress_callback

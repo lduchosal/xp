@@ -21,7 +21,7 @@ from ...services.telegram_blink_service import BlinkError
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
-def send_blink_on_telegram(serial_number: str):
+def send_blink_on_telegram(serial_number: str) -> None:
     """
     Send blink command to start blinking module LED.
 
@@ -42,7 +42,7 @@ def send_blink_on_telegram(serial_number: str):
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
-def send_blink_off_telegram(serial_number: str):
+def send_blink_off_telegram(serial_number: str) -> None:
     """
     Send blink command to start blinking module LED.
 
@@ -60,7 +60,7 @@ def send_blink_off_telegram(serial_number: str):
 
 
 @conbus_blink.group("all", short_help="Control blink state for all devices")
-def conbus_blink_all():
+def conbus_blink_all() -> None:
     """
     Control blink state for all discovered devices.
     """
@@ -70,7 +70,7 @@ def conbus_blink_all():
 @conbus_blink_all.command("off", short_help="Turn off blinking for all devices")
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
-def blink_all_off():
+def blink_all_off() -> None:
     """
     Turn off blinking for all discovered devices.
 
@@ -92,7 +92,7 @@ def blink_all_off():
 @conbus_blink_all.command("on", short_help="Turn on blinking for all devices")
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
-def blink_all_on():
+def blink_all_on() -> None:
     """
     Turn on blinking for all discovered devices.
 

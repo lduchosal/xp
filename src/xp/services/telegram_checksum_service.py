@@ -12,7 +12,7 @@ from ..models.response import Response
 class TelegramChecksumService:
     """Service class for checksum operations."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the checksum service."""
         pass
 
@@ -27,9 +27,6 @@ class TelegramChecksumService:
             Response object with checksum result
         """
         try:
-            if not isinstance(data, str):
-                return Response(success=False, data=None, error="Data must be a string")
-
             checksum = calculate_checksum(data)
 
             return Response(
@@ -56,12 +53,8 @@ class TelegramChecksumService:
             # Convert string to bytes if needed
             if isinstance(data, str):
                 byte_data = data.encode("utf-8")
-            elif isinstance(data, bytes):
+            else:  # isinstance(data, bytes)
                 byte_data = data
-            else:
-                return Response(
-                    success=False, data=None, error="Data must be string or bytes"
-                )
 
             checksum = calculate_checksum32(byte_data)
 
@@ -95,13 +88,6 @@ class TelegramChecksumService:
             Response object with validation result
         """
         try:
-            if not isinstance(data, str) or not isinstance(expected_checksum, str):
-                return Response(
-                    success=False,
-                    data=None,
-                    error="Data and expected checksum must be strings",
-                )
-
             calculated_checksum = calculate_checksum(data)
             is_valid = calculated_checksum == expected_checksum
 
@@ -137,17 +123,8 @@ class TelegramChecksumService:
             # Convert string to bytes if needed
             if isinstance(data, str):
                 byte_data = data.encode("utf-8")
-            elif isinstance(data, bytes):
+            else:  # isinstance(data, bytes)
                 byte_data = data
-            else:
-                return Response(
-                    success=False, data=None, error="Data must be string or bytes"
-                )
-
-            if not isinstance(expected_checksum, str):
-                return Response(
-                    success=False, data=None, error="Expected checksum must be a string"
-                )
 
             calculated_checksum = calculate_checksum32(byte_data)
             is_valid = calculated_checksum == expected_checksum

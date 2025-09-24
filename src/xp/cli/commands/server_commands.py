@@ -1,5 +1,5 @@
 """Conbus emulator server operations CLI commands."""
-from typing import Optional
+from typing import Optional, Dict, Any
 
 import click
 import json
@@ -16,7 +16,7 @@ _server_instance: Optional[ServerService] = None
 
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def server():
+def server() -> None:
     """
     Conbus emulator server operations
     """
@@ -30,7 +30,7 @@ def server():
 @click.option("--config", "-c", default="server.yml", help="Configuration file path")
 
 @handle_service_errors(ServerError)
-def start_server(port: int, config: str):
+def start_server(port: int, config: str) -> None:
     """
     Start the Conbus emulator server.
 
@@ -71,7 +71,7 @@ def start_server(port: int, config: str):
 @server.command("stop")
 
 @handle_service_errors(ServerError)
-def stop_server():
+def stop_server() -> None:
     """
     Stop the running Conbus emulator server.
 
@@ -87,7 +87,8 @@ def stop_server():
             ServerErrorHandler.handle_server_not_running_error()
 
         # Stop the server
-        _server_instance.stop_server()
+        if _server_instance is not None:
+            _server_instance.stop_server()
 
         response = {"success": True, "message": "Server stopped successfully"}
         click.echo(json.dumps(response, indent=2))
@@ -99,7 +100,7 @@ def stop_server():
 @server.command("status")
 
 @handle_service_errors(Exception)
-def server_status():
+def server_status() -> None:
     """
     Get status of the Conbus emulator server.
 
@@ -112,6 +113,7 @@ def server_status():
     formatter = OutputFormatter(True)
 
     try:
+        status: Dict[str, Any]
         if _server_instance is None:
             status = {
                 "running": False,

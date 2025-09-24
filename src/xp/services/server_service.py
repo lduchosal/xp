@@ -55,7 +55,7 @@ class ServerService:
         # Load device configuration
         self._load_device_config()
 
-    def _load_device_config(self):
+    def _load_device_config(self) -> None:
         """Load device configurations from server.yml"""
         try:
             if os.path.exists(self.config_path):
@@ -67,14 +67,14 @@ class ServerService:
                 self.logger.warning(
                     f"Config file {self.config_path} not found, using empty device list"
                 )
-                self.devices = {}
+                self.devices = []
                 self.device_services = {}
         except Exception as e:
             self.logger.error(f"Error loading config file: {e}")
-            self.devices = {}
+            self.devices = []
             self.device_services = {}
 
-    def _create_device_services(self):
+    def _create_device_services(self) -> None:
         """Create device service instances based on device configuration"""
         self.device_services = {}
 
@@ -127,7 +127,7 @@ class ServerService:
                     f"Error creating device service for {serial_number}: {e}"
                 )
 
-    def start_server(self):
+    def start_server(self) -> None:
         """Start the TCP server on port 10001"""
         if self.is_running:
             raise ServerError("Server is already running")
@@ -152,7 +152,7 @@ class ServerService:
             self.logger.error(f"Failed to start server: {e}")
             raise ServerError(f"Failed to start server: {e}")
 
-    def stop_server(self):
+    def stop_server(self) -> None:
         """Stop the TCP server"""
         if not self.is_running:
             return
@@ -166,11 +166,13 @@ class ServerService:
             except Exception as e:
                 self.logger.error(f"Error closing server socket: {e}")
 
-    def _accept_connections(self):
+    def _accept_connections(self) -> None:
         """Accept and handle client connections"""
         while self.is_running:
             try:
                 # Accept connection
+                if self.server_socket is None:
+                    break
                 client_socket, client_address = self.server_socket.accept()
                 self.logger.info(f"Client connected from {client_address}")
 
@@ -186,7 +188,7 @@ class ServerService:
                     self.logger.error(f"Error accepting connection: {e}")
                 break
 
-    def _handle_client(self, client_socket: socket.socket, client_address):
+    def _handle_client(self, client_socket: socket.socket, client_address: tuple[str, int]) -> None:
         """Handle individual client connection"""
         try:
             # Set timeout for idle connections (30 seconds as per spec)
@@ -222,7 +224,7 @@ class ServerService:
 
     def _process_request(self, message: str) -> List[str]:
         """Process incoming request and generate responses"""
-        responses = []
+        responses: list[str] = []
 
         try:
             # Parse the telegram
@@ -235,8 +237,8 @@ class ServerService:
             # Handle discover requests
             if self.discover_service.is_discover_request(parsed_telegram):
                 for serial_number, device_service in self.device_services.items():
-                    response = device_service.generate_discover_response()
-                    responses.append(response)
+                    discover_response = device_service.generate_discover_response()
+                    responses.append(discover_response)
                     responses.append("\n")
             else:
                 # Handle data requests for specific devices
@@ -245,21 +247,21 @@ class ServerService:
                 # If broadcast (0000000000), respond from all devices
                 if serial_number == "0000000000":
                     for serial_number, device_service in self.device_services.items():
-                        response = device_service.process_system_telegram(
+                        broadcast_response: Optional[str] = device_service.process_system_telegram(
                             parsed_telegram
                         )
-                        if response:
-                            responses.append(response)
+                        if broadcast_response:
+                            responses.append(broadcast_response)
                             responses.append("\n")
                 # If specific device - lookup by string serial number
                 else:
                     if serial_number in self.device_services:
                         device_service = self.device_services[serial_number]
-                        response = device_service.process_system_telegram(
+                        device_response: Optional[str] = device_service.process_system_telegram(
                             parsed_telegram
                         )
-                        if response:
-                            responses.append(response)
+                        if device_response:
+                            responses.append(device_response)
                             responses.append("\n")
                     else:
                         self.logger.debug(
@@ -280,7 +282,7 @@ class ServerService:
             "device_list": list([device.serial_number for device in self.devices]),
         }
 
-    def reload_config(self):
+    def reload_config(self) -> None:
         """Reload device configuration from file"""
         self._load_device_config()
         self.logger.info(

@@ -8,7 +8,7 @@ import socket
 import logging
 import yaml
 import os
-from typing import List, Optional
+from typing import List, Optional, Any
 from datetime import datetime
 
 from ..models import (
@@ -55,7 +55,7 @@ class ConbusService:
         self._connection_pool = ConbusConnectionPool.get_instance()
         self._connection_pool.initialize(self.config)
 
-    def _load_config(self):
+    def _load_config(self) -> None:
         """Load client configuration from cli.yml"""
         try:
             if os.path.exists(self.config_path):
@@ -108,7 +108,7 @@ class ConbusService:
             self.is_connected = False
             return Response(success=False, data=None, error=error_msg)
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Close connection pool (graceful shutdown)"""
         try:
             self._connection_pool.close()
@@ -131,7 +131,7 @@ class ConbusService:
     @staticmethod
     def _parse_telegrams(raw_data: str) -> List[str]:
         """Parse raw data and extract telegrams using < and > delimiters"""
-        telegrams = []
+        telegrams: list[str] = []
         if not raw_data:
             return telegrams
 
@@ -164,11 +164,15 @@ class ConbusService:
 
         try:
             # Set a shorter timeout for receiving responses
+            if self.socket is None:
+                return []
             original_timeout = self.socket.gettimeout()
             self.socket.settimeout(0.1)  # 1 second timeout for responses
 
             while True:
                 try:
+                    if self.socket is None:
+                        break
                     data = self.socket.recv(1024)
                     if not data:
                         break
@@ -183,7 +187,8 @@ class ConbusService:
                     break
 
             # Restore original timeout
-            self.socket.settimeout(original_timeout)
+            if self.socket is not None:
+                self.socket.settimeout(original_timeout)
 
         except Exception as e:
             self.logger.error(f"Error receiving responses: {e}")
@@ -296,11 +301,11 @@ class ConbusService:
         all_telegrams = "".join(telegrams)
         return self.send_raw_telegram(all_telegrams)
 
-    def __enter__(self):
+    def __enter__(self) -> 'ConbusService':
         """Context manager entry"""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[Exception], exc_tb: Optional[Any]) -> None:
         """Context manager exit - ensure connection is closed"""
         self.disconnect()
 

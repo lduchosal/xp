@@ -1,4 +1,5 @@
 import click
+from typing import Any, Optional
 
 from xp.models.datapoint_type import DataPointType
 
@@ -7,10 +8,10 @@ from xp.models.datapoint_type import DataPointType
 class DatapointTypeChoice(click.ParamType):
     name = "telegram_type"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.choices = [key.lower() for key in DataPointType.__members__.keys()]
 
-    def convert(self, value, param, ctx):
+    def convert(self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]) -> Any:
         if value is None:
             return value
 

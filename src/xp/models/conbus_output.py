@@ -21,11 +21,8 @@ class ConbusOutputResponse:
     received_telegrams: Optional[list] = None
     datapoint_telegram: Optional[ReplyTelegram] = None
     error: Optional[str] = None
-    timestamp: Optional[datetime] = None
 
-    def __post_init__(self):
-        if self.timestamp is None:
-            self.timestamp = datetime.now()
+    def __post_init__(self) -> None:
         if self.received_telegrams is None:
             self.received_telegrams = []
 

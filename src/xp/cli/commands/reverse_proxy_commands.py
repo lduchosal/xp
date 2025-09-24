@@ -6,7 +6,7 @@ import signal
 import sys
 from click_help_colors import HelpColorsGroup
 
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from ...services.reverse_proxy_service import (
     ReverseProxyService,
@@ -22,7 +22,7 @@ global_proxy_instance: Optional[ReverseProxyService] = None
 
 
 @click.group(name="rp", cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def reverse_proxy():
+def reverse_proxy() -> None:
     """
     Conbus reverse proxy operations
     """
@@ -36,7 +36,7 @@ def reverse_proxy():
 @click.option("--config", "-c", default="rp.yml", help="Configuration file path")
 
 @handle_service_errors(ReverseProxyError)
-def start_proxy(port: int, config: str):
+def start_proxy(port: int, config: str) -> None:
     """
     Start the Conbus reverse proxy server.
 
@@ -68,7 +68,7 @@ def start_proxy(port: int, config: str):
         )
 
         # Handle graceful shutdown on SIGINT
-        def signal_handler():
+        def signal_handler() -> None:
             if global_proxy_instance and global_proxy_instance.is_running:
                 print(
                     f"\n{global_proxy_instance.timestamp()} [SHUTDOWN] Received interrupt signal"
@@ -97,7 +97,7 @@ def start_proxy(port: int, config: str):
 @reverse_proxy.command("stop")
 
 @handle_service_errors(ReverseProxyError)
-def stop_proxy():
+def stop_proxy() -> None:
     """
     Stop the running Conbus reverse proxy server.
 
@@ -129,7 +129,7 @@ def stop_proxy():
 @reverse_proxy.command("status")
 
 @handle_service_errors(Exception)
-def proxy_status():
+def proxy_status() -> None:
     """
     Get status of the Conbus reverse proxy server.
 
@@ -145,6 +145,7 @@ def proxy_status():
     OutputFormatter(True)
 
     try:
+        status_data: Dict[str, Any]
         if global_proxy_instance is None:
             status_data = {
                 "running": False,

@@ -26,7 +26,7 @@ class LinkNumberService:
     <S{serial_number}F04D04{link_number}{checksum}>
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the link number service"""
         pass
 

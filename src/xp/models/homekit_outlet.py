@@ -31,7 +31,7 @@ class Outlet(Accessory):
         self.serial_number: str = serial_number
         self.output_number: int = output_number
         serial = f"{serial_number}.{output_number:02d}"
-        serv_outlet = self.add_preload_service('Outlet') # type: ignore
+        serv_outlet = self.add_preload_service('Outlet')
 
         self.set_info_service(
             version,
@@ -50,7 +50,7 @@ class Outlet(Accessory):
             getter_callback=self.get_outlet_in_use,
         )
 
-    def set_outlet_in_use(self, value):
+    def set_outlet_in_use(self, value: bool) -> None:
         dispatcher.send(
             signal='outlet_set_outlet_in_use',
             sender=self,
@@ -59,7 +59,7 @@ class Outlet(Accessory):
             value=value,
         )
 
-    def get_outlet_in_use(self):
+    def get_outlet_in_use(self) -> bool:
         responses = dispatcher.send(
             signal='outlet_get_outlet_in_use',
             sender=self,
@@ -67,10 +67,10 @@ class Outlet(Accessory):
             output_number=self.output_number,
         )
 
-        response = get_first_response(responses)
-        return response
+        response = get_first_response(responses, default=False)
+        return bool(response)
 
-    def set_on(self, value):
+    def set_on(self, value: bool) -> None:
         # Emit event using PyDispatcher
         dispatcher.send(
             signal='accessory_set_on',
@@ -80,12 +80,12 @@ class Outlet(Accessory):
             value=value,
         )
 
-    def get_on(self):
+    def get_on(self) -> bool:
         # Emit event and get response
         responses = dispatcher.send(signal='accessory_get_on',
             sender=self,
             serial_number=self.serial_number,
             output_number=self.output_number,
         )
-        response = get_first_response(responses)
-        return response
+        response = get_first_response(responses, default=False)
+        return bool(response)

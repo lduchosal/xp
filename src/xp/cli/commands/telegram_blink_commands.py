@@ -13,7 +13,7 @@ from .telegram import blink
 @blink.command("on")
 @click.argument("serial_number", type=SERIAL)
 @handle_service_errors(BlinkError)
-def blink_on(serial_number: str):
+def blink_on(serial_number: str) -> None:
     """
     Generate a telegram to start blinking module LED.
 
@@ -45,7 +45,7 @@ def blink_on(serial_number: str):
 @click.argument("serial_number", type=SERIAL)
 
 @handle_service_errors(BlinkError)
-def blink_off(serial_number: str):
+def blink_off(serial_number: str) -> None:
     """
     Generate a telegram to stop blinking module LED.
 

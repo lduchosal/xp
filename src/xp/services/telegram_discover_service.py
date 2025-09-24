@@ -54,7 +54,7 @@ class TelegramDiscoverService:
     - Discover responses: <R{serial}F01D{checksum}>
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the discover service"""
         pass
 

@@ -8,12 +8,12 @@ class ConbusRawResponse:
     """Represents a response from Conbus raw telegram send operation"""
 
     success: bool
-    sent_telegrams: str = None
+    sent_telegrams: Optional[str] = None
     received_telegrams: Optional[List[str]] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
         if self.received_telegrams is None:

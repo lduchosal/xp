@@ -5,6 +5,7 @@ various types of telegrams including discover, version, and sensor data requests
 """
 
 import logging
+from typing import Any, Optional
 
 from . import TelegramService
 from .conbus_service import ConbusService
@@ -12,6 +13,7 @@ from .conbus_discover_service import ConbusDiscoverService
 from .telegram_blink_service import TelegramBlinkService
 from ..models.conbus_blink import ConbusBlinkResponse
 from ..models.system_function import SystemFunction
+from ..models.reply_telegram import ReplyTelegram
 
 class ConbusBlinkService:
     """
@@ -35,10 +37,10 @@ class ConbusBlinkService:
         self.logger = logging.getLogger(__name__)
 
 
-    def __enter__(self):
+    def __enter__(self) -> "ConbusBlinkService":
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[Exception], exc_tb: Optional[Any]) -> None:
       # Cleanup logic if needed
         pass
 
@@ -68,9 +70,11 @@ class ConbusBlinkService:
             )
 
             reply_telegram = None
-            if response.success and len(response.received_telegrams) > 0:
+            if response.success and response.received_telegrams is not None and len(response.received_telegrams) > 0:
                 ack_or_nak = response.received_telegrams[0]
-                reply_telegram = self.telegram_service.parse_telegram(ack_or_nak)
+                parsed_telegram = self.telegram_service.parse_telegram(ack_or_nak)
+                if isinstance(parsed_telegram, ReplyTelegram):
+                    reply_telegram = parsed_telegram
 
             return ConbusBlinkResponse(
                 serial_number=serial_number,

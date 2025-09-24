@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from pydispatch import dispatcher
 
@@ -44,7 +44,7 @@ class HomekitModuleService:
         return modules
 
 
-    def _setup_event_listeners(self):
+    def _setup_event_listeners(self) -> None:
         """Set up PyDispatcher event listeners"""
         dispatcher.connect(self._outlet_set_outlet_in_use, signal='outlet_set_outlet_in_use')
         dispatcher.connect(self._on_outlet_get_outlet_in_use, signal='outlet_get_outlet_in_use')
@@ -52,28 +52,36 @@ class HomekitModuleService:
         dispatcher.connect(self._on_accessory_get_on, signal='accessory_get_on')
 
     # noinspection PyUnusedLocal
-    def _outlet_set_outlet_in_use(self, sender, **kwargs):
-        serial_number: str = kwargs.get('serial_number')
-        output_number: int = kwargs.get('output_number')
-        value: bool = kwargs.get('value')
+    def _outlet_set_outlet_in_use(self, sender: Any, **kwargs: Any) -> None:
+        serial_number: Optional[Any] = kwargs.get('serial_number')
+        output_number: Optional[Any] = kwargs.get('output_number')
+        value: Optional[Any] = kwargs.get('value')
 
         self.logger.info(f"_outlet_set_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}, value: {value} }}")
 
     # noinspection PyUnusedLocal
-    def _on_outlet_get_outlet_in_use(self, sender, **kwargs):
-        serial_number: str = kwargs.get('serial_number')
-        output_number: int = kwargs.get('output_number')
+    def _on_outlet_get_outlet_in_use(self, sender: Any, **kwargs: Any) -> None:
+        serial_number: Optional[Any] = kwargs.get('serial_number')
+        output_number: Optional[Any] = kwargs.get('output_number')
 
         self.logger.info(f"_on_outlet_get_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}}}")
 
     # noinspection PyUnusedLocal
-    def _on_accessory_set_on(self, sender, **kwargs):
+    def _on_accessory_set_on(self, sender: Any, **kwargs: Any) -> None:
         """Handle accessory set_on events from PyDispatcher"""
-        serial_number: str = kwargs.get('serial_number')
-        output_number: int = kwargs.get('output_number')
-        value: bool = kwargs.get('value')
+        serial_number: Optional[Any] = kwargs.get('serial_number')
+        output_number: Optional[Any] = kwargs.get('output_number')
+        value: Optional[Any] = kwargs.get('value')
 
         self.logger.info(f"_on_accessory_set_on {{ serial_number: {serial_number} output_number: {output_number} }}")
+
+        if not isinstance(serial_number, str):
+            self.logger.warning(f"Invalid serial_number type: {type(serial_number)}")
+            return
+
+        if not isinstance(output_number, int):
+            self.logger.warning(f"Invalid output_number type: {type(output_number)}")
+            return
 
         module = self.get_module_by_serial(serial_number)
         if not module:
@@ -91,12 +99,20 @@ class HomekitModuleService:
         )
 
     # noinspection PyUnusedLocal
-    def _on_accessory_get_on(self, sender, **kwargs):
+    def _on_accessory_get_on(self, sender: Any, **kwargs: Any) -> bool:
         """Handle accessory get_on events from PyDispatcher"""
-        serial_number: str = kwargs.get('serial_number')
-        output_number: int = kwargs.get('output_number')
+        serial_number: Optional[Any] = kwargs.get('serial_number')
+        output_number: Optional[Any] = kwargs.get('output_number')
 
         self.logger.info(f"_on_accessory_get_on {{ serial_number: {serial_number}, output_number: {output_number}}}")
+
+        if not isinstance(serial_number, str):
+            self.logger.warning(f"Invalid serial_number type: {type(serial_number)}")
+            return False
+
+        if not isinstance(output_number, int):
+            self.logger.warning(f"Invalid output_number type: {type(output_number)}")
+            return False
 
         module = self.get_module_by_serial(serial_number)
         if not module:

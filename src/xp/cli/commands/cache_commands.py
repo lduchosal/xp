@@ -11,7 +11,7 @@ from ..utils.error_handlers import CLIErrorHandler
 
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def cache():
+def cache() -> None:
     """
     Cache operations for HomeKit device states
     """
@@ -22,7 +22,7 @@ def cache():
 @click.argument("key")
 @click.argument("tag")
 @list_command(Exception)
-def cache_get(key: str, tag: str):
+def cache_get(key: str, tag: str) -> None:
     """
     Get cached data for a device key with specified tag.
 
@@ -67,7 +67,7 @@ def cache_get(key: str, tag: str):
 @click.argument("tag")
 @click.argument("data")
 @list_command(Exception)
-def cache_set(key: str, tag: str, data: str):
+def cache_set(key: str, tag: str, data: str) -> None:
     """
     Set cache entry for a device key with specified tag and data.
 
@@ -100,7 +100,7 @@ def cache_set(key: str, tag: str, data: str):
 @cache.command("clear")
 @click.argument("key_or_tag_or_all", required=False)
 @list_command(Exception)
-def cache_clear(key_or_tag_or_all: str):
+def cache_clear(key_or_tag_or_all: str) -> None:
     """
     Clear cache entries by key, tag, or clear entire cache.
 
@@ -142,7 +142,7 @@ def cache_clear(key_or_tag_or_all: str):
 
 @cache.command("items")
 @list_command(Exception)
-def cache_items():
+def cache_items() -> None:
     """
     List all cached items with their data.
 
@@ -181,7 +181,7 @@ def cache_items():
 
 @cache.command("stats")
 @list_command(Exception)
-def cache_stats():
+def cache_stats() -> None:
     """
     Show cache statistics and information.
 

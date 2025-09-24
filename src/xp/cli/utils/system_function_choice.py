@@ -1,4 +1,5 @@
 import click
+from typing import Any, Optional
 
 from xp.models.system_function import SystemFunction
 
@@ -7,10 +8,10 @@ from xp.models.system_function import SystemFunction
 class SystemFunctionChoice(click.ParamType):
     name = "system_function"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.choices = [key.lower() for key in SystemFunction.__members__.keys()]
 
-    def convert(self, value, param, ctx):
+    def convert(self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]) -> Any:
         if value is None:
             return value
 
@@ -19,7 +20,7 @@ class SystemFunctionChoice(click.ParamType):
 
         if normalized_value in self.choices:
             # Return the actual enum member
-            return SystemFunction[normalized_value.upper()] # type: ignore
+            return SystemFunction[normalized_value]
 
         # If not found, show error with available choices
         self.fail(f'{value!r} is not a valid choice. '

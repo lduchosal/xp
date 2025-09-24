@@ -10,6 +10,7 @@ from .conbus_service import ConbusService
 from ..models import (
     ConbusDatapointResponse,
 )
+from ..models.reply_telegram import ReplyTelegram
 from ..models.datapoint_type import DataPointType
 from ..models.system_function import SystemFunction
 from ..services.telegram_service import TelegramService
@@ -48,9 +49,11 @@ class ConbusDatapointService:
         # Send telegram
         response = self.conbus_service.send_telegram(serial_number, system_function, datapoint_code)
         datapoint_telegram = None
-        if len(response.received_telegrams) > 0:
+        if response.received_telegrams is not None and len(response.received_telegrams) > 0:
             telegram = response.received_telegrams[0]
-            datapoint_telegram = self.telegram_service.parse_telegram(telegram)
+            parsed_telegram = self.telegram_service.parse_telegram(telegram)
+            if isinstance(parsed_telegram, ReplyTelegram):
+                datapoint_telegram = parsed_telegram
 
         return ConbusDatapointResponse(
             success=response.success,
@@ -63,10 +66,10 @@ class ConbusDatapointService:
             error=response.error,
         )
 
-    def __enter__(self):
+    def __enter__(self) -> 'ConbusDatapointService':
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: object | None) -> None:
       # Cleanup logic if needed
         pass
 

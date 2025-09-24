@@ -26,7 +26,7 @@ class EventTelegram(Telegram):
     input_number: int = 0
     event_type: Optional[EventType] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
 
@@ -63,7 +63,7 @@ class EventTelegram(Telegram):
             "module_type": self.module_type,
             "link_number": self.link_number,
             "output_number": self.input_number,
-            "event_type": self.event_type.value,
+            "event_type": self.event_type.value if self.event_type else None,
             "event_type_name": (
                 "button_press" if self.is_button_press else "button_release"
             ),

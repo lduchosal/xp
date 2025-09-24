@@ -22,7 +22,7 @@ from .conbus import conbus_output
 @handle_service_errors(ConbusDatapointError)
 def xp_output_on(
     serial_number: str, output_number: int
-):
+) -> None:
     """Send ON command for output_number XP module serial_number
 
     Examples:
@@ -44,7 +44,7 @@ def xp_output_on(
 @handle_service_errors(ConbusDatapointError)
 def xp_output_off(
     serial_number: str, output_number: int
-):
+) -> None:
     """Send OFF command for output_number XP module serial_number
 
     Examples:
@@ -65,7 +65,7 @@ def xp_output_off(
 @handle_service_errors(ConbusDatapointError)
 def xp_output_status(
     serial_number: str
-):
+) -> None:
     """Query output state command to XP module serial_number.
 
     Examples:
@@ -87,7 +87,7 @@ def xp_output_status(
 @handle_service_errors(ConbusDatapointError)
 def xp_module_state(
     serial_number: str
-):
+) -> None:
     """Query module state of the XP module serial_number
 
     Examples:

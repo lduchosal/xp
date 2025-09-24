@@ -41,7 +41,7 @@ class HomekitService:
         signal.signal(signal.SIGTERM, driver.signal_handler)
         self.driver:AccessoryDriver = driver
 
-    def run(self) :
+    def run(self) -> None:
 
         """Get current client configuration"""
         self.load_accessories()
@@ -49,7 +49,7 @@ class HomekitService:
         # Start it!
         self.driver.start()
 
-    def load_accessories(self):
+    def load_accessories(self) -> None:
         bridge_config = self.config.bridge
         bridge = Bridge(self.driver, bridge_config.name)
         bridge.set_info_service(
@@ -63,7 +63,7 @@ class HomekitService:
 
         self.driver.add_accessory(accessory=bridge)
 
-    def add_room(self, bridge: Bridge, room: RoomConfig):
+    def add_room(self, bridge: Bridge, room: RoomConfig) -> None:
         """Call this method to get a Bridge instead of a standalone accessory."""
         temperature = TemperatureSensor(self.driver, room.name)
         bridge.add_accessory(temperature)
@@ -109,5 +109,5 @@ class HomekitService:
         self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))
         return None
 
-    def get_accessory_by_name(self, name) -> Optional[HomekitAccessoryConfig]:
+    def get_accessory_by_name(self, name: str) -> Optional[HomekitAccessoryConfig]:
         return next((module for module in self.config.accessories if module.name == name), None)

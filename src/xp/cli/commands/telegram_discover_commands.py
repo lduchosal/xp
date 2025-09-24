@@ -13,7 +13,7 @@ from ...services.telegram_discover_service import TelegramDiscoverService, Disco
 
 @telegram.command("discover")
 @handle_service_errors(DiscoverError)
-def generate_discover():
+def generate_discover() -> None:
     """
     Generate a discover telegram for device enumeration.
 

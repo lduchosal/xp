@@ -18,7 +18,7 @@ from ...services.conbus_discover_service import (
 @conbus.command("discover")
 @connection_command()
 @handle_service_errors(ConbusDiscoverError)
-def send_discover_telegram():
+def send_discover_telegram() -> None:
     """
     Send discover telegram to Conbus server.
 

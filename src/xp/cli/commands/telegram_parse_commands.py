@@ -16,7 +16,7 @@ from ...services.telegram_service import TelegramService, TelegramParsingError
 @telegram.command("parse")
 @click.argument("telegram_string")
 @handle_service_errors(TelegramParsingError)
-def parse_any_telegram(telegram_string: str):
+def parse_any_telegram(telegram_string: str) -> None:
     """
     Auto-detect and parse any type of telegram (event, system, reply, or discover).
 
@@ -46,7 +46,7 @@ def parse_any_telegram(telegram_string: str):
 @telegram.command("validate")
 @click.argument("telegram_string")
 @handle_service_errors(TelegramParsingError)
-def validate_telegram(telegram_string: str):
+def validate_telegram(telegram_string: str) -> None:
     """
     Validate the format of an event telegram.
 

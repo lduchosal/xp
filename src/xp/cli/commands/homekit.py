@@ -6,7 +6,7 @@ from xp.cli.utils.decorators import service_command
 
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def homekit():
+def homekit() -> None:
     """
     HomeKit management commands.
 
@@ -16,7 +16,7 @@ def homekit():
 
 
 @homekit.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def config():
+def config() -> None:
     """HomeKit configuration management"""
     pass
 
@@ -25,7 +25,7 @@ def config():
 @click.option('--conson-config', default='conson.yml', help='Path to conson.yml configuration file')
 @click.option('--homekit-config', default='homekit.yml', help='Path to homekit.yml configuration file')
 @service_command()
-def validate(conson_config: str, homekit_config: str):
+def validate(conson_config: str, homekit_config: str) -> None:
     """Validate homekit.yml and conson.yml coherence"""
     from xp.services.homekit_config_validator import ConfigValidationService
 
@@ -64,7 +64,7 @@ def validate(conson_config: str, homekit_config: str):
 @click.option('--conson-config', default='conson.yml', help='Path to conson.yml configuration file')
 @click.option('--homekit-config', default='homekit.yml', help='Path to homekit.yml configuration file')
 @service_command()
-def show_config(conson_config: str, homekit_config: str):
+def show_config(conson_config: str, homekit_config: str) -> None:
     """Display parsed configuration summary"""
     from xp.services.homekit_config_validator import ConfigValidationService
 

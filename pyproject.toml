@@ -39,6 +39,7 @@ dev = [
     "vulture>=2.14",
     "httpx>=0.24.0",
     "twine>=6.2.0",
+    "types-PyYAML"
 ]
 
 [tool.pytest.ini_options]

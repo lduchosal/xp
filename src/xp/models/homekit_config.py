@@ -31,7 +31,7 @@ class HomekitConfig(BaseModel):
     accessories: List[HomekitAccessoryConfig]
 
     @classmethod
-    def from_yaml(cls, file_path: str):
+    def from_yaml(cls, file_path: str) -> 'HomekitConfig':
         with open(file_path, 'r') as file:
             data = yaml.safe_load(file)
         return cls(**data)

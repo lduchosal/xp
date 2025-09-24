@@ -29,7 +29,7 @@ class OutputTelegram(Telegram):
     action_type: Optional[ActionType] = None
     system_function: SystemFunction = SystemFunction.ACTION
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
 
@@ -40,7 +40,7 @@ class OutputTelegram(Telegram):
             ActionType.PRESS: "Press (Make)",
             ActionType.RELEASE: "Release (Break)",
         }
-        return descriptions.get(self.action_type, "Unknown Action")
+        return descriptions.get(self.action_type, "Unknown Action") if self.action_type else "Unknown Action"
 
     @property
     def input_description(self) -> str:

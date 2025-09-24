@@ -40,7 +40,7 @@ class TelegramService:
         r"^<R(\d{10})F(\d{2})(.+?)([A-Z0-9]{2})>$"
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the telegram service"""
         pass
 

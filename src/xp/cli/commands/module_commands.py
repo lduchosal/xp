@@ -1,17 +1,19 @@
 """Module type operations CLI commands."""
 
-import click
 import json
+from typing import Union, Dict, Any
+
+import click
 from click_help_colors import HelpColorsGroup
 
-from ...services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
 from ..utils.decorators import list_command
-from ..utils.formatters import OutputFormatter, ListFormatter
 from ..utils.error_handlers import CLIErrorHandler
+from ..utils.formatters import OutputFormatter, ListFormatter
+from ...services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
 
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
-def module():
+def module() -> None:
     """
     Module type operations
     """
@@ -21,7 +23,7 @@ def module():
 @module.command("info")
 @click.argument("identifier")
 @list_command(ModuleTypeNotFoundError)
-def module_info(identifier: str):
+def module_info(identifier: str) -> None:
     """
     Get information about a module type by code or name.
 
@@ -36,6 +38,7 @@ def module_info(identifier: str):
 
     try:
         # Try to parse as integer first, then as string
+        module_id: Union[int, str]
         try:
             module_id = int(identifier)
         except ValueError:
@@ -56,7 +59,7 @@ def module_info(identifier: str):
     "--group-by-category", "-g", is_flag=True, help="Group modules by category"
 )
 @list_command(Exception)
-def module_list(category: str, group_by_category: bool):
+def module_list(category: str, group_by_category: bool) -> None:
     """
     List module types, optionally filtered by category.
 
@@ -81,7 +84,7 @@ def module_list(category: str, group_by_category: bool):
 
         if group_by_category:
             categories = service.list_modules_by_category()
-            output = {
+            output: Dict[str, Any] = {
                 "modules_by_category": {
                     cat: [mod.to_dict() for mod in mods]
                     for cat, mods in categories.items()
@@ -107,7 +110,7 @@ def module_list(category: str, group_by_category: bool):
     help="Fields to search in (default: both)",
 )
 @list_command(Exception)
-def module_search(query: str, field: tuple):
+def module_search(query: str, field: tuple) -> None:
     """
     Search for module types by name or description.
 
@@ -138,7 +141,7 @@ def module_search(query: str, field: tuple):
 
 @module.command("categories")
 @list_command(Exception)
-def module_categories():
+def module_categories() -> None:
     """
     List all available module categories.
 

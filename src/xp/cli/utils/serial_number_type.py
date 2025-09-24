@@ -1,9 +1,10 @@
 import click
+from typing import Any, Optional
 
 class SerialNumberParamType(click.ParamType):
     name = "serial_number"
 
-    def convert(self, value, param, ctx):
+    def convert(self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]) -> Optional[str]:
         if value is None:
             return None
 

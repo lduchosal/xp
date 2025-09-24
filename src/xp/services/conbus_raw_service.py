@@ -4,6 +4,7 @@ This service handles sending raw telegram strings without prior validation.
 """
 
 import logging
+from typing import Optional, Any
 
 from .conbus_service import ConbusService
 from ..models.conbus_raw import ConbusRawResponse
@@ -63,10 +64,10 @@ class ConbusRawService:
                 error=error_msg
             )
 
-    def __enter__(self):
+    def __enter__(self) -> 'ConbusRawService':
         """Context manager entry"""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
         """Context manager exit - ensure connection is closed"""
         self.conbus_service.disconnect()

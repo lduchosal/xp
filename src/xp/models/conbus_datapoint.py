@@ -12,16 +12,16 @@ class ConbusDatapointResponse:
     """Represents a response from Conbus send operation"""
 
     success: bool
-    serial_number : Optional[str] = None,
-    system_function : Optional[SystemFunction] = None,
-    datapoint_type : Optional[DataPointType] = None,
+    serial_number : Optional[str] = None
+    system_function : Optional[SystemFunction] = None
+    datapoint_type : Optional[DataPointType] = None
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
     datapoint_telegram: Optional[ReplyTelegram] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
         if self.received_telegrams is None:
