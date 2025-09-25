@@ -5,7 +5,6 @@ from pydispatch import dispatcher
 
 from xp.models.action_type import ActionType
 from xp.models.homekit_conson_config import ConsonModuleConfig, ConsonModuleListConfig
-from xp.services.conbus_output_service import ConbusOutputService
 from xp.services.homekit_cache_service import HomeKitCacheService
 from xp.services.telegram_output_service import TelegramOutputService
 
@@ -18,7 +17,6 @@ class HomekitModuleService:
         self.logger = logging.getLogger(__name__)
 
         self.conson_modules_config = ConsonModuleListConfig.from_yaml(config_path)
-        self.output_service = ConbusOutputService()
         self.telegram_output_service = TelegramOutputService()
         self.cache_service = HomeKitCacheService()
 
@@ -69,18 +67,18 @@ class HomekitModuleService:
     # noinspection PyUnusedLocal
     def _on_accessory_set_on(self, sender: Any, **kwargs: Any) -> None:
         """Handle accessory set_on events from PyDispatcher"""
-        serial_number: Optional[Any] = kwargs.get('serial_number')
-        output_number: Optional[Any] = kwargs.get('output_number')
-        value: Optional[Any] = kwargs.get('value')
+        serial_number: Optional[str] = kwargs.get('serial_number')
+        output_number: Optional[int] = kwargs.get('output_number')
+        value: Optional[bool] = kwargs.get('value')
 
         self.logger.info(f"_on_accessory_set_on {{ serial_number: {serial_number} output_number: {output_number} }}")
 
-        if not isinstance(serial_number, str):
-            self.logger.warning(f"Invalid serial_number type: {type(serial_number)}")
+        if serial_number is None:
+            self.logger.warning(f"Invalid serial_number")
             return
 
-        if not isinstance(output_number, int):
-            self.logger.warning(f"Invalid output_number type: {type(output_number)}")
+        if output_number is None:
+            self.logger.warning(f"Invalid output_number")
             return
 
         module = self.get_module_by_serial(serial_number)
@@ -92,26 +90,27 @@ class HomekitModuleService:
         if value:
             action_type = ActionType.RELEASE
 
-        self.output_service.send_action(
+        self.cache_service.send_action(
             serial_number=serial_number,
             output_number=output_number,
             action_type=action_type
         )
 
+
     # noinspection PyUnusedLocal
     def _on_accessory_get_on(self, sender: Any, **kwargs: Any) -> bool:
         """Handle accessory get_on events from PyDispatcher"""
-        serial_number: Optional[Any] = kwargs.get('serial_number')
-        output_number: Optional[Any] = kwargs.get('output_number')
+        serial_number: Optional[str] = kwargs.get('serial_number')
+        output_number: Optional[int] = kwargs.get('output_number')
 
         self.logger.info(f"_on_accessory_get_on {{ serial_number: {serial_number}, output_number: {output_number}}}")
 
-        if not isinstance(serial_number, str):
-            self.logger.warning(f"Invalid serial_number type: {type(serial_number)}")
+        if serial_number is None:
+            self.logger.warning("Invalid serial_number")
             return False
 
-        if not isinstance(output_number, int):
-            self.logger.warning(f"Invalid output_number type: {type(output_number)}")
+        if output_number is None:
+            self.logger.warning("Invalid output_number")
             return False
 
         module = self.get_module_by_serial(serial_number)
@@ -120,8 +119,12 @@ class HomekitModuleService:
             return False
 
         # tag = f"E{module.module_type_code}L{module.link_number}I{output_number}"
-        tag = f"E{module.module_type_code}L{module.link_number}"
+        tag = f"E{module.module_type_code:02d}L{module.link_number:02d}"
         response = self.cache_service.get(key=serial_number, tag=tag)
+        if response.data is None:
+            self.logger.warning(f"No output_telegram for serial {serial_number}")
+            return False
+
         result = self.telegram_output_service.parse_status_response(response.data)
         return result[output_number]
 

@@ -109,6 +109,7 @@ class TestEventTelegram:
             "checksum": "AK",
             "checksum_validated": None,
             "raw_telegram": "<E14L00I02MAK>",
+            'telegram_type': 'event',
             "timestamp": "2023-01-01T12:00:00",
             "module_info": {
                 "name": "XP2606",

@@ -3,9 +3,10 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Union, Any
+
 from .event_telegram import EventTelegram
-from .system_telegram import SystemTelegram
 from .reply_telegram import ReplyTelegram
+from .system_telegram import SystemTelegram
 
 
 @dataclass
@@ -39,14 +40,10 @@ class LogEntry:
     @property
     def telegram_type(self) -> str:
         """Get the telegram type (event, system, reply, unknown)"""
-        if self.parsed_telegram:
-            if isinstance(self.parsed_telegram, EventTelegram):
-                return "event"
-            elif isinstance(self.parsed_telegram, SystemTelegram):
-                return "system"
-            elif isinstance(self.parsed_telegram, ReplyTelegram):
-                return "reply"
-        return "unknown"
+        if self.parsed_telegram is None:
+            return "unknown"
+
+        return self.parsed_telegram.telegram_type.value.lower()
 
     @property
     def is_valid_parse(self) -> bool:

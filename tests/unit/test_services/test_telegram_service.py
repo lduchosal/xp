@@ -420,7 +420,7 @@ class TestAutoDetectTelegramParsing:
 
     def test_parse_telegram_unknown_type(self):
         """Test parsing unknown telegram type raises error"""
-        with pytest.raises(TelegramParsingError, match="Unknown telegram type: X"):
+        with pytest.raises(TelegramParsingError, match="Unknown telegram type code: X"):
             self.service.parse_telegram("<X0020012521F02D18+26,0§CIL>")
 
     def test_parse_telegram_invalid_format(self):

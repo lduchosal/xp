@@ -1,6 +1,7 @@
 from datetime import datetime
 from dataclasses import dataclass
 from typing import Optional
+from .telegram_type import TelegramType
 
 
 @dataclass
@@ -14,3 +15,4 @@ class Telegram:
     raw_telegram: str
     checksum_validated: Optional[bool] = None
     timestamp: Optional[datetime] = None
+    telegram_type: TelegramType = TelegramType.EVENT

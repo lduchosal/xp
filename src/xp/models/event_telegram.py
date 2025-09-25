@@ -6,6 +6,7 @@ from .input_type import InputType
 from .event_type import EventType
 from .module_type import ModuleType
 from .telegram import Telegram
+from .telegram_type import TelegramType
 
 
 @dataclass
@@ -29,6 +30,7 @@ class EventTelegram(Telegram):
     def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
+        self.telegram_type = TelegramType.EVENT
 
     @property
     def module_info(self) -> Optional[ModuleType]:
@@ -72,6 +74,7 @@ class EventTelegram(Telegram):
             "checksum_validated": self.checksum_validated,
             "raw_telegram": self.raw_telegram,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
+            "telegram_type": self.telegram_type.value,
         }
 
         # Add module information if available

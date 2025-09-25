@@ -5,15 +5,16 @@ various types of telegrams including discover, version, and sensor data requests
 """
 
 import logging
+from typing import Optional
 
 from .conbus_service import ConbusService
 from ..models import (
     ConbusDatapointResponse,
 )
-from ..models.reply_telegram import ReplyTelegram
 from ..models.datapoint_type import DataPointType
+from ..models.reply_telegram import ReplyTelegram
 from ..models.system_function import SystemFunction
-from ..services.telegram_service import TelegramService
+from ..services.telegram_service import TelegramService, TelegramParsingError
 
 
 class ConbusDatapointError(Exception):
@@ -48,23 +49,25 @@ class ConbusDatapointService:
 
         # Send telegram
         response = self.conbus_service.send_telegram(serial_number, system_function, datapoint_code)
-        datapoint_telegram = None
+        datapoint_telegram: Optional[ReplyTelegram] = None
         if response.received_telegrams is not None and len(response.received_telegrams) > 0:
             telegram = response.received_telegrams[0]
-            parsed_telegram = self.telegram_service.parse_telegram(telegram)
-            if isinstance(parsed_telegram, ReplyTelegram):
+            try:
+                parsed_telegram = self.telegram_service.parse_reply_telegram(telegram)
                 datapoint_telegram = parsed_telegram
+            except TelegramParsingError as e:
+                self.logger.debug(f"Not a reply telegram {e}")
 
         return ConbusDatapointResponse(
-            success=response.success,
-            serial_number=serial_number,
-            system_function=system_function,
-            datapoint_type=datapoint_type,
-            sent_telegram=response.sent_telegram,
-            received_telegrams=response.received_telegrams,
-            datapoint_telegram=datapoint_telegram,
-            error=response.error,
-        )
+                success=response.success,
+                serial_number=serial_number,
+                system_function=system_function,
+                datapoint_type=datapoint_type,
+                sent_telegram=response.sent_telegram,
+                received_telegrams=response.received_telegrams,
+                datapoint_telegram=datapoint_telegram,
+                error=response.error,
+            )
 
     def __enter__(self) -> 'ConbusDatapointService':
         return self

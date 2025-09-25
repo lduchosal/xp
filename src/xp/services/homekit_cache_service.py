@@ -10,7 +10,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional
 
+from . import TelegramService, TelegramParsingError
 from .conbus_output_service import ConbusOutputService
+from ..models.action_type import ActionType
 from ..models.cache import CacheEntry, CacheResponse
 
 
@@ -30,6 +32,7 @@ class HomeKitCacheService:
         """
         self.logger = logging.getLogger(__name__)
         self.conbus_output_service = ConbusOutputService(config_path)
+        self.telegram_service = TelegramService()
         self.cache_file = Path(cache_file)
 
         # In-memory cache storage
@@ -232,3 +235,18 @@ class HomeKitCacheService:
             "expired_entries": expired_entries,
             "active_entries": total_entries - expired_entries
         }
+
+    def send_action(self, serial_number: str, output_number:int, action_type: ActionType) -> None:
+
+        conbus_response = self.conbus_output_service.send_action(serial_number, output_number, action_type)
+        if not conbus_response.success or conbus_response.received_telegrams is None:
+            self.logger.error(f"Action failed or no response: {conbus_response}")
+            return
+
+        for received_telegram in conbus_response.received_telegrams:
+            raw_telegram = received_telegram.raw_telegram
+            try:
+                telegram = self.telegram_service.parse_event_telegram(raw_telegram)
+                self.received_event(telegram.raw_telegram)
+            except TelegramParsingError as e:
+                self.logger.info(f"Not an event telegram {raw_telegram}: {e}")

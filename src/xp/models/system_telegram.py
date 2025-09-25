@@ -11,6 +11,7 @@ from typing import Optional, Any
 from .datapoint_type import DataPointType
 from .system_function import SystemFunction
 from .telegram import Telegram
+from .telegram_type import TelegramType
 
 @dataclass
 class SystemTelegram(Telegram):
@@ -29,6 +30,7 @@ class SystemTelegram(Telegram):
     def __post_init__(self) -> None:
         if self.timestamp is None:
             self.timestamp = datetime.now()
+        self.telegram_type = TelegramType.SYSTEM
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
@@ -46,7 +48,7 @@ class SystemTelegram(Telegram):
             "checksum_validated": self.checksum_validated,
             "raw_telegram": self.raw_telegram,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
-            "telegram_type": "system",
+            "telegram_type": self.telegram_type.value,
         }
 
     def __str__(self) -> str:

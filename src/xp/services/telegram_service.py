@@ -302,21 +302,23 @@ class TelegramService:
 
         Raises:
             TelegramParsingError: If the telegram format is invalid or unknown
+            :rtype: Union[EventTelegram, SystemTelegram, ReplyTelegram]
         """
         if not raw_telegram:
             raise TelegramParsingError("Empty telegram string")
 
         # Then check general telegram types
-        telegram_type = raw_telegram.strip()[1] if len(raw_telegram.strip()) > 1 else ""
+        telegram_type_code = raw_telegram.strip()[1] if len(raw_telegram.strip()) > 1 else ""
 
-        if telegram_type == "E":
+        if telegram_type_code in ["E", "O"]:
             return self.parse_event_telegram(raw_telegram)
-        elif telegram_type == "S":
+        elif telegram_type_code == "S":
             return self.parse_system_telegram(raw_telegram)
-        elif telegram_type == "R":
+        elif telegram_type_code == "R":
             return self.parse_reply_telegram(raw_telegram)
         else:
-            raise TelegramParsingError(f"Unknown telegram type: {telegram_type}")
+            raise TelegramParsingError(f"Unknown telegram type code: {telegram_type_code}")
+
 
     @staticmethod
     def format_system_telegram_summary(telegram: SystemTelegram) -> str:

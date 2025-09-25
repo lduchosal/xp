@@ -71,9 +71,9 @@ def start_proxy(port: int, config: str) -> None:
         # Handle graceful shutdown on SIGINT
         def signal_handler(signum: int, frame: Optional[FrameType]) -> None:
             if global_proxy_instance and global_proxy_instance.is_running:
-                print(
-                    f"\n{global_proxy_instance.timestamp()} [SHUTDOWN] Received interrupt signal ({signum})"
-                )
+                timestamp = global_proxy_instance.timestamp()
+                print(f"\n{timestamp} [SHUTDOWN] Received interrupt signal ({signum})")
+                print(f"\n{timestamp} [SHUTDOWN] Frame is ({frame})")
                 global_proxy_instance.stop_proxy()
             sys.exit(0)
 

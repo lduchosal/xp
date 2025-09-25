@@ -10,7 +10,6 @@ from ..utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from ..utils.formatters import OutputFormatter
 from ..utils.serial_number_type import SERIAL
 from ...models.datapoint_type import DataPointType
 from ...services.conbus_datapoint_service import (

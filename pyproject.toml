@@ -115,7 +115,6 @@ strict_equality = true
 ignore_missing_imports = true
 disable_error_code = ["method-assign"]
 
-
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false

@@ -89,7 +89,10 @@ class ConbusOutputService:
             input_action,  # "00AA", "01AA", etc.
         )
 
-        if not response.success or response.received_telegrams is None or not len(response.received_telegrams) > 0:
+        if (not response.success
+                or response.received_telegrams is None
+                or len(response.received_telegrams) <= 0):
+
             return ConbusOutputResponse(
                 success=response.success,
                 serial_number=serial_number,
