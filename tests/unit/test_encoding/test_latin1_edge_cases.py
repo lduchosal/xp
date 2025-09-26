@@ -12,8 +12,6 @@ from contextlib import suppress
 from typing import Optional
 
 
-
-
 class Latin1TestServer:
     """Test server that sends responses with Latin-1 extended characters"""
 
@@ -96,6 +94,7 @@ class Latin1TestServer:
             # Discover with extended chars in device name
             "<S0000000000F01D00FA>": "<R0012345011F01D©XP24®>",
         }.get(message)
+
 
 class TestEncodingConsistency:
     """Test encoding consistency across the communication pipeline"""
