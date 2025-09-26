@@ -195,7 +195,7 @@ class TestConbusDatapointService:
         service = ConbusDatapointService()
 
         # Mock the send_telegram method to return successful responses
-        service.send_telegram = Mock(return_value=mock_single_response)
+        service.query_datapoint = Mock(return_value=mock_single_response)
 
         # Test the query_all_datapoints method
         result = service.query_all_datapoints(self.valid_serial)
@@ -208,7 +208,7 @@ class TestConbusDatapointService:
         assert len(result.datapoints) > 0
 
         # Should have called send_telegram for each DataPointType
-        assert service.send_telegram.call_count == len(DataPointType)
+        assert service.query_datapoint.call_count == len(DataPointType)
 
     def test_query_all_datapoints_partial_failure(self):
         """Test querying datapoints when some datapoints fail"""
@@ -232,7 +232,7 @@ class TestConbusDatapointService:
                 mock_response.datapoint_telegram = None
                 return mock_response
 
-        service.send_telegram = Mock(side_effect=mock_send_telegram)
+        service.query_datapoint = Mock(side_effect=mock_send_telegram)
 
         # Test the query_all_datapoints method
         result = service.query_all_datapoints(self.valid_serial)

@@ -35,7 +35,7 @@ async def datapoint_devices(
     service = ConbusDatapointService()
     # SendDatapoint telegram and receive responses
     with service:
-        response = service.send_telegram(
+        response = service.query_datapoint(
             datapoint_type=datapoint,
             serial_number=serial_number)
 

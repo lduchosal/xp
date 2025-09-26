@@ -1,6 +1,6 @@
 # Get link number of a module
 
-Use CLI to get the link number for a specific module
+Use CLI to get the current link number for a specific module
 
 ## CLI usage
 
@@ -9,69 +9,51 @@ Command:
 xp conbus linknumber get <serial_number>
 ```
 
-xp conbus linknumber get <serial_number> <link_number>
-
 Output:
 ```
 {
   "success": true,
-  "link_number": "10",
+  "link_number": 10,
   "serial_number": "0020045057",
-  "sent_telegram": "<S0020045057F02D04FG>",
+  "sent_telegram": "<S0020045057F03D04FG>",
   "received_telegrams": [
-    "<R0020045057F02D0400FH>"
+    "<R0020045057F03D040AFH>"
   ],
   "error": null,
-  "timestamp": "2025-09-26T13:11:25.820383",
-}
-
-
-```
-Command:
-```
-xp conbus linknumber set <serial_number> <link_number>
-```
-
-xp conbus linknumber set <serial_number> <link_number>
-
-update set linknumber response to add 
-  "link_number": "04",
-
-Output:
-```
-{
-  "success": true,
-  "link_number": "04",
-  "result": "ACK",
-  "serial_number": "0020045057",
-  "sent_telegram": "<S0020045057F02D04FG>",
-  "received_telegrams": [
-    "<R0020045057F02D0400FH>"
-  ],
-  "error": null,
-  "timestamp": "2025-09-26T13:11:25.820383",
+  "timestamp": "2025-09-26T13:11:25.820383"
 }
 ```
-## Service
 
-`ConbusLinknumberService` to handle module link number assignment:
+**Implementation Checklist:**
 
-reuse existing implementation : get datapoint LINK_NUMBER
+## CLI Command
+- [ ] Add `get` subcommand to existing linknumber command group
+- [ ] Accept `serial_number` argument with `type=SERIAL` for validation
+- [ ] Use ConbusLinknumberService to read module link number
+- [ ] Add CLI command as subcommand in `src/xp/cli/commands/conbus_linknumber_commands.py`
+- [ ] Minimal logic in CLI, delegate to service
+
+## Service Enhancement
+- [ ] Add `get_linknumber(serial_number: str) -> ConbusLinknumberResponse` method to existing `ConbusLinknumberService`
+- [ ] Reuse existing `ConbusDatapointService.query_datapoint()` with `DataPointType.LINK_NUMBER`
+- [ ] Parse response to extract link number from datapoint query result
+- [ ] Update `ConbusLinknumberResponse` model to include optional `link_number` field
+- [ ] Handle datapoint responses appropriately
 
 ## Tests
+- [ ] Add unit tests for `get_linknumber()` method
+- [ ] Add integration tests for get command functionality
+- [ ] Test error handling for invalid responses and connection failures
 
-
+## Model Update
+- [ ] Add optional `link_number: Optional[int]` field to `ConbusLinknumberResponse`
+- [ ] Update `to_dict()` method to include link_number field
 
 ## Quality
-
-**Quality assurance checklist:**
 - [ ] Run `pdm run typecheck` - Type checking passes
 - [ ] Run `pdm run lint` - Linting passes
 - [ ] Run `pdm run test-unit` - Unit tests pass
 - [ ] Run `pdm run test-integration` - Integration tests pass
 - [ ] Run `pdm run test` - Full test suite with coverage
 - [ ] Code coverage meets requirements (60%+)
-- [ ] Documentation updated
-- [ ] Error handling implemented
-- [ ] Input validation added
 

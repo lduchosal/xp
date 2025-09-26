@@ -40,7 +40,7 @@ def query_datapoint(serial_number: str, datapoint: DataPointType) -> None:
 
     # Send telegram
     with service:
-        response = service.send_telegram(datapoint_type=datapoint, serial_number=serial_number)
+        response = service.query_datapoint(datapoint_type=datapoint, serial_number=serial_number)
 
     click.echo(json.dumps(response.to_dict(), indent=2))
 

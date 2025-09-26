@@ -41,7 +41,7 @@ class ConbusDatapointService:
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def send_telegram(self, datapoint_type: DataPointType, serial_number: str) -> ConbusDatapointResponse:
+    def query_datapoint(self, datapoint_type: DataPointType, serial_number: str) -> ConbusDatapointResponse:
         """Send a telegram to the Conbus server"""
 
         system_function = SystemFunction.READ_DATAPOINT
@@ -82,7 +82,7 @@ class ConbusDatapointService:
         # Query each datapoint type
         for datapoint_type in DataPointType:
             try:
-                response = self.send_telegram(datapoint_type, serial_number)
+                response = self.query_datapoint(datapoint_type, serial_number)
 
                 if response.success and response.datapoint_telegram:
                     # Extract datapoint name and value
