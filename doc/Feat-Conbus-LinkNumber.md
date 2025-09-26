@@ -13,6 +13,7 @@ Output:
 ```
 {
   "success": true,
+  "link_number": "04",
   "result": "ACK",
   "serial_number": "0020045057",
   "sent_telegram": "<S0020045057F02D04FG>",
