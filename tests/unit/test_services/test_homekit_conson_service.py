@@ -99,7 +99,7 @@ class TestConsonConfigValidator:
             ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
         ]
         config = ConsonModuleListConfig(root=modules)
-        module = (validator := ConsonConfigValidator(config)).get_module_by_serial("123")
+        module = ConsonConfigValidator(config).get_module_by_serial("123")
         assert module.name == "A1"
         assert module.module_type == "XP130"
 
@@ -121,7 +121,7 @@ class TestConsonConfigValidator:
             ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=20, link_number=2)
         ]
         config = ConsonModuleListConfig(root=modules)
-        serials = (validator := ConsonConfigValidator(config)).get_all_serial_numbers()
+        serials = ConsonConfigValidator(config).get_all_serial_numbers()
         assert serials == {"123", "456"}
 
     def test_validate_all_success(self):

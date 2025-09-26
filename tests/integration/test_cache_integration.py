@@ -272,7 +272,7 @@ class TestCacheIntegration:
         service1.set("persistent_device", "test_tag", "persistent_data")
 
         # Create second service instance and verify data persists
-        items = (service2 := HomeKitCacheService(cache_file=self.temp_cache_file.name)).items()
+        items = HomeKitCacheService(cache_file=self.temp_cache_file.name).items()
         assert "persistent_device" in items and items["persistent_device"] == "persistent_data"
 
     def test_service_received_update(self):

@@ -52,7 +52,7 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service_class.return_value = mock_service
 
         # Test
-        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService("test.yml").set_linknumber("0020045057", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -74,7 +74,7 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service_class.return_value = mock_service
 
         # Test
-        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService("test.yml").set_linknumber("0020045057", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -90,7 +90,7 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service_class.return_value = mock_service
 
         # Test
-        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService("test.yml").set_linknumber("0020045057", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -100,7 +100,7 @@ class TestConbusLinknumberIntegration:
 
     def test_conbus_linknumber_invalid_serial_number(self):
         """Test handling invalid serial number"""
-        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("invalid", 25)
+        result = ConbusLinknumberService("test.yml").set_linknumber("invalid", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -111,7 +111,7 @@ class TestConbusLinknumberIntegration:
 
     def test_conbus_linknumber_invalid_link_number(self):
         """Test handling invalid link number"""
-        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("0020045057", 101)
+        result = ConbusLinknumberService("test.yml").set_linknumber("0020045057", 101)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)

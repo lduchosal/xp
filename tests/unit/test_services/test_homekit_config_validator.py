@@ -203,7 +203,7 @@ class TestCrossReferenceValidator:
     def test_validate_serial_number_references_success(self):
         """Test validation passes when all accessory serial numbers exist in conson config."""
         conson_validator, homekit_validator = self.create_test_validators()
-        errors = (cross_validator := CrossReferenceValidator(conson_validator, homekit_validator)).validate_serial_number_references()
+        errors = CrossReferenceValidator(conson_validator, homekit_validator).validate_serial_number_references()
         assert errors == []
 
     def test_validate_serial_number_references_failure(self):
@@ -225,7 +225,7 @@ class TestCrossReferenceValidator:
     def test_validate_output_capabilities_success(self):
         """Test validation passes when output numbers are within module capabilities."""
         conson_validator, homekit_validator = self.create_test_validators()
-        errors = (cross_validator := CrossReferenceValidator(conson_validator, homekit_validator)).validate_output_capabilities()
+        errors = CrossReferenceValidator(conson_validator, homekit_validator).validate_output_capabilities()
         assert errors == []
 
     def test_validate_output_capabilities_failure(self):
@@ -247,7 +247,7 @@ class TestCrossReferenceValidator:
     def test_validate_all_success(self):
         """Test that validate_all returns no errors for valid cross-references."""
         conson_validator, homekit_validator = self.create_test_validators()
-        errors = (cross_validator := CrossReferenceValidator(conson_validator, homekit_validator)).validate_all()
+        errors = CrossReferenceValidator(conson_validator, homekit_validator).validate_all()
         assert errors == []
 
     def test_validate_all_with_errors(self):

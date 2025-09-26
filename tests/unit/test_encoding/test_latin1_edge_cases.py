@@ -131,7 +131,7 @@ conbus:
         char = chr(problematic_byte)
 
         # This would have failed with UTF-8 but should work with Latin-1
-        decoded = (test_data := f"<R0020044966F02D18+31,5{char}CIE>".encode("latin-1")).decode("latin-1")
+        decoded = f"<R0020044966F02D18+31,5{char}CIE>".encode("latin-1").decode("latin-1")
 
         assert char in decoded
         assert decoded == "<R0020044966F02D18+31,5§CIE>"
