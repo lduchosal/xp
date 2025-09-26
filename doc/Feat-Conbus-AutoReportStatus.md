@@ -40,7 +40,8 @@ Output:
   "result": "ACK",
   "sent_telegram": "<S0123450001F04E21PPFG>",
   "received_telegrams": [
-    "<R0123450001F18DFH>"
+    "<R0123450001F18DFH>" # ACK
+    "<R0123450001F19DFH>" # NAK
   ],
   "error": null,
   "timestamp": "2025-09-26T13:11:25.820383"
@@ -62,7 +63,9 @@ Output:
   "result": "ACK",
   "sent_telegram": "<S0123450001F04E21AAFG>",
   "received_telegrams": [
-    "<R0123450001F18DFH>"
+    "<R0123450001F18DFH>" # ACK
+    "<R0123450001F19DFH>" # NAK
+    
   ],
   "error": null,
   "timestamp": "2025-09-26T13:11:25.820383"

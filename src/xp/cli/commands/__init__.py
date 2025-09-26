@@ -7,6 +7,7 @@ from .conbus import (
     conbus_output,
     conbus_datapoint,
     conbus_linknumber,
+    conbus_autoreport,
 )
 from .file_commands import file
 from .module_commands import module
@@ -39,6 +40,7 @@ from .conbus_datapoint_commands import query_datapoint, query_all_datapoints
 from .conbus_raw_commands import send_raw_telegrams
 from .conbus_receive_commands import receive_telegrams
 from .conbus_linknumber_commands import set_linknumber_command, get_linknumber_command
+from .conbus_autoreport_commands import get_autoreport_command, set_autoreport_command
 
 from .telegram_blink_commands import blink_on, blink_off
 from .telegram_parse_commands import parse_any_telegram, validate_telegram
@@ -57,6 +59,7 @@ __all__ = [
     "conbus_output",
     "conbus_datapoint",
     "conbus_linknumber",
+    "conbus_autoreport",
     "file",
     "module",
     "reverse_proxy",
@@ -88,6 +91,8 @@ __all__ = [
     "receive_telegrams",
     "set_linknumber_command",
     "get_linknumber_command",
+    "get_autoreport_command",
+    "set_autoreport_command",
     "blink_on",
     "blink_off",
     "parse_any_telegram",

@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: code quality">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: conbus / autoreport">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-Conbus-AutoReportStatus.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Conbus-AutoReportStatus.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -400,15 +401,7 @@
       <workItem from="1758645289123" duration="26352000" />
       <workItem from="1758798839699" duration="14945000" />
       <workItem from="1758876985425" duration="11705000" />
-      <workItem from="1758891696761" duration="11755000" />
-    </task>
-    <task id="LOCAL-00106" summary="Chore: cleanup">
-      <option name="closed" value="true" />
-      <created>1758494713826</created>
-      <option name="number" value="00106" />
-      <option name="presentableId" value="LOCAL-00106" />
-      <option name="project" value="LOCAL" />
-      <updated>1758494713826</updated>
+      <workItem from="1758891696761" duration="12580000" />
     </task>
     <task id="LOCAL-00107" summary="Chore: cleanup">
       <option name="closed" value="true" />
@@ -794,7 +787,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758900559717</updated>
     </task>
-    <option name="localTasksCounter" value="155" />
+    <task id="LOCAL-00155" summary="feat: conbus / autoreport">
+      <option name="closed" value="true" />
+      <created>1758904258060</created>
+      <option name="number" value="00155" />
+      <option name="presentableId" value="LOCAL-00155" />
+      <option name="project" value="LOCAL" />
+      <updated>1758904258060</updated>
+    </task>
+    <option name="localTasksCounter" value="156" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -823,7 +824,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor: discovery / discover" />
     <MESSAGE value="Chore: doc" />
     <MESSAGE value="Chore: cleanup" />
     <MESSAGE value="Fix: ci" />
@@ -848,7 +848,8 @@
     <MESSAGE value="chore: cleanup" />
     <MESSAGE value="chore: vultrue cleanup" />
     <MESSAGE value="chore: code quality" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: code quality" />
+    <MESSAGE value="feat: conbus / autoreport" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: conbus / autoreport" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

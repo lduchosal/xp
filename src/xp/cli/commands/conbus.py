@@ -69,7 +69,24 @@ def conbus_linknumber() -> None:
     pass
 
 
+@click.group(
+    "autoreport",
+    cls=HelpColorsGroup,
+    help_headers_color="yellow",
+    help_options_color="green",
+    short_help="Auto report status operations",
+)
+def conbus_autoreport() -> None:
+    """
+    Auto report status operations for modules.
+
+    Get or set the auto report status for specific modules.
+    """
+    pass
+
+
 conbus.add_command(conbus_blink)
 conbus.add_command(conbus_output)
 conbus.add_command(conbus_datapoint)
 conbus.add_command(conbus_linknumber)
+conbus.add_command(conbus_autoreport)
