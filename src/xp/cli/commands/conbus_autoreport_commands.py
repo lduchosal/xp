@@ -9,7 +9,10 @@ from ..utils.decorators import (
 )
 from .conbus import conbus_autoreport
 from ..utils.serial_number_type import SERIAL
-from ...services.conbus_autoreport_service import ConbusAutoreportService, ConbusAutoreportError
+from ...services.conbus_autoreport_service import (
+    ConbusAutoreportService,
+    ConbusAutoreportError,
+)
 
 
 @conbus_autoreport.command("get", short_help="Get auto report status for a module")

@@ -4,7 +4,10 @@ from unittest.mock import Mock, patch
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.services.conbus_autoreport_service import ConbusAutoreportService, ConbusAutoreportError
+from xp.services.conbus_autoreport_service import (
+    ConbusAutoreportService,
+    ConbusAutoreportError,
+)
 from xp.models.conbus_autoreport import ConbusAutoreportResponse
 
 
@@ -102,9 +105,7 @@ class TestConbusAutoreportIntegration:
         assert '"success": true' in result.output
         assert f'"serial_number": "{self.valid_serial}"' in result.output
         assert '"auto_report_status": "AA"' in result.output
-        mock_service.get_autoreport_status.assert_called_once_with(
-            self.valid_serial
-        )
+        mock_service.get_autoreport_status.assert_called_once_with(self.valid_serial)
 
     @patch("xp.cli.commands.conbus_autoreport_commands.ConbusAutoreportService")
     def test_conbus_autoreport_set_on_valid_serial(self, mock_service_class):
@@ -282,6 +283,7 @@ class TestConbusAutoreportService:
 
         # Verify datapoint service was called correctly
         from xp.models.datapoint_type import DataPointType
+
         mock_datapoint_service.query_datapoint.assert_called_once_with(
             DataPointType.AUTO_REPORT_STATUS, self.valid_serial
         )

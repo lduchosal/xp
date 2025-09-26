@@ -18,6 +18,7 @@ from ..utils.checksum import calculate_checksum
 
 class ConbusAutoreportError(Exception):
     """Raised when Conbus autoreport operations fail"""
+
     pass
 
 
@@ -88,7 +89,8 @@ class ConbusAutoreportService:
                     serial_number=serial_number,
                     sent_telegram=datapoint_response.sent_telegram,
                     received_telegrams=datapoint_response.received_telegrams,
-                    error=datapoint_response.error or "Failed to query auto report status",
+                    error=datapoint_response.error
+                    or "Failed to query auto report status",
                     timestamp=datapoint_response.timestamp,
                 )
 
@@ -121,7 +123,9 @@ class ConbusAutoreportService:
             status_text = "on" if status else "off"
 
             # Generate the auto report setting telegram: F04E21{value}
-            telegram = self._generate_set_autoreport_telegram(serial_number, status_value)
+            telegram = self._generate_set_autoreport_telegram(
+                serial_number, status_value
+            )
 
             # Send telegram using ConbusService
             with self.conbus_service:
@@ -138,9 +142,15 @@ class ConbusAutoreportService:
                                 received_telegram
                             )
                             if isinstance(parsed_telegram, ReplyTelegram):
-                                if parsed_telegram.system_function == SystemFunction.ACK:
+                                if (
+                                    parsed_telegram.system_function
+                                    == SystemFunction.ACK
+                                ):
                                     result = "ACK"
-                                elif parsed_telegram.system_function == SystemFunction.NAK:
+                                elif (
+                                    parsed_telegram.system_function
+                                    == SystemFunction.NAK
+                                ):
                                     result = "NAK"
                         except Exception as e:
                             self.logger.warning(f"Failed to parse reply telegram: {e}")
