@@ -30,29 +30,25 @@ class ConbusReceiveService:
         self.conbus_service = ConbusService(config_path)
         self.logger = logging.getLogger(__name__)
 
-    def receive_telegrams(self) -> ConbusReceiveResponse:
+    def receive_telegrams(self, timeout: float = 2.0) -> ConbusReceiveResponse:
         """
         Receive waiting telegrams from the Conbus server.
 
         Uses send_raw_telegram with empty string to connect and receive
         any waiting event telegrams from the server.
 
+        Args:
+            timeout: Timeout in seconds for receiving telegrams (default: 2.0)
+
         Returns:
             ConbusReceiveResponse: Response containing received telegrams or error
         """
         try:
             # Send empty telegram to trigger receive operation
-            response = self.conbus_service.send_raw_telegram("")
-
-            if not response.success:
-                return ConbusReceiveResponse(
-                    success=False,
-                    error=response.error,
-                )
-
+            response = self.conbus_service.receive_responses(timeout=timeout)
             return ConbusReceiveResponse(
                 success=True,
-                received_telegrams=response.received_telegrams or [],
+                received_telegrams=response or [],
             )
 
         except Exception as e:

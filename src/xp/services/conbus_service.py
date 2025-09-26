@@ -42,7 +42,6 @@ class ConbusService:
         """Initialize the Conbus client send service"""
         self.config_path = config_path
         self.config = ConbusClientConfig()
-        self.socket: Optional[socket.socket] = None
         self.is_connected = False
         self.last_activity: Optional[datetime] = None
 
@@ -159,45 +158,23 @@ class ConbusService:
 
         return telegrams
 
-    def _receive_responses(self) -> List[str]:
+    def receive_responses(self, timeout: float = 0.1) -> List[str]:
         """Receive responses from the server and properly split telegrams"""
-        accumulated_data = ""
+        import time
 
-        try:
-            # Set a shorter timeout for receiving responses
-            if self.socket is None:
-                return []
-            original_timeout = self.socket.gettimeout()
-            self.socket.settimeout(0.1)  # 1 second timeout for responses
+        all_telegrams = []
+        start_time = time.time()
 
-            while True:
-                try:
-                    data = self.socket.recv(1024)
-                    if not data:
-                        break
+        with self._connection_pool as connection:
+            while time.time() - start_time < timeout:
+                # Call _receive_responses_with_connection with a short timeout for each iteration
+                telegrams = self._receive_responses_with_connection(connection, timeout=0.1)
+                all_telegrams.extend(telegrams)
 
-                    # Accumulate all received data
-                    message = data.decode("latin-1")
-                    accumulated_data += message
-                    self.last_activity = datetime.now()
+                # Small sleep to avoid busy waiting when no data
+                time.sleep(0.01)
 
-                except socket.timeout:
-                    # No more data available
-                    break
-
-            # Restore original timeout
-            if self.socket is not None:
-                self.socket.settimeout(original_timeout)
-
-        except Exception as e:
-            self.logger.error(f"Error receiving responses: {e}")
-
-        # Parse telegrams from accumulated data
-        telegrams = self._parse_telegrams(accumulated_data)
-        for telegram in telegrams:
-            self.logger.info(f"Received telegram: {telegram}")
-
-        return telegrams
+        return all_telegrams
 
     def _receive_responses_with_connection(
         self, connection: socket.socket, timeout: float = 1.0

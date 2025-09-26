@@ -12,9 +12,10 @@ from ...services.conbus_receive_service import ConbusReceiveService, ConbusRecei
 
 
 @conbus.command("receive")
+@click.argument("timeout", type=click.FLOAT, default=2.0)
 @connection_command()
 @handle_service_errors(ConbusReceiveError)
-def receive_telegrams() -> None:
+def receive_telegrams(timeout: float) -> None:
     """
     Receive waiting event telegrams from Conbus server.
 
@@ -22,16 +23,20 @@ def receive_telegrams() -> None:
     without sending any data first. Useful for collecting pending notifications
     or events from the server.
 
+    Arguments:
+        TIMEOUT: Timeout in seconds for receiving telegrams (default: 2.0)
+
     Examples:
 
     \b
         xp conbus receive
+        xp conbus receive 5.0
     """
     service = ConbusReceiveService()
 
     try:
         with service:
-            response = service.receive_telegrams()
+            response = service.receive_telegrams(timeout=timeout)
 
         # Format output to match expected format from documentation
         if response.success and response.received_telegrams:

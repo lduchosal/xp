@@ -225,6 +225,6 @@ class TestErrorHandling(TestConbusService):
         service.is_connected = True
         mock_socket.recv.side_effect = Exception("Network error")
 
-        responses = service._receive_responses()
+        responses = service.receive_responses()
 
         assert responses == []
