@@ -23,7 +23,7 @@ from ...services.conbus_datapoint_service import (
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def datapoint_telegram(serial_number: str, datapoint: DataPointType) -> None:
+def query_datapoint(serial_number: str, datapoint: DataPointType) -> None:
     """
     Query a specific datapoint from Conbus server.
 
@@ -54,7 +54,7 @@ def conbus_datapoint_group() -> None:
 
 
 # Add the single datapoint query command to the group
-conbus_datapoint_group.add_command(datapoint_telegram)
+conbus_datapoint_group.add_command(query_datapoint)
 
 
 @conbus_datapoint_group.command("all", short_help="Query all datapoints from a module")

@@ -76,6 +76,8 @@ class ConbusDatapointService:
         """Query all available datapoints for a given serial number"""
 
         datapoints: List[Dict[str, str]] = []
+        has_any_success = False
+        last_error = None
 
         # Query each datapoint type
         for datapoint_type in DataPointType:
@@ -85,13 +87,27 @@ class ConbusDatapointService:
                 if response.success and response.datapoint_telegram:
                     # Extract datapoint name and value
                     datapoint_name = datapoint_type.name
-                    datapoint_value = response.datapoint_telegram.data_value
+                    datapoint_value = str(response.datapoint_telegram.data_value)
                     datapoints.append({datapoint_name: datapoint_value})
+                    has_any_success = True
+                elif response.error:
+                    last_error = response.error
 
             except Exception as e:
                 self.logger.debug(f"Failed to query datapoint {datapoint_type}: {e}")
+                last_error = str(e)
                 # Continue with other datapoints even if one fails
                 continue
+
+        # If no datapoints were successfully retrieved, return error
+        if not has_any_success and last_error:
+            return ConbusDatapointResponse(
+                success=False,
+                serial_number=serial_number,
+                system_function=SystemFunction.READ_DATAPOINT,
+                error=last_error,
+                datapoints=[],
+            )
 
         return ConbusDatapointResponse(
             success=True,

@@ -29,4 +29,4 @@ def conbus_output() -> None:
 
 conbus.add_command(conbus_blink)
 conbus.add_command(conbus_output)
-conbus.add_command(conbus_datapoint_group)  # type: ignore[has-type]
+conbus.add_command(conbus_datapoint_group)
