@@ -243,8 +243,7 @@ class TestLogFileService:
 
     def test_get_file_statistics_empty(self):
         """Test statistics for empty entry list"""
-        service = LogFileService()
-        stats = service.get_file_statistics([])
+        stats = (service := LogFileService()).get_file_statistics([])
 
         assert stats == {"total_entries": 0}
 

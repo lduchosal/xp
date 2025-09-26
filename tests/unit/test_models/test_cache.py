@@ -63,9 +63,7 @@ class TestCacheEntry:
 
     def test_cache_entry_to_dict(self):
         """Test converting cache entry to dictionary"""
-        entry = CacheEntry(data="test_data", tags=["tag1", "tag2"], ttl=300)
-
-        result = entry.to_dict()
+        result = (entry := CacheEntry(data="test_data", tags=["tag1", "tag2"], ttl=300)).to_dict()
 
         assert result["data"] == "test_data"
         assert result["tags"] == ["tag1", "tag2"]
@@ -145,13 +143,11 @@ class TestCacheResponse:
 
     def test_cache_response_to_dict(self):
         """Test converting cache response to dictionary"""
-        response = CacheResponse(
+        result = (response := CacheResponse(
             data="test_data",
             hit=True,
             error="test_error"
-        )
-
-        result = response.to_dict()
+        )).to_dict()
 
         assert result["data"] == "test_data"
         assert result["hit"] is True
@@ -162,8 +158,7 @@ class TestCacheResponse:
 
     def test_cache_response_to_dict_json_serializable(self):
         """Test cache response dict can be JSON serialized"""
-        response = CacheResponse(data="test_data", hit=True)
-        result = response.to_dict()
+        result = (response := CacheResponse(data="test_data", hit=True)).to_dict()
 
         # Should not raise an exception
         json_str = json.dumps(result)

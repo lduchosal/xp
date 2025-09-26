@@ -84,7 +84,7 @@ class Latin1TestServer:
     def _generate_latin1_response(message):
         """Generate responses containing Latin-1 extended characters"""
         # Map of requests to responses with extended characters
-        latin1_responses = {
+        return {
             # Temperature request with § symbol (0xa7)
             "<S0020012521F02D18FN>": "<R0020044966F02D18+31,5§CIE>",
             # VOLTAGE request with © symbol (0xa9)
@@ -97,9 +97,7 @@ class Latin1TestServer:
             "<S0012345011F02DE2CJ>": "<R0012345011F02DE2COUCOU§©®±FM>",
             # Discover with extended chars in device name
             "<S0000000000F01D00FA>": "<R0012345011F01D©XP24®>",
-        }
-
-        return latin1_responses.get(message)
+        }.get(message)
 
 
 class TestLatin1EdgeCases:
@@ -133,8 +131,7 @@ conbus:
         char = chr(problematic_byte)
 
         # This would have failed with UTF-8 but should work with Latin-1
-        test_data = f"<R0020044966F02D18+31,5{char}CIE>".encode("latin-1")
-        decoded = test_data.decode("latin-1")
+        decoded = (test_data := f"<R0020044966F02D18+31,5{char}CIE>".encode("latin-1")).decode("latin-1")
 
         assert char in decoded
         assert decoded == "<R0020044966F02D18+31,5§CIE>"
@@ -148,10 +145,7 @@ conbus:
         raw_bytes = bytes.fromhex(hex_data)
 
         # This should decode properly with Latin-1
-        decoded = raw_bytes.decode("latin-1")
-        expected = "<R0020044966F02D18+31,5§CIE"
-
-        assert decoded == expected
+        assert (decoded := raw_bytes.decode("latin-1")) == (expected := "<R0020044966F02D18+31,5§CIE")
         assert chr(0xA7) in decoded  # § symbol at position 23
         assert len(decoded) == 27  # Correct length
 

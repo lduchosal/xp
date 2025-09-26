@@ -44,10 +44,9 @@ class TestDeviceInfo:
 
     def test_to_dict(self):
         """Test dictionary conversion"""
-        device = DeviceInfo(
+        result = DeviceInfo(
             "0012345011", checksum_valid=True, raw_telegram="<R0012345011F01DFM>"
-        )
-        result = device.to_dict()
+        ).to_dict()
 
         expected = {
             "serial_number": "0012345011",
@@ -67,16 +66,12 @@ class TestDiscoverService:
 
     def test_generate_discover_telegram(self):
         """Test generating discover broadcast telegram"""
-        service = TelegramDiscoverService()
-
-        result = service.generate_discover_telegram()
+        result = TelegramDiscoverService().generate_discover_telegram()
         assert result == "<S0000000000F01D00FA>"
 
     def test_create_discover_telegram_object(self):
         """Test creating SystemTelegram object for discover"""
-        service = TelegramDiscoverService()
-
-        telegram = service.create_discover_telegram_object()
+        telegram = TelegramDiscoverService().create_discover_telegram_object()
 
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0000000000"
@@ -179,9 +174,7 @@ class TestDiscoverService:
 
     def test_generate_discover_summary_empty(self):
         """Test generating summary for empty device list"""
-        service = TelegramDiscoverService()
-
-        result = service.generate_discover_summary([])
+        result = TelegramDiscoverService().generate_discover_summary([])
 
         assert result["total_responses"] == 0
         assert result["unique_devices"] == 0
@@ -194,9 +187,7 @@ class TestDiscoverService:
 
     def test_format_discover_results_empty(self):
         """Test formatting results for empty device list"""
-        service = TelegramDiscoverService()
-
-        result = service.format_discover_results([])
+        result = TelegramDiscoverService().format_discover_results([])
         assert result == "No devices discovered"
 
     def test_format_discover_results_with_devices(self):

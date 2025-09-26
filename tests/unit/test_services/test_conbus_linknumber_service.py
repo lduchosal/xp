@@ -74,8 +74,7 @@ conbus:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService().set_linknumber("0020045057", 25)
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -121,8 +120,7 @@ conbus:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService().set_linknumber("0020045057", 25)
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -154,8 +152,7 @@ conbus:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService().set_linknumber("0020045057", 25)
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -172,8 +169,7 @@ conbus:
         mock_link_service.generate_set_link_number_telegram.side_effect = LinkNumberError("Invalid link number")
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("invalid", 101)
+        result = ConbusLinknumberService().set_linknumber("invalid", 101)
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -212,8 +208,7 @@ conbus:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService().set_linknumber("0020045057", 25)
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -238,8 +233,7 @@ conbus:
         mock_datapoint_service.query_datapoint.return_value = mock_datapoint_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0020045057")
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -273,8 +267,7 @@ conbus:
         mock_datapoint_service.query_datapoint.return_value = mock_datapoint_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0020045057")
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -302,8 +295,7 @@ conbus:
         mock_datapoint_service.query_datapoint.return_value = mock_datapoint_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0020045057")
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -322,8 +314,7 @@ conbus:
         mock_datapoint_service.query_datapoint.side_effect = Exception("Service error")
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0020045057")
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)

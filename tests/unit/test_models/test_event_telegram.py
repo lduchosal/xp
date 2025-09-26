@@ -86,7 +86,7 @@ class TestEventTelegram:
     def test_to_dict(self):
         """Test dictionary serialization"""
         timestamp = datetime(2023, 1, 1, 12, 0, 0)
-        telegram = EventTelegram(
+        result = EventTelegram(
             module_type=14,
             link_number=0,
             input_number=2,
@@ -94,9 +94,7 @@ class TestEventTelegram:
             checksum="AK",
             raw_telegram="<E14L00I02MAK>",
             timestamp=timestamp,
-        )
-
-        result = telegram.to_dict()
+        ).to_dict()
 
         # Updated to include module_info and checksum_validated
         expected = {

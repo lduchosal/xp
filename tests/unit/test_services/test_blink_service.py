@@ -94,9 +94,7 @@ class TestBlinkService:
 
     def test_create_blink_telegram_object(self):
         """Test creating SystemTelegram object for blink operation"""
-        service = TelegramBlinkService()
-
-        telegram = service.create_blink_telegram_object("0012345008")
+        telegram = TelegramBlinkService().create_blink_telegram_object("0012345008")
 
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0012345008"
@@ -107,9 +105,7 @@ class TestBlinkService:
 
     def test_create_unblink_telegram_object(self):
         """Test creating SystemTelegram object for unblink operation"""
-        service = TelegramBlinkService()
-
-        telegram = service.create_unblink_telegram_object("0012345011")
+        telegram = TelegramBlinkService().create_unblink_telegram_object("0012345011")
 
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0012345011"

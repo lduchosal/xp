@@ -76,9 +76,7 @@ class TestLinkNumberService:
 
     def test_generate_read_link_number_telegram_valid(self):
         """Test generating valid read link number telegram"""
-        service = LinkNumberService()
-
-        result = service.generate_read_link_number_telegram("0012345005")
+        result = (service := LinkNumberService()).generate_read_link_number_telegram("0012345005")
         assert result.startswith("<S0012345005F03D04")
         assert result.endswith(">")
         assert len(result) == 21  # <S{10}F03D04{2}> = 21 chars
@@ -98,9 +96,7 @@ class TestLinkNumberService:
 
     def test_create_set_link_number_telegram_object(self):
         """Test creating SystemTelegram object for set operation"""
-        service = LinkNumberService()
-
-        telegram = service.create_set_link_number_telegram_object("0012345005", 25)
+        telegram = (service := LinkNumberService()).create_set_link_number_telegram_object("0012345005", 25)
 
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0012345005"
@@ -111,9 +107,7 @@ class TestLinkNumberService:
 
     def test_create_read_link_number_telegram_object(self):
         """Test creating SystemTelegram object for read operation"""
-        service = LinkNumberService()
-
-        telegram = service.create_read_link_number_telegram_object("0012345005")
+        telegram = (service := LinkNumberService()).create_read_link_number_telegram_object("0012345005")
 
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0012345005"

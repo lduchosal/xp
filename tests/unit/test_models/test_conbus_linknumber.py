@@ -55,16 +55,14 @@ class TestConbusLinknumberResponse:
     def test_to_dict(self):
         """Test conversion to dictionary"""
         timestamp = datetime(2025, 9, 26, 13, 11, 25, 820383)
-        response = ConbusLinknumberResponse(
+        result = ConbusLinknumberResponse(
             success=True,
             result="ACK",
             serial_number="0020045057",
             sent_telegram="<S0020045057F04D0425FO>",
             received_telegrams=["<R0020045057F04D0400FH>"],
             timestamp=timestamp,
-        )
-
-        result = response.to_dict()
+        ).to_dict()
         expected = {
             "success": True,
             "result": "ACK",
@@ -79,14 +77,12 @@ class TestConbusLinknumberResponse:
 
     def test_to_dict_with_error(self):
         """Test conversion to dictionary with error"""
-        response = ConbusLinknumberResponse(
+        result = ConbusLinknumberResponse(
             success=False,
             result="NAK",
             serial_number="0020045057",
             error="Connection timeout",
-        )
-
-        result = response.to_dict()
+        ).to_dict()
         assert result["success"] is False
         assert result["result"] == "NAK"
         assert result["serial_number"] == "0020045057"
@@ -144,7 +140,7 @@ class TestConbusLinknumberResponse:
     def test_to_dict_with_link_number(self):
         """Test conversion to dictionary with link number"""
         timestamp = datetime(2025, 9, 26, 13, 11, 25, 820383)
-        response = ConbusLinknumberResponse(
+        result = ConbusLinknumberResponse(
             success=True,
             result="SUCCESS",
             serial_number="0020045057",
@@ -152,9 +148,7 @@ class TestConbusLinknumberResponse:
             sent_telegram="<S0020045057F03D04FG>",
             received_telegrams=["<R0020045057F03D041AFH>"],
             timestamp=timestamp,
-        )
-
-        result = response.to_dict()
+        ).to_dict()
         expected = {
             "success": True,
             "result": "SUCCESS",

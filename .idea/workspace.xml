@@ -6,9 +6,25 @@
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: cleanup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/publish.sh" beforeDir="false" afterPath="$PROJECT_DIR$/publish.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/api/routers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/api/routers/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_discover_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_discover_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_cache_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_cache_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_linknumber_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_linknumber_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_cli/test_conbus_blink_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_cache.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_cache.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_linknumber.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_linknumber.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_event_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_event_telegram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_log_entry.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_log_entry.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_blink_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_checksum_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_checksum_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_linknumber_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_linknumber_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_discovery_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_conson_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_conson_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_link_number_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_link_number_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_log_file_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_log_file_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -402,15 +418,7 @@
       <workItem from="1758645289123" duration="26352000" />
       <workItem from="1758798839699" duration="14945000" />
       <workItem from="1758876985425" duration="11705000" />
-      <workItem from="1758891696761" duration="5546000" />
-    </task>
-    <task id="LOCAL-00097" summary="Feat: Cli / conbus receive">
-      <option name="closed" value="true" />
-      <created>1758488621685</created>
-      <option name="number" value="00097" />
-      <option name="presentableId" value="LOCAL-00097" />
-      <option name="project" value="LOCAL" />
-      <updated>1758488621685</updated>
+      <workItem from="1758891696761" duration="6661000" />
     </task>
     <task id="LOCAL-00098" summary="Feat: Cli / conbus receive">
       <option name="closed" value="true" />
@@ -796,7 +804,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758896951335</updated>
     </task>
-    <option name="localTasksCounter" value="146" />
+    <task id="LOCAL-00146" summary="chore: cleanup">
+      <option name="closed" value="true" />
+      <created>1758897357036</created>
+      <option name="number" value="00146" />
+      <option name="presentableId" value="LOCAL-00146" />
+      <option name="project" value="LOCAL" />
+      <updated>1758897357036</updated>
+    </task>
+    <option name="localTasksCounter" value="147" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

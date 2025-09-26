@@ -52,8 +52,7 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service_class.return_value = mock_service
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("0020045057", 25)
+        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("0020045057", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -75,8 +74,7 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service_class.return_value = mock_service
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("0020045057", 25)
+        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("0020045057", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -92,8 +90,7 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service_class.return_value = mock_service
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("0020045057", 25)
+        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("0020045057", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -103,8 +100,7 @@ class TestConbusLinknumberIntegration:
 
     def test_conbus_linknumber_invalid_serial_number(self):
         """Test handling invalid serial number"""
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("invalid", 25)
+        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("invalid", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -115,8 +111,7 @@ class TestConbusLinknumberIntegration:
 
     def test_conbus_linknumber_invalid_link_number(self):
         """Test handling invalid link number"""
-        service = ConbusLinknumberService("test.yml")
-        result = service.set_linknumber("0020045057", 101)
+        result = (service := ConbusLinknumberService("test.yml")).set_linknumber("0020045057", 101)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -182,8 +177,7 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.return_value = datapoint_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0020045057")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -212,8 +206,7 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.return_value = datapoint_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0020045057")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -242,8 +235,7 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.return_value = mock_response
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0020045057")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -262,8 +254,7 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.side_effect = Exception("Service unavailable")
 
         # Test
-        service = ConbusLinknumberService("test.yml")
-        result = service.get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0020045057")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)

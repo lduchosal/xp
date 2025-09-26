@@ -28,8 +28,7 @@ class TestConbusClientConfig:
 
     def test_to_dict(self):
         """Test conversion to dictionary"""
-        config = ConbusClientConfig(ip="192.168.1.50", port=9000, timeout=15)
-        result = config.to_dict()
+        result = ConbusClientConfig(ip="192.168.1.50", port=9000, timeout=15).to_dict()
 
         expected = {"ip": "192.168.1.50", "port": 9000, "timeout": 15}
         assert result == expected
@@ -68,14 +67,12 @@ class TestConbusSendResponse:
     def test_to_dict(self):
         """Test conversion to dictionary"""
         timestamp = datetime(2023, 8, 27, 16, 20, 15, 789123)
-        response = ConbusDatapointResponse(
+        result = ConbusDatapointResponse(
             success=True,
             sent_telegram="<S0020012521F02D18FM>",
             received_telegrams=["<R0020012521F02D18+23.4C§OK>"],
             timestamp=timestamp,
-        )
-
-        result = response.to_dict()
+        ).to_dict()
         assert result["success"] is True
         assert result["sent_telegram"] == "<S0020012521F02D18FM>"
         assert result["received_telegrams"] == ["<R0020012521F02D18+23.4C§OK>"]
@@ -114,15 +111,14 @@ class TestConbusConnectionStatus:
     def test_to_dict(self):
         """Test conversion to dictionary"""
         last_activity = datetime(2023, 8, 27, 18, 45, 20, 456789)
-        status = ConbusConnectionStatus(
+        result = ConbusConnectionStatus(
             connected=True,
             ip="10.0.0.1",
             port=8080,
             last_activity=last_activity,
             error=None,
-        )
+        ).to_dict()
 
-        result = status.to_dict()
         expected = {
             "connected": True,
             "ip": "10.0.0.1",
@@ -134,9 +130,6 @@ class TestConbusConnectionStatus:
 
     def test_to_dict_no_activity(self):
         """Test conversion to dictionary with no last activity"""
-        status = ConbusConnectionStatus(connected=False, ip="192.168.1.50", port=9000)
-
-        result = status.to_dict()
         expected = {
             "connected": False,
             "ip": "192.168.1.50",

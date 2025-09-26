@@ -183,15 +183,13 @@ class TestLogEntry:
             checksum_validated=True,
         )
 
-        entry = LogEntry(
+        result = LogEntry(
             timestamp=timestamp,
             direction="RX",
             raw_telegram="<E14L00I02MAK>",
             parsed_telegram=event_telegram,
             line_number=1,
-        )
-
-        result = entry.to_dict()
+        ).to_dict()
 
         expected = {
             "line_number": 1,
@@ -210,15 +208,13 @@ class TestLogEntry:
     def test_to_dict_with_error(self):
         """Test to_dict with parse error"""
         timestamp = datetime(2023, 1, 1, 22, 44, 20, 352000)
-        entry = LogEntry(
+        result = LogEntry(
             timestamp=timestamp,
             direction="TX",
             raw_telegram="<invalid>",
             parse_error="Invalid format",
             line_number=5,
-        )
-
-        result = entry.to_dict()
+        ).to_dict()
 
         expected = {
             "line_number": 5,

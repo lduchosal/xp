@@ -163,9 +163,7 @@ class TestChecksumService:
 
     def test_response_to_dict(self):
         """Test that response can be converted to dict."""
-        result = self.service.calculate_simple_checksum("test")
-
-        result_dict = result.to_dict()
+        result_dict = self.service.calculate_simple_checksum("test").to_dict()
         assert isinstance(result_dict, dict)
         assert "success" in result_dict
         assert "data" in result_dict
