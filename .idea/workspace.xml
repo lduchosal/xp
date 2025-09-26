@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="doc: add badges">
-      <change afterPath="$PROJECT_DIR$/doc/Feat-Conbus-LinkNumber.md" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="Feat: linknumber / set">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/module_type_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/module_type_code.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-Conbus-LinkNumber.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Conbus-LinkNumber.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -401,15 +399,7 @@
       <workItem from="1758604567711" duration="10337000" />
       <workItem from="1758645289123" duration="26352000" />
       <workItem from="1758798839699" duration="14945000" />
-      <workItem from="1758876985425" duration="5909000" />
-    </task>
-    <task id="LOCAL-00091" summary="Feat: homekit">
-      <option name="closed" value="true" />
-      <created>1758470061493</created>
-      <option name="number" value="00091" />
-      <option name="presentableId" value="LOCAL-00091" />
-      <option name="project" value="LOCAL" />
-      <updated>1758470061493</updated>
+      <workItem from="1758876985425" duration="6969000" />
     </task>
     <task id="LOCAL-00092" summary="Feat: homekit">
       <option name="closed" value="true" />
@@ -795,7 +785,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758882385545</updated>
     </task>
-    <option name="localTasksCounter" value="140" />
+    <task id="LOCAL-00140" summary="Feat: linknumber / set">
+      <option name="closed" value="true" />
+      <created>1758885386206</created>
+      <option name="number" value="00140" />
+      <option name="presentableId" value="LOCAL-00140" />
+      <option name="project" value="LOCAL" />
+      <updated>1758885386206</updated>
+    </task>
+    <option name="localTasksCounter" value="141" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -824,7 +822,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: homekit" />
     <MESSAGE value="Feat: Cli / conbus raw" />
     <MESSAGE value="Feat: Cli / conbus receive" />
     <MESSAGE value="Feat: Cli / conbus blink all" />
@@ -849,7 +846,8 @@
     <MESSAGE value="feat: datapoint / all" />
     <MESSAGE value="chore: version 0.9.19" />
     <MESSAGE value="doc: add badges" />
-    <option name="LAST_COMMIT_MESSAGE" value="doc: add badges" />
+    <MESSAGE value="Feat: linknumber / set" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: linknumber / set" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
