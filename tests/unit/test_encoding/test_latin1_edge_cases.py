@@ -145,7 +145,7 @@ conbus:
         raw_bytes = bytes.fromhex(hex_data)
 
         # This should decode properly with Latin-1
-        assert (decoded := raw_bytes.decode("latin-1")) == (expected := "<R0020044966F02D18+31,5§CIE")
+        assert (decoded := raw_bytes.decode("latin-1")) == "<R0020044966F02D18+31,5§CIE"
         assert chr(0xA7) in decoded  # § symbol at position 23
         assert len(decoded) == 27  # Correct length
 

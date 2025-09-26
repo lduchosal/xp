@@ -143,11 +143,11 @@ class TestCacheResponse:
 
     def test_cache_response_to_dict(self):
         """Test converting cache response to dictionary"""
-        result = (response := CacheResponse(
+        result = CacheResponse(
             data="test_data",
             hit=True,
             error="test_error"
-        )).to_dict()
+        ).to_dict()
 
         assert result["data"] == "test_data"
         assert result["hit"] is True

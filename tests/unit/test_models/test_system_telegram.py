@@ -165,13 +165,13 @@ class TestSystemTelegram:
 
     def test_to_dict(self):
         """Test to_dict method."""
-        result = (telegram := SystemTelegram(
+        result = SystemTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.TEMPERATURE,
             checksum="FN",
             raw_telegram="<S0020012521F02D18FN>",
-        )).to_dict()
+        ).to_dict()
 
         assert isinstance(result, dict)
         assert result["serial_number"] == "0020012521"

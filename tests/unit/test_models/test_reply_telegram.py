@@ -240,14 +240,14 @@ class TestReplyTelegram:
 
     def test_to_dict(self):
         """Test to_dict method."""
-        result = (telegram := ReplyTelegram(
+        result = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
             datapoint_type=DataPointType.TEMPERATURE,
             data_value="+26,0§C",
             checksum="IL",
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
-        )).to_dict()
+        ).to_dict()
 
         assert isinstance(result, dict)
         assert result["serial_number"] == "0020012521"

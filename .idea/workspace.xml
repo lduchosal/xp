@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: cleanup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_client_send.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_conson_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_conson_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_cache.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_cache.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_system_telegram.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -402,23 +403,7 @@
       <workItem from="1758645289123" duration="26352000" />
       <workItem from="1758798839699" duration="14945000" />
       <workItem from="1758876985425" duration="11705000" />
-      <workItem from="1758891696761" duration="6893000" />
-    </task>
-    <task id="LOCAL-00099" summary="Feat: Cli / conbus blink all">
-      <option name="closed" value="true" />
-      <created>1758489268740</created>
-      <option name="number" value="00099" />
-      <option name="presentableId" value="LOCAL-00099" />
-      <option name="project" value="LOCAL" />
-      <updated>1758489268740</updated>
-    </task>
-    <task id="LOCAL-00100" summary="Feat: Cli / conbus blink all">
-      <option name="closed" value="true" />
-      <created>1758490604853</created>
-      <option name="number" value="00100" />
-      <option name="presentableId" value="LOCAL-00100" />
-      <option name="project" value="LOCAL" />
-      <updated>1758490604853</updated>
+      <workItem from="1758891696761" duration="7202000" />
     </task>
     <task id="LOCAL-00101" summary="Refactor: discovery / discover">
       <option name="closed" value="true" />
@@ -796,7 +781,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758898475014</updated>
     </task>
-    <option name="localTasksCounter" value="148" />
+    <task id="LOCAL-00148" summary="chore: cleanup">
+      <option name="closed" value="true" />
+      <created>1758898617274</created>
+      <option name="number" value="00148" />
+      <option name="presentableId" value="LOCAL-00148" />
+      <option name="project" value="LOCAL" />
+      <updated>1758898617274</updated>
+    </task>
+    <task id="LOCAL-00149" summary="chore: cleanup">
+      <option name="closed" value="true" />
+      <created>1758898779587</created>
+      <option name="number" value="00149" />
+      <option name="presentableId" value="LOCAL-00149" />
+      <option name="project" value="LOCAL" />
+      <updated>1758898779587</updated>
+    </task>
+    <option name="localTasksCounter" value="150" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
