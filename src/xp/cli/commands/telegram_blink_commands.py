@@ -10,6 +10,7 @@ from ..utils.error_handlers import CLIErrorHandler
 from ..utils.serial_number_type import SERIAL
 from .telegram import blink
 
+
 @blink.command("on")
 @click.argument("serial_number", type=SERIAL)
 @handle_service_errors(BlinkError)
@@ -38,12 +39,13 @@ def blink_on(serial_number: str) -> None:
         click.echo(json.dumps(output, indent=2))
 
     except BlinkError as e:
-        CLIErrorHandler.handle_service_error(e, "blink telegram generation", {"serial_number": serial_number})
+        CLIErrorHandler.handle_service_error(
+            e, "blink telegram generation", {"serial_number": serial_number}
+        )
 
 
 @blink.command("off")
 @click.argument("serial_number", type=SERIAL)
-
 @handle_service_errors(BlinkError)
 def blink_off(serial_number: str) -> None:
     """
@@ -69,4 +71,6 @@ def blink_off(serial_number: str) -> None:
         click.echo(json.dumps(output, indent=2))
 
     except BlinkError as e:
-        CLIErrorHandler.handle_service_error(e, "unblink telegram generation", {"serial_number": serial_number})
+        CLIErrorHandler.handle_service_error(
+            e, "unblink telegram generation", {"serial_number": serial_number}
+        )

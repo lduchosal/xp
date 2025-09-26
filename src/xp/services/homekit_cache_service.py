@@ -23,7 +23,9 @@ class HomeKitCacheService:
     event-based invalidation, and persistent storage for faster startup times.
     """
 
-    def __init__(self, config_path: str = "cli.yml", cache_file: str= ".homekit_cache.json"):
+    def __init__(
+        self, config_path: str = "cli.yml", cache_file: str = ".homekit_cache.json"
+    ):
         """Initialize the HomeKit cache service.
 
         Args:
@@ -70,13 +72,15 @@ class HomeKitCacheService:
         try:
             response = self.conbus_output_service.get_output_state(key)
 
-            if response.success and response.datapoint_telegram and response.datapoint_telegram.raw_telegram:
+            if (
+                response.success
+                and response.datapoint_telegram
+                and response.datapoint_telegram.raw_telegram
+            ):
                 data = response.datapoint_telegram.raw_telegram
                 # Store in cache
                 self.cache[cache_key] = CacheEntry(
-                    data=data,
-                    tags=[tag],
-                    ttl=300  # 5 minutes default TTL
+                    data=data, tags=[tag], ttl=300  # 5 minutes default TTL
                 )
                 self._save_cache()
 
@@ -131,12 +135,18 @@ class HomeKitCacheService:
             self.logger.debug(f"Cache entry cleared for key: {key_or_tag}")
         else:
             # Clear by tag
-            keys_to_remove = [cache_key for cache_key, entry in self.cache.items() if key_or_tag in entry.tags]
+            keys_to_remove = [
+                cache_key
+                for cache_key, entry in self.cache.items()
+                if key_or_tag in entry.tags
+            ]
 
             for cache_key in keys_to_remove:
                 del self.cache[cache_key]
 
-            self.logger.debug(f"Cache entries cleared for tag: {key_or_tag} ({len(keys_to_remove)} entries)")
+            self.logger.debug(
+                f"Cache entries cleared for tag: {key_or_tag} ({len(keys_to_remove)} entries)"
+            )
 
         self._save_cache()
 
@@ -147,7 +157,9 @@ class HomeKitCacheService:
             Dictionary mapping cache keys to their data values
         """
         # Remove expired entries first
-        expired_keys = [cache_key for cache_key, entry in self.cache.items() if entry.is_expired()]
+        expired_keys = [
+            cache_key for cache_key, entry in self.cache.items() if entry.is_expired()
+        ]
 
         for cache_key in expired_keys:
             del self.cache[cache_key]
@@ -163,20 +175,24 @@ class HomeKitCacheService:
         Args:
             event: Event name to invalidate cache entries for
         """
-        keys_to_remove = [cache_key for cache_key, entry in self.cache.items() if event in entry.tags]
+        keys_to_remove = [
+            cache_key for cache_key, entry in self.cache.items() if event in entry.tags
+        ]
 
         for cache_key in keys_to_remove:
             del self.cache[cache_key]
 
         if keys_to_remove:
             self._save_cache()
-            self.logger.debug(f"Cache invalidated for event: {event} ({len(keys_to_remove)} entries)")
+            self.logger.debug(
+                f"Cache invalidated for event: {event} ({len(keys_to_remove)} entries)"
+            )
 
     def _load_cache(self) -> None:
         """Load cache from persistent storage."""
         try:
             if self.cache_file.exists():
-                with Path(self.cache_file).open('r') as f:
+                with Path(self.cache_file).open("r") as f:
                     cache_data = json.load(f)
 
                 # Convert dictionary back to CacheEntry objects
@@ -186,7 +202,9 @@ class HomeKitCacheService:
                     except Exception as e:
                         self.logger.warning(f"Failed to load cache entry {key}: {e}")
 
-                self.logger.debug(f"Loaded {len(self.cache)} cache entries from {self.cache_file}")
+                self.logger.debug(
+                    f"Loaded {len(self.cache)} cache entries from {self.cache_file}"
+                )
 
         except Exception as e:
             self.logger.error(f"Failed to load cache from {self.cache_file}: {e}")
@@ -204,10 +222,12 @@ class HomeKitCacheService:
                 cache_data[key] = entry.to_dict()
 
             # Write to file
-            with Path(self.cache_file).open('w') as f:
+            with Path(self.cache_file).open("w") as f:
                 json.dump(cache_data, f, indent=2)
 
-            self.logger.debug(f"Saved {len(self.cache)} cache entries to {self.cache_file}")
+            self.logger.debug(
+                f"Saved {len(self.cache)} cache entries to {self.cache_file}"
+            )
 
         except Exception as e:
             self.logger.error(f"Failed to save cache to {self.cache_file}: {e}")
@@ -224,12 +244,16 @@ class HomeKitCacheService:
         return {
             "total_entries": total_entries,
             "expired_entries": expired_entries,
-            "active_entries": total_entries - expired_entries
+            "active_entries": total_entries - expired_entries,
         }
 
-    def send_action(self, serial_number: str, output_number:int, action_type: ActionType) -> None:
+    def send_action(
+        self, serial_number: str, output_number: int, action_type: ActionType
+    ) -> None:
 
-        conbus_response = self.conbus_output_service.send_action(serial_number, output_number, action_type)
+        conbus_response = self.conbus_output_service.send_action(
+            serial_number, output_number, action_type
+        )
         if not conbus_response.success or conbus_response.received_telegrams is None:
             self.logger.error(f"Action failed or no response: {conbus_response}")
             return

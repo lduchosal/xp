@@ -28,7 +28,9 @@ class ConbusSocketConnectionManager:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(self.timeout)
         sock.connect((self.host, self.port))
-        self.logger.info(f"Created new connection to {self.host}:{self.port} (timeout: {self.timeout})")
+        self.logger.info(
+            f"Created new connection to {self.host}:{self.port} (timeout: {self.timeout})"
+        )
         return sock
 
     def dispose(self, connection: socket.socket) -> None:
@@ -54,10 +56,10 @@ class ConbusSocketConnectionManager:
 class ConbusConnectionPool:
     """Singleton connection pool for Conbus TCP connections"""
 
-    _instance: Optional['ConbusConnectionPool'] = None
+    _instance: Optional["ConbusConnectionPool"] = None
     _lock = threading.Lock()
 
-    def __new__(cls) -> 'ConbusConnectionPool':
+    def __new__(cls) -> "ConbusConnectionPool":
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
@@ -65,7 +67,7 @@ class ConbusConnectionPool:
         return cls._instance
 
     def __init__(self) -> None:
-        if hasattr(self, '_initialized'):
+        if hasattr(self, "_initialized"):
             return
 
         self._initialized = True
@@ -116,9 +118,11 @@ class ConbusConnectionPool:
 
         with self._lock:
             # Check if we need a new connection
-            if (self._connection is None or
-                self._is_connection_expired() or
-                not self._is_connection_alive()):
+            if (
+                self._connection is None
+                or self._is_connection_expired()
+                or not self._is_connection_alive()
+            ):
 
                 # Close existing connection if any
                 if self._connection:
@@ -144,14 +148,19 @@ class ConbusConnectionPool:
         self._current_connection = self.acquire_connection()
         return self._current_connection
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Optional[Exception], exc_tb: Optional[Any]) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[Exception],
+        exc_tb: Optional[Any],
+    ) -> None:
         """Context manager exit - release connection"""
-        if hasattr(self, '_current_connection') and self._current_connection:
+        if hasattr(self, "_current_connection") and self._current_connection:
             self.release_connection(self._current_connection)
             self._current_connection = None
 
     @classmethod
-    def get_instance(cls) -> 'ConbusConnectionPool':
+    def get_instance(cls) -> "ConbusConnectionPool":
         """Get the singleton instance"""
         return cls()
 
@@ -161,7 +170,7 @@ class ConbusConnectionPool:
         with cls._lock:
             if cls._instance:
                 # Clean up existing connection
-                if hasattr(cls._instance, '_connection') and cls._instance._connection:
+                if hasattr(cls._instance, "_connection") and cls._instance._connection:
                     with suppress(Exception):
                         cls._instance._connection.close()
             cls._instance = None

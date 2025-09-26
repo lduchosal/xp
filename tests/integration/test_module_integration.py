@@ -127,9 +127,7 @@ class TestModuleIntegration:
 
     def test_module_list_command_group_by_category_json(self):
         """Test module list command grouped by category with JSON output"""
-        result = self.runner.invoke(
-            cli, ["module", "list", "--group-by-category"]
-        )
+        result = self.runner.invoke(cli, ["module", "list", "--group-by-category"])
 
         assert result.exit_code == 0
 
@@ -167,9 +165,7 @@ class TestModuleIntegration:
 
     def test_module_search_command_json_output(self):
         """Test module search command with JSON output"""
-        result = self.runner.invoke(
-            cli, ["module", "search", "XP2606"]
-        )
+        result = self.runner.invoke(cli, ["module", "search", "XP2606"])
 
         assert result.exit_code == 0
 
@@ -245,9 +241,7 @@ class TestModuleIntegration:
 
     def test_enhanced_telegram_parsing_with_module_info(self):
         """Test that telegram parsing now includes module information"""
-        result = self.runner.invoke(
-            cli, ["telegram", "parse", "<E14L00I02MAK>"]
-        )
+        result = self.runner.invoke(cli, ["telegram", "parse", "<E14L00I02MAK>"])
 
         assert result.exit_code == 0
 
@@ -278,9 +272,7 @@ class TestModuleIntegration:
         """Test telegram parsing with unknown module type"""
         # Test with a module type that doesn't exist (using high number)
         # This tests the graceful handling when module_info is None
-        result = self.runner.invoke(
-            cli, ["telegram", "parse", "<E99L00I02MAK>"]
-        )
+        result = self.runner.invoke(cli, ["telegram", "parse", "<E99L00I02MAK>"])
 
         assert result.exit_code == 0
 

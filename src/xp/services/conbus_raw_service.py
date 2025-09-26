@@ -12,6 +12,7 @@ from ..models.conbus_raw import ConbusRawResponse
 
 class ConbusRawError(Exception):
     """Raised when Conbus raw operations fail"""
+
     pass
 
 
@@ -47,27 +48,29 @@ class ConbusRawService:
                 return ConbusRawResponse(
                     success=False,
                     sent_telegrams=raw_input,
-                    error=f"Failed to send telegram {raw_input}: {response.error}"
+                    error=f"Failed to send telegram {raw_input}: {response.error}",
                 )
 
             return ConbusRawResponse(
                 success=True,
                 sent_telegrams=raw_input,
-                received_telegrams=response.received_telegrams
+                received_telegrams=response.received_telegrams,
             )
 
         except Exception as e:
             error_msg = f"Failed to send raw telegrams: {e}"
             self.logger.error(error_msg)
-            return ConbusRawResponse(
-                success=False,
-                error=error_msg
-            )
+            return ConbusRawResponse(success=False, error=error_msg)
 
-    def __enter__(self) -> 'ConbusRawService':
+    def __enter__(self) -> "ConbusRawService":
         """Context manager entry"""
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> None:
         """Context manager exit - ensure connection is closed"""
         self.conbus_service.disconnect()

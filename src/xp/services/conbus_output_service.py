@@ -45,12 +45,16 @@ class ConbusOutputService:
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-
     def __enter__(self) -> "ConbusOutputService":
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Optional[Exception], exc_tb: Optional[Any]) -> None:
-      # Cleanup logic if needed
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[Exception],
+        exc_tb: Optional[Any],
+    ) -> None:
+        # Cleanup logic if needed
         pass
 
     def get_output_state(self, serial_number: str) -> ConbusDatapointResponse:
@@ -58,7 +62,7 @@ class ConbusOutputService:
         # Send status query using custom telegram method
         response = self.datapoint_service.query_datapoint(
             serial_number=serial_number,
-            datapoint_type=DataPointType.MODULE_OUTPUT_STATE  # "12"
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,  # "12"
         )
 
         return response
@@ -67,13 +71,14 @@ class ConbusOutputService:
 
         # Send status query using custom telegram method
         response = self.datapoint_service.query_datapoint(
-            serial_number=serial_number,
-            datapoint_type=DataPointType.MODULE_STATE
+            serial_number=serial_number, datapoint_type=DataPointType.MODULE_STATE
         )
 
         return response
 
-    def send_action(self, serial_number:str, output_number:int, action_type:ActionType) -> ConbusOutputResponse:
+    def send_action(
+        self, serial_number: str, output_number: int, action_type: ActionType
+    ) -> ConbusOutputResponse:
 
         # Parse input number and send action
         self.telegram_output_service.validate_output_number(output_number)
@@ -89,9 +94,11 @@ class ConbusOutputService:
             input_action,  # "00AA", "01AA", etc.
         )
 
-        if (not response.success
-                or response.received_telegrams is None
-                or len(response.received_telegrams) <= 0):
+        if (
+            not response.success
+            or response.received_telegrams is None
+            or len(response.received_telegrams) <= 0
+        ):
 
             return ConbusOutputResponse(
                 success=response.success,

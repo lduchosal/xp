@@ -27,9 +27,7 @@ from ...models import ConbusResponse
 )
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def scan_module(
-    serial_number: str, function_code: str, background: bool
-) -> None:
+def scan_module(serial_number: str, function_code: str, background: bool) -> None:
     """
     Scan all datapoints of a function_code for a module.
 

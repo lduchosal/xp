@@ -21,7 +21,7 @@ class Latin1TestServer:
 
     def __init__(self, port=10003):
         self.port = port
-        self.server_socket : Optional[socket.socket] = None
+        self.server_socket: Optional[socket.socket] = None
         self.is_running = False
         self.received_messages = []
 
@@ -77,7 +77,7 @@ class Latin1TestServer:
         except (ValueError, KeyError, ConnectionError):
             pass
         finally:
-            with suppress (ValueError, KeyError, ConnectionError):
+            with suppress(ValueError, KeyError, ConnectionError):
                 client_socket.close()
 
     @staticmethod
@@ -131,7 +131,9 @@ conbus:
         char = chr(problematic_byte)
 
         # This would have failed with UTF-8 but should work with Latin-1
-        decoded = f"<R0020044966F02D18+31,5{char}CIE>".encode("latin-1").decode("latin-1")
+        decoded = f"<R0020044966F02D18+31,5{char}CIE>".encode("latin-1").decode(
+            "latin-1"
+        )
 
         assert char in decoded
         assert decoded == "<R0020044966F02D18+31,5§CIE>"

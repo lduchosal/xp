@@ -13,6 +13,7 @@ from xp.models.datapoint_type import DataPointType
 
 logger = logging.getLogger(__name__)
 
+
 @router.get(
     "/datapoint/{datapoint}/{serial_number}",
     response_model=Union[ApiResponse, ApiErrorResponse],
@@ -24,9 +25,9 @@ logger = logging.getLogger(__name__)
     },
 )
 async def datapoint_devices(
-        datapoint: DataPointType = DataPointType.SW_VERSION,
-        serial_number: str = "1702033007"
-    ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
+    datapoint: DataPointType = DataPointType.SW_VERSION,
+    serial_number: str = "1702033007",
+) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate a Datapoint operation to find devices on the network.
 
@@ -36,8 +37,8 @@ async def datapoint_devices(
     # SendDatapoint telegram and receive responses
     with service:
         response = service.query_datapoint(
-            datapoint_type=datapoint,
-            serial_number=serial_number)
+            datapoint_type=datapoint, serial_number=serial_number
+        )
 
     if not response.success:
         return handle_service_error(response.error or "Unknown error")
@@ -51,12 +52,12 @@ async def datapoint_devices(
     # Build successful response
     if response.datapoint_telegram and response.datapoint_telegram.datapoint_type:
         return ApiResponse(
-            success = True,
-            result = response.datapoint_telegram.data_value,
-            description = response.datapoint_telegram.datapoint_type.name,
+            success=True,
+            result=response.datapoint_telegram.data_value,
+            description=response.datapoint_telegram.datapoint_type.name,
         )
     return ApiResponse(
-        success = True,
-        result = response.datapoint_telegram.data_value,
-        description = "Datapoint value retrieved",
+        success=True,
+        result=response.datapoint_telegram.data_value,
+        description="Datapoint value retrieved",
     )

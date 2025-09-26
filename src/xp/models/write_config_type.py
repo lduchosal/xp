@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Optional
 
+
 class WriteConfigType(str, Enum):
     """Write Config types for system telegrams"""
 
@@ -15,4 +16,3 @@ class WriteConfigType(str, Enum):
             if dp_type.value == code:
                 return dp_type
         return None
-

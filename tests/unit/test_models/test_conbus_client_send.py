@@ -9,6 +9,7 @@ from xp.models import ConbusDatapointResponse
 class TestTelegramType:
     """Test cases for TelegramType enum"""
 
+
 class TestConbusClientConfig:
     """Test cases for ConbusClientConfig model"""
 
@@ -58,9 +59,7 @@ class TestConbusSendResponse:
     def test_custom_timestamp(self):
         """Test response with custom timestamp"""
         custom_time = datetime(2023, 8, 27, 15, 45, 30)
-        response = ConbusDatapointResponse(
-            success=True, timestamp=custom_time
-        )
+        response = ConbusDatapointResponse(success=True, timestamp=custom_time)
 
         assert response.timestamp == custom_time
 
@@ -128,6 +127,7 @@ class TestConbusConnectionStatus:
         }
         assert result == expected
 
+
 class TestModelIntegration:
     """Integration tests for model interactions"""
 
@@ -165,9 +165,7 @@ class TestModelIntegration:
         # Create request
 
         # Create failed response
-        response = ConbusDatapointResponse(
-            success=False, error="Device not found"
-        )
+        response = ConbusDatapointResponse(success=False, error="Device not found")
 
         # Create disconnected status
         status = ConbusConnectionStatus(

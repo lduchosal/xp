@@ -1,4 +1,5 @@
 """FastAPI router for Conbus operations."""
+
 import json
 import logging
 from typing import Union
@@ -13,6 +14,7 @@ from ...services.conbus_output_service import ConbusOutputService
 
 logger = logging.getLogger(__name__)
 
+
 @router.get(
     "/output/{action}/{serial}/{device_input}",
     response_model=Union[ApiResponse, ApiErrorResponse],
@@ -24,9 +26,9 @@ logger = logging.getLogger(__name__)
     },
 )
 async def input_action(
-        action: ActionType = ActionType.PRESS,
-        serial: str = "1702033007",
-        device_input: int = 0
+    action: ActionType = ActionType.PRESS,
+    serial: str = "1702033007",
+    device_input: int = 0,
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate Input operation to find devices on the network.
@@ -47,15 +49,15 @@ async def input_action(
     # Build successful response
     if response.output_telegram and response.output_telegram.system_function:
         return ApiResponse(
-            success = True,
-            result = response.output_telegram.system_function.name,
-            description = response.output_telegram.system_function.get_description(),
+            success=True,
+            result=response.output_telegram.system_function.name,
+            description=response.output_telegram.system_function.get_description(),
             # raw_telegram = response.output_telegram.raw_telegram,
         )
     return ApiResponse(
-        success = True,
-        result = "Output command sent",
-        description = "Output command was sent successfully",
+        success=True,
+        result="Output command sent",
+        description="Output command was sent successfully",
     )
 
 
@@ -69,7 +71,9 @@ async def input_action(
         500: {"model": ApiErrorResponse, "description": "Internal server error"},
     },
 )
-async def output_status(serial_number: str) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
+async def output_status(
+    serial_number: str,
+) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate Input operation to find devices on the network.
 
@@ -87,14 +91,14 @@ async def output_status(serial_number: str) -> Union[ApiResponse, ApiErrorRespon
     # Build successful response
     if response.datapoint_telegram and response.datapoint_telegram.datapoint_type:
         return ApiResponse(
-            success = True,
-            result = response.datapoint_telegram.data_value,
-            description = response.datapoint_telegram.datapoint_type.name,
+            success=True,
+            result=response.datapoint_telegram.data_value,
+            description=response.datapoint_telegram.datapoint_type.name,
         )
     return ApiResponse(
-        success = True,
-        result = "No data available",
-        description = "Output status retrieved but no data available",
+        success=True,
+        result="No data available",
+        description="Output status retrieved but no data available",
     )
 
 
@@ -108,7 +112,9 @@ async def output_status(serial_number: str) -> Union[ApiResponse, ApiErrorRespon
         500: {"model": ApiErrorResponse, "description": "Internal server error"},
     },
 )
-async def output_state(serial_number: str) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
+async def output_state(
+    serial_number: str,
+) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate Input operation to find devices on the network.
 
@@ -126,12 +132,12 @@ async def output_state(serial_number: str) -> Union[ApiResponse, ApiErrorRespons
     # Build successful response
     if response.datapoint_telegram and response.datapoint_telegram.datapoint_type:
         return ApiResponse(
-            success = True,
-            result = response.datapoint_telegram.data_value,
-            description = response.datapoint_telegram.datapoint_type.name,
+            success=True,
+            result=response.datapoint_telegram.data_value,
+            description=response.datapoint_telegram.datapoint_type.name,
         )
     return ApiResponse(
-        success = True,
-        result = "No data available",
-        description = "Module state retrieved but no data available",
+        success=True,
+        result="No data available",
+        description="Module state retrieved but no data available",
     )

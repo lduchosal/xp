@@ -177,6 +177,7 @@ class TestTelegramService:
         result = self.service.validate_checksum(telegram)
         assert result is False
 
+
 class TestSystemTelegramParsing:
     """Test cases for system telegram parsing in TelegramService"""
 

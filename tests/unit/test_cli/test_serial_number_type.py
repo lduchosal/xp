@@ -54,28 +54,28 @@ class TestSerialNumberParamType:
 class TestSerialNumberTypeInCommand:
     def test_serial_type_in_click_command(self):
         @click.command()
-        @click.argument('serial_number', type=SERIAL)
+        @click.argument("serial_number", type=SERIAL)
         def test_command(serial_number):
             click.echo(f"Serial: {serial_number}")
 
         runner = CliRunner()
 
         # Test valid short serial
-        result = runner.invoke(test_command, ['123'])
+        result = runner.invoke(test_command, ["123"])
         assert result.exit_code == 0
         assert "Serial: 0000000123" in result.output
 
         # Test valid 10-digit serial
-        result = runner.invoke(test_command, ['1234567890'])
+        result = runner.invoke(test_command, ["1234567890"])
         assert result.exit_code == 0
         assert "Serial: 1234567890" in result.output
 
         # Test invalid serial (too long)
-        result = runner.invoke(test_command, ['12345678901'])
+        result = runner.invoke(test_command, ["12345678901"])
         assert result.exit_code != 0
         assert "longer than 10 characters" in result.output
 
         # Test invalid serial (non-numeric)
-        result = runner.invoke(test_command, ['123abc'])
+        result = runner.invoke(test_command, ["123abc"])
         assert result.exit_code != 0
         assert "contains non-numeric characters" in result.output

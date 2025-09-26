@@ -140,18 +140,18 @@ class ConbusService:
         start_pos = 0
         while True:
             # Find the start of next telegram
-            start_idx = raw_data.find('<', start_pos)
+            start_idx = raw_data.find("<", start_pos)
             if start_idx == -1:
                 break
 
             # Find the end of this telegram
-            end_idx = raw_data.find('>', start_idx)
+            end_idx = raw_data.find(">", start_idx)
             if end_idx == -1:
                 # Incomplete telegram at the end
                 break
 
             # Extract telegram including < and >
-            telegram = raw_data[start_idx:end_idx + 1]
+            telegram = raw_data[start_idx : end_idx + 1]
             if telegram.strip():
                 telegrams.append(telegram.strip())
 
@@ -199,7 +199,9 @@ class ConbusService:
 
         return telegrams
 
-    def _receive_responses_with_connection(self, connection: socket.socket, timeout: float = 1.0) -> List[str]:
+    def _receive_responses_with_connection(
+        self, connection: socket.socket, timeout: float = 1.0
+    ) -> List[str]:
         """Receive responses from the server using a specific connection"""
         accumulated_data = ""
 
@@ -247,20 +249,16 @@ class ConbusService:
         checksum = calculate_checksum(telegram_body)
         telegram = f"<{telegram_body}{checksum}>"
 
-        return  self.send_raw_telegram(telegram)
+        return self.send_raw_telegram(telegram)
 
-    def send_telegram_body(
-        self, telegram_body: str
-    ) -> ConbusResponse:
+    def send_telegram_body(self, telegram_body: str) -> ConbusResponse:
         """Send custom telegram with specified function and data point codes"""
         checksum = calculate_checksum(telegram_body)
         telegram = f"<{telegram_body}{checksum}>"
 
         return self.send_raw_telegram(telegram)
 
-    def send_raw_telegram(
-            self, telegram: Optional[str] = None
-    ) -> ConbusResponse:
+    def send_raw_telegram(self, telegram: Optional[str] = None) -> ConbusResponse:
         """Send telegram using connection pool with automatic acquire/release"""
         request = ConbusRequest(telegram=telegram)
 
@@ -306,11 +304,15 @@ class ConbusService:
         all_telegrams = "".join(telegrams)
         return self.send_raw_telegram(all_telegrams)
 
-    def __enter__(self) -> 'ConbusService':
+    def __enter__(self) -> "ConbusService":
         """Context manager entry"""
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Optional[Exception], exc_tb: Optional[Any]) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[Exception],
+        exc_tb: Optional[Any],
+    ) -> None:
         """Context manager exit - ensure connection is closed"""
         self.disconnect()
-

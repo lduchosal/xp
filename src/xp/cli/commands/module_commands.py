@@ -12,7 +12,9 @@ from ..utils.formatters import OutputFormatter, ListFormatter
 from ...services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
 
 
-@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
+@click.group(
+    cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
+)
 def module() -> None:
     """
     Module type operations
@@ -48,9 +50,7 @@ def module_info(identifier: str) -> None:
         click.echo(json.dumps(module_type.to_dict(), indent=2))
 
     except ModuleTypeNotFoundError as e:
-        CLIErrorHandler.handle_not_found_error(
-            e, "module type", identifier
-        )
+        CLIErrorHandler.handle_not_found_error(e, "module type", identifier)
 
 
 @module.command("list")

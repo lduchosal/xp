@@ -1,4 +1,5 @@
 """API routers for FastAPI endpoints."""
+
 from .conbus import router
 from . import conbus_discover
 from . import conbus_output

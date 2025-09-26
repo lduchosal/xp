@@ -7,7 +7,9 @@ responses across all HomeKit accessory classes.
 from typing import Any, List, Tuple, Callable
 
 
-def get_first_response(responses: List[Tuple[Callable, Any]], default: Any = None) -> Any:
+def get_first_response(
+    responses: List[Tuple[Callable, Any]], default: Any = None
+) -> Any:
     """Extract the first non-None response from PyDispatcher responses.
 
     Args:

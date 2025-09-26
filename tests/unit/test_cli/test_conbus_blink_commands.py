@@ -25,13 +25,12 @@ class TestConbusBlinkCommands:
         assert "Usage: conbus blink [OPTIONS] COMMAND [ARGS]" in result.output
         assert "Usage:" in result.output
 
-
     def test_conbus_blink_invalid_serial_json(self):
         """Test blink command with invalid serial number and JSON output"""
         result = CliRunner().invoke(conbus, ["blink", "on", "invalid"])
 
         assert result.exit_code == 2
         assert (
-            "Error: Invalid value for 'SERIAL_NUMBER': 'invalid' contains non-numeric characters" in result.output
+            "Error: Invalid value for 'SERIAL_NUMBER': 'invalid' contains non-numeric characters"
+            in result.output
         )
-

@@ -40,7 +40,9 @@ def calculate_checksum(data: str, algorithm: str) -> None:
             result = service.calculate_crc32_checksum(data)
 
         if not result.success:
-            error_response = formatter.error_response(result.error or "Unknown error", {"input": data})
+            error_response = formatter.error_response(
+                result.error or "Unknown error", {"input": data}
+            )
             click.echo(error_response)
             raise SystemExit(1)
 
@@ -61,9 +63,7 @@ def calculate_checksum(data: str, algorithm: str) -> None:
     help="Checksum algorithm to use",
 )
 @handle_service_errors(Exception)
-def validate_checksum(
-    data: str, expected_checksum: str, algorithm: str
-) -> None:
+def validate_checksum(data: str, expected_checksum: str, algorithm: str) -> None:
     """
     Validate data against expected checksum.
 
@@ -84,7 +84,8 @@ def validate_checksum(
 
         if not result.success:
             error_response = formatter.error_response(
-                result.error or "Unknown error", {"input": data, "expected_checksum": expected_checksum}
+                result.error or "Unknown error",
+                {"input": data, "expected_checksum": expected_checksum},
             )
             click.echo(error_response)
             raise SystemExit(1)
@@ -92,5 +93,8 @@ def validate_checksum(
         click.echo(json.dumps(result.to_dict(), indent=2))
 
     except Exception as e:
-        CLIErrorHandler.handle_service_error(e, "checksum validation",
-                                             {"input": data, "expected_checksum": expected_checksum})
+        CLIErrorHandler.handle_service_error(
+            e,
+            "checksum validation",
+            {"input": data, "expected_checksum": expected_checksum},
+        )

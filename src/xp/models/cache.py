@@ -54,7 +54,7 @@ class CacheEntry:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'CacheEntry':
+    def from_dict(cls, data: dict) -> "CacheEntry":
         """Create CacheEntry from dictionary.
 
         Args:
@@ -63,11 +63,7 @@ class CacheEntry:
         Returns:
             CacheEntry instance created from dictionary
         """
-        entry = cls(
-            data=data["data"],
-            tags=data["tags"],
-            ttl=data["ttl"]
-        )
+        entry = cls(data=data["data"], tags=data["tags"], ttl=data["ttl"])
         entry.timestamp = datetime.fromisoformat(data["timestamp"])
         return entry
 

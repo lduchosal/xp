@@ -14,12 +14,19 @@ from ...services.conbus_discover_service import ConbusDiscoverService
 
 logger = logging.getLogger(__name__)
 
+
 @router.post(
     "/discover",
     response_model=Union[DiscoverResponse, DiscoverErrorResponse],
     responses={
-        200: {"model": DiscoverResponse, "description": "Discover completed successfully"},
-        400: {"model": DiscoverErrorResponse, "description": "Connection or request error"},
+        200: {
+            "model": DiscoverResponse,
+            "description": "Discover completed successfully",
+        },
+        400: {
+            "model": DiscoverErrorResponse,
+            "description": "Connection or request error",
+        },
         408: {"model": DiscoverErrorResponse, "description": "Request timeout"},
         500: {"model": DiscoverErrorResponse, "description": "Internal server error"},
     },
@@ -43,4 +50,3 @@ async def discover_devices() -> Union[DiscoverResponse, JSONResponse]:
     return DiscoverResponse(
         devices=response.discovered_devices or [],
     )
-

@@ -20,5 +20,3 @@ class ValidationError(XPError):
     """Input validation errors"""
 
     pass
-
-

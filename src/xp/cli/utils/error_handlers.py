@@ -4,6 +4,7 @@ import click
 from typing import Dict, Any, Optional
 from .formatters import OutputFormatter
 
+
 class CLIErrorHandler:
     """Centralized error handling for CLI commands."""
 
@@ -64,7 +65,9 @@ class CLIErrorHandler:
             raise SystemExit(1)
 
     @staticmethod
-    def handle_service_error(error: Exception, operation: str, context: Optional[Dict[str, Any]] = None) -> None:
+    def handle_service_error(
+        error: Exception, operation: str, context: Optional[Dict[str, Any]] = None
+    ) -> None:
         """Handle general service errors with JSON formatting.
 
         Args:
@@ -83,9 +86,7 @@ class CLIErrorHandler:
         raise SystemExit(1)
 
     @staticmethod
-    def handle_validation_error(
-        error: Exception, input_data: str
-    ) -> None:
+    def handle_validation_error(error: Exception, input_data: str) -> None:
         """Handle validation errors with JSON formatting.
 
         Args:
@@ -160,6 +161,8 @@ class ServerErrorHandler(CLIErrorHandler):
     @staticmethod
     def handle_server_not_running_error() -> None:
         """Handle errors when server is not running with JSON formatting."""
-        error_response = OutputFormatter(True).error_response("No server is currently running")
+        error_response = OutputFormatter(True).error_response(
+            "No server is currently running"
+        )
         click.echo(error_response)
         raise SystemExit(1)

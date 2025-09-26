@@ -22,7 +22,12 @@ class HomekitService:
     Manages TCP socket connections, handles telegram generation and transmission,
     and processes server responses.
     """
-    def __init__(self, homekit_config_path: str = "homekit.yml", conson_config_path: str = "conson.yml"):
+
+    def __init__(
+        self,
+        homekit_config_path: str = "homekit.yml",
+        conson_config_path: str = "conson.yml",
+    ):
         """Initialize the Conbus client send service"""
         self.last_activity: Optional[datetime] = None
 
@@ -39,10 +44,9 @@ class HomekitService:
             port=self.config.homekit.port,
         )
         signal.signal(signal.SIGTERM, driver.signal_handler)
-        self.driver:AccessoryDriver = driver
+        self.driver: AccessoryDriver = driver
 
     def run(self) -> None:
-
         """Get current client configuration"""
         self.load_accessories()
 
@@ -53,10 +57,8 @@ class HomekitService:
         bridge_config = self.config.bridge
         bridge = Bridge(self.driver, bridge_config.name)
         bridge.set_info_service(
-            xp.__version__,
-            xp.__manufacturer__,
-            xp.__model__,
-            xp.__serial__)
+            xp.__version__, xp.__manufacturer__, xp.__model__, xp.__serial__
+        )
 
         for room in bridge_config.rooms:
             self.add_room(bridge, room)
@@ -77,8 +79,9 @@ class HomekitService:
             accessory = self.get_accessory(homekit_accessory)
             bridge.add_accessory(accessory)
 
-    def get_accessory(self, homekit_accessory: HomekitAccessoryConfig) \
-            -> Union[Accessory, LightBulb, Outlet, None]:
+    def get_accessory(
+        self, homekit_accessory: HomekitAccessoryConfig
+    ) -> Union[Accessory, LightBulb, Outlet, None]:
         """Call this method to get a standalone Accessory."""
         manufacturer = "Conson"
         description = homekit_accessory.description
@@ -110,4 +113,6 @@ class HomekitService:
         return None
 
     def get_accessory_by_name(self, name: str) -> Optional[HomekitAccessoryConfig]:
-        return next((module for module in self.config.accessories if module.name == name), None)
+        return next(
+            (module for module in self.config.accessories if module.name == name), None
+        )

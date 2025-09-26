@@ -13,8 +13,8 @@ class TemperatureSensor(Accessory):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        serv_temp = self.add_preload_service('TemperatureSensor')
-        self.char_temp = serv_temp.configure_char('CurrentTemperature')
+        serv_temp = self.add_preload_service("TemperatureSensor")
+        self.char_temp = serv_temp.configure_char("CurrentTemperature")
 
     @Accessory.run_at_interval(30)
     async def run(self) -> None:

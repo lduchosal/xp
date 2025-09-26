@@ -12,6 +12,7 @@ from ...services.conbus_custom_service import ConbusCustomService
 
 logger = logging.getLogger(__name__)
 
+
 @router.get(
     "/custom/{serial_number}/{function_code}/{data}",
     response_model=Union[ApiResponse, ApiErrorResponse],
@@ -23,10 +24,8 @@ logger = logging.getLogger(__name__)
     },
 )
 async def custom_function(
-        serial_number: str = "1702033007",
-        function_code: str = "02",
-        data: str = "00"
-    ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
+    serial_number: str = "1702033007", function_code: str = "02", data: str = "00"
+) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate a Datapoint operation to find devices on the network.
 
@@ -49,12 +48,12 @@ async def custom_function(
     # Build successful response
     if response.reply_telegram and response.reply_telegram.datapoint_type:
         return ApiResponse(
-            success = True,
-            result = response.reply_telegram.data_value,
-            description = response.reply_telegram.datapoint_type.name,
+            success=True,
+            result=response.reply_telegram.data_value,
+            description=response.reply_telegram.datapoint_type.name,
         )
     return ApiResponse(
-        success = True,
-        result = response.reply_telegram.data_value,
-        description = "Custom command executed successfully",
+        success=True,
+        result=response.reply_telegram.data_value,
+        description="Custom command executed successfully",
     )

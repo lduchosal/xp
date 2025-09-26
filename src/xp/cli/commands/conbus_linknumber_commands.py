@@ -12,6 +12,7 @@ from ..utils.serial_number_type import SERIAL
 from ...services.conbus_linknumber_service import ConbusLinknumberService
 from ...services.telegram_link_number_service import LinkNumberError
 
+
 @conbus_linknumber.command("set", short_help="Set link number for a module")
 @click.argument("serial_number", type=SERIAL)
 @click.argument("link_number", type=click.IntRange(0, 99))

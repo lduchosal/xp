@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any
 
+
 @dataclass
 class ConbusClientConfig:
     """Configuration for Conbus client connection"""

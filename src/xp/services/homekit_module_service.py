@@ -25,53 +25,84 @@ class HomekitModuleService:
 
     def get_module_by_name(self, name: str) -> Optional[ConsonModuleConfig]:
         """Get a module by its name"""
-        module = next((module for module in self.conson_modules_config.root if module.name == name), None)
-        self.logger.debug(f"Module search by name '{name}': {'found' if module else 'not found'}")
+        module = next(
+            (
+                module
+                for module in self.conson_modules_config.root
+                if module.name == name
+            ),
+            None,
+        )
+        self.logger.debug(
+            f"Module search by name '{name}': {'found' if module else 'not found'}"
+        )
         return module
 
     def get_module_by_serial(self, serial_number: str) -> Optional[ConsonModuleConfig]:
         """Get a module by its serial number"""
-        module = next((module for module in self.conson_modules_config.root if module.serial_number == serial_number), None)
-        self.logger.debug(f"Module search by serial '{serial_number}': {'found' if module else 'not found'}")
+        module = next(
+            (
+                module
+                for module in self.conson_modules_config.root
+                if module.serial_number == serial_number
+            ),
+            None,
+        )
+        self.logger.debug(
+            f"Module search by serial '{serial_number}': {'found' if module else 'not found'}"
+        )
         return module
 
     def get_modules_by_type(self, module_type: str) -> List[ConsonModuleConfig]:
         """Get all modules of a specific type"""
-        modules = [module for module in self.conson_modules_config.root if module.module_type == module_type]
+        modules = [
+            module
+            for module in self.conson_modules_config.root
+            if module.module_type == module_type
+        ]
         self.logger.debug(f"Found {len(modules)} modules of type '{module_type}'")
         return modules
 
-
     def _setup_event_listeners(self) -> None:
         """Set up PyDispatcher event listeners"""
-        dispatcher.connect(self._outlet_set_outlet_in_use, signal='outlet_set_outlet_in_use')
-        dispatcher.connect(self._on_outlet_get_outlet_in_use, signal='outlet_get_outlet_in_use')
-        dispatcher.connect(self._on_accessory_set_on, signal='accessory_set_on')
-        dispatcher.connect(self._on_accessory_get_on, signal='accessory_get_on')
+        dispatcher.connect(
+            self._outlet_set_outlet_in_use, signal="outlet_set_outlet_in_use"
+        )
+        dispatcher.connect(
+            self._on_outlet_get_outlet_in_use, signal="outlet_get_outlet_in_use"
+        )
+        dispatcher.connect(self._on_accessory_set_on, signal="accessory_set_on")
+        dispatcher.connect(self._on_accessory_get_on, signal="accessory_get_on")
 
     # noinspection PyUnusedLocal
     def _outlet_set_outlet_in_use(self, sender: Any, **kwargs: Any) -> None:
-        serial_number: Optional[Any] = kwargs.get('serial_number')
-        output_number: Optional[Any] = kwargs.get('output_number')
-        value: Optional[Any] = kwargs.get('value')
+        serial_number: Optional[Any] = kwargs.get("serial_number")
+        output_number: Optional[Any] = kwargs.get("output_number")
+        value: Optional[Any] = kwargs.get("value")
 
-        self.logger.info(f"_outlet_set_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}, value: {value} }}")
+        self.logger.info(
+            f"_outlet_set_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}, value: {value} }}"
+        )
 
     # noinspection PyUnusedLocal
     def _on_outlet_get_outlet_in_use(self, sender: Any, **kwargs: Any) -> None:
-        serial_number: Optional[Any] = kwargs.get('serial_number')
-        output_number: Optional[Any] = kwargs.get('output_number')
+        serial_number: Optional[Any] = kwargs.get("serial_number")
+        output_number: Optional[Any] = kwargs.get("output_number")
 
-        self.logger.info(f"_on_outlet_get_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}}}")
+        self.logger.info(
+            f"_on_outlet_get_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}}}"
+        )
 
     # noinspection PyUnusedLocal
     def _on_accessory_set_on(self, sender: Any, **kwargs: Any) -> None:
         """Handle accessory set_on events from PyDispatcher"""
-        serial_number: Optional[str] = kwargs.get('serial_number')
-        output_number: Optional[int] = kwargs.get('output_number')
-        value: Optional[bool] = kwargs.get('value')
+        serial_number: Optional[str] = kwargs.get("serial_number")
+        output_number: Optional[int] = kwargs.get("output_number")
+        value: Optional[bool] = kwargs.get("value")
 
-        self.logger.info(f"_on_accessory_set_on {{ serial_number: {serial_number} output_number: {output_number} }}")
+        self.logger.info(
+            f"_on_accessory_set_on {{ serial_number: {serial_number} output_number: {output_number} }}"
+        )
 
         if serial_number is None:
             self.logger.warning("Invalid serial_number")
@@ -93,17 +124,18 @@ class HomekitModuleService:
         self.cache_service.send_action(
             serial_number=serial_number,
             output_number=output_number,
-            action_type=action_type
+            action_type=action_type,
         )
-
 
     # noinspection PyUnusedLocal
     def _on_accessory_get_on(self, sender: Any, **kwargs: Any) -> bool:
         """Handle accessory get_on events from PyDispatcher"""
-        serial_number: Optional[str] = kwargs.get('serial_number')
-        output_number: Optional[int] = kwargs.get('output_number')
+        serial_number: Optional[str] = kwargs.get("serial_number")
+        output_number: Optional[int] = kwargs.get("output_number")
 
-        self.logger.info(f"_on_accessory_get_on {{ serial_number: {serial_number}, output_number: {output_number}}}")
+        self.logger.info(
+            f"_on_accessory_get_on {{ serial_number: {serial_number}, output_number: {output_number}}}"
+        )
 
         if serial_number is None:
             self.logger.warning("Invalid serial_number")
@@ -127,5 +159,3 @@ class HomekitModuleService:
 
         result = self.telegram_output_service.parse_status_response(response.data)
         return result[output_number]
-
-

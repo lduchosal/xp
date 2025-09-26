@@ -108,7 +108,7 @@ class TelegramChecksumService:
 
     @staticmethod
     def validate_crc32_checksum(
-            data: Union[str, bytes], expected_checksum: str
+        data: Union[str, bytes], expected_checksum: str
     ) -> Response:
         """Validate data against expected CRC32 checksum.
 

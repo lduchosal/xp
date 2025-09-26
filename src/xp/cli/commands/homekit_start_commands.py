@@ -7,6 +7,7 @@ import click
 from .homekit import homekit
 from ...services.homekit_service import HomekitService
 
+
 @homekit.command("start")
 def homekit_start() -> None:
     """

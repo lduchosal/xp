@@ -18,7 +18,7 @@ class TestHomeKitCacheService:
     def setup_method(self):
         """Setup test fixtures"""
         # Create temporary file for each test
-        self.temp_cache_file = tempfile.NamedTemporaryFile(delete=False, suffix='.json')
+        self.temp_cache_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
         self.temp_cache_file.close()
         self.temp_cache_path = Path(self.temp_cache_file.name)
 
@@ -29,16 +29,16 @@ class TestHomeKitCacheService:
 
     def test_service_initialization_default_cache_file(self):
         """Test service initialization with default cache file"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService()
 
-            expected_cache_file = PosixPath('.homekit_cache.json')
+            expected_cache_file = PosixPath(".homekit_cache.json")
             assert service.cache_file == expected_cache_file
             assert isinstance(service.cache, dict)
 
     def test_service_initialization_custom_cache_file(self):
         """Test service initialization with custom cache file"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
             assert service.cache_file == self.temp_cache_path
@@ -46,15 +46,16 @@ class TestHomeKitCacheService:
 
     def test_cache_miss_queries_device(self):
         """Test cache miss triggers device query"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService') as mock_service_class:
+        with patch(
+            "xp.services.homekit_cache_service.ConbusOutputService"
+        ) as mock_service_class:
             mock_conbus = Mock()
             mock_service_class.return_value = mock_conbus
             mock_conbus.get_output_state.return_value = ConbusDatapointResponse(
                 success=True,
                 datapoint_telegram=ReplyTelegram(
-                    checksum="CK",
-                    raw_telegram="device_response"
-                )
+                    checksum="CK", raw_telegram="device_response"
+                ),
             )
 
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
@@ -74,7 +75,9 @@ class TestHomeKitCacheService:
 
     def test_cache_hit_returns_cached_data(self):
         """Test cache hit returns cached data without device query"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService') as mock_service_class:
+        with patch(
+            "xp.services.homekit_cache_service.ConbusOutputService"
+        ) as mock_service_class:
             mock_conbus = Mock()
             mock_service_class.return_value = mock_conbus
 
@@ -82,9 +85,7 @@ class TestHomeKitCacheService:
 
             # Manually add cache entry
             service.cache["test_device"] = CacheEntry(
-                data="cached_data",
-                tags=["test_tag"],
-                ttl=300
+                data="cached_data", tags=["test_tag"], ttl=300
             )
 
             response = service.get("test_device", "test_tag")
@@ -99,15 +100,16 @@ class TestHomeKitCacheService:
 
     def test_expired_cache_entry_triggers_device_query(self):
         """Test expired cache entry triggers new device query"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService') as mock_service_class:
+        with patch(
+            "xp.services.homekit_cache_service.ConbusOutputService"
+        ) as mock_service_class:
             mock_conbus = Mock()
             mock_service_class.return_value = mock_conbus
             mock_conbus.get_output_state.return_value = ConbusDatapointResponse(
                 success=True,
                 datapoint_telegram=ReplyTelegram(
-                    checksum="CK",
-                    raw_telegram="fresh_data"
-                )
+                    checksum="CK", raw_telegram="fresh_data"
+                ),
             )
 
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
@@ -131,13 +133,13 @@ class TestHomeKitCacheService:
 
     def test_device_query_failure(self):
         """Test handling of device query failure"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService') as mock_service_class:
+        with patch(
+            "xp.services.homekit_cache_service.ConbusOutputService"
+        ) as mock_service_class:
             mock_conbus = Mock()
             mock_service_class.return_value = mock_conbus
             mock_conbus.get_output_state.return_value = Response(
-                success=False,
-                data=None,
-                error="Device timeout"
+                success=False, data=None, error="Device timeout"
             )
 
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
@@ -152,7 +154,9 @@ class TestHomeKitCacheService:
 
     def test_device_query_exception(self):
         """Test handling of device query exception"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService') as mock_service_class:
+        with patch(
+            "xp.services.homekit_cache_service.ConbusOutputService"
+        ) as mock_service_class:
             mock_conbus = Mock()
             mock_service_class.return_value = mock_conbus
             mock_conbus.get_output_state.side_effect = Exception("Connection error")
@@ -169,7 +173,7 @@ class TestHomeKitCacheService:
 
     def test_set_cache_entry(self):
         """Test manually setting cache entry"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
             service.set("test_device", "test_tag", "manual_data")
 
@@ -181,14 +185,12 @@ class TestHomeKitCacheService:
 
     def test_set_updates_existing_entry(self):
         """Test setting cache entry updates existing entry"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
             # Create initial entry
             service.cache["test_device"] = CacheEntry(
-                data="old_data",
-                tags=["old_tag"],
-                ttl=300
+                data="old_data", tags=["old_tag"], ttl=300
             )
             old_timestamp = service.cache["test_device"].timestamp
 
@@ -204,7 +206,7 @@ class TestHomeKitCacheService:
 
     def test_clear_specific_key(self):
         """Test clearing specific cache key"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
             # Add multiple entries
@@ -220,7 +222,7 @@ class TestHomeKitCacheService:
 
     def test_clear_by_tag(self):
         """Test clearing cache entries by tag"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
             # Add entries with different tags
@@ -238,7 +240,7 @@ class TestHomeKitCacheService:
 
     def test_clear_entire_cache(self):
         """Test clearing entire cache"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
             # Add multiple entries
@@ -253,14 +255,12 @@ class TestHomeKitCacheService:
 
     def test_items_returns_active_entries(self):
         """Test items returns only active (non-expired) entries"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
             # Add active entry
             service.cache["active_device"] = CacheEntry(
-                data="active_data",
-                tags=["tag1"],
-                ttl=300
+                data="active_data", tags=["tag1"], ttl=300
             )
 
             # Add expired entry
@@ -277,7 +277,7 @@ class TestHomeKitCacheService:
 
     def test_received_event_invalidates_tagged_entries(self):
         """Test received_event invalidates cache entries with matching tag"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
             # Add entries with different tags
@@ -295,7 +295,7 @@ class TestHomeKitCacheService:
 
     def test_received_update_creates_or_updates_entry(self):
         """Test received_update creates or updates cache entry"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
             # Update non-existing entry
@@ -320,7 +320,7 @@ class TestHomeKitCacheService:
 
     def test_cache_persistence_save_and_load(self):
         """Test cache data persistence to file"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             # Create service and add data
             service1 = HomeKitCacheService(cache_file=str(self.temp_cache_path))
             service1.set("persistent_device", "test_tag", "persistent_data")
@@ -337,7 +337,7 @@ class TestHomeKitCacheService:
         # Write invalid JSON to cache file
         self.temp_cache_path.write_text("invalid json content")
 
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             # Should not raise exception
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
@@ -346,14 +346,12 @@ class TestHomeKitCacheService:
 
     def test_get_cache_stats(self):
         """Test cache statistics calculation"""
-        with patch('xp.services.homekit_cache_service.ConbusOutputService'):
+        with patch("xp.services.homekit_cache_service.ConbusOutputService"):
             service = HomeKitCacheService(cache_file=str(self.temp_cache_path))
 
             # Add active entry
             service.cache["active_device"] = CacheEntry(
-                data="active_data",
-                tags=["tag1"],
-                ttl=300
+                data="active_data", tags=["tag1"], ttl=300
             )
 
             # Add expired entry

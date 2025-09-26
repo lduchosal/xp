@@ -11,7 +11,9 @@ class DatapointTypeChoice(click.ParamType):
     def __init__(self) -> None:
         self.choices = [key.lower() for key in DataPointType.__members__.keys()]
 
-    def convert(self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]) -> Any:
+    def convert(
+        self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]
+    ) -> Any:
         if value is None:
             return value
 
@@ -23,8 +25,12 @@ class DatapointTypeChoice(click.ParamType):
             return DataPointType[normalized_value.upper()]
 
         # If not found, show error with available choices
-        self.fail(f'{value!r} is not a valid choice. '
-                  f'Choose from: {", ".join(self.choices)}',
-                  param, ctx)
+        self.fail(
+            f"{value!r} is not a valid choice. "
+            f'Choose from: {", ".join(self.choices)}',
+            param,
+            ctx,
+        )
+
 
 DATAPOINT = DatapointTypeChoice()

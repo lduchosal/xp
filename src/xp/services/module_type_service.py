@@ -78,7 +78,7 @@ class ModuleTypeService:
 
     @staticmethod
     def search_modules(
-            query: str, search_fields: Optional[List[str]] = None
+        query: str, search_fields: Optional[List[str]] = None
     ) -> List[ModuleType]:
         """
         Search for module types matching a query string.

@@ -22,7 +22,12 @@ from ..utils.error_handlers import CLIErrorHandler
 global_proxy_instance: Optional[ReverseProxyService] = None
 
 
-@click.group(name="rp", cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
+@click.group(
+    name="rp",
+    cls=HelpColorsGroup,
+    help_headers_color="yellow",
+    help_options_color="green",
+)
 def reverse_proxy() -> None:
     """
     Conbus reverse proxy operations
@@ -35,7 +40,6 @@ def reverse_proxy() -> None:
     "--port", "-p", default=10001, type=int, help="Port to listen on (default: 10001)"
 )
 @click.option("--config", "-c", default="rp.yml", help="Configuration file path")
-
 @handle_service_errors(ReverseProxyError)
 def start_proxy(port: int, config: str) -> None:
     """
@@ -86,7 +90,9 @@ def start_proxy(port: int, config: str) -> None:
             global_proxy_instance.run_blocking()
 
     except ReverseProxyError as e:
-        CLIErrorHandler.handle_service_error(e, "reverse proxy startup", {"port": port, "config": config})
+        CLIErrorHandler.handle_service_error(
+            e, "reverse proxy startup", {"port": port, "config": config}
+        )
     except KeyboardInterrupt:
         shutdown_response = {
             "success": True,
@@ -96,7 +102,6 @@ def start_proxy(port: int, config: str) -> None:
 
 
 @reverse_proxy.command("stop")
-
 @handle_service_errors(ReverseProxyError)
 def stop_proxy() -> None:
     """
@@ -128,7 +133,6 @@ def stop_proxy() -> None:
 
 
 @reverse_proxy.command("status")
-
 @handle_service_errors(Exception)
 def proxy_status() -> None:
     """

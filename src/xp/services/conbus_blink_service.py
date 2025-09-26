@@ -15,6 +15,7 @@ from ..models.conbus_blink import ConbusBlinkResponse
 from ..models.system_function import SystemFunction
 from ..models.reply_telegram import ReplyTelegram
 
+
 class ConbusBlinkService:
     """
     TCP client service for sending telegrams to Conbus servers.
@@ -36,15 +37,21 @@ class ConbusBlinkService:
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-
     def __enter__(self) -> "ConbusBlinkService":
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Optional[Exception], exc_tb: Optional[Any]) -> None:
-      # Cleanup logic if needed
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[Exception],
+        exc_tb: Optional[Any],
+    ) -> None:
+        # Cleanup logic if needed
         pass
 
-    def send_blink_telegram(self, serial_number: str, on_or_off: str) -> ConbusBlinkResponse:
+    def send_blink_telegram(
+        self, serial_number: str, on_or_off: str
+    ) -> ConbusBlinkResponse:
         """
         Send blink command to start blinking module LED.
 
@@ -59,7 +66,6 @@ class ConbusBlinkService:
         if on_or_off.lower() == "on":
             system_function = SystemFunction.BLINK
 
-
         # Send blink telegram using custom method (F05D00)
         with self.conbus_service:
 
@@ -70,7 +76,11 @@ class ConbusBlinkService:
             )
 
             reply_telegram = None
-            if response.success and response.received_telegrams is not None and len(response.received_telegrams) > 0:
+            if (
+                response.success
+                and response.received_telegrams is not None
+                and len(response.received_telegrams) > 0
+            ):
                 ack_or_nak = response.received_telegrams[0]
                 parsed_telegram = self.telegram_service.parse_telegram(ack_or_nak)
                 if isinstance(parsed_telegram, ReplyTelegram):
@@ -100,7 +110,9 @@ class ConbusBlinkService:
         # to avoid connection conflicts
         with self.conbus_service:
             # First discover all devices using the same connection
-            telegram = self.discover_service.telegram_discover_service.generate_discover_telegram()
+            telegram = (
+                self.discover_service.telegram_discover_service.generate_discover_telegram()
+            )
             discover_responses = self.conbus_service.send_raw_telegram(telegram)
 
             if not discover_responses.success:
@@ -108,12 +120,18 @@ class ConbusBlinkService:
                     success=False,
                     serial_number="all",
                     operation=on_or_off,
-                    system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
+                    system_function=(
+                        SystemFunction.BLINK
+                        if on_or_off == "on"
+                        else SystemFunction.UNBLINK
+                    ),
                     error="Failed to discover devices",
                 )
 
             # Parse received telegrams to extract device information
-            discovered_devices = self.discover_service.parse_discovered_devices(discover_responses)
+            discovered_devices = self.discover_service.parse_discovered_devices(
+                discover_responses
+            )
 
             # If no devices discovered, return success with appropriate message
             if not discovered_devices:
@@ -121,14 +139,20 @@ class ConbusBlinkService:
                     success=True,
                     serial_number="all",
                     operation=on_or_off,
-                    system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
+                    system_function=(
+                        SystemFunction.BLINK
+                        if on_or_off == "on"
+                        else SystemFunction.UNBLINK
+                    ),
                     error="No devices discovered",
                 )
 
             # Send blink command to each discovered device
             all_blink_telegram = []
             for serial_number in discovered_devices:
-                blink_telegram = self.telegram_blink_service.generate_blink_telegram(serial_number, on_or_off)
+                blink_telegram = self.telegram_blink_service.generate_blink_telegram(
+                    serial_number, on_or_off
+                )
                 all_blink_telegram.append(blink_telegram)
 
             # Send all blink telegrams using the same connection
@@ -138,6 +162,10 @@ class ConbusBlinkService:
                 success=response.success,
                 serial_number="all",
                 operation=on_or_off,
-                system_function=SystemFunction.BLINK if on_or_off == "on" else SystemFunction.UNBLINK,
+                system_function=(
+                    SystemFunction.BLINK
+                    if on_or_off == "on"
+                    else SystemFunction.UNBLINK
+                ),
                 received_telegrams=response.received_telegrams,
             )

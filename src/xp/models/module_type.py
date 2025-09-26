@@ -113,7 +113,13 @@ class ModuleType:
 
 def get_all_module_types() -> List[ModuleType]:
     """Get all available module types"""
-    return [module_type for module_type in [ModuleType.from_code(code) for code in sorted(MODULE_TYPE_REGISTRY.keys())] if module_type is not None]
+    return [
+        module_type
+        for module_type in [
+            ModuleType.from_code(code) for code in sorted(MODULE_TYPE_REGISTRY.keys())
+        ]
+        if module_type is not None
+    ]
 
 
 def get_module_types_by_category() -> Dict[str, List[ModuleType]]:

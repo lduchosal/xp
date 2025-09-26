@@ -13,6 +13,7 @@ from .system_function import SystemFunction
 from .telegram import Telegram
 from .telegram_type import TelegramType
 
+
 @dataclass
 class SystemTelegram(Telegram):
     """
@@ -36,14 +37,28 @@ class SystemTelegram(Telegram):
         """Convert to dictionary for JSON serialization"""
         return {
             "serial_number": self.serial_number,
-            "system_function": {
-                "code": self.system_function.value if self.system_function else None,
-                "description": self.system_function.name if self.system_function else None,
-            } if self.system_function else None,
-            "datapoint_type": {
-                "code": self.datapoint_type.value if self.datapoint_type else None,
-                "description": self.datapoint_type.name if self.datapoint_type else None,
-            } if self.datapoint_type else None,
+            "system_function": (
+                {
+                    "code": (
+                        self.system_function.value if self.system_function else None
+                    ),
+                    "description": (
+                        self.system_function.name if self.system_function else None
+                    ),
+                }
+                if self.system_function
+                else None
+            ),
+            "datapoint_type": (
+                {
+                    "code": self.datapoint_type.value if self.datapoint_type else None,
+                    "description": (
+                        self.datapoint_type.name if self.datapoint_type else None
+                    ),
+                }
+                if self.datapoint_type
+                else None
+            ),
             "checksum": self.checksum,
             "checksum_validated": self.checksum_validated,
             "raw_telegram": self.raw_telegram,
@@ -53,7 +68,9 @@ class SystemTelegram(Telegram):
 
     def __str__(self) -> str:
         """Human-readable string representation"""
-        system_func_name = self.system_function.name if self.system_function else "Unknown"
+        system_func_name = (
+            self.system_function.name if self.system_function else "Unknown"
+        )
         data = self.data or "None"
         data = self.datapoint_type.name if self.datapoint_type else data
         return (

@@ -156,7 +156,9 @@ class TelegramDiscoverService:
         # Discover response format: <R{10-digit-serial}F01D{2-char-checksum}>
         import re
 
-        match = re.compile(r"^<R(\d{10})F01D([A-Z0-9]{2})>$").match(raw_telegram.strip())
+        match = re.compile(r"^<R(\d{10})F01D([A-Z0-9]{2})>$").match(
+            raw_telegram.strip()
+        )
 
         return match is not None
 

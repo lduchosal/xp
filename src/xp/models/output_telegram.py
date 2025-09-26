@@ -25,7 +25,9 @@ class OutputTelegram(Telegram):
     """
 
     serial_number: str = ""
-    output_number: Optional[int] = None  # 0-3 for XP24 modules, 0-2 for XP33, 0 for XP31
+    output_number: Optional[int] = (
+        None  # 0-3 for XP24 modules, 0-2 for XP33, 0 for XP31
+    )
     action_type: Optional[ActionType] = None
     system_function: SystemFunction = SystemFunction.ACTION
 
@@ -40,7 +42,11 @@ class OutputTelegram(Telegram):
             ActionType.PRESS: "Press (Make)",
             ActionType.RELEASE: "Release (Break)",
         }
-        return descriptions.get(self.action_type, "Unknown Action") if self.action_type else "Unknown Action"
+        return (
+            descriptions.get(self.action_type, "Unknown Action")
+            if self.action_type
+            else "Unknown Action"
+        )
 
     @property
     def input_description(self) -> str:

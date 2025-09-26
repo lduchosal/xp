@@ -2,7 +2,8 @@
 import click
 from typing import Any
 
-def add_tree_command(cli_group: click.Group, command_name: str = 'help') -> Any:
+
+def add_tree_command(cli_group: click.Group, command_name: str = "help") -> Any:
     """Add a tree command to any Click group"""
 
     def print_command_tree(group: click.Group, ctx: click.Context, suffix: str) -> None:
@@ -33,4 +34,3 @@ def add_tree_command(cli_group: click.Group, command_name: str = 'help') -> Any:
             print_command_tree(root, root_ctx, root_name)
 
     return tree_command
-

@@ -33,7 +33,6 @@ class TestReplyTelegram:
         assert telegram.timestamp is not None
         assert isinstance(telegram.timestamp, datetime)
 
-
     def test_reply_telegram_creation(self):
         """Test basic reply telegram creation."""
         telegram = ReplyTelegram(

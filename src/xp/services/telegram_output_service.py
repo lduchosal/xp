@@ -143,7 +143,6 @@ class TelegramOutputService:
         # Return complete telegram
         return f"<{data_part}{checksum}>"
 
-
     def parse_reply_telegram(self, raw_telegram: str) -> OutputTelegram:
         """
         Parse a raw XP output response telegram string.
@@ -163,7 +162,9 @@ class TelegramOutputService:
         # Validate and parse using regex
         match = self.XP_ACK_NAK_PATTERN.match(raw_telegram.strip())
         if not match:
-            raise XPOutputError(f"Invalid XP24 response telegram format: {raw_telegram}")
+            raise XPOutputError(
+                f"Invalid XP24 response telegram format: {raw_telegram}"
+            )
 
         try:
             serial_number = match.group(1)
@@ -184,13 +185,14 @@ class TelegramOutputService:
             )
 
             # Validate checksum
-            telegram.checksum_validated = self.telegram_service.validate_checksum(telegram)
+            telegram.checksum_validated = self.telegram_service.validate_checksum(
+                telegram
+            )
 
             return telegram
 
         except ValueError as e:
             raise XPOutputError(f"Invalid values in XP24 action telegram: {e}")
-
 
     def parse_system_telegram(self, raw_telegram: str) -> OutputTelegram:
         """
@@ -237,7 +239,9 @@ class TelegramOutputService:
             )
 
             # Validate checksum
-            telegram.checksum_validated = self.telegram_service.validate_checksum(telegram)
+            telegram.checksum_validated = self.telegram_service.validate_checksum(
+                telegram
+            )
 
             return telegram
 

@@ -3,6 +3,7 @@
 This service handles generation and parsing of link number system telegrams
 used for setting and reading module link numbers.
 """
+
 from contextlib import suppress
 from typing import Optional
 from ..models.system_telegram import SystemTelegram
@@ -31,9 +32,7 @@ class LinkNumberService:
         pass
 
     @staticmethod
-    def generate_set_link_number_telegram(
-            serial_number: str, link_number: int
-    ) -> str:
+    def generate_set_link_number_telegram(serial_number: str, link_number: int) -> str:
         """
         Generate a telegram to set a module's link number.
 
@@ -178,9 +177,7 @@ class LinkNumberService:
         return telegram
 
     @staticmethod
-    def parse_link_number_from_reply(
-            reply_telegram: ReplyTelegram
-    ) -> Optional[int]:
+    def parse_link_number_from_reply(reply_telegram: ReplyTelegram) -> Optional[int]:
         """
         Parse the link number value from a reply telegram.
 

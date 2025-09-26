@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 
 
-
 @dataclass
 class ConbusLinknumberResponse:
     """Represents a response from Conbus link number operations (set/get)"""

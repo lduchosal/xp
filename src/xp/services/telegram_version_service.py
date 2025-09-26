@@ -147,8 +147,8 @@ class VersionService:
         """
         try:
             is_version_request = (
-                    telegram.system_function == SystemFunction.READ_DATAPOINT
-                    and telegram.datapoint_type == DataPointType.SW_VERSION
+                telegram.system_function == SystemFunction.READ_DATAPOINT
+                and telegram.datapoint_type == DataPointType.SW_VERSION
             )
 
             return Response(
@@ -162,10 +162,20 @@ class VersionService:
                         else None
                     ),
                     "data_point": (
-                        telegram.datapoint_type.value if telegram.datapoint_type else None
+                        telegram.datapoint_type.value
+                        if telegram.datapoint_type
+                        else None
                     ),
-                    "function_description": telegram.system_function.name if telegram.system_function else None,
-                    "data_point_description": telegram.datapoint_type.name if telegram.datapoint_type else None,
+                    "function_description": (
+                        telegram.system_function.name
+                        if telegram.system_function
+                        else None
+                    ),
+                    "data_point_description": (
+                        telegram.datapoint_type.name
+                        if telegram.datapoint_type
+                        else None
+                    ),
                 },
                 error=None,
             )

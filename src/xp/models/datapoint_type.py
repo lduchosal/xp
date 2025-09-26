@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Optional
 
+
 class DataPointType(str, Enum):
     """Data point types for system telegrams"""
 
@@ -48,4 +49,3 @@ class DataPointType(str, Enum):
             if dp_type.value == code:
                 return dp_type
         return None
-

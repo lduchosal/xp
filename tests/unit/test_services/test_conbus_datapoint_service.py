@@ -67,6 +67,7 @@ class TestServiceInitialization(TestConbusService):
         assert service.config.port == 10001
         assert service.config.timeout == 0.1
 
+
 class TestConnectionManagement(TestConbusService):
     """Test connection establishment and management"""
 
@@ -110,7 +111,9 @@ class TestConnectionManagement(TestConbusService):
         """Test connection error handling"""
         mock_pool_instance = MagicMock()
         mock_pool_class.get_instance.return_value = mock_pool_instance
-        mock_pool_instance.__enter__.side_effect = ConnectionRefusedError("Connection refused")
+        mock_pool_instance.__enter__.side_effect = ConnectionRefusedError(
+            "Connection refused"
+        )
 
         # Replace the service's connection pool with our mock
         service._connection_pool = mock_pool_instance
@@ -170,6 +173,7 @@ class TestConnectionManagement(TestConbusService):
         assert service.is_connected is False
         assert service.socket is None
 
+
 class TestConnectionStatus(TestConbusService):
     """Test connection status functionality"""
 
@@ -224,4 +228,3 @@ class TestErrorHandling(TestConbusService):
         responses = service._receive_responses()
 
         assert responses == []
-

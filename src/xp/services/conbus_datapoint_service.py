@@ -41,14 +41,18 @@ class ConbusDatapointService:
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def query_datapoint(self, datapoint_type: DataPointType, serial_number: str) -> ConbusDatapointResponse:
+    def query_datapoint(
+        self, datapoint_type: DataPointType, serial_number: str
+    ) -> ConbusDatapointResponse:
         """Send a telegram to the Conbus server"""
 
         system_function = SystemFunction.READ_DATAPOINT
         datapoint_code = datapoint_type.value
 
         # Send telegram
-        response = self.conbus_service.send_telegram(serial_number, system_function, datapoint_code)
+        response = self.conbus_service.send_telegram(
+            serial_number, system_function, datapoint_code
+        )
         datapoint_telegram: Optional[ReplyTelegram] = None
         if (
             response.received_telegrams is not None
@@ -62,15 +66,15 @@ class ConbusDatapointService:
                 self.logger.debug(f"Not a reply telegram {e}")
 
         return ConbusDatapointResponse(
-                success=response.success,
-                serial_number=serial_number,
-                system_function=system_function,
-                datapoint_type=datapoint_type,
-                sent_telegram=response.sent_telegram,
-                received_telegrams=response.received_telegrams,
-                datapoint_telegram=datapoint_telegram,
-                error=response.error,
-            )
+            success=response.success,
+            serial_number=serial_number,
+            system_function=system_function,
+            datapoint_type=datapoint_type,
+            sent_telegram=response.sent_telegram,
+            received_telegrams=response.received_telegrams,
+            datapoint_telegram=datapoint_telegram,
+            error=response.error,
+        )
 
     def query_all_datapoints(self, serial_number: str) -> ConbusDatapointResponse:
         """Query all available datapoints for a given serial number"""
@@ -116,10 +120,14 @@ class ConbusDatapointService:
             datapoints=datapoints,
         )
 
-    def __enter__(self) -> 'ConbusDatapointService':
+    def __enter__(self) -> "ConbusDatapointService":
         return self
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: object | None) -> None:
-      # Cleanup logic if needed
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: object | None,
+    ) -> None:
+        # Cleanup logic if needed
         pass
-

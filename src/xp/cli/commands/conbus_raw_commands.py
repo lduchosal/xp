@@ -45,6 +45,10 @@ def send_raw_telegrams(raw_telegrams: str) -> None:
             click.echo(f"Error: {response.error}", err=True)
 
     except ConbusRawError as e:
-        CLIErrorHandler.handle_service_error(e, "raw telegram send", {
-            "raw_telegrams": raw_telegrams,
-        })
+        CLIErrorHandler.handle_service_error(
+            e,
+            "raw telegram send",
+            {
+                "raw_telegrams": raw_telegrams,
+            },
+        )

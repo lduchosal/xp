@@ -10,9 +10,9 @@ from ..utils.error_handlers import CLIErrorHandler
 from ..utils.serial_number_type import SERIAL
 from .telegram import telegram
 
+
 @telegram.command("version")
 @click.argument("serial_number", type=SERIAL)
-
 @handle_service_errors(VersionParsingError)
 def generate_version_request(serial_number: str) -> None:
     """
@@ -39,5 +39,6 @@ def generate_version_request(serial_number: str) -> None:
         click.echo(json.dumps(result.to_dict(), indent=2))
 
     except VersionParsingError as e:
-        CLIErrorHandler.handle_service_error(e, "version request generation", {"serial_number": serial_number})
-
+        CLIErrorHandler.handle_service_error(
+            e, "version request generation", {"serial_number": serial_number}
+        )

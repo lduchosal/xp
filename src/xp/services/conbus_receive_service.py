@@ -13,6 +13,7 @@ from ..models.conbus_receive import ConbusReceiveResponse
 
 class ConbusReceiveError(ConbusError):
     """Raised when Conbus receive operations fail"""
+
     pass
 
 
@@ -62,9 +63,14 @@ class ConbusReceiveService:
                 error=error_msg,
             )
 
-    def __enter__(self) -> 'ConbusReceiveService':
+    def __enter__(self) -> "ConbusReceiveService":
         """Context manager entry"""
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> None:
         """Context manager exit - ensure connection is closed"""

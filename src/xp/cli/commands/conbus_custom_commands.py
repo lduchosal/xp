@@ -39,13 +39,19 @@ def send_custom_telegram(
 
     try:
         with service:
-            response = service.send_custom_telegram(serial_number, function_code, datapoint_code)
+            response = service.send_custom_telegram(
+                serial_number, function_code, datapoint_code
+            )
 
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     except ConbusDatapointError as e:
-        CLIErrorHandler.handle_service_error(e, "custom telegram send", {
-            "serial_number": serial_number,
-            "function_code": function_code,
-            "datapoint_code": datapoint_code,
-        })
+        CLIErrorHandler.handle_service_error(
+            e,
+            "custom telegram send",
+            {
+                "serial_number": serial_number,
+                "function_code": function_code,
+                "datapoint_code": datapoint_code,
+            },
+        )

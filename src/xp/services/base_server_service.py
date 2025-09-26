@@ -55,7 +55,6 @@ class BaseServerService(ABC):
         """Check if request is for this device (including broadcast)"""
         return request.serial_number in (self.serial_number, "0000000000")
 
-
     @staticmethod
     def _build_response_telegram(data_part: str) -> str:
         """Build a complete response telegram with checksum"""
@@ -163,13 +162,17 @@ class BaseServerService(ABC):
 
     def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
         """Handle RETURN_DATA requests - can be overridden by subclasses"""
-        self.logger.warning(f"_handle_return_data_request {self.device_type} request: {request}")
+        self.logger.warning(
+            f"_handle_return_data_request {self.device_type} request: {request}"
+        )
         if request.datapoint_type == DataPointType.SW_VERSION:
             return self.generate_version_response(request)
         elif request.datapoint_type == DataPointType.MODULE_TYPE:
             return self.generate_status_response(request, DataPointType.MODULE_TYPE)
         elif request.datapoint_type == DataPointType.MODULE_ERROR_CODE:
-            return self.generate_status_response(request, DataPointType.MODULE_ERROR_CODE)
+            return self.generate_status_response(
+                request, DataPointType.MODULE_ERROR_CODE
+            )
         elif request.datapoint_type == DataPointType.LINK_NUMBER:
             return self.generate_link_number_response(request)
         elif request.datapoint_type == DataPointType.MODULE_TYPE_CODE:
@@ -195,12 +198,13 @@ class BaseServerService(ABC):
         """Handle ACTION requests"""
         return self._handle_device_specific_action_request(request)
 
-    def _handle_device_specific_action_request(self, request: SystemTelegram) -> Optional[str]:
+    def _handle_device_specific_action_request(
+        self, request: SystemTelegram
+    ) -> Optional[str]:
         """Override in subclasses for device-specific data requests"""
         return None
 
     @staticmethod
-    def _handle_device_specific_config_request(
-    ) -> Optional[str]:
+    def _handle_device_specific_config_request() -> Optional[str]:
         """Override in subclasses for device-specific config requests"""
         return None

@@ -51,7 +51,6 @@ class XP24ServerService(BaseServerService):
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-
         """Handle XP24-specific data requests"""
         if request.system_function != SystemFunction.READ_DATAPOINT:
             return None
@@ -66,14 +65,13 @@ class XP24ServerService(BaseServerService):
         return None
 
     def _handle_device_specific_action_request(
-            self, request: SystemTelegram
-        ) -> Optional[str]:
+        self, request: SystemTelegram
+    ) -> Optional[str]:
 
         if request.system_function != SystemFunction.ACTION:
             return None
 
         return self.generate_action_response(request)
-
 
     def get_device_info(self) -> Dict:
         """Get XP24 device information"""
@@ -85,7 +83,9 @@ class XP24ServerService(BaseServerService):
             "link_number": self.link_number,
         }
 
-    def generate_module_output_state_response(self, request: SystemTelegram) -> Optional[str]:
+    def generate_module_output_state_response(
+        self, request: SystemTelegram
+    ) -> Optional[str]:
         """Generate module output state response telegram (simulated)"""
         if (
             request.system_function == SystemFunction.READ_DATAPOINT
@@ -101,13 +101,13 @@ class XP24ServerService(BaseServerService):
 
     def generate_action_response(self, request: SystemTelegram) -> Optional[str]:
         """Generate action response telegram (simulated)"""
-        response = "F19D" # NAK
+        response = "F19D"  # NAK
         if (
             request.system_function == SystemFunction.ACTION
-                and request.data[:2] in ("00", "01", "02", "03")
-                and request.data[2:] in ("AA", "AB")
+            and request.data[:2] in ("00", "01", "02", "03")
+            and request.data[2:] in ("AA", "AB")
         ):
-            response = "F18D" # ACK
+            response = "F18D"  # ACK
 
         data_part = f"R{self.serial_number}{response}"
         telegram = self._build_response_telegram(data_part)
@@ -120,7 +120,7 @@ class XP24ServerService(BaseServerService):
             request.system_function == SystemFunction.READ_DATAPOINT
             and request.datapoint_type == DataPointType.MODULE_STATE
         ):
-            module_state = "OFF" # ON
+            module_state = "OFF"  # ON
             data_part = f"R{self.serial_number}F02D09{module_state}"
             telegram = self._build_response_telegram(data_part)
             self._log_response("module_output_state", telegram)

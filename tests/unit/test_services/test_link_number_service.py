@@ -96,7 +96,9 @@ class TestLinkNumberService:
 
     def test_create_set_link_number_telegram_object(self):
         """Test creating SystemTelegram object for set operation"""
-        telegram = LinkNumberService().create_set_link_number_telegram_object("0012345005", 25)
+        telegram = LinkNumberService().create_set_link_number_telegram_object(
+            "0012345005", 25
+        )
 
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0012345005"
@@ -107,7 +109,9 @@ class TestLinkNumberService:
 
     def test_create_read_link_number_telegram_object(self):
         """Test creating SystemTelegram object for read operation"""
-        telegram = LinkNumberService().create_read_link_number_telegram_object("0012345005")
+        telegram = LinkNumberService().create_read_link_number_telegram_object(
+            "0012345005"
+        )
 
         assert isinstance(telegram, SystemTelegram)
         assert telegram.serial_number == "0012345005"

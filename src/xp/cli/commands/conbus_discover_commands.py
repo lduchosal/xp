@@ -34,4 +34,3 @@ def send_discover_telegram() -> None:
         response = service.send_discover_telegram()
 
     click.echo(json.dumps(response.to_dict(), indent=2))
-

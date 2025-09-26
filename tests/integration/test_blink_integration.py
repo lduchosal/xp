@@ -160,13 +160,13 @@ class TestBlinkIntegration:
             blink_telegram_str = blink_service.generate_blink_telegram(serial, "on")
             parsed_blink = telegram_service.parse_system_telegram(blink_telegram_str)
 
-            assert parsed_blink.checksum_validated is True, (
-                f"Blink checksum failed for serial {serial}"
-            )
+            assert (
+                parsed_blink.checksum_validated is True
+            ), f"Blink checksum failed for serial {serial}"
             is_valid_blink = telegram_service.validate_checksum(parsed_blink)
-            assert is_valid_blink is True, (
-                f"Manual blink checksum validation failed for serial {serial}"
-            )
+            assert (
+                is_valid_blink is True
+            ), f"Manual blink checksum validation failed for serial {serial}"
 
             # Test unblink telegram
             unblink_telegram_str = blink_service.generate_blink_telegram(serial, "off")
@@ -174,13 +174,13 @@ class TestBlinkIntegration:
                 unblink_telegram_str
             )
 
-            assert parsed_unblink.checksum_validated is True, (
-                f"Unblink checksum failed for serial {serial}"
-            )
+            assert (
+                parsed_unblink.checksum_validated is True
+            ), f"Unblink checksum failed for serial {serial}"
             is_valid_unblink = telegram_service.validate_checksum(parsed_unblink)
-            assert is_valid_unblink is True, (
-                f"Manual unblink checksum validation failed for serial {serial}"
-            )
+            assert (
+                is_valid_unblink is True
+            ), f"Manual unblink checksum validation failed for serial {serial}"
 
     def test_error_handling_integration(self):
         """Test error handling across services"""
@@ -203,7 +203,9 @@ class TestBlinkIntegration:
         parsed_blink = telegram_service.parse_system_telegram(valid_blink_telegram)
         assert parsed_blink is not None
 
-        valid_unblink_telegram = blink_service.generate_blink_telegram("0012345011", "off")
+        valid_unblink_telegram = blink_service.generate_blink_telegram(
+            "0012345011", "off"
+        )
         parsed_unblink = telegram_service.parse_system_telegram(valid_unblink_telegram)
         assert parsed_unblink is not None
 

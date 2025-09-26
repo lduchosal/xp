@@ -223,7 +223,7 @@ class TestLogFileService:
         result = service.validate_log_format("/path/to/log.txt")
         assert result is False
 
-    @patch.object(LogFileService, 'parse_log_file')
+    @patch.object(LogFileService, "parse_log_file")
     def test_extract_telegrams(self, mock_parse):
         """Test extracting telegrams from log file"""
         service = LogFileService()
@@ -339,7 +339,9 @@ class TestLogFileService:
             Mock(telegram_type="event"),
         ]
 
-        result = service.filter_entries(cast(list[LogEntry], entries), telegram_type="event")
+        result = service.filter_entries(
+            cast(list[LogEntry], entries), telegram_type="event"
+        )
         assert len(result) == 2
         assert all(entry.telegram_type == "event" for entry in result)
 
@@ -410,7 +412,10 @@ class TestLogFileService:
         # Filter for event telegrams, TX direction, after 22:44:22
         start_time = base_time.replace(second=22)
         result = service.filter_entries(
-            cast(list[LogEntry], entries), telegram_type="event", direction="TX", start_time=start_time
+            cast(list[LogEntry], entries),
+            telegram_type="event",
+            direction="TX",
+            start_time=start_time,
         )
 
         assert len(result) == 1  # Only the last entry matches all criteria

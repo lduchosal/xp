@@ -193,18 +193,29 @@ class ReplyTelegram(Telegram):
 
         return {
             "serial_number": self.serial_number,
-            "system_function": {
-                "code": self.system_function.value if self.system_function else None,
-                "description": self.system_function.name if self.system_function else None,
-            } if self.system_function else None,
-            "datapoint_type": {
-                "code": self.datapoint_type.value if self.datapoint_type else None,
-                "description": self.datapoint_type.name if self.datapoint_type else None,
-            } if self.datapoint_type else None,
-            "data_value": {
-                "raw": self.data_value,
-                "parsed": parsed_data
-            },
+            "system_function": (
+                {
+                    "code": (
+                        self.system_function.value if self.system_function else None
+                    ),
+                    "description": (
+                        self.system_function.name if self.system_function else None
+                    ),
+                }
+                if self.system_function
+                else None
+            ),
+            "datapoint_type": (
+                {
+                    "code": self.datapoint_type.value if self.datapoint_type else None,
+                    "description": (
+                        self.datapoint_type.name if self.datapoint_type else None
+                    ),
+                }
+                if self.datapoint_type
+                else None
+            ),
+            "data_value": {"raw": self.data_value, "parsed": parsed_data},
             "checksum": self.checksum,
             "checksum_validated": self.checksum_validated,
             "raw_telegram": self.raw_telegram,
@@ -220,7 +231,9 @@ class ReplyTelegram(Telegram):
         else:
             value_display = self.data_value
 
-        system_func_name = self.system_function.name if self.system_function else "Unknown"
+        system_func_name = (
+            self.system_function.name if self.system_function else "Unknown"
+        )
         datapoint_name = self.datapoint_type.name if self.datapoint_type else "Unknown"
         return (
             f"Reply Telegram: {system_func_name}\n "

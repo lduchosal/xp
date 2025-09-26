@@ -8,7 +8,8 @@ import logging
 
 from .conbus_service import ConbusService
 from ..models import (
-    ConbusDiscoverResponse, ConbusResponse,
+    ConbusDiscoverResponse,
+    ConbusResponse,
 )
 from ..services.telegram_discover_service import TelegramDiscoverService
 from ..services.telegram_service import TelegramService
@@ -68,19 +69,25 @@ class ConbusDiscoverService:
                     # Parse telegram using TelegramService
                     telegram_result = self.telegram_service.parse_telegram(telegram_str)
                     # Only process telegrams that have a serial_number attribute
-                    if hasattr(telegram_result, 'serial_number'):
+                    if hasattr(telegram_result, "serial_number"):
                         discovered_devices.append(telegram_result.serial_number)
 
                 except Exception as e:
-                    self.logger.warning(f"Failed to parse telegram '{telegram_str}': {e}")
+                    self.logger.warning(
+                        f"Failed to parse telegram '{telegram_str}': {e}"
+                    )
                     continue
         return discovered_devices
 
-    def __enter__(self) -> 'ConbusDiscoverService':
+    def __enter__(self) -> "ConbusDiscoverService":
         return self
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: object | None) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: object | None,
+    ) -> None:
         # Cleanup logic if needed
         self.conbus_service.disconnect()
         pass
-

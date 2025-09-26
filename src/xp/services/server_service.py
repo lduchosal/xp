@@ -44,7 +44,13 @@ class ServerService:
         self.is_running = False
         self.devices: List[ConsonModuleConfig] = []
         self.device_services: Dict[
-            str, Union[BaseServerService, XP33ServerService, XP20ServerService, XP130ServerService]
+            str,
+            Union[
+                BaseServerService,
+                XP33ServerService,
+                XP20ServerService,
+                XP130ServerService,
+            ],
         ] = {}  # serial -> device service instance
         self.telegram_service = TelegramService()
         self.discover_service = TelegramDiscoverService()
@@ -143,7 +149,9 @@ class ServerService:
 
             self.is_running = True
             self.logger.info(f"Conbus emulator server started on port {self.port}")
-            self.logger.info(f"Configured devices: {list([device.serial_number for device in self.devices])}")
+            self.logger.info(
+                f"Configured devices: {list([device.serial_number for device in self.devices])}"
+            )
 
             # Start accepting connections
             self._accept_connections()
@@ -188,7 +196,9 @@ class ServerService:
                     self.logger.error(f"Error accepting connection: {e}")
                 break
 
-    def _handle_client(self, client_socket: socket.socket, client_address: tuple[str, int]) -> None:
+    def _handle_client(
+        self, client_socket: socket.socket, client_address: tuple[str, int]
+    ) -> None:
         """Handle individual client connection"""
         try:
             # Set timeout for idle connections (30 seconds as per spec)
@@ -247,8 +257,8 @@ class ServerService:
                 # If broadcast (0000000000), respond from all devices
                 if serial_number == "0000000000":
                     for device_service in self.device_services.values():
-                        broadcast_response: Optional[str] = device_service.process_system_telegram(
-                            parsed_telegram
+                        broadcast_response: Optional[str] = (
+                            device_service.process_system_telegram(parsed_telegram)
                         )
                         if broadcast_response:
                             responses.extend(broadcast_response)
@@ -257,8 +267,8 @@ class ServerService:
                 else:
                     if serial_number in self.device_services:
                         device_service = self.device_services[serial_number]
-                        device_response: Optional[str] = device_service.process_system_telegram(
-                            parsed_telegram
+                        device_response: Optional[str] = (
+                            device_service.process_system_telegram(parsed_telegram)
                         )
                         if device_response:
                             responses.extend(device_response)

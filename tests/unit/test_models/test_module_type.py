@@ -86,7 +86,6 @@ class TestModuleType:
         ir_capable3 = ModuleType.from_code(15)  # XP2606A
         not_ir_capable = ModuleType.from_code(14)  # XP2606
 
-
         assert ir_capable1 is not None
         assert ir_capable2 is not None
         assert ir_capable3 is not None

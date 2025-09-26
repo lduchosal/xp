@@ -15,14 +15,13 @@ from ..utils.decorators import (
 )
 from .conbus import conbus_output
 
+
 @conbus_output.command("on")
 @click.argument("serial_number", type=SERIAL)
 @click.argument("output_number", type=int)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def xp_output_on(
-    serial_number: str, output_number: int
-) -> None:
+def xp_output_on(serial_number: str, output_number: int) -> None:
     """Send ON command for output_number XP module serial_number
 
     Examples:
@@ -37,14 +36,13 @@ def xp_output_on(
         response = service.send_action(serial_number, output_number, ActionType.RELEASE)
         click.echo(json.dumps(response.to_dict(), indent=2))
 
+
 @conbus_output.command("off")
 @click.argument("serial_number", type=SERIAL)
 @click.argument("output_number", type=int)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def xp_output_off(
-    serial_number: str, output_number: int
-) -> None:
+def xp_output_off(serial_number: str, output_number: int) -> None:
     """Send OFF command for output_number XP module serial_number
 
     Examples:
@@ -59,13 +57,12 @@ def xp_output_off(
         response = service.send_action(serial_number, output_number, ActionType.PRESS)
         click.echo(json.dumps(response.to_dict(), indent=2))
 
+
 @conbus_output.command("status")
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def xp_output_status(
-    serial_number: str
-) -> None:
+def xp_output_status(serial_number: str) -> None:
     """Query output state command to XP module serial_number.
 
     Examples:
@@ -85,9 +82,7 @@ def xp_output_status(
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def xp_module_state(
-    serial_number: str
-) -> None:
+def xp_module_state(serial_number: str) -> None:
     """Query module state of the XP module serial_number
 
     Examples:

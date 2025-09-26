@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
 
+
 @dataclass
 class ConbusDiscoverResponse:
     """Represents a response from Conbus send operation"""

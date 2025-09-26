@@ -17,17 +17,19 @@ class SystemFunction(str, Enum):
 
     def get_description(self) -> str:
         """Get the description of the SystemFunction"""
-        return ({
-            self.DISCOVERY: "Discover function",
-            self.READ_DATAPOINT: "Read datapoint",
-            self.READ_CONFIG: "Read configuration",
-            self.WRITE_CONFIG: "Write configuration",
-            self.BLINK: "Blink LED function",
-            self.UNBLINK: "Unblink LED function",
-            self.ACK: "Acknowledge response",
-            self.NAK: "Not acknowledge response",
-            self.ACTION: "Action function",
-        }).get(self, "Unknown function")
+        return (
+            {
+                self.DISCOVERY: "Discover function",
+                self.READ_DATAPOINT: "Read datapoint",
+                self.READ_CONFIG: "Read configuration",
+                self.WRITE_CONFIG: "Write configuration",
+                self.BLINK: "Blink LED function",
+                self.UNBLINK: "Unblink LED function",
+                self.ACK: "Acknowledge response",
+                self.NAK: "Not acknowledge response",
+                self.ACTION: "Action function",
+            }
+        ).get(self, "Unknown function")
 
     @classmethod
     def from_code(cls, code: str) -> Optional["SystemFunction"]:

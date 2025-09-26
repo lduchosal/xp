@@ -8,5 +8,5 @@ __all__ = [
     "calculate_checksum",
     "parse_log_timestamp",
     "TimeParsingError",
-    "get_first_response"
+    "get_first_response",
 ]

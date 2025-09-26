@@ -64,7 +64,9 @@ class TestXP24ActionService:
         """Test generate_action_telegram for PRESS action."""
         mock_checksum.return_value = "FN"
 
-        result = self.service.generate_system_action_telegram("0012345008", 0, ActionType.PRESS)
+        result = self.service.generate_system_action_telegram(
+            "0012345008", 0, ActionType.PRESS
+        )
 
         assert result == "<S0012345008F27D00AAFN>"
         mock_checksum.assert_called_once_with("S0012345008F27D00AA")
@@ -89,7 +91,9 @@ class TestXP24ActionService:
     def test_generate_action_telegram_invalid_input(self):
         """Test generate_action_telegram with invalid input number."""
         with pytest.raises(XPOutputError):
-            self.service.generate_system_action_telegram("0012345008", 500, ActionType.PRESS)
+            self.service.generate_system_action_telegram(
+                "0012345008", 500, ActionType.PRESS
+            )
 
     def test_generate_status_telegram_invalid_serial(self):
         """Test generate_status_telegram with invalid serial number."""
@@ -110,12 +114,18 @@ class TestXP24ActionService:
 
     def test_parse_action_telegram_invalid_input_range(self):
         """Test parse_action_telegram with invalid input number."""
-        with pytest.raises(XPOutputError, match="Invalid XP24 action telegram format: <S0012345008F27D500AAFN>"):
+        with pytest.raises(
+            XPOutputError,
+            match="Invalid XP24 action telegram format: <S0012345008F27D500AAFN>",
+        ):
             self.service.parse_system_telegram("<S0012345008F27D500AAFN>")
 
     def test_parse_action_telegram_invalid_action_code(self):
         """Test parse_action_telegram with invalid action code."""
-        with pytest.raises(XPOutputError, match="Invalid XP24 action telegram format: <S0012345008F27D01XXFN>"):
+        with pytest.raises(
+            XPOutputError,
+            match="Invalid XP24 action telegram format: <S0012345008F27D01XXFN>",
+        ):
             self.service.parse_system_telegram("<S0012345008F27D01XXFN>")
 
     # Checksum validation tests

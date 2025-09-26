@@ -41,7 +41,10 @@ class ConbusScanService:
         self.logger = logging.getLogger(__name__)
 
     def scan_module(
-        self, serial_number: str, function_code: str, progress_callback: Optional[Callable[[ConbusResponse, int, int], Any]] = None
+        self,
+        serial_number: str,
+        function_code: str,
+        progress_callback: Optional[Callable[[ConbusResponse, int, int], Any]] = None,
     ) -> List[ConbusResponse]:
         """Scan all functions and datapoints for a module with live output"""
         results = []
@@ -85,7 +88,12 @@ class ConbusScanService:
 
         return results
 
-    def scan_module_background(self, serial_number: str, function_code: str, progress_callback: Optional[Callable[[ConbusResponse, int, int], Any]] = None) -> threading.Thread:
+    def scan_module_background(
+        self,
+        serial_number: str,
+        function_code: str,
+        progress_callback: Optional[Callable[[ConbusResponse, int, int], Any]] = None,
+    ) -> threading.Thread:
         """Scan module in background with immediate output via callback"""
         import threading
 
@@ -98,9 +106,14 @@ class ConbusScanService:
 
         return scan_thread
 
-    def __enter__(self) -> 'ConbusScanService':
+    def __enter__(self) -> "ConbusScanService":
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
-      # Cleanup logic if needed
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> None:
+        # Cleanup logic if needed
         pass

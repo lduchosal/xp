@@ -21,9 +21,9 @@ class ConsonModuleListConfig(BaseModel):
     root: List[ConsonModuleConfig]
 
     @classmethod
-    def from_yaml(cls, file_path: str) -> 'ConsonModuleListConfig':
+    def from_yaml(cls, file_path: str) -> "ConsonModuleListConfig":
         import yaml
-        with Path(file_path).open('r') as file:
+
+        with Path(file_path).open("r") as file:
             data = yaml.safe_load(file)
         return cls(root=data)
-

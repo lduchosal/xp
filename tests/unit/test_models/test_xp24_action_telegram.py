@@ -138,18 +138,15 @@ class TestXP24ActionTelegram:
         )
 
         expected = {
-           "serial_number": "0012345008",
-           "system_function": SystemFunction.ACTION,
-           "output_number": 1,
-           "input_description": "Input 1",
-           "action_type": {
-               "code": "AA",
-               "description": "Press (Make)"
-           },
-           "checksum": "FN",
-           "checksum_validated": True,
-           "raw_telegram": "<S0012345008F27D01AAFN>",
-           "timestamp": "2023-01-01T12:00:00"
+            "serial_number": "0012345008",
+            "system_function": SystemFunction.ACTION,
+            "output_number": 1,
+            "input_description": "Input 1",
+            "action_type": {"code": "AA", "description": "Press (Make)"},
+            "checksum": "FN",
+            "checksum_validated": True,
+            "raw_telegram": "<S0012345008F27D01AAFN>",
+            "timestamp": "2023-01-01T12:00:00",
         }
         assert telegram.to_dict() == expected
 

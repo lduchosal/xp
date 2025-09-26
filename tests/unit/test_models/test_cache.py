@@ -40,7 +40,7 @@ class TestCacheEntry:
 
         # Mock timestamp to be 2 seconds ago
         past_time = datetime.now() - timedelta(seconds=2)
-        with patch.object(entry, 'timestamp', past_time):
+        with patch.object(entry, "timestamp", past_time):
             assert entry.is_expired()
 
     def test_cache_entry_never_expires_with_zero_ttl(self):
@@ -49,7 +49,7 @@ class TestCacheEntry:
 
         # Mock timestamp to be very old
         old_time = datetime.now() - timedelta(hours=24)
-        with patch.object(entry, 'timestamp', old_time):
+        with patch.object(entry, "timestamp", old_time):
             assert not entry.is_expired()
 
     def test_cache_entry_never_expires_with_negative_ttl(self):
@@ -58,7 +58,7 @@ class TestCacheEntry:
 
         # Mock timestamp to be very old
         old_time = datetime.now() - timedelta(hours=24)
-        with patch.object(entry, 'timestamp', old_time):
+        with patch.object(entry, "timestamp", old_time):
             assert not entry.is_expired()
 
     def test_cache_entry_to_dict(self):
@@ -79,7 +79,7 @@ class TestCacheEntry:
             "data": "test_data",
             "tags": ["tag1", "tag2"],
             "ttl": 600,
-            "timestamp": test_timestamp.isoformat()
+            "timestamp": test_timestamp.isoformat(),
         }
 
         entry = CacheEntry.from_dict(data)
@@ -91,11 +91,7 @@ class TestCacheEntry:
 
     def test_cache_entry_round_trip_serialization(self):
         """Test cache entry can be serialized and deserialized"""
-        original_entry = CacheEntry(
-            data="test_data",
-            tags=["tag1", "tag2"],
-            ttl=600
-        )
+        original_entry = CacheEntry(data="test_data", tags=["tag1", "tag2"], ttl=600)
 
         # Convert to dict and back
         data_dict = original_entry.to_dict()
@@ -130,11 +126,7 @@ class TestCacheResponse:
 
     def test_create_cache_response_with_error(self):
         """Test creating a cache response with error"""
-        response = CacheResponse(
-            data=None,
-            hit=False,
-            error="Device not found"
-        )
+        response = CacheResponse(data=None, hit=False, error="Device not found")
 
         assert response.data is None
         assert response.hit is False
@@ -143,11 +135,7 @@ class TestCacheResponse:
 
     def test_cache_response_to_dict(self):
         """Test converting cache response to dictionary"""
-        result = CacheResponse(
-            data="test_data",
-            hit=True,
-            error="test_error"
-        ).to_dict()
+        result = CacheResponse(data="test_data", hit=True, error="test_error").to_dict()
 
         assert result["data"] == "test_data"
         assert result["hit"] is True

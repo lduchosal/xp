@@ -32,13 +32,9 @@ class TelegramService:
         r"^<([EO])(\d{1,2})L(\d{2})I(\d{2})([MB])([A-Z0-9]{2})>$"
     )
 
-    SYSTEM_TELEGRAM_PATTERN = re.compile(
-        r"^<S(\d{10})F(\d{2})D(.{2,})([A-Z0-9]{2})>$"
-    )
+    SYSTEM_TELEGRAM_PATTERN = re.compile(r"^<S(\d{10})F(\d{2})D(.{2,})([A-Z0-9]{2})>$")
 
-    REPLY_TELEGRAM_PATTERN = re.compile(
-        r"^<R(\d{10})F(\d{2})(.+?)([A-Z0-9]{2})>$"
-    )
+    REPLY_TELEGRAM_PATTERN = re.compile(r"^<R(\d{10})F(\d{2})(.+?)([A-Z0-9]{2})>$")
 
     def __init__(self) -> None:
         """Initialize the telegram service"""
@@ -79,7 +75,6 @@ class TelegramService:
                     f"Event telegram type (E or O): {event_telegram_type}"
                 )
 
-
             if not (0 <= link_number <= 99):
                 raise TelegramParsingError(
                     f"Link number out of range (0-99): {link_number}"
@@ -115,7 +110,9 @@ class TelegramService:
             raise TelegramParsingError(f"Invalid numeric values in telegram: {e}")
 
     @staticmethod
-    def validate_checksum(telegram: Union[EventTelegram, ReplyTelegram, SystemTelegram, OutputTelegram]) -> bool:
+    def validate_checksum(
+        telegram: Union[EventTelegram, ReplyTelegram, SystemTelegram, OutputTelegram]
+    ) -> bool:
         """
         Validate the checksum of a parsed telegram.
 
@@ -309,7 +306,9 @@ class TelegramService:
             raise TelegramParsingError("Empty telegram string")
 
         # Then check general telegram types
-        telegram_type_code = raw_telegram.strip()[1] if len(raw_telegram.strip()) > 1 else ""
+        telegram_type_code = (
+            raw_telegram.strip()[1] if len(raw_telegram.strip()) > 1 else ""
+        )
 
         if telegram_type_code in ("E", "O"):
             return self.parse_event_telegram(raw_telegram)
@@ -318,8 +317,9 @@ class TelegramService:
         elif telegram_type_code == "R":
             return self.parse_reply_telegram(raw_telegram)
         else:
-            raise TelegramParsingError(f"Unknown telegram type code: {telegram_type_code}")
-
+            raise TelegramParsingError(
+                f"Unknown telegram type code: {telegram_type_code}"
+            )
 
     @staticmethod
     def format_system_telegram_summary(telegram: SystemTelegram) -> str:

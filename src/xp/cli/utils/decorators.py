@@ -8,7 +8,9 @@ import click
 from ..utils.formatters import OutputFormatter
 
 
-def handle_service_errors(*service_exceptions: Type[Exception]) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def handle_service_errors(
+    *service_exceptions: Type[Exception],
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator to handle common service exceptions with consistent JSON error formatting.
 
     Args:
@@ -42,7 +44,9 @@ def common_options(func: Callable[..., Any]) -> Callable[..., Any]:
     return func
 
 
-def telegram_parser_command(service_exceptions: Tuple[Type[Exception], ...] = ()) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def telegram_parser_command(
+    service_exceptions: Tuple[Type[Exception], ...] = ()
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator for telegram parsing commands with standard error handling.
 
     Args:
@@ -64,7 +68,9 @@ def telegram_parser_command(service_exceptions: Tuple[Type[Exception], ...] = ()
     return decorator
 
 
-def service_command(*service_exceptions: Type[Exception]) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def service_command(
+    *service_exceptions: Type[Exception],
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator for service-based commands with error handling and JSON output.
 
     Args:
@@ -78,7 +84,9 @@ def service_command(*service_exceptions: Type[Exception]) -> Callable[[Callable[
     return decorator
 
 
-def list_command(*service_exceptions: Type[Exception]) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def list_command(
+    *service_exceptions: Type[Exception],
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator for list/search commands with common options."""
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -110,7 +118,9 @@ def file_operation_command() -> Callable[[Callable[..., Any]], Callable[..., Any
     return decorator
 
 
-def with_formatter(formatter_class: Any = None) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def with_formatter(
+    formatter_class: Any = None,
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator to inject a formatter instance into the command.
 
     Args:
@@ -130,7 +140,9 @@ def with_formatter(formatter_class: Any = None) -> Callable[[Callable[..., Any]]
     return decorator
 
 
-def require_arguments(*required_args: str) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def require_arguments(
+    *required_args: str,
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator to validate required arguments are present.
 
     Args:
@@ -143,7 +155,11 @@ def require_arguments(*required_args: str) -> Callable[[Callable[..., Any]], Cal
             formatter = OutputFormatter(True)
 
             # Check for missing required arguments
-            missing_args = [arg_name for arg_name in required_args if arg_name in kwargs and kwargs[arg_name] is None]
+            missing_args = [
+                arg_name
+                for arg_name in required_args
+                if arg_name in kwargs and kwargs[arg_name] is None
+            ]
 
             if missing_args:
                 error_msg = f"Missing required arguments: {', '.join(missing_args)}"

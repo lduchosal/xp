@@ -8,8 +8,20 @@ class TestConsonConfigValidator:
     def test_validate_unique_names_success(self):
         """Test validation passes when all module names are unique."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
-            ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=20, link_number=2)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+            ),
+            ConsonModuleConfig(
+                name="A2",
+                serial_number="456",
+                module_type="XP20",
+                module_type_code=20,
+                link_number=2,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_unique_names()
@@ -18,8 +30,20 @@ class TestConsonConfigValidator:
     def test_validate_unique_names_failure(self):
         """Test validation fails when module names are duplicated."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
-            ConsonModuleConfig(name="A1", serial_number="456", module_type="XP20", module_type_code=20, link_number=2)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+            ),
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="456",
+                module_type="XP20",
+                module_type_code=20,
+                link_number=2,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_unique_names()
@@ -29,8 +53,20 @@ class TestConsonConfigValidator:
     def test_validate_unique_serial_numbers_success(self):
         """Test validation passes when all serial numbers are unique."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
-            ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=20, link_number=2)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+            ),
+            ConsonModuleConfig(
+                name="A2",
+                serial_number="456",
+                module_type="XP20",
+                module_type_code=20,
+                link_number=2,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_unique_serial_numbers()
@@ -39,8 +75,20 @@ class TestConsonConfigValidator:
     def test_validate_unique_serial_numbers_failure(self):
         """Test validation fails when serial numbers are duplicated."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
-            ConsonModuleConfig(name="A2", serial_number="123", module_type="XP20", module_type_code=20, link_number=2)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+            ),
+            ConsonModuleConfig(
+                name="A2",
+                serial_number="123",
+                module_type="XP20",
+                module_type_code=20,
+                link_number=2,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_unique_serial_numbers()
@@ -50,8 +98,20 @@ class TestConsonConfigValidator:
     def test_validate_module_type_codes_success(self):
         """Test validation passes for valid module type codes."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
-            ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=255, link_number=2)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+            ),
+            ConsonModuleConfig(
+                name="A2",
+                serial_number="456",
+                module_type="XP20",
+                module_type_code=255,
+                link_number=2,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_module_type_codes()
@@ -60,8 +120,20 @@ class TestConsonConfigValidator:
     def test_validate_module_type_codes_failure(self):
         """Test validation fails for invalid module type codes."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=0, link_number=1),
-            ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=256, link_number=2)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=0,
+                link_number=1,
+            ),
+            ConsonModuleConfig(
+                name="A2",
+                serial_number="456",
+                module_type="XP20",
+                module_type_code=256,
+                link_number=2,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_module_type_codes()
@@ -72,8 +144,14 @@ class TestConsonConfigValidator:
     def test_validate_network_config_success(self):
         """Test validation passes for valid network configuration."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13,
-                             link_number=1, conbus_port=10001),
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+                conbus_port=10001,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_network_config()
@@ -82,10 +160,22 @@ class TestConsonConfigValidator:
     def test_validate_network_config_failure(self):
         """Test validation fails for invalid network configuration."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13,
-                             link_number=1, conbus_port=0),
-            ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=20,
-                             link_number=2, conbus_port=70000)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+                conbus_port=0,
+            ),
+            ConsonModuleConfig(
+                name="A2",
+                serial_number="456",
+                module_type="XP20",
+                module_type_code=20,
+                link_number=2,
+                conbus_port=70000,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_network_config()
@@ -96,7 +186,13 @@ class TestConsonConfigValidator:
     def test_get_module_by_serial_success(self):
         """Test getting module by serial number."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         module = ConsonConfigValidator(config).get_module_by_serial("123")
@@ -106,7 +202,13 @@ class TestConsonConfigValidator:
     def test_get_module_by_serial_not_found(self):
         """Test getting module by non-existent serial number."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         validator = ConsonConfigValidator(config)
@@ -117,8 +219,20 @@ class TestConsonConfigValidator:
     def test_get_all_serial_numbers(self):
         """Test getting all serial numbers from configuration."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13, link_number=1),
-            ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=20, link_number=2)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+            ),
+            ConsonModuleConfig(
+                name="A2",
+                serial_number="456",
+                module_type="XP20",
+                module_type_code=20,
+                link_number=2,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         serials = ConsonConfigValidator(config).get_all_serial_numbers()
@@ -127,10 +241,22 @@ class TestConsonConfigValidator:
     def test_validate_all_success(self):
         """Test that validate_all returns no errors for valid configuration."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=13,
-                             link_number=1, conbus_port=10001),
-            ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=20,
-                             link_number=2, conbus_port=10002)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=13,
+                link_number=1,
+                conbus_port=10001,
+            ),
+            ConsonModuleConfig(
+                name="A2",
+                serial_number="456",
+                module_type="XP20",
+                module_type_code=20,
+                link_number=2,
+                conbus_port=10002,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_all()
@@ -139,10 +265,22 @@ class TestConsonConfigValidator:
     def test_validate_all_with_errors(self):
         """Test that validate_all returns all errors for invalid configuration."""
         modules = [
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP130", module_type_code=0,
-                             link_number=1, conbus_port=0),
-            ConsonModuleConfig(name="A1", serial_number="123", module_type="XP20", module_type_code=256,
-                             link_number=2, conbus_port=70000)
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP130",
+                module_type_code=0,
+                link_number=1,
+                conbus_port=0,
+            ),
+            ConsonModuleConfig(
+                name="A1",
+                serial_number="123",
+                module_type="XP20",
+                module_type_code=256,
+                link_number=2,
+                conbus_port=70000,
+            ),
         ]
         config = ConsonModuleListConfig(root=modules)
         errors = ConsonConfigValidator(config).validate_all()

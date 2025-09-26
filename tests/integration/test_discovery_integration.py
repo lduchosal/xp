@@ -73,7 +73,7 @@ class TestDiscoverIntegration:
             "<R0012345011F01DFA>",
             "<R0012345006F01DFG>",
             "<R0012345003F01DFD>",
-            "<R0012345003F18DFL>"
+            "<R0012345003F18DFL>",
         ]
 
         for response_str in test_responses:
@@ -114,9 +114,7 @@ class TestDiscoverIntegration:
 
         for response in valid_responses:
             # Should validate format correctly
-            assert (
-                discover_service.validate_discover_response_format(response) is True
-            )
+            assert discover_service.validate_discover_response_format(response) is True
 
             # Should parse correctly
             parsed = telegram_service.parse_reply_telegram(response)
@@ -133,7 +131,4 @@ class TestDiscoverIntegration:
         ]
 
         for response in invalid_responses:
-            assert (
-                discover_service.validate_discover_response_format(response) is False
-            )
-
+            assert discover_service.validate_discover_response_format(response) is False

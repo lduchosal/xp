@@ -41,6 +41,7 @@ dev = [
     "twine>=6.2.0",
     "types-PyYAML",
     "refurb>=2.2.0",
+    "pdm-backend>=2.4.5",
 ]
 
 [tool.pytest.ini_options]
@@ -120,6 +121,7 @@ disable_error_code = ["method-assign"]
 module = "tests.*"
 disallow_untyped_defs = false
 
+
 [tool.pdm]
 distribution = true
 version = {source = "file", path = "src/xp/__init__.py"}
@@ -142,7 +144,7 @@ bump-version = "pdm bump -v patch"
 env = "echo ${PATH}"
 install = "pdm install"
 install-dev = "pdm install -G dev"
-clean = "rm -rf .coverage htmlcov/ .pytest_cache/ __pycache__/ src/xp/__pycache__/"
+clean = "rm -rf .coverage coverage.xml htmlcov/ .pytest_cache/ __pycache__/ src/xp/__pycache__/"
 version-show = "python -c 'import xp; print(xp.__version__)'"
 version-patch = "pdm bump patch"
 version-minor = "pdm bump minor"

@@ -60,7 +60,7 @@ class TestModuleTypeService:
         categories = self.service.list_modules_by_category()
 
         expected_categories = {
-            'Unknown',
+            "Unknown",
             "System",
             "CP Link Modules",
             "XP Control Modules",

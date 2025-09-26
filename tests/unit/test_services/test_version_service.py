@@ -284,9 +284,7 @@ class TestVersionService(unittest.TestCase):
 
     def test_format_version_summary_invalid_input(self):
         """Test formatting version summary with invalid input."""
-        test_cases = [
-            {"no_version_info": True}
-        ]
+        test_cases = [{"no_version_info": True}]
 
         for version_data in test_cases:
             with self.subTest(version_data=version_data):

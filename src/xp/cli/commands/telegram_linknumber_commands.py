@@ -40,13 +40,15 @@ def generate_set_link_number(serial_number: str, link_number: int) -> None:
         click.echo(json.dumps(output, indent=2))
 
     except LinkNumberError as e:
-        CLIErrorHandler.handle_service_error(e, "link number telegram generation",
-                                             {"serial_number": serial_number, "link_number": link_number})
+        CLIErrorHandler.handle_service_error(
+            e,
+            "link number telegram generation",
+            {"serial_number": serial_number, "link_number": link_number},
+        )
 
 
 @linknumber.command("read")
 @click.argument("serial_number", type=SERIAL)
-
 @handle_service_errors(LinkNumberError)
 def generate_read_link_number(serial_number: str) -> None:
     """
@@ -72,5 +74,6 @@ def generate_read_link_number(serial_number: str) -> None:
         click.echo(json.dumps(output, indent=2))
 
     except LinkNumberError as e:
-        CLIErrorHandler.handle_service_error(e, "read telegram generation", {"serial_number": serial_number})
-
+        CLIErrorHandler.handle_service_error(
+            e, "read telegram generation", {"serial_number": serial_number}
+        )

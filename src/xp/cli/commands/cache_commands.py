@@ -10,7 +10,9 @@ from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 
 
-@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
+@click.group(
+    cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
+)
 def cache() -> None:
     """
     Cache operations for HomeKit device states
@@ -45,7 +47,7 @@ def cache_get(key: str, tag: str) -> None:
                 "hit": response.hit,
                 "data": response.data,
                 "error": response.error,
-                "timestamp": response.timestamp.isoformat()
+                "timestamp": response.timestamp.isoformat(),
             }
         else:
             output = {
@@ -53,7 +55,7 @@ def cache_get(key: str, tag: str) -> None:
                 "tag": tag,
                 "hit": response.hit,
                 "data": response.data,
-                "timestamp": response.timestamp.isoformat()
+                "timestamp": response.timestamp.isoformat(),
             }
 
         click.echo(json.dumps(output, indent=2))
@@ -88,13 +90,15 @@ def cache_set(key: str, tag: str, data: str) -> None:
             "key": key,
             "tag": tag,
             "data": data,
-            "message": f"Cache entry set for key: {key}"
+            "message": f"Cache entry set for key: {key}",
         }
 
         click.echo(json.dumps(output, indent=2))
 
     except Exception as e:
-        CLIErrorHandler.handle_service_error(e, "cache set", {"key": key, "tag": tag, "data": data})
+        CLIErrorHandler.handle_service_error(
+            e, "cache set", {"key": key, "tag": tag, "data": data}
+        )
 
 
 @cache.command("clear")
@@ -128,16 +132,14 @@ def cache_clear(key_or_tag_or_all: str) -> None:
             click.echo("Error: Must specify key_or_tag_or_all")
             return
 
-        output = {
-            "success": True,
-            "cleared": cleared_item,
-            "message": message
-        }
+        output = {"success": True, "cleared": cleared_item, "message": message}
 
         click.echo(json.dumps(output, indent=2))
 
     except Exception as e:
-        CLIErrorHandler.handle_service_error(e, "cache clear", {"key_or_tag_or_all": key_or_tag_or_all, "all": all})
+        CLIErrorHandler.handle_service_error(
+            e, "cache clear", {"key_or_tag_or_all": key_or_tag_or_all, "all": all}
+        )
 
 
 @cache.command("items")
@@ -170,7 +172,7 @@ def cache_items() -> None:
         output = {
             "cached_items": items,
             "statistics": stats,
-            "formatted_output": "\n".join(output_lines)
+            "formatted_output": "\n".join(output_lines),
         }
 
         click.echo(json.dumps(output, indent=2))
@@ -196,10 +198,7 @@ def cache_stats() -> None:
         service = HomeKitCacheService()
         stats = service.get_cache_stats()
 
-        output = {
-            "cache_statistics": stats,
-            "cache_file": str(service.cache_file)
-        }
+        output = {"cache_statistics": stats, "cache_file": str(service.cache_file)}
 
         click.echo(json.dumps(output, indent=2))
 

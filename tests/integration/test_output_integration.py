@@ -79,7 +79,7 @@ class TestOutputIntegration:
 
             # Verify each bit is correctly parsed
             for i in range(4):
-                expected_state = binary_str[3-i] == "1"
+                expected_state = binary_str[3 - i] == "1"
                 assert status[i] == expected_state
 
     def test_checksum_validation_integration(self):

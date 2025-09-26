@@ -1,4 +1,5 @@
 """FastAPI router for Conbus operations."""
+
 import json
 import logging
 from typing import Union
@@ -12,6 +13,7 @@ from ...services.conbus_blink_service import ConbusBlinkService
 
 logger = logging.getLogger(__name__)
 
+
 @router.get(
     "/blink/on/{serial_number}",
     response_model=Union[ApiResponse, ApiErrorResponse],
@@ -22,7 +24,9 @@ logger = logging.getLogger(__name__)
         500: {"model": ApiErrorResponse, "description": "Internal server error"},
     },
 )
-async def blink_on(serial_number: str = "1702033007") -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
+async def blink_on(
+    serial_number: str = "1702033007",
+) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate Input operation to find devices on the network.
 
@@ -32,7 +36,9 @@ async def blink_on(serial_number: str = "1702033007") -> Union[ApiResponse, ApiE
 
     # SendInput telegram and receive responses
     with service:
-        response = service.send_blink_telegram(serial_number=serial_number, on_or_off="on")
+        response = service.send_blink_telegram(
+            serial_number=serial_number, on_or_off="on"
+        )
 
     if not response.success:
         return handle_service_error(response.error or "Unknown error")
@@ -41,9 +47,13 @@ async def blink_on(serial_number: str = "1702033007") -> Union[ApiResponse, ApiE
 
     # Build successful response
     return ApiResponse(
-        success = True,
-        result = response.system_function.name,
-        description = response.reply_telegram.system_function.get_description() if response.reply_telegram and response.reply_telegram.system_function else None,
+        success=True,
+        result=response.system_function.name,
+        description=(
+            response.reply_telegram.system_function.get_description()
+            if response.reply_telegram and response.reply_telegram.system_function
+            else None
+        ),
         # raw_telegram = response.output_telegram.raw_telegram,
     )
 
@@ -59,7 +69,7 @@ async def blink_on(serial_number: str = "1702033007") -> Union[ApiResponse, ApiE
     },
 )
 async def blink_off(
-        serial_number: str = "1702033007"
+    serial_number: str = "1702033007",
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate Input operation to find devices on the network.
@@ -70,7 +80,9 @@ async def blink_off(
 
     # SendInput telegram and receive responses
     with service:
-        response = service.send_blink_telegram(serial_number=serial_number, on_or_off="off")
+        response = service.send_blink_telegram(
+            serial_number=serial_number, on_or_off="off"
+        )
 
     if not response.success:
         return handle_service_error(response.error or "Unknown error")
@@ -79,8 +91,12 @@ async def blink_off(
 
     # Build successful response
     return ApiResponse(
-        success = True,
-        result = response.system_function.name,
-        description = response.reply_telegram.system_function.get_description() if response.reply_telegram and response.reply_telegram.system_function else None,
+        success=True,
+        result=response.system_function.name,
+        description=(
+            response.reply_telegram.system_function.get_description()
+            if response.reply_telegram and response.reply_telegram.system_function
+            else None
+        ),
         # raw_telegram = response.output_telegram.raw_telegram,
     )

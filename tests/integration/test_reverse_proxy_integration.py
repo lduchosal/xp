@@ -300,11 +300,9 @@ class TestReverseProxyErrorHandling:
 
             # Should fail due to port conflict
             assert not result.success
-            assert (
-                result.error is not None and (
-                    "Address already in use" in result.error
-                    or "permission" in result.error.lower()
-                )
+            assert result.error is not None and (
+                "Address already in use" in result.error
+                or "permission" in result.error.lower()
             )
 
         finally:
@@ -326,9 +324,7 @@ conbus:
         temp_config.close()
 
         try:
-            proxy = ReverseProxyService(
-                config_path=temp_config.name, listen_port=19004
-            )
+            proxy = ReverseProxyService(config_path=temp_config.name, listen_port=19004)
 
             # Should load config but connections will fail
             assert proxy.target_ip == "999.999.999.999"

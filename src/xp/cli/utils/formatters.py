@@ -115,7 +115,9 @@ class TelegramFormatter(OutputFormatter):
 class ListFormatter(OutputFormatter):
     """Specialized formatter for list-based output."""
 
-    def format_list_response(self, items: list, title: str, item_formatter: Any = None) -> str:
+    def format_list_response(
+        self, items: list, title: str, item_formatter: Any = None
+    ) -> str:
         """Format a list of items with optional custom formatter."""
         if self.json_output:
             return json.dumps(

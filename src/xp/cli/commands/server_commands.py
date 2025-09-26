@@ -1,4 +1,5 @@
 """Conbus emulator server operations CLI commands."""
+
 from typing import Optional, Dict, Any
 
 import click
@@ -15,7 +16,9 @@ from ..utils.error_handlers import ServerErrorHandler
 _server_instance: Optional[ServerService] = None
 
 
-@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
+@click.group(
+    cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
+)
 def server() -> None:
     """
     Conbus emulator server operations
@@ -28,7 +31,6 @@ def server() -> None:
     "--port", "-p", default=10001, type=int, help="Port to listen on (default: 10001)"
 )
 @click.option("--config", "-c", default="server.yml", help="Configuration file path")
-
 @handle_service_errors(ServerError)
 def start_server(port: int, config: str) -> None:
     """
@@ -69,7 +71,6 @@ def start_server(port: int, config: str) -> None:
 
 
 @server.command("stop")
-
 @handle_service_errors(ServerError)
 def stop_server() -> None:
     """
@@ -98,7 +99,6 @@ def stop_server() -> None:
 
 
 @server.command("status")
-
 @handle_service_errors(Exception)
 def server_status() -> None:
     """

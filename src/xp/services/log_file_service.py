@@ -277,7 +277,7 @@ class LogFileService:
 
     @staticmethod
     def filter_entries(
-            entries: List[LogEntry],
+        entries: List[LogEntry],
         telegram_type: Optional[str] = None,
         direction: Optional[str] = None,
         start_time: Optional[datetime] = None,

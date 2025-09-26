@@ -21,7 +21,7 @@ class EventTelegram(Telegram):
         <E14L00I02MAK>
     """
 
-    event_telegram_type: str = "E" # E or O
+    event_telegram_type: str = "E"  # E or O
     module_type: int = 0
     link_number: int = 0
     input_number: int = 0

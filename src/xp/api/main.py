@@ -115,9 +115,5 @@ if __name__ == "__main__":
 
     logger.info(f"Starting development server on {host}:{port}")
     uvicorn.run(
-        "xp.api.main:app",
-        host=host,
-        port=port,
-        reload=reload,
-        log_level="info"
+        "xp.api.main:app", host=host, port=port, reload=reload, log_level="info"
     )

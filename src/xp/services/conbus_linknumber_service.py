@@ -94,9 +94,7 @@ class ConbusLinknumberService:
                                 ):
                                     result = "NAK"
                         except Exception as e:
-                            self.logger.warning(
-                                f"Failed to parse reply telegram: {e}"
-                            )
+                            self.logger.warning(f"Failed to parse reply telegram: {e}")
 
                 return ConbusLinknumberResponse(
                     success=response.success and result == "ACK",
@@ -146,7 +144,9 @@ class ConbusLinknumberService:
             if datapoint_response.success and datapoint_response.datapoint_telegram:
                 # Extract link number from datapoint response
                 try:
-                    link_number_value = int(datapoint_response.datapoint_telegram.data_value)
+                    link_number_value = int(
+                        datapoint_response.datapoint_telegram.data_value
+                    )
                     return ConbusLinknumberResponse(
                         success=True,
                         result="SUCCESS",

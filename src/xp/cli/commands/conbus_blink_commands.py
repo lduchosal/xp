@@ -34,7 +34,7 @@ def send_blink_on_telegram(serial_number: str) -> None:
 
     with service:
 
-        response = service.send_blink_telegram(serial_number, 'on')
+        response = service.send_blink_telegram(serial_number, "on")
         click.echo(json.dumps(response.to_dict(), indent=2))
 
 
@@ -55,7 +55,7 @@ def send_blink_off_telegram(serial_number: str) -> None:
 
     with service:
 
-        response = service.send_blink_telegram(serial_number, 'off')
+        response = service.send_blink_telegram(serial_number, "off")
         click.echo(json.dumps(response.to_dict(), indent=2))
 
 
@@ -82,7 +82,7 @@ def blink_all_off() -> None:
     service = ConbusBlinkService()
 
     with service:
-        response = service.blink_all('off')
+        response = service.blink_all("off")
         if response.success:
             click.echo("All devices blink turned off")
         else:
@@ -104,9 +104,8 @@ def blink_all_on() -> None:
     service = ConbusBlinkService()
 
     with service:
-        response = service.blink_all('on')
+        response = service.blink_all("on")
         if response.success:
             click.echo("All devices blink turned on")
         else:
             click.echo(f"Error: {response.error}")
-

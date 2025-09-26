@@ -12,7 +12,9 @@ from ..utils.formatters import StatisticsFormatter, OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler
 
 
-@click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
+@click.group(
+    cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
+)
 def file() -> None:
     """
     File operations for console bus logs
@@ -79,9 +81,7 @@ def decode_log_file(
         if summary:
             # Show summary only
             click.echo(
-                json.dumps(
-                    {"statistics": stats, "entry_count": len(entries)}, indent=2
-                )
+                json.dumps({"statistics": stats, "entry_count": len(entries)}, indent=2)
             )
         else:
             # Show full results
@@ -93,14 +93,11 @@ def decode_log_file(
             click.echo(json.dumps(output, indent=2))
 
     except Exception as e:
-        CLIErrorHandler.handle_file_error(
-            e, log_file_path, "log file parsing"
-        )
+        CLIErrorHandler.handle_file_error(e, log_file_path, "log file parsing")
 
 
 @file.command("analyze")
 @click.argument("log_file_path")
-
 @handle_service_errors(Exception)
 def analyze_log_file(log_file_path: str) -> None:
     """
@@ -125,14 +122,11 @@ def analyze_log_file(log_file_path: str) -> None:
         )
 
     except Exception as e:
-        CLIErrorHandler.handle_file_error(
-            e, log_file_path, "log file analysis"
-        )
+        CLIErrorHandler.handle_file_error(e, log_file_path, "log file analysis")
 
 
 @file.command("validate")
 @click.argument("log_file_path")
-
 @handle_service_errors(Exception)
 def validate_log_file(log_file_path: str) -> None:
     """
@@ -166,6 +160,4 @@ def validate_log_file(log_file_path: str) -> None:
         click.echo(json.dumps(result, indent=2))
 
     except Exception as e:
-        CLIErrorHandler.handle_file_error(
-            e, log_file_path, "log file validation"
-        )
+        CLIErrorHandler.handle_file_error(e, log_file_path, "log file validation")
