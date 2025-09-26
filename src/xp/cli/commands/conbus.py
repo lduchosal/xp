@@ -4,6 +4,7 @@ import click
 from click_help_colors import HelpColorsGroup
 
 from .conbus_datapoint_commands import conbus_datapoint_group
+from .conbus_linknumber_commands import conbus_linknumber_command
 
 @click.group(cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green')
 def conbus() -> None:
@@ -30,3 +31,4 @@ def conbus_output() -> None:
 conbus.add_command(conbus_blink)
 conbus.add_command(conbus_output)
 conbus.add_command(conbus_datapoint_group)
+conbus.add_command(conbus_linknumber_command)

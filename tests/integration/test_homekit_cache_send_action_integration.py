@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 
 from xp.models.action_type import ActionType
 from xp.models.event_telegram import EventTelegram
-from xp.models.reply_telegram import ReplyTelegram
 from xp.services.homekit_cache_service import HomeKitCacheService
 
 

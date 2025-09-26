@@ -201,7 +201,8 @@ class TestModuleTypeFunctions:
         assert is_valid_module_code(0) is True
         assert is_valid_module_code(14) is True
         assert is_valid_module_code(23) is True
-        assert is_valid_module_code(37) is True
+        assert is_valid_module_code(36) is True
+        assert is_valid_module_code(37) is False
 
         # Invalid codes
         assert is_valid_module_code(-1) is False

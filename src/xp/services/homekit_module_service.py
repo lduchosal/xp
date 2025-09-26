@@ -74,11 +74,11 @@ class HomekitModuleService:
         self.logger.info(f"_on_accessory_set_on {{ serial_number: {serial_number} output_number: {output_number} }}")
 
         if serial_number is None:
-            self.logger.warning(f"Invalid serial_number")
+            self.logger.warning("Invalid serial_number")
             return
 
         if output_number is None:
-            self.logger.warning(f"Invalid output_number")
+            self.logger.warning("Invalid output_number")
             return
 
         module = self.get_module_by_serial(serial_number)

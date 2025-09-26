@@ -6,7 +6,6 @@ used for enumerating all connected devices on the console bus.
 
 from typing import List, Set
 
-from ..models.datapoint_type import DataPointType
 from ..models.reply_telegram import ReplyTelegram
 from ..models.system_function import SystemFunction
 from ..models.system_telegram import SystemTelegram

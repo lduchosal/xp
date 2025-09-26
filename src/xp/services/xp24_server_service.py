@@ -6,7 +6,6 @@ including response generation and device configuration handling.
 
 from typing import Dict, Optional
 
-from ..models.action_type import ActionType
 from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
 from ..models.system_function import SystemFunction

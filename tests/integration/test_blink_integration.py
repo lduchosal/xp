@@ -4,7 +4,6 @@ import pytest
 from xp.services.telegram_blink_service import TelegramBlinkService, BlinkError
 from xp.services.telegram_service import TelegramService, TelegramParsingError
 from xp.models.system_telegram import SystemTelegram
-from xp.models.datapoint_type import DataPointType
 from xp.models.system_function import SystemFunction
 from xp.models.reply_telegram import ReplyTelegram
 
