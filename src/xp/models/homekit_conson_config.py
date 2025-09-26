@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic import BaseModel, IPvAnyAddress
 from typing import List, Optional
 
@@ -21,7 +23,7 @@ class ConsonModuleListConfig(BaseModel):
     @classmethod
     def from_yaml(cls, file_path: str) -> 'ConsonModuleListConfig':
         import yaml
-        with open(file_path, 'r') as file:
+        with Path(file_path).open('r') as file:
             data = yaml.safe_load(file)
         return cls(root=data)
 

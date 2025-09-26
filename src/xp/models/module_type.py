@@ -51,12 +51,12 @@ class ModuleType:
     @property
     def is_reserved(self) -> bool:
         """Check if this module type is reserved"""
-        return self.name in ["XP26X1", "XP26X2"]
+        return self.name in ("XP26X1", "XP26X2")
 
     @property
     def is_push_button_panel(self) -> bool:
         """Check if this module type is a push button panel"""
-        return self.name in [
+        return self.name in (
             "XP2606",
             "XP2606A",
             "XP2606B",
@@ -64,21 +64,21 @@ class ModuleType:
             "XP2506A",
             "XP2506B",
             "XPX1_8",
-        ]
+        )
 
     @property
     def is_ir_capable(self) -> bool:
         """Check if this module type has IR capabilities"""
-        return any(ir_type in self.name for ir_type in ["38kHz", "B&O"]) or any(
+        return any(ir_type in self.name for ir_type in ("38kHz", "B&O")) or any(
             ir_code in self.name
-            for ir_code in [
+            for ir_code in (
                 "CP70A",
                 "CP70B",
                 "XP2606A",
                 "XP2606B",
                 "XP2506A",
                 "XP2506B",
-            ]
+            )
         )
 
     @property
@@ -92,8 +92,7 @@ class ModuleType:
             return "XP Control Modules"
         elif 14 <= self.code <= 24:
             return "Interface Panels"
-        else:
-            return "Unknown"
+        return "Unknown"
 
     def to_dict(self) -> Dict:
         """Convert to dictionary for JSON serialization"""

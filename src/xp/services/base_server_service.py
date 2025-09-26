@@ -53,10 +53,8 @@ class BaseServerService(ABC):
 
     def _check_request_for_device(self, request: SystemTelegram) -> bool:
         """Check if request is for this device (including broadcast)"""
-        return (
-            request.serial_number == self.serial_number
-            or request.serial_number == "0000000000"
-        )
+        return request.serial_number in (self.serial_number, "0000000000")
+
 
     @staticmethod
     def _build_response_telegram(data_part: str) -> str:

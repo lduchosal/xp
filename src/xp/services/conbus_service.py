@@ -4,13 +4,15 @@ This service implements a TCP client that connects to Conbus servers and sends
 various types of telegrams including discover, version, and sensor data requests.
 """
 
-import socket
 import logging
-import yaml
-import os
-from typing import List, Optional, Any
+import socket
 from datetime import datetime
+from pathlib import Path
+from typing import List, Optional, Any
 
+import yaml
+
+from .conbus_connection_pool import ConbusConnectionPool
 from ..models import (
     ConbusClientConfig,
     ConbusRequest,
@@ -20,7 +22,6 @@ from ..models import (
 from ..models.response import Response
 from ..models.system_function import SystemFunction
 from ..utils.checksum import calculate_checksum
-from .conbus_connection_pool import ConbusConnectionPool
 
 
 class ConbusError(Exception):
@@ -58,8 +59,8 @@ class ConbusService:
     def _load_config(self) -> None:
         """Load client configuration from cli.yml"""
         try:
-            if os.path.exists(self.config_path):
-                with open(self.config_path, "r") as file:
+            if Path(self.config_path).exists():
+                with Path(self.config_path).open("r") as file:
                     config_data = yaml.safe_load(file)
                     conbus_config = config_data.get("conbus", {})
 

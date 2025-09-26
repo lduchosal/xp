@@ -63,11 +63,11 @@ class TestVersionService(unittest.TestCase):
                     self.assertIsNotNone(result.error)
                 else:
                     # Invalid version format but has _V
-                    if version_string in [
+                    if version_string in (
                         "XP230_V1.00",
                         "XP230_V1.00.04.05",
                         "XP230_VX.YZ.AB",
-                    ]:
+                    ):
                         self.assertTrue(result.success)
                         self.assertFalse(result.data["valid_format"])
                         self.assertIn("warning", result.data)

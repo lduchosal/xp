@@ -121,7 +121,7 @@ class ConbusLinknumberService:
                 success=False,
                 result="NAK",
                 serial_number=serial_number,
-                error=f"Unexpected error: {str(e)}",
+                error=f"Unexpected error: {e}",
             )
 
     def get_linknumber(self, serial_number: str) -> ConbusLinknumberResponse:
@@ -163,7 +163,7 @@ class ConbusLinknumberService:
                         serial_number=serial_number,
                         sent_telegram=datapoint_response.sent_telegram,
                         received_telegrams=datapoint_response.received_telegrams,
-                        error=f"Failed to parse link number: {str(e)}",
+                        error=f"Failed to parse link number: {e}",
                         timestamp=datapoint_response.timestamp,
                     )
             else:
@@ -182,5 +182,5 @@ class ConbusLinknumberService:
                 success=False,
                 result="ERROR",
                 serial_number=serial_number,
-                error=f"Unexpected error: {str(e)}",
+                error=f"Unexpected error: {e}",
             )

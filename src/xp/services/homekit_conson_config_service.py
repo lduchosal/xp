@@ -34,21 +34,13 @@ class ConsonConfigValidator:
 
     def validate_module_type_codes(self) -> List[str]:
         """Validate module type code ranges."""
-        errors = []
-
-        for module in self.config.root:
-            if not (1 <= module.module_type_code <= 255):
-                errors.append(f"Invalid module_type_code {module.module_type_code} for module {module.name}. Must be between 1 and 255.")
+        errors = [f"Invalid module_type_code {module.module_type_code} for module {module.name}. Must be between 1 and 255." for module in self.config.root if not (1 <= module.module_type_code <= 255)]
 
         return errors
 
     def validate_network_config(self) -> List[str]:
         """Validate IP/port configuration."""
-        errors = []
-
-        for module in self.config.root:
-            if module.conbus_port is not None and not (1 <= module.conbus_port <= 65535):
-                errors.append(f"Invalid conbus_port {module.conbus_port} for module {module.name}. Must be between 1 and 65535.")
+        errors = [f"Invalid conbus_port {module.conbus_port} for module {module.name}. Must be between 1 and 65535." for module in self.config.root if module.conbus_port is not None and not (1 <= module.conbus_port <= 65535)]
 
         return errors
 

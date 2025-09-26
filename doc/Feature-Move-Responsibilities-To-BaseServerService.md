@@ -194,7 +194,7 @@ def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
     """Handle RETURN_DATA requests - can be overridden by subclasses"""
     if request.datapoint_type == DataPointType.SW_VERSION:
         return self.generate_version_response(request)
-    elif request.datapoint_type in [DataPointType.MODULE_TYPE, DataPointType.MODULE_ERROR_CODE]:
+    elif request.datapoint_type in (DataPointType.MODULE_TYPE, DataPointType.MODULE_ERROR_CODE):
         return self.generate_status_response(request, request.datapoint_type)
     elif request.datapoint_type == DataPointType.LINK_NUMBER:
         return self.generate_link_number_response(request)

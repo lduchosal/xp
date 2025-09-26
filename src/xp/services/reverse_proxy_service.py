@@ -4,14 +4,15 @@ This service implements a TCP reverse proxy that listens on port 10001 and forwa
 all telegrams to the configured Conbus server while printing bidirectional traffic.
 """
 
+import logging
 import socket
 import threading
-import logging
-import yaml
-import os
 import time
-from typing import Optional, Dict
 from datetime import datetime
+from pathlib import Path
+from typing import Optional, Dict
+
+import yaml
 
 from ..models.response import Response
 
@@ -54,8 +55,8 @@ class ReverseProxyService:
     def _load_config(self) -> None:
         """Load target server configuration from cli.yml"""
         try:
-            if os.path.exists(self.config_path):
-                with open(self.config_path, "r") as file:
+            if Path(self.config_path).exists():
+                with Path(self.config_path).open("r") as file:
                     config = yaml.safe_load(file)
                     conbus_config = config.get("conbus", {})
 

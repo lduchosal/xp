@@ -51,7 +51,7 @@ class HomeKitCacheService:
         Returns:
             CacheResponse with data and hit/miss status
         """
-        cache_key = f"{key}"
+        cache_key = key
 
         # Check if key exists in cache and is not expired
         if cache_key in self.cache:
@@ -74,20 +74,20 @@ class HomeKitCacheService:
                 data = response.datapoint_telegram.raw_telegram
                 # Store in cache
                 self.cache[cache_key] = CacheEntry(
-                    data=str(data),
+                    data=data,
                     tags=[tag],
                     ttl=300  # 5 minutes default TTL
                 )
                 self._save_cache()
 
-                return CacheResponse(data=str(data), hit=False)
+                return CacheResponse(data=data, hit=False)
             else:
                 error_msg = f"Failed to query device {key}: {response.error}"
                 self.logger.error(error_msg)
                 return CacheResponse(data=None, hit=False, error=error_msg)
 
         except Exception as e:
-            error_msg = f"Error querying device {key}: {str(e)}"
+            error_msg = f"Error querying device {key}: {e}"
             self.logger.error(error_msg)
             return CacheResponse(data=None, hit=False, error=error_msg)
 
@@ -99,7 +99,7 @@ class HomeKitCacheService:
             tag: Tag for cache organization
             data: Data to cache
         """
-        cache_key = f"{key}"
+        cache_key = key
 
         # Update existing entry or create new one
         if cache_key in self.cache:
@@ -131,10 +131,7 @@ class HomeKitCacheService:
             self.logger.debug(f"Cache entry cleared for key: {key_or_tag}")
         else:
             # Clear by tag
-            keys_to_remove = []
-            for cache_key, entry in self.cache.items():
-                if key_or_tag in entry.tags:
-                    keys_to_remove.append(cache_key)
+            keys_to_remove = [cache_key for cache_key, entry in self.cache.items() if key_or_tag in entry.tags]
 
             for cache_key in keys_to_remove:
                 del self.cache[cache_key]
@@ -150,10 +147,7 @@ class HomeKitCacheService:
             Dictionary mapping cache keys to their data values
         """
         # Remove expired entries first
-        expired_keys = []
-        for cache_key, entry in self.cache.items():
-            if entry.is_expired():
-                expired_keys.append(cache_key)
+        expired_keys = [cache_key for cache_key, entry in self.cache.items() if entry.is_expired()]
 
         for cache_key in expired_keys:
             del self.cache[cache_key]
@@ -169,10 +163,7 @@ class HomeKitCacheService:
         Args:
             event: Event name to invalidate cache entries for
         """
-        keys_to_remove = []
-        for cache_key, entry in self.cache.items():
-            if event in entry.tags:
-                keys_to_remove.append(cache_key)
+        keys_to_remove = [cache_key for cache_key, entry in self.cache.items() if event in entry.tags]
 
         for cache_key in keys_to_remove:
             del self.cache[cache_key]
@@ -185,7 +176,7 @@ class HomeKitCacheService:
         """Load cache from persistent storage."""
         try:
             if self.cache_file.exists():
-                with open(self.cache_file, 'r') as f:
+                with Path(self.cache_file).open('r') as f:
                     cache_data = json.load(f)
 
                 # Convert dictionary back to CacheEntry objects
@@ -213,7 +204,7 @@ class HomeKitCacheService:
                 cache_data[key] = entry.to_dict()
 
             # Write to file
-            with open(self.cache_file, 'w') as f:
+            with Path(self.cache_file).open('w') as f:
                 json.dump(cache_data, f, indent=2)
 
             self.logger.debug(f"Saved {len(self.cache)} cache entries to {self.cache_file}")

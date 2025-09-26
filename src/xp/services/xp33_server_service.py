@@ -145,11 +145,12 @@ class XP33ServerService(BaseServerService):
                 "dimming_type": "Leading/Trailing edge configurable",
                 "protection": "Short-circuit proof channels",
             }
-        else:  # XP33LR
-            return {
-                "power_per_channel": "500VA max",
-                "total_power": "640VA",
-                "load_types": ["Resistive", "inductive"],
-                "dimming_type": "Leading edge, logarithmic control",
-                "protection": "Thermal protection, neutral break detection",
-            }
+
+        # XP33LR
+        return {
+            "power_per_channel": "500VA max",
+            "total_power": "640VA",
+            "load_types": ["Resistive", "inductive"],
+            "dimming_type": "Leading edge, logarithmic control",
+            "protection": "Thermal protection, neutral break detection",
+        }

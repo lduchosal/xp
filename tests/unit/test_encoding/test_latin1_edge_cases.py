@@ -8,6 +8,7 @@ where UTF-8 decoding fails on Latin-1 characters like 0xa7 (§ symbol).
 import socket
 import threading
 import time
+from contextlib import suppress
 from typing import Optional
 
 import pytest
@@ -76,10 +77,8 @@ class Latin1TestServer:
         except (ValueError, KeyError, ConnectionError):
             pass
         finally:
-            try:
+            with suppress (ValueError, KeyError, ConnectionError):
                 client_socket.close()
-            except (ValueError, KeyError, ConnectionError):
-                pass
 
     @staticmethod
     def _generate_latin1_response(message):

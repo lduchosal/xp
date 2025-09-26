@@ -36,7 +36,7 @@ class TelegramChecksumService:
             )
         except Exception as e:
             return Response(
-                success=False, data=None, error=f"Checksum calculation failed: {str(e)}"
+                success=False, data=None, error=f"Checksum calculation failed: {e}"
             )
 
     @staticmethod
@@ -73,7 +73,7 @@ class TelegramChecksumService:
             return Response(
                 success=False,
                 data=None,
-                error=f"CRC32 checksum calculation failed: {str(e)}",
+                error=f"CRC32 checksum calculation failed: {e}",
             )
 
     @staticmethod
@@ -103,7 +103,7 @@ class TelegramChecksumService:
             )
         except Exception as e:
             return Response(
-                success=False, data=None, error=f"Checksum validation failed: {str(e)}"
+                success=False, data=None, error=f"Checksum validation failed: {e}"
             )
 
     @staticmethod
@@ -144,5 +144,5 @@ class TelegramChecksumService:
             return Response(
                 success=False,
                 data=None,
-                error=f"CRC32 checksum validation failed: {str(e)}",
+                error=f"CRC32 checksum validation failed: {e}",
             )

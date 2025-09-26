@@ -160,7 +160,6 @@ class ServerErrorHandler(CLIErrorHandler):
     @staticmethod
     def handle_server_not_running_error() -> None:
         """Handle errors when server is not running with JSON formatting."""
-        formatter = OutputFormatter(True)
-        error_response = formatter.error_response("No server is currently running")
+        error_response = OutputFormatter(True).error_response("No server is currently running")
         click.echo(error_response)
         raise SystemExit(1)

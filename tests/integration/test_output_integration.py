@@ -54,7 +54,7 @@ class TestOutputIntegration:
     def test_all_output_combinations(self):
         """Test telegram generation and parsing for all output combinations."""
         for output_number in range(4):
-            for action in [ActionType.PRESS, ActionType.RELEASE]:
+            for action in (ActionType.PRESS, ActionType.RELEASE):
                 # Generate telegram
                 telegram = self.output_service.generate_system_action_telegram(
                     "1234567890", output_number, action

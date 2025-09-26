@@ -163,7 +163,7 @@ class TestChecksumUtilities:
 
     def test_nibble_roundtrip(self):
         """Test that nibble conversion is reversible."""
-        for test_byte in [0, 1, 65, 127, 255]:
+        for test_byte in (0, 1, 65, 127, 255):
             nibbled = a_nibble(test_byte)
             de_nibbled = de_nibble(nibbled)
             assert de_nibbled[0] == test_byte

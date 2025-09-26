@@ -84,7 +84,7 @@ class VersionService:
 
         except Exception as e:
             return Response(
-                success=False, data=None, error=f"Version parsing failed: {str(e)}"
+                success=False, data=None, error=f"Version parsing failed: {e}"
             )
 
     @staticmethod
@@ -132,7 +132,7 @@ class VersionService:
             return Response(
                 success=False,
                 data=None,
-                error=f"Version request telegram generation failed: {str(e)}",
+                error=f"Version request telegram generation failed: {e}",
             )
 
     @staticmethod
@@ -174,7 +174,7 @@ class VersionService:
             return Response(
                 success=False,
                 data=None,
-                error=f"Version telegram validation failed: {str(e)}",
+                error=f"Version telegram validation failed: {e}",
             )
 
     @staticmethod
@@ -228,7 +228,7 @@ class VersionService:
             return Response(
                 success=False,
                 data=None,
-                error=f"Version reply parsing failed: {str(e)}",
+                error=f"Version reply parsing failed: {e}",
             )
 
     @staticmethod
@@ -272,4 +272,4 @@ class VersionService:
                 return "No version information available"
 
         except Exception as e:
-            return f"Error formatting version summary: {str(e)}"
+            return f"Error formatting version summary: {e}"

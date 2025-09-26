@@ -52,12 +52,11 @@ async def input_action(
             description = response.output_telegram.system_function.get_description(),
             # raw_telegram = response.output_telegram.raw_telegram,
         )
-    else:
-        return ApiResponse(
-            success = True,
-            result = "Output command sent",
-            description = "Output command was sent successfully",
-        )
+    return ApiResponse(
+        success = True,
+        result = "Output command sent",
+        description = "Output command was sent successfully",
+    )
 
 
 @router.get(
@@ -92,12 +91,11 @@ async def output_status(serial_number: str) -> Union[ApiResponse, ApiErrorRespon
             result = response.datapoint_telegram.data_value,
             description = response.datapoint_telegram.datapoint_type.name,
         )
-    else:
-        return ApiResponse(
-            success = True,
-            result = "No data available",
-            description = "Output status retrieved but no data available",
-        )
+    return ApiResponse(
+        success = True,
+        result = "No data available",
+        description = "Output status retrieved but no data available",
+    )
 
 
 @router.get(
@@ -132,9 +130,8 @@ async def output_state(serial_number: str) -> Union[ApiResponse, ApiErrorRespons
             result = response.datapoint_telegram.data_value,
             description = response.datapoint_telegram.datapoint_type.name,
         )
-    else:
-        return ApiResponse(
-            success = True,
-            result = "No data available",
-            description = "Module state retrieved but no data available",
-        )
+    return ApiResponse(
+        success = True,
+        result = "No data available",
+        description = "Module state retrieved but no data available",
+    )

@@ -59,7 +59,7 @@ Key methods (enhanced/new):
 
 ```python
 def get(self, key: str, tag: str, background_refresh: bool = True) -> CacheResponse:
-    cache_key = f"{key}"
+    cache_key = key
 
     if cache_key in cache:
         entry = cache[cache_key]

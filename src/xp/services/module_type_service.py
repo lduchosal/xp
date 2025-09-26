@@ -123,8 +123,7 @@ class ModuleTypeService:
         Returns:
             List of ModuleType instances in the category
         """
-        categories = get_module_types_by_category()
-        return categories.get(category, [])
+        return get_module_types_by_category().get(category, [])
 
     @staticmethod
     def get_push_button_panels() -> List[ModuleType]:
@@ -189,8 +188,7 @@ class ModuleTypeService:
         """
         if group_by_category:
             return self._format_modules_by_category()
-        else:
-            return self._format_all_modules()
+        return self._format_all_modules()
 
     @staticmethod
     def _format_module_summary(module_type: ModuleType) -> str:

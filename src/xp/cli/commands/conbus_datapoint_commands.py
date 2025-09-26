@@ -11,6 +11,7 @@ from ..utils.decorators import (
     handle_service_errors,
 )
 from ..utils.serial_number_type import SERIAL
+from .conbus import conbus_datapoint
 from ...models.datapoint_type import DataPointType
 from ...services.conbus_datapoint_service import (
     ConbusDatapointService,
@@ -45,19 +46,12 @@ def query_datapoint(serial_number: str, datapoint: DataPointType) -> None:
     click.echo(json.dumps(response.to_dict(), indent=2))
 
 
-@click.group(name="datapoint", cls=click.Group)
-def conbus_datapoint_group() -> None:
-    """
-    Conbus datapoint operations for querying module datapoints
-    """
-    pass
-
 
 # Add the single datapoint query command to the group
-conbus_datapoint_group.add_command(query_datapoint)
+conbus_datapoint.add_command(query_datapoint)
 
 
-@conbus_datapoint_group.command("all", short_help="Query all datapoints from a module")
+@conbus_datapoint.command("all", short_help="Query all datapoints from a module")
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)

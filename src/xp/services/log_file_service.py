@@ -66,7 +66,7 @@ class LogFileService:
             if not path.is_file():
                 raise LogFileParsingError(f"Path is not a file: {file_path}")
 
-            with open(path, "r", encoding="utf-8", errors="replace") as f:
+            with Path(path).open("r", encoding="utf-8", errors="replace") as f:
                 lines = f.readlines()
 
             return self.parse_log_lines(lines, base_date)
@@ -296,7 +296,7 @@ class LogFileService:
         Returns:
             Filtered list of LogEntry objects
         """
-        filtered = entries[:]
+        filtered = entries.copy()
 
         if telegram_type:
             filtered = [e for e in filtered if e.telegram_type == telegram_type.lower()]

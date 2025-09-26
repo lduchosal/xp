@@ -4,22 +4,22 @@ This service implements a TCP server that listens on port 10001 and responds to
 Discover Request telegrams with configurable device information.
 """
 
+import logging
 import socket
 import threading
-import logging
-import os
+from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 from .base_server_service import BaseServerService
 from ..models.homekit_conson_config import ConsonModuleListConfig, ConsonModuleConfig
-from ..services.telegram_service import TelegramService
-from ..services.telegram_discover_service import TelegramDiscoverService
 from ..services.cp20_server_service import CP20ServerService
+from ..services.telegram_discover_service import TelegramDiscoverService
+from ..services.telegram_service import TelegramService
+from ..services.xp130_server_service import XP130ServerService
+from ..services.xp20_server_service import XP20ServerService
+from ..services.xp230_server_service import XP230ServerService
 from ..services.xp24_server_service import XP24ServerService
 from ..services.xp33_server_service import XP33ServerService
-from ..services.xp20_server_service import XP20ServerService
-from ..services.xp130_server_service import XP130ServerService
-from ..services.xp230_server_service import XP230ServerService
 
 
 class ServerError(Exception):
@@ -58,7 +58,7 @@ class ServerService:
     def _load_device_config(self) -> None:
         """Load device configurations from server.yml"""
         try:
-            if os.path.exists(self.config_path):
+            if Path(self.config_path).exists():
                 config = ConsonModuleListConfig.from_yaml(self.config_path)
                 self.devices = config.root
                 self._create_device_services()
@@ -236,23 +236,23 @@ class ServerService:
 
             # Handle discover requests
             if self.discover_service.is_discover_request(parsed_telegram):
-                for serial_number, device_service in self.device_services.items():
+                for device_service in self.device_services.values():
                     discover_response = device_service.generate_discover_response()
-                    responses.append(discover_response)
-                    responses.append("\n")
+                    responses.extend(discover_response)
+                    responses.extend("\n")
             else:
                 # Handle data requests for specific devices
                 serial_number = parsed_telegram.serial_number
 
                 # If broadcast (0000000000), respond from all devices
                 if serial_number == "0000000000":
-                    for serial_number, device_service in self.device_services.items():
+                    for device_service in self.device_services.values():
                         broadcast_response: Optional[str] = device_service.process_system_telegram(
                             parsed_telegram
                         )
                         if broadcast_response:
-                            responses.append(broadcast_response)
-                            responses.append("\n")
+                            responses.extend(broadcast_response)
+                            responses.extend("\n")
                 # If specific device - lookup by string serial number
                 else:
                     if serial_number in self.device_services:
@@ -261,8 +261,8 @@ class ServerService:
                             parsed_telegram
                         )
                         if device_response:
-                            responses.append(device_response)
-                            responses.append("\n")
+                            responses.extend(device_response)
+                            responses.extend("\n")
                     else:
                         self.logger.debug(
                             f"No device found for serial: {serial_number}"

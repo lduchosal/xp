@@ -1,4 +1,5 @@
 from ipaddress import IPv6Address, IPv4Address
+from pathlib import Path
 from typing import List, Union
 
 import yaml
@@ -32,6 +33,6 @@ class HomekitConfig(BaseModel):
 
     @classmethod
     def from_yaml(cls, file_path: str) -> 'HomekitConfig':
-        with open(file_path, 'r') as file:
+        with Path(file_path).open('r') as file:
             data = yaml.safe_load(file)
         return cls(**data)

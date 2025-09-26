@@ -1,4 +1,5 @@
 from typing import List, Set
+from contextlib import suppress
 
 from xp.models.homekit_config import HomekitConfig
 from xp.services.homekit_conson_config_service import ConsonConfigValidator
@@ -25,21 +26,13 @@ class HomekitConfigValidator:
     def validate_service_types(self) -> List[str]:
         """Validate that service types are valid."""
         valid_services = {"lightbulb", "outlet", "switch", "fan"}
-        errors = []
-
-        for accessory in self.config.accessories:
-            if accessory.service not in valid_services:
-                errors.append(f"Invalid service type '{accessory.service}' for accessory '{accessory.name}'. Valid types: {', '.join(valid_services)}")
+        errors = [f"Invalid service type '{accessory.service}' for accessory '{accessory.name}'. Valid types: {', '.join(valid_services)}" for accessory in self.config.accessories if accessory.service not in valid_services]
 
         return errors
 
     def validate_output_numbers(self) -> List[str]:
         """Validate that output numbers are positive integers."""
-        errors = []
-
-        for accessory in self.config.accessories:
-            if accessory.output_number < 0:
-                errors.append(f"Invalid output number {accessory.output_number} for accessory '{accessory.name}'. Must be positive.")
+        errors = [f"Invalid output number {accessory.output_number} for accessory '{accessory.name}'. Must be positive." for accessory in self.config.accessories if accessory.output_number < 0]
 
         return errors
 
@@ -73,10 +66,7 @@ class HomekitConfigValidator:
         for room in self.config.bridge.rooms:
             assigned_accessories.update(room.accessories)
 
-        errors = []
-        for accessory in self.config.accessories:
-            if accessory.name not in assigned_accessories:
-                errors.append(f"Accessory '{accessory.name}' is not assigned to any room")
+        errors = [f"Accessory '{accessory.name}' is not assigned to any room" for accessory in self.config.accessories if accessory.name not in assigned_accessories]
 
         return errors
 
@@ -116,11 +106,7 @@ class CrossReferenceValidator:
     def validate_serial_number_references(self) -> List[str]:
         """Validate that all accessory serial numbers exist in conson configuration."""
         conson_serials = self.conson_validator.get_all_serial_numbers()
-        errors = []
-
-        for accessory in self.homekit_validator.config.accessories:
-            if accessory.serial_number not in conson_serials:
-                errors.append(f"Accessory '{accessory.name}' references unknown serial number {accessory.serial_number}")
+        errors = [f"Accessory '{accessory.name}' references unknown serial number {accessory.serial_number}" for accessory in self.homekit_validator.config.accessories if accessory.serial_number not in conson_serials]
 
         return errors
 
@@ -129,7 +115,7 @@ class CrossReferenceValidator:
         errors = []
 
         for accessory in self.homekit_validator.config.accessories:
-            try:
+            with suppress(ValueError):
                 module = self.conson_validator.get_module_by_serial(accessory.serial_number)
 
                 # Define output limits by module type
@@ -150,10 +136,6 @@ class CrossReferenceValidator:
 
                 if accessory.output_number > max_outputs:
                     errors.append(f"Accessory '{accessory.name}' output {accessory.output_number} exceeds module '{module.name}' ({module.module_type}) limit of {max_outputs}")
-
-            except ValueError:
-                # Serial number validation error already caught by validate_serial_number_references
-                pass
 
         return errors
 

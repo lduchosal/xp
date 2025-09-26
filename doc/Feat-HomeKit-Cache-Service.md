@@ -65,7 +65,7 @@ class CacheEntry:
     ttl: int
 
 def get(self, key: str, tag: str) -> CacheResponse:
-    cache_key = f"{key}"
+    cache_key = key
 
     if cache_key in cache and not expired:
         return CacheResponse(data=cached_data, hit=True)

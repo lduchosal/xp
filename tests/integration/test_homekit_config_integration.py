@@ -1,8 +1,8 @@
+import tempfile
+from pathlib import Path
 from typing import List
 
 import pytest
-import tempfile
-import os
 import yaml
 
 from xp.models.homekit_conson_config import ConsonModuleConfig
@@ -32,8 +32,8 @@ class TestHomekitConfigIntegration:
     def cleanup_temp_files(*file_paths):
         """Clean up temporary files."""
         for file_path in file_paths:
-            if os.path.exists(file_path):
-                os.unlink(file_path)
+            if Path(file_path).exists():
+                Path(file_path).unlink()
 
     def test_valid_configuration_integration(self):
         """Test complete validation with valid configuration files."""

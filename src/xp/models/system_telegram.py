@@ -54,7 +54,7 @@ class SystemTelegram(Telegram):
     def __str__(self) -> str:
         """Human-readable string representation"""
         system_func_name = self.system_function.name if self.system_function else "Unknown"
-        data = self.data if self.data else "None"
+        data = self.data or "None"
         data = self.datapoint_type.name if self.datapoint_type else data
         return (
             f"System Telegram: {system_func_name} "

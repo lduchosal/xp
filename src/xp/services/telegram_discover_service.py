@@ -224,7 +224,7 @@ class TelegramDiscoverService:
         if summary["duplicate_responses"] > 0:
             lines.append(f"Duplicate Responses: {summary['duplicate_responses']}")
 
-        lines.append("\nDiscovered Devices:")
+        lines.extend("\nDiscovered Devices:")
         lines.append("-" * 40)
 
         for device in unique_devices:

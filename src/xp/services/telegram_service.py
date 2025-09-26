@@ -74,7 +74,7 @@ class TelegramService:
             checksum = match.group(6)
 
             # Validate ranges
-            if event_telegram_type not in ["E", "O"]:
+            if event_telegram_type not in ("E", "O"):
                 raise TelegramParsingError(
                     f"Event telegram type (E or O): {event_telegram_type}"
                 )
@@ -311,7 +311,7 @@ class TelegramService:
         # Then check general telegram types
         telegram_type_code = raw_telegram.strip()[1] if len(raw_telegram.strip()) > 1 else ""
 
-        if telegram_type_code in ["E", "O"]:
+        if telegram_type_code in ("E", "O"):
             return self.parse_event_telegram(raw_telegram)
         elif telegram_type_code == "S":
             return self.parse_system_telegram(raw_telegram)

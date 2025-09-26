@@ -53,9 +53,8 @@ async def custom_function(
             result = response.reply_telegram.data_value,
             description = response.reply_telegram.datapoint_type.name,
         )
-    else:
-        return ApiResponse(
-            success = True,
-            result = response.reply_telegram.data_value,
-            description = "Custom command executed successfully",
-        )
+    return ApiResponse(
+        success = True,
+        result = response.reply_telegram.data_value,
+        description = "Custom command executed successfully",
+    )

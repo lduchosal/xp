@@ -28,7 +28,7 @@ def handle_service_errors(*service_exceptions: Type[Exception]) -> Callable[[Cal
                 raise SystemExit(1)
             except Exception as e:
                 # Handle unexpected errors
-                error_response = formatter.error_response(f"Unexpected error: {str(e)}")
+                error_response = formatter.error_response(f"Unexpected error: {e}")
                 click.echo(error_response)
                 raise SystemExit(1)
 
@@ -143,10 +143,7 @@ def require_arguments(*required_args: str) -> Callable[[Callable[..., Any]], Cal
             formatter = OutputFormatter(True)
 
             # Check for missing required arguments
-            missing_args = []
-            for arg_name in required_args:
-                if arg_name in kwargs and kwargs[arg_name] is None:
-                    missing_args.append(arg_name)
+            missing_args = [arg_name for arg_name in required_args if arg_name in kwargs and kwargs[arg_name] is None]
 
             if missing_args:
                 error_msg = f"Missing required arguments: {', '.join(missing_args)}"

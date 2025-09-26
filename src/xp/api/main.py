@@ -3,6 +3,7 @@
 import logging
 import os
 import yaml
+from pathlib import Path
 from typing import Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,8 +28,8 @@ def load_api_config() -> dict[str, Any]:
 
     # Try to load from api.yml
     try:
-        if os.path.exists("api.yml"):
-            with open("api.yml", "r") as file:
+        if Path("api.yml").exists():
+            with Path("api.yml").open("r") as file:
                 file_config = yaml.safe_load(file)
                 if file_config:
                     config.update(file_config.get("api", {}))

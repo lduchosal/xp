@@ -1,5 +1,5 @@
-import os
 import tempfile
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import yaml
@@ -76,5 +76,5 @@ class TestHomekitModuleServiceIntegration:
 
         finally:
             # Cleanup
-            if os.path.exists(config_path):
-                os.unlink(config_path)
+            if Path(config_path).exists():
+                Path(config_path).unlink()

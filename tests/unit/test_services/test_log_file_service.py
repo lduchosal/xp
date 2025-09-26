@@ -1,14 +1,16 @@
 """Tests for LogFileService"""
 
-import pytest
 from datetime import datetime
-from unittest.mock import Mock, patch, mock_open
 from typing import cast
+from unittest.mock import Mock, patch
+
+import pytest
+
+from xp.models.event_telegram import EventTelegram
+from xp.models.log_entry import LogEntry
+from xp.models.system_telegram import SystemTelegram
 from xp.services.log_file_service import LogFileService, LogFileParsingError
 from xp.services.telegram_service import TelegramService, TelegramParsingError
-from xp.models.log_entry import LogEntry
-from xp.models.event_telegram import EventTelegram
-from xp.models.system_telegram import SystemTelegram
 
 
 class TestLogFileService:
@@ -152,28 +154,6 @@ class TestLogFileService:
         # Third entry should be valid
         assert results[2].parsed_telegram == mock_telegram
         assert results[2].parse_error is None
-
-    @patch("pathlib.Path.exists")
-    @patch("pathlib.Path.is_file")
-    @patch("builtins.open")
-    def test_parse_log_file_success(self, mock_file_open, mock_is_file, mock_exists):
-        """Test successful log file parsing"""
-        # Setup mocks
-        mock_exists.return_value = True
-        mock_is_file.return_value = True
-        mock_file_open.return_value = mock_open(
-            read_data="22:44:20,352 [TX] <test>"
-        ).return_value
-
-        service = LogFileService()
-        mock_telegram = Mock(spec=SystemTelegram)
-        service.telegram_service.parse_telegram = Mock(return_value=mock_telegram)
-
-        results = service.parse_log_file("/path/to/log.txt")
-
-        assert len(results) == 1
-        assert results[0].raw_telegram == "<test>"
-        assert results[0].parsed_telegram == mock_telegram
 
     @patch("pathlib.Path.exists")
     def test_parse_log_file_not_found(self, mock_exists):

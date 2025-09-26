@@ -31,7 +31,7 @@ class OutputFormatter:
     def validation_response(self, is_valid: bool, data: Dict[str, Any]) -> str:
         """Format a validation response."""
         if self.json_output:
-            response_data = {"valid": is_valid, **data}
+            response_data = {"valid": is_valid} | data
             return json.dumps(response_data, indent=2)
 
         status = "✓ Valid" if is_valid else "✗ Invalid"
@@ -64,7 +64,7 @@ class OutputFormatter:
 
         # Add any remaining fields
         for key, value in data.items():
-            if key not in ["telegram", "serial_number", "operation", "count"]:
+            if key not in ("telegram", "serial_number", "operation", "count"):
                 if isinstance(value, (str, int, float)):
                     lines.append(f"{key.replace('_', ' ').title()}: {value}")
 

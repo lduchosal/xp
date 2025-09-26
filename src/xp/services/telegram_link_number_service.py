@@ -3,7 +3,7 @@
 This service handles generation and parsing of link number system telegrams
 used for setting and reading module link numbers.
 """
-
+from contextlib import suppress
 from typing import Optional
 from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
@@ -196,13 +196,11 @@ class LinkNumberService:
         ):
             return None
 
-        try:
+        with suppress(ValueError, TypeError):
             # The data value should contain the link number
             link_number = int(reply_telegram.data_value)
             if 0 <= link_number <= 99:
                 return link_number
-        except (ValueError, TypeError):
-            pass
 
         return None
 

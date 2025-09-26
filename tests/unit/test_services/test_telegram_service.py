@@ -250,10 +250,9 @@ class TestSystemTelegramParsing:
         with pytest.raises(
             TelegramParsingError, match="Invalid system telegram format"
         ):
-            output = self.service.parse_system_telegram(
+            self.service.parse_system_telegram(
                 "<S0020012521F02D8FN>"
             )  # Wrong data point format
-            assert "cocou" in output.data
 
     def test_parse_system_telegram_unknown_function(self):
         """Test parsing system telegram with unknown function code"""

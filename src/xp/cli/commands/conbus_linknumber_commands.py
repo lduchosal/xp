@@ -1,30 +1,18 @@
 """Conbus link number CLI commands."""
 
 import json
-
 import click
-from click_help_colors import HelpColorsGroup
 
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,
 )
+from .conbus import conbus_linknumber
 from ..utils.serial_number_type import SERIAL
 from ...services.conbus_linknumber_service import ConbusLinknumberService
 from ...services.telegram_link_number_service import LinkNumberError
 
-
-@click.group("linknumber", cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green', short_help="Link number operations")
-def conbus_linknumber_command() -> None:
-    """
-    Link number operations for modules.
-
-    Set or get the link number for specific modules.
-    """
-    pass
-
-
-@conbus_linknumber_command.command("set", short_help="Set link number for a module")
+@conbus_linknumber.command("set", short_help="Set link number for a module")
 @click.argument("serial_number", type=SERIAL)
 @click.argument("link_number", type=click.IntRange(0, 99))
 @connection_command()
@@ -48,7 +36,7 @@ def set_linknumber_command(serial_number: str, link_number: int) -> None:
         click.echo(json.dumps(response.to_dict(), indent=2))
 
 
-@conbus_linknumber_command.command("get", short_help="Get link number for a module")
+@conbus_linknumber.command("get", short_help="Get link number for a module")
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(LinkNumberError)

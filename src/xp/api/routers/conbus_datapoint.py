@@ -55,9 +55,8 @@ async def datapoint_devices(
             result = response.datapoint_telegram.data_value,
             description = response.datapoint_telegram.datapoint_type.name,
         )
-    else:
-        return ApiResponse(
-            success = True,
-            result = response.datapoint_telegram.data_value,
-            description = "Datapoint value retrieved",
-        )
+    return ApiResponse(
+        success = True,
+        result = response.datapoint_telegram.data_value,
+        description = "Datapoint value retrieved",
+    )

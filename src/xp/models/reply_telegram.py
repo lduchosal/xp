@@ -48,8 +48,7 @@ class ReplyTelegram(Telegram):
             return self._parse_module_type_value()
         elif self.datapoint_type == DataPointType.SW_VERSION:
             return self._parse_sw_version_value()
-        else:
-            return {"raw_value": self.data_value, "parsed": False}
+        return {"raw_value": self.data_value, "parsed": False}
 
     def _parse_temperature_value(self) -> dict:
         """Parse temperature value like '+26,0§C'"""

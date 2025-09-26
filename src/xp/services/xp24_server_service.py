@@ -104,8 +104,8 @@ class XP24ServerService(BaseServerService):
         response = "F19D" # NAK
         if (
             request.system_function == SystemFunction.ACTION
-                and request.data[:2] in ["00", "01", "02", "03" ]
-                and request.data[2:] in ["AA", "AB"]
+                and request.data[:2] in ("00", "01", "02", "03")
+                and request.data[2:] in ("AA", "AB")
         ):
             response = "F18D" # ACK
 

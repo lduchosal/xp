@@ -39,7 +39,8 @@ dev = [
     "vulture>=2.14",
     "httpx>=0.24.0",
     "twine>=6.2.0",
-    "types-PyYAML"
+    "types-PyYAML",
+    "refurb>=2.2.0",
 ]
 
 [tool.pytest.ini_options]
@@ -118,9 +119,6 @@ disable_error_code = ["method-assign"]
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
@@ -138,7 +136,8 @@ lint-fix = "ruff check --fix src/ tests/"
 format = "black src/ tests/"
 format-check = "black --check src/ tests/"
 typecheck = "mypy src/ tests/"
-check = ["lint", "format-check", "typecheck", "test"]
+refurb = "refurb src/ tests/ --quiet"
+check = ["lint", "format-check", "typecheck", "refurb", "test"]
 bump-version = "pdm bump -v patch"
 env = "echo ${PATH}"
 install = "pdm install"
@@ -148,6 +147,10 @@ version-show = "python -c 'import xp; print(xp.__version__)'"
 version-patch = "pdm bump patch"
 version-minor = "pdm bump minor"
 version-major = "pdm bump major"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [tool.vulture]
 exclude = ["src/xp/cli"]

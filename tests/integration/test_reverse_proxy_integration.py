@@ -1,10 +1,10 @@
 """Integration tests for Conbus reverse proxy functionality."""
 
 import socket
+import tempfile
 import threading
 import time
-import tempfile
-import os
+from pathlib import Path
 from typing import Optional
 
 import pytest
@@ -116,8 +116,8 @@ conbus:
         if self.mock_server.is_running:
             self.mock_server.stop()
 
-        if os.path.exists(self.temp_config.name):
-            os.unlink(self.temp_config.name)
+        if Path(self.temp_config.name).exists():
+            Path(self.temp_config.name).unlink()
 
     @pytest.mark.reverseproxy
     def test_end_to_end_telegram_relay(self):
@@ -335,4 +335,4 @@ conbus:
             assert proxy.target_port == 99999
 
         finally:
-            os.unlink(temp_config.name)
+            Path(temp_config.name).unlink()

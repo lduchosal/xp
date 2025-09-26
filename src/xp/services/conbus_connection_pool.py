@@ -8,6 +8,7 @@ import threading
 import socket
 import logging
 import time
+from contextlib import suppress
 from typing import Optional, Any
 
 from ..models import ConbusClientConfig
@@ -161,11 +162,8 @@ class ConbusConnectionPool:
             if cls._instance:
                 # Clean up existing connection
                 if hasattr(cls._instance, '_connection') and cls._instance._connection:
-                    # noinspection PyBroadException
-                    try:
+                    with suppress(Exception):
                         cls._instance._connection.close()
-                    except Exception:
-                        pass
             cls._instance = None
 
     def close(self) -> None:

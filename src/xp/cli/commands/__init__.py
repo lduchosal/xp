@@ -10,6 +10,7 @@ from .conbus_scan_commands import *
 from .conbus_datapoint_commands import *
 from .conbus_raw_commands import *
 from .conbus_receive_commands import *
+from .conbus_linknumber_commands import *
 
 from .file_commands import *
 from .module_commands import *
@@ -24,8 +25,11 @@ from .telegram_linknumber_commands import *
 from .telegram_version_commands import *
 from .telegram_checksum_commands import *
 
-from .api import *
 from .api_start_commands import *
 
 from .homekit import *
-from .homekit_start_commands import *
+from .homekit_start_commands import homekit_start
+
+__all__ = [
+    "homekit_start"
+]
