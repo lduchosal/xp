@@ -64,6 +64,7 @@ class XP24ServerService(BaseServerService):
         if request.datapoint_type == DataPointType.MODULE_STATE:
             return self.generate_module_state_response(request)
 
+        return None
 
     def _handle_device_specific_action_request(
             self, request: SystemTelegram

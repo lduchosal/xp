@@ -204,6 +204,7 @@ class TestConbusDatapointService:
         assert result.success is True
         assert result.serial_number == self.valid_serial
         assert result.system_function == SystemFunction.READ_DATAPOINT
+        assert result.datapoints is not None
         assert len(result.datapoints) > 0
 
         # Should have called send_telegram for each DataPointType
@@ -239,5 +240,6 @@ class TestConbusDatapointService:
         # Should still succeed overall but with fewer datapoints
         assert result.success is True
         assert result.serial_number == self.valid_serial
+        assert result.datapoints is not None
         assert len(result.datapoints) == 1  # Only MODULE_TYPE succeeded
         assert result.datapoints[0] == {"MODULE_TYPE": "XP33LED"}
