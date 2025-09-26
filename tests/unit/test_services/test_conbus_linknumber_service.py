@@ -199,10 +199,8 @@ conbus:
 
     @patch("xp.services.conbus_linknumber_service.ConbusService")
     @patch("xp.services.conbus_linknumber_service.LinkNumberService")
-    @patch("xp.services.conbus_linknumber_service.TelegramService")
     def test_set_linknumber_no_received_telegrams(
         self,
-        mock_telegram_service_class,
         mock_link_service_class,
         mock_conbus_service_class,
     ):

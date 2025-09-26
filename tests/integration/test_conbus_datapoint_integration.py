@@ -227,7 +227,7 @@ class TestConbusDatapointService:
         service = ConbusDatapointService()
 
         # Mock send_telegram to return success for some, failure for others
-        def mock_send_telegram(datapoint_type, serial_number):
+        def mock_send_telegram(datapoint_type, _serial_number):
             if datapoint_type == DataPointType.MODULE_TYPE:
                 mock_reply = Mock()
                 mock_reply.data_value = "XP33LED"

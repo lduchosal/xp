@@ -11,9 +11,7 @@ import time
 from contextlib import suppress
 from typing import Optional
 
-import pytest
 
-from xp.services.conbus_datapoint_service import ConbusDatapointService
 
 
 class Latin1TestServer:

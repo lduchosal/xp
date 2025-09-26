@@ -77,8 +77,8 @@ run_command "pdm run lint" "Linting"
 print_step "Code Formatting"
 run_command "pdm run format" "Code formatting"
 
-print_step "Code Formatting"
-run_command "pdm run format" "Code formatting"
+print_step "Code dead variable check"
+run_command "pdm run vulture" "Dead variable checl"
 
 print_step "Running Tests"
 run_command "pdm run test-quick" "Tests"
