@@ -7,6 +7,7 @@ from . import conbus_blink
 from . import conbus_custom
 
 __all__ = [
+    "router",
     "conbus_blink",
     "conbus_custom",
     "conbus_datapoint",
