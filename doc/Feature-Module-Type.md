@@ -39,5 +39,5 @@ The following module type codes exists in the XP system:
  | XP31BC   |  50  | 32  |                                                                                      |
  | XP20     |  51  | 33  | XP switch link module                                                                |
  | XP230    |  52  | 34  | Ethernet/TCPIP interface module                                                      |
- | XP33LED  |  53  | 36  | XP 3 channel LED dimmer                                                              |
- | XP31LED  |  54  | 37  | XP 1 channel LED dimmer                                                              |
+ | XP33LED  |  53  | 35  | XP 3 channel LED dimmer                                                              |
+ | XP31LED  |  54  | 36  | XP 1 channel LED dimmer                                                              |

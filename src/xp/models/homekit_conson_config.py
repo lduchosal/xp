@@ -10,6 +10,7 @@ class ConsonModuleConfig(BaseModel):
     module_type: str
     module_type_code: int
     link_number: int
+    enabled: bool = True
     module_number: Optional[int] = None
     conbus_ip: Optional[IPvAnyAddress] = None
     conbus_port: Optional[int] = None

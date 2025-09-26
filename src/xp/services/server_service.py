@@ -66,7 +66,7 @@ class ServerService:
         try:
             if Path(self.config_path).exists():
                 config = ConsonModuleListConfig.from_yaml(self.config_path)
-                self.devices = config.root
+                self.devices = [module for module in config.root if module.enabled]
                 self._create_device_services()
                 self.logger.info(f"Loaded {len(self.devices)} devices from config")
             else:
@@ -219,7 +219,7 @@ class ServerService:
                 # Send responses
                 for response in responses:
                     client_socket.send(response.encode("latin-1"))
-                    self.logger.info(f"Sent to {client_address}: {response}")
+                    self.logger.info(f"Sent to {client_address}: {response[:-1]}")
 
         except socket.timeout:
             self.logger.info(f"Client {client_address} timed out")
@@ -248,8 +248,7 @@ class ServerService:
             if self.discover_service.is_discover_request(parsed_telegram):
                 for device_service in self.device_services.values():
                     discover_response = device_service.generate_discover_response()
-                    responses.extend(discover_response)
-                    responses.extend("\n")
+                    responses.append(f"{discover_response}\n")
             else:
                 # Handle data requests for specific devices
                 serial_number = parsed_telegram.serial_number
@@ -261,8 +260,7 @@ class ServerService:
                             device_service.process_system_telegram(parsed_telegram)
                         )
                         if broadcast_response:
-                            responses.extend(broadcast_response)
-                            responses.extend("\n")
+                            responses.append(f"{broadcast_response}\n")
                 # If specific device - lookup by string serial number
                 else:
                     if serial_number in self.device_services:
@@ -271,8 +269,7 @@ class ServerService:
                             device_service.process_system_telegram(parsed_telegram)
                         )
                         if device_response:
-                            responses.extend(device_response)
-                            responses.extend("\n")
+                            responses.append(f"{device_response}\n")
                     else:
                         self.logger.debug(
                             f"No device found for serial: {serial_number}"

@@ -13,6 +13,7 @@ class SystemFunction(str, Enum):
     UNBLINK = "06"  # Unblink LED function
     ACK = "18"  # Acknowledge response
     NAK = "19"  # Not acknowledge response
+    UNKNOWN_26 = "26"  # Used after discover, but don't know what it is
     ACTION = "27"  # Action function
 
     def get_description(self) -> str:
