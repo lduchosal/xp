@@ -272,8 +272,7 @@ class TestConbusAutoreportService:
         mock_datapoint_service.query_datapoint.return_value = mock_datapoint_response
 
         # Test the service
-        service = ConbusAutoreportService()
-        result = service.get_autoreport_status(self.valid_serial)
+        result = ConbusAutoreportService().get_autoreport_status(self.valid_serial)
 
         # Assertions
         assert result.success is True
@@ -308,8 +307,9 @@ class TestConbusAutoreportService:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Test the service
-        service = ConbusAutoreportService()
-        result = service.set_autoreport_status(self.valid_serial, True)
+        result = ConbusAutoreportService().set_autoreport_status(
+            self.valid_serial, True
+        )
 
         # Assertions
         assert result.success is True
@@ -343,8 +343,9 @@ class TestConbusAutoreportService:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Test the service
-        service = ConbusAutoreportService()
-        result = service.set_autoreport_status(self.valid_serial, False)
+        result = ConbusAutoreportService().set_autoreport_status(
+            self.valid_serial, False
+        )
 
         # Assertions
         assert result.success is True

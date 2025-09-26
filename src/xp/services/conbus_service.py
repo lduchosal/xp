@@ -168,7 +168,9 @@ class ConbusService:
         with self._connection_pool as connection:
             while time.time() - start_time < timeout:
                 # Call _receive_responses_with_connection with a short timeout for each iteration
-                telegrams = self._receive_responses_with_connection(connection, timeout=0.1)
+                telegrams = self._receive_responses_with_connection(
+                    connection, timeout=0.1
+                )
                 all_telegrams.extend(telegrams)
 
                 # Small sleep to avoid busy waiting when no data

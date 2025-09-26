@@ -7,7 +7,7 @@ class WriteConfigType(str, Enum):
 
     LINK_NUMBER = "04"
     MODULE_NUMBER = "05"
-    SYSTEM_TYPE = "06" # 00 CP, 01 XP, 02 MIXED
+    SYSTEM_TYPE = "06"  # 00 CP, 01 XP, 02 MIXED
 
     @classmethod
     def from_code(cls, code: str) -> Optional["WriteConfigType"]:

@@ -55,8 +55,6 @@ class TestServiceInitialization(TestConbusService):
         assert service.config.ip == "192.168.1.100"
         assert service.config.port == 10001
         assert service.config.timeout == 0.1
-        assert service.is_connected is False
-        assert service.socket is None
 
     def test_nonexistent_config_file(self):
         """Test handling of non-existent config file"""

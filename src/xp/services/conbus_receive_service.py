@@ -48,7 +48,7 @@ class ConbusReceiveService:
             response = self.conbus_service.receive_responses(timeout=timeout)
             return ConbusReceiveResponse(
                 success=True,
-                received_telegrams=response or [],
+                received_telegrams=response,
             )
 
         except Exception as e:

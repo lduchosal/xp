@@ -59,41 +59,41 @@ echo "${BOLD}Starting XP Package Publishing Process...${NC}"
 print_step "Cleaning Previous Build"
 run_command "pdm run clean" "Clean"
 
-print_step "Installing Dependencies"
+print_step "Installing Dependencies (pdm)"
 run_command "pdm run install" "Dependencies installation"
 
-print_step "Installing Development Dependencies"
+print_step "Installing Development Dependencies (pdm)"
 run_command "pdm run install-dev" "Development dependencies installation"
 
-print_step "Type Checking"
+print_step "Type Checking (typecheck)"
 run_command "pdm run typecheck" "Type checking"
 
-print_step "Code Quality Check (Refurb)"
+print_step "Code Quality Check (refurb)"
 run_command "pdm run refurb" "Code quality check"
 
-print_step "Linting"
+print_step "Linting (ruff)"
 run_command "pdm run lint" "Linting"
 
-print_step "Code Formatting"
+print_step "Code Formatting (black)"
 run_command "pdm run format" "Code formatting"
 
-print_step "Code dead variable check"
-run_command "pdm run vulture" "Dead variable checl"
+print_step "Dead code check (vulture)"
+run_command "pdm run vulture" "Dead code check"
 
-print_step "Running Tests"
+print_step "Running Tests (pytest)"
 run_command "pdm run test-quick" "Tests"
 
-print_step "Bumping Version"
+print_step "Bumping Version (pdm-bump)"
 run_command "pdm run bump-version" "Version bump"
 
 # Extract version after bump
 VERSION=$(python -c "import sys; sys.path.insert(0, 'src'); import xp; print(xp.__version__)")
 echo "${BLUE}New version: ${VERSION}${NC}"
 
-print_step "Building Package"
+print_step "Building Package (pdm)"
 run_command "pdm build" "Package build"
 
-print_step "Publishing Package"
+print_step "Publishing Package (twine)"
 run_command "pdm publish" "Package publishing"
 
 print_step "Adding All Files to Git"

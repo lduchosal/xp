@@ -136,7 +136,8 @@ test-cov = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-rep
 lint = "ruff check --fix src/ tests/"
 format = "black src/ tests/"
 typecheck = "mypy src/ tests/"
-deadvar = "vulture src/ tests/"
+vulture = "vulture src/ tests/"
+refurb = "refurb src/ tests/"
 check = ["lint", "format", "typecheck", "refurb", "deadvar", "test"]
 bump-version = "pdm bump -v patch"
 env = "echo ${PATH}"
