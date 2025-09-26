@@ -1,5 +1,12 @@
 # 🔌 XP Protocol Communication Tool
 
+[![PyPI version](https://badge.fury.io/py/conson-xp.svg)](https://badge.fury.io/py/conson-xp)
+[![Python package](https://github.com/lduchosal/xp/actions/workflows/python-package.yml/badge.svg)](https://github.com/lduchosal/xp/actions/workflows/python-package.yml)
+[![codecov](https://codecov.io/gh/lduchosal/xp/branch/main/graph/badge.svg)](https://codecov.io/gh/lduchosal/xp)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+
 > **A powerful Python CLI and API toolkit for CONSON XP Protocol operations**
 
 Control and communicate with XP devices through console bus (Conbus), parse telegrams in real-time, and integrate with smart home systems like Apple HomeKit.

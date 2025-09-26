@@ -129,7 +129,7 @@ version = {source = "file", path = "src/xp/__init__.py"}
 [tool.pdm.scripts]
 test = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing"
 test-quick = "env PYTHONPATH=src python -m pytest tests/ --tb=no -q"
-test-ci = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing -m 'not reverseproxy'"
+test-ci = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-branch --cov-report=xml -m 'not reverseproxy'"
 test-unit = "env PYTHONPATH=src python -m pytest tests/unit/ -v"
 test-integration = "env PYTHONPATH=src python -m pytest tests/integration/ -v"
 test-cov = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=html --cov-report=term-missing"
