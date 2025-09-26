@@ -35,7 +35,7 @@ run_command() {
 
     echo "${YELLOW}→ Running: ${cmd}${NC}"
 
-    if $cmd; then
+    if eval "$cmd"; then
         print_success "$description completed successfully"
     else
         print_error "$description failed"
@@ -52,32 +52,48 @@ echo "╚═╝      ╚═════╝ ╚═════╝ ╚════
 echo "${NC}"
 echo "${BOLD}Starting XP Package Publishing Process...${NC}"
 
-print_step "1/8 Cleaning Previous Build"
+print_step "1/11 Cleaning Previous Build"
 run_command "pdm run clean" "Clean"
 
-print_step "2/8 Installing Dependencies"
+print_step "2/11 Installing Dependencies"
 run_command "pdm run install" "Dependencies installation"
 
-print_step "3/8 Installing Development Dependencies"
+print_step "3/11 Installing Development Dependencies"
 run_command "pdm run install-dev" "Development dependencies installation"
 
-print_step "4/8 Type Checking"
+print_step "4/11 Type Checking"
 run_command "pdm run typecheck" "Type checking"
 
-print_step "5/8 Running Tests"
+print_step "5/11 Running Tests"
 run_command "pdm run test-quick" "Tests"
 
-print_step "6/8 Bumping Version"
+print_step "6/11 Bumping Version"
 run_command "pdm run bump-version" "Version bump"
 
-print_step "7/8 Building Package"
+# Extract version after bump
+VERSION=$(python -c "import sys; sys.path.insert(0, 'src'); import xp; print(xp.__version__)")
+echo "${BLUE}New version: ${VERSION}${NC}"
+
+print_step "7/11 Building Package"
 run_command "pdm build" "Package build"
 
-print_step "8/8 Publishing Package"
+print_step "8/11 Publishing Package"
 run_command "pdm publish" "Package publishing"
+
+print_step "9/11 Adding All Files to Git"
+run_command "git add ." "Adding all files to git"
+
+print_step "10/11 Committing Changes"
+COMMIT_MSG="chore: release version ${VERSION}"
+run_command "git commit -m \"${COMMIT_MSG}\"" "Git commit"
+
+print_step "11/11 Creating Tag and Pushing"
+run_command "git tag conson-xp-${VERSION}" "Creating git tag"
+run_command "git push" "Pushing commits"
+run_command "git push --tags" "Pushing tags"
 
 echo ""
 echo "${GREEN}${BOLD}🎉 PUBLISHING COMPLETED SUCCESSFULLY! 🎉${NC}"
 echo "${GREEN}${BOLD}═══════════════════════════════════════════════════════════════${NC}"
-echo "${GREEN}Your XP package has been successfully published!${NC}"
+echo "${GREEN}Your XP package has been successfully published and tagged!${NC}"
 echo ""

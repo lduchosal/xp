@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: datapoint / all">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/xp24_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp24_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_datapoint_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_datapoint_integration.py" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: version 0.9.19">
+      <change beforePath="$PROJECT_DIR$/publish.sh" beforeDir="false" afterPath="$PROJECT_DIR$/publish.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -400,15 +398,7 @@
       <workItem from="1758604567711" duration="10337000" />
       <workItem from="1758645289123" duration="26352000" />
       <workItem from="1758798839699" duration="14945000" />
-      <workItem from="1758876985425" duration="2998000" />
-    </task>
-    <task id="LOCAL-00089" summary="Feat: homekit">
-      <option name="closed" value="true" />
-      <created>1758461713879</created>
-      <option name="number" value="00089" />
-      <option name="presentableId" value="LOCAL-00089" />
-      <option name="project" value="LOCAL" />
-      <updated>1758461713879</updated>
+      <workItem from="1758876985425" duration="3379000" />
     </task>
     <task id="LOCAL-00090" summary="Feat: homekit">
       <option name="closed" value="true" />
@@ -794,7 +784,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758881066731</updated>
     </task>
-    <option name="localTasksCounter" value="138" />
+    <task id="LOCAL-00138" summary="chore: version 0.9.19">
+      <option name="closed" value="true" />
+      <created>1758881184563</created>
+      <option name="number" value="00138" />
+      <option name="presentableId" value="LOCAL-00138" />
+      <option name="project" value="LOCAL" />
+      <updated>1758881184563</updated>
+    </task>
+    <option name="localTasksCounter" value="139" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -823,7 +821,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: refactor / clean" />
     <MESSAGE value="Feat: refactor / input output" />
     <MESSAGE value="Feat: homekit" />
     <MESSAGE value="Feat: Cli / conbus raw" />
@@ -848,7 +845,8 @@
     <MESSAGE value="feat: Telegram / TelegramType" />
     <MESSAGE value="feat: XP24 / output" />
     <MESSAGE value="feat: datapoint / all" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: datapoint / all" />
+    <MESSAGE value="chore: version 0.9.19" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore: version 0.9.19" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
