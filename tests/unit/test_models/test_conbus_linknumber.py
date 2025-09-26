@@ -71,6 +71,7 @@ class TestConbusLinknumberResponse:
             "serial_number": "0020045057",
             "sent_telegram": "<S0020045057F04D0425FO>",
             "received_telegrams": ["<R0020045057F04D0400FH>"],
+            "link_number": None,
             "error": None,
             "timestamp": "2025-09-26T13:11:25.820383",
         }
@@ -91,6 +92,7 @@ class TestConbusLinknumberResponse:
         assert result["serial_number"] == "0020045057"
         assert result["sent_telegram"] is None
         assert result["received_telegrams"] == []
+        assert result["link_number"] is None
         assert result["error"] == "Connection timeout"
         assert result["timestamp"] is not None
 
@@ -103,3 +105,64 @@ class TestConbusLinknumberResponse:
         )
 
         assert response.received_telegrams == []
+
+    def test_response_with_link_number(self):
+        """Test response with link number for get operations"""
+        response = ConbusLinknumberResponse(
+            success=True,
+            result="SUCCESS",
+            serial_number="0020045057",
+            link_number=25,
+            sent_telegram="<S0020045057F03D04FG>",
+            received_telegrams=["<R0020045057F03D041AFH>"],
+        )
+
+        assert response.success is True
+        assert response.result == "SUCCESS"
+        assert response.serial_number == "0020045057"
+        assert response.link_number == 25
+        assert response.sent_telegram == "<S0020045057F03D04FG>"
+        assert response.received_telegrams == ["<R0020045057F03D041AFH>"]
+        assert response.error is None
+        assert isinstance(response.timestamp, datetime)
+
+    def test_response_without_link_number(self):
+        """Test response without link number (set operations)"""
+        response = ConbusLinknumberResponse(
+            success=True,
+            result="ACK",
+            serial_number="0020045057",
+            sent_telegram="<S0020045057F04D0425FO>",
+        )
+
+        assert response.success is True
+        assert response.result == "ACK"
+        assert response.serial_number == "0020045057"
+        assert response.link_number is None
+        assert response.sent_telegram == "<S0020045057F04D0425FO>"
+
+    def test_to_dict_with_link_number(self):
+        """Test conversion to dictionary with link number"""
+        timestamp = datetime(2025, 9, 26, 13, 11, 25, 820383)
+        response = ConbusLinknumberResponse(
+            success=True,
+            result="SUCCESS",
+            serial_number="0020045057",
+            link_number=25,
+            sent_telegram="<S0020045057F03D04FG>",
+            received_telegrams=["<R0020045057F03D041AFH>"],
+            timestamp=timestamp,
+        )
+
+        result = response.to_dict()
+        expected = {
+            "success": True,
+            "result": "SUCCESS",
+            "serial_number": "0020045057",
+            "sent_telegram": "<S0020045057F03D04FG>",
+            "received_telegrams": ["<R0020045057F03D041AFH>"],
+            "link_number": 25,
+            "error": None,
+            "timestamp": "2025-09-26T13:11:25.820383",
+        }
+        assert result == expected

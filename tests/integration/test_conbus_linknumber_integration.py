@@ -150,3 +150,125 @@ class TestConbusLinknumberIntegration:
 
         with service as s:
             assert s is service
+
+    @staticmethod
+    def _create_mock_datapoint_response(success=True, serial_number="0020045057", link_number=25, error=None):
+        """Helper to create a properly formed ConbusDatapointResponse"""
+        mock_response = Mock()
+        mock_response.success = success
+        mock_response.sent_telegram = f"<S{serial_number}F03D04FG>"
+        mock_response.received_telegrams = [f"<R{serial_number}F03D04{link_number:02d}FH>"] if success else []
+        mock_response.error = error
+        mock_response.timestamp = Mock()
+
+        if success:
+            mock_response.datapoint_telegram = Mock()
+            mock_response.datapoint_telegram.data_value = str(link_number)
+        else:
+            mock_response.datapoint_telegram = None
+
+        return mock_response
+
+    @patch('xp.services.conbus_linknumber_service.ConbusDatapointService')
+    def test_conbus_get_linknumber_valid(self, mock_datapoint_service_class):
+        """Test getting valid link number"""
+        # Setup mock
+        mock_datapoint_service = Mock()
+        mock_datapoint_service_class.return_value = mock_datapoint_service
+
+        datapoint_response = self._create_mock_datapoint_response(
+            success=True, serial_number="0020045057", link_number=25
+        )
+        mock_datapoint_service.query_datapoint.return_value = datapoint_response
+
+        # Test
+        service = ConbusLinknumberService("test.yml")
+        result = service.get_linknumber("0020045057")
+
+        # Verify
+        assert isinstance(result, ConbusLinknumberResponse)
+        assert result.success is True
+        assert result.result == "SUCCESS"
+        assert result.serial_number == "0020045057"
+        assert result.link_number == 25
+        assert result.error is None
+
+        # Verify service was called correctly
+        from xp.models.datapoint_type import DataPointType
+        mock_datapoint_service.query_datapoint.assert_called_once_with(
+            DataPointType.LINK_NUMBER, "0020045057"
+        )
+
+    @patch('xp.services.conbus_linknumber_service.ConbusDatapointService')
+    def test_conbus_get_linknumber_query_failed(self, mock_datapoint_service_class):
+        """Test handling datapoint query failures"""
+        # Setup mock for query failure
+        mock_datapoint_service = Mock()
+        mock_datapoint_service_class.return_value = mock_datapoint_service
+
+        datapoint_response = self._create_mock_datapoint_response(
+            success=False, error="Connection timeout"
+        )
+        mock_datapoint_service.query_datapoint.return_value = datapoint_response
+
+        # Test
+        service = ConbusLinknumberService("test.yml")
+        result = service.get_linknumber("0020045057")
+
+        # Verify
+        assert isinstance(result, ConbusLinknumberResponse)
+        assert result.success is False
+        assert result.result == "QUERY_FAILED"
+        assert result.serial_number == "0020045057"
+        assert result.link_number is None
+        assert result.error is not None and "Connection timeout" in result.error
+
+    @patch('xp.services.conbus_linknumber_service.ConbusDatapointService')
+    def test_conbus_get_linknumber_parse_error(self, mock_datapoint_service_class):
+        """Test handling invalid link number data"""
+        # Setup mock with invalid data
+        mock_datapoint_service = Mock()
+        mock_datapoint_service_class.return_value = mock_datapoint_service
+
+        mock_response = Mock()
+        mock_response.success = True
+        mock_response.sent_telegram = "<S0020045057F03D04FG>"
+        mock_response.received_telegrams = ["<R0020045057F03D04invalidFH>"]
+        mock_response.error = None
+        mock_response.timestamp = Mock()
+        mock_response.datapoint_telegram = Mock()
+        mock_response.datapoint_telegram.data_value = "invalid"
+
+        mock_datapoint_service.query_datapoint.return_value = mock_response
+
+        # Test
+        service = ConbusLinknumberService("test.yml")
+        result = service.get_linknumber("0020045057")
+
+        # Verify
+        assert isinstance(result, ConbusLinknumberResponse)
+        assert result.success is False
+        assert result.result == "PARSE_ERROR"
+        assert result.serial_number == "0020045057"
+        assert result.link_number is None
+        assert result.error is not None and "Failed to parse link number" in result.error
+
+    @patch('xp.services.conbus_linknumber_service.ConbusDatapointService')
+    def test_conbus_get_linknumber_service_exception(self, mock_datapoint_service_class):
+        """Test handling service exceptions"""
+        # Setup mock that raises exception
+        mock_datapoint_service = Mock()
+        mock_datapoint_service_class.return_value = mock_datapoint_service
+        mock_datapoint_service.query_datapoint.side_effect = Exception("Service unavailable")
+
+        # Test
+        service = ConbusLinknumberService("test.yml")
+        result = service.get_linknumber("0020045057")
+
+        # Verify
+        assert isinstance(result, ConbusLinknumberResponse)
+        assert result.success is False
+        assert result.result == "ERROR"
+        assert result.serial_number == "0020045057"
+        assert result.link_number is None
+        assert result.error is not None and "Unexpected error: Service unavailable" in result.error

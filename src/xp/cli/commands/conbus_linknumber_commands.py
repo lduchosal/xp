@@ -3,6 +3,7 @@
 import json
 
 import click
+from click_help_colors import HelpColorsGroup
 
 from ..utils.decorators import (
     connection_command,
@@ -13,12 +14,22 @@ from ...services.conbus_linknumber_service import ConbusLinknumberService
 from ...services.telegram_link_number_service import LinkNumberError
 
 
-@click.command("linknumber", short_help="Set link number for a module")
+@click.group("linknumber", cls=HelpColorsGroup, help_headers_color='yellow', help_options_color='green', short_help="Link number operations")
+def conbus_linknumber_command() -> None:
+    """
+    Link number operations for modules.
+
+    Set or get the link number for specific modules.
+    """
+    pass
+
+
+@conbus_linknumber_command.command("set", short_help="Set link number for a module")
 @click.argument("serial_number", type=SERIAL)
 @click.argument("link_number", type=click.IntRange(0, 99))
 @connection_command()
 @handle_service_errors(LinkNumberError)
-def conbus_linknumber_command(serial_number: str, link_number: int) -> None:
+def set_linknumber_command(serial_number: str, link_number: int) -> None:
     """
     Set the link number for a specific module.
 
@@ -28,10 +39,32 @@ def conbus_linknumber_command(serial_number: str, link_number: int) -> None:
     Examples:
 
     \b
-        xp conbus linknumber 0020045057 25
+        xp conbus linknumber set 0020045057 25
     """
     service = ConbusLinknumberService()
 
     with service:
         response = service.set_linknumber(serial_number, link_number)
+        click.echo(json.dumps(response.to_dict(), indent=2))
+
+
+@conbus_linknumber_command.command("get", short_help="Get link number for a module")
+@click.argument("serial_number", type=SERIAL)
+@connection_command()
+@handle_service_errors(LinkNumberError)
+def get_linknumber_command(serial_number: str) -> None:
+    """
+    Get the current link number for a specific module.
+
+    SERIAL_NUMBER: 10-digit module serial number
+
+    Examples:
+
+    \b
+        xp conbus linknumber get 0020045057
+    """
+    service = ConbusLinknumberService()
+
+    with service:
+        response = service.get_linknumber(serial_number)
         click.echo(json.dumps(response.to_dict(), indent=2))

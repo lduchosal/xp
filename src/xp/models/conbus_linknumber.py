@@ -6,13 +6,14 @@ from typing import Optional, Dict, Any
 
 @dataclass
 class ConbusLinknumberResponse:
-    """Represents a response from Conbus link number set operation"""
+    """Represents a response from Conbus link number operations (set/get)"""
 
     success: bool
     result: str
     serial_number: str
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
+    link_number: Optional[int] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
@@ -27,6 +28,7 @@ class ConbusLinknumberResponse:
         return {
             "success": self.success,
             "result": self.result,
+            "link_number": self.link_number,
             "serial_number": self.serial_number,
             "sent_telegram": self.sent_telegram,
             "received_telegrams": self.received_telegrams,
