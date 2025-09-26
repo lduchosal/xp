@@ -135,10 +135,9 @@ test-integration = "env PYTHONPATH=src python -m pytest tests/integration/ -v"
 test-cov = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=html --cov-report=term-missing"
 lint = "ruff check --fix src/ tests/"
 format = "black src/ tests/"
-format-check = "black --check src/ tests/"
 typecheck = "mypy src/ tests/"
-refurb = "refurb src/ tests/ --quiet"
-check = ["lint", "format-check", "typecheck", "refurb", "test"]
+deadvar = "vulture src/ tests/"
+check = ["lint", "format", "typecheck", "refurb", "deadvar", "test"]
 bump-version = "pdm bump -v patch"
 env = "echo ${PATH}"
 install = "pdm install"
