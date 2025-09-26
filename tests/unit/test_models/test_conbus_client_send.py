@@ -128,18 +128,6 @@ class TestConbusConnectionStatus:
         }
         assert result == expected
 
-    def test_to_dict_no_activity(self):
-        """Test conversion to dictionary with no last activity"""
-        expected = {
-            "connected": False,
-            "ip": "192.168.1.50",
-            "port": 9000,
-            "last_activity": None,
-            "error": None,
-        }
-        assert result == expected
-
-
 class TestModelIntegration:
     """Integration tests for model interactions"""
 

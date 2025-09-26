@@ -12,7 +12,7 @@ class TestConsonConfigValidator:
             ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=20, link_number=2)
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_unique_names()
+        errors = ConsonConfigValidator(config).validate_unique_names()
         assert errors == []
 
     def test_validate_unique_names_failure(self):
@@ -22,7 +22,7 @@ class TestConsonConfigValidator:
             ConsonModuleConfig(name="A1", serial_number="456", module_type="XP20", module_type_code=20, link_number=2)
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_unique_names()
+        errors = ConsonConfigValidator(config).validate_unique_names()
         assert len(errors) == 1
         assert "Duplicate module name: A1" in errors[0]
 
@@ -33,7 +33,7 @@ class TestConsonConfigValidator:
             ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=20, link_number=2)
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_unique_serial_numbers()
+        errors = ConsonConfigValidator(config).validate_unique_serial_numbers()
         assert errors == []
 
     def test_validate_unique_serial_numbers_failure(self):
@@ -43,7 +43,7 @@ class TestConsonConfigValidator:
             ConsonModuleConfig(name="A2", serial_number="123", module_type="XP20", module_type_code=20, link_number=2)
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_unique_serial_numbers()
+        errors = ConsonConfigValidator(config).validate_unique_serial_numbers()
         assert len(errors) == 1
         assert "Duplicate serial number: 123" in errors[0]
 
@@ -54,7 +54,7 @@ class TestConsonConfigValidator:
             ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=255, link_number=2)
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_module_type_codes()
+        errors = ConsonConfigValidator(config).validate_module_type_codes()
         assert errors == []
 
     def test_validate_module_type_codes_failure(self):
@@ -64,7 +64,7 @@ class TestConsonConfigValidator:
             ConsonModuleConfig(name="A2", serial_number="456", module_type="XP20", module_type_code=256, link_number=2)
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_module_type_codes()
+        errors = ConsonConfigValidator(config).validate_module_type_codes()
         assert len(errors) == 2
         assert "Invalid module_type_code 0" in errors[0]
         assert "Invalid module_type_code 256" in errors[1]
@@ -76,7 +76,7 @@ class TestConsonConfigValidator:
                              link_number=1, conbus_port=10001),
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_network_config()
+        errors = ConsonConfigValidator(config).validate_network_config()
         assert errors == []
 
     def test_validate_network_config_failure(self):
@@ -88,7 +88,7 @@ class TestConsonConfigValidator:
                              link_number=2, conbus_port=70000)
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_network_config()
+        errors = ConsonConfigValidator(config).validate_network_config()
         assert len(errors) == 2
         assert "Invalid conbus_port 0" in errors[0]
         assert "Invalid conbus_port 70000" in errors[1]
@@ -133,7 +133,7 @@ class TestConsonConfigValidator:
                              link_number=2, conbus_port=10002)
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_all()
+        errors = ConsonConfigValidator(config).validate_all()
         assert errors == []
 
     def test_validate_all_with_errors(self):
@@ -145,7 +145,7 @@ class TestConsonConfigValidator:
                              link_number=2, conbus_port=70000)
         ]
         config = ConsonModuleListConfig(root=modules)
-        errors = ConsonConfigValidator().validate_all()
+        errors = ConsonConfigValidator(config).validate_all()
         assert len(errors) > 0
         # Should have duplicate name, duplicate serial, invalid type codes, and invalid ports
         assert any("Duplicate module name" in error for error in errors)
