@@ -93,7 +93,7 @@ class TelegramDiscoverService:
         telegram = SystemTelegram(
             serial_number="0000000000",  # Broadcast address
             system_function=SystemFunction.DISCOVERY,
-            datapoint_type=DataPointType.MODULE_TYPE,  # D00 = Status
+            datapoint_type=None,
             checksum=checksum,
             raw_telegram=raw_telegram,
         )

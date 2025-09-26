@@ -33,7 +33,7 @@ class TelegramService:
     )
 
     SYSTEM_TELEGRAM_PATTERN = re.compile(
-        r"^<S(\d{10})F(\d{2})D(.+?)([A-Z0-9]{2})>$"
+        r"^<S(\d{10})F(\d{2})D(.{2,})([A-Z0-9]{2})>$"
     )
 
     REPLY_TELEGRAM_PATTERN = re.compile(

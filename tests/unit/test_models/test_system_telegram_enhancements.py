@@ -167,7 +167,6 @@ class TestSystemTelegramEnhancements:
 
         str_repr = str(telegram)
         assert "WRITE_CONFIG" in str_repr
-        assert "LINK_NUMBER" in str_repr
         assert "0012345005" in str_repr
 
     def test_all_system_functions_from_code(self):

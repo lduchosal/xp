@@ -62,7 +62,7 @@ class TestVersionSystemTelegram(unittest.TestCase):
 
     def test_version_system_telegram_str(self):
         """Test string representation of version system telegram."""
-        expected = "System Telegram: READ_DATAPOINT for SW_VERSION from device 0012345011"
+        expected = "System Telegram: READ_DATAPOINT with data SW_VERSION from device 0012345011"
         self.assertEqual(str(self.version_system_telegram), expected)
 
 

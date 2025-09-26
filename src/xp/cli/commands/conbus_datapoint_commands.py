@@ -4,7 +4,7 @@ import json
 
 import click
 
-from .conbus import conbus
+# Import will be handled by conbus.py registration
 from ..utils.datapoint_type_choice import DATAPOINT
 from ..utils.decorators import (
     connection_command,
@@ -18,28 +18,61 @@ from ...services.conbus_datapoint_service import (
 )
 
 
-@conbus.command("datapoint")
+@click.command("query")
 @click.argument("datapoint", type=DATAPOINT)
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
 def datapoint_telegram(serial_number: str, datapoint: DataPointType) -> None:
     """
-    Send telegram to Conbus server.
+    Query a specific datapoint from Conbus server.
 
     Examples:
 
     \b
-        xp conbus datapoint version 0012345011
-        xp conbus datapoint voltage 0012345011
-        xp conbus datapoint temperature 0012345011
-        xp conbus datapoint current 0012345011
-        xp conbus datapoint humidity 0012345011
+        xp conbus datapoint query version 0012345011
+        xp conbus datapoint query voltage 0012345011
+        xp conbus datapoint query temperature 0012345011
+        xp conbus datapoint query current 0012345011
+        xp conbus datapoint query humidity 0012345011
     """
     service = ConbusDatapointService()
 
     # Send telegram
     with service:
         response = service.send_telegram(datapoint_type=datapoint, serial_number=serial_number)
+
+    click.echo(json.dumps(response.to_dict(), indent=2))
+
+
+@click.group(name="datapoint", cls=click.Group)
+def conbus_datapoint_group() -> None:
+    """
+    Conbus datapoint operations for querying module datapoints
+    """
+    pass
+
+
+# Add the single datapoint query command to the group
+conbus_datapoint_group.add_command(datapoint_telegram)
+
+
+@conbus_datapoint_group.command("all", short_help="Query all datapoints from a module")
+@click.argument("serial_number", type=SERIAL)
+@connection_command()
+@handle_service_errors(ConbusDatapointError)
+def query_all_datapoints(serial_number: str) -> None:
+    """
+    Query all datapoints from a specific module.
+
+    Examples:
+
+    \b
+        xp conbus datapoint all 0123450001
+    """
+    service = ConbusDatapointService()
+
+    with service:
+        response = service.query_all_datapoints(serial_number=serial_number)
 
     click.echo(json.dumps(response.to_dict(), indent=2))

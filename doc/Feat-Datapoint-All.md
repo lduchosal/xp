@@ -13,7 +13,7 @@ Output:
 ```json
 {
   "success": true,
-  "serial_number": "01234500001",
+  "serial_number": "0123450001",
   "system_function": "02",
   "datapoints": [
     {  "DATAPOINT_NAME": "DATA_RAW_VALUE" },

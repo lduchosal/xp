@@ -5,7 +5,7 @@ various types of telegrams including discover, version, and sensor data requests
 """
 
 import logging
-from typing import Optional
+from typing import Optional, Dict, List
 
 from .conbus_service import ConbusService
 from ..models import (
@@ -50,7 +50,10 @@ class ConbusDatapointService:
         # Send telegram
         response = self.conbus_service.send_telegram(serial_number, system_function, datapoint_code)
         datapoint_telegram: Optional[ReplyTelegram] = None
-        if response.received_telegrams is not None and len(response.received_telegrams) > 0:
+        if (
+            response.received_telegrams is not None
+            and len(response.received_telegrams) > 0
+        ):
             telegram = response.received_telegrams[0]
             try:
                 parsed_telegram = self.telegram_service.parse_reply_telegram(telegram)
@@ -68,6 +71,34 @@ class ConbusDatapointService:
                 datapoint_telegram=datapoint_telegram,
                 error=response.error,
             )
+
+    def query_all_datapoints(self, serial_number: str) -> ConbusDatapointResponse:
+        """Query all available datapoints for a given serial number"""
+
+        datapoints: List[Dict[str, str]] = []
+
+        # Query each datapoint type
+        for datapoint_type in DataPointType:
+            try:
+                response = self.send_telegram(datapoint_type, serial_number)
+
+                if response.success and response.datapoint_telegram:
+                    # Extract datapoint name and value
+                    datapoint_name = datapoint_type.name
+                    datapoint_value = response.datapoint_telegram.data_value
+                    datapoints.append({datapoint_name: datapoint_value})
+
+            except Exception as e:
+                self.logger.debug(f"Failed to query datapoint {datapoint_type}: {e}")
+                # Continue with other datapoints even if one fails
+                continue
+
+        return ConbusDatapointResponse(
+            success=True,
+            serial_number=serial_number,
+            system_function=SystemFunction.READ_DATAPOINT,
+            datapoints=datapoints,
+        )
 
     def __enter__(self) -> 'ConbusDatapointService':
         return self

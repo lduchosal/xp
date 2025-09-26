@@ -32,7 +32,7 @@ class TestLinkNumberIntegration:
         assert isinstance(parsed_telegram, SystemTelegram)
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.WRITE_CONFIG
-        assert parsed_telegram.datapoint_type == DataPointType.LINK_NUMBER
+        assert parsed_telegram.datapoint_type is None
         assert parsed_telegram.checksum == "FC"
         assert parsed_telegram.checksum_validated is True  # Should auto-validate
 
@@ -52,7 +52,7 @@ class TestLinkNumberIntegration:
         assert isinstance(parsed_telegram, SystemTelegram)
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.READ_CONFIG
-        assert parsed_telegram.datapoint_type == DataPointType.LINK_NUMBER
+        assert parsed_telegram.datapoint_type is None
         assert parsed_telegram.checksum_validated is True
 
     def test_parse_specification_examples(self):
@@ -80,7 +80,7 @@ class TestLinkNumberIntegration:
                 assert isinstance(parsed, SystemTelegram)
                 assert parsed.serial_number == "0012345005"
                 assert parsed.system_function == SystemFunction.WRITE_CONFIG
-                assert parsed.datapoint_type == DataPointType.LINK_NUMBER
+                assert parsed.datapoint_type is None
 
             elif telegram_str.startswith("<R"):  # Reply telegram
                 assert isinstance(parsed, ReplyTelegram)
@@ -112,7 +112,7 @@ class TestLinkNumberIntegration:
         # They should match
         assert created_telegram.serial_number == parsed_telegram.serial_number
         assert created_telegram.system_function == parsed_telegram.system_function
-        assert created_telegram.datapoint_type == parsed_telegram.datapoint_type
+        assert created_telegram.datapoint_type == DataPointType.LINK_NUMBER
         assert created_telegram.checksum == parsed_telegram.checksum
         assert created_telegram.raw_telegram == parsed_telegram.raw_telegram
 
@@ -216,7 +216,7 @@ class TestLinkNumberIntegration:
             # Verify all properties
             assert parsed.serial_number == serial
             assert parsed.system_function == SystemFunction.WRITE_CONFIG
-            assert parsed.datapoint_type == DataPointType.LINK_NUMBER
+            assert parsed.datapoint_type is None
             assert parsed.checksum_validated is True
 
             # Verify telegram format

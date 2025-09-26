@@ -29,7 +29,7 @@ class TestDiscoverIntegration:
         assert isinstance(parsed_system, SystemTelegram)
         assert parsed_system.serial_number == "0000000000"
         assert parsed_system.system_function == SystemFunction.DISCOVERY
-        assert parsed_system.datapoint_type == DataPointType.MODULE_TYPE
+        assert parsed_system.datapoint_type is None
         assert parsed_system.checksum == "FA"
         assert parsed_system.checksum_validated is True
 
@@ -49,7 +49,7 @@ class TestDiscoverIntegration:
         # They should match
         assert created_telegram.serial_number == parsed_telegram.serial_number
         assert created_telegram.system_function == parsed_telegram.system_function
-        assert created_telegram.datapoint_type == parsed_telegram.datapoint_type
+        assert created_telegram.datapoint_type is None
         assert created_telegram.checksum == parsed_telegram.checksum
         assert created_telegram.raw_telegram == parsed_telegram.raw_telegram
 

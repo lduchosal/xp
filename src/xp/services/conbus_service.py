@@ -205,7 +205,7 @@ class ConbusService:
         try:
             # Set a shorter timeout for receiving responses
             original_timeout = connection.gettimeout()
-            connection.settimeout(0.1)  # 2 second timeout for responses
+            connection.settimeout(1)  # 2 second timeout for responses
 
             while True:
                 try:
@@ -217,6 +217,7 @@ class ConbusService:
                     message = data.decode("latin-1")
                     accumulated_data += message
                     self.last_activity = datetime.now()
+                    connection.settimeout(0.1)  # 2 second timeout for responses
 
                 except socket.timeout:
                     # No more data available

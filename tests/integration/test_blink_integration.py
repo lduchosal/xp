@@ -29,7 +29,7 @@ class TestBlinkIntegration:
         assert isinstance(parsed_telegram, SystemTelegram)
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.BLINK
-        assert parsed_telegram.datapoint_type == DataPointType.MODULE_TYPE
+        assert parsed_telegram.datapoint_type is None
         assert parsed_telegram.checksum == "FN"
         assert parsed_telegram.checksum_validated is True  # Should auto-validate
 
@@ -50,7 +50,7 @@ class TestBlinkIntegration:
         assert isinstance(parsed_telegram, SystemTelegram)
         assert parsed_telegram.serial_number == serial
         assert parsed_telegram.system_function == SystemFunction.UNBLINK
-        assert parsed_telegram.datapoint_type == DataPointType.MODULE_TYPE
+        assert parsed_telegram.datapoint_type is None
         assert parsed_telegram.checksum == "FG"
         assert parsed_telegram.checksum_validated is True
 
@@ -77,13 +77,12 @@ class TestBlinkIntegration:
 
             if telegram_str.startswith("<S"):  # System telegram
                 assert isinstance(parsed, SystemTelegram)
+                assert parsed.datapoint_type is None
                 assert parsed.system_function == expected_function
                 if expected_function == SystemFunction.BLINK:
                     assert parsed.serial_number == "0012345008"
-                    assert parsed.datapoint_type == DataPointType.MODULE_TYPE
                 elif expected_function == SystemFunction.UNBLINK:
                     assert parsed.serial_number == "0012345011"
-                    assert parsed.datapoint_type == DataPointType.MODULE_TYPE
 
             elif telegram_str.startswith("<R"):  # Reply telegram
                 assert isinstance(parsed, ReplyTelegram)
@@ -115,9 +114,7 @@ class TestBlinkIntegration:
             created_blink_telegram.system_function
             == parsed_blink_telegram.system_function
         )
-        assert (
-                created_blink_telegram.datapoint_type == parsed_blink_telegram.datapoint_type
-        )
+        assert created_blink_telegram.datapoint_type is None
         assert created_blink_telegram.checksum == parsed_blink_telegram.checksum
         assert created_blink_telegram.raw_telegram == parsed_blink_telegram.raw_telegram
 
@@ -138,10 +135,7 @@ class TestBlinkIntegration:
             created_unblink_telegram.system_function
             == parsed_unblink_telegram.system_function
         )
-        assert (
-            created_unblink_telegram.datapoint_type
-            == parsed_unblink_telegram.datapoint_type
-        )
+        assert created_unblink_telegram.datapoint_type is None
         assert created_unblink_telegram.checksum == parsed_unblink_telegram.checksum
         assert (
             created_unblink_telegram.raw_telegram
@@ -268,7 +262,7 @@ class TestBlinkIntegration:
             # Verify all properties
             assert parsed_blink.serial_number == serial
             assert parsed_blink.system_function == SystemFunction.BLINK
-            assert parsed_blink.datapoint_type == DataPointType.MODULE_TYPE
+            assert parsed_blink.datapoint_type is None
             assert parsed_blink.checksum_validated is True
 
             # Verify telegram format
@@ -283,7 +277,7 @@ class TestBlinkIntegration:
             # Verify all properties
             assert parsed_unblink.serial_number == serial
             assert parsed_unblink.system_function == SystemFunction.UNBLINK
-            assert parsed_unblink.datapoint_type == DataPointType.MODULE_TYPE
+            assert parsed_unblink.datapoint_type is None
             assert parsed_unblink.checksum_validated is True
 
             # Verify telegram format
@@ -309,8 +303,8 @@ class TestBlinkIntegration:
         assert parsed_unblink.system_function == SystemFunction.UNBLINK
 
         # Both should use STATUS data point
-        assert parsed_blink.datapoint_type == DataPointType.MODULE_TYPE
-        assert parsed_unblink.datapoint_type == DataPointType.MODULE_TYPE
+        assert parsed_blink.datapoint_type is None
+        assert parsed_unblink.datapoint_type is None
 
         # Both should have same serial but different checksums
         assert parsed_blink.serial_number == parsed_unblink.serial_number == serial

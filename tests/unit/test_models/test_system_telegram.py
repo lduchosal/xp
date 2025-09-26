@@ -201,8 +201,8 @@ class TestSystemTelegram:
 
         assert "System Telegram" in str_repr
         assert "READ_DATAPOINT" in str_repr
-        assert "TEMPERATURE" in str_repr
-        assert "0020012521" in str_repr
+        assert "with data TEMPERATURE" in str_repr
+        assert "from device 0020012521" in str_repr
 
     @pytest.mark.parametrize(
         "function,description",

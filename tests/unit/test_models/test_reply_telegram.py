@@ -19,7 +19,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0012345003",
             system_function=SystemFunction.ACK,
-            datapoint_type=DataPointType.MODULE_TYPE,
+            datapoint_type=None,
             data_value="",
             checksum="FF",
             raw_telegram="<R0012345003F18DFF>",
@@ -27,7 +27,7 @@ class TestReplyTelegram:
 
         assert telegram.serial_number == "0012345003"
         assert telegram.system_function == SystemFunction.ACK
-        assert telegram.datapoint_type == DataPointType.MODULE_TYPE
+        assert telegram.datapoint_type is None
         assert telegram.checksum == "FF"
         assert telegram.raw_telegram == "<R0012345003F18DFF>"
         assert telegram.timestamp is not None
