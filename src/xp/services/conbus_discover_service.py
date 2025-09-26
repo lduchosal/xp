@@ -84,9 +84,9 @@ class ConbusDiscoverService:
 
     def __exit__(
         self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: object | None,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: object | None,
     ) -> None:
         # Cleanup logic if needed
         self.conbus_service.disconnect()

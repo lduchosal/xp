@@ -68,9 +68,9 @@ class ConbusRawService:
 
     def __exit__(
         self,
-        exc_type: Optional[type],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[Any],
+        _exc_type: Optional[type],
+        _exc_val: Optional[BaseException],
+        _exc_tb: Optional[Any],
     ) -> None:
         """Context manager exit - ensure connection is closed"""
         self.conbus_service.disconnect()

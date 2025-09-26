@@ -81,7 +81,7 @@ class HomekitModuleService:
         value: Optional[Any] = kwargs.get("value")
 
         self.logger.info(
-            f"_outlet_set_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}, value: {value} }}"
+            f"_outlet_set_outlet_in_use {{ sender: {sender}, serial_number: {serial_number}, output_number: {output_number}, value: {value} }}"
         )
 
     # noinspection PyUnusedLocal
@@ -90,7 +90,7 @@ class HomekitModuleService:
         output_number: Optional[Any] = kwargs.get("output_number")
 
         self.logger.info(
-            f"_on_outlet_get_outlet_in_use {{ serial_number: {serial_number}, output_number: {output_number}}}"
+            f"_on_outlet_get_outlet_in_use {{ sender: {sender}, serial_number: {serial_number}, output_number: {output_number}}}"
         )
 
     # noinspection PyUnusedLocal
@@ -101,7 +101,7 @@ class HomekitModuleService:
         value: Optional[bool] = kwargs.get("value")
 
         self.logger.info(
-            f"_on_accessory_set_on {{ serial_number: {serial_number} output_number: {output_number} }}"
+            f"_on_accessory_set_on {{ sender: {sender}, serial_number: {serial_number} output_number: {output_number} }}"
         )
 
         if serial_number is None:
@@ -134,7 +134,7 @@ class HomekitModuleService:
         output_number: Optional[int] = kwargs.get("output_number")
 
         self.logger.info(
-            f"_on_accessory_get_on {{ serial_number: {serial_number}, output_number: {output_number}}}"
+            f"_on_accessory_get_on {{ sender: {sender}, serial_number: {serial_number}, output_number: {output_number}}}"
         )
 
         if serial_number is None:

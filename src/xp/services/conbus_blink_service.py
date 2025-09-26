@@ -42,9 +42,9 @@ class ConbusBlinkService:
 
     def __exit__(
         self,
-        exc_type: Optional[type],
-        exc_val: Optional[Exception],
-        exc_tb: Optional[Any],
+        _exc_type: Optional[type],
+        _exc_val: Optional[Exception],
+        _exc_tb: Optional[Any],
     ) -> None:
         # Cleanup logic if needed
         pass

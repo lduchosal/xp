@@ -6,7 +6,20 @@
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: cleanup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/publish.sh" beforeDir="false" afterPath="$PROJECT_DIR$/publish.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_blink_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_blink_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_connection_pool.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_connection_pool.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_custom_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_custom_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_discover_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_discover_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_linknumber_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_linknumber_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_raw_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_raw_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_receive_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_receive_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_scan_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_scan_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_encoding/test_latin1_edge_cases.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -400,23 +413,7 @@
       <workItem from="1758645289123" duration="26352000" />
       <workItem from="1758798839699" duration="14945000" />
       <workItem from="1758876985425" duration="11705000" />
-      <workItem from="1758891696761" duration="7321000" />
-    </task>
-    <task id="LOCAL-00102" summary="Chore: doc">
-      <option name="closed" value="true" />
-      <created>1758492706390</created>
-      <option name="number" value="00102" />
-      <option name="presentableId" value="LOCAL-00102" />
-      <option name="project" value="LOCAL" />
-      <updated>1758492706390</updated>
-    </task>
-    <task id="LOCAL-00103" summary="Chore: doc">
-      <option name="closed" value="true" />
-      <created>1758493233629</created>
-      <option name="number" value="00103" />
-      <option name="presentableId" value="LOCAL-00103" />
-      <option name="project" value="LOCAL" />
-      <updated>1758493233629</updated>
+      <workItem from="1758891696761" duration="8581000" />
     </task>
     <task id="LOCAL-00104" summary="Chore: doc">
       <option name="closed" value="true" />
@@ -794,7 +791,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758898920852</updated>
     </task>
-    <option name="localTasksCounter" value="151" />
+    <task id="LOCAL-00151" summary="chore: cleanup">
+      <option name="closed" value="true" />
+      <created>1758899160061</created>
+      <option name="number" value="00151" />
+      <option name="presentableId" value="LOCAL-00151" />
+      <option name="project" value="LOCAL" />
+      <updated>1758899160061</updated>
+    </task>
+    <task id="LOCAL-00152" summary="chore: cleanup">
+      <option name="closed" value="true" />
+      <created>1758899213217</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
+      <option name="project" value="LOCAL" />
+      <updated>1758899213217</updated>
+    </task>
+    <option name="localTasksCounter" value="153" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
