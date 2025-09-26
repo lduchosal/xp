@@ -42,8 +42,8 @@ class ModuleTypeCode(Enum):
     XP31BC = 32  # XP 31 1 channel dimmer
     XP20 = 33  # XP switch link module
     XP230 = 34  # Ethernet/TCPIP interface module
-    XP33LED = 36  # XP 3 channel LED dimmer
-    XP31LED = 37  # XP 1 channel LED dimmer
+    XP33LED = 35  # XP 3 channel LED dimmer
+    XP31LED = 36 # XP 1 channel LED dimmer
 
 
 # Registry mapping module codes to their information

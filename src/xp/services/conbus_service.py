@@ -198,14 +198,14 @@ class ConbusService:
 
         return telegrams
 
-    def _receive_responses_with_connection(self, connection: socket.socket) -> List[str]:
+    def _receive_responses_with_connection(self, connection: socket.socket, timeout: float = 1.0) -> List[str]:
         """Receive responses from the server using a specific connection"""
         accumulated_data = ""
 
         try:
             # Set a shorter timeout for receiving responses
             original_timeout = connection.gettimeout()
-            connection.settimeout(1)  # 2 second timeout for responses
+            connection.settimeout(timeout)  # 2 second timeout for responses
 
             while True:
                 try:
@@ -266,6 +266,11 @@ class ConbusService:
         try:
             # Use context manager for automatic connection management
             with self._connection_pool as connection:
+
+                # Receive waiting event if available (wait time 0)
+                responses = self._receive_responses_with_connection(connection, 0.001)
+                self.logger.info(f"Purged telegram: {responses}")
+
                 # Send telegram
                 if telegram is not None:
                     connection.send(telegram.encode("latin-1"))
