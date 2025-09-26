@@ -33,7 +33,7 @@ class TelegramService:
     )
 
     SYSTEM_TELEGRAM_PATTERN = re.compile(
-        r"^<S(\d{10})F(\d{2})D(\d{2})(.*?)([A-Z0-9]{2})>$"
+        r"^<S(\d{10})F(\d{2})D(.+?)([A-Z0-9]{2})>$"
     )
 
     REPLY_TELEGRAM_PATTERN = re.compile(
@@ -191,8 +191,7 @@ class TelegramService:
             serial_number = match.group(1)
             function_code = match.group(2)
             data = match.group(3)
-            match.group(4)  # Optional data value
-            checksum = match.group(5)
+            checksum = match.group(4)
 
             # Parse system function
             system_function = SystemFunction.from_code(function_code)
@@ -202,14 +201,16 @@ class TelegramService:
                 )
 
             # Parse data point type
-            data_point_type = DataPointType.from_code(data)
+            datapoint_type = None
+            if system_function == SystemFunction.READ_DATAPOINT:
+                datapoint_type = DataPointType.from_code(data)
 
             # Create the telegram object
             telegram = SystemTelegram(
                 serial_number=serial_number,
                 system_function=system_function,
                 data=data,
-                datapoint_type=data_point_type,
+                datapoint_type=datapoint_type,
                 checksum=checksum,
                 raw_telegram=raw_telegram,
             )

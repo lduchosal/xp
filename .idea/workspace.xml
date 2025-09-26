@@ -4,28 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="chore: cleanup">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: Telegram / TelegramType">
+      <change afterPath="$PROJECT_DIR$/doc/Feat-Datapoint-All.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/xp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/xp.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_datapoint_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/reverse_proxy_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/reverse_proxy_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_output.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_output.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/event_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/event_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/log_entry.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/log_entry.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/system_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/system_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_datapoint_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_output_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_cache_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_cache_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_module_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/base_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/base_server_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/xp24_server_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp24_server_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_event_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_event_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_homekit_config_validator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_telegram_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_telegram_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -352,15 +337,7 @@
       <workItem from="1758468596803" duration="27068000" />
       <workItem from="1758604567711" duration="10337000" />
       <workItem from="1758645289123" duration="26352000" />
-      <workItem from="1758798839699" duration="3902000" />
-    </task>
-    <task id="LOCAL-00085" summary="Feat: refactor / input output">
-      <option name="closed" value="true" />
-      <created>1758385340666</created>
-      <option name="number" value="00085" />
-      <option name="presentableId" value="LOCAL-00085" />
-      <option name="project" value="LOCAL" />
-      <updated>1758385340666</updated>
+      <workItem from="1758798839699" duration="9388000" />
     </task>
     <task id="LOCAL-00086" summary="Feat: refactor / input output">
       <option name="closed" value="true" />
@@ -746,7 +723,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758746692366</updated>
     </task>
-    <option name="localTasksCounter" value="134" />
+    <task id="LOCAL-00134" summary="feat: Telegram / TelegramType">
+      <option name="closed" value="true" />
+      <created>1758804679879</created>
+      <option name="number" value="00134" />
+      <option name="presentableId" value="LOCAL-00134" />
+      <option name="project" value="LOCAL" />
+      <updated>1758804679880</updated>
+    </task>
+    <option name="localTasksCounter" value="135" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -775,7 +760,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: refactor / ConbusService" />
     <MESSAGE value="Feat: refactor / Telegram" />
     <MESSAGE value="Feat: refactor / Input" />
     <MESSAGE value="Feat: refactor / clean" />
@@ -800,7 +784,8 @@
     <MESSAGE value="chore: clean doc" />
     <MESSAGE value="chore: version 0.9.17" />
     <MESSAGE value="chore: cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: cleanup" />
+    <MESSAGE value="feat: Telegram / TelegramType" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: Telegram / TelegramType" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -857,7 +842,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/xp/services/telegram_service.py</url>
-          <line>310</line>
+          <line>311</line>
           <option name="timeStamp" value="51" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

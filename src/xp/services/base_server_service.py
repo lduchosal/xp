@@ -157,6 +157,9 @@ class BaseServerService(ABC):
         elif request.system_function == SystemFunction.WRITE_CONFIG:
             return self._handle_write_config_request(request)
 
+        elif request.system_function == SystemFunction.ACTION:
+            return self._handle_action_request(request)
+
         self.logger.warning(f"Unhandled {self.device_type} request: {request}")
         return None
 
@@ -189,6 +192,14 @@ class BaseServerService(ABC):
             return self.set_link_number(request, 1)  # Default implementation
 
         return self._handle_device_specific_config_request()
+
+    def _handle_action_request(self, request: SystemTelegram) -> Optional[str]:
+        """Handle ACTION requests"""
+        return self._handle_device_specific_action_request(request)
+
+    def _handle_device_specific_action_request(self, request: SystemTelegram) -> Optional[str]:
+        """Override in subclasses for device-specific data requests"""
+        return None
 
     @staticmethod
     def _handle_device_specific_config_request(
