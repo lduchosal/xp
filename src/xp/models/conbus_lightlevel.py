@@ -12,7 +12,7 @@ class ConbusLightlevelResponse:
 
     success: bool
     serial_number: str
-    link_number: int
+    output_number: int
     level: Optional[int]
     timestamp: datetime
     sent_telegram: Optional[str] = None
@@ -28,7 +28,7 @@ class ConbusLightlevelResponse:
         return {
             "success": self.success,
             "serial_number": self.serial_number,
-            "link_number": self.link_number,
+            "output_number": self.output_number,
             "level": self.level,
             "sent_telegram": self.sent_telegram,
             "received_telegrams": self.received_telegrams,

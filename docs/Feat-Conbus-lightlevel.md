@@ -6,10 +6,10 @@ Use CLI to control light level (dimming) of outputs on Conbus modules
 
 Commands:
 ```
-xp conbus lightlevel set <serial_number> <link_number> <level>
-xp conbus lightlevel off <serial_number> <link_number>
-xp conbus lightlevel on <serial_number> <link_number>
-xp conbus lightlevel get <serial_number> <link_number>
+xp conbus lightlevel set <serial_number> <output_number> <level>
+xp conbus lightlevel off <serial_number> <output_number>
+xp conbus lightlevel on <serial_number> <output_number>
+xp conbus lightlevel get <serial_number> <output_number>
 ```
 
 Example:
@@ -27,7 +27,7 @@ event sent <E35L15I82MAF> Make (on)
 
 **CLI checklist:**
 - [ ] Add `lightlevel` subcommand group to conbus group
-- [ ] Add `set` subcommand with `serial_number`, `link_number`, and `level` parameters
+- [ ] Add `set` subcommand with `serial_number`, `output_number`, and `level` parameters
 - [ ] Add `off` subcommand (equivalent to set level 0)
 - [ ] Add `on` subcommand (equivalent to set level 80)
 - [ ] Add `get` subcommand to query current light level
@@ -47,10 +47,10 @@ event sent <E35L15I82MAF> Make (on)
 - Generate appropriate events
 
 Key methods:
-- `set_lightlevel(serial_number, link_number, level) -> ConbusLightlevelResponse`
-- `turn_off(serial_number, link_number) -> ConbusLightlevelResponse`
-- `turn_on(serial_number, link_number) -> ConbusLightlevelResponse`
-- `get_lightlevel(serial_number, link_number) -> ConbusLightlevelResponse`
+- `set_lightlevel(serial_number, output_number, level) -> ConbusLightlevelResponse`
+- `turn_off(serial_number, output_number) -> ConbusLightlevelResponse`
+- `turn_on(serial_number, output_number) -> ConbusLightlevelResponse`
+- `get_lightlevel(serial_number, output_number) -> ConbusLightlevelResponse`
 
 **Implementation checklist:**
 - [ ] Create `ConbusLightlevelService` class in `src/xp/services/conbus_lightlevel_service.py`

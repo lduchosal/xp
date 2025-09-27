@@ -55,32 +55,43 @@ class ConbusLightlevelService:
         pass
 
     def set_lightlevel(
-        self, serial_number: str, link_number: int, level: int
+        self, serial_number: str, output_number: int, level: int
     ) -> ConbusLightlevelResponse:
-        """Set light level for a specific link on a module.
+        """Set light level for a specific output on a module.
 
         Args:
             serial_number: Module serial number
-            link_number: Link number (0-based)
+            output_number: Output number (0-based)
             level: Light level percentage (0-100)
 
         Returns:
             ConbusLightlevelResponse with operation result
         """
 
+        # Validate output_number range (0-8)
+        if not 0 <= output_number <= 8:
+            return ConbusLightlevelResponse(
+                success=False,
+                serial_number=serial_number,
+                output_number=output_number,
+                level=level,
+                timestamp=datetime.now(),
+                error=f"Output number must be between 0 and 8, got {output_number}",
+            )
+
         # Validate level range
         if not 0 <= level <= 100:
             return ConbusLightlevelResponse(
                 success=False,
                 serial_number=serial_number,
-                link_number=link_number,
+                output_number=output_number,
                 level=level,
                 timestamp=datetime.now(),
                 error=f"Light level must be between 0 and 100, got {level}",
             )
 
-        # Format data as link_number:level (e.g., "02:050")
-        data = f"{link_number:02d}:{level:03d}"
+        # Format data as output_number:level (e.g., "02:050")
+        data = f"{output_number:02d}:{level:03d}"
 
         # Send telegram using WRITE_CONFIG function with MODULE_LIGHT_LEVEL datapoint
         response = self.conbus_service.send_telegram(
@@ -92,7 +103,7 @@ class ConbusLightlevelService:
         return ConbusLightlevelResponse(
             success=response.success,
             serial_number=serial_number,
-            link_number=link_number,
+            output_number=output_number,
             level=level,
             timestamp=response.timestamp or datetime.now(),
             sent_telegram=response.sent_telegram,
@@ -101,39 +112,39 @@ class ConbusLightlevelService:
         )
 
     def turn_off(
-        self, serial_number: str, link_number: int
+        self, serial_number: str, output_number: int
     ) -> ConbusLightlevelResponse:
-        """Turn off light (set level to 0) for a specific link.
+        """Turn off light (set level to 0) for a specific output.
 
         Args:
             serial_number: Module serial number
-            link_number: Link number (0-based)
+            output_number: Output number (0-8)
 
         Returns:
             ConbusLightlevelResponse with operation result
         """
-        return self.set_lightlevel(serial_number, link_number, 0)
+        return self.set_lightlevel(serial_number, output_number, 0)
 
-    def turn_on(self, serial_number: str, link_number: int) -> ConbusLightlevelResponse:
-        """Turn on light (set level to 80%) for a specific link.
+    def turn_on(self, serial_number: str, output_number: int) -> ConbusLightlevelResponse:
+        """Turn on light (set level to 80%) for a specific output.
 
         Args:
             serial_number: Module serial number
-            link_number: Link number (0-based)
+            output_number: Output number (0-8)
 
         Returns:
             ConbusLightlevelResponse with operation result
         """
-        return self.set_lightlevel(serial_number, link_number, 80)
+        return self.set_lightlevel(serial_number, output_number, 80)
 
     def get_lightlevel(
-        self, serial_number: str, link_number: int
+        self, serial_number: str, output_number: int
     ) -> ConbusLightlevelResponse:
-        """Query current light level for a specific link.
+        """Query current light level for a specific output.
 
         Args:
             serial_number: Module serial number
-            link_number: Link number (0-based)
+            output_number: Output number (0-8)
 
         Returns:
             ConbusLightlevelResponse with current light level
@@ -148,13 +159,13 @@ class ConbusLightlevelService:
             return ConbusLightlevelResponse(
                 success=False,
                 serial_number=serial_number,
-                link_number=link_number,
+                output_number=output_number,
                 level=None,
                 timestamp=datetime.now(),
                 error=datapoint_response.error or "Failed to query light level",
             )
 
-        # Parse the response to extract level for specific link
+        # Parse the response to extract level for specific output
         level = None
         if (
             datapoint_response.datapoint_telegram
@@ -163,10 +174,10 @@ class ConbusLightlevelService:
             try:
                 # Parse response format like "00:050,01:025,02:100"
                 data_value = str(datapoint_response.datapoint_telegram.data_value)
-                for link_data in data_value.split(","):
-                    if ":" in link_data:
-                        link_str, level_str = link_data.split(":")
-                        if int(link_str) == link_number:
+                for output_data in data_value.split(","):
+                    if ":" in output_data:
+                        output_str, level_str = output_data.split(":")
+                        if int(output_str) == output_number:
                             level = int(level_str)
                             break
             except (ValueError, AttributeError) as e:
@@ -175,7 +186,7 @@ class ConbusLightlevelService:
         return ConbusLightlevelResponse(
             success=datapoint_response.success,
             serial_number=serial_number,
-            link_number=link_number,
+            output_number=output_number,
             level=level,
             timestamp=datetime.now(),
             sent_telegram=datapoint_response.sent_telegram,

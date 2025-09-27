@@ -20,7 +20,7 @@ class TestConbusLightlevelIntegration:
         self.runner = CliRunner()
         self.valid_serial = "0020045057"
         self.invalid_serial = "invalid"
-        self.valid_link_number = 2
+        self.valid_output_number = 2
         self.valid_level = 50
 
     @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
@@ -36,7 +36,7 @@ class TestConbusLightlevelIntegration:
         mock_response = ConbusLightlevelResponse(
             success=True,
             serial_number=self.valid_serial,
-            link_number=self.valid_link_number,
+            output_number=self.valid_output_number,
             level=self.valid_level,
             timestamp=datetime.now(),
         )
@@ -50,7 +50,7 @@ class TestConbusLightlevelIntegration:
                 "lightlevel",
                 "set",
                 self.valid_serial,
-                str(self.valid_link_number),
+                str(self.valid_output_number),
                 str(self.valid_level),
             ],
         )
@@ -59,10 +59,10 @@ class TestConbusLightlevelIntegration:
         assert result.exit_code == 0
         assert '"success": true' in result.output
         assert f'"serial_number": "{self.valid_serial}"' in result.output
-        assert f'"link_number": {self.valid_link_number}' in result.output
+        assert f'"output_number": {self.valid_output_number}' in result.output
         assert f'"level": {self.valid_level}' in result.output
         mock_service.set_lightlevel.assert_called_once_with(
-            self.valid_serial, self.valid_link_number, self.valid_level
+            self.valid_serial, self.valid_output_number, self.valid_level
         )
 
     @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
@@ -78,7 +78,7 @@ class TestConbusLightlevelIntegration:
         mock_response = ConbusLightlevelResponse(
             success=True,
             serial_number=self.valid_serial,
-            link_number=self.valid_link_number,
+            output_number=self.valid_output_number,
             level=0,
             timestamp=datetime.now(),
         )
@@ -92,7 +92,7 @@ class TestConbusLightlevelIntegration:
                 "lightlevel",
                 "off",
                 self.valid_serial,
-                str(self.valid_link_number),
+                str(self.valid_output_number),
             ],
         )
 
@@ -101,7 +101,7 @@ class TestConbusLightlevelIntegration:
         assert '"success": true' in result.output
         assert '"level": 0' in result.output
         mock_service.turn_off.assert_called_once_with(
-            self.valid_serial, self.valid_link_number
+            self.valid_serial, self.valid_output_number
         )
 
     @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
@@ -117,7 +117,7 @@ class TestConbusLightlevelIntegration:
         mock_response = ConbusLightlevelResponse(
             success=True,
             serial_number=self.valid_serial,
-            link_number=self.valid_link_number,
+            output_number=self.valid_output_number,
             level=80,
             timestamp=datetime.now(),
         )
@@ -131,7 +131,7 @@ class TestConbusLightlevelIntegration:
                 "lightlevel",
                 "on",
                 self.valid_serial,
-                str(self.valid_link_number),
+                str(self.valid_output_number),
             ],
         )
 
@@ -140,7 +140,7 @@ class TestConbusLightlevelIntegration:
         assert '"success": true' in result.output
         assert '"level": 80' in result.output
         mock_service.turn_on.assert_called_once_with(
-            self.valid_serial, self.valid_link_number
+            self.valid_serial, self.valid_output_number
         )
 
     @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
@@ -156,7 +156,7 @@ class TestConbusLightlevelIntegration:
         mock_response = ConbusLightlevelResponse(
             success=True,
             serial_number=self.valid_serial,
-            link_number=self.valid_link_number,
+            output_number=self.valid_output_number,
             level=75,
             timestamp=datetime.now(),
         )
@@ -170,7 +170,7 @@ class TestConbusLightlevelIntegration:
                 "lightlevel",
                 "get",
                 self.valid_serial,
-                str(self.valid_link_number),
+                str(self.valid_output_number),
             ],
         )
 
@@ -179,28 +179,11 @@ class TestConbusLightlevelIntegration:
         assert '"success": true' in result.output
         assert '"level": 75' in result.output
         mock_service.get_lightlevel.assert_called_once_with(
-            self.valid_serial, self.valid_link_number
+            self.valid_serial, self.valid_output_number
         )
 
-    @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
-    def test_conbus_lightlevel_invalid_level(self, mock_service_class):
-        """Test invalid level values"""
-
-        # Mock service that returns error for invalid level
-        mock_service = Mock()
-        mock_service_class.return_value = mock_service
-        mock_service.__enter__ = Mock(return_value=mock_service)
-        mock_service.__exit__ = Mock(return_value=None)
-
-        mock_response = ConbusLightlevelResponse(
-            success=False,
-            serial_number=self.valid_serial,
-            link_number=self.valid_link_number,
-            level=150,  # Invalid level > 100
-            timestamp=datetime.now(),
-            error="Light level must be between 0 and 100, got 150",
-        )
-        mock_service.set_lightlevel.return_value = mock_response
+    def test_conbus_lightlevel_invalid_level(self):
+        """Test invalid level values are caught by CLI validation"""
 
         # Run CLI command with invalid level
         result = self.runner.invoke(
@@ -210,15 +193,15 @@ class TestConbusLightlevelIntegration:
                 "lightlevel",
                 "set",
                 self.valid_serial,
-                str(self.valid_link_number),
+                str(self.valid_output_number),
                 "150",
             ],
         )
 
-        # Should return the failed response
-        assert '"success": false' in result.output
-        assert result.exit_code == 0  # CLI succeeds but response indicates failure
-        assert "Light level must be between 0 and 100" in result.output
+        # Should be caught by CLI validation before reaching service
+        assert result.exit_code == 2  # CLI validation error
+        assert "Invalid value for 'LEVEL'" in result.output
+        assert "150 is not in the range 0<=x<=100" in result.output
 
     @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
     def test_conbus_lightlevel_connection_error(self, mock_service_class):
@@ -242,7 +225,7 @@ class TestConbusLightlevelIntegration:
                 "lightlevel",
                 "set",
                 self.valid_serial,
-                str(self.valid_link_number),
+                str(self.valid_output_number),
                 "50",
             ],
         )
@@ -264,7 +247,7 @@ class TestConbusLightlevelIntegration:
         mock_response = ConbusLightlevelResponse(
             success=False,
             serial_number=self.valid_serial,
-            link_number=self.valid_link_number,
+            output_number=self.valid_output_number,
             level=None,
             timestamp=datetime.now(),
             error="Invalid response from server",
@@ -279,7 +262,7 @@ class TestConbusLightlevelIntegration:
                 "lightlevel",
                 "get",
                 self.valid_serial,
-                str(self.valid_link_number),
+                str(self.valid_output_number),
             ],
         )
 
@@ -295,7 +278,7 @@ class TestConbusLightlevelService:
     def setup_method(self):
         """Set up test fixtures"""
         self.valid_serial = "0020045057"
-        self.valid_link_number = 2
+        self.valid_output_number = 2
         self.valid_level = 50
 
     @patch("xp.services.conbus_lightlevel_service.ConbusService")
@@ -318,13 +301,13 @@ class TestConbusLightlevelService:
 
         # Test the service
         result = ConbusLightlevelService().set_lightlevel(
-            self.valid_serial, self.valid_link_number, self.valid_level
+            self.valid_serial, self.valid_output_number, self.valid_level
         )
 
         # Assertions
         assert result.success is True
         assert result.serial_number == self.valid_serial
-        assert result.link_number == self.valid_link_number
+        assert result.output_number == self.valid_output_number
         assert result.level == self.valid_level
         assert result.error is None
 
@@ -343,7 +326,7 @@ class TestConbusLightlevelService:
 
         # Test the service with invalid level
         result = ConbusLightlevelService().set_lightlevel(
-            self.valid_serial, self.valid_link_number, 150  # Invalid level > 100
+            self.valid_serial, self.valid_output_number, 150  # Invalid level > 100
         )
 
         # Assertions
@@ -361,16 +344,16 @@ class TestConbusLightlevelService:
             mock_response = ConbusLightlevelResponse(
                 success=True,
                 serial_number=self.valid_serial,
-                link_number=self.valid_link_number,
+                output_number=self.valid_output_number,
                 level=0,
                 timestamp=datetime.now(),
             )
             mock_set.return_value = mock_response
 
-            result = service.turn_off(self.valid_serial, self.valid_link_number)
+            result = service.turn_off(self.valid_serial, self.valid_output_number)
 
             mock_set.assert_called_once_with(
-                self.valid_serial, self.valid_link_number, 0
+                self.valid_serial, self.valid_output_number, 0
             )
             assert result.level == 0
 
@@ -383,16 +366,16 @@ class TestConbusLightlevelService:
             mock_response = ConbusLightlevelResponse(
                 success=True,
                 serial_number=self.valid_serial,
-                link_number=self.valid_link_number,
+                output_number=self.valid_output_number,
                 level=80,
                 timestamp=datetime.now(),
             )
             mock_set.return_value = mock_response
 
-            result = service.turn_on(self.valid_serial, self.valid_link_number)
+            result = service.turn_on(self.valid_serial, self.valid_output_number)
 
             mock_set.assert_called_once_with(
-                self.valid_serial, self.valid_link_number, 80
+                self.valid_serial, self.valid_output_number, 80
             )
             assert result.level == 80
 
@@ -423,7 +406,7 @@ class TestConbusLightlevelService:
         # Assertions
         assert result.success is True
         assert result.serial_number == self.valid_serial
-        assert result.link_number == 2
+        assert result.output_number == 2
         assert result.level == 75  # Level for link 02 from the response
         assert result.error is None
 
