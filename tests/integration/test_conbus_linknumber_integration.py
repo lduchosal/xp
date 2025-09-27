@@ -11,7 +11,7 @@ class TestConbusLinknumberIntegration:
 
     @staticmethod
     def _create_mock_conbus_response(
-        success=True, serial_number="0020045057", error=None, telegrams=None
+        success=True, serial_number="0123450001", error=None, telegrams=None
     ):
         """Helper to create a properly formed ConbusResponse"""
         if telegrams is None:
@@ -33,9 +33,9 @@ class TestConbusLinknumberIntegration:
 
         # Configure response based on test scenario
         if success and ack_response:
-            telegrams = ["<R0020045057F18DFA>"]  # ACK response
+            telegrams = ["<R0123450001F18DFA>"]  # ACK response
         elif success and not ack_response:
-            telegrams = ["<R0020045057F19DFB>"]  # NAK response
+            telegrams = ["<R0123450001F19DFB>"]  # NAK response
         else:
             telegrams = []
 
@@ -53,19 +53,19 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service_class.return_value = mock_service
 
         # Test
-        result = ConbusLinknumberService("test.yml").set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService("test.yml").set_linknumber("0123450001", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
         assert result.success is True
         assert result.result == "ACK"
-        assert result.serial_number == "0020045057"
+        assert result.serial_number == "0123450001"
         assert result.error is None
 
         # Verify service was called correctly
         mock_service.send_raw_telegram.assert_called_once()
         args = mock_service.send_raw_telegram.call_args[0]
-        assert args[0] == "<S0020045057F04D0425FH>"
+        assert args[0] == "<S0123450001F04D0425FG>"
 
     @patch("xp.services.conbus_linknumber_service.ConbusService")
     def test_conbus_linknumber_invalid_response(self, mock_conbus_service_class):
@@ -77,13 +77,13 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service_class.return_value = mock_service
 
         # Test
-        result = ConbusLinknumberService("test.yml").set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService("test.yml").set_linknumber("0123450001", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
         assert result.success is False
         assert result.result == "NAK"
-        assert result.serial_number == "0020045057"
+        assert result.serial_number == "0123450001"
 
     @patch("xp.services.conbus_linknumber_service.ConbusService")
     def test_conbus_linknumber_connection_failure(self, mock_conbus_service_class):
@@ -93,13 +93,13 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service_class.return_value = mock_service
 
         # Test
-        result = ConbusLinknumberService("test.yml").set_linknumber("0020045057", 25)
+        result = ConbusLinknumberService("test.yml").set_linknumber("0123450001", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
         assert result.success is False
         assert result.result == "NAK"
-        assert result.serial_number == "0020045057"
+        assert result.serial_number == "0123450001"
 
     def test_conbus_linknumber_invalid_serial_number(self):
         """Test handling invalid serial number"""
@@ -117,13 +117,13 @@ class TestConbusLinknumberIntegration:
 
     def test_conbus_linknumber_invalid_link_number(self):
         """Test handling invalid link number"""
-        result = ConbusLinknumberService("test.yml").set_linknumber("0020045057", 101)
+        result = ConbusLinknumberService("test.yml").set_linknumber("0123450001", 101)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
         assert result.success is False
         assert result.result == "NAK"
-        assert result.serial_number == "0020045057"
+        assert result.serial_number == "0123450001"
         assert (
             result.error is not None
             and "Link number must be between 0-99" in result.error
@@ -139,12 +139,12 @@ class TestConbusLinknumberIntegration:
         service = ConbusLinknumberService("test.yml")
 
         # Test minimum value
-        result = service.set_linknumber("0020045057", 0)
+        result = service.set_linknumber("0123450001", 0)
         assert result.success is True
         assert result.result == "ACK"
 
         # Test maximum value
-        result = service.set_linknumber("0020045057", 99)
+        result = service.set_linknumber("0123450001", 99)
         assert result.success is True
         assert result.result == "ACK"
 
@@ -157,7 +157,7 @@ class TestConbusLinknumberIntegration:
 
     @staticmethod
     def _create_mock_datapoint_response(
-        success=True, serial_number="0020045057", link_number=25, error=None
+        success=True, serial_number="0123450001", link_number=25, error=None
     ):
         """Helper to create a properly formed ConbusDatapointResponse"""
         mock_response = Mock()
@@ -185,18 +185,18 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service_class.return_value = mock_datapoint_service
 
         datapoint_response = self._create_mock_datapoint_response(
-            success=True, serial_number="0020045057", link_number=25
+            success=True, serial_number="0123450001", link_number=25
         )
         mock_datapoint_service.query_datapoint.return_value = datapoint_response
 
         # Test
-        result = ConbusLinknumberService().get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
         assert result.success is True
         assert result.result == "SUCCESS"
-        assert result.serial_number == "0020045057"
+        assert result.serial_number == "0123450001"
         assert result.link_number == 25
         assert result.error is None
 
@@ -204,7 +204,7 @@ class TestConbusLinknumberIntegration:
         from xp.models.datapoint_type import DataPointType
 
         mock_datapoint_service.query_datapoint.assert_called_once_with(
-            DataPointType.LINK_NUMBER, "0020045057"
+            DataPointType.LINK_NUMBER, "0123450001"
         )
 
     @patch("xp.services.conbus_linknumber_service.ConbusDatapointService")
@@ -220,13 +220,13 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.return_value = datapoint_response
 
         # Test
-        result = ConbusLinknumberService().get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
         assert result.success is False
         assert result.result == "QUERY_FAILED"
-        assert result.serial_number == "0020045057"
+        assert result.serial_number == "0123450001"
         assert result.link_number is None
         assert result.error is not None and "Connection timeout" in result.error
 
@@ -239,8 +239,8 @@ class TestConbusLinknumberIntegration:
 
         mock_response = Mock()
         mock_response.success = True
-        mock_response.sent_telegram = "<S0020045057F03D04FG>"
-        mock_response.received_telegrams = ["<R0020045057F03D04invalidFH>"]
+        mock_response.sent_telegram = "<S0123450001F03D04FG>"
+        mock_response.received_telegrams = ["<R0123450001F03D04invalidFH>"]
         mock_response.error = None
         mock_response.timestamp = Mock()
         mock_response.datapoint_telegram = Mock()
@@ -249,13 +249,13 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.return_value = mock_response
 
         # Test
-        result = ConbusLinknumberService().get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
         assert result.success is False
         assert result.result == "PARSE_ERROR"
-        assert result.serial_number == "0020045057"
+        assert result.serial_number == "0123450001"
         assert result.link_number is None
         assert (
             result.error is not None and "Failed to parse link number" in result.error
@@ -274,13 +274,13 @@ class TestConbusLinknumberIntegration:
         )
 
         # Test
-        result = ConbusLinknumberService().get_linknumber("0020045057")
+        result = ConbusLinknumberService().get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
         assert result.success is False
         assert result.result == "ERROR"
-        assert result.serial_number == "0020045057"
+        assert result.serial_number == "0123450001"
         assert result.link_number is None
         assert (
             result.error is not None

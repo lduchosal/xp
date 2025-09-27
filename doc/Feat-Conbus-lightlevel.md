@@ -14,14 +14,14 @@ xp conbus lightlevel get <serial_number> <output_number>
 
 Example:
 ```
-xp conbus lightlevel set 0020045057 02 050
+xp conbus lightlevel set 0123450001 02 050
 ```
 
 Output:
 ```
-set the light level to 50% for output_number 2 of module 0020045057
-sent telegram <S0020045057F04D1502:050FN>
-received reply <R0020045057F18DFI> ACK
+set the light level to 50% for output_number 2 of module 0123450001
+sent telegram <S0123450001F04D1502:050FN>
+received reply <R0123450001F18DFI> ACK
 event sent <E35L15I82MAF> Make (on)
 ```
 

@@ -14,10 +14,10 @@ Output:
 {
   "success": true,
   "link_number": 10,
-  "serial_number": "0020045057",
-  "sent_telegram": "<S0020045057F03D04FG>",
+  "serial_number": "0123450001",
+  "sent_telegram": "<S0123450001F03D04FG>",
   "received_telegrams": [
-    "<R0020045057F03D040AFH>"
+    "<R0123450001F03D040AFH>"
   ],
   "error": null,
   "timestamp": "2025-09-26T13:11:25.820383"

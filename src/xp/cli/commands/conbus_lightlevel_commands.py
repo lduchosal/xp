@@ -27,7 +27,7 @@ def xp_lightlevel_set(serial_number: str, output_number: int, level: int) -> Non
     Examples:
 
     \b
-        xp conbus lightlevel set 0020045057 2 50   # Set output 2 to 50%
+        xp conbus lightlevel set 0123450001 2 50   # Set output 2 to 50%
         xp conbus lightlevel set 0011223344 0 100  # Set output 0 to 100%
     """
     service = ConbusLightlevelService()
@@ -48,7 +48,7 @@ def xp_lightlevel_off(serial_number: str, output_number: int) -> None:
     Examples:
 
     \b
-        xp conbus lightlevel off 0020045057 2   # Turn off output 2
+        xp conbus lightlevel off 0123450001 2   # Turn off output 2
         xp conbus lightlevel off 0011223344 0   # Turn off output 0
     """
     service = ConbusLightlevelService()
@@ -69,7 +69,7 @@ def xp_lightlevel_on(serial_number: str, output_number: int) -> None:
     Examples:
 
     \b
-        xp conbus lightlevel on 0020045057 2   # Turn on output 2 (80%)
+        xp conbus lightlevel on 0123450001 2   # Turn on output 2 (80%)
         xp conbus lightlevel on 0011223344 0   # Turn on output 0 (80%)
     """
     service = ConbusLightlevelService()
@@ -90,7 +90,7 @@ def xp_lightlevel_get(serial_number: str, output_number: int) -> None:
     Examples:
 
     \b
-        xp conbus lightlevel get 0020045057 2   # Get light level for output 2
+        xp conbus lightlevel get 0123450001 2   # Get light level for output 2
         xp conbus lightlevel get 0011223344 0   # Get light level for output 0
     """
     service = ConbusLightlevelService()

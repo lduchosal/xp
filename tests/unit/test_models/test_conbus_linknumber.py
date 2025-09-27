@@ -10,16 +10,16 @@ class TestConbusLinknumberResponse:
         response = ConbusLinknumberResponse(
             success=True,
             result="ACK",
-            serial_number="0020045057",
-            sent_telegram="<S0020045057F04D0425FO>",
-            received_telegrams=["<R0020045057F04D0400FH>"],
+            serial_number="0123450001",
+            sent_telegram="<S0123450001F04D0425FO>",
+            received_telegrams=["<R0123450001F04D0400FH>"],
         )
 
         assert response.success is True
         assert response.result == "ACK"
-        assert response.serial_number == "0020045057"
-        assert response.sent_telegram == "<S0020045057F04D0425FO>"
-        assert response.received_telegrams == ["<R0020045057F04D0400FH>"]
+        assert response.serial_number == "0123450001"
+        assert response.sent_telegram == "<S0123450001F04D0425FO>"
+        assert response.received_telegrams == ["<R0123450001F04D0400FH>"]
         assert response.error is None
         assert isinstance(response.timestamp, datetime)
 
@@ -28,13 +28,13 @@ class TestConbusLinknumberResponse:
         response = ConbusLinknumberResponse(
             success=False,
             result="NAK",
-            serial_number="0020045057",
+            serial_number="0123450001",
             error="Invalid link number",
         )
 
         assert response.success is False
         assert response.result == "NAK"
-        assert response.serial_number == "0020045057"
+        assert response.serial_number == "0123450001"
         assert response.sent_telegram is None
         assert response.received_telegrams == []
         assert response.error == "Invalid link number"
@@ -46,7 +46,7 @@ class TestConbusLinknumberResponse:
         response = ConbusLinknumberResponse(
             success=True,
             result="ACK",
-            serial_number="0020045057",
+            serial_number="0123450001",
             timestamp=custom_time,
         )
 
@@ -58,17 +58,17 @@ class TestConbusLinknumberResponse:
         result = ConbusLinknumberResponse(
             success=True,
             result="ACK",
-            serial_number="0020045057",
-            sent_telegram="<S0020045057F04D0425FO>",
-            received_telegrams=["<R0020045057F04D0400FH>"],
+            serial_number="0123450001",
+            sent_telegram="<S0123450001F04D0425FO>",
+            received_telegrams=["<R0123450001F04D0400FH>"],
             timestamp=timestamp,
         ).to_dict()
         expected = {
             "success": True,
             "result": "ACK",
-            "serial_number": "0020045057",
-            "sent_telegram": "<S0020045057F04D0425FO>",
-            "received_telegrams": ["<R0020045057F04D0400FH>"],
+            "serial_number": "0123450001",
+            "sent_telegram": "<S0123450001F04D0425FO>",
+            "received_telegrams": ["<R0123450001F04D0400FH>"],
             "link_number": None,
             "error": None,
             "timestamp": "2025-09-26T13:11:25.820383",
@@ -80,12 +80,12 @@ class TestConbusLinknumberResponse:
         result = ConbusLinknumberResponse(
             success=False,
             result="NAK",
-            serial_number="0020045057",
+            serial_number="0123450001",
             error="Connection timeout",
         ).to_dict()
         assert result["success"] is False
         assert result["result"] == "NAK"
-        assert result["serial_number"] == "0020045057"
+        assert result["serial_number"] == "0123450001"
         assert result["sent_telegram"] is None
         assert result["received_telegrams"] == []
         assert result["link_number"] is None
@@ -97,7 +97,7 @@ class TestConbusLinknumberResponse:
         response = ConbusLinknumberResponse(
             success=True,
             result="ACK",
-            serial_number="0020045057",
+            serial_number="0123450001",
         )
 
         assert response.received_telegrams == []
@@ -107,18 +107,18 @@ class TestConbusLinknumberResponse:
         response = ConbusLinknumberResponse(
             success=True,
             result="SUCCESS",
-            serial_number="0020045057",
+            serial_number="0123450001",
             link_number=25,
-            sent_telegram="<S0020045057F03D04FG>",
-            received_telegrams=["<R0020045057F03D041AFH>"],
+            sent_telegram="<S0123450001F03D04FG>",
+            received_telegrams=["<R0123450001F03D041AFH>"],
         )
 
         assert response.success is True
         assert response.result == "SUCCESS"
-        assert response.serial_number == "0020045057"
+        assert response.serial_number == "0123450001"
         assert response.link_number == 25
-        assert response.sent_telegram == "<S0020045057F03D04FG>"
-        assert response.received_telegrams == ["<R0020045057F03D041AFH>"]
+        assert response.sent_telegram == "<S0123450001F03D04FG>"
+        assert response.received_telegrams == ["<R0123450001F03D041AFH>"]
         assert response.error is None
         assert isinstance(response.timestamp, datetime)
 
@@ -127,15 +127,15 @@ class TestConbusLinknumberResponse:
         response = ConbusLinknumberResponse(
             success=True,
             result="ACK",
-            serial_number="0020045057",
-            sent_telegram="<S0020045057F04D0425FO>",
+            serial_number="0123450001",
+            sent_telegram="<S0123450001F04D0425FO>",
         )
 
         assert response.success is True
         assert response.result == "ACK"
-        assert response.serial_number == "0020045057"
+        assert response.serial_number == "0123450001"
         assert response.link_number is None
-        assert response.sent_telegram == "<S0020045057F04D0425FO>"
+        assert response.sent_telegram == "<S0123450001F04D0425FO>"
 
     def test_to_dict_with_link_number(self):
         """Test conversion to dictionary with link number"""
@@ -143,18 +143,18 @@ class TestConbusLinknumberResponse:
         result = ConbusLinknumberResponse(
             success=True,
             result="SUCCESS",
-            serial_number="0020045057",
+            serial_number="0123450001",
             link_number=25,
-            sent_telegram="<S0020045057F03D04FG>",
-            received_telegrams=["<R0020045057F03D041AFH>"],
+            sent_telegram="<S0123450001F03D04FG>",
+            received_telegrams=["<R0123450001F03D041AFH>"],
             timestamp=timestamp,
         ).to_dict()
         expected = {
             "success": True,
             "result": "SUCCESS",
-            "serial_number": "0020045057",
-            "sent_telegram": "<S0020045057F03D04FG>",
-            "received_telegrams": ["<R0020045057F03D041AFH>"],
+            "serial_number": "0123450001",
+            "sent_telegram": "<S0123450001F03D04FG>",
+            "received_telegrams": ["<R0123450001F03D041AFH>"],
             "link_number": 25,
             "error": None,
             "timestamp": "2025-09-26T13:11:25.820383",

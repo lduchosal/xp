@@ -28,7 +28,7 @@ def set_linknumber_command(serial_number: str, link_number: int) -> None:
     Examples:
 
     \b
-        xp conbus linknumber set 0020045057 25
+        xp conbus linknumber set 0123450001 25
     """
     service = ConbusLinknumberService()
 
@@ -50,7 +50,7 @@ def get_linknumber_command(serial_number: str) -> None:
     Examples:
 
     \b
-        xp conbus linknumber get 0020045057
+        xp conbus linknumber get 0123450001
     """
     service = ConbusLinknumberService()
 

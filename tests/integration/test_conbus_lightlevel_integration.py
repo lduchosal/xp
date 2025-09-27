@@ -18,7 +18,7 @@ class TestConbusLightlevelIntegration:
     def setup_method(self):
         """Set up test fixtures"""
         self.runner = CliRunner()
-        self.valid_serial = "0020045057"
+        self.valid_serial = "0123450001"
         self.invalid_serial = "invalid"
         self.valid_output_number = 2
         self.valid_level = 50
@@ -277,7 +277,7 @@ class TestConbusLightlevelService:
 
     def setup_method(self):
         """Set up test fixtures"""
-        self.valid_serial = "0020045057"
+        self.valid_serial = "0123450001"
         self.valid_output_number = 2
         self.valid_level = 50
 
