@@ -87,3 +87,4 @@ CLI integration tests in `tests/integration/test_conbus_lightlevel_integration.p
 - [ ] pdm run format "Code formatting"
 - [ ] pdm run vulture "Dead code check"
 - [ ] pdm run test-quick "Tests"
+ 
