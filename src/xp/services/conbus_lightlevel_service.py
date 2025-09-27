@@ -125,7 +125,9 @@ class ConbusLightlevelService:
         """
         return self.set_lightlevel(serial_number, output_number, 0)
 
-    def turn_on(self, serial_number: str, output_number: int) -> ConbusLightlevelResponse:
+    def turn_on(
+        self, serial_number: str, output_number: int
+    ) -> ConbusLightlevelResponse:
         """Turn on light (set level to 80%) for a specific output.
 
         Args:
