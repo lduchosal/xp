@@ -85,8 +85,25 @@ def conbus_autoreport() -> None:
     pass
 
 
+@click.group(
+    "lightlevel",
+    cls=HelpColorsGroup,
+    help_headers_color="yellow",
+    help_options_color="green",
+    short_help="Light level operations",
+)
+def conbus_lightlevel() -> None:
+    """
+    Light level operations for modules.
+
+    Control light level (dimming) of outputs on Conbus modules.
+    """
+    pass
+
+
 conbus.add_command(conbus_blink)
 conbus.add_command(conbus_output)
 conbus.add_command(conbus_datapoint)
 conbus.add_command(conbus_linknumber)
 conbus.add_command(conbus_autoreport)
+conbus.add_command(conbus_lightlevel)

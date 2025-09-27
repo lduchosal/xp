@@ -165,16 +165,20 @@ class ConbusService:
         all_telegrams = []
         start_time = time.time()
 
-        with self._connection_pool as connection:
-            while time.time() - start_time < timeout:
-                # Call _receive_responses_with_connection with a short timeout for each iteration
-                telegrams = self._receive_responses_with_connection(
-                    connection, timeout=0.1
-                )
-                all_telegrams.extend(telegrams)
+        try:
+            with self._connection_pool as connection:
+                while time.time() - start_time < timeout:
+                    # Call _receive_responses_with_connection with a short timeout for each iteration
+                    telegrams = self._receive_responses_with_connection(
+                        connection, timeout=0.1
+                    )
+                    all_telegrams.extend(telegrams)
 
-                # Small sleep to avoid busy waiting when no data
-                time.sleep(0.01)
+                    # Small sleep to avoid busy waiting when no data
+                    time.sleep(0.01)
+        except Exception as e:
+            self.logger.error(f"Error receiving responses: {e}")
+            return []
 
         return all_telegrams
 

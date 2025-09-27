@@ -217,11 +217,15 @@ class TestContextManager(TestConbusService):
 class TestErrorHandling(TestConbusService):
     """Test error handling scenarios"""
 
-    def test_response_receiving_error(self, service, mock_socket):
+    @patch("xp.services.conbus_service.ConbusConnectionPool")
+    def test_response_receiving_error(self, mock_pool_class, service, mock_socket):
         """Test error handling during response receiving"""
-        service.socket = mock_socket
-        service.is_connected = True
-        mock_socket.recv.side_effect = Exception("Network error")
+        mock_pool_instance = MagicMock()
+        mock_pool_class.get_instance.return_value = mock_pool_instance
+        mock_pool_instance.__enter__.side_effect = Exception("Network error")
+
+        # Replace the service's connection pool with our mock
+        service._connection_pool = mock_pool_instance
 
         responses = service.receive_responses()
 

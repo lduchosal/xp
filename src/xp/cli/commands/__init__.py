@@ -8,6 +8,7 @@ from .conbus import (
     conbus_datapoint,
     conbus_linknumber,
     conbus_autoreport,
+    conbus_lightlevel,
 )
 from .file_commands import file
 from .module_commands import module
@@ -41,6 +42,12 @@ from .conbus_raw_commands import send_raw_telegrams
 from .conbus_receive_commands import receive_telegrams
 from .conbus_linknumber_commands import set_linknumber_command, get_linknumber_command
 from .conbus_autoreport_commands import get_autoreport_command, set_autoreport_command
+from .conbus_lightlevel_commands import (
+    xp_lightlevel_set,
+    xp_lightlevel_off,
+    xp_lightlevel_on,
+    xp_lightlevel_get,
+)
 
 from .telegram_blink_commands import blink_on, blink_off
 from .telegram_parse_commands import parse_any_telegram, validate_telegram
@@ -60,6 +67,7 @@ __all__ = [
     "conbus_datapoint",
     "conbus_linknumber",
     "conbus_autoreport",
+    "conbus_lightlevel",
     "file",
     "module",
     "reverse_proxy",
@@ -93,6 +101,10 @@ __all__ = [
     "get_linknumber_command",
     "get_autoreport_command",
     "set_autoreport_command",
+    "xp_lightlevel_set",
+    "xp_lightlevel_off",
+    "xp_lightlevel_on",
+    "xp_lightlevel_get",
     "blink_on",
     "blink_off",
     "parse_any_telegram",

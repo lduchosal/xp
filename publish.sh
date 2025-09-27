@@ -8,7 +8,36 @@ BLUE='\033[0;34m'
 BOLD='\033[1m'
 NC='\033[0m' # No Color
 
-STEPS=15
+# Parse command line arguments
+QUALITY_ONLY=false
+for arg in "$@"; do
+    case $arg in
+        --quality)
+            QUALITY_ONLY=true
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: $0 [--quality] [--help]"
+            echo ""
+            echo "Options:"
+            echo "  --quality       Run only quality checks without publishing"
+            echo "  --help          Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "Unknown argument: $arg"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
+# Set total steps based on mode
+if [ "$QUALITY_ONLY" = true ]; then
+    STEPS=9
+else
+    STEPS=15
+fi
 STEP=0
 
 # Function to print step headers
@@ -54,7 +83,11 @@ echo "██╔═══╝ ██║   ██║██╔══██╗██�
 echo "██║     ╚██████╔╝██████╔╝███████╗██║███████║██║  ██║"
 echo "╚═╝      ╚═════╝ ╚═════╝ ╚══════╝╚═╝╚══════╝╚═╝  ╚═╝"
 echo "${NC}"
-echo "${BOLD}Starting XP Package Publishing Process...${NC}"
+if [ "$QUALITY_ONLY" = true ]; then
+    echo "${BOLD}Starting XP Package Quality Checks...${NC}"
+else
+    echo "${BOLD}Starting XP Package Publishing Process...${NC}"
+fi
 
 print_step "Cleaning Previous Build"
 run_command "pdm run clean" "Clean"
@@ -82,6 +115,16 @@ run_command "pdm run vulture" "Dead code check"
 
 print_step "Running Tests (pytest)"
 run_command "pdm run test-quick" "Tests"
+
+# Exit here if --no-publish flag is set
+if [ "$QUALITY_ONLY" = true ]; then
+    echo ""
+    echo "${GREEN}${BOLD}🎉 QUALITY CHECKS COMPLETED SUCCESSFULLY! 🎉${NC}"
+    echo "${GREEN}${BOLD}═══════════════════════════════════════════════════════════════${NC}"
+    echo "${GREEN}All quality checks have passed. Your code is ready for publishing!${NC}"
+    echo ""
+    exit 0
+fi
 
 print_step "Bumping Version (pdm-bump)"
 run_command "pdm run bump-version" "Version bump"
