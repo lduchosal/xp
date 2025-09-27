@@ -4,19 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: conbus / action tables">
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: conbus / lightlevel">
+      <change afterPath="$PROJECT_DIR$/doc/Feat-Download-XP24-ActionTable.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/pseudo-code.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/xp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/xp.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-Conbus-LinkNumber-Get.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Conbus-LinkNumber-Get.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-Conbus-LinkNumber.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Conbus-LinkNumber.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-Conbus-lightlevel.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Conbus-lightlevel.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_lightlevel_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_lightlevel_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_linknumber_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_linknumber_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_lightlevel_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_lightlevel_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_conbus_linknumber_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_conbus_linknumber_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_linknumber.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_conbus_linknumber.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_linknumber_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_linknumber_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-Download-ActionTable.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-Download-MsActionTable.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +37,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/lduchosal/xp.git&quot;,
-    &quot;accountId&quot;: &quot;7e21dcc5-31cb-41e6-afba-ccce99ec8411&quot;
+    &quot;accountId&quot;: &quot;d3beeebb-90ee-4bdb-9acf-1f9142944c4f&quot;
   }
 }</component>
   <component name="NamedScopeManager">
@@ -174,8 +168,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;SHELLCHECK.PATH&quot;: &quot;/Users/q/Library/Application Support/JetBrains/PyCharm2025.2/plugins/Shell Script/shellcheck&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Q/Projects/xp/doc&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/q/Projects/xp/doc&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -188,18 +181,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Q\Projects\xp\doc" />
       <recent name="$PROJECT_DIR$/doc" />
       <recent name="$PROJECT_DIR$/.github/workflows" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/xp/services" />
+      <recent name="$PROJECT_DIR$/src/xp/models" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Q\Projects\xp\doc" />
       <recent name="$PROJECT_DIR$/doc/mypy" />
       <recent name="$PROJECT_DIR$/config" />
       <recent name="$PROJECT_DIR$/private" />
       <recent name="$PROJECT_DIR$/doc" />
+      <recent name="$PROJECT_DIR$/src/xp/models" />
     </key>
   </component>
   <component name="RunManager" selected="Python tests.Python tests in tests">
@@ -377,8 +370,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-PY-252.26199.168" />
-        <option value="bundled-python-sdk-b3d66beaba9a-c6efb3732140-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.26199.168" />
+        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-PY-252.25557.130" />
+        <option value="bundled-python-sdk-1bde30d8e611-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.130" />
       </set>
     </attachedChunks>
   </component>
@@ -411,8 +404,14 @@
       <workItem from="1758798839699" duration="14945000" />
       <workItem from="1758876985425" duration="11705000" />
       <workItem from="1758891696761" duration="23538000" />
-      <workItem from="1758976754035" duration="1096000" />
-      <workItem from="1758977874667" duration="301000" />
+    </task>
+    <task id="LOCAL-00112" summary="Fix: rename">
+      <option name="closed" value="true" />
+      <created>1758545178996</created>
+      <option name="number" value="00112" />
+      <option name="presentableId" value="LOCAL-00112" />
+      <option name="project" value="LOCAL" />
+      <updated>1758545178996</updated>
     </task>
     <task id="LOCAL-00113" summary="Fix: rename">
       <option name="closed" value="true" />
@@ -798,15 +797,7 @@
       <option name="project" value="LOCAL" />
       <updated>1758924268543</updated>
     </task>
-    <task id="LOCAL-00161" summary="feat: conbus / action tables">
-      <option name="closed" value="true" />
-      <created>1758976935946</created>
-      <option name="number" value="00161" />
-      <option name="presentableId" value="LOCAL-00161" />
-      <option name="project" value="LOCAL" />
-      <updated>1758976935946</updated>
-    </task>
-    <option name="localTasksCounter" value="162" />
+    <option name="localTasksCounter" value="161" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -835,6 +826,7 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fix: rename" />
     <MESSAGE value="Feat: cache" />
     <MESSAGE value="Feat: connection pool" />
     <MESSAGE value="Feat: fully working prototype" />
@@ -859,8 +851,7 @@
     <MESSAGE value="feat: conson config / enable" />
     <MESSAGE value="feat: conbus / receive" />
     <MESSAGE value="feat: conbus / lightlevel" />
-    <MESSAGE value="feat: conbus / action tables" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: conbus / action tables" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: conbus / lightlevel" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
