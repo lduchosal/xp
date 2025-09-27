@@ -70,8 +70,8 @@ class Xp24ActionTable:
     # Boolean settings
     mutex12: bool = False    # Mutual exclusion between inputs 1-2
     mutex34: bool = False    # Mutual exclusion between inputs 3-4
-    lamella12: bool = False  # Lamella setting for inputs 1-2
-    lamella34: bool = False  # Lamella setting for inputs 3-4
+    curtain12: bool = False  # curtain setting for inputs 1-2
+    curtain34: bool = False  # curtain setting for inputs 3-4
     ms: int = MS300          # Master timing (MS300=12 or MS500=20)
 
 
@@ -111,8 +111,8 @@ class Xp24ActionTableSerializer:
             "AB" if action_table.mutex12 else "AA",
             "AB" if action_table.mutex34 else "AA",
             f"{action_table.ms:02X}",
-            "AB" if action_table.lamella12 else "AA",
-            "AB" if action_table.lamella34 else "AA",
+            "AB" if action_table.curtain12 else "AA",
+            "AB" if action_table.curtain34 else "AA",
             "A" * 38  # padding
         ])
 
@@ -152,8 +152,8 @@ class Xp24ActionTableSerializer:
             mutex12=bool(raw_bytes[8]),
             mutex34=bool(raw_bytes[9]),
             ms=raw_bytes[10],
-            lamella12=bool(raw_bytes[11]),
-            lamella34=bool(raw_bytes[12])
+            curtain12=bool(raw_bytes[11]),
+            curtain34=bool(raw_bytes[12])
         )
 
         return action_table
@@ -252,28 +252,20 @@ json_data = json.dumps(action_table_dict, indent=2, default=str)
 
 ### MS Action Table Response (F17)
 ```
-<S{serial}F17DAAAA{4_rows}{mutex12}{mutex34}{ms}{lamella12}{lamella34}{padding}{checksum}>
+<S{serial}F17DAAAA{4_rows}{mutex12}{mutex34}{ms}{curtain12}{curtain34}{padding}{checksum}>
 ```
 
 Where:
-- `{4_rows}`: 8 bytes (4 rows × 2 bytes per row: function_id + parameter_id)
+- `{in1_action}`: 8 bytes (action_id + parameter_id)
+- `{in2_action}`: 8 bytes (action_id + parameter_id)
+- `{in3_action}`: 8 bytes (action_id + parameter_id)
+- `{in4_action}`: 8 bytes (action_id + parameter_id)
 - `{mutex12}`: AA/AB (mutex for outputs 1-2)
 - `{mutex34}`: AA/AB (mutex for outputs 3-4)
 - `{ms}`: Timing value (MS300=12, MS500=20)
-- `{lamella12}`: AA/AB (lamella setting for outputs 1-2)
-- `{lamella34}`: AA/AB (lamella setting for outputs 3-4)
+- `{curtain12}`: AA/AB (curtain setting for outputs 1-2)
+- `{curtain34}`: AA/AB (curtain setting for outputs 3-4)
 - `{padding}`: 19 bytes of "AA" padding
-
-## Key Features
-
-1. **XP24-Specific Design**: Reflects actual hardware with configurable input action types
-2. **Flexible Input Actions**: Each input has a type (TOGGLE/SWITCH_ON_TIME/HELP) and parameter
-3. **Boolean Settings**: Mutex and lamella controls for input pairs
-4. **Telegram Generation**: Create properly formatted upload telegrams
-5. **Telegram Decoding**: Parse downloaded action table data
-6. **Checksum Handling**: Automatic checksum calculation and validation
-7. **Service Integration**: Compatible with existing Conbus infrastructure
-8. **Pythonic Design**: Uses dataclass with realistic field structure
 
 ## Usage Examples
 
@@ -286,7 +278,7 @@ action_table = Xp24ActionTable(
     input3_action=InputAction(InputActionType.LEVELSET, "75"),  # Set light level to 75%
     input4_action=InputAction(InputActionType.SCENESET, "3"),   # Set scene 3
     mutex12=True,                      # Inputs 1-2 are mutually exclusive
-    lamella34=True,                    # Inputs 3-4 have lamella control
+    curtain34=True,                    # Inputs 3-4 have curtain control
     ms=Xp24ActionTable.MS500           # 500ms timing base
 )
 
@@ -302,17 +294,4 @@ received_action_table = Xp24ActionTableSerializer.from_telegrams(telegrams)
 # JSON serialization using dataclass
 from dataclasses import asdict
 json_data = json.dumps(asdict(action_table), indent=2, default=str)
-```
-
-### Available Action Types
-```python
-# Common action types with their codes (from Feature-Action-Table.md):
-# VOID = 0          # No action
-# TURNON = 1        # Turn output on (with optional time parameter)
-# TURNOFF = 2       # Turn output off (with optional time parameter)
-# TOGGLE = 3        # Toggle function
-# LEVELSET = 11     # Set light level (parameter = level percentage)
-# SCENESET = 13     # Set light scene (parameter = scene number)
-# EVENTTIMER1 = 19  # Event timer (parameter = time in milliseconds)
-# LEARN = 31        # Enter learn state
 ```

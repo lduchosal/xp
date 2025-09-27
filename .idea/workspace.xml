@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: conbus / lightlevel">
-      <change afterPath="$PROJECT_DIR$/doc/Feat-Download-XP24-ActionTable.md" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: conbus / actiontable">
       <change afterPath="$PROJECT_DIR$/doc/pseudo-code.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-Download-ActionTable.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-Download-MsActionTable.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Feat-Download-XP24-MsActionTable.pseudo" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.pseudo.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,10 +186,10 @@
       <recent name="$PROJECT_DIR$/src/xp/models" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/doc" />
       <recent name="$PROJECT_DIR$/doc/mypy" />
       <recent name="$PROJECT_DIR$/config" />
       <recent name="$PROJECT_DIR$/private" />
-      <recent name="$PROJECT_DIR$/doc" />
       <recent name="$PROJECT_DIR$/src/xp/models" />
     </key>
   </component>
@@ -404,14 +402,6 @@
       <workItem from="1758798839699" duration="14945000" />
       <workItem from="1758876985425" duration="11705000" />
       <workItem from="1758891696761" duration="23538000" />
-    </task>
-    <task id="LOCAL-00112" summary="Fix: rename">
-      <option name="closed" value="true" />
-      <created>1758545178996</created>
-      <option name="number" value="00112" />
-      <option name="presentableId" value="LOCAL-00112" />
-      <option name="project" value="LOCAL" />
-      <updated>1758545178996</updated>
     </task>
     <task id="LOCAL-00113" summary="Fix: rename">
       <option name="closed" value="true" />
@@ -797,7 +787,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758924268543</updated>
     </task>
-    <option name="localTasksCounter" value="161" />
+    <task id="LOCAL-00161" summary="feat: conbus / actiontable">
+      <option name="closed" value="true" />
+      <created>1758985933547</created>
+      <option name="number" value="00161" />
+      <option name="presentableId" value="LOCAL-00161" />
+      <option name="project" value="LOCAL" />
+      <updated>1758985933547</updated>
+    </task>
+    <option name="localTasksCounter" value="162" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -826,7 +824,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix: rename" />
     <MESSAGE value="Feat: cache" />
     <MESSAGE value="Feat: connection pool" />
     <MESSAGE value="Feat: fully working prototype" />
@@ -851,7 +848,8 @@
     <MESSAGE value="feat: conson config / enable" />
     <MESSAGE value="feat: conbus / receive" />
     <MESSAGE value="feat: conbus / lightlevel" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: conbus / lightlevel" />
+    <MESSAGE value="feat: conbus / actiontable" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: conbus / actiontable" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
