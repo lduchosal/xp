@@ -10,6 +10,7 @@ from .conbus import (
     conbus_autoreport,
     conbus_lightlevel,
     conbus_msactiontable,
+    conbus_actiontable,
 )
 from .file_commands import file
 from .module_commands import module
@@ -41,6 +42,7 @@ from .conbus_output_commands import (
     xp_module_state,
 )
 from .conbus_msactiontable_commands import conbus_download_msactiontable
+from .conbus_actiontable_commands import conbus_download_actiontable
 from .conbus_scan_commands import scan_module
 from .conbus_raw_commands import send_raw_telegrams
 from .conbus_receive_commands import receive_telegrams
@@ -72,6 +74,7 @@ __all__ = [
     "conbus_autoreport",
     "conbus_lightlevel",
     "conbus_msactiontable",
+    "conbus_actiontable",
     "file",
     "module",
     "reverse_proxy",
@@ -85,6 +88,7 @@ __all__ = [
     "homekit_start",
     # Individual command functions
     "conbus_download_msactiontable",
+    "conbus_download_actiontable",
     "send_blink_on_telegram",
     "send_blink_off_telegram",
     "conbus_blink_all",

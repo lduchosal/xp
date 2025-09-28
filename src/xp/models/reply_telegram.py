@@ -24,7 +24,7 @@ class ReplyTelegram(Telegram):
     """
 
     serial_number: str = ""
-    system_function: Optional[SystemFunction] = None
+    system_function: SystemFunction = SystemFunction.NONE
     data: str = ""
     datapoint_type: Optional[DataPointType] = None
     data_value: str = ""

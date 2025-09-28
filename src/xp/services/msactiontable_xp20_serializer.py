@@ -1,20 +1,19 @@
 """Serializer for XP20 Action Table telegram encoding/decoding."""
 
 from ..models.msactiontable_xp20 import InputChannel, Xp20MsActionTable
-from ..utils.checksum import de_nibble, nibble
-from ..utils.serialization import byte_to_bits
+from ..utils.serialization import byte_to_bits, de_nibbles, nibbles
+
+# Index constants for clarity in implementation
+SHORT_LONG_INDEX: int = 0
+GROUP_ON_OFF_INDEX: int = 1
+INVERT_INDEX: int = 2
+AND_FUNCTIONS_INDEX: int = 3  # starts at 3, uses indices 3-10
+SA_FUNCTION_INDEX: int = 11
+TA_FUNCTION_INDEX: int = 12
 
 
 class Xp20MsActionTableSerializer:
     """Handles serialization/deserialization of XP20 action tables to/from telegrams."""
-
-    # Index constants for clarity in implementation
-    SHORT_LONG_INDEX = 0
-    GROUP_ON_OFF_INDEX = 1
-    INVERT_INDEX = 2
-    AND_FUNCTIONS_INDEX = 3  # starts at 3, uses indices 3-10
-    SA_FUNCTION_INDEX = 11
-    TA_FUNCTION_INDEX = 12
 
     @staticmethod
     def to_data(action_table: Xp20MsActionTable) -> str:
@@ -48,11 +47,7 @@ class Xp20MsActionTableSerializer:
             )
 
         # Convert raw bytes to hex string with A-P encoding
-        hex_data = ""
-        for byte_val in raw_bytes:
-            hex_data += nibble(byte_val)
-
-        return hex_data
+        return nibbles(raw_bytes)
 
     @staticmethod
     def from_data(msactiontable_rawdata: str) -> Xp20MsActionTable:
@@ -73,7 +68,7 @@ class Xp20MsActionTableSerializer:
             )
 
         # Convert hex string to bytes using de_nibble (A-P encoding)
-        raw_bytes = de_nibble(msactiontable_rawdata)
+        raw_bytes = de_nibbles(msactiontable_rawdata)
 
         # Decode input channels
         input_channels = []
@@ -107,24 +102,14 @@ class Xp20MsActionTableSerializer:
             Decoded input channel configuration
         """
         # Extract bit flags from appropriate offsets
-        short_long_flags = byte_to_bits(
-            raw_bytes[Xp20MsActionTableSerializer.SHORT_LONG_INDEX]
-        )
-        group_on_off_flags = byte_to_bits(
-            raw_bytes[Xp20MsActionTableSerializer.GROUP_ON_OFF_INDEX]
-        )
-        invert_flags = byte_to_bits(raw_bytes[Xp20MsActionTableSerializer.INVERT_INDEX])
-        sa_function_flags = byte_to_bits(
-            raw_bytes[Xp20MsActionTableSerializer.SA_FUNCTION_INDEX]
-        )
-        ta_function_flags = byte_to_bits(
-            raw_bytes[Xp20MsActionTableSerializer.TA_FUNCTION_INDEX]
-        )
+        short_long_flags = byte_to_bits(raw_bytes[SHORT_LONG_INDEX])
+        group_on_off_flags = byte_to_bits(raw_bytes[GROUP_ON_OFF_INDEX])
+        invert_flags = byte_to_bits(raw_bytes[INVERT_INDEX])
+        sa_function_flags = byte_to_bits(raw_bytes[SA_FUNCTION_INDEX])
+        ta_function_flags = byte_to_bits(raw_bytes[TA_FUNCTION_INDEX])
 
         # Extract AND functions for this input (full byte)
-        and_functions_byte = raw_bytes[
-            Xp20MsActionTableSerializer.AND_FUNCTIONS_INDEX + input_index
-        ]
+        and_functions_byte = raw_bytes[AND_FUNCTIONS_INDEX + input_index]
         and_functions = byte_to_bits(and_functions_byte)
 
         # Create and return input channel
@@ -150,21 +135,19 @@ class Xp20MsActionTableSerializer:
         """
         # Set bit flags at appropriate positions
         if input_channel.short_long:
-            raw_bytes[Xp20MsActionTableSerializer.SHORT_LONG_INDEX] |= 1 << input_index
+            raw_bytes[SHORT_LONG_INDEX] |= 1 << input_index
 
         if input_channel.group_on_off:
-            raw_bytes[Xp20MsActionTableSerializer.GROUP_ON_OFF_INDEX] |= (
-                1 << input_index
-            )
+            raw_bytes[GROUP_ON_OFF_INDEX] |= 1 << input_index
 
         if input_channel.invert:
-            raw_bytes[Xp20MsActionTableSerializer.INVERT_INDEX] |= 1 << input_index
+            raw_bytes[INVERT_INDEX] |= 1 << input_index
 
         if input_channel.sa_function:
-            raw_bytes[Xp20MsActionTableSerializer.SA_FUNCTION_INDEX] |= 1 << input_index
+            raw_bytes[SA_FUNCTION_INDEX] |= 1 << input_index
 
         if input_channel.ta_function:
-            raw_bytes[Xp20MsActionTableSerializer.TA_FUNCTION_INDEX] |= 1 << input_index
+            raw_bytes[TA_FUNCTION_INDEX] |= 1 << input_index
 
         # Encode AND functions (ensure we have exactly 8 bits)
         and_functions = input_channel.and_functions or [False] * 8
@@ -175,9 +158,7 @@ class Xp20MsActionTableSerializer:
             if bit_value:
                 and_functions_byte |= 1 << bit_index
 
-        raw_bytes[Xp20MsActionTableSerializer.AND_FUNCTIONS_INDEX + input_index] = (
-            and_functions_byte
-        )
+        raw_bytes[AND_FUNCTIONS_INDEX + input_index] = and_functions_byte
 
     @staticmethod
     def from_telegrams(ms_telegrams: str) -> Xp20MsActionTable:

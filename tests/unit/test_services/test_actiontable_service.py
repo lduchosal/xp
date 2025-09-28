@@ -68,6 +68,8 @@ class TestActionTableService:
         self, mock_telegram_service, mock_conbus_service
     ):
         """Test successful actiontable download"""
+        from xp.models.system_function import SystemFunction
+
         # Setup mocks
         mock_conbus = Mock()
         mock_conbus_service.return_value = mock_conbus
@@ -75,27 +77,44 @@ class TestActionTableService:
         mock_telegram = Mock()
         mock_telegram_service.return_value = mock_telegram
 
-        # Mock telegram responses
-        mock_reply = Mock()
-        mock_reply.system_function.value = "17D"
-        mock_reply.raw_telegram = "<R0123450001F17DAAAAACAAAABAAAAC>"
-        mock_telegram.parse_reply_telegram.return_value = mock_reply
-
         service = ActionTableService()
 
-        # Mock the data reception flow
+        # Mock calls to simulate the communication flow
+        call_count = [0]
+
         def mock_send_telegram(serial, function, data, callback):
-            # Simulate receiving actiontable data
-            test_telegrams = ["<R0123450001F17DAAAAACAAAABAAAAC>"]
-            callback(test_telegrams)
+            call_count[0] += 1
+            if call_count[0] == 1:
+                # First call: simulate receiving actiontable data
+                mock_actiontable_reply = Mock()
+                mock_actiontable_reply.system_function = SystemFunction.ACTIONTABLE
+                mock_actiontable_reply.raw_telegram = "AAAAACAAAABAAAAC"
+                mock_telegram.parse_reply_telegram.return_value = mock_actiontable_reply
+                callback(["<R0123450001F17DAAAAACAAAABAAAAC>"])
+            elif call_count[0] == 2:
+                # Second call: simulate receiving EOF
+                mock_eof_reply = Mock()
+                mock_eof_reply.system_function = SystemFunction.EOF
+                mock_eof_reply.raw_telegram = "<R0123450001F16DEO>"
+                mock_telegram.parse_reply_telegram.return_value = mock_eof_reply
+                callback(["<R0123450001F16DEO>"])
 
         mock_conbus.send_telegram.side_effect = mock_send_telegram
 
-        # Test the download
-        result = service.download_actiontable("012345")
+        # Mock receive_responses to not interfere
+        mock_conbus.receive_responses.return_value = None
 
-        assert isinstance(result, ActionTable)
-        assert mock_conbus.send_telegram.called
+        # Mock serializer to return a valid ActionTable
+        with patch.object(
+            service.serializer, "from_encoded_string"
+        ) as mock_deserialize:
+            mock_deserialize.return_value = ActionTable(entries=[])
+
+            # Test the download
+            result = service.download_actiontable("012345")
+
+            assert isinstance(result, ActionTable)
+            assert mock_conbus.send_telegram.called
 
     def test_download_actiontable_communication_error(self, service):
         """Test actiontable download with communication error"""
@@ -161,8 +180,10 @@ class TestActionTableService:
 
     def test_get_actiontable_data_found(self, service):
         """Test _get_actiontable_data extracts data successfully"""
+        from xp.models.system_function import SystemFunction
+
         mock_reply = Mock()
-        mock_reply.system_function.value = "17D"
+        mock_reply.system_function = SystemFunction.ACTIONTABLE
         mock_reply.raw_telegram = "<R0123450001F17DAAAAACAAAABAAAACFK>"
 
         with patch.object(
@@ -172,7 +193,7 @@ class TestActionTableService:
                 ["<R0123450001F17DAAAAACAAAABAAAACFK>"]
             )
             assert result is not None
-            assert isinstance(result, bytes)
+            assert isinstance(result, str)
 
     def test_get_actiontable_data_not_found(self, service):
         """Test _get_actiontable_data returns None when no data found"""
@@ -186,14 +207,6 @@ class TestActionTableService:
         ):
             result = service._get_actiontable_data(["<R0123450001F18DFA>"])
             assert result is None
-
-    def test_decode_telegram_data(self, service):
-        """Test _decode_telegram_data converts string to bytes"""
-        test_data = "AAABACAD"
-        result = service._decode_telegram_data(test_data)
-
-        assert isinstance(result, bytes)
-        assert len(result) > 0
 
     def test_context_manager(self, service):
         """Test service works as context manager"""

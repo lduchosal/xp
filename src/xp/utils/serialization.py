@@ -104,3 +104,73 @@ def a_byte_to_int_no_sign(byte_val: int) -> int:
     if byte_val < 0:
         return byte_val + 256
     return byte_val
+
+
+def nibble(byte_val: int) -> str:
+    """Convert byte value to two-character nibble representation.
+
+    Args:
+        byte_val: Byte value (0-255)
+
+    Returns:
+        Two-character string representing the nibble
+    """
+    low_cc = ((byte_val & 0xF0) >> 4) + 65
+    high_cc = (byte_val & 0xF) + 65
+    return chr(low_cc) + chr(high_cc)
+
+
+def de_nibble(nibble_str: str) -> int:
+    """Convert two-character nibble string to byte value.
+
+    Based on pseudo code: A=0, B=1, C=2, ..., P=15
+
+    Args:
+        nibble_str: Two-character string with A-P encoding
+
+    Returns:
+        Byte value (0-255)
+    """
+    if len(nibble_str) != 2:
+        raise ValueError("Nibble string must be exactly 2 characters")
+
+    high_char = nibble_str[0]
+    low_char = nibble_str[1]
+
+    # Convert A-P to 0-15 (A=65 in ASCII, so A-65=0)
+    high_nibble = (ord(high_char) - 65) << 4
+    low_nibble = ord(low_char) - 65
+
+    return high_nibble + low_nibble
+
+
+def de_nibbles(str_val: str) -> bytearray:
+    """Convert hex string with A-P encoding to list of integers.
+
+    Based on pseudo code: A=0, B=1, C=2, ..., P=15
+
+    Args:
+        str_val: Hex string with A-P encoding
+
+    Returns:
+        List of integers representing the decoded bytes
+    """
+    if len(str_val) % 2 != 0:
+        raise ValueError("String length must be even for nibble conversion")
+
+    result = bytearray()
+    for i in range(0, len(str_val), 2):
+        result.append(de_nibble(str_val[i : i + 2]))
+    return result
+
+
+def nibbles(data: bytes) -> str:
+    """Convert bytes data to nibble string representation.
+
+    Args:
+        data: Bytes data to convert
+
+    Returns:
+        String representation using A-P encoding
+    """
+    return "".join(nibble(byte) for byte in data)

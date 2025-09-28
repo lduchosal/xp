@@ -1,13 +1,11 @@
 """Serializer for ActionTable telegram encoding/decoding."""
 
-import base64
-
 from ..models.actiontable import ActionTable, ActionTableEntry
 from ..models import ModuleTypeCode
 from ..models.action_type import ActionType
 from ..models.input_action_type import InputActionType
 from ..models.timeparam_type import TimeParam
-from ..utils.serialization import de_bcd, to_bcd, lower3, upper5
+from ..utils.serialization import de_bcd, to_bcd, lower3, upper5, de_nibbles, nibbles
 
 
 class ActionTableSerializer:
@@ -117,7 +115,7 @@ class ActionTableSerializer:
             Base64-encoded string representation
         """
         data = ActionTableSerializer.to_data(action_table)
-        return base64.b64encode(data).decode("ascii")
+        return nibbles(data)
 
     @staticmethod
     def from_encoded_string(encoded_data: str) -> ActionTable:
@@ -129,7 +127,7 @@ class ActionTableSerializer:
         Returns:
             Decoded ActionTable
         """
-        data = base64.b64decode(encoded_data.encode("ascii"))
+        data = de_nibbles(encoded_data)
         return ActionTableSerializer.from_data(data)
 
     @staticmethod

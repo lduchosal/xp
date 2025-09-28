@@ -8,6 +8,8 @@ Copyright (c) 2025 ld
 Licensed under MIT License - see LICENSE file for details.
 """
 
+from xp.utils.serialization import nibble
+
 
 def calculate_checksum(buffer: str) -> str:
     """Calculate simple XOR checksum of a string buffer.
@@ -23,48 +25,6 @@ def calculate_checksum(buffer: str) -> str:
         cc ^= ord(char)
 
     return nibble(cc & 0xFF)
-
-
-def nibble(byte_val: int) -> str:
-    """Convert byte value to two-character nibble representation.
-
-    Args:
-        byte_val: Byte value (0-255)
-
-    Returns:
-        Two-character string representing the nibble
-    """
-    low_cc = ((byte_val & 0xF0) >> 4) + 65
-    high_cc = (byte_val & 0xF) + 65
-    return chr(low_cc) + chr(high_cc)
-
-
-def de_nibble(str_val: str) -> bytearray:
-    """Convert hex string with A-P encoding to list of integers.
-
-    Based on pseudo code: A=0, B=1, C=2, ..., P=15
-
-    Args:
-        str_val: Hex string with A-P encoding
-
-    Returns:
-        List of integers representing the decoded bytes
-    """
-    if len(str_val) % 2 != 0:
-        raise ValueError("String length must be even for nibble conversion")
-
-    result = bytearray()
-    for i in range(0, len(str_val), 2):
-        # Get high and low nibbles
-        high_char = str_val[i]
-        low_char = str_val[i + 1]
-
-        # Convert A-P to 0-15 (A=65 in ASCII, so A-65=0)
-        high_nibble = (ord(high_char) - 65) << 4
-        low_nibble = ord(low_char) - 65
-
-        result.extend([high_nibble + low_nibble])
-    return result
 
 
 def calculate_checksum32(buffer: bytes) -> str:

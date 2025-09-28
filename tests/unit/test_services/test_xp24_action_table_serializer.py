@@ -6,7 +6,7 @@ from xp.models.input_action_type import InputActionType
 from xp.models.timeparam_type import TimeParam
 from xp.models.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.services.msactiontable_xp24_serializer import Xp24MsActionTableSerializer
-from xp.utils.checksum import de_nibble
+from xp.utils.serialization import de_nibbles
 
 
 class TestXp24MsActionTableSerializer:
@@ -105,28 +105,28 @@ class TestXp24MsActionTableSerializer:
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AA"
 
-        result = de_nibble(nibble)
+        result = de_nibbles(nibble)
         assert bytearray([0]) == result
 
     def test_from_telegrams_denibble_1(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AB"
 
-        result = de_nibble(nibble)
+        result = de_nibbles(nibble)
         assert bytearray([1]) == result
 
     def test_from_telegrams_denibble_01(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AAAB"
 
-        result = de_nibble(nibble)
+        result = de_nibbles(nibble)
         assert bytearray([0, 1]) == result
 
     def test_from_telegrams_denibble_big(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
-        result = de_nibble(nibble)
+        result = de_nibbles(nibble)
         assert (
             bytearray(
                 [

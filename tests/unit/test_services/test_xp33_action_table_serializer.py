@@ -6,7 +6,7 @@ from contextlib import suppress
 from xp.models.timeparam_type import TimeParam
 from xp.models.msactiontable_xp33 import Xp33MsActionTable, Xp33Output, Xp33Scene
 from xp.services.msactiontable_xp33_serializer import Xp33MsActionTableSerializer
-from xp.utils.checksum import de_nibble
+from xp.utils.serialization import de_nibbles
 
 
 class TestXp33MsActionTableSerializer:
@@ -393,12 +393,12 @@ class TestXp33MsActionTableSerializer:
         """Test integration with de_nibble utility"""
         # Test with simple nibble data
         nibble_data = "AAAB"  # Should decode to [0, 1]
-        result = de_nibble(nibble_data)
+        result = de_nibbles(nibble_data)
         assert result == bytearray([0, 1])
 
         # Test with longer data
         nibble_data = "AAAAADAAADAAADAAADAAAAAA"
-        result = de_nibble(nibble_data)
+        result = de_nibbles(nibble_data)
         expected = bytearray([0, 0, 3, 0, 3, 0, 3, 0, 3, 0, 0, 0])
         assert result == expected
 

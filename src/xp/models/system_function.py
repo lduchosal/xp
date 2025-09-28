@@ -5,6 +5,7 @@ from typing import Optional
 class SystemFunction(str, Enum):
     """System function codes for system telegrams"""
 
+    NONE = "00"  # Undefined
     DISCOVERY = "01"  # Discover function
     READ_DATAPOINT = "02"  # Read datapoint
     READ_CONFIG = "03"  # Read configuration
@@ -17,6 +18,7 @@ class SystemFunction(str, Enum):
     DOWNLOAD_ACTIONTABLE = "11D"  # Download ActionTable
     EOF = "16"  # End of msactiontable response
     MSACTIONTABLE = "17"  # module specific action table (MsActionTable) response
+    ACTIONTABLE = "17"  # module specific action table (MsActionTable) response
     ACK = "18"  # Acknowledge response
     NAK = "19"  # Not acknowledge response
     UNKNOWN_26 = "26"  # Used after discover, but don't know what it is

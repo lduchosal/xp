@@ -3,7 +3,7 @@
 from ..models.input_action_type import InputActionType
 from ..models.timeparam_type import TimeParam
 from ..models.msactiontable_xp24 import InputAction, Xp24MsActionTable
-from ..utils.checksum import de_nibble
+from ..utils.serialization import de_nibbles
 
 
 class Xp24MsActionTableSerializer:
@@ -59,7 +59,7 @@ class Xp24MsActionTableSerializer:
         hex_data = data[:64]
 
         # Convert hex string to bytes using deNibble (A-P encoding)
-        raw_bytes = de_nibble(hex_data)
+        raw_bytes = de_nibbles(hex_data)
 
         # Decode input actions from positions 0-3 (2 bytes each)
         input_actions = []

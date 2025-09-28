@@ -2,8 +2,7 @@
 
 from ..models.timeparam_type import TimeParam
 from ..models.msactiontable_xp33 import Xp33MsActionTable, Xp33Output, Xp33Scene
-from ..utils.checksum import de_nibble, nibble
-from ..utils.serialization import byte_to_bits, bits_to_byte
+from ..utils.serialization import byte_to_bits, bits_to_byte, nibble, de_nibbles
 
 
 class Xp33MsActionTableSerializer:
@@ -110,7 +109,7 @@ class Xp33MsActionTableSerializer:
         hex_data = data[:64]
 
         # Convert hex string to bytes using deNibble (A-P encoding)
-        raw_bytes = de_nibble(hex_data)
+        raw_bytes = de_nibbles(hex_data)
 
         # Decode outputs
         output1 = Xp33MsActionTableSerializer._decode_output(raw_bytes, 0)

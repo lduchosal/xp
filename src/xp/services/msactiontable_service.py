@@ -36,7 +36,6 @@ class MsActionTableService:
     ) -> Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]:
         """Download action table from XP module"""
         try:
-            ack_received = False
             msactiontable_received = False
             eof_received = False
             msactiontable_telegrams: list[str] = []
@@ -44,13 +43,9 @@ class MsActionTableService:
             # Usage
             def on_data_received(telegrams: list[str]) -> None:
 
-                nonlocal ack_received, msactiontable_received, msactiontable_telegrams, eof_received
+                nonlocal msactiontable_received, msactiontable_telegrams, eof_received
 
                 self.logger.debug(f"Data received telegrams: {telegrams}")
-
-                if self._is_ack(telegrams):
-                    self.logger.debug("Received ack")
-                    ack_received = True
 
                 if self._is_eof(telegrams):
                     self.logger.debug("Received eof")
@@ -62,8 +57,7 @@ class MsActionTableService:
                     msactiontable_telegrams.append(msactiontable_telegram)
                     self.logger.debug("Received msactiontable_telegram")
 
-                if ack_received and msactiontable_received:
-                    ack_received = False
+                if msactiontable_received:
                     msactiontable_received = False
                     self.conbus_service.send_telegram(
                         serial_number,
@@ -111,16 +105,6 @@ class MsActionTableService:
 
         except ConbusError as e:
             raise MsActionTableError(f"Conbus communication failed: {e}") from e
-
-    def _is_ack(self, received_telegrams: list[str]) -> bool:
-
-        for response in received_telegrams:
-            with suppress(TelegramParsingError):
-                reply_telegram = self.telegram_service.parse_reply_telegram(response)
-                if reply_telegram.system_function == SystemFunction.ACK:
-                    return True
-
-        return False
 
     def _is_eof(self, received_telegrams: list[str]) -> bool:
 

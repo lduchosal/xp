@@ -3,8 +3,15 @@
 import pytest
 
 from xp.models.msactiontable_xp20 import InputChannel, Xp20MsActionTable
-from xp.services.msactiontable_xp20_serializer import Xp20MsActionTableSerializer
-from xp.utils.checksum import de_nibble
+from xp.services.msactiontable_xp20_serializer import (
+    Xp20MsActionTableSerializer,
+    SHORT_LONG_INDEX,
+    TA_FUNCTION_INDEX,
+    GROUP_ON_OFF_INDEX,
+    SA_FUNCTION_INDEX,
+    INVERT_INDEX,
+)
+from xp.utils.serialization import de_nibbles
 
 
 class TestXp20MsActionTableSerializer:
@@ -224,24 +231,14 @@ class TestXp20MsActionTableSerializer:
         action_table.input8.ta_function = True
 
         serialized = Xp20MsActionTableSerializer.to_data(action_table)
-        raw_bytes = de_nibble(serialized)
+        raw_bytes = de_nibbles(serialized)
 
         # Check bit positions
-        assert (
-            raw_bytes[Xp20MsActionTableSerializer.SHORT_LONG_INDEX] & 1 != 0
-        )  # input1 bit 0
-        assert (
-            raw_bytes[Xp20MsActionTableSerializer.INVERT_INDEX] & 1 != 0
-        )  # input1 bit 0
-        assert (
-            raw_bytes[Xp20MsActionTableSerializer.SA_FUNCTION_INDEX] & 1 != 0
-        )  # input1 bit 0
-        assert (
-            raw_bytes[Xp20MsActionTableSerializer.GROUP_ON_OFF_INDEX] & 128 != 0
-        )  # input8 bit 7
-        assert (
-            raw_bytes[Xp20MsActionTableSerializer.TA_FUNCTION_INDEX] & 128 != 0
-        )  # input8 bit 7
+        assert raw_bytes[SHORT_LONG_INDEX] & 1 != 0  # input1 bit 0
+        assert raw_bytes[INVERT_INDEX] & 1 != 0  # input1 bit 0
+        assert raw_bytes[SA_FUNCTION_INDEX] & 1 != 0  # input1 bit 0
+        assert raw_bytes[GROUP_ON_OFF_INDEX] & 128 != 0  # input8 bit 7
+        assert raw_bytes[TA_FUNCTION_INDEX] & 128 != 0  # input8 bit 7
 
     def test_specification_example(self):
         """Test with the example telegram from specification"""

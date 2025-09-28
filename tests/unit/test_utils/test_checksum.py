@@ -5,15 +5,12 @@ the expected behavior
 """
 
 import pytest
-from xp.utils.checksum import (
-    calculate_checksum,
-    calculate_checksum32,
-    de_nibble,
-    nibble,
-)
+from xp.utils.checksum import calculate_checksum, calculate_checksum32
 from xp.utils.serialization import (
     de_bcd,
     a_byte_to_int_no_sign,
+    nibble,
+    de_nibbles,
 )
 
 
@@ -32,7 +29,7 @@ class TestChecksumUtilities:
         result = calculate_checksum(test_data)
 
         # Convert back to verify
-        nibble_bytes = de_nibble(result)
+        nibble_bytes = de_nibbles(result)
         assert nibble_bytes[0] == expected_xor
 
     def test_calculate_checksum_empty_string(self):
@@ -63,32 +60,32 @@ class TestChecksumUtilities:
     def test_de_nibble_conversion(self):
         """Test reverse nibble conversion."""
         # Test "AA" -> 0
-        result = de_nibble("AA")
+        result = de_nibbles("AA")
         assert result == b"\x00"
 
         # Test "EB" -> 0x41
-        result = de_nibble("EB")
+        result = de_nibbles("EB")
         assert result == b"\x41"
 
         # Test "PP" -> 0xFF
-        result = de_nibble("PP")
+        result = de_nibbles("PP")
         assert result == b"\xff"
 
     def test_de_nibble_multiple_bytes(self):
         """Test de_nibble with multiple byte pairs."""
-        result = de_nibble("AAEB")
+        result = de_nibbles("AAEB")
         assert result == b"\x00\x41"
 
-        result = de_nibble("EBAA")
+        result = de_nibbles("EBAA")
         assert result == b"\x41\x00"
 
     def test_de_nibble_invalid_length(self):
         """Test de_nibble with odd length string."""
         with pytest.raises(ValueError, match="String length must be even"):
-            de_nibble("A")
+            de_nibbles("A")
 
         with pytest.raises(ValueError, match="String length must be even"):
-            de_nibble("ABC")
+            de_nibbles("ABC")
 
     def test_byte_to_int_no_sign(self):
         """Test unsigned byte conversion."""
@@ -167,7 +164,7 @@ class TestChecksumUtilities:
         """Test that nibble conversion is reversible."""
         for test_byte in (0, 1, 65, 127, 255):
             nibbled = nibble(test_byte)
-            de_nibbled = de_nibble(nibbled)
+            de_nibbled = de_nibbles(nibbled)
             assert de_nibbled[0] == test_byte
 
     def test_telegram_example(self):
