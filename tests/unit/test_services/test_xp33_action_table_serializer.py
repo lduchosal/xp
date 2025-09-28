@@ -83,7 +83,10 @@ class TestXp33MsActionTableSerializer:
             deserialized.output1.scene_outputs
             == sample_action_table.output1.scene_outputs
         )
-        assert deserialized.output1.start_at_full == sample_action_table.output1.start_at_full
+        assert (
+            deserialized.output1.start_at_full
+            == sample_action_table.output1.start_at_full
+        )
         assert (
             deserialized.output1.leading_edge
             == sample_action_table.output1.leading_edge
@@ -95,7 +98,10 @@ class TestXp33MsActionTableSerializer:
             deserialized.output2.scene_outputs
             == sample_action_table.output2.scene_outputs
         )
-        assert deserialized.output2.start_at_full == sample_action_table.output2.start_at_full
+        assert (
+            deserialized.output2.start_at_full
+            == sample_action_table.output2.start_at_full
+        )
         assert (
             deserialized.output2.leading_edge
             == sample_action_table.output2.leading_edge
@@ -107,7 +113,10 @@ class TestXp33MsActionTableSerializer:
             deserialized.output3.scene_outputs
             == sample_action_table.output3.scene_outputs
         )
-        assert deserialized.output3.start_at_full == sample_action_table.output3.start_at_full
+        assert (
+            deserialized.output3.start_at_full
+            == sample_action_table.output3.start_at_full
+        )
         assert (
             deserialized.output3.leading_edge
             == sample_action_table.output3.leading_edge
@@ -246,9 +255,15 @@ class TestXp33MsActionTableSerializer:
         """Test proper handling of bit flags for outputs"""
         # Test all combinations of flags
         action_table = Xp33MsActionTable(
-            output1=Xp33Output(scene_outputs=True, start_at_full=False, leading_edge=True),
-            output2=Xp33Output(scene_outputs=False, start_at_full=True, leading_edge=False),
-            output3=Xp33Output(scene_outputs=True, start_at_full=True, leading_edge=True),
+            output1=Xp33Output(
+                scene_outputs=True, start_at_full=False, leading_edge=True
+            ),
+            output2=Xp33Output(
+                scene_outputs=False, start_at_full=True, leading_edge=False
+            ),
+            output3=Xp33Output(
+                scene_outputs=True, start_at_full=True, leading_edge=True
+            ),
         )
 
         # Test round trip
