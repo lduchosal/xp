@@ -24,7 +24,7 @@ def receive_telegrams(timeout: float) -> None:
     or events from the server.
 
     Arguments:
-        TIMEOUT: Timeout in seconds for receiving telegrams (default: 2.0)
+        :param timeout: Timeout in seconds for receiving telegrams (default: 2.0)
 
     Examples:
 

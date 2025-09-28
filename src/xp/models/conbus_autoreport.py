@@ -12,7 +12,7 @@ class ConbusAutoreportResponse:
     auto_report_status: Optional[str] = None
     result: Optional[str] = None
     sent_telegram: Optional[str] = None
-    received_telegrams: Optional[list] = None
+    received_telegrams: Optional[list[str]] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 
@@ -24,7 +24,7 @@ class ConbusAutoreportResponse:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        result_dict = {
+        result_dict: Dict[str, Any] = {
             "success": self.success,
             "serial_number": self.serial_number,
             "error": self.error,

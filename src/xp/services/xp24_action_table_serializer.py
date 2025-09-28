@@ -4,30 +4,12 @@ from typing import List
 
 from ..models.input_action_type import InputActionType, InputTimeParam
 from ..models.xp24_msactiontable import InputAction, Xp24MsActionTable
-from ..utils.checksum import calculate_checksum
+from ..utils.checksum import calculate_checksum, de_nibble
 
 
 class Xp24MsActionTableSerializer:
     """Handles serialization/deserialization of XP24 action tables to/from telegrams."""
 
-    @staticmethod
-    def _denibble(str_val: str) -> List[int]:
-        """
-        Convert hex string with A-P encoding to bytes.
-        Based on pseudo code: A=0, B=1, C=2, ..., P=15
-        """
-        result = []
-        for i in range(0, len(str_val), 2):
-            # Get high and low nibbles
-            high_char = str_val[i]
-            low_char = str_val[i + 1]
-
-            # Convert A-P to 0-15 (A=65 in ASCII, so A-65=0)
-            high_nibble = (ord(high_char) - 65) << 4
-            low_nibble = ord(low_char) - 65
-
-            result.append(high_nibble + low_nibble)
-        return result
 
     @staticmethod
     def to_telegrams(action_table: Xp24MsActionTable, serial: str) -> List[str]:
@@ -74,7 +56,7 @@ class Xp24MsActionTableSerializer:
         hex_data = data[:64]
 
         # Convert hex string to bytes using deNibble (A-P encoding)
-        raw_bytes = Xp24MsActionTableSerializer._denibble(hex_data)
+        raw_bytes = de_nibble(hex_data)
 
         # Decode input actions from positions 0-3 (2 bytes each)
         input_actions = []
@@ -96,7 +78,7 @@ class Xp24MsActionTableSerializer:
         return action_table
 
     @staticmethod
-    def _decode_input_action(raw_bytes: list[int], pos: int) -> InputAction:
+    def _decode_input_action(raw_bytes: bytearray, pos: int) -> InputAction:
         function_id = raw_bytes[2 * pos]
         param_id = raw_bytes[2 * pos + 1]
 

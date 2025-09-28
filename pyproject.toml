@@ -6,13 +6,13 @@ authors = [
     {name = "ldvchosal", email = "ldvchosal@github.com"},
 ]
 dependencies = [
-    "click>=8.0",
+    "click>=8.3",
     "click-help-colors>=0.9",
     "pyyaml>=6.0",
     "structlog>=22.0",
-    "fastapi>=0.104.0",
-    "uvicorn>=0.24.0",
-    "pydantic>=2.0.0",
+    "fastapi>=0.117",
+    "uvicorn>=0.37",
+    "pydantic>=2.11",
     "HAP-python[QRCode]>=5.0.0",
     "PyDispatcher>=2.0.5",
 ]
@@ -30,8 +30,8 @@ xp = "xp.cli:cli"
 
 [dependency-groups]
 dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
+    "pytest>=8.4",
+    "pytest-cov>=7.0",
     "black>=22.0",
     "flake8>=5.0",
     "mypy>=1.0",

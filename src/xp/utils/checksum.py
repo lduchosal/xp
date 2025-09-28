@@ -8,6 +8,8 @@ Copyright (c) 2025 ld
 Licensed under MIT License - see LICENSE file for details.
 """
 
+from typing import List
+
 
 def calculate_checksum(buffer: str) -> str:
     """Calculate simple XOR checksum of a string buffer.
@@ -39,28 +41,32 @@ def a_nibble(byte_val: int) -> str:
     return chr(low_cc) + chr(high_cc)
 
 
-def de_nibble(str_val: str) -> bytes:
-    """Convert nibble string back to bytes.
+def de_nibble(str_val: str) -> bytearray:
+    """Convert hex string with A-P encoding to list of integers.
+
+    Based on pseudo code: A=0, B=1, C=2, ..., P=15
 
     Args:
-        str_val: Nibble string (even length)
+        str_val: Hex string with A-P encoding
 
     Returns:
-        Byte array representation
-
-    Raises:
-        ValueError: If string length is odd
+        List of integers representing the decoded bytes
     """
     if len(str_val) % 2 != 0:
         raise ValueError("String length must be even for nibble conversion")
 
     result = bytearray()
     for i in range(0, len(str_val), 2):
-        low_cc = (ord(str_val[i]) - 65) << 4
-        high_cc = ord(str_val[i + 1]) - 65
-        result.append((low_cc + high_cc) & 0xFF)
+        # Get high and low nibbles
+        high_char = str_val[i]
+        low_char = str_val[i + 1]
 
-    return bytes(result)
+        # Convert A-P to 0-15 (A=65 in ASCII, so A-65=0)
+        high_nibble = (ord(high_char) - 65) << 4
+        low_nibble = ord(low_char) - 65
+
+        result.extend([(high_nibble + low_nibble)])
+    return result
 
 
 def un_bcd(bcd: int) -> int:

@@ -5,6 +5,7 @@ import pytest
 from xp.models.input_action_type import InputActionType, InputTimeParam
 from xp.models.xp24_msactiontable import InputAction, Xp24MsActionTable
 from xp.services.xp24_action_table_serializer import Xp24MsActionTableSerializer
+from xp.utils.checksum import de_nibble
 
 
 class TestXp24MsActionTableSerializer:
@@ -97,29 +98,29 @@ class TestXp24MsActionTableSerializer:
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AA"
 
-        result = Xp24MsActionTableSerializer._denibble(nibble)
-        assert result == [0]
+        result = de_nibble(nibble)
+        assert bytearray([0]) == result
 
 
     def test_from_telegrams_denibble_1(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AB"
 
-        result = Xp24MsActionTableSerializer._denibble(nibble)
-        assert result == [1]
+        result = de_nibble(nibble)
+        assert bytearray([1]) == result
 
 
     def test_from_telegrams_denibble_01(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AAAB"
 
-        result = Xp24MsActionTableSerializer._denibble(nibble)
-        assert result == [0, 1]
+        result = de_nibble(nibble)
+        assert bytearray([0, 1]) == result
 
 
     def test_from_telegrams_denibble_big(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
-        result = Xp24MsActionTableSerializer._denibble(nibble)
-        assert result == [0,0,3,0,3,0,3,0,3,0,0,0,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        result = de_nibble(nibble)
+        assert bytearray([0,0,3,0,3,0,3,0,3,0,0,0,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) == result

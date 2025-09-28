@@ -9,23 +9,23 @@ class TestInputAction:
 
     def test_create_input_action_with_param(self):
         """Test creating InputAction with parameter"""
-        action = InputAction(InputActionType.TURNON, "5")
+        action = InputAction(InputActionType.TURNON, InputTimeParam.T5SEC)
 
         assert action.type == InputActionType.TURNON
-        assert action.param == "5"
+        assert action.param == InputTimeParam.T5SEC
 
     def test_create_input_action_without_param(self):
         """Test creating InputAction without parameter"""
-        action = InputAction(InputActionType.TOGGLE, None)
+        action = InputAction(InputActionType.TOGGLE, InputTimeParam.NONE)
 
         assert action.type == InputActionType.TOGGLE
-        assert action.param is None
+        assert action.param == InputTimeParam.NONE
 
     def test_input_action_equality(self):
         """Test InputAction equality comparison"""
-        action1 = InputAction(InputActionType.TOGGLE, None)
-        action2 = InputAction(InputActionType.TOGGLE, None)
-        action3 = InputAction(InputActionType.TURNON, "5")
+        action1 = InputAction(InputActionType.TOGGLE, InputTimeParam.NONE)
+        action2 = InputAction(InputActionType.TOGGLE, InputTimeParam.NONE)
+        action3 = InputAction(InputActionType.TURNON, InputTimeParam.T5SEC)
 
         assert action1 == action2
         assert action1 != action3
@@ -67,7 +67,7 @@ class TestXp24ActionTable:
         action_table1 = Xp24MsActionTable()
         action_table2 = Xp24MsActionTable()
         action_table3 = Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TURNON, "5"), mutex12=True
+            input1_action=InputAction(InputActionType.TURNON, InputTimeParam.T5SEC), mutex12=True
         )
 
         assert action_table1 == action_table2
@@ -102,20 +102,20 @@ class TestXp24ActionTable:
         ]
 
         for action_type in test_actions:
-            action = InputAction(action_type, None)
+            action = InputAction(action_type, InputTimeParam.NONE)
             assert action.type == action_type
             assert isinstance(action_type.value, int)
 
     def test_input_action_with_various_param_types(self):
         """Test InputAction with various parameter formats"""
         # Test with numeric string
-        action1 = InputAction(InputActionType.LEVELSET, "75")
-        assert action1.param == "75"
+        action1 = InputAction(InputActionType.LEVELSET, InputTimeParam.T60MIN)
+        assert action1.param == InputTimeParam.T60MIN
 
         # Test with zero string
-        action2 = InputAction(InputActionType.TURNON, "0")
-        assert action2.param == "0"
+        action2 = InputAction(InputActionType.TURNON, InputTimeParam.NONE)
+        assert action2.param == InputTimeParam.NONE
 
         # Test with None
-        action3 = InputAction(InputActionType.TOGGLE, None)
-        assert action3.param is None
+        action3 = InputAction(InputActionType.TOGGLE, InputTimeParam.NONE)
+        assert action3.param == InputTimeParam.NONE
