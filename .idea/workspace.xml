@@ -5,21 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: conbus / actiontable">
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/xp_homekit_start.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/xp_homekit_start.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-ConsonConnectionPool.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-ConsonConnectionPool.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.pseudo.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.pseudo.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_lightlevel.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_lightlevel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/conbus_output.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/conbus_output.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/system_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/system_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/homekit_cache_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/homekit_cache_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_homekit_cache_send_action_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_homekit_cache_send_action_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_conbus_datapoint_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_msactiontable_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_msactiontable_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_serializer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -441,14 +429,6 @@
       <workItem from="1758876985425" duration="11705000" />
       <workItem from="1758891696761" duration="23538000" />
     </task>
-    <task id="LOCAL-00116" summary="Feat: cache">
-      <option name="closed" value="true" />
-      <created>1758575644659</created>
-      <option name="number" value="00116" />
-      <option name="presentableId" value="LOCAL-00116" />
-      <option name="project" value="LOCAL" />
-      <updated>1758575644659</updated>
-    </task>
     <task id="LOCAL-00117" summary="Feat: cache">
       <option name="closed" value="true" />
       <created>1758575654003</created>
@@ -833,7 +813,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758987029372</updated>
     </task>
-    <option name="localTasksCounter" value="165" />
+    <task id="LOCAL-00165" summary="feat: conbus / actiontable">
+      <option name="closed" value="true" />
+      <created>1759047007195</created>
+      <option name="number" value="00165" />
+      <option name="presentableId" value="LOCAL-00165" />
+      <option name="project" value="LOCAL" />
+      <updated>1759047007195</updated>
+    </task>
+    <option name="localTasksCounter" value="166" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

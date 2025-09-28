@@ -31,7 +31,6 @@ def conbus_download_msactiontable(serial_number: str) -> None:
         output = {
             "serial_number": serial_number,
             "action_table": asdict(action_table),
-            "raw": "PLACEHOLDER_RAW_DATA",  # TODO: Add raw data extraction
         }
 
         click.echo(json.dumps(output, indent=2, default=str))

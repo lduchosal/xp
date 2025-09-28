@@ -260,3 +260,15 @@ class TestXp24ActionTableSerializer:
         # Zero parameter should become None
         assert action_table.input1_action.type == InputActionType.TURNON
         assert action_table.input1_action.param is None
+
+    def test_from_telegrams_invalid_hex_data(self):
+        """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
+        # This telegram contains non-hex characters that cause fromhex() to fail
+        # Based on the debug log: '<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>'
+        valid_telegram = "<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>"
+
+        msactiontable = Xp24ActionTableSerializer.from_telegrams([valid_telegram])
+        assert msactiontable.input1_action.type == InputActionType.TOGGLE
+        assert msactiontable.input2_action.type == InputActionType.TOGGLE
+        assert msactiontable.input3_action.type == InputActionType.TOGGLE
+        assert msactiontable.input4_action.type == InputActionType.TOGGLE
