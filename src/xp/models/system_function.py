@@ -14,6 +14,7 @@ class SystemFunction(str, Enum):
     DOWNLOAD_MSACTIONTABLE = (
         "13"  # Download the module specific action table (MsActionTable)
     )
+    DOWNLOAD_ACTIONTABLE = "11D"  # Download ActionTable
     EOF = "16"  # End of msactiontable response
     MSACTIONTABLE = "17"  # module specific action table (MsActionTable) response
     ACK = "18"  # Acknowledge response
@@ -31,6 +32,7 @@ class SystemFunction(str, Enum):
                 self.WRITE_CONFIG: "Write configuration",
                 self.BLINK: "Blink LED function",
                 self.DOWNLOAD_MSACTIONTABLE: "Download the msactiontable",
+                self.DOWNLOAD_ACTIONTABLE: "Download ActionTable",
                 self.EOF: "End of msactiontable response",
                 self.MSACTIONTABLE: "Msactiontable response",
                 self.UNBLINK: "Unblink LED function",

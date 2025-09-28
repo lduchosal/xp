@@ -338,31 +338,31 @@ class TestXp33MsActionTableSerializer:
 
     def test_byte_to_bits_conversion(self):
         """Test byte to bits conversion"""
+        from xp.utils.serialization import byte_to_bits
+
         # Test various byte values
-        assert Xp33MsActionTableSerializer._byte_to_bits(0) == [False] * 8
-        assert Xp33MsActionTableSerializer._byte_to_bits(1) == [True] + [False] * 7
-        assert (
-            Xp33MsActionTableSerializer._byte_to_bits(2) == [False, True] + [False] * 6
-        )
-        assert Xp33MsActionTableSerializer._byte_to_bits(255) == [True] * 8
+        assert byte_to_bits(0) == [False] * 8
+        assert byte_to_bits(1) == [True] + [False] * 7
+        assert byte_to_bits(2) == [False, True] + [False] * 6
+        assert byte_to_bits(255) == [True] * 8
 
         # Test specific pattern: 0b00000101 = 5
         expected = [True, False, True, False, False, False, False, False]
-        assert Xp33MsActionTableSerializer._byte_to_bits(5) == expected
+        assert byte_to_bits(5) == expected
 
     def test_bits_to_byte_conversion(self):
         """Test bits to byte conversion"""
+        from xp.utils.serialization import bits_to_byte
+
         # Test various bit patterns
-        assert Xp33MsActionTableSerializer._bits_to_byte([False] * 8) == 0
-        assert Xp33MsActionTableSerializer._bits_to_byte([True] + [False] * 7) == 1
-        assert (
-            Xp33MsActionTableSerializer._bits_to_byte([False, True] + [False] * 6) == 2
-        )
-        assert Xp33MsActionTableSerializer._bits_to_byte([True] * 8) == 255
+        assert bits_to_byte([False] * 8) == 0
+        assert bits_to_byte([True] + [False] * 7) == 1
+        assert bits_to_byte([False, True] + [False] * 6) == 2
+        assert bits_to_byte([True] * 8) == 255
 
         # Test specific pattern: 0b00000101 = 5
         bits = [True, False, True, False, False, False, False, False]
-        assert Xp33MsActionTableSerializer._bits_to_byte(bits) == 5
+        assert bits_to_byte(bits) == 5
 
     def test_exception_handling_for_dim_function(self):
         """Test exception handling for dimFunction bit extraction"""

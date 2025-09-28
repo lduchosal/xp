@@ -67,33 +67,6 @@ def de_nibble(str_val: str) -> bytearray:
     return result
 
 
-def un_bcd(bcd: int) -> int:
-    """Convert BCD (Binary Coded Decimal) to integer.
-
-    Args:
-        bcd: BCD value
-
-    Returns:
-        Integer representation
-    """
-    i_bcd = a_byte_to_int_no_sign(bcd)
-    return (i_bcd >> 4) * 10 + (i_bcd & 0xF)
-
-
-def a_byte_to_int_no_sign(byte_val: int) -> int:
-    """Convert signed byte to unsigned integer.
-
-    Args:
-        byte_val: Byte value (can be negative)
-
-    Returns:
-        Unsigned integer (0-255)
-    """
-    if byte_val < 0:
-        return byte_val + 256
-    return byte_val
-
-
 def calculate_checksum32(buffer: bytes) -> str:
     """Calculate CRC32 checksum for protocol interoperability.
 

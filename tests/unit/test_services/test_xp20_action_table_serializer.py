@@ -115,12 +115,14 @@ class TestXp20MsActionTableSerializer:
 
     def test_byte_to_bits_conversion(self):
         """Test byte to bits conversion helper"""
+        from xp.utils.serialization import byte_to_bits
+
         # Test known values
-        assert Xp20MsActionTableSerializer._byte_to_bits(0) == [False] * 8
-        assert Xp20MsActionTableSerializer._byte_to_bits(255) == [True] * 8
-        assert Xp20MsActionTableSerializer._byte_to_bits(1) == [True] + [False] * 7
-        assert Xp20MsActionTableSerializer._byte_to_bits(128) == [False] * 7 + [True]
-        assert Xp20MsActionTableSerializer._byte_to_bits(85) == [
+        assert byte_to_bits(0) == [False] * 8
+        assert byte_to_bits(255) == [True] * 8
+        assert byte_to_bits(1) == [True] + [False] * 7
+        assert byte_to_bits(128) == [False] * 7 + [True]
+        assert byte_to_bits(85) == [
             True,
             False,
             True,

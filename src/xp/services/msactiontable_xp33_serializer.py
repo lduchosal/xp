@@ -1,10 +1,9 @@
 """Serializer for XP33 Action Table telegram encoding/decoding."""
 
-from typing import List
-
 from ..models.timeparam_type import TimeParam
 from ..models.msactiontable_xp33 import Xp33MsActionTable, Xp33Output, Xp33Scene
 from ..utils.checksum import de_nibble, nibble
+from ..utils.serialization import byte_to_bits, bits_to_byte
 
 
 class Xp33MsActionTableSerializer:
@@ -32,20 +31,6 @@ class Xp33MsActionTableSerializer:
             return TimeParam(byte_val)
         except ValueError:
             return TimeParam.NONE
-
-    @staticmethod
-    def _byte_to_bits(byte_value: int) -> List[bool]:
-        """Convert a byte value to 8-bit boolean array."""
-        return [(byte_value & (1 << n)) != 0 for n in range(8)]
-
-    @staticmethod
-    def _bits_to_byte(bits: List[bool]) -> int:
-        """Convert boolean array to byte value."""
-        byte_val = 0
-        for i, bit in enumerate(bits[:8]):  # Limit to 8 bits
-            if bit:
-                byte_val |= 1 << i
-        return byte_val
 
     @staticmethod
     def to_data(action_table: Xp33MsActionTable) -> str:
@@ -96,9 +81,9 @@ class Xp33MsActionTableSerializer:
                 start_at_full_bits[i] = output.start_at_full
                 leading_edge_bits[i] = output.leading_edge
 
-        raw_bytes[22] = Xp33MsActionTableSerializer._bits_to_byte(scene_outputs_bits)
-        raw_bytes[23] = Xp33MsActionTableSerializer._bits_to_byte(start_at_full_bits)
-        raw_bytes[24] = Xp33MsActionTableSerializer._bits_to_byte(leading_edge_bits)
+        raw_bytes[22] = bits_to_byte(scene_outputs_bits)
+        raw_bytes[23] = bits_to_byte(start_at_full_bits)
+        raw_bytes[24] = bits_to_byte(leading_edge_bits)
 
         # Bytes 25-31 are padding (already 0)
 
@@ -160,12 +145,12 @@ class Xp33MsActionTableSerializer:
         )
 
         # Extract bit flags from bytes 22-24
-        scene_outputs_bits = Xp33MsActionTableSerializer._byte_to_bits(raw_bytes[22])
-        start_at_full_bits = Xp33MsActionTableSerializer._byte_to_bits(raw_bytes[23])
+        scene_outputs_bits = byte_to_bits(raw_bytes[22])
+        start_at_full_bits = byte_to_bits(raw_bytes[23])
 
         # Handle dimFunction with exception handling as per specification
         try:
-            leading_edge_bits = Xp33MsActionTableSerializer._byte_to_bits(raw_bytes[24])
+            leading_edge_bits = byte_to_bits(raw_bytes[24])
         except Exception:
             leading_edge_bits = [False] * 8
 

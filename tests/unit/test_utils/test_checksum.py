@@ -9,8 +9,10 @@ from xp.utils.checksum import (
     calculate_checksum,
     calculate_checksum32,
     de_nibble,
-    un_bcd,
     nibble,
+)
+from xp.utils.serialization import (
+    de_bcd,
     a_byte_to_int_no_sign,
 )
 
@@ -95,16 +97,16 @@ class TestChecksumUtilities:
         assert a_byte_to_int_no_sign(-1) == 255
         assert a_byte_to_int_no_sign(-128) == 128
 
-    def test_un_bcd_conversion(self):
+    def test_de_bcd_conversion(self):
         """Test BCD to integer conversion."""
         # BCD 0x12 should be decimal 12
-        assert un_bcd(0x12) == 12
+        assert de_bcd(0x12) == 12
 
         # BCD 0x99 should be decimal 99
-        assert un_bcd(0x99) == 99
+        assert de_bcd(0x99) == 99
 
         # BCD 0x00 should be decimal 0
-        assert un_bcd(0x00) == 0
+        assert de_bcd(0x00) == 0
 
     def test_calculate_checksum32_simple(self):
         """Test CRC32 checksum calculation."""

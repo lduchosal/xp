@@ -7,6 +7,7 @@ from xp.models.action_type import ActionType
 from xp.models.input_action_type import InputActionType
 from xp.models.timeparam_type import TimeParam
 
+
 # CP20 0 0 > 1 OFF;
 # CP20 0 0 > 1 ~ON;
 @dataclass
@@ -19,8 +20,9 @@ class ActionTableEntry:
     command: InputActionType = InputActionType.TURNOFF
     parameter: TimeParam = TimeParam.NONE
 
+
 @dataclass
 class ActionTable:
-    """Action Table for managing action on events.
-    """
+    """Action Table for managing action on events."""
+
     entries: list[ActionTableEntry] = field(default_factory=list)

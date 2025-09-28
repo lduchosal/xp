@@ -2,6 +2,7 @@
 
 from ..models.msactiontable_xp20 import InputChannel, Xp20MsActionTable
 from ..utils.checksum import de_nibble, nibble
+from ..utils.serialization import byte_to_bits
 
 
 class Xp20MsActionTableSerializer:
@@ -106,19 +107,17 @@ class Xp20MsActionTableSerializer:
             Decoded input channel configuration
         """
         # Extract bit flags from appropriate offsets
-        short_long_flags = Xp20MsActionTableSerializer._byte_to_bits(
+        short_long_flags = byte_to_bits(
             raw_bytes[Xp20MsActionTableSerializer.SHORT_LONG_INDEX]
         )
-        group_on_off_flags = Xp20MsActionTableSerializer._byte_to_bits(
+        group_on_off_flags = byte_to_bits(
             raw_bytes[Xp20MsActionTableSerializer.GROUP_ON_OFF_INDEX]
         )
-        invert_flags = Xp20MsActionTableSerializer._byte_to_bits(
-            raw_bytes[Xp20MsActionTableSerializer.INVERT_INDEX]
-        )
-        sa_function_flags = Xp20MsActionTableSerializer._byte_to_bits(
+        invert_flags = byte_to_bits(raw_bytes[Xp20MsActionTableSerializer.INVERT_INDEX])
+        sa_function_flags = byte_to_bits(
             raw_bytes[Xp20MsActionTableSerializer.SA_FUNCTION_INDEX]
         )
-        ta_function_flags = Xp20MsActionTableSerializer._byte_to_bits(
+        ta_function_flags = byte_to_bits(
             raw_bytes[Xp20MsActionTableSerializer.TA_FUNCTION_INDEX]
         )
 
@@ -126,7 +125,7 @@ class Xp20MsActionTableSerializer:
         and_functions_byte = raw_bytes[
             Xp20MsActionTableSerializer.AND_FUNCTIONS_INDEX + input_index
         ]
-        and_functions = Xp20MsActionTableSerializer._byte_to_bits(and_functions_byte)
+        and_functions = byte_to_bits(and_functions_byte)
 
         # Create and return input channel
         return InputChannel(
@@ -179,18 +178,6 @@ class Xp20MsActionTableSerializer:
         raw_bytes[Xp20MsActionTableSerializer.AND_FUNCTIONS_INDEX + input_index] = (
             and_functions_byte
         )
-
-    @staticmethod
-    def _byte_to_bits(byte_value: int) -> list[bool]:
-        """Convert a byte value to 8-bit boolean array.
-
-        Args:
-            byte_value: Byte value to convert
-
-        Returns:
-            List of 8 boolean values representing the bits
-        """
-        return [(byte_value & (1 << n)) != 0 for n in range(8)]
 
     @staticmethod
     def from_telegrams(ms_telegrams: str) -> Xp20MsActionTable:
