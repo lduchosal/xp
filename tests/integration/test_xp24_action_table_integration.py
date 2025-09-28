@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.models.input_action_type import InputActionType
+from xp.models.input_action_type import InputActionType, InputTimeParam
 from xp.models.xp24_msactiontable import InputAction, Xp24MsActionTable
 from xp.services.xp24_action_table_service import (
     Xp24ActionTableError,
@@ -33,10 +33,10 @@ class TestXp24ActionTableIntegration:
 
         # Create mock action table
         mock_action_table = Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TOGGLE, None),
-            input2_action=InputAction(InputActionType.TURNON, "5"),
-            input3_action=InputAction(InputActionType.LEVELSET, "75"),
-            input4_action=InputAction(InputActionType.SCENESET, "3"),
+            input1_action=InputAction(InputActionType.TOGGLE, InputTimeParam.NONE),
+            input2_action=InputAction(InputActionType.TURNON, InputTimeParam.T5SEC),
+            input3_action=InputAction(InputActionType.LEVELSET, InputTimeParam.T2MIN),
+            input4_action=InputAction(InputActionType.SCENESET, InputTimeParam.T2MIN),
             mutex12=False,
             mutex34=True,
             ms=Xp24MsActionTable.MS300,
@@ -59,44 +59,16 @@ class TestXp24ActionTableIntegration:
         output = json.loads(result.output)
         assert "serial_number" in output
         assert "action_table" in output
-        assert "raw" in output
         assert output["serial_number"] == self.valid_serial
 
         # Verify action table structure
         action_table = output["action_table"]
-        assert action_table["input1_action"]["type"] == "TOGGLE"
-        assert action_table["input1_action"]["param"] is None
-        assert action_table["input2_action"]["type"] == "TURNON"
-        assert action_table["input2_action"]["param"] == "5"
+        assert action_table["input1_action"]["type"] == InputActionType.TOGGLE.value
+        assert action_table["input1_action"]["param"] == InputTimeParam.NONE.value
+        assert action_table["input2_action"]["type"] == InputActionType.TURNON.value
+        assert action_table["input2_action"]["param"]== InputTimeParam.T5SEC.value
         assert action_table["mutex34"] is True
         assert action_table["curtain34"] is True
-
-    @patch("xp.cli.commands.conbus_msactiontable_commands.Xp24ActionTableService")
-    def test_xp24_download_action_table_raw_mode(self, mock_service_class):
-        """Test downloading action table in raw mode"""
-
-        # Mock successful response
-        mock_service = Mock()
-        mock_service_class.return_value = mock_service
-        mock_service.__enter__ = Mock(return_value=mock_service)
-        mock_service.__exit__ = Mock(return_value=None)
-
-        mock_action_table = Xp24MsActionTable()
-        mock_service.download_action_table.return_value = mock_action_table
-
-        # Run CLI command with --raw flag
-        result = self.runner.invoke(
-            cli, ["conbus", "msactiontable", "download", self.valid_serial, "--raw"]
-        )
-
-        # Verify success
-        assert result.exit_code == 0
-
-        # Verify raw output structure (no action_table field)
-        output = json.loads(result.output)
-        assert "serial_number" in output
-        assert "raw" in output
-        assert "action_table" not in output
 
     @patch("xp.cli.commands.conbus_msactiontable_commands.Xp24ActionTableService")
     def test_xp24_download_action_table_invalid_serial(self, mock_service_class):

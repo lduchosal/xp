@@ -3,7 +3,7 @@
 from unittest.mock import patch
 import pytest
 
-from xp.models.input_action_type import InputActionType
+from xp.models.input_action_type import InputActionType, InputTimeParam
 from xp.models.xp24_msactiontable import InputAction, Xp24MsActionTable
 from xp.services.conbus_service import ConbusError
 from xp.services.xp24_action_table_service import (
@@ -24,10 +24,10 @@ class TestXp24ActionTableService:
     def mock_action_table(self):
         """Create mock action table for testing"""
         return Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TOGGLE, None),
-            input2_action=InputAction(InputActionType.TURNON, "5"),
-            input3_action=InputAction(InputActionType.LEVELSET, "75"),
-            input4_action=InputAction(InputActionType.SCENESET, "3"),
+            input1_action=InputAction(InputActionType.TOGGLE, InputTimeParam.NONE),
+            input2_action=InputAction(InputActionType.TURNON, InputTimeParam.T5SEC),
+            input3_action=InputAction(InputActionType.LEVELSET, InputTimeParam.T5MIN),
+            input4_action=InputAction(InputActionType.SCENESET, InputTimeParam.T2MIN),
             mutex12=True,
             mutex34=False,
             ms=Xp24MsActionTable.MS500,
@@ -35,7 +35,7 @@ class TestXp24ActionTableService:
             curtain34=True,
         )
 
-    @patch("xp.services.xp24_action_table_service.Xp24ActionTableSerializer")
+    @patch("xp.services.xp24_action_table_service.Xp24MsActionTableSerializer")
     def test_download_action_table_success(
         self, mock_serializer_class, service, mock_action_table
     ):
@@ -80,7 +80,7 @@ class TestXp24ActionTableService:
             ):
                 service.download_action_table("0123450001")
 
-    @patch("xp.services.xp24_action_table_service.Xp24ActionTableSerializer")
+    @patch("xp.services.xp24_action_table_service.Xp24MsActionTableSerializer")
     def test_download_action_table_serializer_error(
         self, mock_serializer_class, service
     ):

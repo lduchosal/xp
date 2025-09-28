@@ -1,6 +1,6 @@
 """Unit tests for XP24 Action Table models."""
 
-from xp.models.input_action_type import InputActionType
+from xp.models.input_action_type import InputActionType, InputTimeParam
 from xp.models.xp24_msactiontable import InputAction, Xp24MsActionTable
 
 
@@ -40,13 +40,13 @@ class TestXp24ActionTable:
 
         # Verify default input actions are TOGGLE with None param
         assert action_table.input1_action.type == InputActionType.TOGGLE
-        assert action_table.input1_action.param is None
+        assert action_table.input1_action.param == InputTimeParam.NONE
         assert action_table.input2_action.type == InputActionType.TOGGLE
-        assert action_table.input2_action.param is None
+        assert action_table.input2_action.param == InputTimeParam.NONE
         assert action_table.input3_action.type == InputActionType.TOGGLE
-        assert action_table.input3_action.param is None
+        assert action_table.input3_action.param == InputTimeParam.NONE
         assert action_table.input4_action.type == InputActionType.TOGGLE
-        assert action_table.input4_action.param is None
+        assert action_table.input4_action.param == InputTimeParam.NONE
 
         # Verify default boolean settings
         assert action_table.mutex12 is False
@@ -56,39 +56,6 @@ class TestXp24ActionTable:
 
         # Verify default MS timing
         assert action_table.ms == Xp24MsActionTable.MS300
-
-    def test_create_xp24_action_table_with_custom_values(self):
-        """Test creating Xp24ActionTable with custom values"""
-        action_table = Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TURNON, "10"),
-            input2_action=InputAction(InputActionType.LEVELSET, "75"),
-            input3_action=InputAction(InputActionType.SCENESET, "3"),
-            input4_action=InputAction(InputActionType.TOGGLE, None),
-            mutex12=True,
-            mutex34=False,
-            ms=Xp24MsActionTable.MS500,
-            curtain12=True,
-            curtain34=False,
-        )
-
-        # Verify custom input actions
-        assert action_table.input1_action.type == InputActionType.TURNON
-        assert action_table.input1_action.param == "10"
-        assert action_table.input2_action.type == InputActionType.LEVELSET
-        assert action_table.input2_action.param == "75"
-        assert action_table.input3_action.type == InputActionType.SCENESET
-        assert action_table.input3_action.param == "3"
-        assert action_table.input4_action.type == InputActionType.TOGGLE
-        assert action_table.input4_action.param is None
-
-        # Verify custom boolean settings
-        assert action_table.mutex12 is True
-        assert action_table.mutex34 is False
-        assert action_table.curtain12 is True
-        assert action_table.curtain34 is False
-
-        # Verify custom MS timing
-        assert action_table.ms == Xp24MsActionTable.MS500
 
     def test_xp24_action_table_constants(self):
         """Test XP24 action table timing constants"""

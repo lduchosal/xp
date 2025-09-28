@@ -2,7 +2,7 @@
 
 from typing import List
 
-from ..models.input_action_type import InputActionType
+from ..models.input_action_type import InputActionType, InputTimeParam
 from ..models.xp24_msactiontable import InputAction, Xp24MsActionTable
 from ..utils.checksum import calculate_checksum
 
@@ -46,13 +46,8 @@ class Xp24MsActionTableSerializer:
             # Use enum value directly as function ID
             function_id = action.type.value
             # Convert parameter to int (None becomes 0)
-            if action.param is None:
-                param_value = 0
-            elif action.param.isdigit():
-                param_value = int(action.param)
-            else:
-                param_value = 0
-            data_parts.append(f"{function_id:02X}{param_value:02X}")
+            param_id = action.param.value
+            data_parts.append(f"{function_id:02X}{param_id:02X}")
 
         # Add settings as hex values
         data_parts.extend(
@@ -103,14 +98,13 @@ class Xp24MsActionTableSerializer:
     @staticmethod
     def _decode_input_action(raw_bytes: list[int], pos: int) -> InputAction:
         function_id = raw_bytes[2 * pos]
-        param_value = raw_bytes[2 * pos + 1]
+        param_id = raw_bytes[2 * pos + 1]
 
         # Convert function ID to InputActionType
         action_type = InputActionType(function_id)
+        param_type = InputTimeParam(param_id)
 
-        # Convert parameter (0 means None, otherwise string representation)
-        param = None if param_value == 0 else str(param_value)
-        return InputAction(action_type, param)
+        return InputAction(action_type, param_type)
 
     @staticmethod
     def from_telegrams(ms_telegrams: List[str]) -> Xp24MsActionTable:

@@ -75,7 +75,7 @@ class Xp24ActionTable:
     ms: int = MS300          # Master timing (MS300=12 or MS500=20)
 
 
-class Xp24ActionTableSerializer:
+class Xp24MsActionTableSerializer:
     """Handles serialization/deserialization of XP24 action tables to/from telegrams."""
 
     # Action types use their enum values directly as function IDs
@@ -117,7 +117,7 @@ class Xp24ActionTableSerializer:
         ])
 
         data = "".join(data_parts)
-        checksum = Xp24ActionTableSerializer._calculate_checksum(data)
+        checksum = Xp24MsActionTableSerializer._calculate_checksum(data)
         return [f"<{data}{checksum}>"]
 
     @staticmethod
@@ -187,7 +187,7 @@ class Xp24ActionTableService:
         if not query_response.success:
             raise Xp24ActionTableError("Failed to query action table")
 
-        return Xp24ActionTableSerializer.from_telegrams(query_response.received_telegrams)
+        return Xp24MsActionTableSerializer.from_telegrams(query_response.received_telegrams)
 
 ```
 
@@ -276,10 +276,10 @@ action_table = Xp24ActionTable(
 default_table = Xp24ActionTable()
 
 # Serialize to telegram format
-telegrams = Xp24ActionTableSerializer.to_telegrams(action_table, "0123456789")
+telegrams = Xp24MsActionTableSerializer.to_telegrams(action_table, "0123456789")
 
 # Deserialize from telegrams
-received_action_table = Xp24ActionTableSerializer.from_telegrams(telegrams)
+received_action_table = Xp24MsActionTableSerializer.from_telegrams(telegrams)
 
 # JSON serialization using dataclass
 from dataclasses import asdict
