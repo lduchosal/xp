@@ -126,32 +126,6 @@ class TestActionTableService:
 
             assert "communication failed" in str(exc_info.value).lower()
 
-    def test_is_ack_true(self, service):
-        """Test _is_ack returns True for ACK telegrams"""
-        from xp.models.system_function import SystemFunction
-
-        mock_reply = Mock()
-        mock_reply.system_function = SystemFunction.ACK
-
-        with patch.object(
-            service.telegram_service, "parse_reply_telegram", return_value=mock_reply
-        ):
-            result = service._is_ack(["<R0123450001F18DFA>"])
-            assert result is True
-
-    def test_is_ack_false(self, service):
-        """Test _is_ack returns False for non-ACK telegrams"""
-        from xp.models.system_function import SystemFunction
-
-        mock_reply = Mock()
-        mock_reply.system_function = SystemFunction.EOF
-
-        with patch.object(
-            service.telegram_service, "parse_reply_telegram", return_value=mock_reply
-        ):
-            result = service._is_ack(["<R0123450001F16DFO>"])
-            assert result is False
-
     def test_is_eof_true(self, service):
         """Test _is_eof returns True for EOF telegrams"""
         from xp.models.system_function import SystemFunction
