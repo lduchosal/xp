@@ -6,9 +6,21 @@
   <component name="ChangeListManager">
     <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: conbus / actiontable">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/xp24_action_table_serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp24_action_table_serializer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/xp24_action_table_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/xp24_action_table_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Download-XP24-MsActionTable.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_msactiontable_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_msactiontable_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/input_action_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/input_action_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/xp24_msactiontable.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/xp24_msactiontable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/xp24_action_table_serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/msactiontable_xp24_serializer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/services/xp24_action_table_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/msactiontable_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/utils/checksum.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/utils/checksum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/test_xp24_action_table_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_xp24_action_table_integration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_xp24_action_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_xp24_action_table.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_serializer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_utils/test_checksum.py" afterDir="false" />
+    </list>
+    <list id="54e23d0b-fad5-47c6-9388-57a4ccb5aeca" name="nocommit" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +36,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -38,6 +49,40 @@
     &quot;accountId&quot;: &quot;d3beeebb-90ee-4bdb-9acf-1f9142944c4f&quot;
   }
 }</component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/.idea/workspace.xml">
+      <ranges>
+        <range start1="8" end1="10" start2="8" end2="17" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="11" end1="11" start2="18" end2="23" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="26" end1="27" start2="38" end2="38" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="40" end1="40" start2="51" end2="85" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="146" end1="146" start2="191" end2="192" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="152" end1="152" start2="198" end2="201" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="203" end1="204" start2="252" end2="253" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="275" end1="276" start2="324" end2="325" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="289" end1="290" start2="338" end2="339" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="293" end1="294" start2="342" end2="343" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="307" end1="308" start2="356" end2="357" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="311" end1="312" start2="360" end2="361" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="325" end1="326" start2="374" end2="375" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="329" end1="330" start2="378" end2="379" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="343" end1="344" start2="392" end2="393" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="347" end1="348" start2="396" end2="397" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="361" end1="362" start2="410" end2="411" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="389" end1="394" start2="438" end2="443" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="397" end1="402" start2="446" end2="451" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="442" end1="458" start2="491" end2="491" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="835" end1="836" start2="868" end2="885" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="903" end1="903" start2="952" end2="957" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="926" end1="926" start2="980" end2="981" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="942" end1="942" start2="997" end2="998" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="952" end1="952" start2="1008" end2="1009" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="961" end1="962" start2="1018" end2="1019" changelist="91a1783b-5e7d-448a-9916-8780346a33b2" />
+        <range start1="966" end1="966" start2="1023" end2="1024" changelist="54e23d0b-fad5-47c6-9388-57a4ccb5aeca" />
+        <range start1="967" end1="968" start2="1025" end2="1026" changelist="54e23d0b-fad5-47c6-9388-57a4ccb5aeca" />
+      </ranges>
+    </file>
+  </component>
   <component name="NamedScopeManager">
     <scope name="Project" pattern="file[xp]:src//*||file[xp]:tests//*" />
   </component>
@@ -144,12 +189,16 @@
     "Python tests.pytest for tests.unit.test_services.test_telegram_service.TestSystemTelegramParsing.test_parse_system_telegram_invalid_format.executor": "Run",
     "Python tests.pytest for tests.unit.test_services.test_xp24_action_service.TestXP24ActionService.test_format_action_summary_with_validation.executor": "Run",
     "Python tests.pytest for tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data.executor": "Debug",
+    "Python tests.pytest for tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2.executor": "Debug",
     "Python tests.pytest for tests.unit.test_services.test_xp33_server_service.executor": "Debug",
     "Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble.executor": "Run",
     "Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_01.executor": "Run",
     "Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_1.executor": "Run",
     "Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_big.executor": "Run",
     "Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data.executor": "Run",
+    "Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2.executor": "Run",
+    "Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_0.executor": "Debug",
+    "Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_1.executor": "Run",
     "Python tests.pytest in test_xp24_action_table_serializer.py.executor": "Run",
     "Python tests.pytest in tests.executor": "Run",
     "Python tests.pytest.executor": "Run",
@@ -201,7 +250,7 @@
       <recent name="$PROJECT_DIR$/src/xp/models" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.pytest in test_xp24_action_table_serializer.py">
+  <component name="RunManager" selected="Python tests.pytest in tests">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
@@ -273,7 +322,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -287,11 +336,11 @@
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data&quot;" />
+      <option name="_new_target" value="&quot;tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_01" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -305,11 +354,11 @@
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_01&quot;" />
+      <option name="_new_target" value="&quot;unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_big" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_0" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -323,11 +372,11 @@
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_big&quot;" />
+      <option name="_new_target" value="&quot;unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_0&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_1" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -341,11 +390,11 @@
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data&quot;" />
+      <option name="_new_target" value="&quot;unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_1&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest in test_xp24_action_table_serializer.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest in tests" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="xp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -359,7 +408,7 @@
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_serializer.py&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
@@ -387,19 +436,19 @@
       <item itemvalue="Python.xp homekit config validate" />
       <item itemvalue="Python.xp conbus msactiontable download" />
       <item itemvalue="Python tests.pytest" />
-      <item itemvalue="Python tests.pytest for tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data" />
-      <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_01" />
-      <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_big" />
-      <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data" />
-      <item itemvalue="Python tests.pytest in test_xp24_action_table_serializer.py" />
+      <item itemvalue="Python tests.pytest for tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2" />
+      <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2" />
+      <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_0" />
+      <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_1" />
+      <item itemvalue="Python tests.pytest in tests" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.pytest in test_xp24_action_table_serializer.py" />
-        <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data" />
-        <item itemvalue="Python tests.pytest for tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data" />
-        <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_big" />
-        <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_01" />
+        <item itemvalue="Python tests.pytest in tests" />
+        <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_0" />
+        <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_1" />
+        <item itemvalue="Python tests.pytest for tests.unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2" />
+        <item itemvalue="Python tests.pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2" />
       </list>
     </recent_temporary>
   </component>
@@ -440,22 +489,6 @@
       <workItem from="1758798839699" duration="14945000" />
       <workItem from="1758876985425" duration="11705000" />
       <workItem from="1758891696761" duration="23538000" />
-    </task>
-    <task id="LOCAL-00118" summary="Feat: connection pool">
-      <option name="closed" value="true" />
-      <created>1758576444107</created>
-      <option name="number" value="00118" />
-      <option name="presentableId" value="LOCAL-00118" />
-      <option name="project" value="LOCAL" />
-      <updated>1758576444107</updated>
-    </task>
-    <task id="LOCAL-00119" summary="Feat: connection pool">
-      <option name="closed" value="true" />
-      <created>1758576466455</created>
-      <option name="number" value="00119" />
-      <option name="presentableId" value="LOCAL-00119" />
-      <option name="project" value="LOCAL" />
-      <updated>1758576466455</updated>
     </task>
     <task id="LOCAL-00120" summary="Feat: connection pool">
       <option name="closed" value="true" />
@@ -833,7 +866,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759047252032</updated>
     </task>
-    <option name="localTasksCounter" value="167" />
+    <task id="LOCAL-00167" summary="feat: conbus / actiontable">
+      <option name="closed" value="true" />
+      <created>1759055201810</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
+      <option name="project" value="LOCAL" />
+      <updated>1759055201810</updated>
+    </task>
+    <task id="LOCAL-00168" summary="feat: conbus / actiontable">
+      <option name="closed" value="true" />
+      <created>1759060147976</created>
+      <option name="number" value="00168" />
+      <option name="presentableId" value="LOCAL-00168" />
+      <option name="project" value="LOCAL" />
+      <updated>1759060147976</updated>
+    </task>
+    <option name="localTasksCounter" value="169" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -902,6 +951,11 @@
           <line>29</line>
           <option name="timeStamp" value="82" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_serializer.py</url>
+          <line>105</line>
+          <option name="timeStamp" value="90" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
@@ -924,6 +978,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_models_test_xp24_action_telegram_TestXP24ActionTelegram_test_to_dict_minimal.coverage" NAME="pytest for tests.unit.test_models.test_xp24_action_telegram.TestXP24ActionTelegram.test_to_dict_minimal Coverage Results" MODIFIED="1758352695045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_input_integration_TestConbusInputIntegration_test_conbus_input_on_serial_1.coverage" NAME="pytest for tests.integration.test_conbus_input_integration.TestConbusInputIntegration.test_conbus_input_on_serial_1 Coverage Results" MODIFIED="1758288879403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_homekit_config_integration_TestHomekitConfigIntegration_test_valid_configuration_integration.coverage" NAME="pytest for tests.integration.test_homekit_config_integration.TestHomekitConfigIntegration.test_valid_configuration_integration Coverage Results" MODIFIED="1758484059952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_unit_test_services_test_xp24_action_table_serializer_TestXp24MsActionTableSerializer_test_from_telegrams_denibble_1.coverage" NAME="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_1 Coverage Results" MODIFIED="1759059862891" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$xp_cli_main.coverage" NAME="xp homekit start Coverage Results" MODIFIED="1758443422207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_models_test_system_telegram.coverage" NAME="pytest for tests.unit.test_models.test_system_telegram Coverage Results" MODIFIED="1758873968435" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_services_test_telegram_input_service_TestTelegramInputServiceAckNak_test_parse_invalid_format_raises_error.coverage" NAME="pytest for tests.unit.test_services.test_telegram_input_service.TestTelegramInputServiceAckNak.test_parse_invalid_format_raises_error Coverage Results" MODIFIED="1758353384920" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
@@ -940,6 +995,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_datapoint_integration_TestConbusDatapointIntegration_test_conbus_datapoint_invalid_response.coverage" NAME="pytest for tests.integration.test_conbus_datapoint_integration.TestConbusDatapointIntegration.test_conbus_datapoint_invalid_response Coverage Results" MODIFIED="1758877231516" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_api_test_discovery_endpoint_TestDiscoveryEndpoint_test_connection_error.coverage" NAME="pytest for tests.integration.test_api.test_discovery_endpoint.TestDiscoveryEndpoint.test_connection_error Coverage Results" MODIFIED="1758210831535" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_homekit_module_service_integration_TestHomekitModuleServiceIntegration_test_on_accessory_get_on_integration.coverage" NAME="pytest for tests.integration.test_homekit_module_service_integration.TestHomekitModuleServiceIntegration.test_on_accessory_get_on_integration Coverage Results" MODIFIED="1758777907062" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_unit_test_services_test_xp24_action_table_serializer_TestXp24MsActionTableSerializer_test_from_telegrams_denibble_0.coverage" NAME="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24MsActionTableSerializer.test_from_telegrams_denibble_0 Coverage Results" MODIFIED="1759060121882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_api_test_discovery_endpoint_TestDiscoveryEndpoint_test_successful_discovery.coverage" NAME="pytest for tests.integration.test_api.test_discovery_endpoint.TestDiscoveryEndpoint.test_successful_discovery Coverage Results" MODIFIED="1758210784045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_all_input_combinations.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_all_input_combinations Coverage Results" MODIFIED="1758320668412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_unit_test_services_test_telegram_service_TestSystemTelegramParsing_test_parse_system_telegram_invalid_format.coverage" NAME="pytest for tests.unit.test_services.test_telegram_service.TestSystemTelegramParsing.test_parse_system_telegram_invalid_format Coverage Results" MODIFIED="1758878963986" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
@@ -950,6 +1006,7 @@
     <SUITE FILE_PATH="coverage/xp$xp_homekit_config_validate.coverage" NAME="xp homekit config validate Coverage Results" MODIFIED="1758470948719" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_system_reply_telegram_integration.coverage" NAME="pytest for tests.integration.test_system_reply_telegram_integration Coverage Results" MODIFIED="1756485080075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_unit_test_services_test_xp24_action_table_serializer_TestXp24ActionTableSerializer_test_from_telegrams_denibble_big.coverage" NAME="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_big Coverage Results" MODIFIED="1759049646008" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$pytest_for_unit_test_services_test_xp24_action_table_serializer_TestXp24ActionTableSerializer_test_from_telegrams_invalid_hex_data2.coverage" NAME="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_invalid_hex_data2 Coverage Results" MODIFIED="1759054580786" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_conbus_client_send_integration_TestConnectionStatusIntegration_test_connection_status_lifecycle.coverage" NAME="pytest for tests.integration.test_conbus_client_send_integration.TestConnectionStatusIntegration.test_connection_status_lifecycle Coverage Results" MODIFIED="1756891211230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration Coverage Results" MODIFIED="1758123076107" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_system_reply_telegram_integration_TestReplyTelegramCLI_test_parse_reply_telegram_status_data.coverage" NAME="pytest for tests.integration.test_system_reply_telegram_integration.TestReplyTelegramCLI.test_parse_reply_telegram_status_data Coverage Results" MODIFIED="1758384867345" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
@@ -959,7 +1016,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_unit_test_services_test_xp24_action_table_serializer_TestXp24ActionTableSerializer_test_from_telegrams_denibble_01.coverage" NAME="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_01 Coverage Results" MODIFIED="1759049561263" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$demo.coverage" NAME="demo Coverage Results" MODIFIED="1756276295879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$telegram_test_data.coverage" NAME="telegram_test_data Coverage Results" MODIFIED="1757433458751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/fixtures" />
-    <SUITE FILE_PATH="coverage/xp$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1758222096741" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/xp$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1759060359092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_cli_command_integration_action.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_action Coverage Results" MODIFIED="1758260942441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_homekit_cache_send_action_integration_TestHomeKitCacheServiceSendActionIntegration_test_send_action_with_event_telegram_integration_2.coverage" NAME="pytest for tests.integration.test_homekit_cache_send_action_integration.TestHomeKitCacheServiceSendActionIntegration.test_send_action_with_event_telegram_integration_2 Coverage Results" MODIFIED="1758779116498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_event_telegram_integration_TestEventTelegramIntegration_test_parse_event_telegram_json_with_checksum_validation.coverage" NAME="pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_json_with_checksum_validation Coverage Results" MODIFIED="1758230071764" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

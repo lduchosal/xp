@@ -8,8 +8,6 @@ Copyright (c) 2025 ld
 Licensed under MIT License - see LICENSE file for details.
 """
 
-from typing import List
-
 
 def calculate_checksum(buffer: str) -> str:
     """Calculate simple XOR checksum of a string buffer.
@@ -24,10 +22,10 @@ def calculate_checksum(buffer: str) -> str:
     for char in buffer:
         cc ^= ord(char)
 
-    return a_nibble(cc & 0xFF)
+    return nibble(cc & 0xFF)
 
 
-def a_nibble(byte_val: int) -> str:
+def nibble(byte_val: int) -> str:
     """Convert byte value to two-character nibble representation.
 
     Args:
@@ -124,7 +122,7 @@ def calculate_checksum32(buffer: bytes) -> str:
 
     # Convert to nibble format (4 bytes, little-endian)
     for _ in range(4):
-        nibble_result = a_nibble(crc & 0xFF) + nibble_result
+        nibble_result = nibble(crc & 0xFF) + nibble_result
         crc >>= 8
 
     return nibble_result

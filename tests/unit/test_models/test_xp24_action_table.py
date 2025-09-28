@@ -55,7 +55,7 @@ class TestXp24ActionTable:
         assert action_table.curtain34 is False
 
         # Verify default MS timing
-        assert action_table.ms == Xp24MsActionTable.MS300
+        assert action_table.mutual_deadtime == Xp24MsActionTable.MS300
 
     def test_xp24_action_table_constants(self):
         """Test XP24 action table timing constants"""
@@ -67,7 +67,8 @@ class TestXp24ActionTable:
         action_table1 = Xp24MsActionTable()
         action_table2 = Xp24MsActionTable()
         action_table3 = Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TURNON, InputTimeParam.T5SEC), mutex12=True
+            input1_action=InputAction(InputActionType.TURNON, InputTimeParam.T5SEC),
+            mutex12=True,
         )
 
         assert action_table1 == action_table2

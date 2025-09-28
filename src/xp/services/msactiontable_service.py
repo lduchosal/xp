@@ -7,7 +7,7 @@ from typing import Optional, Any
 
 from . import TelegramService, TelegramParsingError
 from .conbus_service import ConbusService, ConbusError
-from .xp24_action_table_serializer import Xp24MsActionTableSerializer
+from .msactiontable_xp24_serializer import Xp24MsActionTableSerializer
 from ..models.system_function import SystemFunction
 from ..models.xp24_msactiontable import Xp24MsActionTable
 
@@ -18,7 +18,7 @@ class Xp24ActionTableError(Exception):
     pass
 
 
-class Xp24ActionTableService:
+class MsActionTableService:
     """Service for downloading XP24 action tables via Conbus"""
 
     def __init__(self, config_path: str = "cli.yml"):
@@ -43,18 +43,18 @@ class Xp24ActionTableService:
                 self.logger.debug(f"Data received telegrams: {telegrams}")
 
                 if self._is_ack(telegrams):
-                    self.logger.debug(f"ack: {telegrams}")
+                    self.logger.debug(f"Received ack")
                     ack_received = True
 
                 if self._is_eof(telegrams):
-                    self.logger.debug(f"eof: {telegrams}")
+                    self.logger.debug(f"Received eof")
                     eof_received = True
 
                 msactiontable_telegram = self._get_msactiontable_telegram(telegrams)
                 if msactiontable_telegram is not None:
                     msactiontable_received = True
                     msactiontable_telegrams.append(msactiontable_telegram)
-                    self.logger.debug(f"msactiontable_received: {telegrams}")
+                    self.logger.debug(f"Received msactiontable_telegram")
 
                 if ack_received and msactiontable_received:
                     ack_received = False
@@ -80,6 +80,9 @@ class Xp24ActionTableService:
 
             # Deserialize from received telegrams
             self.logger.debug(f"Deserialize: {msactiontable_telegrams}")
+            if len(msactiontable_telegrams) <= 0:
+                raise Xp24ActionTableError("No msactiontable telegrams")
+
             return Xp24MsActionTableSerializer.from_telegrams(msactiontable_telegrams)
 
         except ConbusError as e:
@@ -117,7 +120,7 @@ class Xp24ActionTableService:
 
         return None
 
-    def __enter__(self) -> "Xp24ActionTableService":
+    def __enter__(self) -> "MsActionTableService":
         """Context manager entry"""
         return self
 

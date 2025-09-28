@@ -10,7 +10,6 @@ from ..utils.checksum import calculate_checksum, de_nibble
 class Xp24MsActionTableSerializer:
     """Handles serialization/deserialization of XP24 action tables to/from telegrams."""
 
-
     @staticmethod
     def to_telegrams(action_table: Xp24MsActionTable, serial: str) -> List[str]:
         """Serialize action table to telegram format."""
@@ -36,7 +35,7 @@ class Xp24MsActionTableSerializer:
             [
                 "AB" if action_table.mutex12 else "AA",
                 "AB" if action_table.mutex34 else "AA",
-                f"{action_table.ms:02X}",
+                f"{action_table.mutual_deadtime:02X}",
                 "AB" if action_table.curtain12 else "AA",
                 "AB" if action_table.curtain34 else "AA",
                 "A" * 38,  # padding
@@ -61,7 +60,9 @@ class Xp24MsActionTableSerializer:
         # Decode input actions from positions 0-3 (2 bytes each)
         input_actions = []
         for pos in range(4):
-            input_action = Xp24MsActionTableSerializer._decode_input_action(raw_bytes, pos)
+            input_action = Xp24MsActionTableSerializer._decode_input_action(
+                raw_bytes, pos
+            )
             input_actions.append(input_action)
 
         action_table = Xp24MsActionTable(
@@ -71,7 +72,7 @@ class Xp24MsActionTableSerializer:
             input4_action=input_actions[3],
             mutex12=raw_bytes[8] != 0,  # With A-P encoding: AA=0 (False), AB=1 (True)
             mutex34=raw_bytes[9] != 0,
-            ms=raw_bytes[10],
+            mutual_deadtime=raw_bytes[10],
             curtain12=raw_bytes[11] != 0,
             curtain34=raw_bytes[12] != 0,
         )
@@ -95,6 +96,6 @@ class Xp24MsActionTableSerializer:
         data_parts = ""
         for telegram in ms_telegrams:
             # Assume it's already a data part
-            data_parts += (telegram[20:84])
+            data_parts += telegram[20:84]
 
         return Xp24MsActionTableSerializer.from_data(data_parts)

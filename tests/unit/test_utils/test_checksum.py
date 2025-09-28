@@ -10,7 +10,7 @@ from xp.utils.checksum import (
     calculate_checksum32,
     de_nibble,
     un_bcd,
-    a_nibble,
+    nibble,
     a_byte_to_int_no_sign,
 )
 
@@ -50,13 +50,13 @@ class TestChecksumUtilities:
     def test_nibble_conversion(self):
         """Test nibble conversion function."""
         # Test zero
-        assert a_nibble(0) == "AA"
+        assert nibble(0) == "AA"
 
         # Test 0x41 (ASCII 'A')
-        assert a_nibble(0x41) == "EB"
+        assert nibble(0x41) == "EB"
 
         # Test 0xFF (255)
-        assert a_nibble(0xFF) == "PP"
+        assert nibble(0xFF) == "PP"
 
     def test_de_nibble_conversion(self):
         """Test reverse nibble conversion."""
@@ -164,7 +164,7 @@ class TestChecksumUtilities:
     def test_nibble_roundtrip(self):
         """Test that nibble conversion is reversible."""
         for test_byte in (0, 1, 65, 127, 255):
-            nibbled = a_nibble(test_byte)
+            nibbled = nibble(test_byte)
             de_nibbled = de_nibble(nibbled)
             assert de_nibbled[0] == test_byte
 

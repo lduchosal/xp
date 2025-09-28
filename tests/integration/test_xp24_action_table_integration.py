@@ -7,7 +7,7 @@ from click.testing import CliRunner
 from xp.cli.main import cli
 from xp.models.input_action_type import InputActionType, InputTimeParam
 from xp.models.xp24_msactiontable import InputAction, Xp24MsActionTable
-from xp.services.xp24_action_table_service import (
+from xp.services.msactiontable_service import (
     Xp24ActionTableError,
 )
 
@@ -39,7 +39,7 @@ class TestXp24ActionTableIntegration:
             input4_action=InputAction(InputActionType.SCENESET, InputTimeParam.T2MIN),
             mutex12=False,
             mutex34=True,
-            ms=Xp24MsActionTable.MS300,
+            mutual_deadtime=Xp24MsActionTable.MS300,
             curtain12=False,
             curtain34=True,
         )
@@ -66,7 +66,7 @@ class TestXp24ActionTableIntegration:
         assert action_table["input1_action"]["type"] == InputActionType.TOGGLE.value
         assert action_table["input1_action"]["param"] == InputTimeParam.NONE.value
         assert action_table["input2_action"]["type"] == InputActionType.TURNON.value
-        assert action_table["input2_action"]["param"]== InputTimeParam.T5SEC.value
+        assert action_table["input2_action"]["param"] == InputTimeParam.T5SEC.value
         assert action_table["mutex34"] is True
         assert action_table["curtain34"] is True
 

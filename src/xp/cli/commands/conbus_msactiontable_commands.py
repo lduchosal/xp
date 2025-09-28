@@ -10,8 +10,8 @@ from ..utils.decorators import (
     handle_service_errors,
 )
 from ..utils.serial_number_type import SERIAL
-from ...services.xp24_action_table_service import (
-    Xp24ActionTableService,
+from ...services.msactiontable_service import (
+    MsActionTableService,
     Xp24ActionTableError,
 )
 
@@ -24,7 +24,7 @@ from .conbus import conbus_msactiontable
 @handle_service_errors(Xp24ActionTableError)
 def conbus_download_msactiontable(serial_number: str) -> None:
     """Download MS action table from XP24 module"""
-    service = Xp24ActionTableService()
+    service = MsActionTableService()
 
     with service:
         action_table = service.download_action_table(serial_number)

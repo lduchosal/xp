@@ -36,6 +36,7 @@ class InputActionType(IntEnum):
     FADE = 30
     LEARN = 31
 
+
 class InputTimeParam(IntEnum):
     NONE = 0
     T05SEC = 1

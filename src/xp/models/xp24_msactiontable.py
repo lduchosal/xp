@@ -1,7 +1,6 @@
 """XP24 Action Table models for input actions and settings."""
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from .input_action_type import InputActionType, InputTimeParam
 
@@ -46,4 +45,4 @@ class Xp24MsActionTable:
     mutex34: bool = False  # Mutual exclusion between inputs 3-4
     curtain12: bool = False  # Curtain setting for inputs 1-2
     curtain34: bool = False  # Curtain setting for inputs 3-4
-    ms: int = MS300  # Master timing (MS300=12 or MS500=20)
+    mutual_deadtime: int = MS300  # Master timing (MS300=12 or MS500=20)
