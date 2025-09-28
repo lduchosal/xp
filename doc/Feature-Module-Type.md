@@ -9,8 +9,8 @@ The following module type codes exists in the XP system:
  | XP20LITE |  2   |  2  | CP switch link module                                                                |
  | XP70A    |  3   |  3  | CP 38kHz IR link module                                                              |
  | XP70B    |  4   |  4  | CP B&O IR link module                                                                |
- | XP70D    |  5   |  5  | CP UHF link module                                                                   |
- | XP70C    |  6   |  6  | CP timer link module                                                                 |
+ | XP70C    |  5   |  5  | CP UHF link module                                                                   |
+ | XP70D    |  6   |  6  | CP timer link module                                                                 |
  | XP24     |  7   |  7  | XP relay module                                                                      |
  | XP31UNI  |  8   |  8  | XP universal load light dimmer                                                       |
  | XP31BCU  |  9   |  9  | XP ballast controller, 0-10VActions                                                  |

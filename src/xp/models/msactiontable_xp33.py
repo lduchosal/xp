@@ -1,4 +1,4 @@
-"""XP24 Action Table models for input actions and settings."""
+"""XP33 Action Table models for output and scene configuration."""
 
 from dataclasses import dataclass, field
 

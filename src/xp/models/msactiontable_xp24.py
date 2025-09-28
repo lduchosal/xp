@@ -10,8 +10,8 @@ from .timeparam_type import TimeParam
 class InputAction:
     """Represents an input action with type and parameter"""
 
-    type: InputActionType
-    param: TimeParam
+    type: InputActionType = InputActionType.TOGGLE
+    param: TimeParam = TimeParam.NONE
 
 
 @dataclass
@@ -28,18 +28,10 @@ class Xp24MsActionTable:
     MS500 = 20
 
     # Input actions for each input (default to TOGGLE with None parameter)
-    input1_action: InputAction = field(
-        default_factory=lambda: InputAction(InputActionType.TOGGLE, TimeParam.NONE)
-    )
-    input2_action: InputAction = field(
-        default_factory=lambda: InputAction(InputActionType.TOGGLE, TimeParam.NONE)
-    )
-    input3_action: InputAction = field(
-        default_factory=lambda: InputAction(InputActionType.TOGGLE, TimeParam.NONE)
-    )
-    input4_action: InputAction = field(
-        default_factory=lambda: InputAction(InputActionType.TOGGLE, TimeParam.NONE)
-    )
+    input1_action: InputAction = field(default_factory=InputAction)
+    input2_action: InputAction = field(default_factory=InputAction)
+    input3_action: InputAction = field(default_factory=InputAction)
+    input4_action: InputAction = field(default_factory=InputAction)
 
     # Boolean settings
     mutex12: bool = False  # Mutual exclusion between inputs 1-2
