@@ -61,7 +61,7 @@ class TestVersionIntegration(unittest.TestCase):
                 self.assertEqual(parsed.raw_telegram, raw_telegram)
 
                 # Verify version parsing using built-in reply telegram parser
-                version_data = parsed.parsed_value
+                version_data = parsed.parse_datapoint_value
                 self.assertTrue(version_data["parsed"])
                 self.assertEqual(version_data["product"], expected_product)
                 self.assertEqual(version_data["version"], expected_version)
@@ -211,7 +211,7 @@ class TestVersionIntegration(unittest.TestCase):
             with self.subTest(raw_telegram=raw_telegram):
                 try:
                     parsed = self.telegram_service.parse_reply_telegram(raw_telegram)
-                    version_data = parsed.parsed_value
+                    version_data = parsed.parse_datapoint_value
 
                     self.assertTrue(version_data["parsed"])
                     self.assertEqual(version_data["product"], expected_product)

@@ -211,7 +211,8 @@ class ConbusService:
                     # Accumulate all received data
                     message = data.decode("latin-1")
                     if receive_callback is not None:
-                        receive_callback([message])
+                        parsed_telegrams = self._parse_telegrams(message)
+                        receive_callback(parsed_telegrams)
                     accumulated_data += message
                     self.last_activity = datetime.now()
                     connection.settimeout(0.1)  # 2 second timeout for responses

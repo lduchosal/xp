@@ -25,9 +25,10 @@ class DatapointTypeChoice(click.ParamType):
             return DataPointType[normalized_value.upper()]
 
         # If not found, show error with available choices
+        choices_list = "\n".join(f" - {choice}" for choice in sorted(self.choices))
         self.fail(
             f"{value!r} is not a valid choice. "
-            f'Choose from: {", ".join(self.choices)}',
+            f"Choose from:\n{choices_list}",
             param,
             ctx,
         )

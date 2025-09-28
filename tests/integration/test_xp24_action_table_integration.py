@@ -5,8 +5,9 @@ from unittest.mock import Mock, patch
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.models.input_action_type import InputActionType, InputTimeParam
-from xp.models.xp24_msactiontable import InputAction, Xp24MsActionTable
+from xp.models.input_action_type import InputActionType
+from xp.models.timeparam_type import TimeParam
+from xp.models.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.services.msactiontable_service import (
     Xp24ActionTableError,
 )
@@ -33,10 +34,10 @@ class TestXp24ActionTableIntegration:
 
         # Create mock action table
         mock_action_table = Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TOGGLE, InputTimeParam.NONE),
-            input2_action=InputAction(InputActionType.TURNON, InputTimeParam.T5SEC),
-            input3_action=InputAction(InputActionType.LEVELSET, InputTimeParam.T2MIN),
-            input4_action=InputAction(InputActionType.SCENESET, InputTimeParam.T2MIN),
+            input1_action=InputAction(InputActionType.TOGGLE, TimeParam.NONE),
+            input2_action=InputAction(InputActionType.TURNON, TimeParam.T5SEC),
+            input3_action=InputAction(InputActionType.LEVELSET, TimeParam.T2MIN),
+            input4_action=InputAction(InputActionType.SCENESET, TimeParam.T2MIN),
             mutex12=False,
             mutex34=True,
             mutual_deadtime=Xp24MsActionTable.MS300,
@@ -64,9 +65,9 @@ class TestXp24ActionTableIntegration:
         # Verify action table structure
         action_table = output["action_table"]
         assert action_table["input1_action"]["type"] == InputActionType.TOGGLE.value
-        assert action_table["input1_action"]["param"] == InputTimeParam.NONE.value
+        assert action_table["input1_action"]["param"] == TimeParam.NONE.value
         assert action_table["input2_action"]["type"] == InputActionType.TURNON.value
-        assert action_table["input2_action"]["param"] == InputTimeParam.T5SEC.value
+        assert action_table["input2_action"]["param"] == TimeParam.T5SEC.value
         assert action_table["mutex34"] is True
         assert action_table["curtain34"] is True
 

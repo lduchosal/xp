@@ -207,7 +207,7 @@ class VersionService:
                 )
 
             # Parse the version using the telegram's built-in parser
-            parsed_data = telegram.parsed_value
+            parsed_data = telegram.parse_datapoint_value
 
             if parsed_data.get("parsed", False):
                 return Response(

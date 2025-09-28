@@ -118,7 +118,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
 
     def test_version_reply_telegram_parsed_value_valid(self):
         """Test parsing valid version value."""
-        parsed = self.version_reply_telegram.parsed_value
+        parsed = self.version_reply_telegram.parse_datapoint_value
 
         self.assertTrue(parsed["parsed"])
         self.assertEqual(parsed["product"], "XP230")
@@ -129,7 +129,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
 
     def test_version_reply_telegram_parsed_value_invalid(self):
         """Test parsing invalid version value."""
-        parsed = self.invalid_version_reply.parsed_value
+        parsed = self.invalid_version_reply.parse_datapoint_value
 
         self.assertFalse(parsed["parsed"])
         self.assertEqual(parsed["full_version"], "INVALID_FORMAT")
@@ -189,7 +189,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
                     checksum_validated=True,
                 )
 
-                parsed = telegram.parsed_value
+                parsed = telegram.parse_datapoint_value
                 self.assertEqual(parsed["parsed"], expected["parsed"])
 
                 if expected["parsed"]:

@@ -355,7 +355,7 @@ class TelegramService:
         Returns:
             Formatted string summary
         """
-        parsed_data = telegram.parsed_value
+        parsed_data = telegram.parse_datapoint_value
         data_display = (
             parsed_data.get("formatted", telegram.data_value)
             if parsed_data.get("parsed")

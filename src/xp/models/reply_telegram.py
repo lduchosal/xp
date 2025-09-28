@@ -18,6 +18,7 @@ class ReplyTelegram(Telegram):
     """
     Represents a parsed reply telegram from the console bus.
 
+    Format: <R{serial_number}F{function_code}D{data}{checksum}>
     Format: <R{serial_number}F{function_code}D{datapoint_type}{data_value}{checksum}>
     Examples: <R0020012521F02D18+26,0§CIL>
     """
@@ -34,7 +35,7 @@ class ReplyTelegram(Telegram):
         self.telegram_type = TelegramType.REPLY
 
     @property
-    def parsed_value(self) -> dict[str, Any]:
+    def parse_datapoint_value(self) -> dict[str, Any]:
         """Parse the data value based on data point type"""
         if self.datapoint_type == DataPointType.TEMPERATURE:
             return self._parse_temperature_value()
@@ -189,7 +190,7 @@ class ReplyTelegram(Telegram):
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        parsed_data = self.parsed_value
+        parsed_data = self.parse_datapoint_value
 
         return {
             "serial_number": self.serial_number,
@@ -225,7 +226,7 @@ class ReplyTelegram(Telegram):
 
     def __str__(self) -> str:
         """Human-readable string representation"""
-        parsed = self.parsed_value
+        parsed = self.parse_datapoint_value
         if parsed.get("parsed", False) and "formatted" in parsed:
             value_display = parsed["formatted"]
         else:

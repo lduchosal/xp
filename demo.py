@@ -251,7 +251,7 @@ def demo_version_parsing():
     for telegram_str in version_replies[:4]:  # Show first 4 examples
         try:
             parsed = telegram_service.parse_reply_telegram(telegram_str)
-            version_data = parsed.parsed_value
+            version_data = parsed.parse_datapoint_value
 
             if version_data["parsed"]:
                 print(f"Device {parsed.serial_number}:")
@@ -293,7 +293,7 @@ def demo_version_parsing():
                 telegram_type = "reply"
                 print(f"Auto-detected: {telegram_type.upper()}")
                 if parsed.datapoint_type == DataPointType.SW_VERSION:
-                    version_info = parsed.parsed_value
+                    version_info = parsed.parse_datapoint_value
                     if version_info["parsed"]:
                         print(
                             f"  → Version reply: {version_info['formatted']} from device {parsed.serial_number}"
@@ -370,7 +370,7 @@ def demo_version_edge_cases():
     for telegram_str in invalid_versions:
         try:
             parsed = telegram_service.parse_reply_telegram(telegram_str)
-            version_data = parsed.parsed_value
+            version_data = parsed.parse_datapoint_value
 
             print(f"Telegram: {telegram_str}")
             print(f"  Parsed: {version_data['parsed']}")
@@ -395,7 +395,7 @@ def demo_version_edge_cases():
     for telegram_str in edge_cases:
         try:
             parsed = telegram_service.parse_reply_telegram(telegram_str)
-            version_data = parsed.parsed_value
+            version_data = parsed.parse_datapoint_value
 
             print(f"Product: {version_data.get('product', 'PARSE_FAILED')}")
             print(f"Version: {version_data.get('version', 'PARSE_FAILED')}")

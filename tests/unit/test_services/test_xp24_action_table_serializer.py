@@ -2,8 +2,9 @@
 
 import pytest
 
-from xp.models.input_action_type import InputActionType, InputTimeParam
-from xp.models.xp24_msactiontable import InputAction, Xp24MsActionTable
+from xp.models.input_action_type import InputActionType
+from xp.models.timeparam_type import TimeParam
+from xp.models.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.services.msactiontable_xp24_serializer import Xp24MsActionTableSerializer
 from xp.utils.checksum import de_nibble
 
@@ -15,10 +16,10 @@ class TestXp24MsActionTableSerializer:
     def sample_action_table(self):
         """Create sample action table for testing"""
         return Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TOGGLE, InputTimeParam.NONE),
-            input2_action=InputAction(InputActionType.TURNON, InputTimeParam.T5SEC),
-            input3_action=InputAction(InputActionType.LEVELSET, InputTimeParam.T5SEC),
-            input4_action=InputAction(InputActionType.SCENESET, InputTimeParam.T5SEC),
+            input1_action=InputAction(InputActionType.TOGGLE, TimeParam.NONE),
+            input2_action=InputAction(InputActionType.TURNON, TimeParam.T5SEC),
+            input3_action=InputAction(InputActionType.LEVELSET, TimeParam.T5SEC),
+            input4_action=InputAction(InputActionType.SCENESET, TimeParam.T5SEC),
             mutex12=True,
             mutex34=False,
             mutual_deadtime=Xp24MsActionTable.MS500,
@@ -37,9 +38,11 @@ class TestXp24MsActionTableSerializer:
             "<R0020044964F17DAAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFD>",
         ]
 
-    def test_from_telegrams_basic(self, sample_telegrams):
+    def test_from_telegrams_basic(self, sample_telegrams: list[str]) -> None:
         """Test basic telegram parsing"""
-        action_table = Xp24MsActionTableSerializer.from_telegrams(sample_telegrams)
+
+        assert sample_telegrams
+        action_table = Xp24MsActionTableSerializer.from_telegrams(sample_telegrams[0])
 
         # Verify it's a valid Xp24ActionTable
         assert isinstance(action_table, Xp24MsActionTable)
@@ -55,7 +58,7 @@ class TestXp24MsActionTableSerializer:
         # This telegram contains non-hex characters that cause fromhex() to fail
         # Based on the debug log: '<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>'
         valid_telegram = (
-            "ADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         msactiontable = Xp24MsActionTableSerializer.from_data(valid_telegram)
@@ -64,10 +67,10 @@ class TestXp24MsActionTableSerializer:
         assert msactiontable.input3_action.type == InputActionType.TOGGLE
         assert msactiontable.input4_action.type == InputActionType.TOGGLE
 
-        assert msactiontable.input1_action.param == InputTimeParam.NONE
-        assert msactiontable.input2_action.param == InputTimeParam.NONE
-        assert msactiontable.input3_action.param == InputTimeParam.NONE
-        assert msactiontable.input4_action.param == InputTimeParam.NONE
+        assert msactiontable.input1_action.param == TimeParam.NONE
+        assert msactiontable.input2_action.param == TimeParam.NONE
+        assert msactiontable.input3_action.param == TimeParam.NONE
+        assert msactiontable.input4_action.param == TimeParam.NONE
 
         assert not msactiontable.curtain12
         assert not msactiontable.curtain34
@@ -79,7 +82,7 @@ class TestXp24MsActionTableSerializer:
         # This telegram contains non-hex characters that cause fromhex() to fail
         # Based on the debug log: '<R0020044964F17DAAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFD>'
         valid_telegram = (
-            "ABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "AAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         msactiontable = Xp24MsActionTableSerializer.from_data(valid_telegram)
@@ -88,10 +91,10 @@ class TestXp24MsActionTableSerializer:
         assert msactiontable.input3_action.type == InputActionType.TOGGLE
         assert msactiontable.input4_action.type == InputActionType.TOGGLE
 
-        assert msactiontable.input1_action.param == InputTimeParam.T15SEC
-        assert msactiontable.input2_action.param == InputTimeParam.NONE
-        assert msactiontable.input3_action.param == InputTimeParam.NONE
-        assert msactiontable.input4_action.param == InputTimeParam.NONE
+        assert msactiontable.input1_action.param == TimeParam.T15SEC
+        assert msactiontable.input2_action.param == TimeParam.NONE
+        assert msactiontable.input3_action.param == TimeParam.NONE
+        assert msactiontable.input4_action.param == TimeParam.NONE
 
         assert not msactiontable.curtain12
         assert not msactiontable.curtain34

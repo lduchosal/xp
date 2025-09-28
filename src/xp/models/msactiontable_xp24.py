@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass, field
 
-from .input_action_type import InputActionType, InputTimeParam
+from .input_action_type import InputActionType
+from .timeparam_type import TimeParam
 
 
 @dataclass
@@ -10,7 +11,7 @@ class InputAction:
     """Represents an input action with type and parameter"""
 
     type: InputActionType
-    param: InputTimeParam
+    param: TimeParam
 
 
 @dataclass
@@ -28,16 +29,16 @@ class Xp24MsActionTable:
 
     # Input actions for each input (default to TOGGLE with None parameter)
     input1_action: InputAction = field(
-        default_factory=lambda: InputAction(InputActionType.TOGGLE, InputTimeParam.NONE)
+        default_factory=lambda: InputAction(InputActionType.TOGGLE, TimeParam.NONE)
     )
     input2_action: InputAction = field(
-        default_factory=lambda: InputAction(InputActionType.TOGGLE, InputTimeParam.NONE)
+        default_factory=lambda: InputAction(InputActionType.TOGGLE, TimeParam.NONE)
     )
     input3_action: InputAction = field(
-        default_factory=lambda: InputAction(InputActionType.TOGGLE, InputTimeParam.NONE)
+        default_factory=lambda: InputAction(InputActionType.TOGGLE, TimeParam.NONE)
     )
     input4_action: InputAction = field(
-        default_factory=lambda: InputAction(InputActionType.TOGGLE, InputTimeParam.NONE)
+        default_factory=lambda: InputAction(InputActionType.TOGGLE, TimeParam.NONE)
     )
 
     # Boolean settings

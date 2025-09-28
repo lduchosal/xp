@@ -9,7 +9,7 @@ from . import TelegramService, TelegramParsingError
 from .conbus_service import ConbusService, ConbusError
 from .msactiontable_xp24_serializer import Xp24MsActionTableSerializer
 from ..models.system_function import SystemFunction
-from ..models.xp24_msactiontable import Xp24MsActionTable
+from ..models.msactiontable_xp24 import Xp24MsActionTable
 
 
 class Xp24ActionTableError(Exception):
@@ -79,11 +79,13 @@ class MsActionTableService:
             )
 
             # Deserialize from received telegrams
-            self.logger.debug(f"Deserialize: {msactiontable_telegrams}")
+            self.logger.debug(f"Received msactiontable_telegrams: {msactiontable_telegrams}")
             if not msactiontable_telegrams:
                 raise Xp24ActionTableError("No msactiontable telegrams")
 
-            return Xp24MsActionTableSerializer.from_telegrams(msactiontable_telegrams)
+            msactiontable_telegram =msactiontable_telegrams[0]
+            self.logger.debug(f"Deserialize: {msactiontable_telegram}")
+            return Xp24MsActionTableSerializer.from_telegrams(msactiontable_telegram)
 
         except ConbusError as e:
             raise Xp24ActionTableError(f"Conbus communication failed: {e}") from e

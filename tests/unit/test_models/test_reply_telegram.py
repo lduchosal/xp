@@ -121,7 +121,7 @@ class TestReplyTelegram:
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is True
         assert parsed["value"] == 26.0
@@ -140,7 +140,7 @@ class TestReplyTelegram:
             raw_telegram="<R0020012521F02D18-15,5§CAB>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is True
         assert parsed["value"] == -15.5
@@ -158,7 +158,7 @@ class TestReplyTelegram:
             raw_telegram="<R0020012521F02D19+65,5§RHXY>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is True
         assert parsed["value"] == 65.5
@@ -177,7 +177,7 @@ class TestReplyTelegram:
             raw_telegram="<R0020012521F02D20+12,5§VVW>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is True
         assert parsed["value"] == 12.5
@@ -196,7 +196,7 @@ class TestReplyTelegram:
             raw_telegram="<R0020012521F02D21+0,25§ACD>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is True
         assert parsed["value"] == 0.25
@@ -215,7 +215,7 @@ class TestReplyTelegram:
             raw_telegram="<R0020012521F02D18invalid§CER>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is False
         assert "error" in parsed
@@ -232,7 +232,7 @@ class TestReplyTelegram:
             raw_telegram="<R0020012521F02D18nounitER>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is False
         assert parsed["raw_value"] == "nounit"
@@ -319,7 +319,7 @@ class TestReplyTelegram:
             raw_telegram=f"<R0020012521F02D18{data_value}AB>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is True
         assert parsed["value"] == expected_value
@@ -345,7 +345,7 @@ class TestReplyTelegram:
             raw_telegram=f"<R0020012521F02D19{data_value}AB>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is True
         assert parsed["value"] == expected_value
@@ -366,7 +366,7 @@ class TestReplyTelegram:
             raw_telegram=f"<R0020012521F02D20{data_value}AB>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is True
         assert parsed["value"] == expected_value
@@ -387,7 +387,7 @@ class TestReplyTelegram:
             raw_telegram=f"<R0020012521F02D21{data_value}AB>",
         )
 
-        parsed = telegram.parsed_value
+        parsed = telegram.parse_datapoint_value
 
         assert parsed["parsed"] is True
         assert parsed["value"] == expected_value

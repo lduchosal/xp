@@ -3,8 +3,9 @@
 from unittest.mock import patch
 import pytest
 
-from xp.models.input_action_type import InputActionType, InputTimeParam
-from xp.models.xp24_msactiontable import InputAction, Xp24MsActionTable
+from xp.models.input_action_type import InputActionType
+from xp.models.timeparam_type import TimeParam
+from xp.models.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.services.conbus_service import ConbusError
 from xp.services.msactiontable_service import (
     MsActionTableService,
@@ -24,10 +25,10 @@ class TestMsActionTableService:
     def mock_action_table(self):
         """Create mock action table for testing"""
         return Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TOGGLE, InputTimeParam.NONE),
-            input2_action=InputAction(InputActionType.TURNON, InputTimeParam.T5SEC),
-            input3_action=InputAction(InputActionType.LEVELSET, InputTimeParam.T5MIN),
-            input4_action=InputAction(InputActionType.SCENESET, InputTimeParam.T2MIN),
+            input1_action=InputAction(InputActionType.TOGGLE, TimeParam.NONE),
+            input2_action=InputAction(InputActionType.TURNON, TimeParam.T5SEC),
+            input3_action=InputAction(InputActionType.LEVELSET, TimeParam.T5MIN),
+            input4_action=InputAction(InputActionType.SCENESET, TimeParam.T2MIN),
             mutex12=True,
             mutex34=False,
             mutual_deadtime=Xp24MsActionTable.MS500,
@@ -46,7 +47,7 @@ class TestMsActionTableService:
         # Patch the complex callback workflow to directly call the serializer
         with patch.object(service.conbus_service, "send_telegram"):
             # Mock the internal workflow by directly setting the msactiontable_telegrams
-            def mock_download_method(serial_number):
+            def mock_download_method(_serial_number):
                 # Simulate successful workflow resulting in telegrams
                 msactiontable_telegrams = [
                     "<S0123450001F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFD>"
@@ -93,7 +94,7 @@ class TestMsActionTableService:
         # Mock the callback workflow to succeed but serializer fails
         with patch.object(service.conbus_service, "send_telegram"):
 
-            def mock_download_method(serial_number):
+            def mock_download_method(_serial_number):
                 # Simulate successful telegram collection but serializer failure
                 msactiontable_telegrams = ["invalid_telegram"]
                 return mock_serializer_class.from_telegrams(msactiontable_telegrams)

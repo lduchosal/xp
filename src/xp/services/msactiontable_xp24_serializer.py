@@ -2,18 +2,19 @@
 
 from typing import List
 
-from ..models.input_action_type import InputActionType, InputTimeParam
-from ..models.xp24_msactiontable import InputAction, Xp24MsActionTable
-from ..utils.checksum import calculate_checksum, de_nibble
+from ..models.input_action_type import InputActionType
+from ..models.timeparam_type import TimeParam
+from ..models.msactiontable_xp24 import InputAction, Xp24MsActionTable
+from ..utils.checksum import de_nibble
 
 
 class Xp24MsActionTableSerializer:
     """Handles serialization/deserialization of XP24 action tables to/from telegrams."""
 
     @staticmethod
-    def to_telegrams(action_table: Xp24MsActionTable, serial: str) -> List[str]:
+    def to_data(action_table: Xp24MsActionTable) -> str:
         """Serialize action table to telegram format."""
-        data_parts = [f"S{serial}F17DAAAA"]
+        data_parts: list[str] = []
 
         # Encode all 4 input actions
         input_actions = [
@@ -43,13 +44,18 @@ class Xp24MsActionTableSerializer:
         )
 
         data = "".join(data_parts)
-        checksum = calculate_checksum(data)
-        return [f"<{data}{checksum}>"]
+        return data
 
     @staticmethod
     def from_data(msactiontable_rawdata: str) -> Xp24MsActionTable:
         """Deserialize action table from raw data parts."""
-        data = msactiontable_rawdata
+
+        raw_length = len(msactiontable_rawdata)
+        if raw_length != 68:
+            raise ValueError(f"Msactiontable is not 68 bytes long ({raw_length})")
+
+        # Remove action table count AAAA, AAAB ...
+        data = msactiontable_rawdata[4:]
 
         # Take first 64 chars (32 bytes) as per pseudo code
         hex_data = data[:64]
@@ -85,17 +91,14 @@ class Xp24MsActionTableSerializer:
 
         # Convert function ID to InputActionType
         action_type = InputActionType(function_id)
-        param_type = InputTimeParam(param_id)
+        param_type = TimeParam(param_id)
 
         return InputAction(action_type, param_type)
 
     @staticmethod
-    def from_telegrams(ms_telegrams: List[str]) -> Xp24MsActionTable:
+    def from_telegrams(ms_telegrams: str) -> Xp24MsActionTable:
         """Legacy method for backward compatibility. Use from_data() instead."""
         # For backward compatibility, assume full telegrams and extract data
-        data_parts = ""
-        for telegram in ms_telegrams:
-            # Assume it's already a data part
-            data_parts += telegram[20:84]
+        data_parts = ms_telegrams[16:84]
 
         return Xp24MsActionTableSerializer.from_data(data_parts)
