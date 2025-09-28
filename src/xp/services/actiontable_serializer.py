@@ -60,16 +60,17 @@ class ActionTableSerializer:
             except ValueError:
                 parameter = TimeParam.NONE  # Default fallback
 
-            entry = ActionTableEntry(
-                module_type=module_type,
-                link_number=link_number,
-                module_input=module_input,
-                module_output=module_output,
-                act_upon=act_upon,
-                command=command,
-                parameter=parameter,
-            )
-            entries.append(entry)
+            if module_type != ModuleTypeCode.NOMOD:
+                entry = ActionTableEntry(
+                    module_type=module_type,
+                    link_number=link_number,
+                    module_input=module_input,
+                    module_output=module_output,
+                    act_upon=act_upon,
+                    command=command,
+                    parameter=parameter,
+                )
+                entries.append(entry)
 
         return ActionTable(entries=entries)
 

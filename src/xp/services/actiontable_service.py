@@ -110,7 +110,7 @@ class ActionTableService:
                 # Look for F17D (TABLE) responses containing actiontable data
                 if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
                     # Extract the data portion and decode from base64-like format
-                    return reply_telegram.raw_telegram
+                    return reply_telegram.data_value[2:]
         return None
 
     def __enter__(self) -> "ActionTableService":
