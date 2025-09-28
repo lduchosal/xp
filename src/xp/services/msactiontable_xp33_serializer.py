@@ -105,7 +105,7 @@ class Xp33MsActionTableSerializer:
         # Remove action table count prefix (first 4 characters: AAAA, AAAB, etc.)
         data = msactiontable_rawdata[4:]
 
-        # Take first 64 chars (32 bytes) as per pseudo code
+        # Take first 64 chars (32 bytes) as per pseudocode
         hex_data = data[:64]
 
         # Convert hex string to bytes using deNibble (A-P encoding)
@@ -148,9 +148,9 @@ class Xp33MsActionTableSerializer:
         start_at_full_bits = byte_to_bits(raw_bytes[23])
 
         # Handle dimFunction with exception handling as per specification
-        try:
+        if len(raw_bytes) > 24:
             leading_edge_bits = byte_to_bits(raw_bytes[24])
-        except Exception:
+        else:
             leading_edge_bits = [False] * 8
 
         # Map bit flags to output properties

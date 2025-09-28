@@ -94,10 +94,8 @@ class TestActionTableIntegration:
         assert isinstance(encoded, str)
         assert len(encoded) > 0
 
-    @patch("xp.services.actiontable_service.ConbusService")
-    @patch("xp.services.actiontable_service.TelegramService")
     def test_service_serializer_integration(
-        self, mock_telegram_service, mock_conbus_service, sample_actiontable
+        self, sample_actiontable
     ):
         """Test ActionTableService and ActionTableSerializer integration"""
         # Setup service with mocked dependencies

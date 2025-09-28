@@ -55,7 +55,7 @@ class TestXp24MsActionTableSerializer:
 
     def test_from_telegrams_invalid_hex_data(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
-        # This telegram contains non-hex characters that cause fromhex() to fail
+        # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>'
         valid_telegram = (
             "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -79,7 +79,7 @@ class TestXp24MsActionTableSerializer:
 
     def test_from_telegrams_invalid_hex_data2(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
-        # This telegram contains non-hex characters that cause fromhex() to fail
+        # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044964F17DAAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFD>'
         valid_telegram = (
             "AAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -101,28 +101,28 @@ class TestXp24MsActionTableSerializer:
         assert not msactiontable.mutex12
         assert not msactiontable.mutex34
 
-    def test_from_telegrams_denibble_0(self):
+    def test_from_telegrams_de_nibble_0(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AA"
 
         result = de_nibbles(nibble)
         assert bytearray([0]) == result
 
-    def test_from_telegrams_denibble_1(self):
+    def test_from_telegrams_de_nibble_1(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AB"
 
         result = de_nibbles(nibble)
         assert bytearray([1]) == result
 
-    def test_from_telegrams_denibble_01(self):
+    def test_from_telegrams_de_nibble_01(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AAAB"
 
         result = de_nibbles(nibble)
         assert bytearray([0, 1]) == result
 
-    def test_from_telegrams_denibble_big(self):
+    def test_from_telegrams_de_nibble_big(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
         nibble = "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 

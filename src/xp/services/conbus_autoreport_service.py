@@ -22,6 +22,31 @@ class ConbusAutoreportError(Exception):
     pass
 
 
+def _generate_set_autoreport_telegram(
+        serial_number: str, status_value: str
+) -> str:
+    """
+    Generate a telegram for setting auto report status.
+
+    Args:
+        serial_number: 10-digit module serial number
+        status_value: "PP" for ON, "AA" for OFF
+
+    Returns:
+        Formatted telegram string (e.g., "<S0123450001F04E21PPFG>")
+    """
+    # Build the data part: S{serial_number}F04E21{status_value}
+    data_part = f"S{serial_number}F04E21{status_value}"
+
+    # Calculate checksum
+    checksum = calculate_checksum(data_part)
+
+    # Build complete telegram
+    telegram = f"<{data_part}{checksum}>"
+
+    return telegram
+
+
 class ConbusAutoreportService:
     """
     Service for getting and setting module auto report status via Conbus telegrams.
@@ -123,7 +148,7 @@ class ConbusAutoreportService:
             status_text = "on" if status else "off"
 
             # Generate the auto report setting telegram: F04E21{value}
-            telegram = self._generate_set_autoreport_telegram(
+            telegram = _generate_set_autoreport_telegram(
                 serial_number, status_value
             )
 
@@ -174,27 +199,3 @@ class ConbusAutoreportService:
                 result="NAK",
                 error=f"Unexpected error: {e}",
             )
-
-    def _generate_set_autoreport_telegram(
-        self, serial_number: str, status_value: str
-    ) -> str:
-        """
-        Generate a telegram for setting auto report status.
-
-        Args:
-            serial_number: 10-digit module serial number
-            status_value: "PP" for ON, "AA" for OFF
-
-        Returns:
-            Formatted telegram string (e.g., "<S0123450001F04E21PPFG>")
-        """
-        # Build the data part: S{serial_number}F04E21{status_value}
-        data_part = f"S{serial_number}F04E21{status_value}"
-
-        # Calculate checksum
-        checksum = calculate_checksum(data_part)
-
-        # Build complete telegram
-        telegram = f"<{data_part}{checksum}>"
-
-        return telegram

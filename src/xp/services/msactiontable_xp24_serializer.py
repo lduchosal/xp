@@ -55,7 +55,7 @@ class Xp24MsActionTableSerializer:
         # Remove action table count AAAA, AAAB ...
         data = msactiontable_rawdata[4:]
 
-        # Take first 64 chars (32 bytes) as per pseudo code
+        # Take first 64 chars (32 bytes) as per pseudocode
         hex_data = data[:64]
 
         # Convert hex string to bytes using deNibble (A-P encoding)

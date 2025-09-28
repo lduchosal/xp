@@ -82,7 +82,7 @@ class TestActionTableService:
         # Mock calls to simulate the communication flow
         call_count = [0]
 
-        def mock_send_telegram(serial, function, data, callback):
+        def mock_send_telegram(_serial, _function, _data, callback):
             call_count[0] += 1
             if call_count[0] == 1:
                 # First call: simulate receiving actiontable data

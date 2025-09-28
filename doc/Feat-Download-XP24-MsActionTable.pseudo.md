@@ -125,7 +125,7 @@ class Xp24MsActionTableSerializer:
         """Deserialize action table from telegram format."""
         # Extract and concatenate payload data
         concat = "".join(telegram[20:84] for telegram in ms_telegrams)
-        raw_bytes = bytes.fromhex(concat[:64])
+        raw_bytes = bytes.from_hex(concat[:64])
 
         # Decode input actions
         input_actions = []

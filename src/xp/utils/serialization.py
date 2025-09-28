@@ -123,7 +123,7 @@ def nibble(byte_val: int) -> str:
 def de_nibble(nibble_str: str) -> int:
     """Convert two-character nibble string to byte value.
 
-    Based on pseudo code: A=0, B=1, C=2, ..., P=15
+    Based on pseudocode: A=0, B=1, C=2, ..., P=15
 
     Args:
         nibble_str: Two-character string with A-P encoding
@@ -147,7 +147,7 @@ def de_nibble(nibble_str: str) -> int:
 def de_nibbles(str_val: str) -> bytearray:
     """Convert hex string with A-P encoding to list of integers.
 
-    Based on pseudo code: A=0, B=1, C=2, ..., P=15
+    Based on pseudocode: A=0, B=1, C=2, ..., P=15
 
     Args:
         str_val: Hex string with A-P encoding
