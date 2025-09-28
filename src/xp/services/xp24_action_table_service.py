@@ -7,7 +7,7 @@ from typing import Optional, Any
 
 from . import TelegramService, TelegramParsingError
 from .conbus_service import ConbusService, ConbusError
-from .xp24_action_table_serializer import Xp24ActionTableSerializer
+from .xp24_action_table_serializer import Xp24MsActionTableSerializer
 from ..models.system_function import SystemFunction
 from ..models.xp24_msactiontable import Xp24MsActionTable
 
@@ -23,7 +23,7 @@ class Xp24ActionTableService:
 
     def __init__(self, config_path: str = "cli.yml"):
         self.conbus_service = ConbusService(config_path)
-        self.serializer = Xp24ActionTableSerializer()
+        self.serializer = Xp24MsActionTableSerializer()
         self.telegram_service = TelegramService()
         self.logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ class Xp24ActionTableService:
 
             # Deserialize from received telegrams
             self.logger.debug(f"Deserialize: {msactiontable_telegrams}")
-            return Xp24ActionTableSerializer.from_telegrams(msactiontable_telegrams)
+            return Xp24MsActionTableSerializer.from_telegrams(msactiontable_telegrams)
 
         except ConbusError as e:
             raise Xp24ActionTableError(f"Conbus communication failed: {e}") from e
