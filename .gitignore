@@ -15,3 +15,8 @@ rp.yml
 .homekit_cache.json
 .idea/workspace.xml
 coverage.xml
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
