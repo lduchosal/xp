@@ -63,7 +63,7 @@ def de_nibble(str_val: str) -> bytearray:
         high_nibble = (ord(high_char) - 65) << 4
         low_nibble = ord(low_char) - 65
 
-        result.extend([(high_nibble + low_nibble)])
+        result.extend([high_nibble + low_nibble])
     return result
 
 

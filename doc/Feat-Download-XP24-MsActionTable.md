@@ -94,11 +94,11 @@ Unit tests in `tests/unit/test_models/test_xp24_action_table.py`:
 - `test_input_action_type_enum()` - Test all action type values
 - `test_xp24_action_table_constants()` - Test MS300/MS500 constants
 
-Unit tests in `tests/unit/test_services/test_xp24_msactiontable_service.py`:
+Unit tests in `tests/unit/test_services/test_msactiontable_service.py`:
 
 - `test_xp24_action_table_serializer_to_telegrams()` - Test telegram generation
 - `test_xp24_action_table_serializer_from_telegrams()` - Test telegram parsing
-- `test_xp24_msactiontable_service_download()` - Test service download functionality
+- `test_msactiontable_service_download()` - Test service download functionality
 - `test_xp24_action_table_checksum_calculation()` - Test checksum handling
 
 **Test checklist:**

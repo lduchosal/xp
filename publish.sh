@@ -34,9 +34,9 @@ done
 
 # Set total steps based on mode
 if [ "$QUALITY_ONLY" = true ]; then
-    STEPS=9
+    STEPS=10
 else
-    STEPS=15
+    STEPS=16
 fi
 STEP=0
 
@@ -89,14 +89,17 @@ else
     echo "${BOLD}Starting XP Package Publishing Process...${NC}"
 fi
 
-print_step "Cleaning Previous Build"
+print_step "Cleaning Previous Build (pdm run clean)"
 run_command "pdm run clean" "Clean"
 
-print_step "Installing Dependencies (pdm)"
+print_step "Installing Dependencies (pdm install)"
 run_command "pdm run install" "Dependencies installation"
 
-print_step "Installing Development Dependencies (pdm)"
+print_step "Installing Development Dependencies (pdm install-dev)"
 run_command "pdm run install-dev" "Development dependencies installation"
+
+print_step "Checking for Outdated Dependencies (pdm outdated)"
+run_command "pdm outdated" "Outdated Dependencies"
 
 print_step "Type Checking (typecheck)"
 run_command "pdm run typecheck" "Type checking"

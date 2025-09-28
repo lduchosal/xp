@@ -170,7 +170,7 @@ class Xp24MsActionTableSerializer:
 
 ### Conbus Service Integration
 ```python
-class Xp24ActionTableService:
+class MsActionTableService:
     """Service for downloading XP24 action tables via Conbus"""
 
     def __init__(self, config_path: str = "cli.yml"):
@@ -199,7 +199,7 @@ class Xp24ActionTableService:
 @handle_service_errors(Xp24ActionTableError)
 def xp24_download_action_table(serial_number: str) -> None:
     """Download MS action table from XP24 module"""
-    service = Xp24ActionTableService()
+    service = MsActionTableService()
 
     with service:
         action_table = service.download_action_table(serial_number)

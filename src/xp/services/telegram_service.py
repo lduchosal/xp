@@ -111,7 +111,7 @@ class TelegramService:
 
     @staticmethod
     def validate_checksum(
-        telegram: Union[EventTelegram, ReplyTelegram, SystemTelegram, OutputTelegram]
+        telegram: Union[EventTelegram, ReplyTelegram, SystemTelegram, OutputTelegram],
     ) -> bool:
         """
         Validate the checksum of a parsed telegram.

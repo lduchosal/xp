@@ -45,7 +45,7 @@ def common_options(func: Callable[..., Any]) -> Callable[..., Any]:
 
 
 def telegram_parser_command(
-    service_exceptions: Tuple[Type[Exception], ...] = ()
+    service_exceptions: Tuple[Type[Exception], ...] = (),
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator for telegram parsing commands with standard error handling.
 

@@ -87,7 +87,7 @@ class TestXp24ActionTable:
         assert hasattr(action_table, "mutex34")
         assert hasattr(action_table, "curtain12")
         assert hasattr(action_table, "curtain34")
-        assert hasattr(action_table, "ms")
+        assert hasattr(action_table, "mutual_deadtime")
 
     def test_input_action_type_enum_coverage(self):
         """Test that all major InputActionType enum values work"""
