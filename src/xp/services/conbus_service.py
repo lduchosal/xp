@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import List, Optional, Any
 
 import yaml
+from typing_extensions import Callable
 
 from .conbus_connection_pool import ConbusConnectionPool
 from ..models import (
@@ -116,7 +117,6 @@ class ConbusService:
         except Exception as e:
             self.logger.error(f"Error closing connection pool: {e}")
         finally:
-            self.socket = None
             self.is_connected = False
 
     def get_connection_status(self) -> ConbusConnectionStatus:
@@ -158,7 +158,11 @@ class ConbusService:
 
         return telegrams
 
-    def receive_responses(self, timeout: float = 0.1) -> List[str]:
+    def receive_responses(
+        self,
+        timeout: float = 0.1,
+        receive_callback: Optional[Callable[[list[str]], None]] = None,
+    ) -> List[str]:
         """Receive responses from the server and properly split telegrams"""
         import time
 
@@ -172,6 +176,8 @@ class ConbusService:
                     telegrams = self._receive_responses_with_connection(
                         connection, timeout=0.1
                     )
+                    if receive_callback is not None:
+                        receive_callback(telegrams)
                     all_telegrams.extend(telegrams)
 
                     # Small sleep to avoid busy waiting when no data
@@ -183,7 +189,10 @@ class ConbusService:
         return all_telegrams
 
     def _receive_responses_with_connection(
-        self, connection: socket.socket, timeout: float = 1.0
+        self,
+        connection: socket.socket,
+        timeout: float = 1.0,
+        receive_callback: Optional[Callable[[list[str]], None]] = None,
     ) -> List[str]:
         """Receive responses from the server using a specific connection"""
         accumulated_data = ""
@@ -191,7 +200,7 @@ class ConbusService:
         try:
             # Set a shorter timeout for receiving responses
             original_timeout = connection.gettimeout()
-            connection.settimeout(timeout)  # 2 second timeout for responses
+            connection.settimeout(timeout)  # 1 second timeout for responses
 
             while True:
                 try:
@@ -201,6 +210,8 @@ class ConbusService:
 
                     # Accumulate all received data
                     message = data.decode("latin-1")
+                    if receive_callback is not None:
+                        receive_callback([message])
                     accumulated_data += message
                     self.last_activity = datetime.now()
                     connection.settimeout(0.1)  # 2 second timeout for responses
@@ -223,7 +234,11 @@ class ConbusService:
         return telegrams
 
     def send_telegram(
-        self, serial_number: str, system_function: SystemFunction, data: str
+        self,
+        serial_number: str,
+        system_function: SystemFunction,
+        data: str,
+        receive_callback: Optional[Callable[[list[str]], None]] = None,
     ) -> ConbusResponse:
         """Send custom telegram with specified function and data point codes"""
         # Generate custom system telegram: <S{serial}F{function}{data_point}{checksum}>
@@ -232,16 +247,24 @@ class ConbusService:
         checksum = calculate_checksum(telegram_body)
         telegram = f"<{telegram_body}{checksum}>"
 
-        return self.send_raw_telegram(telegram)
+        return self.send_raw_telegram(telegram, receive_callback)
 
-    def send_telegram_body(self, telegram_body: str) -> ConbusResponse:
+    def send_telegram_body(
+        self,
+        telegram_body: str,
+        receive_callback: Optional[Callable[[list[str]], None]] = None,
+    ) -> ConbusResponse:
         """Send custom telegram with specified function and data point codes"""
         checksum = calculate_checksum(telegram_body)
         telegram = f"<{telegram_body}{checksum}>"
 
-        return self.send_raw_telegram(telegram)
+        return self.send_raw_telegram(telegram, receive_callback)
 
-    def send_raw_telegram(self, telegram: Optional[str] = None) -> ConbusResponse:
+    def send_raw_telegram(
+        self,
+        telegram: Optional[str] = None,
+        receive_callback: Optional[Callable[[list[str]], None]] = None,
+    ) -> ConbusResponse:
         """Send telegram using connection pool with automatic acquire/release"""
         request = ConbusRequest(telegram=telegram)
 
@@ -249,7 +272,7 @@ class ConbusService:
             # Use context manager for automatic connection management
             with self._connection_pool as connection:
 
-                # Receive waiting event if available (wait time 0)
+                # Draining event waiting to be read (wait time 0)
                 responses = self._receive_responses_with_connection(connection, 0.001)
                 self.logger.info(f"Purged telegram: {responses}")
 
@@ -262,7 +285,9 @@ class ConbusService:
                 self.is_connected = True  # Update connection status
 
                 # Receive responses
-                responses = self._receive_responses_with_connection(connection)
+                responses = self._receive_responses_with_connection(
+                    connection, 0.1, receive_callback
+                )
 
                 return ConbusResponse(
                     success=True,

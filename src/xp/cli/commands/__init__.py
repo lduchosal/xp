@@ -9,6 +9,7 @@ from .conbus import (
     conbus_linknumber,
     conbus_autoreport,
     conbus_lightlevel,
+    conbus_msactiontable,
 )
 from .file_commands import file
 from .module_commands import module
@@ -20,6 +21,8 @@ from .homekit import homekit
 from .homekit_start_commands import homekit_start
 
 # Individual command functions that attach to groups
+from .conbus_autoreport_commands import get_autoreport_command, set_autoreport_command
+
 from .conbus_blink_commands import (
     send_blink_on_telegram,
     send_blink_off_telegram,
@@ -29,6 +32,7 @@ from .conbus_blink_commands import (
 )
 from .conbus_config_commands import show_config
 from .conbus_custom_commands import send_custom_telegram
+from .conbus_datapoint_commands import query_datapoint, query_all_datapoints
 from .conbus_discover_commands import send_discover_telegram
 from .conbus_output_commands import (
     xp_output_on,
@@ -36,12 +40,11 @@ from .conbus_output_commands import (
     xp_output_status,
     xp_module_state,
 )
+from .conbus_msactiontable_commands import conbus_download_msactiontable
 from .conbus_scan_commands import scan_module
-from .conbus_datapoint_commands import query_datapoint, query_all_datapoints
 from .conbus_raw_commands import send_raw_telegrams
 from .conbus_receive_commands import receive_telegrams
 from .conbus_linknumber_commands import set_linknumber_command, get_linknumber_command
-from .conbus_autoreport_commands import get_autoreport_command, set_autoreport_command
 from .conbus_lightlevel_commands import (
     xp_lightlevel_set,
     xp_lightlevel_off,
@@ -68,6 +71,7 @@ __all__ = [
     "conbus_linknumber",
     "conbus_autoreport",
     "conbus_lightlevel",
+    "conbus_msactiontable",
     "file",
     "module",
     "reverse_proxy",
@@ -80,6 +84,7 @@ __all__ = [
     "homekit",
     "homekit_start",
     # Individual command functions
+    "conbus_download_msactiontable",
     "send_blink_on_telegram",
     "send_blink_off_telegram",
     "conbus_blink_all",

@@ -11,6 +11,11 @@ class SystemFunction(str, Enum):
     WRITE_CONFIG = "04"  # Write configuration
     BLINK = "05"  # Blink LED function
     UNBLINK = "06"  # Unblink LED function
+    DOWNLOAD_MSACTIONTABLE = (
+        "13"  # Download the module specific action table (MsActionTable)
+    )
+    EOF = "16"  # End of msactiontable response
+    MSACTIONTABLE = "17"  # module specific action table (MsActionTable) response
     ACK = "18"  # Acknowledge response
     NAK = "19"  # Not acknowledge response
     UNKNOWN_26 = "26"  # Used after discover, but don't know what it is
@@ -25,6 +30,9 @@ class SystemFunction(str, Enum):
                 self.READ_CONFIG: "Read configuration",
                 self.WRITE_CONFIG: "Write configuration",
                 self.BLINK: "Blink LED function",
+                self.DOWNLOAD_MSACTIONTABLE: "Download the msactiontable",
+                self.EOF: "End of msactiontable response",
+                self.MSACTIONTABLE: "Msactiontable response",
                 self.UNBLINK: "Unblink LED function",
                 self.ACK: "Acknowledge response",
                 self.NAK: "Not acknowledge response",

@@ -34,7 +34,7 @@ class ConbusResponse:
     success: bool
     request: ConbusRequest
     sent_telegram: Optional[str] = None
-    received_telegrams: Optional[list] = None
+    received_telegrams: Optional[list[str]] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 

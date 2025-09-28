@@ -152,7 +152,6 @@ class TestConnectionManagement(TestConbusService):
         service.disconnect()
 
         assert service.is_connected is False
-        assert service.socket is None
         mock_pool_instance.close.assert_called_once()
 
     @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
@@ -169,7 +168,6 @@ class TestConnectionManagement(TestConbusService):
         service.disconnect()  # Should not raise exception
 
         assert service.is_connected is False
-        assert service.socket is None
 
 
 class TestConnectionStatus(TestConbusService):

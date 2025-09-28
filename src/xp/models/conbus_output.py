@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any
 
 from .action_type import ActionType
 from .output_telegram import OutputTelegram
@@ -18,7 +18,7 @@ class ConbusOutputResponse:
     timestamp: datetime
     output_telegram: Optional[OutputTelegram] = None
     sent_telegram: Optional[str] = None
-    received_telegrams: Optional[list[Union[ReplyTelegram, OutputTelegram]]] = None
+    received_telegrams: Optional[list[str]] = None
     datapoint_telegram: Optional[ReplyTelegram] = None
     error: Optional[str] = None
 

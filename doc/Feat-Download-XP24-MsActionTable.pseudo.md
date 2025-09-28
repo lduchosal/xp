@@ -171,7 +171,7 @@ class Xp24ActionTableSerializer:
 ### Conbus Service Integration
 ```python
 class Xp24ActionTableService:
-    """Service for downloading/uploading XP24 action tables via Conbus"""
+    """Service for downloading XP24 action tables via Conbus"""
 
     def __init__(self, config_path: str = "cli.yml"):
         self.conbus_service = ConbusService(config_path)
@@ -189,16 +189,6 @@ class Xp24ActionTableService:
 
         return Xp24ActionTableSerializer.from_telegrams(query_response.received_telegrams)
 
-    def upload_action_table(self, serial_number: str, action_table: Xp24ActionTable) -> bool:
-        """Upload action table to XP24 module"""
-        telegrams = Xp24ActionTableSerializer.to_telegrams(action_table, serial_number)
-
-        for telegram in telegrams:
-            response = self.conbus_service.send_raw_telegram(telegram)
-            if not response.success:
-                return False
-
-        return True
 ```
 
 ### CLI Integration

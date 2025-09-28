@@ -258,8 +258,7 @@ class HomeKitCacheService:
             self.logger.error(f"Action failed or no response: {conbus_response}")
             return
 
-        for received_telegram in conbus_response.received_telegrams:
-            raw_telegram = received_telegram.raw_telegram
+        for raw_telegram in conbus_response.received_telegrams:
             try:
                 telegram = self.telegram_service.parse_event_telegram(raw_telegram)
                 self.received_event(telegram.raw_telegram)

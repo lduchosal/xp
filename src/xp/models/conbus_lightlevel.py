@@ -1,9 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Dict, Any, Union
-
-from .reply_telegram import ReplyTelegram
-from .output_telegram import OutputTelegram
+from typing import Optional, Dict, Any
 
 
 @dataclass
@@ -16,7 +13,7 @@ class ConbusLightlevelResponse:
     level: Optional[int]
     timestamp: datetime
     sent_telegram: Optional[str] = None
-    received_telegrams: Optional[list[Union[ReplyTelegram, OutputTelegram]]] = None
+    received_telegrams: Optional[list[str]] = None
     error: Optional[str] = None
 
     def __post_init__(self) -> None:

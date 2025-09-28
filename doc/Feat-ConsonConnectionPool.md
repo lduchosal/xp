@@ -215,7 +215,7 @@ class ConbusConnectionPool:
         self._current_connection = self.acquire_connection()
         return self._current_connection
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, _exc_type, _exc_val, _exc_tb):
         """Context manager exit - release connection"""
         if hasattr(self, '_current_connection') and self._current_connection:
             self.release_connection(self._current_connection)

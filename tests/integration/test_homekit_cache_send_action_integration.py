@@ -36,14 +36,10 @@ class TestHomeKitCacheServiceSendActionIntegration:
         mock_telegram_service = Mock()
         mock_telegram_service_class.return_value = mock_telegram_service
 
-        # Create mock received telegram
-        mock_received_telegram_event = Mock()
-        mock_received_telegram_event.raw_telegram = "<E14L01I02MAK>"
-
-        # Create mock response with received telegrams
+        # Create mock response with received telegrams (strings, not objects)
         mock_response = Mock()
         mock_response.success = True
-        mock_response.received_telegrams = [mock_received_telegram_event]
+        mock_response.received_telegrams = ["<E14L01I02MAK>"]
         mock_conbus_service.send_action.return_value = mock_response
 
         # Create mock event telegram
@@ -73,26 +69,41 @@ class TestHomeKitCacheServiceSendActionIntegration:
             mock_received_event.assert_called_once_with("<E14L01I02MAK>")
 
     @patch("xp.services.homekit_cache_service.ConbusOutputService")
+    @patch("xp.services.homekit_cache_service.TelegramService")
     def test_send_action_with_event_telegram_integration_2(
-        self, mock_conbus_service_class
+        self, mock_telegram_service_class, mock_conbus_service_class
     ):
         """Integration test for send_action method when receiving EventTelegram."""
         # Setup mocks
         mock_conbus_service = Mock()
         mock_conbus_service_class.return_value = mock_conbus_service
 
-        # Create mock received telegram
-        mock_received_telegram_event = Mock()
-        mock_received_telegram_event.raw_telegram = "<E14L01I02MAK>"
-        mock_received_telegram_reply = Mock()
-        mock_received_telegram_reply.raw_telegram = "<R2113010000E18DFJ>"
+        mock_telegram_service = Mock()
+        mock_telegram_service_class.return_value = mock_telegram_service
 
-        # Create mock response with received telegrams
+        # Create mock event telegram
+        mock_event_telegram = Mock(spec=EventTelegram)
+        mock_event_telegram.raw_telegram = "<E14L01I02MAK>"
+
+        # Configure mock to raise exception for reply telegram, success for event telegram
+        from xp.services import TelegramParsingError
+
+        def side_effect(telegram):
+            if telegram == "<R2113010000E18DFJ>":
+                raise TelegramParsingError("Not an event telegram")
+            elif telegram == "<E14L01I02MAK>":
+                return mock_event_telegram
+            else:
+                raise TelegramParsingError("Unknown telegram")
+
+        mock_telegram_service.parse_event_telegram.side_effect = side_effect
+
+        # Create mock response with received telegrams (strings, not objects)
         mock_response = Mock()
         mock_response.success = True
         mock_response.received_telegrams = [
-            mock_received_telegram_reply,
-            mock_received_telegram_event,
+            "<R2113010000E18DFJ>",
+            "<E14L01I02MAK>",
         ]
         mock_conbus_service.send_action.return_value = mock_response
 
