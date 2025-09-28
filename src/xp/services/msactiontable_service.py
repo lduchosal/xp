@@ -7,9 +7,11 @@ from typing import Optional, Any, Union
 
 from . import TelegramService, TelegramParsingError
 from .conbus_service import ConbusService, ConbusError
+from .msactiontable_xp20_serializer import Xp20MsActionTableSerializer
 from .msactiontable_xp24_serializer import Xp24MsActionTableSerializer
 from .msactiontable_xp33_serializer import Xp33MsActionTableSerializer
 from ..models.system_function import SystemFunction
+from ..models.msactiontable_xp20 import Xp20MsActionTable
 from ..models.msactiontable_xp24 import Xp24MsActionTable
 from ..models.msactiontable_xp33 import Xp33MsActionTable
 
@@ -31,7 +33,7 @@ class MsActionTableService:
 
     def download_action_table(
         self, serial_number: str, xpmoduletype: str
-    ) -> Union[Xp24MsActionTable, Xp33MsActionTable]:
+    ) -> Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]:
         """Download action table from XP module"""
         try:
             ack_received = False
@@ -92,7 +94,11 @@ class MsActionTableService:
             msactiontable_telegram = msactiontable_telegrams[0]
             self.logger.debug(f"Deserialize {xpmoduletype}: {msactiontable_telegram}")
 
-            if xpmoduletype == "xp24":
+            if xpmoduletype == "xp20":
+                return Xp20MsActionTableSerializer.from_telegrams(
+                    msactiontable_telegram
+                )
+            elif xpmoduletype == "xp24":
                 return Xp24MsActionTableSerializer.from_telegrams(
                     msactiontable_telegram
                 )

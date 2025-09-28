@@ -154,3 +154,6 @@ def _byte_to_bits(byte_value: int) -> list[bool]:
 - `Xp20MsActionTable`, `InputChannel` models
 - `de_nibble` utility function
 - Bit manipulation utilities
+
+## quality
+- run publish.sh --quality until the issues are all fixed

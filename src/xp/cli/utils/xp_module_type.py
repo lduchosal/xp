@@ -6,7 +6,7 @@ class XpModuleTypeChoice(click.ParamType):
     name = "xpmoduletype"
 
     def __init__(self) -> None:
-        self.choices = ["xp24", "xp31", "xp33"]
+        self.choices = ["xp20", "xp24", "xp31", "xp33"]
 
     def convert(
         self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]
