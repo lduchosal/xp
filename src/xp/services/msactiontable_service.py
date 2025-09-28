@@ -2,17 +2,19 @@
 
 import logging
 from contextlib import suppress
-from typing import Optional, Any
+from typing import Optional, Any, Union
 
 
 from . import TelegramService, TelegramParsingError
 from .conbus_service import ConbusService, ConbusError
 from .msactiontable_xp24_serializer import Xp24MsActionTableSerializer
+from .msactiontable_xp33_serializer import Xp33MsActionTableSerializer
 from ..models.system_function import SystemFunction
 from ..models.msactiontable_xp24 import Xp24MsActionTable
+from ..models.msactiontable_xp33 import Xp33MsActionTable
 
 
-class Xp24ActionTableError(Exception):
+class MsActionTableError(Exception):
     """Raised when XP24 action table operations fail"""
 
     pass
@@ -27,8 +29,10 @@ class MsActionTableService:
         self.telegram_service = TelegramService()
         self.logger = logging.getLogger(__name__)
 
-    def download_action_table(self, serial_number: str) -> Xp24MsActionTable:
-        """Download action table from XP24 module"""
+    def download_action_table(
+        self, serial_number: str, xpmoduletype: str
+    ) -> Union[Xp24MsActionTable, Xp33MsActionTable]:
+        """Download action table from XP module"""
         try:
             ack_received = False
             msactiontable_received = False
@@ -79,16 +83,28 @@ class MsActionTableService:
             )
 
             # Deserialize from received telegrams
-            self.logger.debug(f"Received msactiontable_telegrams: {msactiontable_telegrams}")
+            self.logger.debug(
+                f"Received msactiontable_telegrams: {msactiontable_telegrams}"
+            )
             if not msactiontable_telegrams:
-                raise Xp24ActionTableError("No msactiontable telegrams")
+                raise MsActionTableError("No msactiontable telegrams")
 
-            msactiontable_telegram =msactiontable_telegrams[0]
-            self.logger.debug(f"Deserialize: {msactiontable_telegram}")
-            return Xp24MsActionTableSerializer.from_telegrams(msactiontable_telegram)
+            msactiontable_telegram = msactiontable_telegrams[0]
+            self.logger.debug(f"Deserialize {xpmoduletype}: {msactiontable_telegram}")
+
+            if xpmoduletype == "xp24":
+                return Xp24MsActionTableSerializer.from_telegrams(
+                    msactiontable_telegram
+                )
+            elif xpmoduletype == "xp33":
+                return Xp33MsActionTableSerializer.from_telegrams(
+                    msactiontable_telegram
+                )
+            else:
+                raise MsActionTableError(f"Unsupported module type: {xpmoduletype}")
 
         except ConbusError as e:
-            raise Xp24ActionTableError(f"Conbus communication failed: {e}") from e
+            raise MsActionTableError(f"Conbus communication failed: {e}") from e
 
     def _is_ack(self, received_telegrams: list[str]) -> bool:
 

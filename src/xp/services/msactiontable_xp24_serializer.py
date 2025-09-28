@@ -1,7 +1,5 @@
 """Serializer for XP24 Action Table telegram encoding/decoding."""
 
-from typing import List
-
 from ..models.input_action_type import InputActionType
 from ..models.timeparam_type import TimeParam
 from ..models.msactiontable_xp24 import InputAction, Xp24MsActionTable
@@ -43,7 +41,7 @@ class Xp24MsActionTableSerializer:
             ]
         )
 
-        data = "".join(data_parts)
+        data = "AAAA".join(data_parts)
         return data
 
     @staticmethod

@@ -9,7 +9,7 @@ from xp.models.input_action_type import InputActionType
 from xp.models.timeparam_type import TimeParam
 from xp.models.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.services.msactiontable_service import (
-    Xp24ActionTableError,
+    MsActionTableError,
 )
 
 
@@ -49,18 +49,22 @@ class TestXp24ActionTableIntegration:
 
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "msactiontable", "download", self.valid_serial]
+            cli, ["conbus", "msactiontable", "download", self.valid_serial, "xp24"]
         )
 
         # Verify success
         assert result.exit_code == 0
-        mock_service.download_action_table.assert_called_once_with(self.valid_serial)
+        mock_service.download_action_table.assert_called_once_with(
+            self.valid_serial, "xp24"
+        )
 
         # Verify JSON output structure
         output = json.loads(result.output)
         assert "serial_number" in output
+        assert "xpmoduletype" in output
         assert "action_table" in output
         assert output["serial_number"] == self.valid_serial
+        assert output["xpmoduletype"] == "xp24"
 
         # Verify action table structure
         action_table = output["action_table"]
@@ -81,13 +85,13 @@ class TestXp24ActionTableIntegration:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        mock_service.download_action_table.side_effect = Xp24ActionTableError(
+        mock_service.download_action_table.side_effect = MsActionTableError(
             "Invalid serial number"
         )
 
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "msactiontable", "download", self.invalid_serial]
+            cli, ["conbus", "msactiontable", "download", self.invalid_serial, "xp24"]
         )
 
         # Verify error
@@ -104,13 +108,13 @@ class TestXp24ActionTableIntegration:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        mock_service.download_action_table.side_effect = Xp24ActionTableError(
+        mock_service.download_action_table.side_effect = MsActionTableError(
             "Conbus communication failed"
         )
 
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "msactiontable", "download", self.valid_serial]
+            cli, ["conbus", "msactiontable", "download", self.valid_serial, "xp24"]
         )
 
         # Verify error

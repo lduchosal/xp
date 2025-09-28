@@ -14,7 +14,7 @@ The `Xp33MsActionTable` contains:
 - `min_level`: int (0-100) - Minimum output level percentage
 - `max_level`: int (0-100) - Maximum output level percentage
 - `scene_outputs`: bool - Scene output enable flag
-- `on_at_max`: bool - Start at full level flag
+- `start_at_full`: bool - Start at full level flag
 - `leading_edge`: bool - Dimming function flag
 
 ### Scene Configuration (`Xp33Scene`)
@@ -41,7 +41,7 @@ Theses 2 examples is are chars, representing 2 completes XP33 MsActionTable tele
 | 4-5    | 2    | Output 3 Min/Max | `raw[4]` = min_level, `raw[5]` = max_level |
 | 6-21   | 16   | Light Scenes | 4 scenes × 4 bytes each |
 | 22     | 1    | Scene Outputs | Bit flags for scene_outputs |
-| 23     | 1    | Start At Full | Bit flags for on_at_max |
+| 23     | 1    | Start At Full | Bit flags for start_at_full |
 | 24     | 1    | Dim Function | Bit flags for leading_edge |
 | 25-31  | 7    | Padding | Reserved/unused |
 
@@ -89,7 +89,7 @@ Each bit array represents flags for outputs:
 - Extract output configuration from raw bytes
 - Read min/max levels from appropriate offsets: `raw[2 * output_index]`, `raw[2 * output_index + 1]`
 - Extract bit flags from bytes 22-24 using `byteToBits()` conversion
-- Map bit flags to output properties: `scene_outputs`, `on_at_max`, `leading_edge`
+- Map bit flags to output properties: `scene_outputs`, `start_at_full`, `leading_edge`
 
 ##### `_decode_scene(raw_bytes: bytearray, scene_index: int) -> Xp33Scene`
 - Extract scene configuration from raw bytes

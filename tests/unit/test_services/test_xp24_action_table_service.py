@@ -9,7 +9,7 @@ from xp.models.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.services.conbus_service import ConbusError
 from xp.services.msactiontable_service import (
     MsActionTableService,
-    Xp24ActionTableError,
+    MsActionTableError,
 )
 
 
@@ -76,10 +76,10 @@ class TestMsActionTableService:
 
             # Execute and verify exception
             with pytest.raises(
-                Xp24ActionTableError,
+                MsActionTableError,
                 match="Conbus communication failed: Connection failed",
             ):
-                service.download_action_table("0123450001")
+                service.download_action_table("0123450001", "xp24")
 
     @patch("xp.services.msactiontable_service.Xp24MsActionTableSerializer")
     def test_download_action_table_serializer_error(
@@ -94,7 +94,7 @@ class TestMsActionTableService:
         # Mock the callback workflow to succeed but serializer fails
         with patch.object(service.conbus_service, "send_telegram"):
 
-            def mock_download_method(_serial_number):
+            def mock_download_method(_serial_number, _xpmoduletype):
                 # Simulate successful telegram collection but serializer failure
                 msactiontable_telegrams = ["invalid_telegram"]
                 return mock_serializer_class.from_telegrams(msactiontable_telegrams)
@@ -104,7 +104,7 @@ class TestMsActionTableService:
 
             # Execute and verify exception propagates
             with pytest.raises(Exception, match="Serialization failed"):
-                service.download_action_table("0123450001")
+                service.download_action_table("0123450001", "xp24")
 
     def test_context_manager(self, service):
         """Test service as context manager"""

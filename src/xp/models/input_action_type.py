@@ -35,5 +35,3 @@ class InputActionType(IntEnum):
     LEVELSETINTERN = 29
     FADE = 30
     LEARN = 31
-
-

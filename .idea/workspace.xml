@@ -4,29 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: conbus / actiontable">
-      <change afterPath="$PROJECT_DIR$/src/xp/models/msactiontable_xp33.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/xp/models/timeparam_type.py" afterDir="false" />
+    <list default="true" id="91a1783b-5e7d-448a-9916-8780346a33b2" name="Changes" comment="feat: conbus / xp33 actiontable">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/Feat-Download-Xp33-MsActionTable.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/Feat-Download-Xp33-MsActionTable.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/cli/commands/conbus_msactiontable_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/commands/conbus_msactiontable_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/cli/utils/datapoint_type_choice.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/cli/utils/datapoint_type_choice.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/models/input_action_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/input_action_type.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/reply_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/models/xp24_msactiontable.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/msactiontable_xp24.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/conbus_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/conbus_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xp/models/msactiontable_xp33.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/models/msactiontable_xp33.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/msactiontable_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/msactiontable_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/xp/services/msactiontable_xp24_serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/msactiontable_xp24_serializer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xp/services/telegram_version_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/xp/services/telegram_version_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/integration/test_version_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_version_integration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/integration/test_xp24_action_table_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/test_xp24_action_table_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_reply_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_version_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_version_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_models/test_xp24_action_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_models/test_xp24_action_table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_serializer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/test_services/test_xp24_action_table_service.py" afterDir="false" />
     </list>
-    <list id="54e23d0b-fad5-47c6-9388-57a4ccb5aeca" name="nocommit" comment="" />
+    <list id="54e23d0b-fad5-47c6-9388-57a4ccb5aeca" name="nocommit" comment="nocommit" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -463,22 +453,6 @@
       <workItem from="1758876985425" duration="11705000" />
       <workItem from="1758891696761" duration="23538000" />
     </task>
-    <task id="LOCAL-00122" summary="Cleanup">
-      <option name="closed" value="true" />
-      <created>1758604558052</created>
-      <option name="number" value="00122" />
-      <option name="presentableId" value="LOCAL-00122" />
-      <option name="project" value="LOCAL" />
-      <updated>1758604558052</updated>
-    </task>
-    <task id="LOCAL-00123" summary="Feat: pypi">
-      <option name="closed" value="true" />
-      <created>1758606382487</created>
-      <option name="number" value="00123" />
-      <option name="presentableId" value="LOCAL-00123" />
-      <option name="project" value="LOCAL" />
-      <updated>1758606382487</updated>
-    </task>
     <task id="LOCAL-00124" summary="chore: publish">
       <option name="closed" value="true" />
       <created>1758610245309</created>
@@ -855,7 +829,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759062713062</updated>
     </task>
-    <option name="localTasksCounter" value="171" />
+    <task id="LOCAL-00171" summary="feat: conbus / actiontable">
+      <option name="closed" value="true" />
+      <created>1759068418795</created>
+      <option name="number" value="00171" />
+      <option name="presentableId" value="LOCAL-00171" />
+      <option name="project" value="LOCAL" />
+      <updated>1759068418795</updated>
+    </task>
+    <task id="LOCAL-00172" summary="feat: conbus / xp33 actiontable">
+      <option name="closed" value="true" />
+      <created>1759069205647</created>
+      <option name="number" value="00172" />
+      <option name="presentableId" value="LOCAL-00172" />
+      <option name="project" value="LOCAL" />
+      <updated>1759069205647</updated>
+    </task>
+    <option name="localTasksCounter" value="173" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -884,7 +874,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Feat: cache" />
     <MESSAGE value="Feat: connection pool" />
     <MESSAGE value="Feat: fully working prototype" />
     <MESSAGE value="Cleanup" />
@@ -909,7 +898,8 @@
     <MESSAGE value="feat: conbus / receive" />
     <MESSAGE value="feat: conbus / lightlevel" />
     <MESSAGE value="feat: conbus / actiontable" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: conbus / actiontable" />
+    <MESSAGE value="feat: conbus / xp33 actiontable" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: conbus / xp33 actiontable" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -921,7 +911,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/xp/cli/commands/conbus_msactiontable_commands.py</url>
-          <line>29</line>
+          <line>31</line>
           <option name="timeStamp" value="82" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -931,7 +921,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/xp/services/msactiontable_xp24_serializer.py</url>
-          <line>52</line>
+          <line>50</line>
           <option name="timeStamp" value="91" />
         </line-breakpoint>
       </breakpoints>
@@ -996,7 +986,7 @@
     <SUITE FILE_PATH="coverage/xp$pytest_for_unit_test_services_test_xp24_action_table_serializer_TestXp24ActionTableSerializer_test_from_telegrams_denibble_01.coverage" NAME="pytest for unit.test_services.test_xp24_action_table_serializer.TestXp24ActionTableSerializer.test_from_telegrams_denibble_01 Coverage Results" MODIFIED="1759049561263" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$demo.coverage" NAME="demo Coverage Results" MODIFIED="1756276295879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xp$telegram_test_data.coverage" NAME="telegram_test_data Coverage Results" MODIFIED="1757433458751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/fixtures" />
-    <SUITE FILE_PATH="coverage/xp$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1759064945902" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/xp$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1759069659038" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_xp_input_integration_TestXPInputIntegration_test_cli_command_integration_action.coverage" NAME="pytest for tests.integration.test_xp_input_integration.TestXPInputIntegration.test_cli_command_integration_action Coverage Results" MODIFIED="1758260942441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_homekit_cache_send_action_integration_TestHomeKitCacheServiceSendActionIntegration_test_send_action_with_event_telegram_integration_2.coverage" NAME="pytest for tests.integration.test_homekit_cache_send_action_integration.TestHomeKitCacheServiceSendActionIntegration.test_send_action_with_event_telegram_integration_2 Coverage Results" MODIFIED="1758779116498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/xp$pytest_for_tests_integration_test_event_telegram_integration_TestEventTelegramIntegration_test_parse_event_telegram_json_with_checksum_validation.coverage" NAME="pytest for tests.integration.test_event_telegram_integration.TestEventTelegramIntegration.test_parse_event_telegram_json_with_checksum_validation Coverage Results" MODIFIED="1758230071764" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
