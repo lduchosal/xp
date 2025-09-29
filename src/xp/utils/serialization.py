@@ -92,7 +92,31 @@ def bits_to_byte(bits: List[bool]) -> int:
     return byte_val
 
 
-def a_byte_to_int_no_sign(byte_val: int) -> int:
+def highest_bit_set(value: int) -> int:
+    """Remove the high bit (0x80) from a byte value.
+
+    Args:
+        value: Byte value to process
+
+    Returns:
+        Value with high bit cleared (XOR with 0x80 if high bit was set)
+    """
+    return (value & 0x80) == 128
+
+
+def remove_highest_bit(value: int) -> int:
+    """Remove the high bit (0x80) from a byte value.
+
+    Args:
+        value: Byte value to process
+
+    Returns:
+        Value with high bit cleared (XOR with 0x80 if high bit was set)
+    """
+    return value ^ 0x80 if (value & 0x80) == 128 else value
+
+
+def byte_to_unsigned(byte_val: int) -> int:
     """Convert signed byte to unsigned integer.
 
     Args:

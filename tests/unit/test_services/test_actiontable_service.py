@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 from xp.services.actiontable_service import ActionTableService, ActionTableError
 from xp.models.actiontable import ActionTable, ActionTableEntry
 from xp.models import ModuleTypeCode
-from xp.models.action_type import ActionType
 from xp.models.input_action_type import InputActionType
 from xp.models.timeparam_type import TimeParam
 
@@ -30,7 +29,7 @@ class TestActionTableService:
                 link_number=0,
                 module_input=0,
                 module_output=1,
-                act_upon=ActionType.PRESS,
+                inverted=False,
                 command=InputActionType.TURNOFF,
                 parameter=TimeParam.NONE,
             ),
@@ -39,7 +38,7 @@ class TestActionTableService:
                 link_number=0,
                 module_input=1,
                 module_output=1,
-                act_upon=ActionType.RELEASE,
+                inverted=True,
                 command=InputActionType.TURNON,
                 parameter=TimeParam.NONE,
             ),
@@ -89,6 +88,9 @@ class TestActionTableService:
                 mock_actiontable_reply = Mock()
                 mock_actiontable_reply.system_function = SystemFunction.ACTIONTABLE
                 mock_actiontable_reply.raw_telegram = "AAAAACAAAABAAAAC"
+                mock_actiontable_reply.data_value = (
+                    "XXAAAAACAAAABAAAAC"  # Add data_value for slicing
+                )
                 mock_telegram.parse_reply_telegram.return_value = mock_actiontable_reply
                 callback(["<R0123450001F17DAAAAACAAAABAAAAC>"])
             elif call_count[0] == 2:
@@ -159,6 +161,7 @@ class TestActionTableService:
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACTIONTABLE
         mock_reply.raw_telegram = "<R0123450001F17DAAAAACAAAABAAAACFK>"
+        mock_reply.data_value = "XXAAAAACAAAABAAAAC"  # Add data_value for slicing
 
         with patch.object(
             service.telegram_service, "parse_reply_telegram", return_value=mock_reply

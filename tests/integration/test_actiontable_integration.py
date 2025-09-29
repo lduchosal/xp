@@ -10,7 +10,6 @@ from xp.services.actiontable_serializer import ActionTableSerializer
 from xp.cli.commands.conbus_actiontable_commands import conbus_download_actiontable
 from xp.models.actiontable import ActionTable, ActionTableEntry
 from xp.models import ModuleTypeCode
-from xp.models.action_type import ActionType
 from xp.models.input_action_type import InputActionType
 from xp.models.timeparam_type import TimeParam
 
@@ -27,7 +26,7 @@ class TestActionTableIntegration:
                 link_number=0,
                 module_input=0,
                 module_output=1,
-                act_upon=ActionType.PRESS,
+                inverted=False,
                 command=InputActionType.TURNOFF,
                 parameter=TimeParam.NONE,
             ),
@@ -36,7 +35,7 @@ class TestActionTableIntegration:
                 link_number=0,
                 module_input=1,
                 module_output=2,
-                act_upon=ActionType.RELEASE,
+                inverted=True,
                 command=InputActionType.TURNON,
                 parameter=TimeParam.NONE,
             ),
@@ -94,9 +93,7 @@ class TestActionTableIntegration:
         assert isinstance(encoded, str)
         assert len(encoded) > 0
 
-    def test_service_serializer_integration(
-        self, sample_actiontable
-    ):
+    def test_service_serializer_integration(self, sample_actiontable):
         """Test ActionTableService and ActionTableSerializer integration"""
         # Setup service with mocked dependencies
         service = ActionTableService()
@@ -181,7 +178,7 @@ class TestActionTableIntegration:
             link_number=99,  # Max BCD value
             module_input=99,  # Max BCD value
             module_output=7,  # Max 3-bit value
-            act_upon=ActionType.PRESS,
+            inverted=False,
             command=InputActionType.TURNOFF,
             parameter=TimeParam.NONE,
         )

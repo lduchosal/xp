@@ -22,9 +22,7 @@ class ConbusAutoreportError(Exception):
     pass
 
 
-def _generate_set_autoreport_telegram(
-        serial_number: str, status_value: str
-) -> str:
+def _generate_set_autoreport_telegram(serial_number: str, status_value: str) -> str:
     """
     Generate a telegram for setting auto report status.
 
@@ -148,9 +146,7 @@ class ConbusAutoreportService:
             status_text = "on" if status else "off"
 
             # Generate the auto report setting telegram: F04E21{value}
-            telegram = _generate_set_autoreport_telegram(
-                serial_number, status_value
-            )
+            telegram = _generate_set_autoreport_telegram(serial_number, status_value)
 
             # Send telegram using ConbusService
             with self.conbus_service:

@@ -9,7 +9,6 @@ from xp.cli.commands.conbus_actiontable_commands import conbus_download_actionta
 from xp.services.actiontable_service import ActionTableError
 from xp.models.actiontable import ActionTable, ActionTableEntry
 from xp.models import ModuleTypeCode
-from xp.models.action_type import ActionType
 from xp.models.input_action_type import InputActionType
 from xp.models.timeparam_type import TimeParam
 
@@ -31,7 +30,7 @@ class TestConbusActionTableCommands:
                 link_number=0,
                 module_input=0,
                 module_output=1,
-                act_upon=ActionType.PRESS,
+                inverted=False,
                 command=InputActionType.TURNOFF,
                 parameter=TimeParam.NONE,
             )
@@ -99,7 +98,7 @@ class TestConbusActionTableCommands:
                 "link_number",
                 "module_input",
                 "module_output",
-                "act_upon",
+                "inverted",
                 "command",
                 "parameter",
             }
@@ -173,7 +172,7 @@ class TestConbusActionTableCommands:
             link_number=5,
             module_input=2,
             module_output=3,
-            act_upon=ActionType.RELEASE,
+            inverted=True,
             command=InputActionType.TURNON,
             parameter=TimeParam.T2SEC,
         )

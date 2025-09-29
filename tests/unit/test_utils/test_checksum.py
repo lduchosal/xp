@@ -8,7 +8,7 @@ import pytest
 from xp.utils.checksum import calculate_checksum, calculate_checksum32
 from xp.utils.serialization import (
     de_bcd,
-    a_byte_to_int_no_sign,
+    byte_to_unsigned,
     nibble,
     de_nibbles,
 )
@@ -89,10 +89,10 @@ class TestChecksumUtilities:
 
     def test_byte_to_int_no_sign(self):
         """Test unsigned byte conversion."""
-        assert a_byte_to_int_no_sign(0) == 0
-        assert a_byte_to_int_no_sign(127) == 127
-        assert a_byte_to_int_no_sign(-1) == 255
-        assert a_byte_to_int_no_sign(-128) == 128
+        assert byte_to_unsigned(0) == 0
+        assert byte_to_unsigned(127) == 127
+        assert byte_to_unsigned(-1) == 255
+        assert byte_to_unsigned(-128) == 128
 
     def test_de_bcd_conversion(self):
         """Test BCD to integer conversion."""

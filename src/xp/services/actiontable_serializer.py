@@ -2,10 +2,19 @@
 
 from ..models.actiontable import ActionTable, ActionTableEntry
 from ..models import ModuleTypeCode
-from ..models.action_type import ActionType
 from ..models.input_action_type import InputActionType
 from ..models.timeparam_type import TimeParam
-from ..utils.serialization import de_bcd, to_bcd, lower3, upper5, de_nibbles, nibbles
+from ..utils.serialization import (
+    de_bcd,
+    to_bcd,
+    lower3,
+    upper5,
+    de_nibbles,
+    nibbles,
+    byte_to_unsigned,
+    remove_highest_bit,
+    highest_bit_set,
+)
 
 
 class ActionTableSerializer:
@@ -37,18 +46,18 @@ class ActionTableSerializer:
             module_output = lower3(data[i + 3])
             command_raw = upper5(data[i + 3])
 
-            parameter_raw = data[i + 4]
+            parameter_raw = byte_to_unsigned(data[i + 4])
+            parameter_raw = remove_highest_bit(parameter_raw)
+
+            inverted = False
+            if highest_bit_set(data[i + 4]):
+                inverted = True
 
             # Map raw values to enum types
             try:
                 module_type = ModuleTypeCode(module_type_raw)
             except ValueError:
                 module_type = ModuleTypeCode.CP20  # Default fallback
-
-            try:
-                act_upon = ActionType(module_input)  # Using input as act_upon
-            except ValueError:
-                act_upon = ActionType.PRESS  # Default fallback
 
             try:
                 command = InputActionType(command_raw)
@@ -66,9 +75,9 @@ class ActionTableSerializer:
                     link_number=link_number,
                     module_input=module_input,
                     module_output=module_output,
-                    act_upon=act_upon,
                     command=command,
                     parameter=parameter,
+                    inverted=inverted,
                 )
                 entries.append(entry)
 
@@ -151,7 +160,7 @@ class ActionTableSerializer:
             command = entry.command.name
 
             # Add prefix for special commands
-            if entry.act_upon == ActionType.RELEASE:
+            if entry.inverted:
                 command = f"~{command}"
 
             line = f"{module_type} {link} {input_num} > {output} {command};"

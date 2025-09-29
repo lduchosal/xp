@@ -14,7 +14,7 @@ cli output
    link_number: 1,
    module_input: 1,
    module_output: 1.
-   act_upon: ActionType.PRESS,
+   inverted: True,
    command: InputActionType.OFF,
    parameter: TimeParam.NONE
 }

@@ -7,7 +7,7 @@ from xp.utils.serialization import (
     upper5,
     byte_to_bits,
     bits_to_byte,
-    a_byte_to_int_no_sign,
+    byte_to_unsigned,
 )
 
 
@@ -197,15 +197,15 @@ class TestLegacyBCDOperations:
 
     def test_a_byte_to_int_no_sign_positive(self):
         """Test conversion of positive bytes."""
-        assert a_byte_to_int_no_sign(0) == 0
-        assert a_byte_to_int_no_sign(127) == 127
-        assert a_byte_to_int_no_sign(255) == 255
+        assert byte_to_unsigned(0) == 0
+        assert byte_to_unsigned(127) == 127
+        assert byte_to_unsigned(255) == 255
 
     def test_a_byte_to_int_no_sign_negative(self):
         """Test conversion of negative bytes."""
-        assert a_byte_to_int_no_sign(-1) == 255
-        assert a_byte_to_int_no_sign(-128) == 128
-        assert a_byte_to_int_no_sign(-256) == 0
+        assert byte_to_unsigned(-1) == 255
+        assert byte_to_unsigned(-128) == 128
+        assert byte_to_unsigned(-256) == 0
 
     def test_de_bcd_with_signed_conversion(self):
         """Test de_bcd works correctly with signed byte conversion."""
