@@ -20,9 +20,6 @@ class HomekitModuleService:
         self.telegram_output_service = TelegramOutputService()
         self.cache_service = HomeKitCacheService()
 
-        # Connect to PyDispatcher events
-        self._setup_event_listeners()
-
     def get_module_by_name(self, name: str) -> Optional[ConsonModuleConfig]:
         """Get a module by its name"""
         module = next(
