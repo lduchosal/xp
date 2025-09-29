@@ -73,6 +73,9 @@ class HomekitModuleService:
         )
         dispatcher.connect(self._on_accessory_set_on, signal="accessory_set_on")
         dispatcher.connect(self._on_accessory_get_on, signal="accessory_get_on")
+        dispatcher.connect(self._on_accessory_set_brightness, signal="accessory_set_brightness")
+        dispatcher.connect(self._on_accessory_get_brightness, signal="accessory_get_brightness")
+
 
     # noinspection PyUnusedLocal
     def _outlet_set_outlet_in_use(self, sender: Any, **kwargs: Any) -> None:
@@ -93,7 +96,6 @@ class HomekitModuleService:
             f"_on_outlet_get_outlet_in_use {{ sender: {sender}, serial_number: {serial_number}, output_number: {output_number}}}"
         )
 
-    # noinspection PyUnusedLocal
     def _on_accessory_set_on(self, sender: Any, **kwargs: Any) -> None:
         """Handle accessory set_on events from PyDispatcher"""
         serial_number: Optional[str] = kwargs.get("serial_number")
@@ -104,22 +106,16 @@ class HomekitModuleService:
             f"_on_accessory_set_on {{ sender: {sender}, serial_number: {serial_number} output_number: {output_number} }}"
         )
 
-        if serial_number is None:
-            self.logger.warning("Invalid serial_number")
-            return
-
-        if output_number is None:
-            self.logger.warning("Invalid output_number")
+        if (serial_number is None
+            or output_number is None
+            or self.get_module_by_serial(serial_number) is None):
+            self.logger.warning("Invalid parameters")
             return
 
         module = self.get_module_by_serial(serial_number)
-        if not module:
-            self.logger.warning(f"Module not found for serial {serial_number}")
-            return
-
-        action_type = ActionType.PRESS
+        action_type = ActionType.OFF_PRESS
         if value:
-            action_type = ActionType.RELEASE
+            action_type = ActionType.ON_RELEASE
 
         self.cache_service.send_action(
             serial_number=serial_number,
@@ -127,7 +123,6 @@ class HomekitModuleService:
             action_type=action_type,
         )
 
-    # noinspection PyUnusedLocal
     def _on_accessory_get_on(self, sender: Any, **kwargs: Any) -> bool:
         """Handle accessory get_on events from PyDispatcher"""
         serial_number: Optional[str] = kwargs.get("serial_number")
@@ -137,22 +132,70 @@ class HomekitModuleService:
             f"_on_accessory_get_on {{ sender: {sender}, serial_number: {serial_number}, output_number: {output_number}}}"
         )
 
-        if serial_number is None:
-            self.logger.warning("Invalid serial_number")
-            return False
-
-        if output_number is None:
-            self.logger.warning("Invalid output_number")
+        if (serial_number is None
+            or output_number is None
+            or self.get_module_by_serial(serial_number) is None):
+            self.logger.warning("Invalid parameters")
             return False
 
         module = self.get_module_by_serial(serial_number)
-        if not module:
-            self.logger.warning(f"Module not found for serial {serial_number}")
-            return False
-
         # tag = f"E{module.module_type_code}L{module.link_number}I{output_number}"
         tag = f"E{module.module_type_code:02d}L{module.link_number:02d}"
         response = self.cache_service.get(key=serial_number, tag=tag)
+        if response.data is None:
+            self.logger.warning(f"No output_telegram for serial {serial_number}")
+            return False
+
+        result = self.telegram_output_service.parse_status_response(response.data)
+        return result[output_number]
+
+
+    def _on_accessory_set_brightness(self, sender: Any, **kwargs: Any) -> None:
+        """Handle accessory set_on events from PyDispatcher"""
+        serial_number: Optional[str] = kwargs.get("serial_number")
+        output_number: Optional[int] = kwargs.get("output_number")
+        value: Optional[bool] = kwargs.get("value")
+
+        self.logger.info(
+            f"_on_accessory_set_brightness {{ "
+            f"sender: {sender}, "
+            f"serial_number: {serial_number}, "
+            f"output_number: {output_number}, "
+            f"value: {value}, "
+            f"}}"
+        )
+
+        if (serial_number is None
+            or output_number is None
+            or self.get_module_by_serial(serial_number) is None):
+            self.logger.warning("Invalid parameters")
+            return
+
+        self.cache_service.set_brightness(
+            serial_number=serial_number,
+            output_number=output_number,
+            value=value,
+        )
+
+    def _on_accessory_get_brightness(self, sender: Any, **kwargs: Any) -> bool:
+        """Handle accessory get_on events from PyDispatcher"""
+        serial_number: Optional[str] = kwargs.get("serial_number")
+        output_number: Optional[int] = kwargs.get("output_number")
+
+        self.logger.info(
+            f"_on_accessory_get_on {{ sender: {sender}, serial_number: {serial_number}, output_number: {output_number}}}"
+        )
+
+        if (serial_number is None
+            or output_number is None
+            or self.get_module_by_serial(serial_number) is None):
+            self.logger.warning("Invalid parameters")
+            return False
+
+        module = self.get_module_by_serial(serial_number)
+        # tag = f"E{module.module_type_code}L{module.link_number}I{output_number}"
+        tag = f"E{module.module_type_code:02d}L{module.link_number:02d}"
+        response = self.cache_service.get_brightness(key=serial_number, tag=tag)
         if response.data is None:
             self.logger.warning(f"No output_telegram for serial {serial_number}")
             return False

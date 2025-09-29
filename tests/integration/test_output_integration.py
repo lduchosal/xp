@@ -19,7 +19,7 @@ class TestOutputIntegration:
         """Test complete flow: generate telegram, parse it back."""
         # Generate action telegram
         original_telegram = self.output_service.generate_system_action_telegram(
-            "0012345008", 2, ActionType.RELEASE
+            "0012345008", 2, ActionType.ON_RELEASE
         )
 
         # Parse the generated telegram
@@ -28,7 +28,7 @@ class TestOutputIntegration:
         # Verify parsed data matches original
         assert parsed.serial_number == "0012345008"
         assert parsed.output_number == 2
-        assert parsed.action_type == ActionType.RELEASE
+        assert parsed.action_type == ActionType.ON_RELEASE
         assert parsed.raw_telegram == original_telegram
         assert parsed.checksum_validated is True
 
@@ -54,7 +54,7 @@ class TestOutputIntegration:
     def test_all_output_combinations(self):
         """Test telegram generation and parsing for all output combinations."""
         for output_number in range(4):
-            for action in (ActionType.PRESS, ActionType.RELEASE):
+            for action in (ActionType.OFF_PRESS, ActionType.ON_RELEASE):
                 # Generate telegram
                 telegram = self.output_service.generate_system_action_telegram(
                     "1234567890", output_number, action
@@ -86,7 +86,7 @@ class TestOutputIntegration:
         """Test checksum validation with real checksums."""
         # Generate telegram with valid checksum
         valid_telegram = self.output_service.generate_system_action_telegram(
-            "0012345008", 1, ActionType.PRESS
+            "0012345008", 1, ActionType.OFF_PRESS
         )
 
         # Parse and verify checksum is valid
@@ -106,7 +106,7 @@ class TestOutputIntegration:
 
         # Generate XP24 action telegram
         xp24_telegram = self.output_service.generate_system_action_telegram(
-            "0012345008", 0, ActionType.PRESS
+            "0012345008", 0, ActionType.OFF_PRESS
         )
 
         # Verify telegram service can recognize it as system telegram
@@ -123,7 +123,7 @@ class TestOutputIntegration:
         # Test invalid output number
         with pytest.raises(XPOutputError, match="Invalid output number: 100"):
             self.output_service.generate_system_action_telegram(
-                "0012345008", 100, ActionType.PRESS
+                "0012345008", 100, ActionType.OFF_PRESS
             )
 
         # Test invalid serial number
@@ -142,7 +142,7 @@ class TestOutputIntegration:
         start_time = time.time()
         for _ in range(1000):
             self.output_service.generate_system_action_telegram(
-                "0012345008", 0, ActionType.PRESS
+                "0012345008", 0, ActionType.OFF_PRESS
             )
         generation_time = time.time() - start_time
 

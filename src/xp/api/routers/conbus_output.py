@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
     },
 )
 async def input_action(
-    action: ActionType = ActionType.PRESS,
+    action: ActionType = ActionType.OFF_PRESS,
     serial: str = "1702033007",
     device_input: int = 0,
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:

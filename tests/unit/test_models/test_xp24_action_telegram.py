@@ -13,13 +13,13 @@ class TestActionType:
 
     def test_action_type_values(self):
         """Test ActionType enum values."""
-        assert ActionType.PRESS.value == "AA"
-        assert ActionType.RELEASE.value == "AB"
+        assert ActionType.OFF_PRESS.value == "AA"
+        assert ActionType.ON_RELEASE.value == "AB"
 
     def test_from_code_valid(self):
         """Test ActionType.from_code with valid codes."""
-        assert ActionType.from_code("AA") == ActionType.PRESS
-        assert ActionType.from_code("AB") == ActionType.RELEASE
+        assert ActionType.from_code("AA") == ActionType.OFF_PRESS
+        assert ActionType.from_code("AB") == ActionType.ON_RELEASE
 
     def test_from_code_invalid(self):
         """Test ActionType.from_code with invalid codes."""
@@ -49,7 +49,7 @@ class TestXP24ActionTelegram:
         telegram = OutputTelegram(
             serial_number="0012345008",
             output_number=2,
-            action_type=ActionType.PRESS,
+            action_type=ActionType.OFF_PRESS,
             checksum="FN",
             raw_telegram="<S0012345008F27D02AAFN>",
             checksum_validated=True,
@@ -58,7 +58,7 @@ class TestXP24ActionTelegram:
 
         assert telegram.serial_number == "0012345008"
         assert telegram.output_number == 2
-        assert telegram.action_type == ActionType.PRESS
+        assert telegram.action_type == ActionType.OFF_PRESS
         assert telegram.checksum == "FN"
         assert telegram.raw_telegram == "<S0012345008F27D02AAFN>"
         assert telegram.checksum_validated is True
@@ -90,7 +90,7 @@ class TestXP24ActionTelegram:
     def test_action_description_press(self):
         """Test action_description property for PRESS action."""
         telegram = OutputTelegram(
-            action_type=ActionType.PRESS,
+            action_type=ActionType.OFF_PRESS,
             checksum="FN",
             raw_telegram="<S0012345008F27D00AAFN>",
         )
@@ -100,7 +100,7 @@ class TestXP24ActionTelegram:
     def test_action_description_release(self):
         """Test action_description property for RELEASE action."""
         telegram = OutputTelegram(
-            action_type=ActionType.RELEASE,
+            action_type=ActionType.ON_RELEASE,
             checksum="FN",
             raw_telegram="<S0012345008F27D00ABFN>",
         )
@@ -130,7 +130,7 @@ class TestXP24ActionTelegram:
         telegram = OutputTelegram(
             serial_number="0012345008",
             output_number=1,
-            action_type=ActionType.PRESS,
+            action_type=ActionType.OFF_PRESS,
             checksum="FN",
             raw_telegram="<S0012345008F27D01AAFN>",
             checksum_validated=True,
@@ -155,7 +155,7 @@ class TestXP24ActionTelegram:
         telegram = OutputTelegram(
             serial_number="0012345008",
             output_number=3,
-            action_type=ActionType.RELEASE,
+            action_type=ActionType.ON_RELEASE,
             checksum="FN",
             raw_telegram="<S0012345008F27D03ABFN>",
         )

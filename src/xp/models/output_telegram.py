@@ -39,8 +39,8 @@ class OutputTelegram(Telegram):
     def action_description(self) -> str:
         """Get human-readable action description"""
         descriptions = {
-            ActionType.PRESS: "Press (Make)",
-            ActionType.RELEASE: "Release (Break)",
+            ActionType.OFF_PRESS: "Press (Make)",
+            ActionType.ON_RELEASE: "Release (Break)",
         }
         return (
             descriptions.get(self.action_type, "Unknown Action")

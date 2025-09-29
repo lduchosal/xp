@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Dict, Optional
 
 from . import TelegramService, TelegramParsingError
+from .conbus_lightlevel_service import ConbusLightlevelService
 from .conbus_output_service import ConbusOutputService
 from ..models.action_type import ActionType
 from ..models.cache import CacheEntry, CacheResponse
@@ -34,6 +35,7 @@ class HomeKitCacheService:
         """
         self.logger = logging.getLogger(__name__)
         self.conbus_output_service = ConbusOutputService(config_path)
+        self.conbus_lightlevel_service = ConbusLightlevelService(config_path)
         self.telegram_service = TelegramService()
         self.cache_file = Path(cache_file)
 
@@ -264,3 +266,13 @@ class HomeKitCacheService:
                 self.received_event(telegram.raw_telegram)
             except TelegramParsingError as e:
                 self.logger.info(f"Not an event telegram {raw_telegram}: {e}")
+
+    def get_brightness(self, serial_number: str, output_number:int) -> int:
+        lightlevel_response = self.conbus_lightlevel_service.get_lightlevel(serial_number, output_number)
+        if (not lightlevel_response.success
+            or not lightlevel_response.level):
+            return 0
+        return lightlevel_response.level
+
+    def set_brightness(self, serial_number: str, output_number: int, value: int) -> None:
+        self.conbus_lightlevel_service.set_lightlevel(serial_number, output_number, value)

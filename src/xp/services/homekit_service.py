@@ -9,9 +9,10 @@ from typing_extensions import Union
 
 import xp
 from xp.models.homekit_accessory import TemperatureSensor
-from xp.models.homekit_outlet import Outlet
-from xp.models.homekit_lightbulb import LightBulb
+from xp.services.homekit_outlet import Outlet
+from xp.services.homekit_lightbulb import LightBulb
 from xp.models.homekit_config import HomekitConfig, HomekitAccessoryConfig, RoomConfig
+from xp.services.homekit_dimminglight import DimmingLight
 from xp.services.homekit_module_service import HomekitModuleService
 
 
@@ -87,26 +88,30 @@ class HomekitService:
         description = homekit_accessory.description
         version = homekit_accessory.id
 
+        module_config = self.modules.get_module_by_serial(homekit_accessory.serial_number)
+        if module_config is None:
+            self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))
+            return None
+
         if homekit_accessory.service == "lightbulb":
             return LightBulb(
                 driver=self.driver,
-                display_name=description,
-                version=version,
-                manufacturer=manufacturer,
-                model="XP24_lightbulb",
-                serial_number=homekit_accessory.serial_number,
-                output_number=homekit_accessory.output_number,
+                module = module_config,
+                accessory = homekit_accessory
             )
 
         if homekit_accessory.service == "outlet":
             return Outlet(
                 driver=self.driver,
-                display_name=description,
-                version=version,
-                manufacturer=manufacturer,
-                model="XP24_outlet",
-                serial_number=homekit_accessory.serial_number,
-                output_number=homekit_accessory.output_number,
+                module=module_config,
+                accessory=homekit_accessory
+            )
+
+        if homekit_accessory.service == "dimminglight":
+            return DimmingLight(
+                driver=self.driver,
+                module = module_config,
+                accessory = homekit_accessory,
             )
 
         self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))

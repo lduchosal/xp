@@ -53,11 +53,11 @@ class TestHomeKitCacheServiceSendActionIntegration:
         # Mock the received_event method to track calls
         with patch.object(cache_service, "received_event") as mock_received_event:
             # Call send_action
-            cache_service.send_action("2113010000", 1, ActionType.PRESS)
+            cache_service.send_action("2113010000", 1, ActionType.OFF_PRESS)
 
             # Verify conbus service was called correctly
             mock_conbus_service.send_action.assert_called_once_with(
-                "2113010000", 1, ActionType.PRESS
+                "2113010000", 1, ActionType.OFF_PRESS
             )
 
             # Verify telegram service parsed the raw telegram
@@ -113,11 +113,11 @@ class TestHomeKitCacheServiceSendActionIntegration:
         # Mock the received_event method to track calls
         with patch.object(cache_service, "received_event") as mock_received_event:
             # Call send_action
-            cache_service.send_action("2113010000", 1, ActionType.PRESS)
+            cache_service.send_action("2113010000", 1, ActionType.OFF_PRESS)
 
             # Verify conbus service was called correctly
             mock_conbus_service.send_action.assert_called_once_with(
-                "2113010000", 1, ActionType.PRESS
+                "2113010000", 1, ActionType.OFF_PRESS
             )
 
             # Verify received_event was called with raw telegram
@@ -148,11 +148,11 @@ class TestHomeKitCacheServiceSendActionIntegration:
         # Mock the received_event method to track calls
         with patch.object(cache_service, "received_event") as mock_received_event:
             # Call send_action
-            cache_service.send_action("2113010000", 1, ActionType.PRESS)
+            cache_service.send_action("2113010000", 1, ActionType.OFF_PRESS)
 
             # Verify conbus service was called correctly
             mock_conbus_service.send_action.assert_called_once_with(
-                "2113010000", 1, ActionType.PRESS
+                "2113010000", 1, ActionType.OFF_PRESS
             )
 
             # Verify telegram service was not called since response failed
@@ -186,11 +186,11 @@ class TestHomeKitCacheServiceSendActionIntegration:
         # Mock the received_event method to track calls
         with patch.object(cache_service, "received_event") as mock_received_event:
             # Call send_action
-            cache_service.send_action("2113010000", 1, ActionType.PRESS)
+            cache_service.send_action("2113010000", 1, ActionType.OFF_PRESS)
 
             # Verify conbus service was called correctly
             mock_conbus_service.send_action.assert_called_once_with(
-                "2113010000", 1, ActionType.PRESS
+                "2113010000", 1, ActionType.OFF_PRESS
             )
 
             # Verify telegram service was not called since no telegrams received

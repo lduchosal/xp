@@ -25,7 +25,7 @@ class HomekitConfigValidator:
 
     def validate_service_types(self) -> List[str]:
         """Validate that service types are valid."""
-        valid_services = {"lightbulb", "outlet", "switch", "fan"}
+        valid_services = {"lightbulb", "outlet", "dimminglight"}
         errors = [
             f"Invalid service type '{accessory.service}' for accessory '{accessory.name}'. Valid types: {', '.join(valid_services)}"
             for accessory in self.config.accessories

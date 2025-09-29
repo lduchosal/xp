@@ -65,7 +65,7 @@ class TestXP24ActionService:
         mock_checksum.return_value = "FN"
 
         result = self.service.generate_system_action_telegram(
-            "0012345008", 0, ActionType.PRESS
+            "0012345008", 0, ActionType.OFF_PRESS
         )
 
         assert result == "<S0012345008F27D00AAFN>"
@@ -77,7 +77,7 @@ class TestXP24ActionService:
         mock_checksum.return_value = "FB"
 
         result = self.service.generate_system_action_telegram(
-            "0012345008", 3, ActionType.RELEASE
+            "0012345008", 3, ActionType.ON_RELEASE
         )
 
         assert result == "<S0012345008F27D03ABFB>"
@@ -86,13 +86,13 @@ class TestXP24ActionService:
     def test_generate_action_telegram_invalid_serial(self):
         """Test generate_action_telegram with invalid serial number."""
         with pytest.raises(XPOutputError):
-            self.service.generate_system_action_telegram("123", 0, ActionType.PRESS)
+            self.service.generate_system_action_telegram("123", 0, ActionType.OFF_PRESS)
 
     def test_generate_action_telegram_invalid_input(self):
         """Test generate_action_telegram with invalid input number."""
         with pytest.raises(XPOutputError):
             self.service.generate_system_action_telegram(
-                "0012345008", 500, ActionType.PRESS
+                "0012345008", 500, ActionType.OFF_PRESS
             )
 
     def test_generate_status_telegram_invalid_serial(self):
@@ -190,7 +190,7 @@ class TestXP24ActionService:
         telegram = OutputTelegram(
             serial_number="0012345008",
             output_number=1,
-            action_type=ActionType.PRESS,
+            action_type=ActionType.OFF_PRESS,
             checksum="FN",
             raw_telegram="<S0012345008F27D01AAFN>",
             checksum_validated=True,
@@ -210,7 +210,7 @@ class TestXP24ActionService:
         telegram = OutputTelegram(
             serial_number="0012345008",
             output_number=2,
-            action_type=ActionType.RELEASE,
+            action_type=ActionType.ON_RELEASE,
             checksum="FB",
             raw_telegram="<S0012345008F27D02ABFB>",
             checksum_validated=None,
@@ -227,7 +227,7 @@ class TestXP24ActionService:
         telegram = OutputTelegram(
             serial_number="0012345008",
             output_number=0,
-            action_type=ActionType.PRESS,
+            action_type=ActionType.OFF_PRESS,
             checksum="XX",
             raw_telegram="<S0012345008F27D00AAXX>",
             checksum_validated=False,
