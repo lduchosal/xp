@@ -267,12 +267,17 @@ class HomeKitCacheService:
             except TelegramParsingError as e:
                 self.logger.info(f"Not an event telegram {raw_telegram}: {e}")
 
-    def get_brightness(self, serial_number: str, output_number:int) -> int:
-        lightlevel_response = self.conbus_lightlevel_service.get_lightlevel(serial_number, output_number)
-        if (not lightlevel_response.success
-            or not lightlevel_response.level):
+    def get_brightness(self, serial_number: str, output_number: int) -> int:
+        lightlevel_response = self.conbus_lightlevel_service.get_lightlevel(
+            serial_number, output_number
+        )
+        if not lightlevel_response.success or not lightlevel_response.level:
             return 0
         return lightlevel_response.level
 
-    def set_brightness(self, serial_number: str, output_number: int, value: int) -> None:
-        self.conbus_lightlevel_service.set_lightlevel(serial_number, output_number, value)
+    def set_brightness(
+        self, serial_number: str, output_number: int, value: int
+    ) -> None:
+        self.conbus_lightlevel_service.set_lightlevel(
+            serial_number, output_number, value
+        )

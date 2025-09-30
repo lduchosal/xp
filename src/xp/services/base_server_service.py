@@ -30,26 +30,33 @@ class BaseServerService(ABC):
         # Must be set by subclasses
         self.device_type: str = ""
         self.module_type_code: int = 0
-        self.firmware_version: str = ""
+        self.hardware_version: str = ""
+        self.software_version: str = ""
         self.device_status: str = "OK"
         self.link_number: int = 1
+        self.temperature: str = "+23,5§C"
+        self.voltage: str = "+12,5§V"
 
-    def generate_module_type_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate module type response telegram"""
-        if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type == DataPointType.MODULE_TYPE_CODE
-        ):
-            data_part = f"R{self.serial_number}F02D07{self.module_type_code}"
-            checksum = calculate_checksum(data_part)
-            telegram = f"<{data_part}{checksum}>"
+    def generate_datapoint_type_response(
+        self, datapoint_type: DataPointType
+    ) -> Optional[str]:
+        """Generate datapoint_type response telegram"""
+        datapoint_values = {
+            DataPointType.TEMPERATURE: self.temperature,
+            DataPointType.MODULE_TYPE_CODE: f"{self.module_type_code:02X}",
+            DataPointType.SW_VERSION: self.software_version,
+            DataPointType.ERROR_CODE: self.device_status,
+            DataPointType.LINK_NUMBER: f"{self.link_number:02X}",
+            DataPointType.VOLTAGE: self.voltage,
+            DataPointType.HW_VERSION: self.hardware_version,
+        }
+        data_part = f"R{self.serial_number}F02{datapoint_type.value}{self.module_type_code}{datapoint_values.get(datapoint_type)}"
+        telegram = self._build_response_telegram(data_part)
 
-            self.logger.debug(
-                f"Generated {self.device_type} module type response: {telegram}"
-            )
-            return telegram
-
-        return None
+        self.logger.debug(
+            f"Generated {self.device_type} module type response: {telegram}"
+        )
+        return telegram
 
     def _check_request_for_device(self, request: SystemTelegram) -> bool:
         """Check if request is for this device (including broadcast)"""
@@ -73,50 +80,6 @@ class BaseServerService(ABC):
         telegram = self._build_response_telegram(data_part)
         self._log_response("discover", telegram)
         return telegram
-
-    def generate_version_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate version response telegram"""
-        if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type == DataPointType.SW_VERSION
-        ):
-            data_part = f"R{self.serial_number}F02D02{self.firmware_version}"
-            telegram = self._build_response_telegram(data_part)
-            self._log_response("version", telegram)
-            return telegram
-
-        return None
-
-    def generate_status_response(
-        self,
-        request: SystemTelegram,
-        status_data_point: DataPointType = DataPointType.MODULE_TYPE,
-    ) -> Optional[str]:
-        """Generate status response telegram"""
-        if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type == status_data_point
-        ):
-            data_part = f"R{self.serial_number}F02D00{self.device_status}"
-            telegram = self._build_response_telegram(data_part)
-            self._log_response("status", telegram)
-            return telegram
-
-        return None
-
-    def generate_link_number_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate link number response telegram"""
-        if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type == DataPointType.LINK_NUMBER
-        ):
-            link_hex = f"{self.link_number:02X}"
-            data_part = f"R{self.serial_number}F02D04{link_hex}"
-            telegram = self._build_response_telegram(data_part)
-            self._log_response("link number", telegram)
-            return telegram
-
-        return None
 
     def set_link_number(
         self, request: SystemTelegram, new_link_number: int
@@ -165,18 +128,8 @@ class BaseServerService(ABC):
         self.logger.warning(
             f"_handle_return_data_request {self.device_type} request: {request}"
         )
-        if request.datapoint_type == DataPointType.SW_VERSION:
-            return self.generate_version_response(request)
-        elif request.datapoint_type == DataPointType.MODULE_TYPE:
-            return self.generate_status_response(request, DataPointType.MODULE_TYPE)
-        elif request.datapoint_type == DataPointType.MODULE_ERROR_CODE:
-            return self.generate_status_response(
-                request, DataPointType.MODULE_ERROR_CODE
-            )
-        elif request.datapoint_type == DataPointType.LINK_NUMBER:
-            return self.generate_link_number_response(request)
-        elif request.datapoint_type == DataPointType.MODULE_TYPE_CODE:
-            return self.generate_module_type_response(request)
+        if request.datapoint_type:
+            return self.generate_datapoint_type_response(request.datapoint_type)
 
         # Allow device-specific handlers
         return self._handle_device_specific_data_request(request)

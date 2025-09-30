@@ -81,7 +81,7 @@ class TestSystemTelegramCLI:
 
         assert result.exit_code == 0
         output_data = json.loads(result.output)
-        assert output_data["datapoint_type"]["description"] == "MODULE_TYPE"
+        assert output_data["datapoint_type"]["description"] == "ERROR_CODE"
 
     def test_parse_system_telegram_invalid_format(self):
         """Test parsing invalid system telegram format."""

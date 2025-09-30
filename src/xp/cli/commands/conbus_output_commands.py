@@ -33,7 +33,9 @@ def xp_output_on(serial_number: str, output_number: int) -> None:
 
     with service:
 
-        response = service.send_action(serial_number, output_number, ActionType.ON_RELEASE)
+        response = service.send_action(
+            serial_number, output_number, ActionType.ON_RELEASE
+        )
         click.echo(json.dumps(response.to_dict(), indent=2))
 
 
@@ -54,7 +56,9 @@ def xp_output_off(serial_number: str, output_number: int) -> None:
 
     with service:
 
-        response = service.send_action(serial_number, output_number, ActionType.OFF_PRESS)
+        response = service.send_action(
+            serial_number, output_number, ActionType.OFF_PRESS
+        )
         click.echo(json.dumps(response.to_dict(), indent=2))
 
 

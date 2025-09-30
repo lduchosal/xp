@@ -21,7 +21,7 @@ class DimmingLight(Accessory):
         self,
         driver: AccessoryDriver,
         module: ConsonModuleConfig,
-        accessory: HomekitAccessoryConfig
+        accessory: HomekitAccessoryConfig,
     ):
         super().__init__(driver, accessory.description)
 
@@ -39,44 +39,47 @@ class DimmingLight(Accessory):
         version = accessory.id
         manufacturer = "Conson"
         model = "XP33LED_Lightdimmer"
-        serv_light = self.add_preload_service('Lightbulb', [
-            # The names here refer to the Characteristic name defined
-            # in characteristic.json
-            "Brightness"])
+        serv_light = self.add_preload_service(
+            "Lightbulb",
+            [
+                # The names here refer to the Characteristic name defined
+                # in characteristic.json
+                "Brightness"
+            ],
+        )
         self.set_info_service(version, manufacturer, model, serial)
 
         self.char_on = serv_light.configure_char(
-            "On",
-            getter_callback=self.get_on,
-            setter_callback=self.set_on
+            "On", getter_callback=self.get_on, setter_callback=self.set_on
         )
         self.char_brightness = serv_light.configure_char(
-            'Brightness',
+            "Brightness",
             value=100,
             getter_callback=self.get_brightness,
-            setter_callback=self.set_brightness)
+            setter_callback=self.set_brightness,
+        )
 
     def set_on(self, value: bool) -> None:
         # Emit event using PyDispatcher
         self.logger.debug(f"set_on: {bool}")
         if value:
             result = self.lightlevel_service.turn_on(
-                serial_number = self.module.serial_number,
-                output_number = self.accessory.output_number
+                serial_number=self.module.serial_number,
+                output_number=self.accessory.output_number,
             )
         else:
             result = self.lightlevel_service.turn_off(
                 serial_number=self.module.serial_number,
-                output_number=self.accessory.output_number
+                output_number=self.accessory.output_number,
             )
         self.logger.debug(f"result: {result}")
 
     def get_on(self) -> bool:
         # Emit event and get response
-        self.logger.debug(f"get_on")
+        self.logger.debug("get_on")
         result = self.lightlevel_service.get_lightlevel(
-            serial_number = self.module.serial_number,
-            output_number = self.accessory.output_number
+            serial_number=self.module.serial_number,
+            output_number=self.accessory.output_number,
         )
         self.logger.debug(f"result: {result}")
         if not result.success or not result.level:
@@ -84,21 +87,20 @@ class DimmingLight(Accessory):
 
         return result.level >= 0
 
-
     def set_brightness(self, value: int) -> None:
-        self.logger.debug(f"set_brightness")
+        self.logger.debug("set_brightness")
         result = self.lightlevel_service.set_lightlevel(
-            serial_number = self.module.serial_number,
-            output_number = self.accessory.output_number,
-            level = value
+            serial_number=self.module.serial_number,
+            output_number=self.accessory.output_number,
+            level=value,
         )
         self.logger.debug(f"result: {result}")
 
     def get_brightness(self) -> int:
-        self.logger.debug(f"get_brightness")
+        self.logger.debug("get_brightness")
         result = self.lightlevel_service.get_lightlevel(
-            serial_number = self.module.serial_number,
-            output_number = self.accessory.output_number,
+            serial_number=self.module.serial_number,
+            output_number=self.accessory.output_number,
         )
         self.logger.debug(f"result: {result}")
         if not result.success or not result.level:

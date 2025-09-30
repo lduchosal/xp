@@ -33,36 +33,29 @@ class XP24ServerService(BaseServerService):
         self.module_type_code = 7  # XP24 module type from registry
         self.firmware_version = "XP24_V0.34.03"
 
-    def generate_temperature_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate temperature response telegram (simulated)"""
-        if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type == DataPointType.TEMPERATURE
-        ):
-            # Simulate temperature reading: +23.5°C
-            temperature_value = "+23,5§C"
-            data_part = f"R{self.serial_number}F02D18{temperature_value}"
-            telegram = self._build_response_telegram(data_part)
-            self._log_response("temperature", telegram)
-            return telegram
-
-        return None
-
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
         """Handle XP24-specific data requests"""
-        if request.system_function != SystemFunction.READ_DATAPOINT:
+        if (
+            request.system_function != SystemFunction.READ_DATAPOINT
+            or not request.datapoint_type
+        ):
             return None
 
-        if request.datapoint_type == DataPointType.TEMPERATURE:
-            return self.generate_temperature_response(request)
-        if request.datapoint_type == DataPointType.MODULE_OUTPUT_STATE:
-            return self.generate_module_output_state_response(request)
-        if request.datapoint_type == DataPointType.MODULE_STATE:
-            return self.generate_module_state_response(request)
+        datapoint_type = request.datapoint_type
+        datapoint_values = {
+            DataPointType.MODULE_OUTPUT_STATE: "xxxx0001",
+            DataPointType.MODULE_STATE: "OFF",
+            DataPointType.MODULE_OPERATING_HOURS: "00:000[H],01:000[H],02:000[H],03:000[H]",
+        }
+        data_part = f"R{self.serial_number}F02{datapoint_type.value}{self.module_type_code}{datapoint_values.get(datapoint_type)}"
+        telegram = self._build_response_telegram(data_part)
 
-        return None
+        self.logger.debug(
+            f"Generated {self.device_type} module type response: {telegram}"
+        )
+        return telegram
 
     def _handle_device_specific_action_request(
         self, request: SystemTelegram
@@ -83,22 +76,6 @@ class XP24ServerService(BaseServerService):
             "link_number": self.link_number,
         }
 
-    def generate_module_output_state_response(
-        self, request: SystemTelegram
-    ) -> Optional[str]:
-        """Generate module output state response telegram (simulated)"""
-        if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
-        ):
-            module_output_state = "xxxx0001"
-            data_part = f"R{self.serial_number}F02D12{module_output_state}"
-            telegram = self._build_response_telegram(data_part)
-            self._log_response("module_output_state", telegram)
-            return telegram
-
-        return None
-
     def generate_action_response(self, request: SystemTelegram) -> Optional[str]:
         """Generate action response telegram (simulated)"""
         response = "F19D"  # NAK
@@ -113,17 +90,3 @@ class XP24ServerService(BaseServerService):
         telegram = self._build_response_telegram(data_part)
         self._log_response("module_action_response", telegram)
         return telegram
-
-    def generate_module_state_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate module output state response telegram (simulated)"""
-        if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type == DataPointType.MODULE_STATE
-        ):
-            module_state = "OFF"  # ON
-            data_part = f"R{self.serial_number}F02D09{module_state}"
-            telegram = self._build_response_telegram(data_part)
-            self._log_response("module_output_state", telegram)
-            return telegram
-
-        return None

@@ -10,6 +10,7 @@ from ..models.system_telegram import SystemTelegram
 from ..models.datapoint_type import DataPointType
 from ..models.system_function import SystemFunction
 from .base_server_service import BaseServerService
+from ..utils import calculate_checksum
 
 
 class XP33ServerError(Exception):
@@ -64,27 +65,30 @@ class XP33ServerService(BaseServerService):
             4: [0, 0, 0],  # Scene 4: Off
         }
 
-    def generate_channel_states_response(
+    def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Generate channel states response telegram"""
+        """Handle XP24-specific data requests"""
         if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
+            request.system_function != SystemFunction.READ_DATAPOINT
+            or not request.datapoint_type
         ):
-            # Format: xxxxx000 (3 channels + padding)
-            # Each channel: 00-64 hex (0-100%)
-            ch1_hex = f"{int(self.channel_states[0] * 100 / 100):02X}"
-            ch2_hex = f"{int(self.channel_states[1] * 100 / 100):02X}"
-            ch3_hex = f"{int(self.channel_states[2] * 100 / 100):02X}"
+            return None
 
-            channel_data = f"{ch1_hex}{ch2_hex}{ch3_hex}000"
-            data_part = f"R{self.serial_number}F02D12{channel_data}"
-            telegram = self._build_response_telegram(data_part)
-            self._log_response("channel states", telegram)
-            return telegram
+        datapoint_type = request.datapoint_type
+        datapoint_values = {
+            DataPointType.MODULE_OUTPUT_STATE: "xxxxx001",
+            DataPointType.MODULE_STATE: "OFF",
+            DataPointType.MODULE_OPERATING_HOURS: "00:000[H],01:000[H],02:000[H]",
+        }
+        data_part = f"R{self.serial_number}F02{datapoint_type.value}{self.module_type_code}{datapoint_values.get(datapoint_type)}"
+        checksum = calculate_checksum(data_part)
+        telegram = f"<{data_part}{checksum}>"
 
-        return None
+        self.logger.debug(
+            f"Generated {self.device_type} module type response: {telegram}"
+        )
+        return telegram
 
     def set_channel_dimming(self, channel: int, level: int) -> bool:
         """Set individual channel dimming level"""
@@ -101,24 +105,6 @@ class XP33ServerService(BaseServerService):
             self.logger.info(f"XP33 scene {scene} activated: {self.channel_states}")
             return True
         return False
-
-    def generate_status_response(
-        self,
-        request: SystemTelegram,
-        status_data_point: DataPointType = DataPointType.MODULE_ERROR_CODE,
-    ) -> Optional[str]:
-        """Generate status response telegram for XP33 (uses STATUS_QUERY)"""
-        if (
-            request.system_function == SystemFunction.READ_DATAPOINT
-            and request.datapoint_type == status_data_point
-        ):
-            # Format: <R{serial}F02D10{status}{checksum}>
-            data_part = f"R{self.serial_number}F02D10{self.device_status}"
-            telegram = self._build_response_telegram(data_part)
-            self._log_response("status", telegram)
-            return telegram
-
-        return None
 
     def get_device_info(self) -> Dict:
         """Get XP33 device information"""

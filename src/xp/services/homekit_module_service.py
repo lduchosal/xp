@@ -1,12 +1,8 @@
 import logging
-from typing import Optional, List, Any
+from typing import Optional, List
 
-from pydispatch import dispatcher
 
-from xp.models.action_type import ActionType
 from xp.models.homekit_conson_config import ConsonModuleConfig, ConsonModuleListConfig
-from xp.services.homekit_cache_service import HomeKitCacheService
-from xp.services.telegram_output_service import TelegramOutputService
 
 
 class HomekitModuleService:
@@ -15,10 +11,7 @@ class HomekitModuleService:
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
-
         self.conson_modules_config = ConsonModuleListConfig.from_yaml(config_path)
-        self.telegram_output_service = TelegramOutputService()
-        self.cache_service = HomeKitCacheService()
 
     def get_module_by_name(self, name: str) -> Optional[ConsonModuleConfig]:
         """Get a module by its name"""
@@ -59,4 +52,3 @@ class HomekitModuleService:
         ]
         self.logger.debug(f"Found {len(modules)} modules of type '{module_type}'")
         return modules
-

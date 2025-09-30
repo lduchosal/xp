@@ -25,7 +25,7 @@ class LightBulb(Accessory):
         self,
         driver: AccessoryDriver,
         module: ConsonModuleConfig,
-        accessory: HomekitAccessoryConfig
+        accessory: HomekitAccessoryConfig,
     ):
         super().__init__(driver, accessory.description)
 
@@ -42,35 +42,35 @@ class LightBulb(Accessory):
         serial = f"{module.serial_number}.{accessory.output_number:02d}"
         version = accessory.id
         manufacturer = "Conson"
-        model = "XP24_lightbulb",
-        serv_light = self.add_preload_service('Lightbulb')
+        model = ("XP24_lightbulb",)
+        serv_light = self.add_preload_service("Lightbulb")
         self.set_info_service(version, manufacturer, model, serial)
 
         self.char_on = serv_light.configure_char(
-            "On",
-            getter_callback=self.get_on,
-            setter_callback=self.set_on
+            "On", getter_callback=self.get_on, setter_callback=self.set_on
         )
 
     def set_on(self, value: bool) -> None:
         # Emit event using PyDispatcher
         self.logger.debug(f"set_on: {bool}")
         result = self.output_service.send_action(
-            serial_number = self.module.serial_number,
-            output_number = self.accessory.output_number,
+            serial_number=self.module.serial_number,
+            output_number=self.accessory.output_number,
             action_type=(ActionType.ON_RELEASE if value else ActionType.OFF_PRESS),
         )
         self.logger.debug(f"result: {result}")
 
     def get_on(self) -> bool:
         # Emit event and get response
-        self.logger.debug(f"get_on")
+        self.logger.debug("get_on")
         response = self.output_service.get_output_state(
-            serial_number = self.module.serial_number,
+            serial_number=self.module.serial_number,
         )
         self.logger.debug(f"result: {response}")
         if response.received_telegrams:
-            result = self.telegram_output_service.parse_status_response(response.received_telegrams[0])
-            return result[3-self.accessory.output_number]
+            result = self.telegram_output_service.parse_status_response(
+                response.received_telegrams[0]
+            )
+            return result[3 - self.accessory.output_number]
 
         return False

@@ -84,34 +84,30 @@ class HomekitService:
         self, homekit_accessory: HomekitAccessoryConfig
     ) -> Union[Accessory, LightBulb, Outlet, None]:
         """Call this method to get a standalone Accessory."""
-        manufacturer = "Conson"
-        description = homekit_accessory.description
-        version = homekit_accessory.id
-
-        module_config = self.modules.get_module_by_serial(homekit_accessory.serial_number)
+        module_config = self.modules.get_module_by_serial(
+            homekit_accessory.serial_number
+        )
         if module_config is None:
-            self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))
+            self.logger.warning(
+                "Accessory '{}' not found".format(homekit_accessory.name)
+            )
             return None
 
         if homekit_accessory.service == "lightbulb":
             return LightBulb(
-                driver=self.driver,
-                module = module_config,
-                accessory = homekit_accessory
+                driver=self.driver, module=module_config, accessory=homekit_accessory
             )
 
         if homekit_accessory.service == "outlet":
             return Outlet(
-                driver=self.driver,
-                module=module_config,
-                accessory=homekit_accessory
+                driver=self.driver, module=module_config, accessory=homekit_accessory
             )
 
         if homekit_accessory.service == "dimminglight":
             return DimmingLight(
                 driver=self.driver,
-                module = module_config,
-                accessory = homekit_accessory,
+                module=module_config,
+                accessory=homekit_accessory,
             )
 
         self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))

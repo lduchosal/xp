@@ -5,10 +5,7 @@ from typing import Optional
 class DataPointType(str, Enum):
     """Data point types for system telegrams"""
 
-    # XP24 00:000[%],01:000[%],02:000[%],03:000[%]
-    # XP33 00:000[%],01:000[%],02:000[%]
-
-    MODULE_TYPE = "00"  # General status
+    ERROR_CODE = "00"  # Error code status
     HW_VERSION = "01"  # Hardware version information
     SW_VERSION = "02"  # Software version information
     SERIAL_NUMBER = "03"  # Serial number
