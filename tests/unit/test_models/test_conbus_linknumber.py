@@ -1,5 +1,5 @@
 from datetime import datetime
-from xp.models.conbus_linknumber import ConbusLinknumberResponse
+from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse
 
 
 class TestConbusLinknumberResponse:

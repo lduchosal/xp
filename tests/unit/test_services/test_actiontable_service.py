@@ -3,11 +3,14 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from xp.services.actiontable_service import ActionTableService, ActionTableError
-from xp.models.actiontable import ActionTable, ActionTableEntry
+from xp.services.actiontable.actiontable_service import (
+    ActionTableService,
+    ActionTableError,
+)
+from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models import ModuleTypeCode
-from xp.models.input_action_type import InputActionType
-from xp.models.timeparam_type import TimeParam
+from xp.models.telegram.input_action_type import InputActionType
+from xp.models.telegram.timeparam_type import TimeParam
 
 
 class TestActionTableService:
@@ -16,8 +19,8 @@ class TestActionTableService:
     @pytest.fixture
     def service(self):
         """Create service instance for testing"""
-        with patch("xp.services.actiontable_service.ConbusService"):
-            with patch("xp.services.actiontable_service.TelegramService"):
+        with patch("xp.services.actiontable.actiontable_service.ConbusService"):
+            with patch("xp.services.actiontable.actiontable_service.TelegramService"):
                 return ActionTableService()
 
     @pytest.fixture
@@ -61,13 +64,13 @@ class TestActionTableService:
         assert isinstance(result, str)
         assert len(result) > 0
 
-    @patch("xp.services.actiontable_service.ConbusService")
-    @patch("xp.services.actiontable_service.TelegramService")
+    @patch("xp.services.actiontable.actiontable_service.ConbusService")
+    @patch("xp.services.actiontable.actiontable_service.TelegramService")
     def test_download_actiontable_success(
         self, mock_telegram_service, mock_conbus_service
     ):
         """Test successful actiontable download"""
-        from xp.models.system_function import SystemFunction
+        from xp.models.telegram.system_function import SystemFunction
 
         # Setup mocks
         mock_conbus = Mock()
@@ -130,7 +133,7 @@ class TestActionTableService:
 
     def test_is_eof_true(self, service):
         """Test _is_eof returns True for EOF telegrams"""
-        from xp.models.system_function import SystemFunction
+        from xp.models.telegram.system_function import SystemFunction
 
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.EOF
@@ -143,7 +146,7 @@ class TestActionTableService:
 
     def test_is_eof_false(self, service):
         """Test _is_eof returns False for non-EOF telegrams"""
-        from xp.models.system_function import SystemFunction
+        from xp.models.telegram.system_function import SystemFunction
 
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK
@@ -156,7 +159,7 @@ class TestActionTableService:
 
     def test_get_actiontable_data_found(self, service):
         """Test _get_actiontable_data extracts data successfully"""
-        from xp.models.system_function import SystemFunction
+        from xp.models.telegram.system_function import SystemFunction
 
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACTIONTABLE
@@ -174,7 +177,7 @@ class TestActionTableService:
 
     def test_get_actiontable_data_not_found(self, service):
         """Test _get_actiontable_data returns None when no data found"""
-        from xp.models.system_function import SystemFunction
+        from xp.models.telegram.system_function import SystemFunction
 
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK

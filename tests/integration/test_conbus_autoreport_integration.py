@@ -4,11 +4,11 @@ from unittest.mock import Mock, patch
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.services.conbus_autoreport_service import (
+from xp.services.conbus.conbus_autoreport_service import (
     ConbusAutoreportService,
     ConbusAutoreportError,
 )
-from xp.models.conbus_autoreport import ConbusAutoreportResponse
+from xp.models.conbus.conbus_autoreport import ConbusAutoreportResponse
 
 
 class TestConbusAutoreportIntegration:
@@ -252,7 +252,7 @@ class TestConbusAutoreportService:
         """Set up test fixtures"""
         self.valid_serial = "0123450001"
 
-    @patch("xp.services.conbus_autoreport_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_autoreport_service.ConbusDatapointService")
     def test_get_autoreport_status_success(self, mock_datapoint_service_class):
         """Test successful getting of auto report status"""
 
@@ -281,13 +281,13 @@ class TestConbusAutoreportService:
         assert result.error is None
 
         # Verify datapoint service was called correctly
-        from xp.models.datapoint_type import DataPointType
+        from xp.models.telegram.datapoint_type import DataPointType
 
         mock_datapoint_service.query_datapoint.assert_called_once_with(
             DataPointType.AUTO_REPORT_STATUS, self.valid_serial
         )
 
-    @patch("xp.services.conbus_autoreport_service.ConbusService")
+    @patch("xp.services.conbus.conbus_autoreport_service.ConbusService")
     def test_set_autoreport_status_on_success(self, mock_conbus_service_class):
         """Test successful setting of auto report status to ON"""
 
@@ -323,7 +323,7 @@ class TestConbusAutoreportService:
         sent_telegram = mock_conbus_service.send_raw_telegram.call_args[0][0]
         assert "F04E21PP" in sent_telegram  # Should contain PP for ON
 
-    @patch("xp.services.conbus_autoreport_service.ConbusService")
+    @patch("xp.services.conbus.conbus_autoreport_service.ConbusService")
     def test_set_autoreport_status_off_success(self, mock_conbus_service_class):
         """Test successful setting of auto report status to OFF"""
 

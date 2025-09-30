@@ -214,7 +214,7 @@ class TelegramService:
 ## Backward Compatibility
 
 - All public methods of TelegramService remain unchanged
-- Import paths stay the same (`from xp.services.telegram_service import TelegramService`)
+- Import paths stay the same (`from xp.services.telegram.telegram_service import TelegramService`)
 - Static methods preserved for existing code
 - Exception types and error messages unchanged
 

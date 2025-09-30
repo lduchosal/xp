@@ -8,8 +8,8 @@ from fastapi.responses import JSONResponse
 from .conbus import router
 from .errors import handle_service_error
 from ..models.api import ApiResponse, ApiErrorResponse
-from ...services.conbus_datapoint_service import ConbusDatapointService
-from xp.models.datapoint_type import DataPointType
+from ...services.conbus.conbus_datapoint_service import ConbusDatapointService
+from xp.models.telegram.datapoint_type import DataPointType
 
 logger = logging.getLogger(__name__)
 

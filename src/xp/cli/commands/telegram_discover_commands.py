@@ -8,7 +8,10 @@ from .telegram import telegram
 from ..utils.decorators import handle_service_errors
 from ..utils.error_handlers import CLIErrorHandler
 from ..utils.formatters import OutputFormatter
-from ...services.telegram_discover_service import TelegramDiscoverService, DiscoverError
+from ...services.telegram.telegram_discover_service import (
+    TelegramDiscoverService,
+    DiscoverError,
+)
 
 
 @telegram.command("discover")

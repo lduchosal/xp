@@ -3,10 +3,10 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from xp.services.conbus_linknumber_service import ConbusLinknumberService
-from xp.services.telegram_link_number_service import LinkNumberError
-from xp.models.conbus_linknumber import ConbusLinknumberResponse
-from xp.models.reply_telegram import ReplyTelegram
+from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
+from xp.services.telegram.telegram_link_number_service import LinkNumberError
+from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse
+from xp.models.telegram.reply_telegram import ReplyTelegram
 
 
 class TestConbusLinknumberService:
@@ -39,9 +39,9 @@ conbus:
         assert service.link_number_service is not None
         assert service.telegram_service is not None
 
-    @patch("xp.services.conbus_linknumber_service.ConbusService")
-    @patch("xp.services.conbus_linknumber_service.LinkNumberService")
-    @patch("xp.services.conbus_linknumber_service.TelegramService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
+    @patch("xp.services.conbus.conbus_linknumber_service.LinkNumberService")
+    @patch("xp.services.conbus.conbus_linknumber_service.TelegramService")
     def test_set_linknumber_success_ack(
         self,
         mock_telegram_service_class,
@@ -90,9 +90,9 @@ conbus:
         assert result.received_telegrams == ["<R0123450001F04D0400FH>"]
         assert result.error is None
 
-    @patch("xp.services.conbus_linknumber_service.ConbusService")
-    @patch("xp.services.conbus_linknumber_service.LinkNumberService")
-    @patch("xp.services.conbus_linknumber_service.TelegramService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
+    @patch("xp.services.conbus.conbus_linknumber_service.LinkNumberService")
+    @patch("xp.services.conbus.conbus_linknumber_service.TelegramService")
     def test_set_linknumber_success_nak(
         self,
         mock_telegram_service_class,
@@ -138,8 +138,8 @@ conbus:
         assert result.result == "NAK"
         assert result.serial_number == "0123450001"
 
-    @patch("xp.services.conbus_linknumber_service.ConbusService")
-    @patch("xp.services.conbus_linknumber_service.LinkNumberService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
+    @patch("xp.services.conbus.conbus_linknumber_service.LinkNumberService")
     def test_set_linknumber_connection_failure(
         self, mock_link_service_class, mock_conbus_service_class
     ):
@@ -173,7 +173,7 @@ conbus:
         assert result.result == "NAK"
         assert result.error == "Connection timeout"
 
-    @patch("xp.services.conbus_linknumber_service.LinkNumberService")
+    @patch("xp.services.conbus.conbus_linknumber_service.LinkNumberService")
     def test_set_linknumber_invalid_parameters(self, mock_link_service_class):
         """Test link number setting with invalid parameters"""
         # Setup mocks
@@ -197,8 +197,8 @@ conbus:
         with service as s:
             assert s is service
 
-    @patch("xp.services.conbus_linknumber_service.ConbusService")
-    @patch("xp.services.conbus_linknumber_service.LinkNumberService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
+    @patch("xp.services.conbus.conbus_linknumber_service.LinkNumberService")
     def test_set_linknumber_no_received_telegrams(
         self,
         mock_link_service_class,
@@ -233,7 +233,7 @@ conbus:
         assert result.success is False  # Should be False because no ACK received
         assert result.result == "NAK"
 
-    @patch("xp.services.conbus_linknumber_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
     def test_get_linknumber_success(self, mock_datapoint_service_class):
         """Test successful link number retrieval"""
         # Setup mock datapoint service
@@ -262,13 +262,13 @@ conbus:
         assert result.sent_telegram == "<S0123450001F03D04FG>"
 
         # Verify datapoint service was called correctly
-        from xp.models.datapoint_type import DataPointType
+        from xp.models.telegram.datapoint_type import DataPointType
 
         mock_datapoint_service.query_datapoint.assert_called_once_with(
             DataPointType.LINK_NUMBER, "0123450001"
         )
 
-    @patch("xp.services.conbus_linknumber_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
     def test_get_linknumber_query_failed(self, mock_datapoint_service_class):
         """Test link number retrieval when datapoint query fails"""
         # Setup mock datapoint service
@@ -296,7 +296,7 @@ conbus:
         assert result.link_number is None
         assert result.error == "Connection timeout"
 
-    @patch("xp.services.conbus_linknumber_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
     def test_get_linknumber_parse_error(self, mock_datapoint_service_class):
         """Test link number retrieval when parsing fails"""
         # Setup mock datapoint service
@@ -326,7 +326,7 @@ conbus:
             result.error is not None and "Failed to parse link number" in result.error
         )
 
-    @patch("xp.services.conbus_linknumber_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
     def test_get_linknumber_exception(self, mock_datapoint_service_class):
         """Test link number retrieval when exception occurs"""
         # Setup mock datapoint service that raises exception

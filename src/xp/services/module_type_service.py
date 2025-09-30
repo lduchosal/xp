@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict, Union
-from ..models.module_type import (
+from xp.models.telegram.module_type import (
     ModuleType,
     get_all_module_types,
     get_module_types_by_category,

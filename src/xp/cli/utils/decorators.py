@@ -58,7 +58,7 @@ def telegram_parser_command(
         func = common_options(func)
 
         # Apply error handling for telegram parsing
-        from ...services.telegram_service import TelegramParsingError
+        from ...services.telegram.telegram_service import TelegramParsingError
 
         exceptions = (TelegramParsingError,) + service_exceptions
         func = handle_service_errors(*exceptions)(func)

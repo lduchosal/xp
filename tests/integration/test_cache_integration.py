@@ -9,8 +9,8 @@ from click.testing import CliRunner
 
 from xp.cli.main import cli
 from xp.models import ConbusDatapointResponse
-from xp.models.reply_telegram import ReplyTelegram
-from xp.services.homekit_cache_service import HomeKitCacheService
+from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 
 
 class TestCacheIntegration:

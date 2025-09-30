@@ -1,11 +1,11 @@
 import pytest
-from xp.services.telegram_service import TelegramService, TelegramParsingError
-from xp.models.event_telegram import EventTelegram
+from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
+from xp.models.telegram.event_telegram import EventTelegram
 from xp.models import InputType, EventType
-from xp.models.system_telegram import SystemTelegram
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
-from xp.models.reply_telegram import ReplyTelegram
+from xp.models.telegram.system_telegram import SystemTelegram
+from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.reply_telegram import ReplyTelegram
 
 
 class TestTelegramService:

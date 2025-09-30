@@ -2,8 +2,8 @@
 
 from unittest.mock import Mock, patch
 
-from xp.services.conbus_linknumber_service import ConbusLinknumberService
-from xp.models.conbus_linknumber import ConbusLinknumberResponse
+from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
+from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse
 
 
 class TestConbusLinknumberIntegration:
@@ -45,7 +45,7 @@ class TestConbusLinknumberIntegration:
         mock_conbus_instance.send_raw_telegram.return_value = response
         return mock_conbus_instance
 
-    @patch("xp.services.conbus_linknumber_service.ConbusService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
     def test_conbus_linknumber_valid(self, mock_conbus_service_class):
         """Test setting valid link number"""
         # Setup mock
@@ -67,7 +67,7 @@ class TestConbusLinknumberIntegration:
         args = mock_service.send_raw_telegram.call_args[0]
         assert args[0] == "<S0123450001F04D0425FG>"
 
-    @patch("xp.services.conbus_linknumber_service.ConbusService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
     def test_conbus_linknumber_invalid_response(self, mock_conbus_service_class):
         """Test handling invalid/NAK responses"""
         # Setup mock for NAK response
@@ -85,7 +85,7 @@ class TestConbusLinknumberIntegration:
         assert result.result == "NAK"
         assert result.serial_number == "0123450001"
 
-    @patch("xp.services.conbus_linknumber_service.ConbusService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
     def test_conbus_linknumber_connection_failure(self, mock_conbus_service_class):
         """Test handling connection failures"""
         # Setup mock for connection failure
@@ -129,7 +129,7 @@ class TestConbusLinknumberIntegration:
             and "Link number must be between 0-99" in result.error
         )
 
-    @patch("xp.services.conbus_linknumber_service.ConbusService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
     def test_conbus_linknumber_edge_cases(self, mock_conbus_service_class):
         """Test edge cases for link number values"""
         # Setup mock
@@ -177,7 +177,7 @@ class TestConbusLinknumberIntegration:
 
         return mock_response
 
-    @patch("xp.services.conbus_linknumber_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
     def test_conbus_get_linknumber_valid(self, mock_datapoint_service_class):
         """Test getting valid link number"""
         # Setup mock
@@ -201,13 +201,13 @@ class TestConbusLinknumberIntegration:
         assert result.error is None
 
         # Verify service was called correctly
-        from xp.models.datapoint_type import DataPointType
+        from xp.models.telegram.datapoint_type import DataPointType
 
         mock_datapoint_service.query_datapoint.assert_called_once_with(
             DataPointType.LINK_NUMBER, "0123450001"
         )
 
-    @patch("xp.services.conbus_linknumber_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
     def test_conbus_get_linknumber_query_failed(self, mock_datapoint_service_class):
         """Test handling datapoint query failures"""
         # Setup mock for query failure
@@ -230,7 +230,7 @@ class TestConbusLinknumberIntegration:
         assert result.link_number is None
         assert result.error is not None and "Connection timeout" in result.error
 
-    @patch("xp.services.conbus_linknumber_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
     def test_conbus_get_linknumber_parse_error(self, mock_datapoint_service_class):
         """Test handling invalid link number data"""
         # Setup mock with invalid data
@@ -261,7 +261,7 @@ class TestConbusLinknumberIntegration:
             result.error is not None and "Failed to parse link number" in result.error
         )
 
-    @patch("xp.services.conbus_linknumber_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
     def test_conbus_get_linknumber_service_exception(
         self, mock_datapoint_service_class
     ):

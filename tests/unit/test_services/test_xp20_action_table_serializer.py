@@ -2,8 +2,8 @@
 
 import pytest
 
-from xp.models.msactiontable_xp20 import InputChannel, Xp20MsActionTable
-from xp.services.msactiontable_xp20_serializer import (
+from xp.models.actiontable.msactiontable_xp20 import InputChannel, Xp20MsActionTable
+from xp.services.actiontable.msactiontable_xp20_serializer import (
     Xp20MsActionTableSerializer,
     SHORT_LONG_INDEX,
     TA_FUNCTION_INDEX,

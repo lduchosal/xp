@@ -3,7 +3,7 @@
 import click
 import json
 
-from ...services.telegram_blink_service import TelegramBlinkService, BlinkError
+from ...services.telegram.telegram_blink_service import TelegramBlinkService, BlinkError
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler

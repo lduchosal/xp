@@ -5,7 +5,7 @@ import click
 from click.testing import CliRunner
 
 from xp.cli.utils.datapoint_type_choice import DatapointTypeChoice, DATAPOINT
-from xp.models.datapoint_type import DataPointType
+from xp.models.telegram.datapoint_type import DataPointType
 
 
 class TestDatapointTypeChoice:

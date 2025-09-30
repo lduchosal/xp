@@ -39,7 +39,7 @@ def config() -> None:
 @service_command()
 def validate(conson_config: str, homekit_config: str) -> None:
     """Validate homekit.yml and conson.yml coherence"""
-    from xp.services.homekit_config_validator import ConfigValidationService
+    from xp.services.homekit.homekit_config_validator import ConfigValidationService
 
     try:
         validator = ConfigValidationService(conson_config, homekit_config)
@@ -97,7 +97,7 @@ def validate(conson_config: str, homekit_config: str) -> None:
 @service_command()
 def show_config(conson_config: str, homekit_config: str) -> None:
     """Display parsed configuration summary"""
-    from xp.services.homekit_config_validator import ConfigValidationService
+    from xp.services.homekit.homekit_config_validator import ConfigValidationService
 
     try:
         validator = ConfigValidationService(conson_config, homekit_config)

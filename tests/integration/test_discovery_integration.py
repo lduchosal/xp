@@ -2,12 +2,12 @@
 
 import pytest
 
-from xp.models.system_function import SystemFunction
-from xp.models.system_telegram import SystemTelegram
-from xp.services.telegram_discover_service import (
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
+from xp.services.telegram.telegram_discover_service import (
     TelegramDiscoverService,
 )
-from xp.services.telegram_service import TelegramService, TelegramParsingError
+from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
 
 
 class TestDiscoverIntegration:

@@ -9,7 +9,7 @@ from unittest.mock import patch, MagicMock
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.models.conbus_receive import ConbusReceiveResponse
+from xp.models.conbus.conbus_receive import ConbusReceiveResponse
 
 
 class TestConbusReceiveIntegration:
@@ -131,7 +131,7 @@ class TestConbusReceiveIntegration:
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
-        from xp.services.conbus_receive_service import ConbusReceiveError
+        from xp.services.conbus.conbus_receive_service import ConbusReceiveError
 
         mock_service.receive_telegrams.side_effect = ConbusReceiveError("Service error")
 

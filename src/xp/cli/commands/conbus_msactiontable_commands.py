@@ -11,7 +11,7 @@ from ..utils.decorators import (
 )
 from ..utils.serial_number_type import SERIAL
 from ..utils.xp_module_type import XP_MODULE_TYPE
-from ...services.msactiontable_service import (
+from xp.services.actiontable.msactiontable_service import (
     MsActionTableService,
     MsActionTableError,
 )

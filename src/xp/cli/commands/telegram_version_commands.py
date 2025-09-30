@@ -3,7 +3,10 @@
 import click
 import json
 
-from ...services.telegram_version_service import VersionService, VersionParsingError
+from ...services.telegram.telegram_version_service import (
+    VersionService,
+    VersionParsingError,
+)
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler

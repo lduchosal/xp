@@ -9,7 +9,7 @@ from ..utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from ...services.conbus_discover_service import (
+from ...services.conbus.conbus_discover_service import (
     ConbusDiscoverService,
     ConbusDiscoverError,
 )

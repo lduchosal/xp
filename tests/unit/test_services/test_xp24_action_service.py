@@ -3,9 +3,12 @@
 import pytest
 from unittest.mock import patch
 
-from xp.services.telegram_output_service import TelegramOutputService, XPOutputError
-from xp.models.output_telegram import OutputTelegram
-from xp.models.action_type import ActionType
+from xp.services.telegram.telegram_output_service import (
+    TelegramOutputService,
+    XPOutputError,
+)
+from xp.models.telegram.output_telegram import OutputTelegram
+from xp.models.telegram.action_type import ActionType
 
 
 class TestXP24ActionService:
@@ -59,7 +62,7 @@ class TestXP24ActionService:
 
     # Telegram generation tests
 
-    @patch("xp.services.telegram_output_service.calculate_checksum")
+    @patch("xp.services.telegram.telegram_output_service.calculate_checksum")
     def test_generate_action_telegram_press(self, mock_checksum):
         """Test generate_action_telegram for PRESS action."""
         mock_checksum.return_value = "FN"
@@ -71,7 +74,7 @@ class TestXP24ActionService:
         assert result == "<S0012345008F27D00AAFN>"
         mock_checksum.assert_called_once_with("S0012345008F27D00AA")
 
-    @patch("xp.services.telegram_output_service.calculate_checksum")
+    @patch("xp.services.telegram.telegram_output_service.calculate_checksum")
     def test_generate_action_telegram_release(self, mock_checksum):
         """Test generate_action_telegram for RELEASE action."""
         mock_checksum.return_value = "FB"

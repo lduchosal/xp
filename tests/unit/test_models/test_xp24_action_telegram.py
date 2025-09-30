@@ -3,9 +3,9 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from xp.models.output_telegram import OutputTelegram
-from xp.models.action_type import ActionType
-from xp.models.system_function import SystemFunction
+from xp.models.telegram.output_telegram import OutputTelegram
+from xp.models.telegram.action_type import ActionType
+from xp.models.telegram.system_function import SystemFunction
 
 
 class TestActionType:
@@ -64,7 +64,7 @@ class TestXP24ActionTelegram:
         assert telegram.checksum_validated is True
         assert telegram.timestamp == test_time
 
-    @patch("xp.models.output_telegram.datetime")
+    @patch("xp.models.telegram.output_telegram.datetime")
     def test_post_init_sets_timestamp(self, mock_datetime):
         """Test that __post_init__ sets timestamp when None."""
         mock_now = datetime(2023, 1, 1, 12, 0, 0)

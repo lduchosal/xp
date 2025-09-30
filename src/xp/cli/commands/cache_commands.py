@@ -4,7 +4,7 @@ import click
 import json
 from click_help_colors import HelpColorsGroup
 
-from ...services.homekit_cache_service import HomeKitCacheService
+from ...services.homekit.homekit_cache_service import HomeKitCacheService
 from ..utils.decorators import list_command
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler

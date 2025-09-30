@@ -4,9 +4,9 @@ import tempfile
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from xp.models.action_type import ActionType
-from xp.models.event_telegram import EventTelegram
-from xp.services.homekit_cache_service import HomeKitCacheService
+from xp.models.telegram.action_type import ActionType
+from xp.models.telegram.event_telegram import EventTelegram
+from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 
 
 class TestHomeKitCacheServiceSendActionIntegration:
@@ -23,8 +23,8 @@ class TestHomeKitCacheServiceSendActionIntegration:
         # Clean up temporary cache file
         Path(self.temp_cache_file.name).unlink(missing_ok=True)
 
-    @patch("xp.services.homekit_cache_service.ConbusOutputService")
-    @patch("xp.services.homekit_cache_service.TelegramService")
+    @patch("xp.services.homekit.homekit_cache_service.ConbusOutputService")
+    @patch("xp.services.homekit.homekit_cache_service.TelegramService")
     def test_send_action_with_event_telegram_integration(
         self, mock_telegram_service_class, mock_conbus_service_class
     ):
@@ -68,8 +68,8 @@ class TestHomeKitCacheServiceSendActionIntegration:
             # Verify received_event was called with raw telegram
             mock_received_event.assert_called_once_with("<E14L01I02MAK>")
 
-    @patch("xp.services.homekit_cache_service.ConbusOutputService")
-    @patch("xp.services.homekit_cache_service.TelegramService")
+    @patch("xp.services.homekit.homekit_cache_service.ConbusOutputService")
+    @patch("xp.services.homekit.homekit_cache_service.TelegramService")
     def test_send_action_with_event_telegram_integration_2(
         self, mock_telegram_service_class, mock_conbus_service_class
     ):
@@ -123,8 +123,8 @@ class TestHomeKitCacheServiceSendActionIntegration:
             # Verify received_event was called with raw telegram
             mock_received_event.assert_called_once_with("<E14L01I02MAK>")
 
-    @patch("xp.services.homekit_cache_service.ConbusOutputService")
-    @patch("xp.services.homekit_cache_service.TelegramService")
+    @patch("xp.services.homekit.homekit_cache_service.ConbusOutputService")
+    @patch("xp.services.homekit.homekit_cache_service.TelegramService")
     def test_send_action_failed_response_integration(
         self, mock_telegram_service_class, mock_conbus_service_class
     ):
@@ -161,8 +161,8 @@ class TestHomeKitCacheServiceSendActionIntegration:
             # Verify received_event was not called
             mock_received_event.assert_not_called()
 
-    @patch("xp.services.homekit_cache_service.ConbusOutputService")
-    @patch("xp.services.homekit_cache_service.TelegramService")
+    @patch("xp.services.homekit.homekit_cache_service.ConbusOutputService")
+    @patch("xp.services.homekit.homekit_cache_service.TelegramService")
     def test_send_action_no_received_telegrams_integration(
         self, mock_telegram_service_class, mock_conbus_service_class
     ):

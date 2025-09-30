@@ -3,7 +3,7 @@
 import click
 import json
 
-from ...services.telegram_checksum_service import TelegramChecksumService
+from ...services.telegram.telegram_checksum_service import TelegramChecksumService
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler

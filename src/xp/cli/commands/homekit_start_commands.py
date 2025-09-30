@@ -5,7 +5,7 @@ import sys
 import click
 
 from .homekit import homekit
-from ...services.homekit_service import HomekitService
+from ...services.homekit.homekit_service import HomekitService
 
 
 @homekit.command("start")

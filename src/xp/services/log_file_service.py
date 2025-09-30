@@ -6,7 +6,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 from ..models.log_entry import LogEntry
-from ..services.telegram_service import TelegramService, TelegramParsingError
+from .telegram.telegram_service import TelegramService, TelegramParsingError
 from ..utils.time_utils import (
     parse_log_timestamp,
     TimeParsingError,

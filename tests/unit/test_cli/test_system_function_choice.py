@@ -5,7 +5,7 @@ import click
 from click.testing import CliRunner
 
 from xp.cli.utils.system_function_choice import SystemFunctionChoice, SYSTEM_FUNCTION
-from xp.models.system_function import SystemFunction
+from xp.models.telegram.system_function import SystemFunction
 
 
 class TestSystemFunctionChoice:

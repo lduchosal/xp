@@ -1,8 +1,8 @@
 """Unit tests for XP24 Action Table models."""
 
-from xp.models.input_action_type import InputActionType
-from xp.models.timeparam_type import TimeParam
-from xp.models.msactiontable_xp24 import InputAction, Xp24MsActionTable
+from xp.models.telegram.input_action_type import InputActionType
+from xp.models.telegram.timeparam_type import TimeParam
+from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
 
 
 class TestInputAction:

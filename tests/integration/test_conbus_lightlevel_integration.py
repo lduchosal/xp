@@ -5,11 +5,11 @@ from unittest.mock import Mock, patch
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.services.conbus_lightlevel_service import (
+from xp.services.conbus.conbus_lightlevel_service import (
     ConbusLightlevelService,
     ConbusLightlevelError,
 )
-from xp.models.conbus_lightlevel import ConbusLightlevelResponse
+from xp.models.conbus.conbus_lightlevel import ConbusLightlevelResponse
 
 
 class TestConbusLightlevelIntegration:
@@ -281,7 +281,7 @@ class TestConbusLightlevelService:
         self.valid_output_number = 2
         self.valid_level = 50
 
-    @patch("xp.services.conbus_lightlevel_service.ConbusService")
+    @patch("xp.services.conbus.conbus_lightlevel_service.ConbusService")
     def test_set_lightlevel_success(self, mock_conbus_service_class):
         """Test successful setting of light level"""
 
@@ -312,8 +312,8 @@ class TestConbusLightlevelService:
         assert result.error is None
 
         # Verify telegram was sent correctly
-        from xp.models.system_function import SystemFunction
-        from xp.models.datapoint_type import DataPointType
+        from xp.models.telegram.system_function import SystemFunction
+        from xp.models.telegram.datapoint_type import DataPointType
 
         mock_conbus_service.send_telegram.assert_called_once_with(
             self.valid_serial,
@@ -379,7 +379,7 @@ class TestConbusLightlevelService:
             )
             assert result.level == 80
 
-    @patch("xp.services.conbus_lightlevel_service.ConbusDatapointService")
+    @patch("xp.services.conbus.conbus_lightlevel_service.ConbusDatapointService")
     def test_get_lightlevel_success(self, mock_datapoint_service_class):
         """Test successful getting of light level"""
 
@@ -411,7 +411,7 @@ class TestConbusLightlevelService:
         assert result.error is None
 
         # Verify datapoint service was called correctly
-        from xp.models.datapoint_type import DataPointType
+        from xp.models.telegram.datapoint_type import DataPointType
 
         mock_datapoint_service.query_datapoint.assert_called_once_with(
             DataPointType.MODULE_LIGHT_LEVEL, self.valid_serial

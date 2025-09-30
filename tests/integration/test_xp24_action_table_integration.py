@@ -5,10 +5,10 @@ from unittest.mock import Mock, patch
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.models.input_action_type import InputActionType
-from xp.models.timeparam_type import TimeParam
-from xp.models.msactiontable_xp24 import InputAction, Xp24MsActionTable
-from xp.services.msactiontable_service import (
+from xp.models.telegram.input_action_type import InputActionType
+from xp.models.telegram.timeparam_type import TimeParam
+from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
+from xp.services.actiontable.msactiontable_service import (
     MsActionTableError,
 )
 

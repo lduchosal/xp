@@ -3,9 +3,15 @@
 import pytest
 from contextlib import suppress
 
-from xp.models.timeparam_type import TimeParam
-from xp.models.msactiontable_xp33 import Xp33MsActionTable, Xp33Output, Xp33Scene
-from xp.services.msactiontable_xp33_serializer import Xp33MsActionTableSerializer
+from xp.models.telegram.timeparam_type import TimeParam
+from xp.models.actiontable.msactiontable_xp33 import (
+    Xp33MsActionTable,
+    Xp33Output,
+    Xp33Scene,
+)
+from xp.services.actiontable.msactiontable_xp33_serializer import (
+    Xp33MsActionTableSerializer,
+)
 from xp.utils.serialization import de_nibbles
 
 

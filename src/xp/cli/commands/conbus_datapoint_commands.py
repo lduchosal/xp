@@ -12,8 +12,8 @@ from ..utils.decorators import (
 )
 from ..utils.serial_number_type import SERIAL
 from .conbus import conbus_datapoint
-from ...models.datapoint_type import DataPointType
-from ...services.conbus_datapoint_service import (
+from xp.models.telegram.datapoint_type import DataPointType
+from ...services.conbus.conbus_datapoint_service import (
     ConbusDatapointService,
     ConbusDatapointError,
 )

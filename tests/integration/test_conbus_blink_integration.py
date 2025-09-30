@@ -2,9 +2,9 @@
 
 from unittest.mock import Mock, patch
 
-from xp.models.conbus import ConbusRequest, ConbusResponse
-from xp.models.system_function import SystemFunction
-from xp.services.conbus_blink_service import ConbusBlinkService
+from xp.models.conbus.conbus import ConbusRequest, ConbusResponse
+from xp.models.telegram.system_function import SystemFunction
+from xp.services.conbus.conbus_blink_service import ConbusBlinkService
 
 
 class TestConbusBlinkIntegration:
@@ -59,7 +59,7 @@ class TestConbusBlinkIntegration:
 
         return mock_conbus_instance
 
-    @patch("xp.services.conbus_blink_service.ConbusService")
+    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
     def test_conbus_blink_all_off(self, mock_conbus_service):
         """Test turning all device blinks off"""
         mock_conbus_instance = self._create_mock_conbus_service()
@@ -81,7 +81,7 @@ class TestConbusBlinkIntegration:
         # Verify blink telegrams were sent
         mock_conbus_instance.send_raw_telegrams.assert_called_once()
 
-    @patch("xp.services.conbus_blink_service.ConbusService")
+    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
     def test_conbus_blink_all_on(self, mock_conbus_service):
         """Test turning all device blinks on"""
         mock_conbus_instance = self._create_mock_conbus_service()
@@ -103,7 +103,7 @@ class TestConbusBlinkIntegration:
         # Verify blink telegrams were sent
         mock_conbus_instance.send_raw_telegrams.assert_called_once()
 
-    @patch("xp.services.conbus_blink_service.ConbusService")
+    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
     def test_conbus_blink_connection_error(self, mock_conbus_service):
         """Handle network failures"""
         mock_conbus_instance = self._create_mock_conbus_service(discover_success=False)
@@ -121,7 +121,7 @@ class TestConbusBlinkIntegration:
         assert response.system_function == SystemFunction.UNBLINK
         assert response.error == "Failed to discover devices"
 
-    @patch("xp.services.conbus_blink_service.ConbusService")
+    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
     def test_conbus_blink_invalid_response(self, mock_conbus_service):
         """Handle invalid responses"""
         mock_conbus_instance = self._create_mock_conbus_service(discover_devices=[])
@@ -141,7 +141,7 @@ class TestConbusBlinkIntegration:
         assert response.system_function == SystemFunction.UNBLINK
         assert response.error == "No devices discovered"
 
-    @patch("xp.services.conbus_blink_service.ConbusService")
+    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
     def test_conbus_blink_partial_failure(self, mock_conbus_service):
         """Test scenario where some devices fail to blink"""
         mock_conbus_instance = self._create_mock_conbus_service(blink_success=False)
@@ -173,7 +173,7 @@ class TestConbusBlinkIntegration:
 
         # Should not raise any exceptions
 
-    @patch("xp.services.conbus_blink_service.ConbusService")
+    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
     def test_conbus_blink_all_multiple_devices(self, mock_conbus_service):
         """Test blinking multiple devices successfully"""
         devices = ["0012345008", "0012345011", "1234567890", "9876543210"]

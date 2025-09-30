@@ -1,7 +1,7 @@
 import click
 from typing import Any, Optional
 
-from xp.models.system_function import SystemFunction
+from xp.models.telegram.system_function import SystemFunction
 
 
 # noinspection DuplicatedCode

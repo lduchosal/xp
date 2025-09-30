@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Union, Any
 
-from .event_telegram import EventTelegram
-from .reply_telegram import ReplyTelegram
-from .system_telegram import SystemTelegram
+from .telegram.event_telegram import EventTelegram
+from .telegram.reply_telegram import ReplyTelegram
+from .telegram.system_telegram import SystemTelegram
 
 
 @dataclass

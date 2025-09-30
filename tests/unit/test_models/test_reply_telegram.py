@@ -6,9 +6,9 @@ value interpretation, and data structure integrity.
 
 import pytest
 from datetime import datetime
-from xp.models.reply_telegram import ReplyTelegram
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
+from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.system_function import SystemFunction
 
 
 class TestReplyTelegram:

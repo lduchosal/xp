@@ -6,11 +6,11 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from xp.models.event_telegram import EventTelegram
+from xp.models.telegram.event_telegram import EventTelegram
 from xp.models.log_entry import LogEntry
-from xp.models.system_telegram import SystemTelegram
+from xp.models.telegram.system_telegram import SystemTelegram
 from xp.services.log_file_service import LogFileService, LogFileParsingError
-from xp.services.telegram_service import TelegramService, TelegramParsingError
+from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
 
 
 class TestLogFileService:

@@ -11,8 +11,8 @@ from ..utils.decorators import (
 )
 from ..utils.error_handlers import CLIErrorHandler
 from ..utils.serial_number_type import SERIAL
-from ...services.conbus_custom_service import ConbusCustomService
-from ...services.conbus_datapoint_service import (
+from ...services.conbus.conbus_custom_service import ConbusCustomService
+from ...services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
 )
 

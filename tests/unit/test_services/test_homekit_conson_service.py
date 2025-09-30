@@ -1,6 +1,9 @@
 import pytest
-from xp.models.homekit_conson_config import ConsonModuleConfig, ConsonModuleListConfig
-from xp.services.homekit_conson_config_service import ConsonConfigValidator
+from xp.models.homekit.homekit_conson_config import (
+    ConsonModuleConfig,
+    ConsonModuleListConfig,
+)
+from xp.services.homekit.homekit_conson_config_service import ConsonConfigValidator
 
 
 class TestConsonConfigValidator:

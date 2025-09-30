@@ -8,7 +8,7 @@ from ..utils.decorators import (
     handle_service_errors,
 )
 from ..utils.error_handlers import CLIErrorHandler
-from ...services.conbus_raw_service import ConbusRawService, ConbusRawError
+from ...services.conbus.conbus_raw_service import ConbusRawService, ConbusRawError
 
 
 @conbus.command("raw")

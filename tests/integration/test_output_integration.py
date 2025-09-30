@@ -2,9 +2,12 @@
 
 import pytest
 
-from xp.models.action_type import ActionType
-from xp.services.conbus_datapoint_service import ConbusDatapointService
-from xp.services.telegram_output_service import TelegramOutputService, XPOutputError
+from xp.models.telegram.action_type import ActionType
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
+from xp.services.telegram.telegram_output_service import (
+    TelegramOutputService,
+    XPOutputError,
+)
 
 
 class TestOutputIntegration:
@@ -100,7 +103,7 @@ class TestOutputIntegration:
 
     def test_telegram_service_integration(self):
         """Test integration with existing telegram service."""
-        from xp.services.telegram_service import TelegramService
+        from xp.services.telegram.telegram_service import TelegramService
 
         telegram_service = TelegramService()
 
@@ -113,7 +116,7 @@ class TestOutputIntegration:
         parsed_generic = telegram_service.parse_telegram(xp24_telegram)
 
         # Should be parsed as SystemTelegram
-        from xp.models.system_telegram import SystemTelegram
+        from xp.models.telegram.system_telegram import SystemTelegram
 
         assert isinstance(parsed_generic, SystemTelegram)
         assert parsed_generic.serial_number == "0012345008"

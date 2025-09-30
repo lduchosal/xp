@@ -3,7 +3,10 @@
 import click
 import json
 
-from ...services.telegram_link_number_service import LinkNumberService, LinkNumberError
+from ...services.telegram.telegram_link_number_service import (
+    LinkNumberService,
+    LinkNumberError,
+)
 from ..utils.decorators import handle_service_errors
 from ..utils.formatters import OutputFormatter
 from ..utils.error_handlers import CLIErrorHandler

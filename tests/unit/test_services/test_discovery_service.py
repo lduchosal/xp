@@ -1,13 +1,13 @@
 """Tests for DiscoverService"""
 
 from unittest.mock import Mock
-from xp.services.telegram_discover_service import (
+from xp.services.telegram.telegram_discover_service import (
     TelegramDiscoverService,
     DeviceInfo,
 )
-from xp.models.system_telegram import SystemTelegram
-from xp.models.system_function import SystemFunction
-from xp.models.reply_telegram import ReplyTelegram
+from xp.models.telegram.system_telegram import SystemTelegram
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.reply_telegram import ReplyTelegram
 
 
 class TestDeviceInfo:

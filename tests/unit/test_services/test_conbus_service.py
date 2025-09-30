@@ -1,6 +1,6 @@
 import pytest
 
-from xp.services.conbus_service import ConbusService
+from xp.services.conbus.conbus_service import ConbusService
 
 
 class TestConbusServiceTelegramParsing:

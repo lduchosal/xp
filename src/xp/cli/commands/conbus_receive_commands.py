@@ -8,7 +8,10 @@ from ..utils.decorators import (
     handle_service_errors,
 )
 from ..utils.error_handlers import CLIErrorHandler
-from ...services.conbus_receive_service import ConbusReceiveService, ConbusReceiveError
+from ...services.conbus.conbus_receive_service import (
+    ConbusReceiveService,
+    ConbusReceiveError,
+)
 
 
 @conbus.command("receive")

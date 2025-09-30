@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from xp.models.conbus_discover import ConbusDiscoverResponse
+from xp.models.conbus.conbus_discover import ConbusDiscoverResponse
 
 
 class TestConbusDiscoverResponse:

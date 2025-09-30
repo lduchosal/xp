@@ -1,7 +1,7 @@
 import click
 from typing import Any, Optional
 
-from xp.models.datapoint_type import DataPointType
+from xp.models.telegram.datapoint_type import DataPointType
 
 
 # noinspection DuplicatedCode

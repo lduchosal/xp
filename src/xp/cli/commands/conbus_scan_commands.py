@@ -8,11 +8,11 @@ import click
 from .conbus import conbus
 from ..utils.decorators import connection_command, handle_service_errors
 from ..utils.serial_number_type import SERIAL
-from ...services.conbus_datapoint_service import (
+from ...services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
 )
-from ...services.conbus_scan_service import ConbusScanService
-from ...models import ConbusResponse
+from ...services.conbus.conbus_scan_service import ConbusScanService
+from xp.models import ConbusResponse
 
 
 @conbus.command("scan")

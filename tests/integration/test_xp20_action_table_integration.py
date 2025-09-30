@@ -2,9 +2,11 @@
 
 import pytest
 
-from xp.models.msactiontable_xp20 import Xp20MsActionTable
-from xp.services.msactiontable_xp20_serializer import Xp20MsActionTableSerializer
-from xp.services.msactiontable_service import MsActionTableService
+from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
+from xp.services.actiontable.msactiontable_xp20_serializer import (
+    Xp20MsActionTableSerializer,
+)
+from xp.services.actiontable.msactiontable_service import MsActionTableService
 
 
 class TestXp20ActionTableIntegration:

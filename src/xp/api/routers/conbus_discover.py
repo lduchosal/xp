@@ -10,7 +10,7 @@ from ..models.discover import (
     DiscoverResponse,
     DiscoverErrorResponse,
 )
-from ...services.conbus_discover_service import ConbusDiscoverService
+from ...services.conbus.conbus_discover_service import ConbusDiscoverService
 
 logger = logging.getLogger(__name__)
 

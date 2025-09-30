@@ -4,7 +4,7 @@ import click
 import json
 
 from ..utils.serial_number_type import SERIAL
-from ...services.conbus_lightlevel_service import (
+from ...services.conbus.conbus_lightlevel_service import (
     ConbusLightlevelService,
     ConbusLightlevelError,
 )

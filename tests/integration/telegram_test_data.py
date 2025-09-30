@@ -1,6 +1,6 @@
 """Test data fixtures for telegram testing"""
 
-from xp.models.event_telegram import EventTelegram
+from xp.models.telegram.event_telegram import EventTelegram
 from xp.models import EventType
 
 # Valid telegram strings for testing

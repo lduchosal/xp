@@ -9,8 +9,8 @@ from ..utils.decorators import (
 )
 from .conbus import conbus_linknumber
 from ..utils.serial_number_type import SERIAL
-from ...services.conbus_linknumber_service import ConbusLinknumberService
-from ...services.telegram_link_number_service import LinkNumberError
+from ...services.conbus.conbus_linknumber_service import ConbusLinknumberService
+from ...services.telegram.telegram_link_number_service import LinkNumberError
 
 
 @conbus_linknumber.command("set", short_help="Set link number for a module")

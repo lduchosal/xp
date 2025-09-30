@@ -1,6 +1,6 @@
 """Unit tests for XP20 Action Table models."""
 
-from xp.models.msactiontable_xp20 import InputChannel, Xp20MsActionTable
+from xp.models.actiontable.msactiontable_xp20 import InputChannel, Xp20MsActionTable
 
 
 class TestInputChannel:

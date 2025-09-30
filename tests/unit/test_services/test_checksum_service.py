@@ -5,7 +5,7 @@ following the architecture pattern for service testing.
 """
 
 import pytest
-from xp.services.telegram_checksum_service import TelegramChecksumService
+from xp.services.telegram.telegram_checksum_service import TelegramChecksumService
 from xp.models.response import Response
 
 

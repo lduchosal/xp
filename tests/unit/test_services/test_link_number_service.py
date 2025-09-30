@@ -1,11 +1,14 @@
 """Tests for LinkNumberService"""
 
 import pytest
-from xp.services.telegram_link_number_service import LinkNumberService, LinkNumberError
-from xp.models.system_telegram import SystemTelegram
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
-from xp.models.reply_telegram import ReplyTelegram
+from xp.services.telegram.telegram_link_number_service import (
+    LinkNumberService,
+    LinkNumberError,
+)
+from xp.models.telegram.system_telegram import SystemTelegram
+from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.reply_telegram import ReplyTelegram
 from unittest.mock import Mock
 
 

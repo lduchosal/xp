@@ -121,7 +121,7 @@ class TestTelegramParserCommand:
 
     def test_handles_telegram_parsing_error(self):
         """Test decorator handles TelegramParsingError."""
-        from xp.services.telegram_service import TelegramParsingError
+        from xp.services.telegram.telegram_service import TelegramParsingError
 
         @telegram_parser_command()
         def test_func():

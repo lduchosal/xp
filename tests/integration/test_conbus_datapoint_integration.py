@@ -4,10 +4,10 @@ from unittest.mock import Mock, patch
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.models.conbus_datapoint import ConbusDatapointResponse
-from xp.models.datapoint_type import DataPointType
-from xp.models.system_function import SystemFunction
-from xp.services.conbus_datapoint_service import (
+from xp.models.conbus.conbus_datapoint import ConbusDatapointResponse
+from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.system_function import SystemFunction
+from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointService,
     ConbusDatapointError,
 )
@@ -182,8 +182,8 @@ class TestConbusDatapointService:
         """Set up test fixtures"""
         self.valid_serial = "0123450001"
 
-    @patch("xp.services.conbus_datapoint_service.ConbusService")
-    @patch("xp.services.conbus_datapoint_service.TelegramService")
+    @patch("xp.services.conbus.conbus_datapoint_service.ConbusService")
+    @patch("xp.services.conbus.conbus_datapoint_service.TelegramService")
     def test_query_all_datapoints_success(
         self, mock_telegram_service, mock_conbus_service
     ):

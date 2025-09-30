@@ -10,7 +10,7 @@ from ..utils.decorators import (
     handle_service_errors,
 )
 from ..utils.serial_number_type import SERIAL
-from ...services.actiontable_service import (
+from xp.services.actiontable.actiontable_service import (
     ActionTableService,
     ActionTableError,
 )

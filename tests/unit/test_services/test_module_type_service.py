@@ -3,7 +3,7 @@ from xp.services.module_type_service import (
     ModuleTypeService,
     ModuleTypeNotFoundError,
 )
-from xp.models.module_type import ModuleType
+from xp.models.telegram.module_type import ModuleType
 
 
 class TestModuleTypeService:

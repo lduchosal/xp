@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch, MagicMock
 
 import pytest
 
-from xp.services.conbus_datapoint_service import (
+from xp.services.conbus.conbus_datapoint_service import (
     ConbusService,
 )
 
@@ -69,7 +69,7 @@ class TestServiceInitialization(TestConbusService):
 class TestConnectionManagement(TestConbusService):
     """Test connection establishment and management"""
 
-    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    @patch("xp.services.conbus.conbus_connection_pool.ConbusConnectionPool")
     def test_successful_connection(self, mock_pool_class, service):
         """Test successful connection establishment"""
         mock_pool_instance = MagicMock()
@@ -88,7 +88,7 @@ class TestConnectionManagement(TestConbusService):
         mock_pool_instance.__enter__.assert_called_once()
         mock_pool_instance.__exit__.assert_called_once()
 
-    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    @patch("xp.services.conbus.conbus_connection_pool.ConbusConnectionPool")
     def test_connection_timeout(self, mock_pool_class, service):
         """Test connection timeout handling"""
         mock_pool_instance = MagicMock()
@@ -104,7 +104,7 @@ class TestConnectionManagement(TestConbusService):
         assert "Failed to establish connection pool" in result.error
         assert service.is_connected is False
 
-    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    @patch("xp.services.conbus.conbus_connection_pool.ConbusConnectionPool")
     def test_connection_error(self, mock_pool_class, service):
         """Test connection error handling"""
         mock_pool_instance = MagicMock()
@@ -122,7 +122,7 @@ class TestConnectionManagement(TestConbusService):
         assert "Failed to establish connection pool to " in result.error
         assert service.is_connected is False
 
-    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    @patch("xp.services.conbus.conbus_connection_pool.ConbusConnectionPool")
     def test_already_connected(self, mock_pool_class, service):
         """Test connecting - pool will handle repeated connections gracefully"""
         mock_pool_instance = MagicMock()
@@ -139,7 +139,7 @@ class TestConnectionManagement(TestConbusService):
         assert result.success is True
         assert "Connection pool ready for " in result.data["message"]
 
-    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    @patch("xp.services.conbus.conbus_connection_pool.ConbusConnectionPool")
     def test_disconnect(self, mock_pool_class, service):
         """Test disconnection"""
         mock_pool_instance = MagicMock()
@@ -154,7 +154,7 @@ class TestConnectionManagement(TestConbusService):
         assert service.is_connected is False
         mock_pool_instance.close.assert_called_once()
 
-    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    @patch("xp.services.conbus.conbus_connection_pool.ConbusConnectionPool")
     def test_disconnect_with_error(self, mock_pool_class, service):
         """Test disconnection with connection pool error"""
         mock_pool_instance = MagicMock()
@@ -194,7 +194,7 @@ class TestConnectionStatus(TestConbusService):
 class TestContextManager(TestConbusService):
     """Test context manager functionality"""
 
-    @patch("xp.services.conbus_connection_pool.ConbusConnectionPool")
+    @patch("xp.services.conbus.conbus_connection_pool.ConbusConnectionPool")
     def test_context_manager_enter_exit(self, mock_pool_class, service):
         """Test context manager enter and exit"""
         mock_pool_instance = MagicMock()
@@ -215,7 +215,7 @@ class TestContextManager(TestConbusService):
 class TestErrorHandling(TestConbusService):
     """Test error handling scenarios"""
 
-    @patch("xp.services.conbus_service.ConbusConnectionPool")
+    @patch("xp.services.conbus.conbus_service.ConbusConnectionPool")
     def test_response_receiving_error(self, mock_pool_class, service, mock_socket):
         """Test error handling during response receiving"""
         mock_pool_instance = MagicMock()

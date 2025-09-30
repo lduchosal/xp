@@ -4,11 +4,11 @@ import click
 import json
 
 from ..utils.serial_number_type import SERIAL
-from ...models.action_type import ActionType
-from ...services.conbus_datapoint_service import (
+from xp.models.telegram.action_type import ActionType
+from ...services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
 )
-from ...services.conbus_output_service import ConbusOutputService
+from ...services.conbus.conbus_output_service import ConbusOutputService
 from ..utils.decorators import (
     connection_command,
     handle_service_errors,

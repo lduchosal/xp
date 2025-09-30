@@ -10,7 +10,7 @@ from ..utils.decorators import (
 )
 from ..utils.error_handlers import CLIErrorHandler
 from ..utils.formatters import TelegramFormatter
-from ...services.telegram_service import TelegramService, TelegramParsingError
+from ...services.telegram.telegram_service import TelegramService, TelegramParsingError
 
 
 @telegram.command("parse")

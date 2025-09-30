@@ -6,11 +6,11 @@ from unittest.mock import Mock, patch
 from click.testing import CliRunner
 
 from xp.cli.commands.conbus_actiontable_commands import conbus_download_actiontable
-from xp.services.actiontable_service import ActionTableError
-from xp.models.actiontable import ActionTable, ActionTableEntry
+from xp.services.actiontable.actiontable_service import ActionTableError
+from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models import ModuleTypeCode
-from xp.models.input_action_type import InputActionType
-from xp.models.timeparam_type import TimeParam
+from xp.models.telegram.input_action_type import InputActionType
+from xp.models.telegram.timeparam_type import TimeParam
 
 
 class TestConbusActionTableCommands:

@@ -5,8 +5,8 @@ from typing import List
 import pytest
 import yaml
 
-from xp.models.homekit_conson_config import ConsonModuleConfig
-from xp.services.homekit_config_validator import ConfigValidationService
+from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
+from xp.services.homekit.homekit_config_validator import ConfigValidationService
 
 
 class TestHomekitConfigIntegration:

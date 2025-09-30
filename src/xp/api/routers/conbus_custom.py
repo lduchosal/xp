@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from .conbus import router
 from .errors import handle_service_error
 from ..models.api import ApiResponse, ApiErrorResponse
-from ...services.conbus_custom_service import ConbusCustomService
+from ...services.conbus.conbus_custom_service import ConbusCustomService
 
 logger = logging.getLogger(__name__)
 
