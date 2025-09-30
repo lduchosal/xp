@@ -96,7 +96,7 @@ class TelegramFormatter(OutputFormatter):
         return "\n".join(lines)
 
     def format_validation_result(
-        self, parsed_telegram: Any, checksum_valid: bool, service_summary: str
+        self, parsed_telegram: Any, checksum_valid: Optional[bool], service_summary: str
     ) -> str:
         """Format telegram validation results."""
         if self.json_output:
