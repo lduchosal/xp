@@ -1,16 +1,17 @@
 """Unit tests for ActionTableService."""
 
-import pytest
 from unittest.mock import Mock, patch
 
-from xp.services.actiontable.actiontable_service import (
-    ActionTableService,
-    ActionTableError,
-)
-from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
+import pytest
+
 from xp.models import ModuleTypeCode
+from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
+from xp.services.actiontable.actiontable_service import (
+    ActionTableError,
+    ActionTableService,
+)
 
 
 class TestActionTableService:

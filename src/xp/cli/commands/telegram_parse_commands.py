@@ -10,7 +10,7 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.error_handlers import CLIErrorHandler
 from xp.cli.utils.formatters import TelegramFormatter
-from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
 
 @telegram.command("parse")

@@ -5,8 +5,10 @@ ensuring proper integration between all layers.
 """
 
 import json
+
 import pytest
 from click.testing import CliRunner
+
 from xp.cli.main import cli
 
 

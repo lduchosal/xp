@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
 from xp.models.telegram.module_type_code import MODULE_TYPE_REGISTRY
 

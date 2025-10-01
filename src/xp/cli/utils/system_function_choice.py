@@ -1,5 +1,6 @@
-import click
 from typing import Any, Optional
+
+import click
 
 from xp.models.telegram.system_function import SystemFunction
 

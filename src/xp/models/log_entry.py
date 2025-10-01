@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Union, Any
+from typing import Any, Optional, Union
 
 from xp.models.telegram.event_telegram import EventTelegram
 from xp.models.telegram.reply_telegram import ReplyTelegram

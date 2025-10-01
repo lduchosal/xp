@@ -2,12 +2,12 @@
 
 import unittest
 
-from xp.models.telegram.reply_telegram import ReplyTelegram
-from xp.models.telegram.system_telegram import SystemTelegram
-from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
-from xp.services.telegram.telegram_version_service import VersionService
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
+from xp.services.telegram.telegram_version_service import VersionService
 
 
 class TestVersionIntegration(unittest.TestCase):

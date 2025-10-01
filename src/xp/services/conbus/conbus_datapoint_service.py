@@ -5,16 +5,16 @@ various types of telegrams including discover, version, and sensor data requests
 """
 
 import logging
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
-from xp.services.conbus.conbus_service import ConbusService
 from xp.models import (
     ConbusDatapointResponse,
 )
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
-from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
+from xp.services.conbus.conbus_service import ConbusService
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
 
 class ConbusDatapointError(Exception):

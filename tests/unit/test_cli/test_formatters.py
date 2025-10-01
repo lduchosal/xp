@@ -4,12 +4,11 @@ import json
 from typing import Any
 from unittest.mock import Mock
 
-
 from xp.cli.utils.formatters import (
-    OutputFormatter,
-    TelegramFormatter,
     ListFormatter,
+    OutputFormatter,
     StatisticsFormatter,
+    TelegramFormatter,
 )
 
 

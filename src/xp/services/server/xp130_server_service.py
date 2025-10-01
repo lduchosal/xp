@@ -6,6 +6,7 @@ XP130 is an Ethernet/TCPIP interface module.
 """
 
 from typing import Dict
+
 from xp.services.server.base_server_service import BaseServerService
 
 

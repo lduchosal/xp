@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from xp.models.telegram.action_type import ActionType
 from xp.models.telegram.output_telegram import OutputTelegram

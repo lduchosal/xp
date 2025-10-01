@@ -4,12 +4,12 @@ import pytest
 
 from xp.models.actiontable.msactiontable_xp20 import InputChannel, Xp20MsActionTable
 from xp.services.actiontable.msactiontable_xp20_serializer import (
-    Xp20MsActionTableSerializer,
+    GROUP_ON_OFF_INDEX,
+    INVERT_INDEX,
+    SA_FUNCTION_INDEX,
     SHORT_LONG_INDEX,
     TA_FUNCTION_INDEX,
-    GROUP_ON_OFF_INDEX,
-    SA_FUNCTION_INDEX,
-    INVERT_INDEX,
+    Xp20MsActionTableSerializer,
 )
 from xp.utils.serialization import de_nibbles
 

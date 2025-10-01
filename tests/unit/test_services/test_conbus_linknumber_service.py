@@ -3,10 +3,10 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
-from xp.services.telegram.telegram_link_number_service import LinkNumberError
 from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse
 from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
+from xp.services.telegram.telegram_link_number_service import LinkNumberError
 
 
 class TestConbusLinknumberService:

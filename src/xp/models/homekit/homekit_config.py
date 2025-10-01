@@ -1,4 +1,4 @@
-from ipaddress import IPv6Address, IPv4Address
+from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path
 from typing import List, Union
 

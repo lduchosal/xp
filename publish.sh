@@ -34,9 +34,9 @@ done
 
 # Set total steps based on mode
 if [ "$QUALITY_ONLY" = true ]; then
-    STEPS=10
+    STEPS=12
 else
-    STEPS=16
+    STEPS=18
 fi
 STEP=0
 
@@ -109,6 +109,12 @@ run_command "pdm run refurb" "Code quality check"
 
 print_step "Linting (ruff)"
 run_command "pdm run lint" "Linting"
+
+print_step "Converting to Absolute Imports (absolufy-imports)"
+run_command "pdm run absolufy" "Import conversion"
+
+print_step "Sorting Imports (isort)"
+run_command "pdm run isort" "Import sorting"
 
 print_step "Code Formatting (black)"
 run_command "pdm run format" "Code formatting"

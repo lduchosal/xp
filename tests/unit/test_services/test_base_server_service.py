@@ -2,9 +2,9 @@
 
 from unittest.mock import Mock
 
-from xp.services.server.base_server_service import BaseServerService
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
+from xp.services.server.base_server_service import BaseServerService
 
 
 class ConcreteServerService(BaseServerService):

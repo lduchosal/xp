@@ -1,10 +1,11 @@
 import pytest
+
+from xp.models.telegram.output_telegram import OutputTelegram
+from xp.models.telegram.system_function import SystemFunction
 from xp.services.telegram.telegram_output_service import (
     TelegramOutputService,
     XPOutputError,
 )
-from xp.models.telegram.output_telegram import OutputTelegram
-from xp.models.telegram.system_function import SystemFunction
 
 
 class TestTelegramInputServiceAckNak:

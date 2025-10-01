@@ -1,9 +1,10 @@
 """Tests for ServerService."""
 
 from unittest.mock import Mock, patch
+
 import pytest
 
-from xp.services.server.server_service import ServerService, ServerError
+from xp.services.server.server_service import ServerError, ServerService
 
 
 class TestServerError:

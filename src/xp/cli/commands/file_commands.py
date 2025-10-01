@@ -1,15 +1,16 @@
 """File operations CLI commands for console bus logs."""
 
-import click
 import json
+
+import click
 from click_help_colors import HelpColorsGroup
 
 from xp.cli.utils.decorators import (
     file_operation_command,
     handle_service_errors,
 )
-from xp.cli.utils.formatters import StatisticsFormatter, OutputFormatter
 from xp.cli.utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.formatters import OutputFormatter, StatisticsFormatter
 
 
 @click.group(
@@ -43,7 +44,7 @@ def decode_log_file(
         xp file decode conbus.log
     """
     from xp.services.log_file_service import LogFileService
-    from xp.utils.time_utils import parse_time_range, TimeParsingError
+    from xp.utils.time_utils import TimeParsingError, parse_time_range
 
     service = LogFileService()
     StatisticsFormatter(True)

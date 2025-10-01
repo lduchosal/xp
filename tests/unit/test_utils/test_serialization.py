@@ -1,13 +1,13 @@
 """Unit tests for serialization utilities."""
 
 from xp.utils.serialization import (
-    de_bcd,
-    to_bcd,
-    lower3,
-    upper5,
-    byte_to_bits,
     bits_to_byte,
+    byte_to_bits,
     byte_to_unsigned,
+    de_bcd,
+    lower3,
+    to_bcd,
+    upper5,
 )
 
 

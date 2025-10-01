@@ -2,9 +2,10 @@
 
 import logging
 import os
-import yaml
 from pathlib import Path
 from typing import Any
+
+import yaml
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

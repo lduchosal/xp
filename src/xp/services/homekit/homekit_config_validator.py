@@ -1,5 +1,5 @@
-from typing import List, Set
 from contextlib import suppress
+from typing import List, Set
 
 from xp.models.homekit.homekit_config import HomekitConfig
 from xp.services.homekit.homekit_conson_config_service import ConsonConfigValidator
@@ -179,8 +179,8 @@ class ConfigValidationService:
     """Main service for validating HomeKit configuration coherence."""
 
     def __init__(self, conson_config_path: str, homekit_config_path: str):
-        from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
         from xp.models.homekit.homekit_config import HomekitConfig
+        from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 
         self.conson_config = ConsonModuleListConfig.from_yaml(conson_config_path)
         self.homekit_config = HomekitConfig.from_yaml(homekit_config_path)

@@ -6,7 +6,7 @@ and reading temperature from modules.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any, Optional
 
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction

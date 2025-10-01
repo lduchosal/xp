@@ -1,6 +1,7 @@
 # save as click_tree.py
-import click
 from typing import Any
+
+import click
 
 
 def add_tree_command(cli_group: click.Group, command_name: str = "help") -> Any:

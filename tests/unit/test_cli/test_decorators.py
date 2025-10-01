@@ -1,19 +1,19 @@
 """Tests for CLI decorators."""
 
 import click
-from click.testing import CliRunner
 import pytest
+from click.testing import CliRunner
 
 from xp.cli.utils.decorators import (
-    handle_service_errors,
     common_options,
-    telegram_parser_command,
-    service_command,
-    list_command,
-    file_operation_command,
-    with_formatter,
-    require_arguments,
     connection_command,
+    file_operation_command,
+    handle_service_errors,
+    list_command,
+    require_arguments,
+    service_command,
+    telegram_parser_command,
+    with_formatter,
 )
 from xp.cli.utils.formatters import OutputFormatter, TelegramFormatter
 

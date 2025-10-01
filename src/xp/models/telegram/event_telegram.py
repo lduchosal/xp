@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any, Optional
 
-from xp.models.telegram.input_type import InputType
 from xp.models.telegram.event_type import EventType
+from xp.models.telegram.input_type import InputType
 from xp.models.telegram.module_type import ModuleType
 from xp.models.telegram.telegram import Telegram
 from xp.models.telegram.telegram_type import TelegramType

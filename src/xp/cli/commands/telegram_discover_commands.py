@@ -9,8 +9,8 @@ from xp.cli.utils.decorators import handle_service_errors
 from xp.cli.utils.error_handlers import CLIErrorHandler
 from xp.cli.utils.formatters import OutputFormatter
 from xp.services.telegram.telegram_discover_service import (
-    TelegramDiscoverService,
     DiscoverError,
+    TelegramDiscoverService,
 )
 
 

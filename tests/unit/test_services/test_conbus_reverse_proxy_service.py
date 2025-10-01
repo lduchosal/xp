@@ -8,8 +8,8 @@ from unittest.mock import Mock, patch
 import pytest
 
 from xp.services.reverse_proxy_service import (
-    ReverseProxyService,
     ReverseProxyError,
+    ReverseProxyService,
 )
 
 

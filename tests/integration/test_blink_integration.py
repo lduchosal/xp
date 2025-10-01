@@ -1,11 +1,12 @@
 """Integration tests for blink functionality"""
 
 import pytest
-from xp.services.telegram.telegram_blink_service import TelegramBlinkService, BlinkError
-from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
-from xp.models.telegram.system_telegram import SystemTelegram
-from xp.models.telegram.system_function import SystemFunction
+
 from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
+from xp.services.telegram.telegram_blink_service import BlinkError, TelegramBlinkService
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
 
 class TestBlinkIntegration:

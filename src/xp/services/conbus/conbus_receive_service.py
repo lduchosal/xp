@@ -5,10 +5,10 @@ allowing clients to receive waiting event telegrams using empty telegram sends.
 """
 
 import logging
-from typing import Optional, Any
+from typing import Any, Optional
 
-from xp.services.conbus.conbus_service import ConbusService, ConbusError
 from xp.models.conbus.conbus_receive import ConbusReceiveResponse
+from xp.services.conbus.conbus_service import ConbusError, ConbusService
 
 
 class ConbusReceiveError(ConbusError):

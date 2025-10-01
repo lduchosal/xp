@@ -2,9 +2,9 @@
 
 import pytest
 
+from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.services.actiontable.msactiontable_xp24_serializer import (
     Xp24MsActionTableSerializer,
 )

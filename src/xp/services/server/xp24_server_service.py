@@ -6,9 +6,9 @@ including response generation and device configuration handling.
 
 from typing import Dict, Optional
 
-from xp.models.telegram.system_telegram import SystemTelegram
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
 from xp.services.server.base_server_service import BaseServerService
 
 

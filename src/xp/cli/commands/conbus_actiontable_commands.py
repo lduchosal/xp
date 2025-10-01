@@ -5,17 +5,16 @@ from dataclasses import asdict
 
 import click
 
+from xp.cli.commands.conbus import conbus_actiontable
 from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.services.actiontable.actiontable_service import (
-    ActionTableService,
     ActionTableError,
+    ActionTableService,
 )
-
-from xp.cli.commands.conbus import conbus_actiontable
 
 
 @conbus_actiontable.command("download", short_help="Download ActionTable")

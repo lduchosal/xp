@@ -1,16 +1,15 @@
 """Conbus emulator server operations CLI commands."""
 
-from typing import Optional, Dict, Any
+import json
+from typing import Any, Dict, Optional
 
 import click
-import json
 from click_help_colors import HelpColorsGroup
 
-from xp.services.server.server_service import ServerService, ServerError
 from xp.cli.utils.decorators import handle_service_errors
-from xp.cli.utils.formatters import OutputFormatter
 from xp.cli.utils.error_handlers import ServerErrorHandler
-
+from xp.cli.utils.formatters import OutputFormatter
+from xp.services.server.server_service import ServerError, ServerService
 
 # Global server instance
 _server_instance: Optional[ServerService] = None

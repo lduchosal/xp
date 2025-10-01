@@ -6,7 +6,6 @@ the XP protocol serializers for consistent data encoding/decoding.
 
 from typing import List
 
-
 # BCD and bit manipulation constants
 UPPER4 = 240  # 0xF0
 LOWER4 = 15  # 0x0F

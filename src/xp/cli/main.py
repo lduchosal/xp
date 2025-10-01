@@ -6,7 +6,6 @@ import click
 from click_help_colors import HelpColorsGroup
 
 from xp.cli.commands import homekit
-from xp.cli.utils.click_tree import add_tree_command
 from xp.cli.commands.api import api
 from xp.cli.commands.cache_commands import cache
 from xp.cli.commands.conbus import conbus
@@ -19,6 +18,7 @@ from xp.cli.commands.server_commands import server
 
 # Import command groups from modular structure
 from xp.cli.commands.telegram_parse_commands import telegram
+from xp.cli.utils.click_tree import add_tree_command
 
 
 @click.group(

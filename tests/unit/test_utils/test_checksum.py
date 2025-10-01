@@ -5,12 +5,13 @@ the expected behavior
 """
 
 import pytest
+
 from xp.utils.checksum import calculate_checksum, calculate_checksum32
 from xp.utils.serialization import (
-    de_bcd,
     byte_to_unsigned,
-    nibble,
+    de_bcd,
     de_nibbles,
+    nibble,
 )
 
 

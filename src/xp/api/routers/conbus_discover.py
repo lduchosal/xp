@@ -2,14 +2,15 @@
 
 import logging
 from typing import Union
+
 from fastapi.responses import JSONResponse
 
+from xp.api.models.discover import (
+    DiscoverErrorResponse,
+    DiscoverResponse,
+)
 from xp.api.routers.conbus import router
 from xp.api.routers.errors import handle_service_error
-from xp.api.models.discover import (
-    DiscoverResponse,
-    DiscoverErrorResponse,
-)
 from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
 
 logger = logging.getLogger(__name__)

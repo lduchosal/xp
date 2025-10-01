@@ -1,19 +1,20 @@
 """Conbus client operations CLI commands."""
 
-import click
 import json
 
+import click
+
+from xp.cli.commands.conbus import conbus_output
+from xp.cli.utils.decorators import (
+    connection_command,
+    handle_service_errors,
+)
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.telegram.action_type import ActionType
 from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
 )
 from xp.services.conbus.conbus_output_service import ConbusOutputService
-from xp.cli.utils.decorators import (
-    connection_command,
-    handle_service_errors,
-)
-from xp.cli.commands.conbus import conbus_output
 
 
 @conbus_output.command("on")

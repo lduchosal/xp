@@ -6,10 +6,11 @@ used for setting and reading module link numbers.
 
 from contextlib import suppress
 from typing import Optional
-from xp.models.telegram.system_telegram import SystemTelegram
+
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
 from xp.utils.checksum import calculate_checksum
 
 

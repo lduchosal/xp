@@ -1,7 +1,7 @@
 """Output formatting utilities for CLI commands."""
 
 import json
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 
 class OutputFormatter:

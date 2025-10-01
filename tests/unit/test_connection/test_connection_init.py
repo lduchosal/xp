@@ -1,7 +1,7 @@
 """Tests for connection module initialization."""
 
-from xp.connection import XPError, ProtocolError, ValidationError
 import xp.connection as connection_module
+from xp.connection import ProtocolError, ValidationError, XPError
 
 
 class TestConnectionInit:

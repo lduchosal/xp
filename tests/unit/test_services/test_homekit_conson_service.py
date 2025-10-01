@@ -1,4 +1,5 @@
 import pytest
+
 from xp.models.homekit.homekit_conson_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,

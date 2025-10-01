@@ -1,13 +1,14 @@
 """Cache operations CLI commands for HomeKit cache service."""
 
-import click
 import json
+
+import click
 from click_help_colors import HelpColorsGroup
 
-from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.cli.utils.decorators import list_command
-from xp.cli.utils.formatters import OutputFormatter
 from xp.cli.utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.formatters import OutputFormatter
+from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 
 
 @click.group(

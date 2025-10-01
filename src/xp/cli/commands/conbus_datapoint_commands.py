@@ -4,6 +4,8 @@ import json
 
 import click
 
+from xp.cli.commands.conbus import conbus_datapoint
+
 # Import will be handled by conbus.py registration
 from xp.cli.utils.datapoint_type_choice import DATAPOINT
 from xp.cli.utils.decorators import (
@@ -11,11 +13,10 @@ from xp.cli.utils.decorators import (
     handle_service_errors,
 )
 from xp.cli.utils.serial_number_type import SERIAL
-from xp.cli.commands.conbus import conbus_datapoint
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_datapoint_service import (
-    ConbusDatapointService,
     ConbusDatapointError,
+    ConbusDatapointService,
 )
 
 

@@ -1,6 +1,7 @@
 """Tests for CLI error handlers."""
 
 import json
+
 import pytest
 
 from xp.cli.utils.error_handlers import CLIErrorHandler, ServerErrorHandler

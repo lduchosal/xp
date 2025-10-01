@@ -1,7 +1,7 @@
 from pathlib import Path
+from typing import List, Optional
 
 from pydantic import BaseModel, IPvAnyAddress
-from typing import List, Optional
 
 
 class ConsonModuleConfig(BaseModel):

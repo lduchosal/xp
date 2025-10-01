@@ -5,12 +5,12 @@ containing common functionality like module type response generation.
 """
 
 import logging
-from typing import Optional
 from abc import ABC
+from typing import Optional
 
-from xp.models.telegram.system_telegram import SystemTelegram
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
 from xp.utils.checksum import calculate_checksum
 
 

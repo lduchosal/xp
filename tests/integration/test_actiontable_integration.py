@@ -1,17 +1,18 @@
 """Integration tests for ActionTable functionality."""
 
-import pytest
-from unittest.mock import Mock, patch
 import json
+from unittest.mock import Mock, patch
+
+import pytest
 from click.testing import CliRunner
 
-from xp.services.actiontable.actiontable_service import ActionTableService
-from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.cli.commands.conbus_actiontable_commands import conbus_download_actiontable
-from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models import ModuleTypeCode
+from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
+from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
+from xp.services.actiontable.actiontable_service import ActionTableService
 
 
 class TestActionTableIntegration:
@@ -134,7 +135,7 @@ class TestActionTableIntegration:
 
     def test_bcd_encoding_decoding(self):
         """Test BCD encoding/decoding functionality"""
-        from xp.utils.serialization import to_bcd, de_bcd
+        from xp.utils.serialization import de_bcd, to_bcd
 
         # Test BCD conversion
         test_values = [0, 5, 10, 15, 25, 99]

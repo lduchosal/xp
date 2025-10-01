@@ -1,16 +1,17 @@
 """Unit tests for conbus actiontable CLI commands."""
 
 import json
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 from click.testing import CliRunner
 
 from xp.cli.commands.conbus_actiontable_commands import conbus_download_actiontable
-from xp.services.actiontable.actiontable_service import ActionTableError
-from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models import ModuleTypeCode
+from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
+from xp.services.actiontable.actiontable_service import ActionTableError
 
 
 class TestConbusActionTableCommands:

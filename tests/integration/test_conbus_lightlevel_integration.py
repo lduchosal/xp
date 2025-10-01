@@ -2,14 +2,15 @@
 
 from datetime import datetime
 from unittest.mock import Mock, patch
+
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.services.conbus.conbus_lightlevel_service import (
-    ConbusLightlevelService,
-    ConbusLightlevelError,
-)
 from xp.models.conbus.conbus_lightlevel import ConbusLightlevelResponse
+from xp.services.conbus.conbus_lightlevel_service import (
+    ConbusLightlevelError,
+    ConbusLightlevelService,
+)
 
 
 class TestConbusLightlevelIntegration:
@@ -312,8 +313,8 @@ class TestConbusLightlevelService:
         assert result.error is None
 
         # Verify telegram was sent correctly
-        from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.datapoint_type import DataPointType
+        from xp.models.telegram.system_function import SystemFunction
 
         mock_conbus_service.send_telegram.assert_called_once_with(
             self.valid_serial,

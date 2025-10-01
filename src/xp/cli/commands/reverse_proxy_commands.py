@@ -1,22 +1,21 @@
 """Conbus reverse proxy operations CLI commands."""
 
-import click
 import json
 import signal
 import sys
+from types import FrameType
+from typing import Any, Dict, Optional
+
+import click
 from click_help_colors import HelpColorsGroup
 
-from typing import Optional, Dict, Any
-from types import FrameType
-
-from xp.services.reverse_proxy_service import (
-    ReverseProxyService,
-    ReverseProxyError,
-)
 from xp.cli.utils.decorators import handle_service_errors
-from xp.cli.utils.formatters import OutputFormatter
 from xp.cli.utils.error_handlers import CLIErrorHandler
-
+from xp.cli.utils.formatters import OutputFormatter
+from xp.services.reverse_proxy_service import (
+    ReverseProxyError,
+    ReverseProxyService,
+)
 
 # Global proxy instance
 global_proxy_instance: Optional[ReverseProxyService] = None

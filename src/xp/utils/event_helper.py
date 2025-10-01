@@ -4,7 +4,7 @@ This module provides clean, reusable utilities for handling PyDispatcher
 responses across all HomeKit accessory classes.
 """
 
-from typing import Any, List, Tuple, Callable
+from typing import Any, Callable, List, Tuple
 
 
 def get_first_response(

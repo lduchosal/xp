@@ -4,7 +4,7 @@ Tests the complete flow from CLI input to output,
 ensuring proper integration between all layers.
 """
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
 

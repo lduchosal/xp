@@ -1,5 +1,6 @@
-import click
 from typing import Any, Optional
+
+import click
 
 
 class XpModuleTypeChoice(click.ParamType):

@@ -1,14 +1,15 @@
 """Integration tests for Conbus auto report functionality"""
 
 from unittest.mock import Mock, patch
+
 from click.testing import CliRunner
 
 from xp.cli.main import cli
-from xp.services.conbus.conbus_autoreport_service import (
-    ConbusAutoreportService,
-    ConbusAutoreportError,
-)
 from xp.models.conbus.conbus_autoreport import ConbusAutoreportResponse
+from xp.services.conbus.conbus_autoreport_service import (
+    ConbusAutoreportError,
+    ConbusAutoreportService,
+)
 
 
 class TestConbusAutoreportIntegration:

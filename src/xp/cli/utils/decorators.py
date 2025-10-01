@@ -1,7 +1,7 @@
 """Common decorators for CLI commands."""
 
 import functools
-from typing import Tuple, Type, Callable, Any
+from typing import Any, Callable, Tuple, Type
 
 import click
 

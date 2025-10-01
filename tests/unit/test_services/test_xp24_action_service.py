@@ -1,14 +1,15 @@
 """Unit tests for XP24ActionService."""
 
-import pytest
 from unittest.mock import patch
 
+import pytest
+
+from xp.models.telegram.action_type import ActionType
+from xp.models.telegram.output_telegram import OutputTelegram
 from xp.services.telegram.telegram_output_service import (
     TelegramOutputService,
     XPOutputError,
 )
-from xp.models.telegram.output_telegram import OutputTelegram
-from xp.models.telegram.action_type import ActionType
 
 
 class TestXP24ActionService:

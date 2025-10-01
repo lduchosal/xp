@@ -9,8 +9,8 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.error_handlers import CLIErrorHandler
 from xp.services.conbus.conbus_receive_service import (
-    ConbusReceiveService,
     ConbusReceiveError,
+    ConbusReceiveService,
 )
 
 

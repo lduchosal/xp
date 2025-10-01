@@ -10,8 +10,8 @@ from xp.cli.utils.decorators import (
     handle_service_errors,
 )
 from xp.services.conbus.conbus_discover_service import (
-    ConbusDiscoverService,
     ConbusDiscoverError,
+    ConbusDiscoverService,
 )
 
 

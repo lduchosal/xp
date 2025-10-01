@@ -1,17 +1,18 @@
 """Version information operations CLI commands."""
 
-import click
 import json
 
-from xp.services.telegram.telegram_version_service import (
-    VersionService,
-    VersionParsingError,
-)
-from xp.cli.utils.decorators import handle_service_errors
-from xp.cli.utils.formatters import OutputFormatter
-from xp.cli.utils.error_handlers import CLIErrorHandler
-from xp.cli.utils.serial_number_type import SERIAL
+import click
+
 from xp.cli.commands.telegram import telegram
+from xp.cli.utils.decorators import handle_service_errors
+from xp.cli.utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.formatters import OutputFormatter
+from xp.cli.utils.serial_number_type import SERIAL
+from xp.services.telegram.telegram_version_service import (
+    VersionParsingError,
+    VersionService,
+)
 
 
 @telegram.command("version")

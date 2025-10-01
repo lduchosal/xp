@@ -1,11 +1,13 @@
 """Tests for BlinkService"""
 
-import pytest
-from xp.services.telegram.telegram_blink_service import TelegramBlinkService, BlinkError
-from xp.models.telegram.system_telegram import SystemTelegram
-from xp.models.telegram.system_function import SystemFunction
-from xp.models.telegram.reply_telegram import ReplyTelegram
 from unittest.mock import Mock
+
+import pytest
+
+from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
+from xp.services.telegram.telegram_blink_service import BlinkError, TelegramBlinkService
 
 
 class TestBlinkService:

@@ -7,8 +7,8 @@ from unittest.mock import Mock, patch
 
 from xp.models import ConbusDatapointResponse
 from xp.models.cache import CacheEntry
-from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.response import Response
+from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 
 

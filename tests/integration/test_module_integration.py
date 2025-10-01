@@ -1,5 +1,7 @@
-from click.testing import CliRunner
 import json
+
+from click.testing import CliRunner
+
 from xp.cli.main import cli
 
 

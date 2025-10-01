@@ -1,17 +1,17 @@
 from xp.models.homekit.homekit_config import (
-    HomekitConfig,
-    HomekitAccessoryConfig,
-    RoomConfig,
     BridgeConfig,
+    HomekitAccessoryConfig,
+    HomekitConfig,
     NetworkConfig,
+    RoomConfig,
 )
 from xp.models.homekit.homekit_conson_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
 )
 from xp.services.homekit.homekit_config_validator import (
-    HomekitConfigValidator,
     CrossReferenceValidator,
+    HomekitConfigValidator,
 )
 from xp.services.homekit.homekit_conson_config_service import ConsonConfigValidator
 

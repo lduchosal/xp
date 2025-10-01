@@ -3,8 +3,8 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from xp.models.telegram.output_telegram import OutputTelegram
 from xp.models.telegram.action_type import ActionType
+from xp.models.telegram.output_telegram import OutputTelegram
 from xp.models.telegram.system_function import SystemFunction
 
 

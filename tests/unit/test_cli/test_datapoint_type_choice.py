@@ -1,10 +1,10 @@
 """Tests for datapoint type choice parameter type."""
 
-import pytest
 import click
+import pytest
 from click.testing import CliRunner
 
-from xp.cli.utils.datapoint_type_choice import DatapointTypeChoice, DATAPOINT
+from xp.cli.utils.datapoint_type_choice import DATAPOINT, DatapointTypeChoice
 from xp.models.telegram.datapoint_type import DataPointType
 
 

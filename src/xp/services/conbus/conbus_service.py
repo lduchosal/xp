@@ -8,20 +8,20 @@ import logging
 import socket
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 import yaml
 from typing_extensions import Callable
 
-from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
 from xp.models import (
     ConbusClientConfig,
+    ConbusConnectionStatus,
     ConbusRequest,
     ConbusResponse,
-    ConbusConnectionStatus,
 )
 from xp.models.response import Response
 from xp.models.telegram.system_function import SystemFunction
+from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
 from xp.utils.checksum import calculate_checksum
 
 

@@ -6,9 +6,9 @@ various types of telegrams including discover, version, and sensor data requests
 
 import logging
 
-from xp.services.conbus.conbus_service import ConbusService
 from xp.models.conbus.conbus_custom import ConbusCustomResponse
 from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.services.conbus.conbus_service import ConbusService
 from xp.services.telegram.telegram_service import TelegramService
 
 

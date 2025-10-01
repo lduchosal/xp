@@ -1,14 +1,16 @@
 """Tests for time parsing utilities"""
 
-import pytest
 from datetime import datetime
+
+import pytest
+
 from xp.utils.time_utils import (
-    parse_log_timestamp,
     TimeParsingError,
-    format_log_timestamp,
-    parse_time_range,
     calculate_duration_ms,
+    format_log_timestamp,
     is_valid_log_timestamp,
+    parse_log_timestamp,
+    parse_time_range,
 )
 
 

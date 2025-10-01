@@ -1,15 +1,15 @@
 """Module type operations CLI commands."""
 
 import json
-from typing import Union, Dict, Any
+from typing import Any, Dict, Union
 
 import click
 from click_help_colors import HelpColorsGroup
 
 from xp.cli.utils.decorators import list_command
 from xp.cli.utils.error_handlers import CLIErrorHandler
-from xp.cli.utils.formatters import OutputFormatter, ListFormatter
-from xp.services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
+from xp.cli.utils.formatters import ListFormatter, OutputFormatter
+from xp.services.module_type_service import ModuleTypeNotFoundError, ModuleTypeService
 
 
 @click.group(

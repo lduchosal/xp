@@ -1,13 +1,14 @@
 """Checksum calculation and validation CLI commands."""
 
-import click
 import json
 
-from xp.services.telegram.telegram_checksum_service import TelegramChecksumService
-from xp.cli.utils.decorators import handle_service_errors
-from xp.cli.utils.formatters import OutputFormatter
-from xp.cli.utils.error_handlers import CLIErrorHandler
+import click
+
 from xp.cli.commands.telegram import checksum
+from xp.cli.utils.decorators import handle_service_errors
+from xp.cli.utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.formatters import OutputFormatter
+from xp.services.telegram.telegram_checksum_service import TelegramChecksumService
 
 
 @checksum.command("calculate")

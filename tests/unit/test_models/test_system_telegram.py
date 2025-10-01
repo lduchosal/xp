@@ -4,11 +4,13 @@ Tests the system telegram model functionality including parsing,
 validation, and data structure integrity.
 """
 
-import pytest
 from datetime import datetime
-from xp.models.telegram.system_telegram import SystemTelegram
+
+import pytest
+
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
 
 
 class TestSystemFunction:

@@ -3,21 +3,21 @@ import signal
 from datetime import datetime
 from typing import Optional
 
-from pyhap.accessory import Bridge, Accessory
+from pyhap.accessory import Accessory, Bridge
 from pyhap.accessory_driver import AccessoryDriver
 from typing_extensions import Union
 
 import xp
 from xp.models.homekit.homekit_accessory import TemperatureSensor
 from xp.models.homekit.homekit_config import (
-    HomekitConfig,
     HomekitAccessoryConfig,
+    HomekitConfig,
     RoomConfig,
 )
-from xp.services.homekit.homekit_outlet import Outlet
-from xp.services.homekit.homekit_lightbulb import LightBulb
 from xp.services.homekit.homekit_dimminglight import DimmingLight
+from xp.services.homekit.homekit_lightbulb import LightBulb
 from xp.services.homekit.homekit_module_service import HomekitModuleService
+from xp.services.homekit.homekit_outlet import Outlet
 
 
 class HomekitService:

@@ -1,19 +1,19 @@
 """Serializer for ActionTable telegram encoding/decoding."""
 
-from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models import ModuleTypeCode
+from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.utils.serialization import (
-    de_bcd,
-    to_bcd,
-    lower3,
-    upper5,
-    de_nibbles,
-    nibbles,
     byte_to_unsigned,
-    remove_highest_bit,
+    de_bcd,
+    de_nibbles,
     highest_bit_set,
+    lower3,
+    nibbles,
+    remove_highest_bit,
+    to_bcd,
+    upper5,
 )
 
 

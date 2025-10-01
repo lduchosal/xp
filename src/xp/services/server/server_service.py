@@ -10,19 +10,19 @@ import threading
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 
-from xp.services.server.base_server_service import BaseServerService
 from xp.models.homekit.homekit_conson_config import (
-    ConsonModuleListConfig,
     ConsonModuleConfig,
+    ConsonModuleListConfig,
 )
+from xp.services.server.base_server_service import BaseServerService
 from xp.services.server.cp20_server_service import CP20ServerService
-from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
-from xp.services.telegram.telegram_service import TelegramService
-from xp.services.server.xp130_server_service import XP130ServerService
 from xp.services.server.xp20_server_service import XP20ServerService
-from xp.services.server.xp230_server_service import XP230ServerService
 from xp.services.server.xp24_server_service import XP24ServerService
 from xp.services.server.xp33_server_service import XP33ServerService
+from xp.services.server.xp130_server_service import XP130ServerService
+from xp.services.server.xp230_server_service import XP230ServerService
+from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class ServerError(Exception):

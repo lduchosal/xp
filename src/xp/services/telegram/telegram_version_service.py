@@ -5,11 +5,12 @@ following the layered architecture pattern.
 """
 
 import re
+
 from xp.models.response import Response
-from xp.models.telegram.system_telegram import SystemTelegram
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
 from xp.utils.checksum import calculate_checksum
 
 

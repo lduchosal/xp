@@ -1,9 +1,9 @@
 """Connection layer for XP CLI tool"""
 
 from xp.connection.exceptions import (
-    XPError,
     ProtocolError,
     ValidationError,
+    XPError,
 )
 
 __all__ = [

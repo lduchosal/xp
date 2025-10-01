@@ -1,15 +1,16 @@
 """Integration tests for link number functionality"""
 
 import pytest
-from xp.services.telegram.telegram_link_number_service import (
-    LinkNumberService,
-    LinkNumberError,
-)
-from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
-from xp.models.telegram.system_telegram import SystemTelegram
+
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
+from xp.services.telegram.telegram_link_number_service import (
+    LinkNumberError,
+    LinkNumberService,
+)
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
 
 class TestLinkNumberIntegration:

@@ -8,7 +8,7 @@ from xp.cli.utils.decorators import (
     handle_service_errors,
 )
 from xp.cli.utils.error_handlers import CLIErrorHandler
-from xp.services.conbus.conbus_raw_service import ConbusRawService, ConbusRawError
+from xp.services.conbus.conbus_raw_service import ConbusRawError, ConbusRawService
 
 
 @conbus.command("raw")

@@ -1,14 +1,15 @@
 """Unit tests for XP33 Action Table Serializer."""
 
-import pytest
 from contextlib import suppress
 
-from xp.models.telegram.timeparam_type import TimeParam
+import pytest
+
 from xp.models.actiontable.msactiontable_xp33 import (
     Xp33MsActionTable,
     Xp33Output,
     Xp33Scene,
 )
+from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )

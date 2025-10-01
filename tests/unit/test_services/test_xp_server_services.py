@@ -2,11 +2,11 @@
 
 from unittest.mock import Mock
 
-from xp.services.server.xp33_server_service import XP33ServerService
+from xp.services.server.cp20_server_service import CP20ServerService
 from xp.services.server.xp20_server_service import XP20ServerService
+from xp.services.server.xp33_server_service import XP33ServerService
 from xp.services.server.xp130_server_service import XP130ServerService
 from xp.services.server.xp230_server_service import XP230ServerService
-from xp.services.server.cp20_server_service import CP20ServerService
 
 
 class TestXP33ServerService:

@@ -2,7 +2,7 @@
 
 import pytest
 
-from xp.connection.exceptions import XPError, ProtocolError, ValidationError
+from xp.connection.exceptions import ProtocolError, ValidationError, XPError
 
 
 class TestXPError:

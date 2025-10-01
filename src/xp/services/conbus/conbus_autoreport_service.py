@@ -6,13 +6,13 @@ This service handles auto report status operations for modules through Conbus te
 import logging
 from typing import Any, Optional
 
-from xp.services.telegram.telegram_service import TelegramService
-from xp.services.conbus.conbus_service import ConbusService
-from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.models.conbus.conbus_autoreport import ConbusAutoreportResponse
-from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
+from xp.services.conbus.conbus_service import ConbusService
+from xp.services.telegram.telegram_service import TelegramService
 from xp.utils.checksum import calculate_checksum
 
 

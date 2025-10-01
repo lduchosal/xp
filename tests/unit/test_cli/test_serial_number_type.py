@@ -1,7 +1,8 @@
-import pytest
 import click
+import pytest
 from click.testing import CliRunner
-from xp.cli.utils.serial_number_type import SerialNumberParamType, SERIAL
+
+from xp.cli.utils.serial_number_type import SERIAL, SerialNumberParamType
 
 
 class TestSerialNumberParamType:

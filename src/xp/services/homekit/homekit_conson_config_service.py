@@ -1,4 +1,5 @@
 from typing import List, Set
+
 from xp.models.homekit.homekit_conson_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,

@@ -1,17 +1,18 @@
 """Conbus auto report CLI commands."""
 
 import json
+
 import click
 
+from xp.cli.commands.conbus import conbus_autoreport
 from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from xp.cli.commands.conbus import conbus_autoreport
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.services.conbus.conbus_autoreport_service import (
-    ConbusAutoreportService,
     ConbusAutoreportError,
+    ConbusAutoreportService,
 )
 
 

@@ -41,6 +41,7 @@ dev = [
     "types-PyYAML",
     "refurb>=2.2.0",
     "pdm-backend>=2.4.5",
+    "isort>=6.0.1",
 ]
 
 [tool.pytest.ini_options]
@@ -120,6 +121,15 @@ disable_error_code = ["method-assign"]
 module = "tests.*"
 disallow_untyped_defs = false
 
+[tool.isort]
+profile = "black"
+src_paths = ["src", "tests"]
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
 
 [tool.pdm]
 distribution = true
@@ -137,6 +147,7 @@ format = "black src/ tests/"
 typecheck = "mypy src/ tests/"
 vulture = "vulture src/ tests/"
 refurb = "refurb src/ tests/"
+isort = "isort src/ tests/"
 absolufy = {shell = "find src tests -name '*.py' -type f -exec absolufy-imports --application-directories=src:tests {} +"}
 check = ["lint", "format", "typecheck", "refurb", "deadvar", "test"]
 bump-version = "pdm bump -v patch"

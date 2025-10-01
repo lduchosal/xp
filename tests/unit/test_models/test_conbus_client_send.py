@@ -1,9 +1,10 @@
 from datetime import datetime
+
 from xp.models import (
     ConbusClientConfig,
     ConbusConnectionStatus,
+    ConbusDatapointResponse,
 )
-from xp.models import ConbusDatapointResponse
 
 
 class TestTelegramType:

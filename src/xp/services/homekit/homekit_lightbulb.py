@@ -4,9 +4,9 @@ from pyhap.accessory import Accessory
 from pyhap.accessory_driver import AccessoryDriver
 from pyhap.const import CATEGORY_LIGHTBULB
 
-from xp.models.telegram.action_type import ActionType
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
+from xp.models.telegram.action_type import ActionType
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 

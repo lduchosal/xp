@@ -6,13 +6,16 @@ This service handles setting link numbers for modules through Conbus telegrams.
 import logging
 from typing import Any, Optional
 
-from xp.services.telegram.telegram_service import TelegramService
-from xp.services.conbus.conbus_service import ConbusService
-from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
-from xp.services.telegram.telegram_link_number_service import LinkNumberService, LinkNumberError
 from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse
-from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
+from xp.services.conbus.conbus_service import ConbusService
+from xp.services.telegram.telegram_link_number_service import (
+    LinkNumberError,
+    LinkNumberService,
+)
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class ConbusLinknumberService:

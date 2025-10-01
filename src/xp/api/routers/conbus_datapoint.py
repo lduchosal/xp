@@ -5,11 +5,11 @@ from typing import Union
 
 from fastapi.responses import JSONResponse
 
+from xp.api.models.api import ApiErrorResponse, ApiResponse
 from xp.api.routers.conbus import router
 from xp.api.routers.errors import handle_service_error
-from xp.api.models.api import ApiResponse, ApiErrorResponse
-from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 
 logger = logging.getLogger(__name__)
 

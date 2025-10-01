@@ -5,8 +5,9 @@ following the layered architecture pattern.
 """
 
 from typing import Union
-from xp.utils.checksum import calculate_checksum, calculate_checksum32
+
 from xp.models.response import Response
+from xp.utils.checksum import calculate_checksum, calculate_checksum32
 
 
 class TelegramChecksumService:

@@ -1,7 +1,9 @@
 """Error handling utilities for CLI commands."""
 
+from typing import Any, Dict, Optional
+
 import click
-from typing import Dict, Any, Optional
+
 from xp.cli.utils.formatters import OutputFormatter
 
 

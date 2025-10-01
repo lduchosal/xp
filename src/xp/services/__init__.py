@@ -1,10 +1,16 @@
 """Service layer for XP CLI tool"""
 
-from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
-from xp.services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
-from xp.services.log_file_service import LogFileService, LogFileParsingError
-from xp.services.telegram.telegram_link_number_service import LinkNumberService, LinkNumberError
-from xp.services.telegram.telegram_discover_service import TelegramDiscoverService, DiscoverError
+from xp.services.log_file_service import LogFileParsingError, LogFileService
+from xp.services.module_type_service import ModuleTypeNotFoundError, ModuleTypeService
+from xp.services.telegram.telegram_discover_service import (
+    DiscoverError,
+    TelegramDiscoverService,
+)
+from xp.services.telegram.telegram_link_number_service import (
+    LinkNumberError,
+    LinkNumberService,
+)
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
 __all__ = [
     "TelegramService",

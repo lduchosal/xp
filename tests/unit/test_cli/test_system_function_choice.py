@@ -1,10 +1,10 @@
 """Tests for system function choice parameter type."""
 
-import pytest
 import click
+import pytest
 from click.testing import CliRunner
 
-from xp.cli.utils.system_function_choice import SystemFunctionChoice, SYSTEM_FUNCTION
+from xp.cli.utils.system_function_choice import SYSTEM_FUNCTION, SystemFunctionChoice
 from xp.models.telegram.system_function import SystemFunction
 
 

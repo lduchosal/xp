@@ -2,8 +2,8 @@
 
 from unittest.mock import Mock, patch
 
-from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
 from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse
+from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
 
 
 class TestConbusLinknumberIntegration:

@@ -4,12 +4,12 @@ This module provides a singleton connection pool for managing TCP socket connect
 to Conbus servers with automatic lifecycle management, health checking, and reconnection.
 """
 
-import threading
-import socket
 import logging
+import socket
+import threading
 import time
 from contextlib import suppress
-from typing import Optional, Any
+from typing import Any, Optional
 
 from xp.models import ConbusClientConfig
 
