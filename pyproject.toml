@@ -156,7 +156,7 @@ bump-version = "pdm bump -v patch"
 env = "echo ${PATH}"
 install = "pdm install"
 install-dev = "pdm install -G dev"
-clean = "rm -rf .coverage coverage.xml htmlcov/ .pytest_cache/ __pycache__/ src/xp/__pycache__/"
+clean = {shell = "rm -rf .coverage coverage.xml htmlcov/ .pytest_cache/ && find . -type d -name '__pycache__' -exec rm -rf {} +"}
 version-show = "python -c 'import xp; print(xp.__version__)'"
 version-patch = "pdm bump patch"
 version-minor = "pdm bump minor"
