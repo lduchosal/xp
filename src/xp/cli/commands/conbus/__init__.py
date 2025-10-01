@@ -12,6 +12,12 @@ from xp.cli.commands.conbus.conbus import (
     conbus_output,
 )
 
+# Import command modules to make them patchable in tests (Python 3.10 compatibility)
+from xp.cli.commands.conbus import (
+    conbus_actiontable_commands,
+    conbus_msactiontable_commands,
+)
+
 __all__ = [
     "conbus",
     "conbus_blink",
