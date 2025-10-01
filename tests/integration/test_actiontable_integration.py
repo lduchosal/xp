@@ -6,7 +6,9 @@ from unittest.mock import Mock, patch
 import pytest
 from click.testing import CliRunner
 
-from xp.cli.commands.conbus.conbus_actiontable_commands import conbus_download_actiontable
+from xp.cli.commands.conbus.conbus_actiontable_commands import (
+    conbus_download_actiontable,
+)
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType

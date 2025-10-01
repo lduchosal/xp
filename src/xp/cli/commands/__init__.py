@@ -13,7 +13,9 @@ from xp.cli.commands.conbus.conbus import (
     conbus_msactiontable,
     conbus_output,
 )
-from xp.cli.commands.conbus.conbus_actiontable_commands import conbus_download_actiontable
+from xp.cli.commands.conbus.conbus_actiontable_commands import (
+    conbus_download_actiontable,
+)
 
 # Individual command functions that attach to groups
 from xp.cli.commands.conbus.conbus_autoreport_commands import (
@@ -44,7 +46,9 @@ from xp.cli.commands.conbus.conbus_linknumber_commands import (
     get_linknumber_command,
     set_linknumber_command,
 )
-from xp.cli.commands.conbus.conbus_msactiontable_commands import conbus_download_msactiontable
+from xp.cli.commands.conbus.conbus_msactiontable_commands import (
+    conbus_download_msactiontable,
+)
 from xp.cli.commands.conbus.conbus_output_commands import (
     xp_module_state,
     xp_output_off,
