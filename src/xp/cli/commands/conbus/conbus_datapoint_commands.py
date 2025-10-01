@@ -4,7 +4,7 @@ import json
 
 import click
 
-from xp.cli.commands.conbus import conbus_datapoint
+from xp.cli.commands.conbus.conbus import conbus_datapoint
 
 # Import will be handled by conbus.py registration
 from xp.cli.utils.datapoint_type_choice import DATAPOINT

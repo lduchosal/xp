@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 from click.testing import CliRunner
 
-from xp.cli.commands.conbus_actiontable_commands import conbus_download_actiontable
+from xp.cli.commands.conbus.conbus_actiontable_commands import conbus_download_actiontable
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
@@ -38,7 +38,7 @@ class TestConbusActionTableCommands:
         ]
         return ActionTable(entries=entries)
 
-    @patch("xp.cli.commands.conbus_actiontable_commands.ActionTableService")
+    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_success(
         self, mock_service_class, runner, sample_actiontable
     ):
@@ -64,7 +64,7 @@ class TestConbusActionTableCommands:
         assert output_data["serial_number"] == "0000012345"
         assert "entries" in output_data["actiontable"]
 
-    @patch("xp.cli.commands.conbus_actiontable_commands.ActionTableService")
+    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_output_format(
         self, mock_service_class, runner, sample_actiontable
     ):
@@ -105,7 +105,7 @@ class TestConbusActionTableCommands:
             }
             assert set(entry.keys()) == expected_entry_keys
 
-    @patch("xp.cli.commands.conbus_actiontable_commands.ActionTableService")
+    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_error_handling(
         self, mock_service_class, runner
     ):
@@ -134,7 +134,7 @@ class TestConbusActionTableCommands:
         # Should fail due to serial number validation
         assert result.exit_code != 0
 
-    @patch("xp.cli.commands.conbus_actiontable_commands.ActionTableService")
+    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_context_manager(
         self, mock_service_class, runner, sample_actiontable
     ):
@@ -162,7 +162,7 @@ class TestConbusActionTableCommands:
         assert "Download action table from XP module" in result.output
         assert "SERIAL_NUMBER" in result.output
 
-    @patch("xp.cli.commands.conbus_actiontable_commands.ActionTableService")
+    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_json_serialization(
         self, mock_service_class, runner
     ):

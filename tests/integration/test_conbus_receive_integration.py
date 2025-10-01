@@ -19,7 +19,7 @@ class TestConbusReceiveIntegration:
         """Set up test runner."""
         self.runner = CliRunner()
 
-    @patch("xp.cli.commands.conbus_receive_commands.ConbusReceiveService")
+    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
     def test_conbus_receive_single_telegram(self, mock_service_class):
         """Test conbus receive command with single telegram response."""
         # Mock the service
@@ -40,7 +40,7 @@ class TestConbusReceiveIntegration:
         assert "<R2113010000F02D12>" in result.output
         mock_service.receive_telegrams.assert_called_once()
 
-    @patch("xp.cli.commands.conbus_receive_commands.ConbusReceiveService")
+    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
     def test_conbus_receive_multiple_telegrams(self, mock_service_class):
         """Test conbus receive command with multiple telegram responses."""
         # Mock the service
@@ -71,7 +71,7 @@ class TestConbusReceiveIntegration:
         assert "<E12L1BAK>" in output_lines
         mock_service.receive_telegrams.assert_called_once()
 
-    @patch("xp.cli.commands.conbus_receive_commands.ConbusReceiveService")
+    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
     def test_conbus_receive_connection_error(self, mock_service_class):
         """Test conbus receive command with connection error."""
         # Mock the service
@@ -93,7 +93,7 @@ class TestConbusReceiveIntegration:
         )  # CLI doesn't exit with error code, but shows error
         assert "Error: Failed to connect to server: Connection timeout" in result.output
 
-    @patch("xp.cli.commands.conbus_receive_commands.ConbusReceiveService")
+    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
     def test_conbus_receive_no_telegrams(self, mock_service_class):
         """Test conbus receive command with no waiting telegrams."""
         # Mock the service
@@ -122,7 +122,7 @@ class TestConbusReceiveIntegration:
         assert "Receive waiting event telegrams from Conbus server" in output
         assert "xp conbus receive" in output
 
-    @patch("xp.cli.commands.conbus_receive_commands.ConbusReceiveService")
+    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
     def test_conbus_receive_service_exception(self, mock_service_class):
         """Test conbus receive command when service raises exception."""
         # Mock the service to raise an exception

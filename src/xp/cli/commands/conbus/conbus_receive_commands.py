@@ -2,7 +2,7 @@
 
 import click
 
-from xp.cli.commands.conbus import conbus
+from xp.cli.commands.conbus.conbus import conbus
 from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,

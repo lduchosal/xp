@@ -23,7 +23,7 @@ class TestXp24ActionTableIntegration:
         self.valid_serial = "0123450001"
         self.invalid_serial = "1234567890"  # Valid format but will cause service error
 
-    @patch("xp.cli.commands.conbus_msactiontable_commands.MsActionTableService")
+    @patch("xp.cli.commands.conbus.conbus_msactiontable_commands.MsActionTableService")
     def test_xp24_download_action_table(self, mock_service_class):
         """Test downloading action table from module"""
 
@@ -76,7 +76,7 @@ class TestXp24ActionTableIntegration:
         assert action_table["mutex34"] is True
         assert action_table["curtain34"] is True
 
-    @patch("xp.cli.commands.conbus_msactiontable_commands.MsActionTableService")
+    @patch("xp.cli.commands.conbus.conbus_msactiontable_commands.MsActionTableService")
     def test_xp24_download_action_table_invalid_serial(self, mock_service_class):
         """Test downloading with invalid serial number"""
 
@@ -99,7 +99,7 @@ class TestXp24ActionTableIntegration:
         assert result.exit_code != 0
         assert "Invalid serial number" in result.output
 
-    @patch("xp.cli.commands.conbus_msactiontable_commands.MsActionTableService")
+    @patch("xp.cli.commands.conbus.conbus_msactiontable_commands.MsActionTableService")
     def test_xp24_download_action_table_connection_error(self, mock_service_class):
         """Test downloading with network failure"""
 

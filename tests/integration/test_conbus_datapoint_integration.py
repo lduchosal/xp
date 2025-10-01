@@ -23,7 +23,7 @@ class TestConbusDatapointIntegration:
         self.valid_serial = "0123450001"
         self.invalid_serial = "invalid"
 
-    @patch("xp.cli.commands.conbus_datapoint_commands.ConbusDatapointService")
+    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
     def test_conbus_datapoint_all_valid_serial(self, mock_service_class):
         """Test querying all datapoints with valid serial number"""
 
@@ -71,7 +71,7 @@ class TestConbusDatapointIntegration:
         assert '"datapoints"' in result.output
         assert '"MODULE_TYPE": "XP33LED"' in result.output
 
-    @patch("xp.cli.commands.conbus_datapoint_commands.ConbusDatapointService")
+    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
     def test_conbus_datapoint_all_invalid_serial(self, mock_service_class):
         """Test querying all datapoints with invalid serial number"""
 
@@ -94,7 +94,7 @@ class TestConbusDatapointIntegration:
         assert result.exit_code != 0
         assert "Invalid serial number" in result.output or "Error" in result.output
 
-    @patch("xp.cli.commands.conbus_datapoint_commands.ConbusDatapointService")
+    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
     def test_conbus_datapoint_connection_error(self, mock_service_class):
         """Test handling network connection failures"""
 
@@ -117,7 +117,7 @@ class TestConbusDatapointIntegration:
         assert "Connection failed" in result.output or "Error" in result.output
         assert result.exit_code != 0
 
-    @patch("xp.cli.commands.conbus_datapoint_commands.ConbusDatapointService")
+    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
     def test_conbus_datapoint_invalid_response(self, mock_service_class):
         """Test handling invalid responses from the server"""
 
@@ -145,7 +145,7 @@ class TestConbusDatapointIntegration:
         assert result.exit_code == 0  # CLI succeeds but response indicates failure
         assert "Invalid response from server" in result.output
 
-    @patch("xp.cli.commands.conbus_datapoint_commands.ConbusDatapointService")
+    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
     def test_conbus_datapoint_empty_datapoints(self, mock_service_class):
         """Test handling when no datapoints are returned"""
 

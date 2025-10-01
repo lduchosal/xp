@@ -5,7 +5,7 @@ from dataclasses import asdict
 
 import click
 
-from xp.cli.commands.conbus import conbus_actiontable
+from xp.cli.commands.conbus.conbus import conbus_actiontable
 from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,

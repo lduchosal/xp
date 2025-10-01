@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 from click.testing import CliRunner
 
-from xp.cli.commands.conbus_actiontable_commands import conbus_download_actiontable
+from xp.cli.commands.conbus.conbus_actiontable_commands import conbus_download_actiontable
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
@@ -108,7 +108,7 @@ class TestActionTableIntegration:
         assert "CP20 0 0 > 1 TURNOFF;" in decoded
         assert len(encoded) > 0
 
-    @patch("xp.cli.commands.conbus_actiontable_commands.ActionTableService")
+    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_end_to_end_cli_download(self, mock_service_class, sample_actiontable):
         """Test end-to-end CLI download functionality"""
         # Setup mock service

@@ -19,7 +19,7 @@ class TestConbusRawIntegration:
         """Set up test runner."""
         self.runner = CliRunner()
 
-    @patch("xp.cli.commands.conbus_raw_commands.ConbusRawService")
+    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
     def test_conbus_raw_single_telegram(self, mock_service_class):
         """Test conbus raw command with single telegram."""
         # Mock the service
@@ -42,7 +42,7 @@ class TestConbusRawIntegration:
         assert "<R2113010000F02D12>" in result.output
         mock_service.send_raw_telegrams.assert_called_once_with("<S2113010000F02D12>")
 
-    @patch("xp.cli.commands.conbus_raw_commands.ConbusRawService")
+    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
     def test_conbus_raw_multiple_telegrams(self, mock_service_class):
         """Test conbus raw command with multiple telegrams."""
         # Mock the service
@@ -73,7 +73,7 @@ class TestConbusRawIntegration:
         assert "<S2113010002F02D12>" in output_lines
         mock_service.send_raw_telegrams.assert_called_once_with(raw_input)
 
-    @patch("xp.cli.commands.conbus_raw_commands.ConbusRawService")
+    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
     def test_conbus_raw_connection_error(self, mock_service_class):
         """Test conbus raw command with connection error."""
         # Mock the service
@@ -93,7 +93,7 @@ class TestConbusRawIntegration:
         )  # CLI doesn't exit with error code, but shows error
         assert "Error: Connection failed" in result.output
 
-    @patch("xp.cli.commands.conbus_raw_commands.ConbusRawService")
+    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
     def test_conbus_raw_no_response(self, mock_service_class):
         """Test conbus raw command with no response."""
         # Mock the service
@@ -130,7 +130,7 @@ class TestConbusRawIntegration:
         assert result.exit_code != 0
         assert "Usage: cli conbus raw [OPTIONS] RAW_TELEGRAMS" in result.output
 
-    @patch("xp.cli.commands.conbus_raw_commands.ConbusRawService")
+    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
     def test_conbus_raw_service_exception(self, mock_service_class):
         """Test conbus raw command when service raises exception."""
         # Mock the service to raise an exception

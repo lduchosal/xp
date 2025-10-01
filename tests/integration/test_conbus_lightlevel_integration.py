@@ -24,7 +24,7 @@ class TestConbusLightlevelIntegration:
         self.valid_output_number = 2
         self.valid_level = 50
 
-    @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
+    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
     def test_conbus_lightlevel_set(self, mock_service_class):
         """Test setting specific light level"""
 
@@ -66,7 +66,7 @@ class TestConbusLightlevelIntegration:
             self.valid_serial, self.valid_output_number, self.valid_level
         )
 
-    @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
+    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
     def test_conbus_lightlevel_off(self, mock_service_class):
         """Test turning light off (level 0)"""
 
@@ -105,7 +105,7 @@ class TestConbusLightlevelIntegration:
             self.valid_serial, self.valid_output_number
         )
 
-    @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
+    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
     def test_conbus_lightlevel_on(self, mock_service_class):
         """Test turning light on (level 80)"""
 
@@ -144,7 +144,7 @@ class TestConbusLightlevelIntegration:
             self.valid_serial, self.valid_output_number
         )
 
-    @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
+    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
     def test_conbus_lightlevel_get(self, mock_service_class):
         """Test querying light level"""
 
@@ -204,7 +204,7 @@ class TestConbusLightlevelIntegration:
         assert "Invalid value for 'LEVEL'" in result.output
         assert "150 is not in the range 0<=x<=100" in result.output
 
-    @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
+    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
     def test_conbus_lightlevel_connection_error(self, mock_service_class):
         """Test handling network connection failures"""
 
@@ -235,7 +235,7 @@ class TestConbusLightlevelIntegration:
         assert "Connection failed" in result.output or "Error" in result.output
         assert result.exit_code != 0
 
-    @patch("xp.cli.commands.conbus_lightlevel_commands.ConbusLightlevelService")
+    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
     def test_conbus_lightlevel_invalid_response(self, mock_service_class):
         """Test handling invalid responses from the server"""
 

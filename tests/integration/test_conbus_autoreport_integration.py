@@ -79,7 +79,7 @@ class TestConbusAutoreportIntegration:
 
         return mock_response
 
-    @patch("xp.cli.commands.conbus_autoreport_commands.ConbusAutoreportService")
+    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
     def test_conbus_autoreport_get_valid_serial(self, mock_service_class):
         """Test getting auto report status with valid serial number"""
 
@@ -108,7 +108,7 @@ class TestConbusAutoreportIntegration:
         assert '"auto_report_status": "AA"' in result.output
         mock_service.get_autoreport_status.assert_called_once_with(self.valid_serial)
 
-    @patch("xp.cli.commands.conbus_autoreport_commands.ConbusAutoreportService")
+    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
     def test_conbus_autoreport_set_on_valid_serial(self, mock_service_class):
         """Test setting auto report status to ON with valid serial"""
 
@@ -140,7 +140,7 @@ class TestConbusAutoreportIntegration:
             self.valid_serial, True
         )
 
-    @patch("xp.cli.commands.conbus_autoreport_commands.ConbusAutoreportService")
+    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
     def test_conbus_autoreport_set_off_valid_serial(self, mock_service_class):
         """Test setting auto report status to OFF with valid serial"""
 
@@ -172,7 +172,7 @@ class TestConbusAutoreportIntegration:
             self.valid_serial, False
         )
 
-    @patch("xp.cli.commands.conbus_autoreport_commands.ConbusAutoreportService")
+    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
     def test_conbus_autoreport_invalid_serial(self, mock_service_class):
         """Test with invalid serial number"""
 
@@ -195,7 +195,7 @@ class TestConbusAutoreportIntegration:
         assert result.exit_code != 0
         assert "Invalid serial number" in result.output or "Error" in result.output
 
-    @patch("xp.cli.commands.conbus_autoreport_commands.ConbusAutoreportService")
+    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
     def test_conbus_autoreport_connection_error(self, mock_service_class):
         """Test handling network connection failures"""
 
@@ -218,7 +218,7 @@ class TestConbusAutoreportIntegration:
         assert "Connection failed" in result.output or "Error" in result.output
         assert result.exit_code != 0
 
-    @patch("xp.cli.commands.conbus_autoreport_commands.ConbusAutoreportService")
+    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
     def test_conbus_autoreport_invalid_response(self, mock_service_class):
         """Test handling invalid responses from the server"""
 

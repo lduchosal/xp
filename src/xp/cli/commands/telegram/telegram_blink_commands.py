@@ -4,7 +4,7 @@ import json
 
 import click
 
-from xp.cli.commands.telegram import blink
+from xp.cli.commands.telegram.telegram import blink
 from xp.cli.utils.decorators import handle_service_errors
 from xp.cli.utils.error_handlers import CLIErrorHandler
 from xp.cli.utils.formatters import OutputFormatter

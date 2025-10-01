@@ -4,7 +4,7 @@ import json
 
 import click
 
-from xp.cli.commands.telegram import telegram
+from xp.cli.commands.telegram.telegram import telegram
 from xp.cli.utils.decorators import (
     handle_service_errors,
 )

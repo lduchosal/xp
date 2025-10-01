@@ -4,7 +4,7 @@ import json
 
 import click
 
-from xp.cli.commands.conbus import conbus_output
+from xp.cli.commands.conbus.conbus import conbus_output
 from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,

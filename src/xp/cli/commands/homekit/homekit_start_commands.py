@@ -4,7 +4,7 @@ import sys
 
 import click
 
-from xp.cli.commands.homekit import homekit
+from xp.cli.commands.homekit.homekit import homekit
 from xp.services.homekit.homekit_service import HomekitService
 
 
