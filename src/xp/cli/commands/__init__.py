@@ -2,8 +2,9 @@
 
 # Main command groups
 from xp.cli.commands.api_start_commands import start_api_server
+
+# Import conbus command groups (but not 'conbus' itself to avoid module shadowing in Python 3.10)
 from xp.cli.commands.conbus.conbus import (
-    conbus,
     conbus_actiontable,
     conbus_autoreport,
     conbus_blink,
@@ -82,8 +83,7 @@ from xp.cli.commands.telegram.telegram_parse_commands import (
 from xp.cli.commands.telegram.telegram_version_commands import generate_version_request
 
 __all__ = [
-    # Main command groups
-    "conbus",
+    # Main command groups (conbus excluded to avoid module shadowing)
     "conbus_blink",
     "conbus_output",
     "conbus_datapoint",

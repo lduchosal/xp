@@ -2,7 +2,7 @@
 
 from click.testing import CliRunner
 
-from xp.cli.commands import conbus
+from xp.cli.commands.conbus import conbus
 
 
 class TestConbusBlinkCommands:
