@@ -36,7 +36,7 @@ done
 if [ "$QUALITY_ONLY" = true ]; then
     STEPS=12
 else
-    STEPS=18
+    STEPS=19
 fi
 STEP=0
 
@@ -141,6 +141,9 @@ run_command "pdm run bump-version" "Version bump"
 # Extract version after bump
 VERSION=$(python -c "import sys; sys.path.insert(0, 'src'); import xp; print(xp.__version__)")
 echo "${BLUE}New version: ${VERSION}${NC}"
+
+print_step "Updating README (pdm run update-readme)"
+run_command "pdm run update-readme" "README update"
 
 print_step "Building Package (pdm)"
 run_command "pdm build" "Package build"

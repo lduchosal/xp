@@ -216,10 +216,10 @@ src/xp/
 <details>
 <summary><b>Functionalities</b></summary>
 
-``` 
-xp
+```
+<!-- BEGIN CLI HELP -->
 
-xp help
+xp
 
 xp api
 xp api start
@@ -235,6 +235,15 @@ xp cache stats
 
 xp conbus
 
+xp conbus actiontable
+xp conbus actiontable download
+
+
+xp conbus autoreport
+xp conbus autoreport get
+xp conbus autoreport set
+
+
 xp conbus blink
 
 xp conbus blink all
@@ -246,8 +255,28 @@ xp conbus blink on
 
 xp conbus config
 xp conbus custom
+
 xp conbus datapoint
+xp conbus datapoint all
+xp conbus datapoint query
+
 xp conbus discover
+
+xp conbus lightlevel
+xp conbus lightlevel get
+xp conbus lightlevel off
+xp conbus lightlevel on
+xp conbus lightlevel set
+
+
+xp conbus linknumber
+xp conbus linknumber get
+xp conbus linknumber set
+
+
+xp conbus msactiontable
+xp conbus msactiontable download
+
 
 xp conbus output
 xp conbus output off
@@ -316,6 +345,7 @@ xp telegram parse
 xp telegram validate
 xp telegram version
 
+<!-- END CLI HELP -->
 ```
 </details>
 
