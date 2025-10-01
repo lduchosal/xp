@@ -14,7 +14,6 @@ dependencies = [
     "uvicorn>=0.37",
     "pydantic>=2.11",
     "HAP-python[QRCode]>=5.0.0",
-    "PyDispatcher>=2.0.5",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
@@ -138,6 +137,7 @@ format = "black src/ tests/"
 typecheck = "mypy src/ tests/"
 vulture = "vulture src/ tests/"
 refurb = "refurb src/ tests/"
+absolufy = {shell = "find src tests -name '*.py' -type f -exec absolufy-imports --application-directories=src:tests {} +"}
 check = ["lint", "format", "typecheck", "refurb", "deadvar", "test"]
 bump-version = "pdm bump -v patch"
 env = "echo ${PATH}"

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-from ..telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.reply_telegram import ReplyTelegram
 
 
 @dataclass

@@ -5,7 +5,7 @@ from typing import Tuple, Type, Callable, Any
 
 import click
 
-from ..utils.formatters import OutputFormatter
+from xp.cli.utils.formatters import OutputFormatter
 
 
 def handle_service_errors(
@@ -58,7 +58,7 @@ def telegram_parser_command(
         func = common_options(func)
 
         # Apply error handling for telegram parsing
-        from ...services.telegram.telegram_service import TelegramParsingError
+        from xp.services.telegram.telegram_service import TelegramParsingError
 
         exceptions = (TelegramParsingError,) + service_exceptions
         func = handle_service_errors(*exceptions)(func)

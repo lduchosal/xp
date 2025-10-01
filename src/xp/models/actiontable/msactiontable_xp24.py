@@ -2,8 +2,8 @@
 
 from dataclasses import dataclass, field
 
-from ..telegram.input_action_type import InputActionType
-from ..telegram.timeparam_type import TimeParam
+from xp.models.telegram.input_action_type import InputActionType
+from xp.models.telegram.timeparam_type import TimeParam
 
 
 @dataclass

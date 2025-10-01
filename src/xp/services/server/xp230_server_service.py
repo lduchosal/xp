@@ -5,7 +5,7 @@ including response generation and device configuration handling.
 """
 
 from typing import Dict
-from .base_server_service import BaseServerService
+from xp.services.server.base_server_service import BaseServerService
 
 
 class XP230ServerError(Exception):

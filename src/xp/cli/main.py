@@ -7,18 +7,18 @@ from click_help_colors import HelpColorsGroup
 
 from xp.cli.commands import homekit
 from xp.cli.utils.click_tree import add_tree_command
-from .commands.api import api
-from .commands.cache_commands import cache
-from .commands.conbus import conbus
-from .commands.file_commands import file
-from .commands.module_commands import module
+from xp.cli.commands.api import api
+from xp.cli.commands.cache_commands import cache
+from xp.cli.commands.conbus import conbus
+from xp.cli.commands.file_commands import file
+from xp.cli.commands.module_commands import module
 
 # Import all conbus command modules to register their commands
-from .commands.reverse_proxy_commands import reverse_proxy
-from .commands.server_commands import server
+from xp.cli.commands.reverse_proxy_commands import reverse_proxy
+from xp.cli.commands.server_commands import server
 
 # Import command groups from modular structure
-from .commands.telegram_parse_commands import telegram
+from xp.cli.commands.telegram_parse_commands import telegram
 
 
 @click.group(

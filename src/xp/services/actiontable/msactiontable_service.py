@@ -7,9 +7,9 @@ from typing import Optional, Any, Union
 
 from xp.services import TelegramService, TelegramParsingError
 from xp.services.conbus.conbus_service import ConbusService, ConbusError
-from .msactiontable_xp20_serializer import Xp20MsActionTableSerializer
-from .msactiontable_xp24_serializer import Xp24MsActionTableSerializer
-from .msactiontable_xp33_serializer import Xp33MsActionTableSerializer
+from xp.services.actiontable.msactiontable_xp20_serializer import Xp20MsActionTableSerializer
+from xp.services.actiontable.msactiontable_xp24_serializer import Xp24MsActionTableSerializer
+from xp.services.actiontable.msactiontable_xp33_serializer import Xp33MsActionTableSerializer
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable

@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
-from ..models.log_entry import LogEntry
-from .telegram.telegram_service import TelegramService, TelegramParsingError
-from ..utils.time_utils import (
+from xp.models.log_entry import LogEntry
+from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
+from xp.utils.time_utils import (
     parse_log_timestamp,
     TimeParsingError,
     calculate_duration_ms,

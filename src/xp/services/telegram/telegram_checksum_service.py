@@ -5,7 +5,7 @@ following the layered architecture pattern.
 """
 
 from typing import Union
-from ...utils.checksum import calculate_checksum, calculate_checksum32
+from xp.utils.checksum import calculate_checksum, calculate_checksum32
 from xp.models.response import Response
 
 

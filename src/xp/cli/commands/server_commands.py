@@ -6,10 +6,10 @@ import click
 import json
 from click_help_colors import HelpColorsGroup
 
-from ...services.server.server_service import ServerService, ServerError
-from ..utils.decorators import handle_service_errors
-from ..utils.formatters import OutputFormatter
-from ..utils.error_handlers import ServerErrorHandler
+from xp.services.server.server_service import ServerService, ServerError
+from xp.cli.utils.decorators import handle_service_errors
+from xp.cli.utils.formatters import OutputFormatter
+from xp.cli.utils.error_handlers import ServerErrorHandler
 
 
 # Global server instance

@@ -6,7 +6,7 @@ including response generation and device configuration handling.
 
 from typing import Dict, Optional
 from xp.models.telegram.system_telegram import SystemTelegram
-from .base_server_service import BaseServerService
+from xp.services.server.base_server_service import BaseServerService
 
 
 class CP20ServerError(Exception):

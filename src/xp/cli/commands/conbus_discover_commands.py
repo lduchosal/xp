@@ -4,12 +4,12 @@ import json
 
 import click
 
-from .conbus import conbus
-from ..utils.decorators import (
+from xp.cli.commands.conbus import conbus
+from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from ...services.conbus.conbus_discover_service import (
+from xp.services.conbus.conbus_discover_service import (
     ConbusDiscoverService,
     ConbusDiscoverError,
 )

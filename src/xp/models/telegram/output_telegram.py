@@ -10,9 +10,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from .action_type import ActionType
-from .system_function import SystemFunction
-from .telegram import Telegram
+from xp.models.telegram.action_type import ActionType
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.telegram import Telegram
 
 
 @dataclass

@@ -9,13 +9,13 @@ from click_help_colors import HelpColorsGroup
 from typing import Optional, Dict, Any
 from types import FrameType
 
-from ...services.reverse_proxy_service import (
+from xp.services.reverse_proxy_service import (
     ReverseProxyService,
     ReverseProxyError,
 )
-from ..utils.decorators import handle_service_errors
-from ..utils.formatters import OutputFormatter
-from ..utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.decorators import handle_service_errors
+from xp.cli.utils.formatters import OutputFormatter
+from xp.cli.utils.error_handlers import CLIErrorHandler
 
 
 # Global proxy instance

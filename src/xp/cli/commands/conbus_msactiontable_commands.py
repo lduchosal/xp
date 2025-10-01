@@ -5,18 +5,18 @@ from dataclasses import asdict
 
 import click
 
-from ..utils.decorators import (
+from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from ..utils.serial_number_type import SERIAL
-from ..utils.xp_module_type import XP_MODULE_TYPE
+from xp.cli.utils.serial_number_type import SERIAL
+from xp.cli.utils.xp_module_type import XP_MODULE_TYPE
 from xp.services.actiontable.msactiontable_service import (
     MsActionTableService,
     MsActionTableError,
 )
 
-from .conbus import conbus_msactiontable
+from xp.cli.commands.conbus import conbus_msactiontable
 
 
 @conbus_msactiontable.command("download", short_help="Download MSActionTable")

@@ -2,10 +2,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-from .. import ConbusResponse
-from ..telegram.reply_telegram import ReplyTelegram
-from ..telegram.system_function import SystemFunction
-from ..telegram.system_telegram import SystemTelegram
+from xp.models import ConbusResponse
+from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.system_telegram import SystemTelegram
 
 
 @dataclass

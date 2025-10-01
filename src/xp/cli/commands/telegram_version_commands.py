@@ -3,15 +3,15 @@
 import click
 import json
 
-from ...services.telegram.telegram_version_service import (
+from xp.services.telegram.telegram_version_service import (
     VersionService,
     VersionParsingError,
 )
-from ..utils.decorators import handle_service_errors
-from ..utils.formatters import OutputFormatter
-from ..utils.error_handlers import CLIErrorHandler
-from ..utils.serial_number_type import SERIAL
-from .telegram import telegram
+from xp.cli.utils.decorators import handle_service_errors
+from xp.cli.utils.formatters import OutputFormatter
+from xp.cli.utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.serial_number_type import SERIAL
+from xp.cli.commands.telegram import telegram
 
 
 @telegram.command("version")

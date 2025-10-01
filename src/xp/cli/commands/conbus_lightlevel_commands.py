@@ -3,16 +3,16 @@
 import click
 import json
 
-from ..utils.serial_number_type import SERIAL
-from ...services.conbus.conbus_lightlevel_service import (
+from xp.cli.utils.serial_number_type import SERIAL
+from xp.services.conbus.conbus_lightlevel_service import (
     ConbusLightlevelService,
     ConbusLightlevelError,
 )
-from ..utils.decorators import (
+from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from .conbus import conbus_lightlevel
+from xp.cli.commands.conbus import conbus_lightlevel
 
 
 @conbus_lightlevel.command("set")

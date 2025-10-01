@@ -4,10 +4,10 @@ import click
 import json
 from click_help_colors import HelpColorsGroup
 
-from ...services.homekit.homekit_cache_service import HomeKitCacheService
-from ..utils.decorators import list_command
-from ..utils.formatters import OutputFormatter
-from ..utils.error_handlers import CLIErrorHandler
+from xp.services.homekit.homekit_cache_service import HomeKitCacheService
+from xp.cli.utils.decorators import list_command
+from xp.cli.utils.formatters import OutputFormatter
+from xp.cli.utils.error_handlers import CLIErrorHandler
 
 
 @click.group(

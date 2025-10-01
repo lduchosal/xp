@@ -4,8 +4,8 @@ import sys
 
 import click
 
-from .homekit import homekit
-from ...services.homekit.homekit_service import HomekitService
+from xp.cli.commands.homekit import homekit
+from xp.services.homekit.homekit_service import HomekitService
 
 
 @homekit.command("start")

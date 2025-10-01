@@ -8,10 +8,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Any
 
-from .datapoint_type import DataPointType
-from .system_function import SystemFunction
-from .telegram import Telegram
-from .telegram_type import TelegramType
+from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.telegram import Telegram
+from xp.models.telegram.telegram_type import TelegramType
 
 
 @dataclass

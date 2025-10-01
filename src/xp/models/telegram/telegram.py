@@ -1,7 +1,7 @@
 from datetime import datetime
 from dataclasses import dataclass
 from typing import Optional
-from .telegram_type import TelegramType
+from xp.models.telegram.telegram_type import TelegramType
 
 
 @dataclass

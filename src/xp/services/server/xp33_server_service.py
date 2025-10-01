@@ -9,8 +9,8 @@ from typing import Dict, Optional
 from xp.models.telegram.system_telegram import SystemTelegram
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
-from .base_server_service import BaseServerService
-from ...utils import calculate_checksum
+from xp.services.server.base_server_service import BaseServerService
+from xp.utils import calculate_checksum
 
 
 class XP33ServerError(Exception):

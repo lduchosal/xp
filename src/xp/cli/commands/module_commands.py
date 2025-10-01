@@ -6,10 +6,10 @@ from typing import Union, Dict, Any
 import click
 from click_help_colors import HelpColorsGroup
 
-from ..utils.decorators import list_command
-from ..utils.error_handlers import CLIErrorHandler
-from ..utils.formatters import OutputFormatter, ListFormatter
-from ...services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
+from xp.cli.utils.decorators import list_command
+from xp.cli.utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.formatters import OutputFormatter, ListFormatter
+from xp.services.module_type_service import ModuleTypeService, ModuleTypeNotFoundError
 
 
 @click.group(

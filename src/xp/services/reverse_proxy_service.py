@@ -14,7 +14,7 @@ from typing import Optional, Dict
 
 import yaml
 
-from ..models.response import Response
+from xp.models.response import Response
 
 
 class ReverseProxyError(Exception):

@@ -5,10 +5,10 @@ from typing import Union
 
 from fastapi.responses import JSONResponse
 
-from .conbus import router
-from .errors import handle_service_error
-from ..models.api import ApiResponse, ApiErrorResponse
-from ...services.conbus.conbus_custom_service import ConbusCustomService
+from xp.api.routers.conbus import router
+from xp.api.routers.errors import handle_service_error
+from xp.api.models.api import ApiResponse, ApiErrorResponse
+from xp.services.conbus.conbus_custom_service import ConbusCustomService
 
 logger = logging.getLogger(__name__)
 

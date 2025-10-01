@@ -4,12 +4,12 @@ import click
 import json
 from click_help_colors import HelpColorsGroup
 
-from ..utils.decorators import (
+from xp.cli.utils.decorators import (
     file_operation_command,
     handle_service_errors,
 )
-from ..utils.formatters import StatisticsFormatter, OutputFormatter
-from ..utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.formatters import StatisticsFormatter, OutputFormatter
+from xp.cli.utils.error_handlers import CLIErrorHandler
 
 
 @click.group(
@@ -42,8 +42,8 @@ def decode_log_file(
     \b
         xp file decode conbus.log
     """
-    from ...services.log_file_service import LogFileService
-    from ...utils.time_utils import parse_time_range, TimeParsingError
+    from xp.services.log_file_service import LogFileService
+    from xp.utils.time_utils import parse_time_range, TimeParsingError
 
     service = LogFileService()
     StatisticsFormatter(True)
@@ -108,7 +108,7 @@ def analyze_log_file(log_file_path: str) -> None:
     \b
         xp file analyze conbus.log
     """
-    from ...services.log_file_service import LogFileService
+    from xp.services.log_file_service import LogFileService
 
     service = LogFileService()
     StatisticsFormatter(True)
@@ -137,7 +137,7 @@ def validate_log_file(log_file_path: str) -> None:
     \b
         xp file validate conbus.log
     """
-    from ...services.log_file_service import LogFileService
+    from xp.services.log_file_service import LogFileService
 
     service = LogFileService()
     OutputFormatter(True)

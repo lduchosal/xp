@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-from ..telegram.action_type import ActionType
-from ..telegram.output_telegram import OutputTelegram
-from ..telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.action_type import ActionType
+from xp.models.telegram.output_telegram import OutputTelegram
+from xp.models.telegram.reply_telegram import ReplyTelegram
 
 
 @dataclass

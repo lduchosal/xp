@@ -2,7 +2,7 @@
 
 import click
 from typing import Dict, Any, Optional
-from .formatters import OutputFormatter
+from xp.cli.utils.formatters import OutputFormatter
 
 
 class CLIErrorHandler:

@@ -5,7 +5,7 @@ import sys
 import click
 import uvicorn
 
-from .api import api
+from xp.cli.commands.api import api
 
 
 @api.command("start")

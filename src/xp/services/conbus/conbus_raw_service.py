@@ -6,7 +6,7 @@ This service handles sending raw telegram strings without prior validation.
 import logging
 from typing import Optional, Any
 
-from .conbus_service import ConbusService
+from xp.services.conbus.conbus_service import ConbusService
 from xp.models.conbus.conbus_raw import ConbusRawResponse
 
 

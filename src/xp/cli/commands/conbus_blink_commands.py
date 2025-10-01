@@ -4,17 +4,17 @@ import json
 
 import click
 
-from .conbus import conbus_blink
-from ..utils.decorators import (
+from xp.cli.commands.conbus import conbus_blink
+from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from ..utils.serial_number_type import SERIAL
-from ...services.conbus.conbus_blink_service import ConbusBlinkService
-from ...services.conbus.conbus_datapoint_service import (
+from xp.cli.utils.serial_number_type import SERIAL
+from xp.services.conbus.conbus_blink_service import ConbusBlinkService
+from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
 )
-from ...services.telegram.telegram_blink_service import BlinkError
+from xp.services.telegram.telegram_blink_service import BlinkError
 
 
 @conbus_blink.command("on", short_help="Blink on remote service")

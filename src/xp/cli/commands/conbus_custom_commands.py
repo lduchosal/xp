@@ -4,15 +4,15 @@ import json
 
 import click
 
-from .conbus import conbus
-from ..utils.decorators import (
+from xp.cli.commands.conbus import conbus
+from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from ..utils.error_handlers import CLIErrorHandler
-from ..utils.serial_number_type import SERIAL
-from ...services.conbus.conbus_custom_service import ConbusCustomService
-from ...services.conbus.conbus_datapoint_service import (
+from xp.cli.utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.serial_number_type import SERIAL
+from xp.services.conbus.conbus_custom_service import ConbusCustomService
+from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
 )
 

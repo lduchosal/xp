@@ -13,7 +13,7 @@ from typing import List, Optional, Any
 import yaml
 from typing_extensions import Callable
 
-from .conbus_connection_pool import ConbusConnectionPool
+from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
 from xp.models import (
     ConbusClientConfig,
     ConbusRequest,
@@ -22,7 +22,7 @@ from xp.models import (
 )
 from xp.models.response import Response
 from xp.models.telegram.system_function import SystemFunction
-from ...utils.checksum import calculate_checksum
+from xp.utils.checksum import calculate_checksum
 
 
 class ConbusError(Exception):

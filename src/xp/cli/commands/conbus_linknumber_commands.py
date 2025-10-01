@@ -3,14 +3,14 @@
 import json
 import click
 
-from ..utils.decorators import (
+from xp.cli.utils.decorators import (
     connection_command,
     handle_service_errors,
 )
-from .conbus import conbus_linknumber
-from ..utils.serial_number_type import SERIAL
-from ...services.conbus.conbus_linknumber_service import ConbusLinknumberService
-from ...services.telegram.telegram_link_number_service import LinkNumberError
+from xp.cli.commands.conbus import conbus_linknumber
+from xp.cli.utils.serial_number_type import SERIAL
+from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
+from xp.services.telegram.telegram_link_number_service import LinkNumberError
 
 
 @conbus_linknumber.command("set", short_help="Set link number for a module")

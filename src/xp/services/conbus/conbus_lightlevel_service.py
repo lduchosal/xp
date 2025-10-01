@@ -9,12 +9,12 @@ import logging
 from datetime import datetime
 from typing import Optional, Any
 
-from .conbus_service import ConbusService
-from .conbus_datapoint_service import ConbusDatapointService
+from xp.services.conbus.conbus_service import ConbusService
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.models.conbus.conbus_lightlevel import ConbusLightlevelResponse
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
-from ..telegram.telegram_service import TelegramService
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class ConbusLightlevelError(Exception):

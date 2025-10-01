@@ -6,13 +6,13 @@ various types of telegrams including discover, version, and sensor data requests
 
 import logging
 
-from .conbus_service import ConbusService
+from xp.services.conbus.conbus_service import ConbusService
 from xp.models import (
     ConbusDiscoverResponse,
     ConbusResponse,
 )
-from ..telegram.telegram_discover_service import TelegramDiscoverService
-from ..telegram.telegram_service import TelegramService
+from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class ConbusDiscoverError(Exception):

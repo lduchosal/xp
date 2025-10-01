@@ -1,5 +1,5 @@
 """CLI interface for XP tool"""
 
-from .main import cli
+from xp.cli.main import cli
 
 __all__ = ["cli"]

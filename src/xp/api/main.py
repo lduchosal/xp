@@ -8,7 +8,7 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import conbus
+from xp.api.routers import conbus
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

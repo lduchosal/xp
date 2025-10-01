@@ -10,9 +10,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional
 
-from ..telegram.telegram_service import TelegramService, TelegramParsingError
-from ..conbus.conbus_lightlevel_service import ConbusLightlevelService
-from ..conbus.conbus_output_service import ConbusOutputService
+from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
+from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
+from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.models.telegram.action_type import ActionType
 from xp.models.cache import CacheEntry, CacheResponse
 

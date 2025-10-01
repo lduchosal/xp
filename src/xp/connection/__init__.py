@@ -1,6 +1,6 @@
 """Connection layer for XP CLI tool"""
 
-from .exceptions import (
+from xp.connection.exceptions import (
     XPError,
     ProtocolError,
     ValidationError,

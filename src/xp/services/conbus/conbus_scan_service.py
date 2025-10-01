@@ -8,12 +8,12 @@ import logging
 from typing import List, Optional, Callable, Any
 import threading
 
-from .conbus_service import ConbusService
+from xp.services.conbus.conbus_service import ConbusService
 from xp.models import (
     ConbusResponse,
     ConbusRequest,
 )
-from ..telegram.telegram_service import TelegramService
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class ConbusScanError(Exception):

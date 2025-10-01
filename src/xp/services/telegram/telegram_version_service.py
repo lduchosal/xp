@@ -10,7 +10,7 @@ from xp.models.telegram.system_telegram import SystemTelegram
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.reply_telegram import ReplyTelegram
-from ...utils.checksum import calculate_checksum
+from xp.utils.checksum import calculate_checksum
 
 
 class VersionParsingError(Exception):

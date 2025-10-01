@@ -4,13 +4,13 @@ import json
 
 import click
 
-from .telegram import telegram
-from ..utils.decorators import (
+from xp.cli.commands.telegram import telegram
+from xp.cli.utils.decorators import (
     handle_service_errors,
 )
-from ..utils.error_handlers import CLIErrorHandler
-from ..utils.formatters import TelegramFormatter
-from ...services.telegram.telegram_service import TelegramService, TelegramParsingError
+from xp.cli.utils.error_handlers import CLIErrorHandler
+from xp.cli.utils.formatters import TelegramFormatter
+from xp.services.telegram.telegram_service import TelegramService, TelegramParsingError
 
 
 @telegram.command("parse")

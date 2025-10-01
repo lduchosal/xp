@@ -11,7 +11,7 @@ from abc import ABC
 from xp.models.telegram.system_telegram import SystemTelegram
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
-from ...utils.checksum import calculate_checksum
+from xp.utils.checksum import calculate_checksum
 
 
 class BaseServerService(ABC):

@@ -3,12 +3,12 @@
 import re
 from typing import Dict
 
-from .telegram_service import TelegramService
+from xp.services.telegram.telegram_service import TelegramService
 from xp.models.telegram.action_type import ActionType
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.output_telegram import OutputTelegram
 from xp.models.telegram.system_function import SystemFunction
-from ...utils.checksum import calculate_checksum
+from xp.utils.checksum import calculate_checksum
 
 
 class XPOutputError(Exception):
