@@ -65,8 +65,7 @@ class TestHomeKitCacheService:
             ),
         )
 
-        service = self._create_service()
-        response = service.get("test_device", "test_tag")
+        response = self._create_service().get("test_device", "test_tag")
 
         # Should call device
         self.mock_output_service.get_output_state.assert_called_once_with("test_device")
@@ -133,8 +132,7 @@ class TestHomeKitCacheService:
             success=False, data=None, error="Device timeout"
         )
 
-        service = self._create_service()
-        response = service.get("test_device", "test_tag")
+        response = self._create_service().get("test_device", "test_tag")
 
         # Should return error response
         assert response is not None
@@ -147,8 +145,7 @@ class TestHomeKitCacheService:
         """Test handling of device query exception"""
         self.mock_output_service.get_output_state.side_effect = Exception("Connection error")
 
-        service = self._create_service()
-        response = service.get("test_device", "test_tag")
+        response = self._create_service().get("test_device", "test_tag")
 
         # Should return error response
         assert response is not None

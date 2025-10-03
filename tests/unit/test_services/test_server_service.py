@@ -267,8 +267,7 @@ class TestServerServiceStatus:
         mock_path.return_value.exists.return_value = False
         telegram_service = TelegramService()
         discover_service = TelegramDiscoverService()
-        service = ServerService(telegram_service, discover_service)
-        status = service.get_server_status()
+        status = ServerService(telegram_service, discover_service).get_server_status()
 
         assert status["running"] is False
         assert status["devices_configured"] == 0
