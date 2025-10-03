@@ -133,8 +133,7 @@ class TestActionTableIntegration:
         mock_service_container.get_container.return_value = mock_container
 
         # Create CLI runner with context
-        runner = CliRunner()
-        result = runner.invoke(
+        result = CliRunner().invoke(
             conbus_download_actiontable,
             ["012345"],
             obj={"container": mock_service_container}

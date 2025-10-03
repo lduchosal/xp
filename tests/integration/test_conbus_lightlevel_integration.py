@@ -331,12 +331,11 @@ class TestConbusLightlevelService:
         mock_conbus_service.send_telegram.return_value = mock_response
 
         # Test the service with mocked dependencies
-        service = ConbusLightlevelService(
+        result = ConbusLightlevelService(
             telegram_service=mock_telegram_service,
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service
-        )
-        result = service.set_lightlevel(
+        ).set_lightlevel(
             self.valid_serial, self.valid_output_number, self.valid_level
         )
 
@@ -366,12 +365,11 @@ class TestConbusLightlevelService:
         mock_datapoint_service = Mock()
 
         # Test the service with invalid level
-        service = ConbusLightlevelService(
+        result = ConbusLightlevelService(
             telegram_service=mock_telegram_service,
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service
-        )
-        result = service.set_lightlevel(
+        ).set_lightlevel(
             self.valid_serial, self.valid_output_number, 150  # Invalid level > 100
         )
 
@@ -465,12 +463,11 @@ class TestConbusLightlevelService:
         mock_datapoint_service.query_datapoint.return_value = mock_datapoint_response
 
         # Test the service - get level for link 2
-        service = ConbusLightlevelService(
+        result = ConbusLightlevelService(
             telegram_service=mock_telegram_service,
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service
-        )
-        result = service.get_lightlevel(self.valid_serial, 2)
+        ).get_lightlevel(self.valid_serial, 2)
 
         # Assertions
         assert result.success is True

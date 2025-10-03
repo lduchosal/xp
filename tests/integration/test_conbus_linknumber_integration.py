@@ -76,13 +76,12 @@ class TestConbusLinknumberIntegration:
         mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
 
         # Test
-        service = ConbusLinknumberService(
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
             telegram_service=mock_telegram_service
-        )
-        result = service.set_linknumber("0123450001", 25)
+        ).set_linknumber("0123450001", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -119,13 +118,12 @@ class TestConbusLinknumberIntegration:
         mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
 
         # Test
-        service = ConbusLinknumberService(
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
             telegram_service=mock_telegram_service
-        )
-        result = service.set_linknumber("0123450001", 25)
+        ).set_linknumber("0123450001", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -150,13 +148,12 @@ class TestConbusLinknumberIntegration:
         mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
 
         # Test
-        service = ConbusLinknumberService(
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
             telegram_service=mock_telegram_service
-        )
-        result = service.set_linknumber("0123450001", 25)
+        ).set_linknumber("0123450001", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -177,13 +174,12 @@ class TestConbusLinknumberIntegration:
         mock_link_number_service.generate_set_link_number_telegram.side_effect = LinkNumberError("Serial number must be 10 digits")
 
         # Test
-        service = ConbusLinknumberService(
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
             telegram_service=mock_telegram_service
-        )
-        result = service.set_linknumber("invalid", 25)
+        ).set_linknumber("invalid", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -208,13 +204,12 @@ class TestConbusLinknumberIntegration:
         mock_link_number_service.generate_set_link_number_telegram.side_effect = LinkNumberError("Link number must be between 0-99")
 
         # Test
-        service = ConbusLinknumberService(
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
             telegram_service=mock_telegram_service
-        )
-        result = service.set_linknumber("0123450001", 101)
+        ).set_linknumber("0123450001", 101)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -328,13 +323,12 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.return_value = datapoint_response
 
         # Test
-        service = ConbusLinknumberService(
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
             telegram_service=mock_telegram_service
-        )
-        result = service.get_linknumber("0123450001")
+        ).get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -366,13 +360,12 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.return_value = datapoint_response
 
         # Test
-        service = ConbusLinknumberService(
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
             telegram_service=mock_telegram_service
-        )
-        result = service.get_linknumber("0123450001")
+        ).get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -403,13 +396,12 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.return_value = mock_response
 
         # Test
-        service = ConbusLinknumberService(
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
             telegram_service=mock_telegram_service
-        )
-        result = service.get_linknumber("0123450001")
+        ).get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -435,13 +427,12 @@ class TestConbusLinknumberIntegration:
         )
 
         # Test
-        service = ConbusLinknumberService(
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
             telegram_service=mock_telegram_service
-        )
-        result = service.get_linknumber("0123450001")
+        ).get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)

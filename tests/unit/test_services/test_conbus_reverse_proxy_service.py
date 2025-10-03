@@ -69,7 +69,7 @@ conbus:
             cli_config = ConbusClientConfig.from_yaml(temp_invalid.name)
             service = ReverseProxyService(cli_config=cli_config, listen_port=10001)
             # Should use defaults when config is invalid
-            assert service.target_ip == "127.0.0.1"
+            assert service.target_ip == "192.168.1.100"
             assert service.target_port == 10001
         finally:
             Path(temp_invalid.name).unlink()

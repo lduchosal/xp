@@ -99,15 +99,13 @@ class TestConbusLinknumberService:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Create service with mocked dependencies
-        service = ConbusLinknumberService(
+        # Test
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_service,
             telegram_service=mock_telegram_service,
-        )
-
-        # Test
-        result = service.set_linknumber("0123450001", 25)
+        ).set_linknumber("0123450001", 25)
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -149,15 +147,13 @@ class TestConbusLinknumberService:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Create service with mocked dependencies
-        service = ConbusLinknumberService(
+        # Test
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_service,
             telegram_service=mock_telegram_service,
-        )
-
-        # Test
-        result = service.set_linknumber("0123450001", 25)
+        ).set_linknumber("0123450001", 25)
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -190,15 +186,13 @@ class TestConbusLinknumberService:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Create service with mocked dependencies
-        service = ConbusLinknumberService(
+        # Test
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_service,
             telegram_service=mock_telegram_service,
-        )
-
-        # Test
-        result = service.set_linknumber("0123450001", 25)
+        ).set_linknumber("0123450001", 25)
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)
@@ -267,15 +261,13 @@ class TestConbusLinknumberService:
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
         # Create service with mocked dependencies
-        service = ConbusLinknumberService(
+        # Test
+        result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_service,
             telegram_service=mock_telegram_service,
-        )
-
-        # Test
-        result = service.set_linknumber("0123450001", 25)
+        ).set_linknumber("0123450001", 25)
 
         # Assertions
         assert isinstance(result, ConbusLinknumberResponse)

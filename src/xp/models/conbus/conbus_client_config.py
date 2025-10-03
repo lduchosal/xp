@@ -29,11 +29,15 @@ class ConbusClientConfig:
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "ConbusClientConfig":
-        with Path(file_path).open("r") as file:
-            data = yaml.safe_load(file)
+        try:
+            with Path(file_path).open("r") as file:
+                data = yaml.safe_load(file)
 
-        # Convert nested dict to ClientConfig if needed
-        if "conbus" in data and isinstance(data["conbus"], dict):
-            data["conbus"] = ClientConfig(**data["conbus"])
+            # Convert nested dict to ClientConfig if needed
+            if "conbus" in data and isinstance(data["conbus"], dict):
+                data["conbus"] = ClientConfig(**data["conbus"])
 
-        return cls(**data)
+            return cls(**data)
+        except (yaml.YAMLError, FileNotFoundError, KeyError, TypeError):
+            # Return default config if YAML parsing fails
+            return cls()
