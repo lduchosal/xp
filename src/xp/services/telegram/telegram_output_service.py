@@ -269,13 +269,13 @@ class TelegramOutputService:
         if not reply_telegram or not reply_telegram.data_value:
             raise XPOutputError("Not a reply telegram")
 
-        if not reply_telegram.datapoint_type or not reply_telegram.datapoint_type == DataPointType.MODULE_OUTPUT_STATE:
+        if (
+            not reply_telegram.datapoint_type
+            or not reply_telegram.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
+        ):
             raise XPOutputError("Not a DataPoint telegram")
 
-        status_bits = reply_telegram.data_value
-        status_bits = status_bits.replace("xxxx", "")
-        status_bits = status_bits[::-1]
-        status_bits = status_bits[0:4]
+        status_bits = reply_telegram.data_value.replace("xxxx", "")[::-1][0:4]
         if len(status_bits) != 4:
             raise XPOutputError("Not a module_output_state telegram")
 

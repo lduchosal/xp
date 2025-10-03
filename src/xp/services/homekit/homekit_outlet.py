@@ -103,10 +103,10 @@ class Outlet(Accessory):
         data_value = response.datapoint_telegram.data_value
         raw_telegram = response.datapoint_telegram.raw_telegram
 
-        self.logger.debug(f"result: {data_value}, output_number: {self.accessory.output_number}")
-        result = self.telegram_output_service.parse_status_response(
-            raw_telegram
+        self.logger.debug(
+            f"result: {data_value}, output_number: {self.accessory.output_number}"
         )
+        result = self.telegram_output_service.parse_status_response(raw_telegram)
         is_on = result[self.accessory.output_number]
         self.logger.debug(f" is_on: {is_on}")
         return is_on

@@ -1,13 +1,14 @@
-from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path
-from typing import List, Union
 
 import yaml
-from pydantic import BaseModel, IPvAnyAddress
+from pydantic import BaseModel
+
+
 class ConbusConfig(BaseModel):
     ip: str = "127.0.0.1"
     port: int = 10001
     timeout: float = 0.1
+
 
 class CliConfig(BaseModel):
     conbus: ConbusConfig

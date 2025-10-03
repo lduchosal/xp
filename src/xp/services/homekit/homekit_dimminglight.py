@@ -81,11 +81,15 @@ class DimmingLight(Accessory):
             serial_number=self.module.serial_number,
             output_number=self.accessory.output_number,
         )
-        self.logger.debug(f"result: {result}, output_number: {self.accessory.output_number}")
+        self.logger.debug(
+            f"result: {result}, output_number: {self.accessory.output_number}"
+        )
         if not result.success or not result.level:
             return False
 
-        self.logger.debug(f"result: {result}, output_number: {self.accessory.output_number}: {result.level}")
+        self.logger.debug(
+            f"result: {result}, output_number: {self.accessory.output_number}: {result.level}"
+        )
         return result.level >= 0
 
     def set_brightness(self, value: int) -> None:

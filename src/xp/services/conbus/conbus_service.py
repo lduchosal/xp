@@ -10,7 +10,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, List, Optional
 
-import yaml
 from typing_extensions import Callable
 
 from xp.models import (
@@ -61,13 +60,12 @@ class ConbusService:
         """Load client configuration from cli.yml"""
         try:
             if Path(self.config_path).exists():
-                with Path(self.config_path).open("r") as file:
-                    cli_config = CliConfig.from_yaml(self.config_path)
-                    self.config.ip = cli_config.conbus.ip
-                    self.config.port = cli_config.conbus.port
-                    self.config.timeout = cli_config.conbus.timeout
+                cli_config = CliConfig.from_yaml(self.config_path)
+                self.config.ip = cli_config.conbus.ip
+                self.config.port = cli_config.conbus.port
+                self.config.timeout = cli_config.conbus.timeout
 
-                    self.logger.info(f"Loaded configuration from {self.config_path}")
+                self.logger.info(f"Loaded configuration from {self.config_path}")
             else:
                 self.logger.warning(
                     f"Config file {self.config_path} not found, using defaults"

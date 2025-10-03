@@ -51,7 +51,7 @@ class TestOutputIntegration:
         mock_response = "<R0012345008F02D12xxxx1010FJ>"
         status = self.output_service.parse_status_response(mock_response)
 
-        expected = [ False, True, False, True ]
+        expected = [False, True, False, True]
         assert status == expected
 
     def test_all_output_combinations(self):

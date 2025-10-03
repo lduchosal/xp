@@ -37,7 +37,9 @@ class TestMsActionTableService:
             curtain34=True,
         )
 
-    @patch("xp.services.conbus.actiontable.msactiontable_service.Xp24MsActionTableSerializer")
+    @patch(
+        "xp.services.conbus.actiontable.msactiontable_service.Xp24MsActionTableSerializer"
+    )
     def test_download_action_table_success(
         self, mock_serializer_class, service, mock_action_table
     ):
@@ -82,7 +84,9 @@ class TestMsActionTableService:
             ):
                 service.download_action_table("0123450001", "xp24")
 
-    @patch("xp.services.conbus.actiontable.msactiontable_service.Xp24MsActionTableSerializer")
+    @patch(
+        "xp.services.conbus.actiontable.msactiontable_service.Xp24MsActionTableSerializer"
+    )
     def test_download_action_table_serializer_error(
         self, mock_serializer_class, service
     ):

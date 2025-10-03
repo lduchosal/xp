@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from xp.models.homekit.homekit_conson_config import (
     ConsonModuleConfig,
@@ -29,4 +29,3 @@ class HomekitModuleService:
             f"Module search by serial '{serial_number}': {'found' if module else 'not found'}"
         )
         return module
-

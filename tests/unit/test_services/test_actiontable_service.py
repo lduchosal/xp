@@ -21,7 +21,9 @@ class TestActionTableService:
     def service(self):
         """Create service instance for testing"""
         with patch("xp.services.conbus.actiontable.actiontable_service.ConbusService"):
-            with patch("xp.services.conbus.actiontable.actiontable_service.TelegramService"):
+            with patch(
+                "xp.services.conbus.actiontable.actiontable_service.TelegramService"
+            ):
                 return ActionTableService()
 
     @pytest.fixture
