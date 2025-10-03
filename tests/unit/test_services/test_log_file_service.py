@@ -268,7 +268,6 @@ class TestLogFileService:
         telegram_service = Mock(spec=TelegramService)
         service = LogFileService(telegram_service)
 
-
         # Create mock entries with various properties
         entries = []
 
@@ -351,7 +350,6 @@ class TestLogFileService:
         telegram_service = Mock(spec=TelegramService)
         service = LogFileService(telegram_service)
 
-
         entries = [
             Mock(telegram_type="event"),
             Mock(telegram_type="system"),
@@ -370,7 +368,6 @@ class TestLogFileService:
         telegram_service = Mock(spec=TelegramService)
         service = LogFileService(telegram_service)
 
-
         entries = [
             Mock(direction="TX"),
             Mock(direction="RX"),
@@ -386,7 +383,6 @@ class TestLogFileService:
         """Test filtering entries by time range"""
         telegram_service = Mock(spec=TelegramService)
         service = LogFileService(telegram_service)
-
 
         base_time = datetime(2023, 1, 1, 22, 44, 20)
         entries = [
@@ -413,7 +409,6 @@ class TestLogFileService:
         """Test filtering entries with multiple criteria"""
         telegram_service = Mock(spec=TelegramService)
         service = LogFileService(telegram_service)
-
 
         base_time = datetime(2023, 1, 1, 22, 44, 20)
         entries = [

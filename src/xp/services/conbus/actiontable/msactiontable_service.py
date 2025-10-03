@@ -8,7 +8,6 @@ from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 from xp.models.telegram.system_function import SystemFunction
-from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 from xp.services.conbus.actiontable.msactiontable_xp20_serializer import (
     Xp20MsActionTableSerializer,
 )
@@ -19,6 +18,7 @@ from xp.services.conbus.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
 from xp.services.conbus.conbus_service import ConbusError, ConbusService
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
 
 class MsActionTableError(Exception):

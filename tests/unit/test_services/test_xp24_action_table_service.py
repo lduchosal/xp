@@ -21,6 +21,7 @@ class TestMsActionTableService:
     def service(self):
         """Create service instance for testing"""
         from unittest.mock import Mock
+
         mock_conbus = Mock()
         mock_telegram = Mock()
         return MsActionTableService(

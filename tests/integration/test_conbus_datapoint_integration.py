@@ -54,8 +54,9 @@ class TestConbusDatapointIntegration:
 
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.valid_serial],
-            obj={"container": mock_service_container}
+            cli,
+            ["conbus", "datapoint", "all", self.valid_serial],
+            obj={"container": mock_service_container},
         )
 
         # Debug output
@@ -96,8 +97,9 @@ class TestConbusDatapointIntegration:
 
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.invalid_serial],
-            obj={"container": mock_service_container}
+            cli,
+            ["conbus", "datapoint", "all", self.invalid_serial],
+            obj={"container": mock_service_container},
         )
 
         # Should handle the error gracefully
@@ -124,8 +126,9 @@ class TestConbusDatapointIntegration:
 
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.valid_serial],
-            obj={"container": mock_service_container}
+            cli,
+            ["conbus", "datapoint", "all", self.valid_serial],
+            obj={"container": mock_service_container},
         )
 
         # Should handle the error gracefully
@@ -156,8 +159,9 @@ class TestConbusDatapointIntegration:
 
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.valid_serial],
-            obj={"container": mock_service_container}
+            cli,
+            ["conbus", "datapoint", "all", self.valid_serial],
+            obj={"container": mock_service_container},
         )
 
         # Should return the failed response
@@ -189,8 +193,9 @@ class TestConbusDatapointIntegration:
 
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.valid_serial],
-            obj={"container": mock_service_container}
+            cli,
+            ["conbus", "datapoint", "all", self.valid_serial],
+            obj={"container": mock_service_container},
         )
 
         # Should succeed with empty datapoints
@@ -224,8 +229,7 @@ class TestConbusDatapointService:
         mock_single_response.datapoint_telegram = mock_reply_telegram
 
         service = ConbusDatapointService(
-            telegram_service=mock_telegram_service,
-            conbus_service=mock_conbus_service
+            telegram_service=mock_telegram_service, conbus_service=mock_conbus_service
         )
 
         # Mock the send_telegram method to return successful responses
@@ -252,8 +256,7 @@ class TestConbusDatapointService:
         mock_conbus_service = Mock()
 
         service = ConbusDatapointService(
-            telegram_service=mock_telegram_service,
-            conbus_service=mock_conbus_service
+            telegram_service=mock_telegram_service, conbus_service=mock_conbus_service
         )
 
         # Mock send_telegram to return success for some, failure for others

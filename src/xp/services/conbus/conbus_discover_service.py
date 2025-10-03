@@ -5,7 +5,6 @@ various types of telegrams including discover, version, and sensor data requests
 """
 
 import logging
-from typing import Optional
 
 from xp.models import (
     ConbusDiscoverResponse,

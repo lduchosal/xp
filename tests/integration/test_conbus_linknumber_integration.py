@@ -1,6 +1,6 @@
 """Integration tests for Conbus link number functionality"""
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse
 from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
@@ -69,18 +69,21 @@ class TestConbusLinknumberIntegration:
 
         # Setup telegram parsing - parse_telegram should return a ReplyTelegram
         from xp.models.telegram.reply_telegram import ReplyTelegram
+
         mock_reply = ReplyTelegram(checksum="DFA", raw_telegram="<R0123450001F18DFA>")
         mock_telegram_service.parse_telegram.return_value = mock_reply
         mock_link_number_service.is_ack_response.return_value = True
         mock_link_number_service.is_nak_response.return_value = False
-        mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
+        mock_link_number_service.generate_set_link_number_telegram.return_value = (
+            "<S0123450001F04D0425FG>"
+        )
 
         # Test
         result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).set_linknumber("0123450001", 25)
 
         # Verify
@@ -115,14 +118,16 @@ class TestConbusLinknumberIntegration:
         mock_telegram_service.parse_telegram.return_value = mock_reply
         mock_link_number_service.is_ack_response.return_value = False
         mock_link_number_service.is_nak_response.return_value = True
-        mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
+        mock_link_number_service.generate_set_link_number_telegram.return_value = (
+            "<S0123450001F04D0425FG>"
+        )
 
         # Test
         result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).set_linknumber("0123450001", 25)
 
         # Verify
@@ -145,14 +150,16 @@ class TestConbusLinknumberIntegration:
         mock_conbus_service.__exit__ = Mock(return_value=False)
 
         # Setup telegram generation
-        mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
+        mock_link_number_service.generate_set_link_number_telegram.return_value = (
+            "<S0123450001F04D0425FG>"
+        )
 
         # Test
         result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).set_linknumber("0123450001", 25)
 
         # Verify
@@ -171,14 +178,17 @@ class TestConbusLinknumberIntegration:
 
         # Setup link number service to raise error for invalid serial
         from xp.services.telegram.telegram_link_number_service import LinkNumberError
-        mock_link_number_service.generate_set_link_number_telegram.side_effect = LinkNumberError("Serial number must be 10 digits")
+
+        mock_link_number_service.generate_set_link_number_telegram.side_effect = (
+            LinkNumberError("Serial number must be 10 digits")
+        )
 
         # Test
         result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).set_linknumber("invalid", 25)
 
         # Verify
@@ -201,14 +211,17 @@ class TestConbusLinknumberIntegration:
 
         # Setup link number service to raise error for invalid link number
         from xp.services.telegram.telegram_link_number_service import LinkNumberError
-        mock_link_number_service.generate_set_link_number_telegram.side_effect = LinkNumberError("Link number must be between 0-99")
+
+        mock_link_number_service.generate_set_link_number_telegram.side_effect = (
+            LinkNumberError("Link number must be between 0-99")
+        )
 
         # Test
         result = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).set_linknumber("0123450001", 101)
 
         # Verify
@@ -245,17 +258,20 @@ class TestConbusLinknumberIntegration:
 
         # Setup telegram parsing - parse_telegram should return a ReplyTelegram
         from xp.models.telegram.reply_telegram import ReplyTelegram
+
         mock_reply = ReplyTelegram(checksum="DFA", raw_telegram="<R0123450001F18DFA>")
         mock_telegram_service.parse_telegram.return_value = mock_reply
         mock_link_number_service.is_ack_response.return_value = True
         mock_link_number_service.is_nak_response.return_value = False
-        mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
+        mock_link_number_service.generate_set_link_number_telegram.return_value = (
+            "<S0123450001F04D0425FG>"
+        )
 
         service = ConbusLinknumberService(
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         )
 
         # Test minimum value
@@ -280,7 +296,7 @@ class TestConbusLinknumberIntegration:
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         )
 
         with service as s:
@@ -327,7 +343,7 @@ class TestConbusLinknumberIntegration:
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).get_linknumber("0123450001")
 
         # Verify
@@ -364,7 +380,7 @@ class TestConbusLinknumberIntegration:
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).get_linknumber("0123450001")
 
         # Verify
@@ -400,7 +416,7 @@ class TestConbusLinknumberIntegration:
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).get_linknumber("0123450001")
 
         # Verify
@@ -431,7 +447,7 @@ class TestConbusLinknumberIntegration:
             conbus_service=mock_conbus_service,
             datapoint_service=mock_datapoint_service,
             link_number_service=mock_link_number_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).get_linknumber("0123450001")
 
         # Verify

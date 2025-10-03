@@ -40,9 +40,7 @@ class TestConbusActionTableCommands:
         ]
         return ActionTable(entries=entries)
 
-    def test_conbus_download_actiontable_success(
-        self, runner, sample_actiontable
-    ):
+    def test_conbus_download_actiontable_success(self, runner, sample_actiontable):
         """Test successful actiontable download command"""
         # Setup mock service
         mock_service = Mock()
@@ -58,8 +56,9 @@ class TestConbusActionTableCommands:
 
         # Execute command
         result = runner.invoke(
-            conbus_download_actiontable, ["012345"],
-            obj={"container": mock_service_container}
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
         )
 
         # Verify success
@@ -91,8 +90,9 @@ class TestConbusActionTableCommands:
 
         # Execute command
         result = runner.invoke(
-            conbus_download_actiontable, ["012345"],
-            obj={"container": mock_service_container}
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
         )
 
         # Parse and verify JSON output
@@ -121,9 +121,7 @@ class TestConbusActionTableCommands:
             }
             assert set(entry.keys()) == expected_entry_keys
 
-    def test_conbus_download_actiontable_error_handling(
-        self, runner
-    ):
+    def test_conbus_download_actiontable_error_handling(self, runner):
         """Test actiontable download command error handling"""
         # Setup mock service to raise error
         mock_service = Mock()
@@ -141,8 +139,9 @@ class TestConbusActionTableCommands:
 
         # Execute command
         result = runner.invoke(
-            conbus_download_actiontable, ["012345"],
-            obj={"container": mock_service_container}
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
         )
 
         # Verify error handling
@@ -175,8 +174,9 @@ class TestConbusActionTableCommands:
 
         # Execute command
         result = runner.invoke(
-            conbus_download_actiontable, ["012345"],
-            obj={"container": mock_service_container}
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
         )
 
         # Verify context manager usage
@@ -192,9 +192,7 @@ class TestConbusActionTableCommands:
         assert "Download action table from XP module" in result.output
         assert "SERIAL_NUMBER" in result.output
 
-    def test_conbus_download_actiontable_json_serialization(
-        self, runner
-    ):
+    def test_conbus_download_actiontable_json_serialization(self, runner):
         """Test that complex objects are properly serialized to JSON"""
         # Create actiontable with enum values
         entry = ActionTableEntry(
@@ -222,8 +220,9 @@ class TestConbusActionTableCommands:
 
         # Execute command
         result = runner.invoke(
-            conbus_download_actiontable, ["012345"],
-            obj={"container": mock_service_container}
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
         )
 
         # Verify JSON can be parsed and contains expected data

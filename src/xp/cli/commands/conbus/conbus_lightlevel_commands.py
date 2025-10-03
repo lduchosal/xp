@@ -23,7 +23,9 @@ from xp.services.conbus.conbus_lightlevel_service import (
 @click.pass_context
 @connection_command()
 @handle_service_errors(ConbusLightlevelError)
-def xp_lightlevel_set(ctx: click.Context, serial_number: str, output_number: int, level: int) -> None:
+def xp_lightlevel_set(
+    ctx: click.Context, serial_number: str, output_number: int, level: int
+) -> None:
     """Set light level for output_number on XP module serial_number
 
     Examples:
@@ -45,7 +47,9 @@ def xp_lightlevel_set(ctx: click.Context, serial_number: str, output_number: int
 @click.pass_context
 @connection_command()
 @handle_service_errors(ConbusLightlevelError)
-def xp_lightlevel_off(ctx: click.Context, serial_number: str, output_number: int) -> None:
+def xp_lightlevel_off(
+    ctx: click.Context, serial_number: str, output_number: int
+) -> None:
     """Turn off light for output_number on XP module serial_number (set level to 0)
 
     Examples:
@@ -67,7 +71,9 @@ def xp_lightlevel_off(ctx: click.Context, serial_number: str, output_number: int
 @click.pass_context
 @connection_command()
 @handle_service_errors(ConbusLightlevelError)
-def xp_lightlevel_on(ctx: click.Context, serial_number: str, output_number: int) -> None:
+def xp_lightlevel_on(
+    ctx: click.Context, serial_number: str, output_number: int
+) -> None:
     """Turn on light for output_number on XP module serial_number (set level to 80%)
 
     Examples:
@@ -89,7 +95,9 @@ def xp_lightlevel_on(ctx: click.Context, serial_number: str, output_number: int)
 @click.pass_context
 @connection_command()
 @handle_service_errors(ConbusLightlevelError)
-def xp_lightlevel_get(ctx: click.Context, serial_number: str, output_number: int) -> None:
+def xp_lightlevel_get(
+    ctx: click.Context, serial_number: str, output_number: int
+) -> None:
     """Get current light level for output_number on XP module serial_number
 
     Examples:

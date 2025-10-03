@@ -25,7 +25,9 @@ from xp.services.conbus.actiontable.msactiontable_service import (
 @click.pass_context
 @connection_command()
 @handle_service_errors(MsActionTableError)
-def conbus_download_msactiontable(ctx: Context, serial_number: str, xpmoduletype: str) -> None:
+def conbus_download_msactiontable(
+    ctx: Context, serial_number: str, xpmoduletype: str
+) -> None:
     """Download MS action table from XP24 module"""
     service = ctx.obj.get("container").get_container().resolve(MsActionTableService)
 

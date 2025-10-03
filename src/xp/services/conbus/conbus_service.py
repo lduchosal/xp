@@ -7,7 +7,6 @@ various types of telegrams including discover, version, and sensor data requests
 import logging
 import socket
 from datetime import datetime
-from pathlib import Path
 from typing import Any, List, Optional
 
 from typing_extensions import Callable

@@ -34,9 +34,7 @@ conbus:
         self.temp_config.close()
 
         cli_config = ConbusClientConfig.from_yaml(self.temp_config.name)
-        self.service = ReverseProxyService(
-            cli_config=cli_config, listen_port=10003
-        )
+        self.service = ReverseProxyService(cli_config=cli_config, listen_port=10003)
 
     def teardown_method(self):
         """Clean up test fixtures"""

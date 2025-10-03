@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from pyhap.accessory import Accessory
 from pyhap.accessory_driver import AccessoryDriver

@@ -55,7 +55,9 @@ class TestServerServiceInit:
 
         telegram_service = TelegramService()
         discover_service = TelegramDiscoverService()
-        service = ServerService(telegram_service, discover_service, config_path="custom.yml", port=8080)
+        service = ServerService(
+            telegram_service, discover_service, config_path="custom.yml", port=8080
+        )
 
         assert service.config_path == "custom.yml"
         assert service.port == 8080

@@ -1,7 +1,7 @@
 """Integration tests for ActionTable functionality."""
 
 import json
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 from click.testing import CliRunner
@@ -136,7 +136,7 @@ class TestActionTableIntegration:
         result = CliRunner().invoke(
             conbus_download_actiontable,
             ["012345"],
-            obj={"container": mock_service_container}
+            obj={"container": mock_service_container},
         )
 
         # Verify successful execution

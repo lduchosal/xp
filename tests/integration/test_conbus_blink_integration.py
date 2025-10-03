@@ -1,6 +1,6 @@
 """Integration tests for Conbus blink functionality"""
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from xp.models.conbus.conbus import ConbusRequest, ConbusResponse
 from xp.models.telegram.system_function import SystemFunction
@@ -63,10 +63,17 @@ class TestConbusBlinkIntegration:
         """Test turning all device blinks off"""
         mock_conbus_instance = self._create_mock_conbus_service()
         mock_discover_service = Mock()
-        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
-        mock_discover_service.parse_discovered_devices.return_value = ["0012345008", "0012345011"]
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = (
+            "<B012345F01D00FG>"
+        )
+        mock_discover_service.parse_discovered_devices.return_value = [
+            "0012345008",
+            "0012345011",
+        ]
         mock_telegram_blink_service = Mock()
-        mock_telegram_blink_service.generate_blink_telegram.return_value = "<S0012345008F06D00FP>"
+        mock_telegram_blink_service.generate_blink_telegram.return_value = (
+            "<S0012345008F06D00FP>"
+        )
         mock_telegram_service = Mock()
 
         service = ConbusBlinkService(
@@ -94,10 +101,17 @@ class TestConbusBlinkIntegration:
         """Test turning all device blinks on"""
         mock_conbus_instance = self._create_mock_conbus_service()
         mock_discover_service = Mock()
-        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
-        mock_discover_service.parse_discovered_devices.return_value = ["0012345008", "0012345011"]
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = (
+            "<B012345F01D00FG>"
+        )
+        mock_discover_service.parse_discovered_devices.return_value = [
+            "0012345008",
+            "0012345011",
+        ]
         mock_telegram_blink_service = Mock()
-        mock_telegram_blink_service.generate_blink_telegram.return_value = "<S0012345008F05D00FP>"
+        mock_telegram_blink_service.generate_blink_telegram.return_value = (
+            "<S0012345008F05D00FP>"
+        )
         mock_telegram_service = Mock()
 
         service = ConbusBlinkService(
@@ -149,7 +163,9 @@ class TestConbusBlinkIntegration:
         """Handle invalid responses"""
         mock_conbus_instance = self._create_mock_conbus_service(discover_devices=[])
         mock_discover_service = Mock()
-        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = (
+            "<B012345F01D00FG>"
+        )
         mock_discover_service.parse_discovered_devices.return_value = []
         mock_telegram_blink_service = Mock()
         mock_telegram_service = Mock()
@@ -177,10 +193,17 @@ class TestConbusBlinkIntegration:
         """Test scenario where some devices fail to blink"""
         mock_conbus_instance = self._create_mock_conbus_service(blink_success=False)
         mock_discover_service = Mock()
-        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
-        mock_discover_service.parse_discovered_devices.return_value = ["0012345008", "0012345011"]
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = (
+            "<B012345F01D00FG>"
+        )
+        mock_discover_service.parse_discovered_devices.return_value = [
+            "0012345008",
+            "0012345011",
+        ]
         mock_telegram_blink_service = Mock()
-        mock_telegram_blink_service.generate_blink_telegram.return_value = "<S0012345008F05D00FP>"
+        mock_telegram_blink_service.generate_blink_telegram.return_value = (
+            "<S0012345008F05D00FP>"
+        )
         mock_telegram_service = Mock()
 
         service = ConbusBlinkService(
@@ -231,10 +254,14 @@ class TestConbusBlinkIntegration:
             discover_devices=devices
         )
         mock_discover_service = Mock()
-        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = (
+            "<B012345F01D00FG>"
+        )
         mock_discover_service.parse_discovered_devices.return_value = devices
         mock_telegram_blink_service = Mock()
-        mock_telegram_blink_service.generate_blink_telegram.return_value = "<S0012345008F05D00FP>"
+        mock_telegram_blink_service.generate_blink_telegram.return_value = (
+            "<S0012345008F05D00FP>"
+        )
         mock_telegram_service = Mock()
 
         service = ConbusBlinkService(

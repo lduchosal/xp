@@ -5,8 +5,9 @@ import sys
 import click
 import uvicorn
 
-from xp.cli.commands.api import api
 from xp.api.main import create_app
+from xp.cli.commands.api import api
+
 
 @api.command("start")
 @click.option(

@@ -21,10 +21,10 @@ class TestOutputIntegration:
         cli_config = ConbusClientConfig.from_yaml("cli.yml")
         conbus_service = ConbusService(cli_config)
         telegram_service = TelegramService()
-        self.output_service = TelegramOutputService(
-            telegram_service=telegram_service
+        self.output_service = TelegramOutputService(telegram_service=telegram_service)
+        self.conbus_service = ConbusDatapointService(
+            telegram_service=telegram_service, conbus_service=conbus_service
         )
-        self.conbus_service = ConbusDatapointService(telegram_service=telegram_service, conbus_service=conbus_service)
 
     def test_end_to_end_action_generation_and_parsing(self):
         """Test complete flow: generate telegram, parse it back."""

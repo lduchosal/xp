@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from pyhap.accessory import Accessory
 from pyhap.accessory_driver import AccessoryDriver
@@ -8,13 +7,9 @@ from pyhap.const import CATEGORY_OUTLET
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.telegram.action_type import ActionType
-from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
-from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
-from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
-from xp.services.telegram.telegram_service import TelegramService
 
 
 class Outlet(Accessory):

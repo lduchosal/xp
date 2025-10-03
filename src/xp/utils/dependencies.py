@@ -267,7 +267,6 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
-
         # HomeKit conson config
         self.container.register(
             HomekitConfig,

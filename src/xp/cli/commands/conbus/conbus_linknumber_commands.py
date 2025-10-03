@@ -20,7 +20,9 @@ from xp.services.telegram.telegram_link_number_service import LinkNumberError
 @click.pass_context
 @connection_command()
 @handle_service_errors(LinkNumberError)
-def set_linknumber_command(ctx: click.Context, serial_number: str, link_number: int) -> None:
+def set_linknumber_command(
+    ctx: click.Context, serial_number: str, link_number: int
+) -> None:
     """
     Set the link number for a specific module.
 

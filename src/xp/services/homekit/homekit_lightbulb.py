@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from pyhap.accessory import Accessory
 from pyhap.accessory_driver import AccessoryDriver
@@ -11,9 +10,7 @@ from xp.models.telegram.action_type import ActionType
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
-from xp.services.conbus.conbus_service import ConbusService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
-from xp.services.telegram.telegram_service import TelegramService
 
 
 class LightBulb(Accessory):

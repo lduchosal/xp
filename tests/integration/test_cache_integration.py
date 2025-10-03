@@ -40,8 +40,9 @@ class TestCacheIntegration:
         mock_service_container.get_container.return_value = mock_container
 
         result = self.runner.invoke(
-            cli, ["cache", "set", "2113010000", "output_state", "ON"],
-            obj={"container": mock_service_container}
+            cli,
+            ["cache", "set", "2113010000", "output_state", "ON"],
+            obj={"container": mock_service_container},
         )
 
         assert result.exit_code == 0
@@ -70,8 +71,9 @@ class TestCacheIntegration:
         mock_service_container.get_container.return_value = mock_container
 
         result = self.runner.invoke(
-            cli, ["cache", "get", "2113010000", "output_state"],
-            obj={"container": mock_service_container}
+            cli,
+            ["cache", "get", "2113010000", "output_state"],
+            obj={"container": mock_service_container},
         )
 
         assert result.exit_code == 0
@@ -100,8 +102,9 @@ class TestCacheIntegration:
         mock_service_container.get_container.return_value = mock_container
 
         result = self.runner.invoke(
-            cli, ["cache", "get", "2113010000", "output_state"],
-            obj={"container": mock_service_container}
+            cli,
+            ["cache", "get", "2113010000", "output_state"],
+            obj={"container": mock_service_container},
         )
 
         assert result.exit_code == 0
@@ -120,9 +123,7 @@ class TestCacheIntegration:
         from xp.models.cache import CacheResponse
 
         mock_service = Mock()
-        mock_response = CacheResponse(
-            data=None, hit=False, error="Device not found"
-        )
+        mock_response = CacheResponse(data=None, hit=False, error="Device not found")
         mock_service.get.return_value = mock_response
 
         # Setup mock container to resolve HomeKitCacheService
@@ -132,8 +133,9 @@ class TestCacheIntegration:
         mock_service_container.get_container.return_value = mock_container
 
         result = self.runner.invoke(
-            cli, ["cache", "get", "invalid_device", "output_state"],
-            obj={"container": mock_service_container}
+            cli,
+            ["cache", "get", "invalid_device", "output_state"],
+            obj={"container": mock_service_container},
         )
 
         assert result.exit_code == 0
@@ -156,8 +158,11 @@ class TestCacheIntegration:
         mock_service_container = Mock()
         mock_service_container.get_container.return_value = mock_container
 
-        result = self.runner.invoke(cli, ["cache", "clear", "2113010000"],
-            obj={"container": mock_service_container})
+        result = self.runner.invoke(
+            cli,
+            ["cache", "clear", "2113010000"],
+            obj={"container": mock_service_container},
+        )
 
         assert result.exit_code == 0
         mock_service.clear.assert_called_once_with("2113010000")
@@ -178,8 +183,9 @@ class TestCacheIntegration:
         mock_service_container = Mock()
         mock_service_container.get_container.return_value = mock_container
 
-        result = self.runner.invoke(cli, ["cache", "clear", "all"],
-            obj={"container": mock_service_container})
+        result = self.runner.invoke(
+            cli, ["cache", "clear", "all"], obj={"container": mock_service_container}
+        )
 
         assert result.exit_code == 0
         mock_service.clear.assert_called_once_with()
@@ -204,8 +210,9 @@ class TestCacheIntegration:
         mock_service_container = Mock()
         mock_service_container.get_container.return_value = mock_container
 
-        result = self.runner.invoke(cli, ["cache", "items"],
-            obj={"container": mock_service_container})
+        result = self.runner.invoke(
+            cli, ["cache", "items"], obj={"container": mock_service_container}
+        )
 
         assert result.exit_code == 0
         mock_service.items.assert_called_once()
@@ -234,8 +241,9 @@ class TestCacheIntegration:
         mock_service_container = Mock()
         mock_service_container.get_container.return_value = mock_container
 
-        result = self.runner.invoke(cli, ["cache", "stats"],
-            obj={"container": mock_service_container})
+        result = self.runner.invoke(
+            cli, ["cache", "stats"], obj={"container": mock_service_container}
+        )
 
         assert result.exit_code == 0
         mock_service.get_cache_stats.assert_called_once()
@@ -258,7 +266,7 @@ class TestCacheIntegration:
             cache_file=self.temp_cache_file.name,
             conbus_output_service=mock_output_service,
             conbus_lightlevel_service=mock_lightlevel_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         )
 
         # Mock ConbusOutputService to avoid actual device calls
@@ -295,7 +303,7 @@ class TestCacheIntegration:
             cache_file=self.temp_cache_file.name,
             conbus_output_service=mock_output_service,
             conbus_lightlevel_service=mock_lightlevel_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         )
 
         # Add cache entry manually
@@ -325,7 +333,7 @@ class TestCacheIntegration:
             cache_file=self.temp_cache_file.name,
             conbus_output_service=mock_output_service,
             conbus_lightlevel_service=mock_lightlevel_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         )
         service1.set("persistent_device", "test_tag", "persistent_data")
 
@@ -334,7 +342,7 @@ class TestCacheIntegration:
             cache_file=self.temp_cache_file.name,
             conbus_output_service=mock_output_service,
             conbus_lightlevel_service=mock_lightlevel_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         ).items()
         assert (
             "persistent_device" in items
@@ -352,7 +360,7 @@ class TestCacheIntegration:
             cache_file=self.temp_cache_file.name,
             conbus_output_service=mock_output_service,
             conbus_lightlevel_service=mock_lightlevel_service,
-            telegram_service=mock_telegram_service
+            telegram_service=mock_telegram_service,
         )
 
         # Add initial cache entry
@@ -372,8 +380,9 @@ class TestCacheIntegration:
         mock_service_container = Mock()
         mock_service_container.get_container.return_value = mock_container
 
-        result = self.runner.invoke(cli, ["cache", "--help"],
-            obj={"container": mock_service_container})
+        result = self.runner.invoke(
+            cli, ["cache", "--help"], obj={"container": mock_service_container}
+        )
 
         assert result.exit_code == 0
         assert "Cache operations for HomeKit device states" in result.output
@@ -390,8 +399,9 @@ class TestCacheIntegration:
         mock_service_container = Mock()
         mock_service_container.get_container.return_value = mock_container
 
-        result = self.runner.invoke(cli, ["cache", "get", "--help"],
-            obj={"container": mock_service_container})
+        result = self.runner.invoke(
+            cli, ["cache", "get", "--help"], obj={"container": mock_service_container}
+        )
 
         assert result.exit_code == 0
         assert "Get cached data for a device key" in result.output

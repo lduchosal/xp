@@ -1,7 +1,7 @@
 import logging
 import signal
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from pyhap.accessory import Accessory, Bridge
 from pyhap.accessory_driver import AccessoryDriver
@@ -14,15 +14,14 @@ from xp.models.homekit.homekit_config import (
     HomekitConfig,
     RoomConfig,
 )
-from xp.services.homekit.homekit_dimminglight import DimmingLight
-from xp.services.homekit.homekit_lightbulb import LightBulb
-from xp.services.homekit.homekit_module_service import HomekitModuleService
-from xp.services.homekit.homekit_outlet import Outlet
-
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
+from xp.services.homekit.homekit_dimminglight import DimmingLight
+from xp.services.homekit.homekit_lightbulb import LightBulb
+from xp.services.homekit.homekit_module_service import HomekitModuleService
+from xp.services.homekit.homekit_outlet import Outlet
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 
 

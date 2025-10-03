@@ -3,7 +3,7 @@
 import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path, PosixPath
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from xp.models import ConbusDatapointResponse
 from xp.models.cache import CacheEntry
@@ -58,11 +58,13 @@ class TestHomeKitCacheService:
 
     def test_cache_miss_queries_device(self):
         """Test cache miss triggers device query"""
-        self.mock_output_service.get_output_state.return_value = ConbusDatapointResponse(
-            success=True,
-            datapoint_telegram=ReplyTelegram(
-                checksum="CK", raw_telegram="device_response"
-            ),
+        self.mock_output_service.get_output_state.return_value = (
+            ConbusDatapointResponse(
+                success=True,
+                datapoint_telegram=ReplyTelegram(
+                    checksum="CK", raw_telegram="device_response"
+                ),
+            )
         )
 
         service = self._create_service()
@@ -101,11 +103,13 @@ class TestHomeKitCacheService:
 
     def test_expired_cache_entry_triggers_device_query(self):
         """Test expired cache entry triggers new device query"""
-        self.mock_output_service.get_output_state.return_value = ConbusDatapointResponse(
-            success=True,
-            datapoint_telegram=ReplyTelegram(
-                checksum="CK", raw_telegram="fresh_data"
-            ),
+        self.mock_output_service.get_output_state.return_value = (
+            ConbusDatapointResponse(
+                success=True,
+                datapoint_telegram=ReplyTelegram(
+                    checksum="CK", raw_telegram="fresh_data"
+                ),
+            )
         )
 
         service = self._create_service()
@@ -144,7 +148,9 @@ class TestHomeKitCacheService:
 
     def test_device_query_exception(self):
         """Test handling of device query exception"""
-        self.mock_output_service.get_output_state.side_effect = Exception("Connection error")
+        self.mock_output_service.get_output_state.side_effect = Exception(
+            "Connection error"
+        )
 
         response = self._create_service().get("test_device", "test_tag")
 

@@ -39,8 +39,9 @@ class TestConbusRawIntegration:
         mock_container.get_container().resolve.return_value = mock_service
 
         result = self.runner.invoke(
-            cli, ["conbus", "raw", "<S2113010000F02D12>"],
-            obj={"container": mock_container}
+            cli,
+            ["conbus", "raw", "<S2113010000F02D12>"],
+            obj={"container": mock_container},
         )
 
         assert result.exit_code == 0
@@ -72,8 +73,7 @@ class TestConbusRawIntegration:
 
         raw_input = "<S2113010000F02D12><S2113010001F02D12><S2113010002F02D12>"
         result = self.runner.invoke(
-            cli, ["conbus", "raw", raw_input],
-            obj={"container": mock_container}
+            cli, ["conbus", "raw", raw_input], obj={"container": mock_container}
         )
 
         assert result.exit_code == 0
@@ -99,8 +99,9 @@ class TestConbusRawIntegration:
         mock_container.get_container().resolve.return_value = mock_service
 
         result = self.runner.invoke(
-            cli, ["conbus", "raw", "<S2113010000F02D12>"],
-            obj={"container": mock_container}
+            cli,
+            ["conbus", "raw", "<S2113010000F02D12>"],
+            obj={"container": mock_container},
         )
 
         assert (
@@ -126,8 +127,9 @@ class TestConbusRawIntegration:
         mock_container.get_container().resolve.return_value = mock_service
 
         result = self.runner.invoke(
-            cli, ["conbus", "raw", "<S2113010000F02D12>"],
-            obj={"container": mock_container}
+            cli,
+            ["conbus", "raw", "<S2113010000F02D12>"],
+            obj={"container": mock_container},
         )
 
         assert result.exit_code == 0
@@ -166,8 +168,9 @@ class TestConbusRawIntegration:
         mock_container.get_container().resolve.return_value = mock_service
 
         result = self.runner.invoke(
-            cli, ["conbus", "raw", "<S2113010000F02D12>"],
-            obj={"container": mock_container}
+            cli,
+            ["conbus", "raw", "<S2113010000F02D12>"],
+            obj={"container": mock_container},
         )
 
         # The CLI should handle the exception gracefully

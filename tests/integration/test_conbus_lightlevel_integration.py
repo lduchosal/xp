@@ -58,7 +58,7 @@ class TestConbusLightlevelIntegration:
                 str(self.valid_output_number),
                 str(self.valid_level),
             ],
-            obj={"container": mock_service_container}
+            obj={"container": mock_service_container},
         )
 
         # Assertions
@@ -104,7 +104,7 @@ class TestConbusLightlevelIntegration:
                 self.valid_serial,
                 str(self.valid_output_number),
             ],
-            obj={"container": mock_service_container}
+            obj={"container": mock_service_container},
         )
 
         # Assertions
@@ -148,7 +148,7 @@ class TestConbusLightlevelIntegration:
                 self.valid_serial,
                 str(self.valid_output_number),
             ],
-            obj={"container": mock_service_container}
+            obj={"container": mock_service_container},
         )
 
         # Assertions
@@ -192,7 +192,7 @@ class TestConbusLightlevelIntegration:
                 self.valid_serial,
                 str(self.valid_output_number),
             ],
-            obj={"container": mock_service_container}
+            obj={"container": mock_service_container},
         )
 
         # Assertions
@@ -253,7 +253,7 @@ class TestConbusLightlevelIntegration:
                 str(self.valid_output_number),
                 "50",
             ],
-            obj={"container": mock_service_container}
+            obj={"container": mock_service_container},
         )
 
         # Should handle the error gracefully
@@ -294,7 +294,7 @@ class TestConbusLightlevelIntegration:
                 self.valid_serial,
                 str(self.valid_output_number),
             ],
-            obj={"container": mock_service_container}
+            obj={"container": mock_service_container},
         )
 
         # Should return the failed response
@@ -334,10 +334,8 @@ class TestConbusLightlevelService:
         result = ConbusLightlevelService(
             telegram_service=mock_telegram_service,
             conbus_service=mock_conbus_service,
-            datapoint_service=mock_datapoint_service
-        ).set_lightlevel(
-            self.valid_serial, self.valid_output_number, self.valid_level
-        )
+            datapoint_service=mock_datapoint_service,
+        ).set_lightlevel(self.valid_serial, self.valid_output_number, self.valid_level)
 
         # Assertions
         assert result.success is True
@@ -368,7 +366,7 @@ class TestConbusLightlevelService:
         result = ConbusLightlevelService(
             telegram_service=mock_telegram_service,
             conbus_service=mock_conbus_service,
-            datapoint_service=mock_datapoint_service
+            datapoint_service=mock_datapoint_service,
         ).set_lightlevel(
             self.valid_serial, self.valid_output_number, 150  # Invalid level > 100
         )
@@ -389,7 +387,7 @@ class TestConbusLightlevelService:
         service = ConbusLightlevelService(
             telegram_service=mock_telegram_service,
             conbus_service=mock_conbus_service,
-            datapoint_service=mock_datapoint_service
+            datapoint_service=mock_datapoint_service,
         )
 
         # Mock the set_lightlevel method
@@ -420,7 +418,7 @@ class TestConbusLightlevelService:
         service = ConbusLightlevelService(
             telegram_service=mock_telegram_service,
             conbus_service=mock_conbus_service,
-            datapoint_service=mock_datapoint_service
+            datapoint_service=mock_datapoint_service,
         )
 
         # Mock the set_lightlevel method
@@ -466,7 +464,7 @@ class TestConbusLightlevelService:
         result = ConbusLightlevelService(
             telegram_service=mock_telegram_service,
             conbus_service=mock_conbus_service,
-            datapoint_service=mock_datapoint_service
+            datapoint_service=mock_datapoint_service,
         ).get_lightlevel(self.valid_serial, 2)
 
         # Assertions
@@ -493,7 +491,7 @@ class TestConbusLightlevelService:
         service = ConbusLightlevelService(
             telegram_service=mock_telegram_service,
             conbus_service=mock_conbus_service,
-            datapoint_service=mock_datapoint_service
+            datapoint_service=mock_datapoint_service,
         )
 
         with service as s:
