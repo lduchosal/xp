@@ -8,7 +8,7 @@ from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.actiontable.actiontable_service import (
+from xp.services.conbus.actiontable.actiontable_service import (
     ActionTableError,
     ActionTableService,
 )
@@ -20,8 +20,8 @@ class TestActionTableService:
     @pytest.fixture
     def service(self):
         """Create service instance for testing"""
-        with patch("xp.services.actiontable.actiontable_service.ConbusService"):
-            with patch("xp.services.actiontable.actiontable_service.TelegramService"):
+        with patch("xp.services.conbus.actiontable.actiontable_service.ConbusService"):
+            with patch("xp.services.conbus.actiontable.actiontable_service.TelegramService"):
                 return ActionTableService()
 
     @pytest.fixture
@@ -65,8 +65,8 @@ class TestActionTableService:
         assert isinstance(result, str)
         assert len(result) > 0
 
-    @patch("xp.services.actiontable.actiontable_service.ConbusService")
-    @patch("xp.services.actiontable.actiontable_service.TelegramService")
+    @patch("xp.services.conbus.actiontable.actiontable_service.ConbusService")
+    @patch("xp.services.conbus.actiontable.actiontable_service.TelegramService")
     def test_download_actiontable_success(
         self, mock_telegram_service, mock_conbus_service
     ):

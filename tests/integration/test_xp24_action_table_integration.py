@@ -9,7 +9,7 @@ from xp.cli.main import cli
 from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.actiontable.msactiontable_service import (
+from xp.services.conbus.actiontable.msactiontable_service import (
     MsActionTableError,
 )
 

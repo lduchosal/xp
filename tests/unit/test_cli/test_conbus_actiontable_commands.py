@@ -13,7 +13,7 @@ from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.actiontable.actiontable_service import ActionTableError
+from xp.services.conbus.actiontable.actiontable_service import ActionTableError
 
 
 class TestConbusActionTableCommands:

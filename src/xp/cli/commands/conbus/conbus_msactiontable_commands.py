@@ -12,7 +12,7 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.cli.utils.xp_module_type import XP_MODULE_TYPE
-from xp.services.actiontable.msactiontable_service import (
+from xp.services.conbus.actiontable.msactiontable_service import (
     MsActionTableError,
     MsActionTableService,
 )

@@ -3,7 +3,7 @@
 import pytest
 
 from xp.models.actiontable.msactiontable_xp20 import InputChannel, Xp20MsActionTable
-from xp.services.actiontable.msactiontable_xp20_serializer import (
+from xp.services.conbus.actiontable.msactiontable_xp20_serializer import (
     GROUP_ON_OFF_INDEX,
     INVERT_INDEX,
     SA_FUNCTION_INDEX,

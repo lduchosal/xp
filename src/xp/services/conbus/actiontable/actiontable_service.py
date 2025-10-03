@@ -7,7 +7,7 @@ from typing import Any, Optional
 from xp.models.actiontable.actiontable import ActionTable
 from xp.models.telegram.system_function import SystemFunction
 from xp.services import TelegramParsingError, TelegramService
-from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
+from xp.services.conbus.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.conbus.conbus_service import ConbusError, ConbusService
 
 

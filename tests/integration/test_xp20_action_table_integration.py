@@ -3,8 +3,8 @@
 import pytest
 
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
-from xp.services.actiontable.msactiontable_service import MsActionTableService
-from xp.services.actiontable.msactiontable_xp20_serializer import (
+from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
+from xp.services.conbus.actiontable.msactiontable_service import (
     Xp20MsActionTableSerializer,
 )
 

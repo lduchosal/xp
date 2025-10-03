@@ -10,7 +10,7 @@ from xp.models.actiontable.msactiontable_xp33 import (
     Xp33Scene,
 )
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.actiontable.msactiontable_xp33_serializer import (
+from xp.services.conbus.actiontable.msactiontable_service import (
     Xp33MsActionTableSerializer,
 )
 from xp.utils.serialization import de_nibbles

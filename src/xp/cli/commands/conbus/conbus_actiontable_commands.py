@@ -11,7 +11,7 @@ from xp.cli.utils.decorators import (
     handle_service_errors,
 )
 from xp.cli.utils.serial_number_type import SERIAL
-from xp.services.actiontable.actiontable_service import (
+from xp.services.conbus.actiontable.actiontable_service import (
     ActionTableError,
     ActionTableService,
 )

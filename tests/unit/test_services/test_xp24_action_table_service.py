@@ -7,7 +7,7 @@ import pytest
 from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.actiontable.msactiontable_service import (
+from xp.services.conbus.actiontable.msactiontable_service import (
     MsActionTableError,
     MsActionTableService,
 )
@@ -37,7 +37,7 @@ class TestMsActionTableService:
             curtain34=True,
         )
 
-    @patch("xp.services.actiontable.msactiontable_service.Xp24MsActionTableSerializer")
+    @patch("xp.services.conbus.actiontable.msactiontable_service.Xp24MsActionTableSerializer")
     def test_download_action_table_success(
         self, mock_serializer_class, service, mock_action_table
     ):
@@ -82,7 +82,7 @@ class TestMsActionTableService:
             ):
                 service.download_action_table("0123450001", "xp24")
 
-    @patch("xp.services.actiontable.msactiontable_service.Xp24MsActionTableSerializer")
+    @patch("xp.services.conbus.actiontable.msactiontable_service.Xp24MsActionTableSerializer")
     def test_download_action_table_serializer_error(
         self, mock_serializer_class, service
     ):
