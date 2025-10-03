@@ -3,6 +3,7 @@
 import json
 
 import click
+from click import Context
 from click_help_colors import HelpColorsGroup
 
 from xp.cli.utils.decorators import (
@@ -26,9 +27,11 @@ def file() -> None:
 @file.command("decode")
 @click.argument("log_file_path")
 @click.option("--summary", is_flag=True, help="Show summary statistics only")
+@click.pass_context
 @file_operation_command()
 @handle_service_errors(Exception)
 def decode_log_file(
+    ctx: Context,
     log_file_path: str,
     filter_type: str,
     filter_direction: str,
@@ -46,7 +49,7 @@ def decode_log_file(
     from xp.services.log_file_service import LogFileService
     from xp.utils.time_utils import TimeParsingError, parse_time_range
 
-    service = LogFileService()
+    service = ctx.obj.get("container").get_container().resolve(LogFileService)
     StatisticsFormatter(True)
 
     try:
@@ -99,8 +102,9 @@ def decode_log_file(
 
 @file.command("analyze")
 @click.argument("log_file_path")
+@click.pass_context
 @handle_service_errors(Exception)
-def analyze_log_file(log_file_path: str) -> None:
+def analyze_log_file(ctx: Context, log_file_path: str) -> None:
     """
     Analyze console bus log file for patterns and statistics.
 
@@ -111,7 +115,7 @@ def analyze_log_file(log_file_path: str) -> None:
     """
     from xp.services.log_file_service import LogFileService
 
-    service = LogFileService()
+    service = ctx.obj.get("container").get_container().resolve(LogFileService)
     StatisticsFormatter(True)
 
     try:
@@ -128,8 +132,9 @@ def analyze_log_file(log_file_path: str) -> None:
 
 @file.command("validate")
 @click.argument("log_file_path")
+@click.pass_context
 @handle_service_errors(Exception)
-def validate_log_file(log_file_path: str) -> None:
+def validate_log_file(ctx: Context, log_file_path: str) -> None:
     """
     Validate console bus log file format and telegram checksums.
 
@@ -140,7 +145,7 @@ def validate_log_file(log_file_path: str) -> None:
     """
     from xp.services.log_file_service import LogFileService
 
-    service = LogFileService()
+    service = ctx.obj.get("container").get_container().resolve(LogFileService)
     OutputFormatter(True)
 
     try:

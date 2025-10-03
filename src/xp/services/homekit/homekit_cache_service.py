@@ -26,31 +26,25 @@ class HomeKitCacheService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        cache_file: str = ".homekit_cache.json",
-        conbus_output_service: Optional[ConbusOutputService] = None,
-        conbus_lightlevel_service: Optional[ConbusLightlevelService] = None,
-        telegram_service: Optional[TelegramService] = None,
+        cache_file: str,
+        conbus_output_service: ConbusOutputService,
+        conbus_lightlevel_service: ConbusLightlevelService,
+        telegram_service: TelegramService,
     ):
         """Initialize the HomeKit cache service.
 
         Args:
-            config_path: Path to configuration file for ConBus service
-            cache_file: Custom cache file path (defaults to ~/.homekit_cache.json)
-            conbus_output_service: Optional ConbusOutputService for dependency injection
-            conbus_lightlevel_service: Optional ConbusLightlevelService for dependency injection
-            telegram_service: Optional TelegramService for dependency injection
+            cache_file: Custom cache file path
+            conbus_output_service: ConbusOutputService for dependency injection
+            conbus_lightlevel_service: ConbusLightlevelService for dependency injection
+            telegram_service: TelegramService for dependency injection
         """
         self.logger = logging.getLogger(__name__)
 
-        # Service dependencies - support both DI and direct instantiation
-        self.conbus_output_service = conbus_output_service or ConbusOutputService(
-            config_path
-        )
-        self.conbus_lightlevel_service = (
-            conbus_lightlevel_service or ConbusLightlevelService(config_path)
-        )
-        self.telegram_service = telegram_service or TelegramService()
+        # Service dependencies
+        self.conbus_output_service = conbus_output_service
+        self.conbus_lightlevel_service = conbus_lightlevel_service
+        self.telegram_service = telegram_service
         self.cache_file = Path(cache_file)
 
         # In-memory cache storage

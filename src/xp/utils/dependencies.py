@@ -2,6 +2,9 @@
 
 import punq
 
+from xp.models import ConbusClientConfig
+from xp.models.homekit.homekit_config import HomekitConfig
+from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.services.conbus.actiontable.actiontable_service import ActionTableService
 from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
 from xp.services.conbus.conbus_autoreport_service import ConbusAutoreportService
@@ -20,6 +23,8 @@ from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.homekit.homekit_service import HomekitService
+from xp.services.log_file_service import LogFileService
+from xp.services.module_type_service import ModuleTypeService
 from xp.services.reverse_proxy_service import ReverseProxyService
 from xp.services.server.server_service import ServerService
 from xp.services.telegram.telegram_blink_service import TelegramBlinkService
@@ -77,17 +82,32 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
-        # Telegram services layer - no dependencies
+        # Telegram services layer
         self.container.register(TelegramService, scope=punq.Scope.singleton)
-        self.container.register(TelegramOutputService, scope=punq.Scope.singleton)
+        self.container.register(
+            TelegramOutputService,
+            factory=lambda: TelegramOutputService(
+                telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
         self.container.register(TelegramDiscoverService, scope=punq.Scope.singleton)
         self.container.register(TelegramBlinkService, scope=punq.Scope.singleton)
         self.container.register(LinkNumberService, scope=punq.Scope.singleton)
 
+        # ConbusClientConfig
+        self.container.register(
+            ConbusClientConfig,
+            factory=lambda: ConbusClientConfig.from_yaml(self._config_path),
+            scope=punq.Scope.singleton,
+        )
+
         # ConbusService - depends on ConbusConnectionPool
         self.container.register(
             ConbusService,
-            factory=lambda: ConbusService(self._config_path),
+            factory=lambda: ConbusService(
+                client_config=self.container.resolve(ConbusClientConfig),
+            ),
             scope=punq.Scope.singleton,
         )
 
@@ -95,7 +115,6 @@ class ServiceContainer:
         self.container.register(
             ConbusDatapointService,
             factory=lambda: ConbusDatapointService(
-                config_path=self._config_path,
                 telegram_service=self.container.resolve(TelegramService),
                 conbus_service=self.container.resolve(ConbusService),
             ),
@@ -105,7 +124,6 @@ class ServiceContainer:
         self.container.register(
             ConbusScanService,
             factory=lambda: ConbusScanService(
-                config_path=self._config_path,
                 telegram_service=self.container.resolve(TelegramService),
                 conbus_service=self.container.resolve(ConbusService),
             ),
@@ -115,7 +133,6 @@ class ServiceContainer:
         self.container.register(
             ConbusDiscoverService,
             factory=lambda: ConbusDiscoverService(
-                config_path=self._config_path,
                 telegram_service=self.container.resolve(TelegramService),
                 telegram_discover_service=self.container.resolve(
                     TelegramDiscoverService
@@ -128,7 +145,6 @@ class ServiceContainer:
         self.container.register(
             ConbusBlinkService,
             factory=lambda: ConbusBlinkService(
-                config_path=self._config_path,
                 conbus_service=self.container.resolve(ConbusService),
                 discover_service=self.container.resolve(ConbusDiscoverService),
                 telegram_blink_service=self.container.resolve(TelegramBlinkService),
@@ -140,7 +156,6 @@ class ServiceContainer:
         self.container.register(
             ConbusOutputService,
             factory=lambda: ConbusOutputService(
-                config_path=self._config_path,
                 telegram_service=self.container.resolve(TelegramService),
                 telegram_output_service=self.container.resolve(TelegramOutputService),
                 datapoint_service=self.container.resolve(ConbusDatapointService),
@@ -152,7 +167,6 @@ class ServiceContainer:
         self.container.register(
             ConbusLightlevelService,
             factory=lambda: ConbusLightlevelService(
-                config_path=self._config_path,
                 telegram_service=self.container.resolve(TelegramService),
                 conbus_service=self.container.resolve(ConbusService),
                 datapoint_service=self.container.resolve(ConbusDatapointService),
@@ -163,7 +177,6 @@ class ServiceContainer:
         self.container.register(
             ActionTableService,
             factory=lambda: ActionTableService(
-                config_path=self._config_path,
                 conbus_service=self.container.resolve(ConbusService),
                 telegram_service=self.container.resolve(TelegramService),
             ),
@@ -173,7 +186,6 @@ class ServiceContainer:
         self.container.register(
             MsActionTableService,
             factory=lambda: MsActionTableService(
-                config_path=self._config_path,
                 conbus_service=self.container.resolve(ConbusService),
                 telegram_service=self.container.resolve(TelegramService),
             ),
@@ -193,7 +205,6 @@ class ServiceContainer:
         self.container.register(
             ConbusLinknumberService,
             factory=lambda: ConbusLinknumberService(
-                config_path=self._config_path,
                 conbus_service=self.container.resolve(ConbusService),
                 datapoint_service=self.container.resolve(ConbusDatapointService),
                 link_number_service=self.container.resolve(LinkNumberService),
@@ -205,7 +216,6 @@ class ServiceContainer:
         self.container.register(
             ConbusCustomService,
             factory=lambda: ConbusCustomService(
-                config_path=self._config_path,
                 telegram_service=self.container.resolve(TelegramService),
                 conbus_service=self.container.resolve(ConbusService),
             ),
@@ -215,7 +225,6 @@ class ServiceContainer:
         self.container.register(
             ConbusRawService,
             factory=lambda: ConbusRawService(
-                config_path=self._config_path,
                 conbus_service=self.container.resolve(ConbusService),
             ),
             scope=punq.Scope.singleton,
@@ -229,12 +238,18 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
+        # HomeKit conson config
+        self.container.register(
+            ConsonModuleListConfig,
+            factory=lambda: ConsonModuleListConfig.from_yaml(self._conson_config_path),
+            scope=punq.Scope.singleton,
+        )
+
         # HomeKit services layer
         self.container.register(
             HomekitModuleService,
             factory=lambda: HomekitModuleService(
-                conson_modules_config=None,
-                config_path=self._conson_config_path,
+                conson_modules_config=self.container.resolve(ConsonModuleListConfig),
             ),
             scope=punq.Scope.singleton,
         )
@@ -242,7 +257,6 @@ class ServiceContainer:
         self.container.register(
             HomeKitCacheService,
             factory=lambda: HomeKitCacheService(
-                config_path=self._config_path,
                 cache_file=self._cache_file,
                 conbus_output_service=self.container.resolve(ConbusOutputService),
                 conbus_lightlevel_service=self.container.resolve(
@@ -253,24 +267,43 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
+
+        # HomeKit conson config
+        self.container.register(
+            HomekitConfig,
+            factory=lambda: HomekitConfig.from_yaml(self._homekit_config_path),
+            scope=punq.Scope.singleton,
+        )
+
         self.container.register(
             HomekitService,
             factory=lambda: HomekitService(
-                homekit_config_path=self._homekit_config_path,
-                conson_config_path=self._conson_config_path,
+                homekit_config=self.container.resolve(HomekitConfig),
                 module_service=self.container.resolve(HomekitModuleService),
             ),
             scope=punq.Scope.singleton,
         )
 
+        # Log file services layer
+        self.container.register(
+            LogFileService,
+            factory=lambda: LogFileService(
+                telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        # Module type services layer
+        self.container.register(ModuleTypeService, scope=punq.Scope.singleton)
+
         # Server services layer
         self.container.register(
             ServerService,
             factory=lambda: ServerService(
-                config_path="server.yml",
-                port=self._server_port,
                 telegram_service=self.container.resolve(TelegramService),
                 discover_service=self.container.resolve(TelegramDiscoverService),
+                config_path="server.yml",
+                port=self._server_port,
             ),
             scope=punq.Scope.singleton,
         )
@@ -279,7 +312,7 @@ class ServiceContainer:
         self.container.register(
             ReverseProxyService,
             factory=lambda: ReverseProxyService(
-                config_path=self._config_path,
+                cli_config=self.container.resolve(ConbusClientConfig),
                 listen_port=self._reverse_proxy_port,
             ),
             scope=punq.Scope.singleton,

@@ -27,15 +27,13 @@ class TelegramOutputService:
 
     MAX_OUTPUTS = 99
 
-    telegram_service = TelegramService()
-
     # Regex pattern for XP24 action telegrams
     XP_OUTPUT_PATTERN = re.compile(r"^<S(\d{10})F27D(\d{2})(A[AB])([A-Z0-9]{2})>$")
     XP_ACK_NAK_PATTERN = re.compile(r"^<R(\d{10})F(1[89])D([A-Z0-9]{2})>$")
 
-    def __init__(self) -> None:
+    def __init__(self, telegram_service: TelegramService) -> None:
         """Initialize the XP output service"""
-        pass
+        self.telegram_service = telegram_service
 
     def validate_output_number(self, output_number: int) -> None:
         """

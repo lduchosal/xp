@@ -101,7 +101,12 @@ class TestActionTableIntegration:
     def test_service_serializer_integration(self, sample_actiontable):
         """Test ActionTableService and ActionTableSerializer integration"""
         # Setup service with mocked dependencies
-        service = ActionTableService()
+        mock_conbus = Mock()
+        mock_telegram = Mock()
+        service = ActionTableService(
+            conbus_service=mock_conbus,
+            telegram_service=mock_telegram,
+        )
 
         # Test formatting methods work
         decoded = service.format_decoded_output(sample_actiontable)
@@ -112,18 +117,28 @@ class TestActionTableIntegration:
         assert "CP20 0 0 > 1 TURNOFF;" in decoded
         assert len(encoded) > 0
 
-    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
-    def test_end_to_end_cli_download(self, mock_service_class, sample_actiontable):
+    def test_end_to_end_cli_download(self, sample_actiontable):
         """Test end-to-end CLI download functionality"""
         # Setup mock service
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
         mock_service.download_actiontable.return_value = sample_actiontable
-        mock_service_class.return_value = mock_service
 
-        # Create CLI runner and execute command
-        result = CliRunner().invoke(conbus_download_actiontable, ["012345"])
+        # Setup mock container
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Create CLI runner with context
+        runner = CliRunner()
+        result = runner.invoke(
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container}
+        )
 
         # Verify successful execution
         assert result.exit_code == 0

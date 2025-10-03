@@ -35,31 +35,25 @@ class ConbusOutputService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        telegram_service: Optional[TelegramService] = None,
-        telegram_output_service: Optional[TelegramOutputService] = None,
-        datapoint_service: Optional[ConbusDatapointService] = None,
-        conbus_service: Optional[ConbusService] = None,
+        telegram_service: TelegramService,
+        telegram_output_service: TelegramOutputService,
+        datapoint_service: ConbusDatapointService,
+        conbus_service: ConbusService,
     ):
         """Initialize the Conbus client send service
 
         Args:
-            config_path: Path to configuration file
-            telegram_service: Optional TelegramService for dependency injection
-            telegram_output_service: Optional TelegramOutputService for dependency injection
-            datapoint_service: Optional ConbusDatapointService for dependency injection
-            conbus_service: Optional ConbusService for dependency injection
+            telegram_service: TelegramService for dependency injection
+            telegram_output_service: TelegramOutputService for dependency injection
+            datapoint_service: ConbusDatapointService for dependency injection
+            conbus_service: ConbusService for dependency injection
         """
 
-        # Service dependencies - support both DI and direct instantiation
-        self.telegram_service = telegram_service or TelegramService()
-        self.telegram_output_service = (
-            telegram_output_service or TelegramOutputService()
-        )
-        self.datapoint_service = datapoint_service or ConbusDatapointService(
-            config_path
-        )
-        self.conbus_service = conbus_service or ConbusService(config_path)
+        # Service dependencies
+        self.telegram_service = telegram_service
+        self.telegram_output_service = telegram_output_service
+        self.datapoint_service = datapoint_service
+        self.conbus_service = conbus_service
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

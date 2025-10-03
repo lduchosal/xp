@@ -40,16 +40,13 @@ class ConbusService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        client_config: Optional[ConbusClientConfig] = None,
+        client_config: ConbusClientConfig,
     ):
         """Initialize the Conbus client send service
 
         Args:
-            config_path: Path to configuration file
             client_config: Optional ConbusClientConfig for dependency injection
         """
-        self.config_path = config_path
         self.client_config: ConbusClientConfig = client_config or ConbusClientConfig()
         self.is_connected = False
         self.last_activity: Optional[datetime] = None
@@ -57,27 +54,9 @@ class ConbusService:
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-        # Load configuration
-        self._load_config()
-
         # Initialize connection pool
         self._connection_pool = ConbusConnectionPool.get_instance()
         self._connection_pool.initialize(self.client_config)
-
-    def _load_config(self) -> None:
-        """Load client configuration from cli.yml"""
-        try:
-            if Path(self.config_path).exists():
-                cli_config = ConbusClientConfig.from_yaml(self.config_path)
-                self.client_config = cli_config
-
-                self.logger.info(f"Loaded configuration from {self.config_path}")
-            else:
-                self.logger.warning(
-                    f"Config file {self.config_path} not found, using defaults"
-                )
-        except Exception as e:
-            self.logger.error(f"Error loading config file: {e}")
 
     def get_config(self) -> ConbusClientConfig:
         """Get current client configuration"""

@@ -41,12 +41,14 @@ class ServerService:
 
     def __init__(
         self,
+        telegram_service: TelegramService,
+        discover_service: TelegramDiscoverService,
         config_path: str = "server.yml",
         port: int = 10001,
-        telegram_service: Optional[TelegramService] = None,
-        discover_service: Optional[TelegramDiscoverService] = None,
     ):
         """Initialize the Conbus server service"""
+        self.telegram_service = telegram_service
+        self.discover_service = discover_service
         self.config_path = config_path
         self.port = port
         self.server_socket: Optional[socket.socket] = None
@@ -61,10 +63,6 @@ class ServerService:
                 XP130ServerService,
             ],
         ] = {}  # serial -> device service instance
-
-        # Service dependencies - support both DI and direct instantiation
-        self.telegram_service = telegram_service or TelegramService()
-        self.discover_service = discover_service or TelegramDiscoverService()
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

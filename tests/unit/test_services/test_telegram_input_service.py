@@ -6,6 +6,7 @@ from xp.services.telegram.telegram_output_service import (
     TelegramOutputService,
     XPOutputError,
 )
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class TestTelegramInputServiceAckNak:
@@ -13,7 +14,7 @@ class TestTelegramInputServiceAckNak:
 
     def setup_method(self):
         """Setup test fixtures"""
-        self.service = TelegramOutputService()
+        self.service = TelegramOutputService(telegram_service=TelegramService())
 
     def test_parse_valid_ack_telegram(self):
         """Test parsing a valid ACK telegram"""

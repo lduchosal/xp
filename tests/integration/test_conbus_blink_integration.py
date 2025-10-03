@@ -59,13 +59,22 @@ class TestConbusBlinkIntegration:
 
         return mock_conbus_instance
 
-    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
-    def test_conbus_blink_all_off(self, mock_conbus_service):
+    def test_conbus_blink_all_off(self):
         """Test turning all device blinks off"""
         mock_conbus_instance = self._create_mock_conbus_service()
-        mock_conbus_service.return_value = mock_conbus_instance
+        mock_discover_service = Mock()
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
+        mock_discover_service.parse_discovered_devices.return_value = ["0012345008", "0012345011"]
+        mock_telegram_blink_service = Mock()
+        mock_telegram_blink_service.generate_blink_telegram.return_value = "<S0012345008F06D00FP>"
+        mock_telegram_service = Mock()
 
-        service = ConbusBlinkService()
+        service = ConbusBlinkService(
+            conbus_service=mock_conbus_instance,
+            discover_service=mock_discover_service,
+            telegram_blink_service=mock_telegram_blink_service,
+            telegram_service=mock_telegram_service,
+        )
 
         with service:
             response = service.blink_all("off")
@@ -81,13 +90,22 @@ class TestConbusBlinkIntegration:
         # Verify blink telegrams were sent
         mock_conbus_instance.send_raw_telegrams.assert_called_once()
 
-    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
-    def test_conbus_blink_all_on(self, mock_conbus_service):
+    def test_conbus_blink_all_on(self):
         """Test turning all device blinks on"""
         mock_conbus_instance = self._create_mock_conbus_service()
-        mock_conbus_service.return_value = mock_conbus_instance
+        mock_discover_service = Mock()
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
+        mock_discover_service.parse_discovered_devices.return_value = ["0012345008", "0012345011"]
+        mock_telegram_blink_service = Mock()
+        mock_telegram_blink_service.generate_blink_telegram.return_value = "<S0012345008F05D00FP>"
+        mock_telegram_service = Mock()
 
-        service = ConbusBlinkService()
+        service = ConbusBlinkService(
+            conbus_service=mock_conbus_instance,
+            discover_service=mock_discover_service,
+            telegram_blink_service=mock_telegram_blink_service,
+            telegram_service=mock_telegram_service,
+        )
 
         with service:
             response = service.blink_all("on")
@@ -103,13 +121,19 @@ class TestConbusBlinkIntegration:
         # Verify blink telegrams were sent
         mock_conbus_instance.send_raw_telegrams.assert_called_once()
 
-    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
-    def test_conbus_blink_connection_error(self, mock_conbus_service):
+    def test_conbus_blink_connection_error(self):
         """Handle network failures"""
         mock_conbus_instance = self._create_mock_conbus_service(discover_success=False)
-        mock_conbus_service.return_value = mock_conbus_instance
+        mock_discover_service = Mock()
+        mock_telegram_blink_service = Mock()
+        mock_telegram_service = Mock()
 
-        service = ConbusBlinkService()
+        service = ConbusBlinkService(
+            conbus_service=mock_conbus_instance,
+            discover_service=mock_discover_service,
+            telegram_blink_service=mock_telegram_blink_service,
+            telegram_service=mock_telegram_service,
+        )
 
         with service:
             response = service.blink_all("off")
@@ -121,13 +145,21 @@ class TestConbusBlinkIntegration:
         assert response.system_function == SystemFunction.UNBLINK
         assert response.error == "Failed to discover devices"
 
-    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
-    def test_conbus_blink_invalid_response(self, mock_conbus_service):
+    def test_conbus_blink_invalid_response(self):
         """Handle invalid responses"""
         mock_conbus_instance = self._create_mock_conbus_service(discover_devices=[])
-        mock_conbus_service.return_value = mock_conbus_instance
+        mock_discover_service = Mock()
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
+        mock_discover_service.parse_discovered_devices.return_value = []
+        mock_telegram_blink_service = Mock()
+        mock_telegram_service = Mock()
 
-        service = ConbusBlinkService()
+        service = ConbusBlinkService(
+            conbus_service=mock_conbus_instance,
+            discover_service=mock_discover_service,
+            telegram_blink_service=mock_telegram_blink_service,
+            telegram_service=mock_telegram_service,
+        )
 
         with service:
             response = service.blink_all("off")
@@ -141,13 +173,22 @@ class TestConbusBlinkIntegration:
         assert response.system_function == SystemFunction.UNBLINK
         assert response.error == "No devices discovered"
 
-    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
-    def test_conbus_blink_partial_failure(self, mock_conbus_service):
+    def test_conbus_blink_partial_failure(self):
         """Test scenario where some devices fail to blink"""
         mock_conbus_instance = self._create_mock_conbus_service(blink_success=False)
-        mock_conbus_service.return_value = mock_conbus_instance
+        mock_discover_service = Mock()
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
+        mock_discover_service.parse_discovered_devices.return_value = ["0012345008", "0012345011"]
+        mock_telegram_blink_service = Mock()
+        mock_telegram_blink_service.generate_blink_telegram.return_value = "<S0012345008F05D00FP>"
+        mock_telegram_service = Mock()
 
-        service = ConbusBlinkService()
+        service = ConbusBlinkService(
+            conbus_service=mock_conbus_instance,
+            discover_service=mock_discover_service,
+            telegram_blink_service=mock_telegram_blink_service,
+            telegram_service=mock_telegram_service,
+        )
 
         with service:
             response = service.blink_all("on")
@@ -165,7 +206,17 @@ class TestConbusBlinkIntegration:
 
     def test_conbus_blink_service_context_manager(self):
         """Test that the service works properly as a context manager"""
-        service = ConbusBlinkService()
+        mock_conbus = Mock()
+        mock_discover = Mock()
+        mock_telegram_blink = Mock()
+        mock_telegram = Mock()
+
+        service = ConbusBlinkService(
+            conbus_service=mock_conbus,
+            discover_service=mock_discover,
+            telegram_blink_service=mock_telegram_blink,
+            telegram_service=mock_telegram,
+        )
 
         # Test entering and exiting context manager
         with service:
@@ -173,16 +224,25 @@ class TestConbusBlinkIntegration:
 
         # Should not raise any exceptions
 
-    @patch("xp.services.conbus.conbus_blink_service.ConbusService")
-    def test_conbus_blink_all_multiple_devices(self, mock_conbus_service):
+    def test_conbus_blink_all_multiple_devices(self):
         """Test blinking multiple devices successfully"""
         devices = ["0012345008", "0012345011", "1234567890", "9876543210"]
         mock_conbus_instance = self._create_mock_conbus_service(
             discover_devices=devices
         )
-        mock_conbus_service.return_value = mock_conbus_instance
+        mock_discover_service = Mock()
+        mock_discover_service.telegram_discover_service.generate_discover_telegram.return_value = "<B012345F01D00FG>"
+        mock_discover_service.parse_discovered_devices.return_value = devices
+        mock_telegram_blink_service = Mock()
+        mock_telegram_blink_service.generate_blink_telegram.return_value = "<S0012345008F05D00FP>"
+        mock_telegram_service = Mock()
 
-        service = ConbusBlinkService()
+        service = ConbusBlinkService(
+            conbus_service=mock_conbus_instance,
+            discover_service=mock_discover_service,
+            telegram_blink_service=mock_telegram_blink_service,
+            telegram_service=mock_telegram_service,
+        )
 
         with service:
             response = service.blink_all("on")

@@ -4,12 +4,15 @@ import json
 from typing import Any, Dict, Optional
 
 import click
+from click import Context
 from click_help_colors import HelpColorsGroup
 
 from xp.cli.utils.decorators import handle_service_errors
 from xp.cli.utils.error_handlers import ServerErrorHandler
 from xp.cli.utils.formatters import OutputFormatter
 from xp.services.server.server_service import ServerError, ServerService
+from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
+from xp.services.telegram.telegram_service import TelegramService
 
 # Global server instance
 _server_instance: Optional[ServerService] = None
@@ -30,8 +33,9 @@ def server() -> None:
     "--port", "-p", default=10001, type=int, help="Port to listen on (default: 10001)"
 )
 @click.option("--config", "-c", default="server.yml", help="Configuration file path")
+@click.pass_context
 @handle_service_errors(ServerError)
-def start_server(port: int, config: str) -> None:
+def start_server(ctx: Context, port: int, config: str) -> None:
     """
     Start the Conbus emulator server.
 
@@ -53,8 +57,8 @@ def start_server(port: int, config: str) -> None:
             click.echo(json.dumps(error_response, indent=2))
             raise SystemExit(1)
 
-        # Create and start server
-        _server_instance = ServerService(config_path=config, port=port)
+        # Get dependencies from container
+        _server_instance = ctx.obj.get("container").get_container().resolve(ServerService)
 
         status = _server_instance.get_server_status()
         click.echo(json.dumps(status, indent=2))

@@ -47,8 +47,15 @@ from xp.cli.commands.api import api
     default=True,
     help="Enable/disable access log (default: enabled)",
 )
+@click.pass_context
 def start_api_server(
-    host: str, port: int, reload: bool, workers: int, log_level: str, access_log: bool
+        context: click.Context,
+        host: str,
+        port: int,
+        reload: bool,
+        workers: int,
+        log_level: str,
+        access_log: bool
 ) -> None:
     """
     Start the FastAPI server.

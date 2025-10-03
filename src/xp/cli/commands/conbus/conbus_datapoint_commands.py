@@ -3,6 +3,7 @@
 import json
 
 import click
+from click import Context
 
 from xp.cli.commands.conbus.conbus import conbus_datapoint
 
@@ -23,9 +24,10 @@ from xp.services.conbus.conbus_datapoint_service import (
 @click.command("query")
 @click.argument("datapoint", type=DATAPOINT)
 @click.argument("serial_number", type=SERIAL)
+@click.pass_context
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def query_datapoint(serial_number: str, datapoint: DataPointType) -> None:
+def query_datapoint(ctx: Context, serial_number: str, datapoint: DataPointType) -> None:
     """
     Query a specific datapoint from Conbus server.
 
@@ -38,7 +40,7 @@ def query_datapoint(serial_number: str, datapoint: DataPointType) -> None:
         xp conbus datapoint query current 0012345011
         xp conbus datapoint query humidity 0012345011
     """
-    service = ConbusDatapointService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
 
     # Send telegram
     with service:

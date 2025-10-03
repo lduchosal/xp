@@ -4,6 +4,7 @@ import json
 from typing import Any, Dict, Union
 
 import click
+from click import Context
 from click_help_colors import HelpColorsGroup
 
 from xp.cli.utils.decorators import list_command
@@ -24,8 +25,9 @@ def module() -> None:
 
 @module.command("info")
 @click.argument("identifier")
+@click.pass_context
 @list_command(ModuleTypeNotFoundError)
-def module_info(identifier: str) -> None:
+def module_info(ctx: Context, identifier: str) -> None:
     """
     Get information about a module type by code or name.
 
@@ -35,7 +37,7 @@ def module_info(identifier: str) -> None:
         xp module info 14
         xp module info XP2606
     """
-    service = ModuleTypeService()
+    service = ctx.obj.get("container").get_container().resolve(ModuleTypeService)
     OutputFormatter(True)
 
     try:
@@ -58,8 +60,9 @@ def module_info(identifier: str) -> None:
 @click.option(
     "--group-by-category", "-g", is_flag=True, help="Group modules by category"
 )
+@click.pass_context
 @list_command(Exception)
-def module_list(category: str, group_by_category: bool) -> None:
+def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
     """
     List module types, optionally filtered by category.
 
@@ -70,7 +73,7 @@ def module_list(category: str, group_by_category: bool) -> None:
         xp module list --category "Interface Panels"
         xp module list --group-by-category
     """
-    service = ModuleTypeService()
+    service = ctx.obj.get("container").get_container().resolve(ModuleTypeService)
     ListFormatter(True)
 
     try:
@@ -109,8 +112,9 @@ def module_list(category: str, group_by_category: bool) -> None:
     type=click.Choice(["name", "description"]),
     help="Fields to search in (default: both)",
 )
+@click.pass_context
 @list_command(Exception)
-def module_search(query: str, field: tuple) -> None:
+def module_search(ctx: Context, query: str, field: tuple) -> None:
     """
     Search for module types by name or description.
 
@@ -120,7 +124,7 @@ def module_search(query: str, field: tuple) -> None:
         xp module search "push button"
         xp module search --field name "XP"
     """
-    service = ModuleTypeService()
+    service = ctx.obj.get("container").get_container().resolve(ModuleTypeService)
     ListFormatter(True)
 
     try:
@@ -140,8 +144,9 @@ def module_search(query: str, field: tuple) -> None:
 
 
 @module.command("categories")
+@click.pass_context
 @list_command(Exception)
-def module_categories() -> None:
+def module_categories(ctx: Context) -> None:
     """
     List all available module categories.
 
@@ -150,7 +155,7 @@ def module_categories() -> None:
     \b
         xp module categories
     """
-    service = ModuleTypeService()
+    service = ctx.obj.get("container").get_container().resolve(ModuleTypeService)
     OutputFormatter(True)
 
     try:

@@ -1,13 +1,3 @@
-ActionTableService
-MsActionTableService
-ConbusAutoreportService
-ConbusBlinkService
-ConbusCustomService
-ConbusDatapointService
-ConbusDiscoverService
-ConbusLightlevelService
-ConbusLinknumberService
-ConbusOutputService
 ConbusRawService
 ConbusReceiveService
 ConbusScanService

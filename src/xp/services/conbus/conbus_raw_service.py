@@ -25,11 +25,10 @@ class ConbusRawService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        conbus_service: Optional[ConbusService] = None,
+        conbus_service: ConbusService,
     ):
         """Initialize the Conbus raw service"""
-        self.conbus_service = conbus_service or ConbusService(config_path)
+        self.conbus_service = conbus_service
         self.logger = logging.getLogger(__name__)
 
     def send_raw_telegrams(self, raw_input: str) -> ConbusRawResponse:

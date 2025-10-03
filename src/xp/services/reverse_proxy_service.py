@@ -9,7 +9,6 @@ import socket
 import threading
 import time
 from datetime import datetime
-from pathlib import Path
 from typing import Dict, Optional
 
 from xp.models import ConbusClientConfig
@@ -33,15 +32,13 @@ class ReverseProxyService:
 
     def __init__(
         self,
-        cli_config: Optional[ConbusClientConfig] = None,
-        listen_port: int = 10001,
-        config_path: str = "cli.yml",
+        cli_config: ConbusClientConfig,
+        listen_port: int,
     ):
         """Initialize the Conbus reverse proxy service"""
         # Set up logging first
         self.logger = logging.getLogger(__name__)
 
-        self.config_path = config_path
         self.listen_port = listen_port
         self.server_socket: Optional[socket.socket] = None
         self.is_running = False
@@ -49,22 +46,7 @@ class ReverseProxyService:
         self.connection_counter = 0
 
         # Target server configuration
-        self.cli_config = cli_config or self._load_config(config_path)
-
-    def _load_config(self, config_path: str) -> ConbusClientConfig:
-        """Load configuration from file or use defaults"""
-        try:
-            if Path(config_path).exists():
-                return ConbusClientConfig.from_yaml(config_path)
-        except Exception as e:
-            self.logger.warning(f"Failed to load config from {config_path}: {e}")
-
-        # Return defaults on error
-        from xp.models.conbus.conbus_client_config import ClientConfig
-
-        return ConbusClientConfig(
-            conbus=ClientConfig(ip="127.0.0.1", port=10001, timeout=0.1)
-        )
+        self.cli_config = cli_config
 
     @property
     def target_ip(self) -> str:

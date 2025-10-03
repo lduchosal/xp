@@ -11,7 +11,9 @@ from xp.models.telegram.action_type import ActionType
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
+from xp.services.conbus.conbus_service import ConbusService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class LightBulb(Accessory):
@@ -24,9 +26,9 @@ class LightBulb(Accessory):
         driver: AccessoryDriver,
         module: ConsonModuleConfig,
         accessory: HomekitAccessoryConfig,
-        output_service: Optional[ConbusOutputService] = None,
-        telegram_output_service: Optional[TelegramOutputService] = None,
-        datapoint_service: Optional[ConbusDatapointService] = None,
+        output_service: ConbusOutputService,
+        telegram_output_service: TelegramOutputService,
+        datapoint_service: ConbusDatapointService,
     ):
         super().__init__(driver, accessory.description)
 
@@ -34,11 +36,9 @@ class LightBulb(Accessory):
         self.accessory = accessory
         self.module = module
 
-        self.output_service = output_service or ConbusOutputService()
-        self.telegram_output_service = (
-            telegram_output_service or TelegramOutputService()
-        )
-        self.datapoint_service = datapoint_service or ConbusDatapointService()
+        self.output_service = output_service
+        self.telegram_output_service = telegram_output_service
+        self.datapoint_service = datapoint_service
 
         self.logger.info(
             "Creating Lightbulb { serial_number : %s, output_number: %s }",

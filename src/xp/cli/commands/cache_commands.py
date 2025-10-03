@@ -3,6 +3,7 @@
 import json
 
 import click
+from click import Context
 from click_help_colors import HelpColorsGroup
 
 from xp.cli.utils.decorators import list_command
@@ -24,8 +25,9 @@ def cache() -> None:
 @cache.command("get")
 @click.argument("key")
 @click.argument("tag")
+@click.pass_context
 @list_command(Exception)
-def cache_get(key: str, tag: str) -> None:
+def cache_get(ctx: Context, key: str, tag: str) -> None:
     """
     Get cached data for a device key with specified tag.
 
@@ -38,7 +40,7 @@ def cache_get(key: str, tag: str) -> None:
     OutputFormatter(True)
 
     try:
-        service = HomeKitCacheService()
+        service = ctx.obj.get("container").get_container().resolve(HomeKitCacheService)
         response = service.get(key, tag)
 
         if response.error:
@@ -69,8 +71,9 @@ def cache_get(key: str, tag: str) -> None:
 @click.argument("key")
 @click.argument("tag")
 @click.argument("data")
+@click.pass_context
 @list_command(Exception)
-def cache_set(key: str, tag: str, data: str) -> None:
+def cache_set(ctx: Context, key: str, tag: str, data: str) -> None:
     """
     Set cache entry for a device key with specified tag and data.
 
@@ -83,7 +86,7 @@ def cache_set(key: str, tag: str, data: str) -> None:
     OutputFormatter(True)
 
     try:
-        service = HomeKitCacheService()
+        service = ctx.obj.get("container").get_container().resolve(HomeKitCacheService)
         service.set(key, tag, data)
 
         output = {
@@ -104,8 +107,9 @@ def cache_set(key: str, tag: str, data: str) -> None:
 
 @cache.command("clear")
 @click.argument("key_or_tag_or_all", required=False)
+@click.pass_context
 @list_command(Exception)
-def cache_clear(key_or_tag_or_all: str) -> None:
+def cache_clear(ctx: Context, key_or_tag_or_all: str) -> None:
     """
     Clear cache entries by key, tag, or clear entire cache.
 
@@ -119,7 +123,7 @@ def cache_clear(key_or_tag_or_all: str) -> None:
     OutputFormatter(True)
 
     try:
-        service = HomeKitCacheService()
+        service = ctx.obj.get("container").get_container().resolve(HomeKitCacheService)
 
         if "all" in key_or_tag_or_all:
             service.clear()
@@ -144,8 +148,9 @@ def cache_clear(key_or_tag_or_all: str) -> None:
 
 
 @cache.command("items")
+@click.pass_context
 @list_command(Exception)
-def cache_items() -> None:
+def cache_items(ctx: Context) -> None:
     """
     List all cached items with their data.
 
@@ -157,7 +162,7 @@ def cache_items() -> None:
     OutputFormatter(True)
 
     try:
-        service = HomeKitCacheService()
+        service = ctx.obj.get("container").get_container().resolve(HomeKitCacheService)
         items = service.items()
         stats = service.get_cache_stats()
 
@@ -183,8 +188,9 @@ def cache_items() -> None:
 
 
 @cache.command("stats")
+@click.pass_context
 @list_command(Exception)
-def cache_stats() -> None:
+def cache_stats(ctx: Context) -> None:
     """
     Show cache statistics and information.
 
@@ -196,7 +202,7 @@ def cache_stats() -> None:
     OutputFormatter(True)
 
     try:
-        service = HomeKitCacheService()
+        service = ctx.obj.get("container").get_container().resolve(HomeKitCacheService)
         stats = service.get_cache_stats()
 
         output = {"cache_statistics": stats, "cache_file": str(service.cache_file)}

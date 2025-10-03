@@ -8,9 +8,13 @@ from pyhap.const import CATEGORY_OUTLET
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.telegram.action_type import ActionType
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
+from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
+from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class Outlet(Accessory):
@@ -23,21 +27,19 @@ class Outlet(Accessory):
         driver: AccessoryDriver,
         module: ConsonModuleConfig,
         accessory: HomekitAccessoryConfig,
-        cache_service: Optional[HomeKitCacheService] = None,
-        output_service: Optional[ConbusOutputService] = None,
-        telegram_output_service: Optional[TelegramOutputService] = None,
+        cache_service: HomeKitCacheService,
+        output_service: ConbusOutputService,
+        telegram_output_service: TelegramOutputService,
     ):
         super().__init__(driver=driver, display_name=accessory.description)
 
         self.logger = logging.getLogger(__name__)
         self.accessory = accessory
         self.module = module
-        self.cache_service = cache_service or HomeKitCacheService()
-        self.output_service = output_service or ConbusOutputService()
-        self.telegram_output_service = (
-            telegram_output_service or TelegramOutputService()
-        )
 
+        self.cache_service = cache_service
+        self.output_service = output_service
+        self.telegram_output_service = telegram_output_service
         self.logger.info(
             "Creating Outlet { serial_number : %s, output_number: %s }",
             module.serial_number,

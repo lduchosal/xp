@@ -3,13 +3,15 @@
 import sys
 
 import click
+from click import Context
 
 from xp.cli.commands.homekit.homekit import homekit
 from xp.services.homekit.homekit_service import HomekitService
 
 
 @homekit.command("start")
-def homekit_start() -> None:
+@click.pass_context
+def homekit_start(ctx: Context) -> None:
     """
     Start the HomeKit server.
 
@@ -28,7 +30,7 @@ def homekit_start() -> None:
 
     try:
 
-        service = HomekitService()
+        service = ctx.obj.get("container").get_container().resolve(HomekitService)
         service.run()
 
     except KeyboardInterrupt:

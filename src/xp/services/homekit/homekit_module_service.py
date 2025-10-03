@@ -11,15 +11,12 @@ class HomekitModuleService:
 
     def __init__(
         self,
-        conson_modules_config: Optional[ConsonModuleListConfig] = None,
-        config_path: str = "conson.yml",
+        conson_modules_config: ConsonModuleListConfig,
     ):
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
-        self.conson_modules_config = (
-            conson_modules_config or ConsonModuleListConfig.from_yaml(config_path)
-        )
+        self.conson_modules_config = conson_modules_config
 
     def get_module_by_serial(self, serial_number: str) -> Optional[ConsonModuleConfig]:
         """Get a module by its serial number"""

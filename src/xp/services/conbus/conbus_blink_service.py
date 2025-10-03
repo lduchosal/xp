@@ -26,22 +26,21 @@ class ConbusBlinkService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        conbus_service: Optional[ConbusService] = None,
-        discover_service: Optional[ConbusDiscoverService] = None,
-        telegram_blink_service: Optional[TelegramBlinkService] = None,
-        telegram_service: Optional[TelegramService] = None,
+        conbus_service: ConbusService,
+        discover_service: ConbusDiscoverService,
+        telegram_blink_service: TelegramBlinkService,
+        telegram_service: TelegramService,
     ):
         """Initialize the Conbus client send service"""
 
-        # Service dependencies - support both DI and direct instantiation
-        self.conbus_service = conbus_service or ConbusService(config_path)
-        self.discover_service = discover_service or ConbusDiscoverService(config_path)
-        self.telegram_blink_service = telegram_blink_service or TelegramBlinkService()
+        # Service dependencies
+        self.conbus_service = conbus_service
+        self.discover_service = discover_service
+        self.telegram_blink_service = telegram_blink_service
         self.blink_service = (
             self.telegram_blink_service
         )  # Alias for backward compatibility
-        self.telegram_service = telegram_service or TelegramService()
+        self.telegram_service = telegram_service
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

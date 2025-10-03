@@ -4,6 +4,7 @@ import json
 import threading
 
 import click
+from click import Context
 
 from xp.cli.commands.conbus.conbus import conbus
 from xp.cli.utils.decorators import connection_command, handle_service_errors
@@ -25,9 +26,10 @@ from xp.services.conbus.conbus_scan_service import ConbusScanService
     is_flag=True,
     help="Run scan in background with live output",
 )
+@click.pass_context
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def scan_module(serial_number: str, function_code: str, background: bool) -> None:
+def scan_module(ctx: Context, serial_number: str, function_code: str, background: bool) -> None:
     """
     Scan all datapoints of a function_code for a module.
 
@@ -36,7 +38,7 @@ def scan_module(serial_number: str, function_code: str, background: bool) -> Non
     \b
         xp conbus scan 0012345011 02 # Scan all datapoints of function Read data points (02)
     """
-    service = ConbusScanService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusScanService)
 
     # Shared state for results collection and live output
     results = []

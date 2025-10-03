@@ -1,6 +1,7 @@
 # Refactoring: implement IoC
 
-For each service in the list dev/service_refactor.txt
+You are given an agent number agentX
+For each service in the list dev/service_refactor_agentX.txt
 
 ## Service Refactoring Steps
 

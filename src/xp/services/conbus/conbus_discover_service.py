@@ -32,26 +32,22 @@ class ConbusDiscoverService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        telegram_service: Optional[TelegramService] = None,
-        telegram_discover_service: Optional[TelegramDiscoverService] = None,
-        conbus_service: Optional[ConbusService] = None,
+        telegram_service: TelegramService,
+        telegram_discover_service: TelegramDiscoverService,
+        conbus_service: ConbusService,
     ):
         """Initialize the Conbus client send service
 
         Args:
-            config_path: Path to configuration file
-            telegram_service: Optional TelegramService for dependency injection
-            telegram_discover_service: Optional TelegramDiscoverService for dependency injection
-            conbus_service: Optional ConbusService for dependency injection
+            telegram_service: TelegramService for dependency injection
+            telegram_discover_service: TelegramDiscoverService for dependency injection
+            conbus_service: ConbusService for dependency injection
         """
 
-        # Service dependencies - support both DI and direct instantiation
-        self.telegram_service = telegram_service or TelegramService()
-        self.telegram_discover_service = (
-            telegram_discover_service or TelegramDiscoverService()
-        )
-        self.conbus_service = conbus_service or ConbusService(config_path)
+        # Service dependencies
+        self.telegram_service = telegram_service
+        self.telegram_discover_service = telegram_discover_service
+        self.conbus_service = conbus_service
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

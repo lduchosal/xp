@@ -29,15 +29,14 @@ class ConbusCustomService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        telegram_service: Optional[TelegramService] = None,
-        conbus_service: Optional[ConbusService] = None,
+        telegram_service: TelegramService,
+        conbus_service: ConbusService,
     ):
         """Initialize the Conbus client send service"""
 
-        # Service dependencies - support both DI and direct instantiation
-        self.telegram_service = telegram_service or TelegramService()
-        self.conbus_service = conbus_service or ConbusService(config_path)
+        # Service dependencies
+        self.telegram_service = telegram_service
+        self.conbus_service = conbus_service
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

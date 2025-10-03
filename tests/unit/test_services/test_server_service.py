@@ -5,6 +5,8 @@ from unittest.mock import Mock, patch
 import pytest
 
 from xp.services.server.server_service import ServerError, ServerService
+from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class TestServerError:
@@ -35,7 +37,9 @@ class TestServerServiceInit:
         """Test initialization with default parameters."""
         mock_path.return_value.exists.return_value = False
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert service.config_path == "server.yml"
         assert service.port == 10001
@@ -49,7 +53,9 @@ class TestServerServiceInit:
         """Test initialization with custom parameters."""
         mock_path.return_value.exists.return_value = False
 
-        service = ServerService(config_path="custom.yml", port=8080)
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service, config_path="custom.yml", port=8080)
 
         assert service.config_path == "custom.yml"
         assert service.port == 8080
@@ -65,7 +71,9 @@ class TestServerServiceInit:
         mock_module.module_type = "XP33"
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert len(service.devices) == 1
         mock_config.from_yaml.assert_called_once_with("server.yml")
@@ -79,7 +87,9 @@ class TestServerServiceConfig:
         """Test loading config when file doesn't exist."""
         mock_path.return_value.exists.return_value = False
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert service.devices == []
         assert service.device_services == {}
@@ -93,7 +103,9 @@ class TestServerServiceConfig:
         mock_disabled = Mock(enabled=False, serial_number="22222", module_type="XP33")
         mock_config.from_yaml.return_value = Mock(root=[mock_enabled, mock_disabled])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert len(service.devices) == 1
         assert service.devices[0].serial_number == "11111"
@@ -105,7 +117,9 @@ class TestServerServiceConfig:
         mock_path.return_value.exists.return_value = True
         mock_config.from_yaml.side_effect = Exception("Parse error")
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert service.devices == []
         assert service.device_services == {}
@@ -118,7 +132,9 @@ class TestServerServiceConfig:
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert "12345" in service.device_services
 
@@ -130,7 +146,9 @@ class TestServerServiceConfig:
         mock_module = Mock(enabled=True, serial_number="11111", module_type="CP20")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert "11111" in service.device_services
 
@@ -142,7 +160,9 @@ class TestServerServiceConfig:
         mock_module = Mock(enabled=True, serial_number="22222", module_type="XP20")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert "22222" in service.device_services
 
@@ -154,7 +174,9 @@ class TestServerServiceConfig:
         mock_module = Mock(enabled=True, serial_number="99999", module_type="UNKNOWN")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert "99999" not in service.device_services
 
@@ -166,7 +188,9 @@ class TestServerServiceLifecycle:
     def test_start_server_when_already_running(self, mock_path):
         """Test starting server when already running raises error."""
         mock_path.return_value.exists.return_value = False
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         service.is_running = True
 
         with pytest.raises(ServerError, match="already running"):
@@ -176,7 +200,9 @@ class TestServerServiceLifecycle:
     def test_stop_server_when_not_running(self, mock_path):
         """Test stopping server when not running does nothing."""
         mock_path.return_value.exists.return_value = False
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         service.is_running = False
 
         service.stop_server()  # Should not raise
@@ -185,7 +211,9 @@ class TestServerServiceLifecycle:
     def test_stop_server_closes_socket(self, mock_path):
         """Test stopping server closes socket."""
         mock_path.return_value.exists.return_value = False
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         service.is_running = True
         service.server_socket = Mock()
 
@@ -198,7 +226,9 @@ class TestServerServiceLifecycle:
     def test_stop_server_handles_close_exception(self, mock_path):
         """Test stopping server handles socket close exceptions."""
         mock_path.return_value.exists.return_value = False
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         service.is_running = True
         service.server_socket = Mock()
         service.server_socket.close.side_effect = Exception("Close failed")
@@ -219,7 +249,9 @@ class TestServerServiceStatus:
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService(port=8080)
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service, port=8080)
         service.is_running = True
 
         status = service.get_server_status()
@@ -233,7 +265,10 @@ class TestServerServiceStatus:
     def test_get_server_status_not_running(self, mock_path):
         """Test getting server status when not running."""
         mock_path.return_value.exists.return_value = False
-        status = ServerService().get_server_status()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
+        status = service.get_server_status()
 
         assert status["running"] is False
         assert status["devices_configured"] == 0
@@ -247,7 +282,9 @@ class TestServerServiceRequestProcessing:
     def test_process_request_invalid_telegram(self, mock_path):
         """Test processing invalid telegram returns empty list."""
         mock_path.return_value.exists.return_value = False
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         service.telegram_service = Mock()
         service.telegram_service.parse_system_telegram.return_value = None
 
@@ -263,7 +300,9 @@ class TestServerServiceRequestProcessing:
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         mock_telegram = Mock()
         service.telegram_service.parse_system_telegram = Mock(
             return_value=mock_telegram
@@ -286,7 +325,9 @@ class TestServerServiceRequestProcessing:
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         mock_telegram = Mock(serial_number="12345")
         service.telegram_service.parse_system_telegram = Mock(
             return_value=mock_telegram
@@ -310,7 +351,9 @@ class TestServerServiceRequestProcessing:
         mock_module2 = Mock(enabled=True, serial_number="22222", module_type="XP20")
         mock_config.from_yaml.return_value = Mock(root=[mock_module1, mock_module2])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         mock_telegram = Mock(serial_number="0000000000")
         service.telegram_service.parse_system_telegram = Mock(
             return_value=mock_telegram
@@ -336,7 +379,9 @@ class TestServerServiceRequestProcessing:
         mock_module2 = Mock(enabled=True, serial_number="22222", module_type="XP20")
         mock_config.from_yaml.return_value = Mock(root=[mock_module1, mock_module2])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         mock_telegram = Mock(serial_number="0000000000")
         service.telegram_service.parse_system_telegram = Mock(
             return_value=mock_telegram
@@ -358,7 +403,9 @@ class TestServerServiceRequestProcessing:
     def test_process_request_device_not_found(self, mock_path):
         """Test processing request for non-existent device."""
         mock_path.return_value.exists.return_value = False
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         mock_telegram = Mock(serial_number="99999")
         service.telegram_service.parse_system_telegram = Mock(
             return_value=mock_telegram
@@ -373,7 +420,9 @@ class TestServerServiceRequestProcessing:
     def test_process_request_handles_exception(self, mock_path):
         """Test processing request handles exceptions."""
         mock_path.return_value.exists.return_value = False
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
         mock_telegram_service = Mock()
         mock_telegram_service.parse_system_telegram.side_effect = Exception(
             "Parse error"
@@ -396,7 +445,9 @@ class TestServerServiceReload:
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         # Change config
         mock_module2 = Mock(enabled=True, serial_number="22222", module_type="XP20")
@@ -418,7 +469,9 @@ class TestServerServiceDeviceTypes:
         mock_module = Mock(enabled=True, serial_number="24242", module_type="XP24")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert "24242" in service.device_services
 
@@ -430,7 +483,9 @@ class TestServerServiceDeviceTypes:
         mock_module = Mock(enabled=True, serial_number="33333", module_type="XP33LED")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert "33333" in service.device_services
 
@@ -442,7 +497,9 @@ class TestServerServiceDeviceTypes:
         mock_module = Mock(enabled=True, serial_number="13013", module_type="XP130")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert "13013" in service.device_services
 
@@ -454,6 +511,8 @@ class TestServerServiceDeviceTypes:
         mock_module = Mock(enabled=True, serial_number="23023", module_type="XP230")
         mock_config.from_yaml.return_value = Mock(root=[mock_module])
 
-        service = ServerService()
+        telegram_service = TelegramService()
+        discover_service = TelegramDiscoverService()
+        service = ServerService(telegram_service, discover_service)
 
         assert "23023" in service.device_services

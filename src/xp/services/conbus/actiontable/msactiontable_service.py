@@ -8,7 +8,7 @@ from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 from xp.models.telegram.system_function import SystemFunction
-from xp.services import TelegramParsingError, TelegramService
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 from xp.services.conbus.actiontable.msactiontable_xp20_serializer import (
     Xp20MsActionTableSerializer,
 )
@@ -32,14 +32,13 @@ class MsActionTableService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        conbus_service: Optional[ConbusService] = None,
-        telegram_service: Optional[TelegramService] = None,
+        conbus_service: ConbusService,
+        telegram_service: TelegramService,
     ):
-        # Service dependencies - support both DI and direct instantiation
-        self.conbus_service = conbus_service or ConbusService(config_path)
+        # Service dependencies
+        self.conbus_service = conbus_service
         self.serializer = Xp24MsActionTableSerializer()
-        self.telegram_service = telegram_service or TelegramService()
+        self.telegram_service = telegram_service
         self.logger = logging.getLogger(__name__)
 
     def download_action_table(

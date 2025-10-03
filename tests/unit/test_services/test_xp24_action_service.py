@@ -10,6 +10,7 @@ from xp.services.telegram.telegram_output_service import (
     TelegramOutputService,
     XPOutputError,
 )
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class TestXP24ActionService:
@@ -17,7 +18,7 @@ class TestXP24ActionService:
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.service = TelegramOutputService()
+        self.service = TelegramOutputService(telegram_service=TelegramService())
 
     def test_validate_output_number_valid(self):
         """Test validate_output_number with valid inputs."""

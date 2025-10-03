@@ -54,8 +54,14 @@ class TestXp20ActionTableIntegration:
         """Test that MsActionTableService recognizes XP20 module type"""
         # This test verifies the service is configured to handle xp20
         # without actually making network calls
+        from unittest.mock import Mock
 
-        service = MsActionTableService()
+        mock_conbus = Mock()
+        mock_telegram = Mock()
+        service = MsActionTableService(
+            conbus_service=mock_conbus,
+            telegram_service=mock_telegram,
+        )
 
         # The service should have the xp20 serializer available
         # We can't test the actual download without a real connection,

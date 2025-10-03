@@ -6,7 +6,7 @@ from typing import Any, Optional
 
 from xp.models.actiontable.actiontable import ActionTable
 from xp.models.telegram.system_function import SystemFunction
-from xp.services import TelegramParsingError, TelegramService
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 from xp.services.conbus.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.conbus.conbus_service import ConbusError, ConbusService
 
@@ -22,21 +22,18 @@ class ActionTableService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        conbus_service: Optional[ConbusService] = None,
-        telegram_service: Optional[TelegramService] = None,
+        conbus_service: ConbusService,
+        telegram_service: TelegramService,
     ):
         """Initialize the ActionTable service
 
         Args:
-            config_path: Path to configuration file
-            conbus_service: Optional ConbusService for dependency injection
-            telegram_service: Optional TelegramService for dependency injection
+            conbus_service: ConbusService for dependency injection
+            telegram_service: TelegramService for dependency injection
         """
-        # Service dependencies - support both DI and direct instantiation
-        self.conbus_service = conbus_service or ConbusService(config_path)
+        self.conbus_service = conbus_service
         self.serializer = ActionTableSerializer()
-        self.telegram_service = telegram_service or TelegramService()
+        self.telegram_service = telegram_service
         self.logger = logging.getLogger(__name__)
 
     def download_actiontable(self, serial_number: str) -> ActionTable:

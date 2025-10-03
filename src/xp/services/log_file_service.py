@@ -33,14 +33,14 @@ class LogFileService:
         r"^(\d{2}:\d{2}:\d{2},\d{3})\s+\[([TR]X)\]\s+(<[^>]+>)\s*$"
     )
 
-    def __init__(self, telegram_service: Optional[TelegramService] = None):
+    def __init__(self, telegram_service: TelegramService):
         """
         Initialize the log file service
 
         Args:
-            telegram_service: Optional telegram service for parsing telegrams
+            telegram_service: Telegram service for parsing telegrams
         """
-        self.telegram_service = telegram_service or TelegramService()
+        self.telegram_service = telegram_service
 
     def parse_log_file(
         self, file_path: str, base_date: Optional[datetime] = None

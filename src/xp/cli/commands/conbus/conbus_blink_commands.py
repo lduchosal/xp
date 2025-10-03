@@ -3,6 +3,7 @@
 import json
 
 import click
+from click import Context
 
 from xp.cli.commands.conbus.conbus import conbus_blink
 from xp.cli.utils.decorators import (
@@ -19,9 +20,10 @@ from xp.services.telegram.telegram_blink_service import BlinkError
 
 @conbus_blink.command("on", short_help="Blink on remote service")
 @click.argument("serial_number", type=SERIAL)
+@click.pass_context
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
-def send_blink_on_telegram(serial_number: str) -> None:
+def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
     """
     Send blink command to start blinking module LED.
 
@@ -30,7 +32,7 @@ def send_blink_on_telegram(serial_number: str) -> None:
     \b
         xp conbus blink on 0012345008
     """
-    service = ConbusBlinkService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
 
     with service:
 
@@ -40,9 +42,10 @@ def send_blink_on_telegram(serial_number: str) -> None:
 
 @conbus_blink.command("off")
 @click.argument("serial_number", type=SERIAL)
+@click.pass_context
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
-def send_blink_off_telegram(serial_number: str) -> None:
+def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
     """
     Send blink command to start blinking module LED.
 
@@ -51,7 +54,7 @@ def send_blink_off_telegram(serial_number: str) -> None:
     \b
         xp conbus blink off 0012345008
     """
-    service = ConbusBlinkService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
 
     with service:
 
@@ -68,9 +71,10 @@ def conbus_blink_all() -> None:
 
 
 @conbus_blink_all.command("off", short_help="Turn off blinking for all devices")
+@click.pass_context
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
-def blink_all_off() -> None:
+def blink_all_off(ctx: Context) -> None:
     """
     Turn off blinking for all discovered devices.
 
@@ -79,7 +83,7 @@ def blink_all_off() -> None:
     \b
         xp conbus blink all off
     """
-    service = ConbusBlinkService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
 
     with service:
         response = service.blink_all("off")
@@ -90,9 +94,10 @@ def blink_all_off() -> None:
 
 
 @conbus_blink_all.command("on", short_help="Turn on blinking for all devices")
+@click.pass_context
 @connection_command()
 @handle_service_errors(ConbusDatapointError, BlinkError)
-def blink_all_on() -> None:
+def blink_all_on(ctx: Context) -> None:
     """
     Turn on blinking for all discovered devices.
 
@@ -101,7 +106,7 @@ def blink_all_on() -> None:
     \b
         xp conbus blink all on
     """
-    service = ConbusBlinkService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
 
     with service:
         response = service.blink_all("on")

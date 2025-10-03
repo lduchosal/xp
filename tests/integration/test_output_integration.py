@@ -8,6 +8,7 @@ from xp.services.telegram.telegram_output_service import (
     TelegramOutputService,
     XPOutputError,
 )
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class TestOutputIntegration:
@@ -15,7 +16,9 @@ class TestOutputIntegration:
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.output_service = TelegramOutputService()
+        self.output_service = TelegramOutputService(
+            telegram_service=TelegramService()
+        )
         self.conbus_service = ConbusDatapointService()
 
     def test_end_to_end_action_generation_and_parsing(self):

@@ -20,11 +20,12 @@ class TestActionTableService:
     @pytest.fixture
     def service(self):
         """Create service instance for testing"""
-        with patch("xp.services.conbus.actiontable.actiontable_service.ConbusService"):
-            with patch(
-                "xp.services.conbus.actiontable.actiontable_service.TelegramService"
-            ):
-                return ActionTableService()
+        mock_conbus = Mock()
+        mock_telegram = Mock()
+        return ActionTableService(
+            conbus_service=mock_conbus,
+            telegram_service=mock_telegram,
+        )
 
     @pytest.fixture
     def sample_actiontable(self):
@@ -67,22 +68,18 @@ class TestActionTableService:
         assert isinstance(result, str)
         assert len(result) > 0
 
-    @patch("xp.services.conbus.actiontable.actiontable_service.ConbusService")
-    @patch("xp.services.conbus.actiontable.actiontable_service.TelegramService")
-    def test_download_actiontable_success(
-        self, mock_telegram_service, mock_conbus_service
-    ):
+    def test_download_actiontable_success(self):
         """Test successful actiontable download"""
         from xp.models.telegram.system_function import SystemFunction
 
         # Setup mocks
         mock_conbus = Mock()
-        mock_conbus_service.return_value = mock_conbus
-
         mock_telegram = Mock()
-        mock_telegram_service.return_value = mock_telegram
 
-        service = ActionTableService()
+        service = ActionTableService(
+            conbus_service=mock_conbus,
+            telegram_service=mock_telegram,
+        )
 
         # Mock calls to simulate the communication flow
         call_count = [0]

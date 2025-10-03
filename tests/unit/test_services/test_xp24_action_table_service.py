@@ -20,7 +20,13 @@ class TestMsActionTableService:
     @pytest.fixture
     def service(self):
         """Create service instance for testing"""
-        return MsActionTableService("test_config.yml")
+        from unittest.mock import Mock
+        mock_conbus = Mock()
+        mock_telegram = Mock()
+        return MsActionTableService(
+            conbus_service=mock_conbus,
+            telegram_service=mock_telegram,
+        )
 
     @pytest.fixture
     def mock_action_table(self):
