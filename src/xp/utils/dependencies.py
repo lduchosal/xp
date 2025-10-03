@@ -280,6 +280,11 @@ class ServiceContainer:
             factory=lambda: HomekitService(
                 homekit_config=self.container.resolve(HomekitConfig),
                 module_service=self.container.resolve(HomekitModuleService),
+                output_service=self.container.resolve(ConbusOutputService),
+                telegram_output_service=self.container.resolve(TelegramOutputService),
+                datapoint_service=self.container.resolve(ConbusDatapointService),
+                cache_service=self.container.resolve(HomeKitCacheService),
+                lightlevel_service=self.container.resolve(ConbusLightlevelService),
             ),
             scope=punq.Scope.singleton,
         )

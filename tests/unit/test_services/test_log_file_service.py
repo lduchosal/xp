@@ -18,7 +18,8 @@ class TestLogFileService:
 
     def test_init_with_default_telegram_service(self):
         """Test initialization with default telegram service"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
         assert isinstance(service.telegram_service, TelegramService)
 
     def test_init_with_custom_telegram_service(self):
@@ -29,7 +30,8 @@ class TestLogFileService:
 
     def test_parse_log_line_valid(self):
         """Test parsing a valid log line"""
-        service = LogFileService()
+        mock_telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(mock_telegram_service)
         line = "22:44:20,352 [TX] <S0012345008F27D00AAFN>"
 
         # Mock telegram service
@@ -52,7 +54,8 @@ class TestLogFileService:
 
     def test_parse_log_line_telegram_parsing_error(self):
         """Test parsing log line with telegram parsing error"""
-        service = LogFileService()
+        mock_telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(mock_telegram_service)
         line = "22:44:20,352 [RX] <invalid>"
 
         # Mock telegram service to raise error
@@ -71,7 +74,8 @@ class TestLogFileService:
 
     def test_parse_log_line_invalid_format(self):
         """Test parsing invalid log line format"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
         invalid_lines = [
             "invalid line format",
             "22:44:20,352 <missing direction>",
@@ -86,7 +90,8 @@ class TestLogFileService:
 
     def test_parse_log_lines_valid(self):
         """Test parsing multiple valid log lines"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
         lines = [
             "22:44:20,352 [TX] <S0012345008F27D00AAFN>",
             "22:44:20,420 [RX] <R0012345008F18DFA>",
@@ -125,7 +130,9 @@ class TestLogFileService:
 
     def test_parse_log_lines_with_errors(self):
         """Test parsing log lines with various errors"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
+
         lines = [
             "22:44:20,352 [TX] <valid>",
             "invalid line format",
@@ -160,7 +167,8 @@ class TestLogFileService:
         """Test parsing non-existent log file"""
         mock_exists.return_value = False
 
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
 
         with pytest.raises(LogFileParsingError, match="Log file not found"):
             service.parse_log_file("/nonexistent/log.txt")
@@ -172,7 +180,8 @@ class TestLogFileService:
         mock_exists.return_value = True
         mock_is_file.return_value = False
 
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
 
         with pytest.raises(LogFileParsingError, match="Path is not a file"):
             service.parse_log_file("/path/to/directory")
@@ -186,14 +195,16 @@ class TestLogFileService:
         mock_is_file.return_value = True
         mock_file_open.side_effect = IOError("Permission denied")
 
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
 
         with pytest.raises(LogFileParsingError, match="Error reading log file"):
             service.parse_log_file("/path/to/log.txt")
 
     def test_validate_log_format_valid(self):
         """Test log format validation with valid file"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
 
         # Mock parse_log_file to return valid entries
         valid_entry = Mock(spec=LogEntry)
@@ -205,7 +216,8 @@ class TestLogFileService:
 
     def test_validate_log_format_no_valid_entries(self):
         """Test log format validation with no valid entries"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
 
         # Mock parse_log_file to return only invalid entries
         invalid_entry = Mock(spec=LogEntry)
@@ -217,7 +229,8 @@ class TestLogFileService:
 
     def test_validate_log_format_parsing_error(self):
         """Test log format validation with parsing error"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
         service.parse_log_file = Mock(side_effect=LogFileParsingError("Error"))
 
         result = service.validate_log_format("/path/to/log.txt")
@@ -226,7 +239,8 @@ class TestLogFileService:
     @patch.object(LogFileService, "parse_log_file")
     def test_extract_telegrams(self, mock_parse):
         """Test extracting telegrams from log file"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
 
         # Mock parse_log_file
         entries = [
@@ -243,13 +257,18 @@ class TestLogFileService:
 
     def test_get_file_statistics_empty(self):
         """Test statistics for empty entry list"""
-        stats = LogFileService().get_file_statistics([])
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
+
+        stats = service.get_file_statistics([])
 
         assert stats == {"total_entries": 0}
 
     def test_get_file_statistics_full(self):
         """Test comprehensive statistics calculation"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
+
 
         # Create mock entries with various properties
         entries = []
@@ -330,7 +349,9 @@ class TestLogFileService:
 
     def test_filter_entries_by_type(self):
         """Test filtering entries by telegram type"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
+
 
         entries = [
             Mock(telegram_type="event"),
@@ -347,7 +368,9 @@ class TestLogFileService:
 
     def test_filter_entries_by_direction(self):
         """Test filtering entries by direction"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
+
 
         entries = [
             Mock(direction="TX"),
@@ -362,7 +385,9 @@ class TestLogFileService:
 
     def test_filter_entries_by_time_range(self):
         """Test filtering entries by time range"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
+
 
         base_time = datetime(2023, 1, 1, 22, 44, 20)
         entries = [
@@ -387,7 +412,9 @@ class TestLogFileService:
 
     def test_filter_entries_multiple_criteria(self):
         """Test filtering entries with multiple criteria"""
-        service = LogFileService()
+        telegram_service = Mock(spec=TelegramService)
+        service = LogFileService(telegram_service)
+
 
         base_time = datetime(2023, 1, 1, 22, 44, 20)
         entries = [

@@ -1,7 +1,7 @@
 import logging
 import signal
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from pyhap.accessory import Accessory, Bridge
 from pyhap.accessory_driver import AccessoryDriver
@@ -19,6 +19,12 @@ from xp.services.homekit.homekit_lightbulb import LightBulb
 from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.homekit.homekit_outlet import Outlet
 
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
+from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
+from xp.services.conbus.conbus_output_service import ConbusOutputService
+from xp.services.homekit.homekit_cache_service import HomeKitCacheService
+from xp.services.telegram.telegram_output_service import TelegramOutputService
+
 
 class HomekitService:
     """
@@ -32,12 +38,22 @@ class HomekitService:
         self,
         homekit_config: HomekitConfig,
         module_service: HomekitModuleService,
+        output_service: ConbusOutputService,
+        telegram_output_service: TelegramOutputService,
+        datapoint_service: ConbusDatapointService,
+        cache_service: HomeKitCacheService,
+        lightlevel_service: ConbusLightlevelService,
     ):
         """Initialize the Conbus client send service
 
         Args:
             homekit_config: Conson configuration file
             module_service: HomekitModuleService for dependency injection
+            output_service: ConbusOutputService for dependency injection
+            telegram_output_service: TelegramOutputService for dependency injection
+            datapoint_service: ConbusDatapointService for dependency injection
+            cache_service: HomeKitCacheService for dependency injection
+            lightlevel_service: ConbusLightlevelService for dependency injection
         """
         self.last_activity: Optional[datetime] = None
 
@@ -49,6 +65,11 @@ class HomekitService:
 
         # Service dependencies
         self.modules = module_service
+        self.output_service = output_service
+        self.telegram_output_service = telegram_output_service
+        self.datapoint_service = datapoint_service
+        self.cache_service = cache_service
+        self.lightlevel_service = lightlevel_service
 
         # We want SIGTERM (terminate) to be handled by the driver itself,
         # so that it can gracefully stop the accessory, server and advertising.
@@ -106,12 +127,22 @@ class HomekitService:
 
         if homekit_accessory.service == "lightbulb":
             return LightBulb(
-                driver=self.driver, module=module_config, accessory=homekit_accessory
+                driver=self.driver,
+                module=module_config,
+                accessory=homekit_accessory,
+                output_service=self.output_service,
+                telegram_output_service=self.telegram_output_service,
+                datapoint_service=self.datapoint_service,
             )
 
         if homekit_accessory.service == "outlet":
             return Outlet(
-                driver=self.driver, module=module_config, accessory=homekit_accessory
+                driver=self.driver,
+                module=module_config,
+                accessory=homekit_accessory,
+                cache_service=self.cache_service,
+                output_service=self.output_service,
+                telegram_output_service=self.telegram_output_service,
             )
 
         if homekit_accessory.service == "dimminglight":
@@ -119,6 +150,7 @@ class HomekitService:
                 driver=self.driver,
                 module=module_config,
                 accessory=homekit_accessory,
+                lightlevel_service=self.lightlevel_service,
             )
 
         self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))

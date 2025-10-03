@@ -297,7 +297,8 @@ class TestReverseProxyErrorHandling:
 
         try:
             # Try to start proxy on the same port
-            proxy = ReverseProxyService(listen_port=19003)
+            cli_config = ConbusClientConfig.from_yaml("cli.yml")
+            proxy = ReverseProxyService(cli_config=cli_config, listen_port=19003)
             result = proxy.start_proxy()
 
             # Should fail due to port conflict

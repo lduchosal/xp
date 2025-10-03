@@ -17,9 +17,10 @@ from xp.services.telegram.telegram_link_number_service import LinkNumberError
 @conbus_linknumber.command("set", short_help="Set link number for a module")
 @click.argument("serial_number", type=SERIAL)
 @click.argument("link_number", type=click.IntRange(0, 99))
+@click.pass_context
 @connection_command()
 @handle_service_errors(LinkNumberError)
-def set_linknumber_command(serial_number: str, link_number: int) -> None:
+def set_linknumber_command(ctx: click.Context, serial_number: str, link_number: int) -> None:
     """
     Set the link number for a specific module.
 
@@ -31,7 +32,7 @@ def set_linknumber_command(serial_number: str, link_number: int) -> None:
     \b
         xp conbus linknumber set 0123450001 25
     """
-    service = ConbusLinknumberService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusLinknumberService)
 
     with service:
         response = service.set_linknumber(serial_number, link_number)
@@ -40,9 +41,10 @@ def set_linknumber_command(serial_number: str, link_number: int) -> None:
 
 @conbus_linknumber.command("get", short_help="Get link number for a module")
 @click.argument("serial_number", type=SERIAL)
+@click.pass_context
 @connection_command()
 @handle_service_errors(LinkNumberError)
-def get_linknumber_command(serial_number: str) -> None:
+def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
     """
     Get the current link number for a specific module.
 
@@ -53,7 +55,7 @@ def get_linknumber_command(serial_number: str) -> None:
     \b
         xp conbus linknumber get 0123450001
     """
-    service = ConbusLinknumberService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusLinknumberService)
 
     with service:
         response = service.get_linknumber(serial_number)

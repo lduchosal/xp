@@ -7,6 +7,7 @@ from types import FrameType
 from typing import Any, Dict, Optional
 
 import click
+from click import Context
 from click_help_colors import HelpColorsGroup
 
 from xp.cli.utils.decorators import handle_service_errors
@@ -40,7 +41,8 @@ def reverse_proxy() -> None:
 )
 @click.option("--config", "-c", default="rp.yml", help="Configuration file path")
 @handle_service_errors(ReverseProxyError)
-def start_proxy(port: int, config: str) -> None:
+@click.pass_context
+def start_proxy(ctx: Context, port: int, config: str) -> None:
     """
     Start the Conbus reverse proxy server.
 
@@ -66,10 +68,9 @@ def start_proxy(port: int, config: str) -> None:
             click.echo(json.dumps(error_response, indent=2))
             raise SystemExit(1)
 
-        # Create proxy instance
-        global_proxy_instance = ReverseProxyService(
-            config_path=config, listen_port=port
-        )
+        # Load configuration and create proxy instance
+        service = ctx.obj.get("container").get_container().resolve(ReverseProxyService)
+        global_proxy_instance = service
 
         # Handle graceful shutdown on SIGINT
         def signal_handler(signum: int, frame: Optional[FrameType]) -> None:

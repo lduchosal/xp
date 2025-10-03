@@ -20,14 +20,14 @@ class DimmingLight(Accessory):
         driver: AccessoryDriver,
         module: ConsonModuleConfig,
         accessory: HomekitAccessoryConfig,
-        lightlevel_service: Optional[ConbusLightlevelService] = None,
+        lightlevel_service: ConbusLightlevelService,
     ):
         super().__init__(driver, accessory.description)
 
         self.logger = logging.getLogger(__name__)
         self.accessory = accessory
         self.module = module
-        self.lightlevel_service = lightlevel_service or ConbusLightlevelService()
+        self.lightlevel_service = lightlevel_service
 
         self.logger.info(
             "Creating DimmingLight { serial_number : %s, output_number: %s }",

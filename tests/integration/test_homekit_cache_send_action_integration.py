@@ -48,7 +48,13 @@ class TestHomeKitCacheServiceSendActionIntegration:
         mock_telegram_service.parse_event_telegram.return_value = mock_event_telegram
 
         # Initialize cache service
-        cache_service = HomeKitCacheService(cache_file=self.temp_cache_file.name)
+        mock_lightlevel_service = Mock()
+        cache_service = HomeKitCacheService(
+            cache_file=self.temp_cache_file.name,
+            conbus_output_service=mock_conbus_service,
+            conbus_lightlevel_service=mock_lightlevel_service,
+            telegram_service=mock_telegram_service,
+        )
 
         # Mock the received_event method to track calls
         with patch.object(cache_service, "received_event") as mock_received_event:
@@ -108,7 +114,13 @@ class TestHomeKitCacheServiceSendActionIntegration:
         mock_conbus_service.send_action.return_value = mock_response
 
         # Initialize cache service
-        cache_service = HomeKitCacheService(cache_file=self.temp_cache_file.name)
+        mock_lightlevel_service = Mock()
+        cache_service = HomeKitCacheService(
+            cache_file=self.temp_cache_file.name,
+            conbus_output_service=mock_conbus_service,
+            conbus_lightlevel_service=mock_lightlevel_service,
+            telegram_service=mock_telegram_service,
+        )
 
         # Mock the received_event method to track calls
         with patch.object(cache_service, "received_event") as mock_received_event:
@@ -143,7 +155,13 @@ class TestHomeKitCacheServiceSendActionIntegration:
         mock_conbus_service.send_action.return_value = mock_response
 
         # Initialize cache service
-        cache_service = HomeKitCacheService(cache_file=self.temp_cache_file.name)
+        mock_lightlevel_service = Mock()
+        cache_service = HomeKitCacheService(
+            cache_file=self.temp_cache_file.name,
+            conbus_output_service=mock_conbus_service,
+            conbus_lightlevel_service=mock_lightlevel_service,
+            telegram_service=mock_telegram_service,
+        )
 
         # Mock the received_event method to track calls
         with patch.object(cache_service, "received_event") as mock_received_event:
@@ -181,7 +199,13 @@ class TestHomeKitCacheServiceSendActionIntegration:
         mock_conbus_service.send_action.return_value = mock_response
 
         # Initialize cache service
-        cache_service = HomeKitCacheService(cache_file=self.temp_cache_file.name)
+        mock_lightlevel_service = Mock()
+        cache_service = HomeKitCacheService(
+            cache_file=self.temp_cache_file.name,
+            conbus_output_service=mock_conbus_service,
+            conbus_lightlevel_service=mock_lightlevel_service,
+            telegram_service=mock_telegram_service,
+        )
 
         # Mock the received_event method to track calls
         with patch.object(cache_service, "received_event") as mock_received_event:

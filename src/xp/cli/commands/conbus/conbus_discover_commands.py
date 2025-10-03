@@ -16,9 +16,10 @@ from xp.services.conbus.conbus_discover_service import (
 
 
 @conbus.command("discover")
+@click.pass_context
 @connection_command()
 @handle_service_errors(ConbusDiscoverError)
-def send_discover_telegram() -> None:
+def send_discover_telegram(ctx: click.Context) -> None:
     """
     Send discover telegram to Conbus server.
 
@@ -27,7 +28,7 @@ def send_discover_telegram() -> None:
     \b
         xp conbus discover
     """
-    service = ConbusDiscoverService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusDiscoverService)
 
     # Send telegram
     with service:

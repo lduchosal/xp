@@ -50,7 +50,7 @@ conbus:
     def test_init_with_defaults(self):
         """Test service initialization with default values"""
         cli_config = ConbusClientConfig.from_yaml("cli.yml")
-        service = ReverseProxyService(cli_config=cli_config)
+        service = ReverseProxyService(cli_config=cli_config, listen_port=10001)
 
         assert service.listen_port == 10001
         assert not service.is_running
@@ -67,7 +67,7 @@ conbus:
 
         try:
             cli_config = ConbusClientConfig.from_yaml(temp_invalid.name)
-            service = ReverseProxyService(cli_config=cli_config)
+            service = ReverseProxyService(cli_config=cli_config, listen_port=10001)
             # Should use defaults when config is invalid
             assert service.target_ip == "127.0.0.1"
             assert service.target_port == 10001
