@@ -4,17 +4,14 @@ import json
 import logging
 from typing import Union
 
+from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from xp.api.models.api import ApiErrorResponse, ApiResponse
 from xp.api.routers.conbus import router
 from xp.api.routers.errors import handle_service_error
 from xp.models.telegram.action_type import ActionType
-from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
-from xp.services.conbus.conbus_service import ConbusService
-from xp.services.telegram.telegram_output_service import TelegramOutputService
-from xp.services.telegram.telegram_service import TelegramService
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +27,7 @@ logger = logging.getLogger(__name__)
     },
 )
 async def input_action(
+    request: Request,
     action: ActionType = ActionType.OFF_PRESS,
     serial: str = "1702033007",
     device_input: int = 0,
@@ -39,17 +37,7 @@ async def input_action(
 
     Sends a broadcastInput telegram and collects responses from all connected devices.
     """
-    telegram_service = TelegramService()
-    telegram_output_service = TelegramOutputService(telegram_service=telegram_service)
-    conbus_service = ConbusService(config_path="cli.yml")
-    datapoint_service = ConbusDatapointService()
-    service = ConbusOutputService(
-        config_path="cli.yml",
-        telegram_service=telegram_service,
-        telegram_output_service=telegram_output_service,
-        datapoint_service=datapoint_service,
-        conbus_service=conbus_service,
-    )
+    service = request.app.state.container.get_container().resolve(ConbusOutputService)
 
     # SendInput telegram and receive responses
     with service:
@@ -86,6 +74,7 @@ async def input_action(
     },
 )
 async def output_status(
+    request: Request,
     serial_number: str,
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
@@ -93,17 +82,7 @@ async def output_status(
 
     Sends a broadcastInput telegram and collects responses from all connected devices.
     """
-    telegram_service = TelegramService()
-    telegram_output_service = TelegramOutputService(telegram_service=telegram_service)
-    conbus_service = ConbusService(config_path="cli.yml")
-    datapoint_service = ConbusDatapointService()
-    service = ConbusOutputService(
-        config_path="cli.yml",
-        telegram_service=telegram_service,
-        telegram_output_service=telegram_output_service,
-        datapoint_service=datapoint_service,
-        conbus_service=conbus_service,
-    )
+    service = request.app.state.container.get_container().resolve(ConbusOutputService)
 
     # SendInput telegram and receive responses
     with service:
@@ -137,6 +116,7 @@ async def output_status(
     },
 )
 async def output_state(
+    request: Request,
     serial_number: str,
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
@@ -144,17 +124,7 @@ async def output_state(
 
     Sends a broadcastInput telegram and collects responses from all connected devices.
     """
-    telegram_service = TelegramService()
-    telegram_output_service = TelegramOutputService(telegram_service=telegram_service)
-    conbus_service = ConbusService(config_path="cli.yml")
-    datapoint_service = ConbusDatapointService()
-    service = ConbusOutputService(
-        config_path="cli.yml",
-        telegram_service=telegram_service,
-        telegram_output_service=telegram_output_service,
-        datapoint_service=datapoint_service,
-        conbus_service=conbus_service,
-    )
+    service = request.app.state.container.get_container().resolve(ConbusOutputService)
 
     # SendInput telegram and receive responses
     with service:

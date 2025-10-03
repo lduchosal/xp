@@ -4,6 +4,7 @@ import json
 import logging
 from typing import Union
 
+from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from xp.api.models.api import ApiErrorResponse, ApiResponse
@@ -25,6 +26,7 @@ logger = logging.getLogger(__name__)
     },
 )
 async def blink_on(
+    request: Request,
     serial_number: str = "1702033007",
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
@@ -32,7 +34,7 @@ async def blink_on(
 
     Sends a broadcastInput telegram and collects responses from all connected devices.
     """
-    service = ConbusBlinkService()
+    service = request.app.state.container.get_container().resolve(ConbusBlinkService)
 
     # SendInput telegram and receive responses
     with service:
@@ -69,6 +71,7 @@ async def blink_on(
     },
 )
 async def blink_off(
+    request: Request,
     serial_number: str = "1702033007",
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
@@ -76,7 +79,7 @@ async def blink_off(
 
     Sends a broadcastInput telegram and collects responses from all connected devices.
     """
-    service = ConbusBlinkService()
+    service = request.app.state.container.get_container().resolve(ConbusBlinkService)
 
     # SendInput telegram and receive responses
     with service:

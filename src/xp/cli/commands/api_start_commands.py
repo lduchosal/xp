@@ -6,7 +6,7 @@ import click
 import uvicorn
 
 from xp.cli.commands.api import api
-
+from xp.api.main import create_app
 
 @api.command("start")
 @click.option(
@@ -49,13 +49,13 @@ from xp.cli.commands.api import api
 )
 @click.pass_context
 def start_api_server(
-        context: click.Context,
-        host: str,
-        port: int,
-        reload: bool,
-        workers: int,
-        log_level: str,
-        access_log: bool
+    context: click.Context,
+    host: str,
+    port: int,
+    reload: bool,
+    workers: int,
+    log_level: str,
+    access_log: bool,
 ) -> None:
     """
     Start the FastAPI server.
@@ -100,9 +100,14 @@ def start_api_server(
     if reload:
         click.echo(click.style("Development mode: Auto-reload enabled", fg="green"))
 
+    # Get container from CLI context or create new one
+    container = context.obj.get("container")
+
     try:
+        # For production mode, create app instance with container
+        app = create_app(container)
         uvicorn.run(
-            "xp.api.main:app",
+            app,
             host=host,
             port=port,
             reload=reload,

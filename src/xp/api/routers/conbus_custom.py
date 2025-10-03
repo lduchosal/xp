@@ -3,6 +3,7 @@
 import logging
 from typing import Union
 
+from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from xp.api.models.api import ApiErrorResponse, ApiResponse
@@ -24,14 +25,17 @@ logger = logging.getLogger(__name__)
     },
 )
 async def custom_function(
-    serial_number: str = "1702033007", function_code: str = "02", data: str = "00"
+    request: Request,
+    serial_number: str = "1702033007",
+    function_code: str = "02",
+    data: str = "00",
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
     """
     Initiate a Datapoint operation to find devices on the network.
 
     Sends a broadcastDatapoint telegram and collects responses from all connected devices.
     """
-    service = ConbusCustomService()
+    service = request.app.state.container.get_container().resolve(ConbusCustomService)
     # SendDatapoint telegram and receive responses
     with service:
         response = service.send_custom_telegram(serial_number, function_code, data)

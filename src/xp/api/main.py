@@ -10,6 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from xp.api.routers import conbus
+from xp.utils.dependencies import ServiceContainer
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -57,8 +58,12 @@ def load_api_config() -> dict[str, Any]:
     return config
 
 
-def create_app() -> FastAPI:
-    """Create and configure the FastAPI application."""
+def create_app(container: ServiceContainer | None = None) -> FastAPI:
+    """Create and configure the FastAPI application.
+
+    Args:
+        container: Optional ServiceContainer instance. If not provided, a new one will be created.
+    """
     config = load_api_config()
 
     fastapi = FastAPI(
@@ -77,6 +82,12 @@ def create_app() -> FastAPI:
         allow_methods=config["cors_methods"],
         allow_headers=config["cors_headers"],
     )
+
+    # Initialize service container
+    if container is None:
+        config_path = os.getenv("XP_CONFIG_PATH", "cli.yml")
+        container = ServiceContainer(config_path=config_path)
+    fastapi.state.container = container
 
     # Include routers
     fastapi.include_router(conbus.router)

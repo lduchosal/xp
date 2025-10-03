@@ -3,6 +3,7 @@
 import logging
 from typing import Union
 
+from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from xp.api.models.discover import (
@@ -32,13 +33,13 @@ logger = logging.getLogger(__name__)
         500: {"model": DiscoverErrorResponse, "description": "Internal server error"},
     },
 )
-async def discover_devices() -> Union[DiscoverResponse, JSONResponse]:
+async def discover_devices(request: Request) -> Union[DiscoverResponse, JSONResponse]:
     """
     Initiate a Conbus discover operation to find devices on the network.
 
     Sends a broadcast discover telegram and collects responses from all connected devices.
     """
-    service = ConbusDiscoverService()
+    service = request.app.state.container.get_container().resolve(ConbusDiscoverService)
 
     # Send discover telegram and receive responses
     with service:

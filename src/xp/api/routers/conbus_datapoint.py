@@ -3,6 +3,7 @@
 import logging
 from typing import Union
 
+from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from xp.api.models.api import ApiErrorResponse, ApiResponse
@@ -25,6 +26,7 @@ logger = logging.getLogger(__name__)
     },
 )
 async def datapoint_devices(
+    request: Request,
     datapoint: DataPointType = DataPointType.SW_VERSION,
     serial_number: str = "1702033007",
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
@@ -33,7 +35,9 @@ async def datapoint_devices(
 
     Sends a broadcastDatapoint telegram and collects responses from all connected devices.
     """
-    service = ConbusDatapointService()
+    service = request.app.state.container.get_container().resolve(
+        ConbusDatapointService
+    )
     # SendDatapoint telegram and receive responses
     with service:
         response = service.query_datapoint(
