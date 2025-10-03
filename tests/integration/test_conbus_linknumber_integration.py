@@ -45,15 +45,44 @@ class TestConbusLinknumberIntegration:
         mock_conbus_instance.send_raw_telegram.return_value = response
         return mock_conbus_instance
 
-    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
-    def test_conbus_linknumber_valid(self, mock_conbus_service_class):
+    def test_conbus_linknumber_valid(self):
         """Test setting valid link number"""
-        # Setup mock
-        mock_service = self._create_mock_conbus_service(success=True, ack_response=True)
-        mock_conbus_service_class.return_value = mock_service
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+        mock_link_number_service = Mock()
+
+        # Setup mock conbus service with context manager
+        # The service code does: with self.conbus_service: ... self.conbus_service.send_raw_telegram()
+        # So we need __enter__ and __exit__ on the service itself, AND the method on it
+        mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_service)
+        mock_conbus_service.__exit__ = Mock(return_value=False)
+
+        # Create proper response with list
+        mock_response = Mock()
+        mock_response.success = True
+        mock_response.received_telegrams = ["<R0123450001F18DFA>"]  # ACK response
+        mock_response.error = None
+        mock_response.timestamp = Mock()
+        mock_conbus_service.send_raw_telegram.return_value = mock_response
+
+        # Setup telegram parsing - parse_telegram should return a ReplyTelegram
+        from xp.models.telegram.reply_telegram import ReplyTelegram
+        mock_reply = ReplyTelegram(checksum="DFA", raw_telegram="<R0123450001F18DFA>")
+        mock_telegram_service.parse_telegram.return_value = mock_reply
+        mock_link_number_service.is_ack_response.return_value = True
+        mock_link_number_service.is_nak_response.return_value = False
+        mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
 
         # Test
-        result = ConbusLinknumberService("test.yml").set_linknumber("0123450001", 25)
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
+        result = service.set_linknumber("0123450001", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -63,21 +92,40 @@ class TestConbusLinknumberIntegration:
         assert result.error is None
 
         # Verify service was called correctly
-        mock_service.send_raw_telegram.assert_called_once()
-        args = mock_service.send_raw_telegram.call_args[0]
+        mock_conbus_service.send_raw_telegram.assert_called_once()
+        args = mock_conbus_service.send_raw_telegram.call_args[0]
         assert args[0] == "<S0123450001F04D0425FG>"
 
-    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
-    def test_conbus_linknumber_invalid_response(self, mock_conbus_service_class):
+    def test_conbus_linknumber_invalid_response(self):
         """Test handling invalid/NAK responses"""
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+        mock_link_number_service = Mock()
+
         # Setup mock for NAK response
-        mock_service = self._create_mock_conbus_service(
+        mock_conbus_instance = self._create_mock_conbus_service(
             success=True, ack_response=False
         )
-        mock_conbus_service_class.return_value = mock_service
+        mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_instance)
+        mock_conbus_service.__exit__ = Mock(return_value=False)
+
+        # Setup telegram parsing for NAK
+        mock_reply = Mock()
+        mock_telegram_service.parse_telegram.return_value = mock_reply
+        mock_link_number_service.is_ack_response.return_value = False
+        mock_link_number_service.is_nak_response.return_value = True
+        mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
 
         # Test
-        result = ConbusLinknumberService("test.yml").set_linknumber("0123450001", 25)
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
+        result = service.set_linknumber("0123450001", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -85,15 +133,30 @@ class TestConbusLinknumberIntegration:
         assert result.result == "NAK"
         assert result.serial_number == "0123450001"
 
-    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
-    def test_conbus_linknumber_connection_failure(self, mock_conbus_service_class):
+    def test_conbus_linknumber_connection_failure(self):
         """Test handling connection failures"""
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+        mock_link_number_service = Mock()
+
         # Setup mock for connection failure
-        mock_service = self._create_mock_conbus_service(success=False)
-        mock_conbus_service_class.return_value = mock_service
+        mock_conbus_instance = self._create_mock_conbus_service(success=False)
+        mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_instance)
+        mock_conbus_service.__exit__ = Mock(return_value=False)
+
+        # Setup telegram generation
+        mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
 
         # Test
-        result = ConbusLinknumberService("test.yml").set_linknumber("0123450001", 25)
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
+        result = service.set_linknumber("0123450001", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -103,7 +166,24 @@ class TestConbusLinknumberIntegration:
 
     def test_conbus_linknumber_invalid_serial_number(self):
         """Test handling invalid serial number"""
-        result = ConbusLinknumberService("test.yml").set_linknumber("invalid", 25)
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+        mock_link_number_service = Mock()
+
+        # Setup link number service to raise error for invalid serial
+        from xp.services.telegram.telegram_link_number_service import LinkNumberError
+        mock_link_number_service.generate_set_link_number_telegram.side_effect = LinkNumberError("Serial number must be 10 digits")
+
+        # Test
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
+        result = service.set_linknumber("invalid", 25)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -117,7 +197,24 @@ class TestConbusLinknumberIntegration:
 
     def test_conbus_linknumber_invalid_link_number(self):
         """Test handling invalid link number"""
-        result = ConbusLinknumberService("test.yml").set_linknumber("0123450001", 101)
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+        mock_link_number_service = Mock()
+
+        # Setup link number service to raise error for invalid link number
+        from xp.services.telegram.telegram_link_number_service import LinkNumberError
+        mock_link_number_service.generate_set_link_number_telegram.side_effect = LinkNumberError("Link number must be between 0-99")
+
+        # Test
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
+        result = service.set_linknumber("0123450001", 101)
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -129,14 +226,42 @@ class TestConbusLinknumberIntegration:
             and "Link number must be between 0-99" in result.error
         )
 
-    @patch("xp.services.conbus.conbus_linknumber_service.ConbusService")
-    def test_conbus_linknumber_edge_cases(self, mock_conbus_service_class):
+    def test_conbus_linknumber_edge_cases(self):
         """Test edge cases for link number values"""
-        # Setup mock
-        mock_service = self._create_mock_conbus_service(success=True, ack_response=True)
-        mock_conbus_service_class.return_value = mock_service
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+        mock_link_number_service = Mock()
 
-        service = ConbusLinknumberService("test.yml")
+        # Setup mock conbus service with context manager
+        # The service code does: with self.conbus_service: ... self.conbus_service.send_raw_telegram()
+        # So we need __enter__ and __exit__ on the service itself, AND the method on it
+        mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_service)
+        mock_conbus_service.__exit__ = Mock(return_value=False)
+
+        # Create proper response with list
+        mock_response = Mock()
+        mock_response.success = True
+        mock_response.received_telegrams = ["<R0123450001F18DFA>"]  # ACK response
+        mock_response.error = None
+        mock_response.timestamp = Mock()
+        mock_conbus_service.send_raw_telegram.return_value = mock_response
+
+        # Setup telegram parsing - parse_telegram should return a ReplyTelegram
+        from xp.models.telegram.reply_telegram import ReplyTelegram
+        mock_reply = ReplyTelegram(checksum="DFA", raw_telegram="<R0123450001F18DFA>")
+        mock_telegram_service.parse_telegram.return_value = mock_reply
+        mock_link_number_service.is_ack_response.return_value = True
+        mock_link_number_service.is_nak_response.return_value = False
+        mock_link_number_service.generate_set_link_number_telegram.return_value = "<S0123450001F04D0425FG>"
+
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
 
         # Test minimum value
         result = service.set_linknumber("0123450001", 0)
@@ -150,7 +275,18 @@ class TestConbusLinknumberIntegration:
 
     def test_service_context_manager(self):
         """Test service can be used as context manager"""
-        service = ConbusLinknumberService("test.yml")
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+        mock_link_number_service = Mock()
+
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
 
         with service as s:
             assert s is service
@@ -177,20 +313,28 @@ class TestConbusLinknumberIntegration:
 
         return mock_response
 
-    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
-    def test_conbus_get_linknumber_valid(self, mock_datapoint_service_class):
+    def test_conbus_get_linknumber_valid(self):
         """Test getting valid link number"""
-        # Setup mock
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
         mock_datapoint_service = Mock()
-        mock_datapoint_service_class.return_value = mock_datapoint_service
+        mock_link_number_service = Mock()
 
+        # Setup mock datapoint response
         datapoint_response = self._create_mock_datapoint_response(
             success=True, serial_number="0123450001", link_number=25
         )
         mock_datapoint_service.query_datapoint.return_value = datapoint_response
 
         # Test
-        result = ConbusLinknumberService().get_linknumber("0123450001")
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
+        result = service.get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -207,20 +351,28 @@ class TestConbusLinknumberIntegration:
             DataPointType.LINK_NUMBER, "0123450001"
         )
 
-    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
-    def test_conbus_get_linknumber_query_failed(self, mock_datapoint_service_class):
+    def test_conbus_get_linknumber_query_failed(self):
         """Test handling datapoint query failures"""
-        # Setup mock for query failure
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
         mock_datapoint_service = Mock()
-        mock_datapoint_service_class.return_value = mock_datapoint_service
+        mock_link_number_service = Mock()
 
+        # Setup mock for query failure
         datapoint_response = self._create_mock_datapoint_response(
             success=False, error="Connection timeout"
         )
         mock_datapoint_service.query_datapoint.return_value = datapoint_response
 
         # Test
-        result = ConbusLinknumberService().get_linknumber("0123450001")
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
+        result = service.get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -230,13 +382,15 @@ class TestConbusLinknumberIntegration:
         assert result.link_number is None
         assert result.error is not None and "Connection timeout" in result.error
 
-    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
-    def test_conbus_get_linknumber_parse_error(self, mock_datapoint_service_class):
+    def test_conbus_get_linknumber_parse_error(self):
         """Test handling invalid link number data"""
-        # Setup mock with invalid data
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
         mock_datapoint_service = Mock()
-        mock_datapoint_service_class.return_value = mock_datapoint_service
+        mock_link_number_service = Mock()
 
+        # Setup mock with invalid data
         mock_response = Mock()
         mock_response.success = True
         mock_response.sent_telegram = "<S0123450001F03D04FG>"
@@ -249,7 +403,13 @@ class TestConbusLinknumberIntegration:
         mock_datapoint_service.query_datapoint.return_value = mock_response
 
         # Test
-        result = ConbusLinknumberService().get_linknumber("0123450001")
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
+        result = service.get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)
@@ -261,20 +421,27 @@ class TestConbusLinknumberIntegration:
             result.error is not None and "Failed to parse link number" in result.error
         )
 
-    @patch("xp.services.conbus.conbus_linknumber_service.ConbusDatapointService")
-    def test_conbus_get_linknumber_service_exception(
-        self, mock_datapoint_service_class
-    ):
+    def test_conbus_get_linknumber_service_exception(self):
         """Test handling service exceptions"""
-        # Setup mock that raises exception
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
         mock_datapoint_service = Mock()
-        mock_datapoint_service_class.return_value = mock_datapoint_service
+        mock_link_number_service = Mock()
+
+        # Setup mock that raises exception
         mock_datapoint_service.query_datapoint.side_effect = Exception(
             "Service unavailable"
         )
 
         # Test
-        result = ConbusLinknumberService().get_linknumber("0123450001")
+        service = ConbusLinknumberService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            link_number_service=mock_link_number_service,
+            telegram_service=mock_telegram_service
+        )
+        result = service.get_linknumber("0123450001")
 
         # Verify
         assert isinstance(result, ConbusLinknumberResponse)

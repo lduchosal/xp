@@ -7,6 +7,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+from xp.models import ConbusClientConfig
 from xp.services.reverse_proxy_service import (
     ReverseProxyError,
     ReverseProxyService,
@@ -32,8 +33,9 @@ conbus:
         )
         self.temp_config.close()
 
+        cli_config = ConbusClientConfig.from_yaml(self.temp_config.name)
         self.service = ReverseProxyService(
-            config_path=self.temp_config.name, listen_port=10003
+            cli_config=cli_config, listen_port=10003
         )
 
     def teardown_method(self):
@@ -47,26 +49,13 @@ conbus:
 
     def test_init_with_defaults(self):
         """Test service initialization with default values"""
-        service = ReverseProxyService()
-        assert service.config_path == "cli.yml"
+        cli_config = ConbusClientConfig.from_yaml("cli.yml")
+        service = ReverseProxyService(cli_config=cli_config)
+
         assert service.listen_port == 10001
         assert not service.is_running
         assert service.active_connections == {}
         assert service.connection_counter == 0
-
-    def test_init_with_custom_values(self):
-        """Test service initialization with custom values"""
-        assert self.service.config_path == self.temp_config.name
-        assert self.service.listen_port == 10003
-
-    def test_load_config_file_not_found(self):
-        """Test configuration loading when file doesn't exist"""
-        service = ReverseProxyService(config_path="nonexistent.yml")
-
-        # Should use defaults
-        assert service.cli_config.conbus.ip == "127.0.0.1"
-        assert service.cli_config.conbus.port == 10001
-        assert service.cli_config.conbus.timeout == 0.1
 
     def test_load_config_invalid_yaml(self):
         """Test configuration loading with invalid YAML"""
@@ -77,7 +66,8 @@ conbus:
         temp_invalid.close()
 
         try:
-            service = ReverseProxyService(config_path=temp_invalid.name)
+            cli_config = ConbusClientConfig.from_yaml(temp_invalid.name)
+            service = ReverseProxyService(cli_config=cli_config)
             # Should use defaults when config is invalid
             assert service.target_ip == "127.0.0.1"
             assert service.target_port == 10001
@@ -260,8 +250,9 @@ conbus:
         )
         self.temp_config.close()
 
+        cli_config = ConbusClientConfig.from_yaml(self.temp_config.name)
         self.service = ReverseProxyService(
-            config_path=self.temp_config.name, listen_port=self.listen_port
+            cli_config=cli_config, listen_port=self.listen_port
         )
 
     def teardown_method(self):

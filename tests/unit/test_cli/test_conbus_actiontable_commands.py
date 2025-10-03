@@ -1,7 +1,7 @@
 """Unit tests for conbus actiontable CLI commands."""
 
 import json
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 from click.testing import CliRunner
@@ -40,9 +40,8 @@ class TestConbusActionTableCommands:
         ]
         return ActionTable(entries=entries)
 
-    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_success(
-        self, mock_service_class, runner, sample_actiontable
+        self, runner, sample_actiontable
     ):
         """Test successful actiontable download command"""
         # Setup mock service
@@ -50,10 +49,18 @@ class TestConbusActionTableCommands:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
         mock_service.download_actiontable.return_value = sample_actiontable
-        mock_service_class.return_value = mock_service
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
 
         # Execute command
-        result = runner.invoke(conbus_download_actiontable, ["012345"])
+        result = runner.invoke(
+            conbus_download_actiontable, ["012345"],
+            obj={"container": mock_service_container}
+        )
 
         # Verify success
         assert result.exit_code == 0
@@ -66,9 +73,8 @@ class TestConbusActionTableCommands:
         assert output_data["serial_number"] == "0000012345"
         assert "entries" in output_data["actiontable"]
 
-    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_output_format(
-        self, mock_service_class, runner, sample_actiontable
+        self, runner, sample_actiontable
     ):
         """Test actiontable download command output format"""
         # Setup mock service
@@ -76,10 +82,18 @@ class TestConbusActionTableCommands:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
         mock_service.download_actiontable.return_value = sample_actiontable
-        mock_service_class.return_value = mock_service
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
 
         # Execute command
-        result = runner.invoke(conbus_download_actiontable, ["012345"])
+        result = runner.invoke(
+            conbus_download_actiontable, ["012345"],
+            obj={"container": mock_service_container}
+        )
 
         # Parse and verify JSON output
         output_data = json.loads(result.output)
@@ -107,9 +121,8 @@ class TestConbusActionTableCommands:
             }
             assert set(entry.keys()) == expected_entry_keys
 
-    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_error_handling(
-        self, mock_service_class, runner
+        self, runner
     ):
         """Test actiontable download command error handling"""
         # Setup mock service to raise error
@@ -119,10 +132,18 @@ class TestConbusActionTableCommands:
         mock_service.download_actiontable.side_effect = ActionTableError(
             "Communication failed"
         )
-        mock_service_class.return_value = mock_service
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
 
         # Execute command
-        result = runner.invoke(conbus_download_actiontable, ["012345"])
+        result = runner.invoke(
+            conbus_download_actiontable, ["012345"],
+            obj={"container": mock_service_container}
+        )
 
         # Verify error handling
         assert result.exit_code != 0
@@ -136,9 +157,8 @@ class TestConbusActionTableCommands:
         # Should fail due to serial number validation
         assert result.exit_code != 0
 
-    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_context_manager(
-        self, mock_service_class, runner, sample_actiontable
+        self, runner, sample_actiontable
     ):
         """Test that service is properly used as context manager"""
         # Setup mock service
@@ -146,10 +166,18 @@ class TestConbusActionTableCommands:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
         mock_service.download_actiontable.return_value = sample_actiontable
-        mock_service_class.return_value = mock_service
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
 
         # Execute command
-        result = runner.invoke(conbus_download_actiontable, ["012345"])
+        result = runner.invoke(
+            conbus_download_actiontable, ["012345"],
+            obj={"container": mock_service_container}
+        )
 
         # Verify context manager usage
         assert result.exit_code == 0
@@ -164,9 +192,8 @@ class TestConbusActionTableCommands:
         assert "Download action table from XP module" in result.output
         assert "SERIAL_NUMBER" in result.output
 
-    @patch("xp.cli.commands.conbus.conbus_actiontable_commands.ActionTableService")
     def test_conbus_download_actiontable_json_serialization(
-        self, mock_service_class, runner
+        self, runner
     ):
         """Test that complex objects are properly serialized to JSON"""
         # Create actiontable with enum values
@@ -186,10 +213,18 @@ class TestConbusActionTableCommands:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
         mock_service.download_actiontable.return_value = actiontable
-        mock_service_class.return_value = mock_service
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
 
         # Execute command
-        result = runner.invoke(conbus_download_actiontable, ["012345"])
+        result = runner.invoke(
+            conbus_download_actiontable, ["012345"],
+            obj={"container": mock_service_container}
+        )
 
         # Verify JSON can be parsed and contains expected data
         assert result.exit_code == 0

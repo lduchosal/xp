@@ -1,6 +1,6 @@
 """Integration tests for Conbus datapoint functionality."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from click.testing import CliRunner
 
@@ -23,13 +23,11 @@ class TestConbusDatapointIntegration:
         self.valid_serial = "0123450001"
         self.invalid_serial = "invalid"
 
-    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
-    def test_conbus_datapoint_all_valid_serial(self, mock_service_class):
+    def test_conbus_datapoint_all_valid_serial(self):
         """Test querying all datapoints with valid serial number"""
 
         # Mock successful response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -48,9 +46,16 @@ class TestConbusDatapointIntegration:
         )
         mock_service.query_all_datapoints.return_value = mock_response
 
+        # Setup mock container to resolve ConbusDatapointService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.valid_serial]
+            cli, ["conbus", "datapoint", "all", self.valid_serial],
+            obj={"container": mock_service_container}
         )
 
         # Debug output
@@ -71,13 +76,11 @@ class TestConbusDatapointIntegration:
         assert '"datapoints"' in result.output
         assert '"MODULE_TYPE": "XP33LED"' in result.output
 
-    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
-    def test_conbus_datapoint_all_invalid_serial(self, mock_service_class):
+    def test_conbus_datapoint_all_invalid_serial(self):
         """Test querying all datapoints with invalid serial number"""
 
         # Mock service that raises error
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -85,22 +88,27 @@ class TestConbusDatapointIntegration:
             "Invalid serial number"
         )
 
+        # Setup mock container to resolve ConbusDatapointService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.invalid_serial]
+            cli, ["conbus", "datapoint", "all", self.invalid_serial],
+            obj={"container": mock_service_container}
         )
 
         # Should handle the error gracefully
         assert result.exit_code != 0
         assert "Invalid serial number" in result.output or "Error" in result.output
 
-    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
-    def test_conbus_datapoint_connection_error(self, mock_service_class):
+    def test_conbus_datapoint_connection_error(self):
         """Test handling network connection failures"""
 
         # Mock service that raises connection error
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -108,22 +116,27 @@ class TestConbusDatapointIntegration:
             "Connection failed"
         )
 
+        # Setup mock container to resolve ConbusDatapointService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.valid_serial]
+            cli, ["conbus", "datapoint", "all", self.valid_serial],
+            obj={"container": mock_service_container}
         )
 
         # Should handle the error gracefully
         assert "Connection failed" in result.output or "Error" in result.output
         assert result.exit_code != 0
 
-    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
-    def test_conbus_datapoint_invalid_response(self, mock_service_class):
+    def test_conbus_datapoint_invalid_response(self):
         """Test handling invalid responses from the server"""
 
         # Mock service with failed response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -135,9 +148,16 @@ class TestConbusDatapointIntegration:
         )
         mock_service.query_all_datapoints.return_value = mock_response
 
+        # Setup mock container to resolve ConbusDatapointService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.valid_serial]
+            cli, ["conbus", "datapoint", "all", self.valid_serial],
+            obj={"container": mock_service_container}
         )
 
         # Should return the failed response
@@ -145,13 +165,11 @@ class TestConbusDatapointIntegration:
         assert result.exit_code == 0  # CLI succeeds but response indicates failure
         assert "Invalid response from server" in result.output
 
-    @patch("xp.cli.commands.conbus.conbus_datapoint_commands.ConbusDatapointService")
-    def test_conbus_datapoint_empty_datapoints(self, mock_service_class):
+    def test_conbus_datapoint_empty_datapoints(self):
         """Test handling when no datapoints are returned"""
 
         # Mock service with successful but empty response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -163,9 +181,16 @@ class TestConbusDatapointIntegration:
         )
         mock_service.query_all_datapoints.return_value = mock_response
 
+        # Setup mock container to resolve ConbusDatapointService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
-            cli, ["conbus", "datapoint", "all", self.valid_serial]
+            cli, ["conbus", "datapoint", "all", self.valid_serial],
+            obj={"container": mock_service_container}
         )
 
         # Should succeed with empty datapoints
@@ -183,18 +208,12 @@ class TestConbusDatapointService:
         """Set up test fixtures"""
         self.valid_serial = "0123450001"
 
-    @patch("xp.services.conbus.conbus_datapoint_service.ConbusService")
-    @patch("xp.services.conbus.conbus_datapoint_service.TelegramService")
-    def test_query_all_datapoints_success(
-        self, mock_telegram_service, mock_conbus_service
-    ):
+    def test_query_all_datapoints_success(self):
         """Test successful querying of all datapoints"""
 
         # Mock dependencies
-        mock_conbus = Mock()
-        mock_conbus_service.return_value = mock_conbus
-        mock_telegram = Mock()
-        mock_telegram_service.return_value = mock_telegram
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
 
         # Mock successful telegram response for each datapoint type
         mock_reply_telegram = Mock()
@@ -204,7 +223,10 @@ class TestConbusDatapointService:
         mock_single_response.success = True
         mock_single_response.datapoint_telegram = mock_reply_telegram
 
-        service = ConbusDatapointService()
+        service = ConbusDatapointService(
+            telegram_service=mock_telegram_service,
+            conbus_service=mock_conbus_service
+        )
 
         # Mock the send_telegram method to return successful responses
         service.query_datapoint = Mock(return_value=mock_single_response)
@@ -225,7 +247,14 @@ class TestConbusDatapointService:
     def test_query_all_datapoints_partial_failure(self):
         """Test querying datapoints when some datapoints fail"""
 
-        service = ConbusDatapointService()
+        # Mock dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+
+        service = ConbusDatapointService(
+            telegram_service=mock_telegram_service,
+            conbus_service=mock_conbus_service
+        )
 
         # Mock send_telegram to return success for some, failure for others
         def mock_send_telegram(datapoint_type, _serial_number):

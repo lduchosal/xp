@@ -4,31 +4,23 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-from xp.services.conbus.conbus_datapoint_service import (
-    ConbusService,
-)
+from xp.models.conbus.conbus_client_config import ClientConfig, ConbusClientConfig
+from xp.services.conbus.conbus_service import ConbusService
 
 
 class TestConbusService:
     """Test cases for ConbusService"""
 
     @pytest.fixture
-    def mock_config_file(self, tmp_path):
-        """Create a temporary config file for testing"""
-        config_file = tmp_path / "test_cli.yml"
-        config_content = """
-conbus:
-  ip: 10.0.0.1
-  port: 8080
-  timeout: 15
-"""
-        config_file.write_text(config_content)
-        return str(config_file)
+    def mock_config(self):
+        """Create a test config"""
+        client_config = ClientConfig(ip="10.0.0.1", port=8080, timeout=15)
+        return ConbusClientConfig(conbus=client_config)
 
     @pytest.fixture
-    def service(self, mock_config_file):
+    def service(self, mock_config):
         """Create service instance with test config"""
-        return ConbusService(config_path=mock_config_file)
+        return ConbusService(client_config=mock_config)
 
     @pytest.fixture
     def mock_socket(self):
@@ -46,24 +38,26 @@ conbus:
 class TestServiceInitialization(TestConbusService):
     """Test service initialization and configuration loading"""
 
-    def test_default_initialization(self, tmp_path):
+    def test_default_initialization(self):
         """Test service initialization with default config"""
-        # Use a non-existent config file to test defaults
-        non_existent_config = str(tmp_path / "non_existent.yml")
-        service = ConbusService(config_path=non_existent_config)
+        # Create service with default config
+        default_config = ConbusClientConfig()
+        service = ConbusService(client_config=default_config)
 
         assert service.client_config.conbus.ip == "192.168.1.100"
         assert service.client_config.conbus.port == 10001
         assert service.client_config.conbus.timeout == 0.1
 
-    def test_nonexistent_config_file(self):
-        """Test handling of non-existent config file"""
-        service = ConbusService(config_path="nonexistent.yml")
+    def test_custom_config(self):
+        """Test service initialization with custom config"""
+        # Create service with custom config
+        custom_client_config = ClientConfig(ip="10.1.1.1", port=9999, timeout=5.0)
+        custom_config = ConbusClientConfig(conbus=custom_client_config)
+        service = ConbusService(client_config=custom_config)
 
-        # Should use defaults when config file doesn't exist
-        assert service.client_config.conbus.ip == "192.168.1.100"
-        assert service.client_config.conbus.port == 10001
-        assert service.client_config.conbus.timeout == 0.1
+        assert service.client_config.conbus.ip == "10.1.1.1"
+        assert service.client_config.conbus.port == 9999
+        assert service.client_config.conbus.timeout == 5.0
 
 
 class TestConnectionManagement(TestConbusService):

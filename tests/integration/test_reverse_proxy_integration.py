@@ -9,6 +9,7 @@ from typing import Optional
 
 import pytest
 
+from xp.models import ConbusClientConfig
 from xp.services.reverse_proxy_service import ReverseProxyService
 
 
@@ -104,8 +105,9 @@ conbus:
         self.temp_config.close()
 
         # Create reverse proxy
+        cli_config = ConbusClientConfig.from_yaml(self.temp_config.name)
         self.proxy = ReverseProxyService(
-            config_path=self.temp_config.name, listen_port=self.proxy_port
+            cli_config=cli_config, listen_port=self.proxy_port
         )
 
     def teardown_method(self):
@@ -324,7 +326,8 @@ conbus:
         temp_config.close()
 
         try:
-            proxy = ReverseProxyService(config_path=temp_config.name, listen_port=19004)
+            cli_config = ConbusClientConfig.from_yaml(temp_config.name)
+            proxy = ReverseProxyService(cli_config=cli_config, listen_port=19004)
 
             # Should load config but connections will fail
             assert proxy.cli_config.conbus.ip == "999.999.999.999"

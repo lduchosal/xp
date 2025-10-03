@@ -24,13 +24,11 @@ class TestConbusLightlevelIntegration:
         self.valid_output_number = 2
         self.valid_level = 50
 
-    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
-    def test_conbus_lightlevel_set(self, mock_service_class):
+    def test_conbus_lightlevel_set(self):
         """Test setting specific light level"""
 
         # Mock successful response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -43,6 +41,12 @@ class TestConbusLightlevelIntegration:
         )
         mock_service.set_lightlevel.return_value = mock_response
 
+        # Setup mock container to resolve ConbusLightlevelService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
             cli,
@@ -54,6 +58,7 @@ class TestConbusLightlevelIntegration:
                 str(self.valid_output_number),
                 str(self.valid_level),
             ],
+            obj={"container": mock_service_container}
         )
 
         # Assertions
@@ -66,13 +71,11 @@ class TestConbusLightlevelIntegration:
             self.valid_serial, self.valid_output_number, self.valid_level
         )
 
-    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
-    def test_conbus_lightlevel_off(self, mock_service_class):
+    def test_conbus_lightlevel_off(self):
         """Test turning light off (level 0)"""
 
         # Mock successful response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -85,6 +88,12 @@ class TestConbusLightlevelIntegration:
         )
         mock_service.turn_off.return_value = mock_response
 
+        # Setup mock container to resolve ConbusLightlevelService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
             cli,
@@ -95,6 +104,7 @@ class TestConbusLightlevelIntegration:
                 self.valid_serial,
                 str(self.valid_output_number),
             ],
+            obj={"container": mock_service_container}
         )
 
         # Assertions
@@ -105,13 +115,11 @@ class TestConbusLightlevelIntegration:
             self.valid_serial, self.valid_output_number
         )
 
-    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
-    def test_conbus_lightlevel_on(self, mock_service_class):
+    def test_conbus_lightlevel_on(self):
         """Test turning light on (level 80)"""
 
         # Mock successful response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -124,6 +132,12 @@ class TestConbusLightlevelIntegration:
         )
         mock_service.turn_on.return_value = mock_response
 
+        # Setup mock container to resolve ConbusLightlevelService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
             cli,
@@ -134,6 +148,7 @@ class TestConbusLightlevelIntegration:
                 self.valid_serial,
                 str(self.valid_output_number),
             ],
+            obj={"container": mock_service_container}
         )
 
         # Assertions
@@ -144,13 +159,11 @@ class TestConbusLightlevelIntegration:
             self.valid_serial, self.valid_output_number
         )
 
-    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
-    def test_conbus_lightlevel_get(self, mock_service_class):
+    def test_conbus_lightlevel_get(self):
         """Test querying light level"""
 
         # Mock successful response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -163,6 +176,12 @@ class TestConbusLightlevelIntegration:
         )
         mock_service.get_lightlevel.return_value = mock_response
 
+        # Setup mock container to resolve ConbusLightlevelService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
             cli,
@@ -173,6 +192,7 @@ class TestConbusLightlevelIntegration:
                 self.valid_serial,
                 str(self.valid_output_number),
             ],
+            obj={"container": mock_service_container}
         )
 
         # Assertions
@@ -204,19 +224,23 @@ class TestConbusLightlevelIntegration:
         assert "Invalid value for 'LEVEL'" in result.output
         assert "150 is not in the range 0<=x<=100" in result.output
 
-    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
-    def test_conbus_lightlevel_connection_error(self, mock_service_class):
+    def test_conbus_lightlevel_connection_error(self):
         """Test handling network connection failures"""
 
         # Mock service that raises connection error
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
         mock_service.set_lightlevel.side_effect = ConbusLightlevelError(
             "Connection failed"
         )
+
+        # Setup mock container to resolve ConbusLightlevelService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
 
         # Run CLI command
         result = self.runner.invoke(
@@ -229,19 +253,18 @@ class TestConbusLightlevelIntegration:
                 str(self.valid_output_number),
                 "50",
             ],
+            obj={"container": mock_service_container}
         )
 
         # Should handle the error gracefully
         assert "Connection failed" in result.output or "Error" in result.output
         assert result.exit_code != 0
 
-    @patch("xp.cli.commands.conbus.conbus_lightlevel_commands.ConbusLightlevelService")
-    def test_conbus_lightlevel_invalid_response(self, mock_service_class):
+    def test_conbus_lightlevel_invalid_response(self):
         """Test handling invalid responses from the server"""
 
         # Mock service with failed response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -255,6 +278,12 @@ class TestConbusLightlevelIntegration:
         )
         mock_service.get_lightlevel.return_value = mock_response
 
+        # Setup mock container to resolve ConbusLightlevelService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
         # Run CLI command
         result = self.runner.invoke(
             cli,
@@ -265,6 +294,7 @@ class TestConbusLightlevelIntegration:
                 self.valid_serial,
                 str(self.valid_output_number),
             ],
+            obj={"container": mock_service_container}
         )
 
         # Should return the failed response
@@ -282,13 +312,13 @@ class TestConbusLightlevelService:
         self.valid_output_number = 2
         self.valid_level = 50
 
-    @patch("xp.services.conbus.conbus_lightlevel_service.ConbusService")
-    def test_set_lightlevel_success(self, mock_conbus_service_class):
+    def test_set_lightlevel_success(self):
         """Test successful setting of light level"""
 
-        # Mock conbus service
+        # Mock service dependencies
+        mock_telegram_service = Mock()
         mock_conbus_service = Mock()
-        mock_conbus_service_class.return_value = mock_conbus_service
+        mock_datapoint_service = Mock()
 
         # Create mock response
         mock_response = Mock()
@@ -300,8 +330,13 @@ class TestConbusLightlevelService:
 
         mock_conbus_service.send_telegram.return_value = mock_response
 
-        # Test the service
-        result = ConbusLightlevelService().set_lightlevel(
+        # Test the service with mocked dependencies
+        service = ConbusLightlevelService(
+            telegram_service=mock_telegram_service,
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service
+        )
+        result = service.set_lightlevel(
             self.valid_serial, self.valid_output_number, self.valid_level
         )
 
@@ -325,8 +360,18 @@ class TestConbusLightlevelService:
     def test_set_lightlevel_invalid_level(self):
         """Test setting invalid light level"""
 
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+
         # Test the service with invalid level
-        result = ConbusLightlevelService().set_lightlevel(
+        service = ConbusLightlevelService(
+            telegram_service=mock_telegram_service,
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service
+        )
+        result = service.set_lightlevel(
             self.valid_serial, self.valid_output_number, 150  # Invalid level > 100
         )
 
@@ -338,7 +383,16 @@ class TestConbusLightlevelService:
 
     def test_turn_off(self):
         """Test turning light off calls set_lightlevel with level 0"""
-        service = ConbusLightlevelService()
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+
+        service = ConbusLightlevelService(
+            telegram_service=mock_telegram_service,
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service
+        )
 
         # Mock the set_lightlevel method
         with patch.object(service, "set_lightlevel") as mock_set:
@@ -360,7 +414,16 @@ class TestConbusLightlevelService:
 
     def test_turn_on(self):
         """Test turning light on calls set_lightlevel with level 80"""
-        service = ConbusLightlevelService()
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+
+        service = ConbusLightlevelService(
+            telegram_service=mock_telegram_service,
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service
+        )
 
         # Mock the set_lightlevel method
         with patch.object(service, "set_lightlevel") as mock_set:
@@ -380,13 +443,13 @@ class TestConbusLightlevelService:
             )
             assert result.level == 80
 
-    @patch("xp.services.conbus.conbus_lightlevel_service.ConbusDatapointService")
-    def test_get_lightlevel_success(self, mock_datapoint_service_class):
+    def test_get_lightlevel_success(self):
         """Test successful getting of light level"""
 
-        # Mock datapoint service
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
         mock_datapoint_service = Mock()
-        mock_datapoint_service_class.return_value = mock_datapoint_service
 
         # Create mock datapoint response with multiple links
         mock_datapoint_response = Mock()
@@ -402,7 +465,12 @@ class TestConbusLightlevelService:
         mock_datapoint_service.query_datapoint.return_value = mock_datapoint_response
 
         # Test the service - get level for link 2
-        result = ConbusLightlevelService().get_lightlevel(self.valid_serial, 2)
+        service = ConbusLightlevelService(
+            telegram_service=mock_telegram_service,
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service
+        )
+        result = service.get_lightlevel(self.valid_serial, 2)
 
         # Assertions
         assert result.success is True
@@ -420,7 +488,16 @@ class TestConbusLightlevelService:
 
     def test_service_context_manager(self):
         """Test service can be used as context manager"""
-        service = ConbusLightlevelService("test.yml")
+        # Mock service dependencies
+        mock_telegram_service = Mock()
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+
+        service = ConbusLightlevelService(
+            telegram_service=mock_telegram_service,
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service
+        )
 
         with service as s:
             assert s is service

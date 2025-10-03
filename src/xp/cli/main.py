@@ -27,7 +27,7 @@ from xp.utils.dependencies import ServiceContainer
 )
 @click.version_option()
 @click.pass_context
-def cli(ctx: click.Context, service_container: ServiceContainer) -> None:
+def cli(ctx: click.Context, service_container: ServiceContainer | None = None) -> None:
     """XP CLI tool for remote console bus operations"""
     logging.basicConfig(level=logging.DEBUG)
     # Suppress pyhap.hap_protocol logs
@@ -39,6 +39,8 @@ def cli(ctx: click.Context, service_container: ServiceContainer) -> None:
     ctx.ensure_object(dict)
     # Only create a new container if one doesn't already exist (for testing)
     if "container" not in ctx.obj:
+        if service_container is None:
+            service_container = ServiceContainer()
         ctx.obj["container"] = service_container
 
 

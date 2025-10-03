@@ -1,6 +1,7 @@
 import pytest
 
 from xp.services.conbus.conbus_service import ConbusService
+from xp.utils.dependencies import ServiceContainer
 
 
 class TestConbusServiceTelegramParsing:
@@ -9,7 +10,7 @@ class TestConbusServiceTelegramParsing:
     @pytest.fixture
     def service(self):
         """Create service instance for testing"""
-        return ConbusService()
+        return ServiceContainer().get_container().resolve(ConbusService)
 
     def test_parse_telegrams_empty_data(self, service):
         """Test parsing empty data"""

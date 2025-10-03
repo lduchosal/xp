@@ -5,6 +5,7 @@ ensuring proper integration between all layers.
 """
 
 import json
+from unittest.mock import Mock
 
 import pytest
 from click.testing import CliRunner
@@ -19,9 +20,22 @@ class TestChecksumIntegration:
         """Set up test runner."""
         self.runner = CliRunner()
 
+    def _create_mock_container(self):
+        """Create a mock service container for IoC pattern."""
+        mock_service = Mock()
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+        return mock_service_container
+
     def test_checksum_calculate_json_output(self):
         """Test checksum calculate command with JSON output."""
-        result = self.runner.invoke(cli, ["telegram", "checksum", "calculate", "test"])
+        mock_container = self._create_mock_container()
+        result = self.runner.invoke(
+            cli, ["telegram", "checksum", "calculate", "test"],
+            obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
 
@@ -36,9 +50,11 @@ class TestChecksumIntegration:
 
     def test_checksum_validate_valid_checksum(self):
         """Test checksum validate command with valid checksum."""
+        mock_container = self._create_mock_container()
         # First calculate a checksum
         calc_result = self.runner.invoke(
-            cli, ["telegram", "checksum", "calculate", "test"]
+            cli, ["telegram", "checksum", "calculate", "test"],
+            obj={"container": mock_container}
         )
         assert calc_result.exit_code == 0
 
@@ -47,7 +63,8 @@ class TestChecksumIntegration:
 
         # Then validate it
         result = self.runner.invoke(
-            cli, ["telegram", "checksum", "validate", "test", checksum]
+            cli, ["telegram", "checksum", "validate", "test", checksum],
+            obj={"container": mock_container}
         )
 
         assert result.exit_code == 0
@@ -60,8 +77,10 @@ class TestChecksumIntegration:
 
     def test_checksum_validate_invalid_checksum(self):
         """Test checksum validate command with invalid checksum."""
+        mock_container = self._create_mock_container()
         result = self.runner.invoke(
-            cli, ["telegram", "checksum", "validate", "test", "XX"]
+            cli, ["telegram", "checksum", "validate", "test", "XX"],
+            obj={"container": mock_container}
         )
 
         assert result.exit_code == 0
@@ -73,10 +92,12 @@ class TestChecksumIntegration:
 
     def test_checksum_validate_crc32_algorithm(self):
         """Test checksum validate command with CRC32 algorithm."""
+        mock_container = self._create_mock_container()
         # First calculate a CRC32 checksum
         calc_result = self.runner.invoke(
             cli,
             ["telegram", "checksum", "calculate", "test", "--algorithm", "crc32"],
+            obj={"container": mock_container}
         )
         assert calc_result.exit_code == 0
 
@@ -95,6 +116,7 @@ class TestChecksumIntegration:
                 "--algorithm",
                 "crc32",
             ],
+            obj={"container": mock_container}
         )
 
         assert result.exit_code == 0
@@ -104,8 +126,10 @@ class TestChecksumIntegration:
 
     def test_checksum_validate_json_output(self):
         """Test checksum validate command with JSON output."""
+        mock_container = self._create_mock_container()
         result = self.runner.invoke(
-            cli, ["telegram", "checksum", "validate", "test", "XX"]
+            cli, ["telegram", "checksum", "validate", "test", "XX"],
+            obj={"container": mock_container}
         )
 
         assert result.exit_code == 0
@@ -120,7 +144,11 @@ class TestChecksumIntegration:
 
     def test_checksum_help_command(self):
         """Test checksum help command."""
-        result = self.runner.invoke(cli, ["telegram", "checksum", "--help"])
+        mock_container = self._create_mock_container()
+        result = self.runner.invoke(
+            cli, ["telegram", "checksum", "--help"],
+            obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         output = result.output
@@ -131,8 +159,10 @@ class TestChecksumIntegration:
 
     def test_checksum_calculate_help(self):
         """Test checksum calculate help command."""
+        mock_container = self._create_mock_container()
         result = self.runner.invoke(
-            cli, ["telegram", "checksum", "calculate", "--help"]
+            cli, ["telegram", "checksum", "calculate", "--help"],
+            obj={"container": mock_container}
         )
 
         assert result.exit_code == 0
@@ -143,7 +173,11 @@ class TestChecksumIntegration:
 
     def test_checksum_validate_help(self):
         """Test checksum validate help command."""
-        result = self.runner.invoke(cli, ["telegram", "checksum", "validate", "--help"])
+        mock_container = self._create_mock_container()
+        result = self.runner.invoke(
+            cli, ["telegram", "checksum", "validate", "--help"],
+            obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         output = result.output
@@ -153,7 +187,11 @@ class TestChecksumIntegration:
 
     def test_checksum_calculate_empty_string(self):
         """Test checksum calculate with empty string."""
-        result = self.runner.invoke(cli, ["telegram", "checksum", "calculate"])
+        mock_container = self._create_mock_container()
+        result = self.runner.invoke(
+            cli, ["telegram", "checksum", "calculate"],
+            obj={"container": mock_container}
+        )
 
         assert result.exit_code == 2
         output = result.output
@@ -162,7 +200,11 @@ class TestChecksumIntegration:
 
     def test_checksum_validate_empty_string(self):
         """Test checksum validate with empty string."""
-        result = self.runner.invoke(cli, ["telegram", "checksum", "validate", "", "AA"])
+        mock_container = self._create_mock_container()
+        result = self.runner.invoke(
+            cli, ["telegram", "checksum", "validate", "", "AA"],
+            obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         output = result.output
@@ -171,9 +213,11 @@ class TestChecksumIntegration:
 
     def test_algorithm_parameter_validation(self):
         """Test that algorithm parameter accepts only valid values."""
+        mock_container = self._create_mock_container()
         # Test invalid algorithm
         result = self.runner.invoke(
-            cli, ["telegram", "checksum", "calculate", "test", "--algorithm", "invalid"]
+            cli, ["telegram", "checksum", "calculate", "test", "--algorithm", "invalid"],
+            obj={"container": mock_container}
         )
 
         assert result.exit_code != 0
@@ -181,12 +225,19 @@ class TestChecksumIntegration:
 
     def test_missing_arguments(self):
         """Test commands with missing required arguments."""
+        mock_container = self._create_mock_container()
         # Missing data argument for calculate
-        result = self.runner.invoke(cli, ["telegram", "checksum", "calculate"])
+        result = self.runner.invoke(
+            cli, ["telegram", "checksum", "calculate"],
+            obj={"container": mock_container}
+        )
         assert result.exit_code != 0
 
         # Missing expected_checksum argument for validate
-        result = self.runner.invoke(cli, ["telegram", "checksum", "validate", "test"])
+        result = self.runner.invoke(
+            cli, ["telegram", "checksum", "validate", "test"],
+            obj={"container": mock_container}
+        )
         assert result.exit_code != 0
 
     @pytest.mark.parametrize(
@@ -201,8 +252,10 @@ class TestChecksumIntegration:
     )
     def test_checksum_calculate_various_data(self, test_data):
         """Test checksum calculate with various data inputs."""
+        mock_container = self._create_mock_container()
         result = self.runner.invoke(
-            cli, ["telegram", "checksum", "calculate", test_data]
+            cli, ["telegram", "checksum", "calculate", test_data],
+            obj={"container": mock_container}
         )
 
         assert result.exit_code == 0
@@ -212,6 +265,7 @@ class TestChecksumIntegration:
     @pytest.mark.parametrize("algorithm", ["simple", "crc32"])
     def test_checksum_roundtrip(self, algorithm):
         """Test calculate then validate roundtrip for both algorithms."""
+        mock_container = self._create_mock_container()
         # Calculate checksum
         calc_result = self.runner.invoke(
             cli,
@@ -223,6 +277,7 @@ class TestChecksumIntegration:
                 "--algorithm",
                 algorithm,
             ],
+            obj={"container": mock_container}
         )
         assert calc_result.exit_code == 0
 
@@ -241,6 +296,7 @@ class TestChecksumIntegration:
                 "--algorithm",
                 algorithm,
             ],
+            obj={"container": mock_container}
         )
         assert validate_result.exit_code == 0
 
@@ -250,9 +306,13 @@ class TestChecksumIntegration:
     def test_integration_with_telegram_parse(self):
         """Test integration concept - checksum could be used with telegram parsing."""
         # This tests that the checksum commands are available alongside other commands
+        mock_container = self._create_mock_container()
 
         # First test that checksum commands exist
-        result = self.runner.invoke(cli, ["telegram", "--help"])
+        result = self.runner.invoke(
+            cli, ["telegram", "--help"],
+            obj={"container": mock_container}
+        )
         assert result.exit_code == 0
         assert "checksum" in result.output
 
@@ -262,7 +322,11 @@ class TestChecksumIntegration:
 
     def test_consistent_output_format(self):
         """Test that output format is consistent with other CLI commands."""
-        result = self.runner.invoke(cli, ["telegram", "checksum", "calculate", "test"])
+        mock_container = self._create_mock_container()
+        result = self.runner.invoke(
+            cli, ["telegram", "checksum", "calculate", "test"],
+            obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         output_data = json.loads(result.output)
@@ -276,8 +340,10 @@ class TestChecksumIntegration:
         """Test that errors are properly formatted in JSON mode."""
         # This would require creating a scenario that causes an error
         # For now, we test that the JSON structure is maintained
+        mock_container = self._create_mock_container()
         result = self.runner.invoke(
-            cli, ["telegram", "checksum", "validate", "test", "invalid"]
+            cli, ["telegram", "checksum", "validate", "test", "invalid"],
+            obj={"container": mock_container}
         )
 
         assert result.exit_code == 0  # Validation failure is not a CLI error

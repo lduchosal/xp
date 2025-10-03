@@ -4,7 +4,7 @@ Tests the complete flow from CLI input to output,
 ensuring proper integration between all layers.
 """
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from click.testing import CliRunner
 
@@ -19,12 +19,10 @@ class TestConbusRawIntegration:
         """Set up test runner."""
         self.runner = CliRunner()
 
-    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
-    def test_conbus_raw_single_telegram(self, mock_service_class):
+    def test_conbus_raw_single_telegram(self):
         """Test conbus raw command with single telegram."""
         # Mock the service
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -36,18 +34,23 @@ class TestConbusRawIntegration:
         )
         mock_service.send_raw_telegrams.return_value = mock_response
 
-        result = self.runner.invoke(cli, ["conbus", "raw", "<S2113010000F02D12>"])
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
+        result = self.runner.invoke(
+            cli, ["conbus", "raw", "<S2113010000F02D12>"],
+            obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         assert "<R2113010000F02D12>" in result.output
         mock_service.send_raw_telegrams.assert_called_once_with("<S2113010000F02D12>")
 
-    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
-    def test_conbus_raw_multiple_telegrams(self, mock_service_class):
+    def test_conbus_raw_multiple_telegrams(self):
         """Test conbus raw command with multiple telegrams."""
         # Mock the service
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -63,8 +66,15 @@ class TestConbusRawIntegration:
         )
         mock_service.send_raw_telegrams.return_value = mock_response
 
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
         raw_input = "<S2113010000F02D12><S2113010001F02D12><S2113010002F02D12>"
-        result = self.runner.invoke(cli, ["conbus", "raw", raw_input])
+        result = self.runner.invoke(
+            cli, ["conbus", "raw", raw_input],
+            obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         output_lines = result.output.strip().split("\n")
@@ -73,12 +83,10 @@ class TestConbusRawIntegration:
         assert "<S2113010002F02D12>" in output_lines
         mock_service.send_raw_telegrams.assert_called_once_with(raw_input)
 
-    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
-    def test_conbus_raw_connection_error(self, mock_service_class):
+    def test_conbus_raw_connection_error(self):
         """Test conbus raw command with connection error."""
         # Mock the service
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -86,19 +94,24 @@ class TestConbusRawIntegration:
         mock_response = ConbusRawResponse(success=False, error="Connection failed")
         mock_service.send_raw_telegrams.return_value = mock_response
 
-        result = self.runner.invoke(cli, ["conbus", "raw", "<S2113010000F02D12>"])
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
+        result = self.runner.invoke(
+            cli, ["conbus", "raw", "<S2113010000F02D12>"],
+            obj={"container": mock_container}
+        )
 
         assert (
             result.exit_code == 0
         )  # CLI doesn't exit with error code, but shows error
         assert "Error: Connection failed" in result.output
 
-    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
-    def test_conbus_raw_no_response(self, mock_service_class):
+    def test_conbus_raw_no_response(self):
         """Test conbus raw command with no response."""
         # Mock the service
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -108,7 +121,14 @@ class TestConbusRawIntegration:
         )
         mock_service.send_raw_telegrams.return_value = mock_response
 
-        result = self.runner.invoke(cli, ["conbus", "raw", "<S2113010000F02D12>"])
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
+        result = self.runner.invoke(
+            cli, ["conbus", "raw", "<S2113010000F02D12>"],
+            obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         assert "No response received" in result.output
@@ -130,12 +150,10 @@ class TestConbusRawIntegration:
         assert result.exit_code != 0
         assert "Usage: cli conbus raw [OPTIONS] RAW_TELEGRAMS" in result.output
 
-    @patch("xp.cli.commands.conbus.conbus_raw_commands.ConbusRawService")
-    def test_conbus_raw_service_exception(self, mock_service_class):
+    def test_conbus_raw_service_exception(self):
         """Test conbus raw command when service raises exception."""
         # Mock the service to raise an exception
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -143,7 +161,14 @@ class TestConbusRawIntegration:
 
         mock_service.send_raw_telegrams.side_effect = ConbusRawError("Service error")
 
-        result = self.runner.invoke(cli, ["conbus", "raw", "<S2113010000F02D12>"])
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
+        result = self.runner.invoke(
+            cli, ["conbus", "raw", "<S2113010000F02D12>"],
+            obj={"container": mock_container}
+        )
 
         # The CLI should handle the exception gracefully
         assert result.exit_code != 0 or "Service error" in result.output

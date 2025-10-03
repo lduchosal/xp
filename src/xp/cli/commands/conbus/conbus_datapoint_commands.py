@@ -57,9 +57,10 @@ conbus_datapoint.add_command(query_datapoint)
 
 @conbus_datapoint.command("all", short_help="Query all datapoints from a module")
 @click.argument("serial_number", type=SERIAL)
+@click.pass_context
 @connection_command()
 @handle_service_errors(ConbusDatapointError)
-def query_all_datapoints(serial_number: str) -> None:
+def query_all_datapoints(ctx: Context, serial_number: str) -> None:
     """
     Query all datapoints from a specific module.
 
@@ -68,7 +69,7 @@ def query_all_datapoints(serial_number: str) -> None:
     \b
         xp conbus datapoint all 0123450001
     """
-    service = ConbusDatapointService()
+    service = ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
 
     with service:
         response = service.query_all_datapoints(serial_number=serial_number)

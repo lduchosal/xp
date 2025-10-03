@@ -58,7 +58,7 @@ def load_api_config() -> dict[str, Any]:
     return config
 
 
-def create_app(container: ServiceContainer | None = None) -> FastAPI:
+def create_app(container: ServiceContainer) -> FastAPI:
     """Create and configure the FastAPI application.
 
     Args:
@@ -84,9 +84,6 @@ def create_app(container: ServiceContainer | None = None) -> FastAPI:
     )
 
     # Initialize service container
-    if container is None:
-        config_path = os.getenv("XP_CONFIG_PATH", "cli.yml")
-        container = ServiceContainer(config_path=config_path)
     fastapi.state.container = container
 
     # Include routers
@@ -111,21 +108,3 @@ def create_app(container: ServiceContainer | None = None) -> FastAPI:
 
     logger.info(f"FastAPI application created: {config['title']} v{config['version']}")
     return fastapi
-
-
-# Create the application instance
-app = create_app()
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    # Development server configuration
-    host = os.getenv("API_HOST", "127.0.0.1")
-    port = int(os.getenv("API_PORT", "8000"))
-    reload = os.getenv("API_RELOAD", "true").lower() == "true"
-
-    logger.info(f"Starting development server on {host}:{port}")
-    uvicorn.run(
-        "xp.api.main:app", host=host, port=port, reload=reload, log_level="info"
-    )
