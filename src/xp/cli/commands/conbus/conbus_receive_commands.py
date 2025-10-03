@@ -38,8 +38,7 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
         xp conbus receive 5.0
     """
     # Get service from container
-    container = ctx.obj.get("container")
-    service = container.get_container().resolve(ConbusReceiveService)
+    service = ctx.obj.get("container").get_container().resolve(ConbusReceiveService)
 
     try:
         with service:

@@ -3,6 +3,7 @@
 import json
 
 import click
+from click import Context
 
 from xp.cli.commands.conbus.conbus import conbus_autoreport
 from xp.cli.utils.decorators import (
@@ -20,7 +21,8 @@ from xp.services.conbus.conbus_autoreport_service import (
 @click.argument("serial_number", type=SERIAL)
 @connection_command()
 @handle_service_errors(ConbusAutoreportError)
-def get_autoreport_command(serial_number: str) -> None:
+@click.pass_context
+def get_autoreport_command(ctx: Context, serial_number: str) -> None:
     """
     Get the current auto report status for a specific module.
 
@@ -31,7 +33,8 @@ def get_autoreport_command(serial_number: str) -> None:
     \b
         xp conbus autoreport get 0123450001
     """
-    service = ConbusAutoreportService()
+    # Get service from container
+    service = ctx.obj.get("container").get_container().resolve(ConbusAutoreportService)
 
     with service:
         response = service.get_autoreport_status(serial_number)
@@ -43,7 +46,8 @@ def get_autoreport_command(serial_number: str) -> None:
 @click.argument("status", type=click.Choice(["on", "off"], case_sensitive=False))
 @connection_command()
 @handle_service_errors(ConbusAutoreportError)
-def set_autoreport_command(serial_number: str, status: str) -> None:
+@click.pass_context
+def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> None:
     """
     Set the auto report status for a specific module.
 
@@ -56,7 +60,8 @@ def set_autoreport_command(serial_number: str, status: str) -> None:
         xp conbus autoreport set 0123450001 on
         xp conbus autoreport set 0123450001 off
     """
-    service = ConbusAutoreportService()
+    # Get service from container
+    service = ctx.obj.get("container").get_container().resolve(ConbusAutoreportService)
     status_bool = status.lower() == "on"
 
     with service:

@@ -1,11 +1,13 @@
 """Integration tests for Conbus auto report functionality"""
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from click.testing import CliRunner
 
 from xp.cli.main import cli
 from xp.models.conbus.conbus_autoreport import ConbusAutoreportResponse
+from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.models.telegram.system_function import SystemFunction
 from xp.services.conbus.conbus_autoreport_service import (
     ConbusAutoreportError,
     ConbusAutoreportService,
@@ -79,13 +81,11 @@ class TestConbusAutoreportIntegration:
 
         return mock_response
 
-    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
-    def test_conbus_autoreport_get_valid_serial(self, mock_service_class):
+    def test_conbus_autoreport_get_valid_serial(self):
         """Test getting auto report status with valid serial number"""
 
         # Mock successful response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -96,9 +96,17 @@ class TestConbusAutoreportIntegration:
         )
         mock_service.get_autoreport_status.return_value = mock_response
 
-        # Run CLI command
+        # Mock container
+        mock_container_instance = Mock()
+        mock_container_instance.resolve.return_value = mock_service
+        mock_container = Mock()
+        mock_container.get_container.return_value = mock_container_instance
+
+        # Run CLI command with mocked container
         result = self.runner.invoke(
-            cli, ["conbus", "autoreport", "get", self.valid_serial]
+            cli,
+            ["conbus", "autoreport", "get", self.valid_serial],
+            obj={"container": mock_container},
         )
 
         # Assertions
@@ -108,13 +116,11 @@ class TestConbusAutoreportIntegration:
         assert '"auto_report_status": "AA"' in result.output
         mock_service.get_autoreport_status.assert_called_once_with(self.valid_serial)
 
-    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
-    def test_conbus_autoreport_set_on_valid_serial(self, mock_service_class):
+    def test_conbus_autoreport_set_on_valid_serial(self):
         """Test setting auto report status to ON with valid serial"""
 
         # Mock successful response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -126,9 +132,17 @@ class TestConbusAutoreportIntegration:
         )
         mock_service.set_autoreport_status.return_value = mock_response
 
-        # Run CLI command
+        # Mock container
+        mock_container_instance = Mock()
+        mock_container_instance.resolve.return_value = mock_service
+        mock_container = Mock()
+        mock_container.get_container.return_value = mock_container_instance
+
+        # Run CLI command with mocked container
         result = self.runner.invoke(
-            cli, ["conbus", "autoreport", "set", self.valid_serial, "on"]
+            cli,
+            ["conbus", "autoreport", "set", self.valid_serial, "on"],
+            obj={"container": mock_container},
         )
 
         # Assertions
@@ -140,13 +154,11 @@ class TestConbusAutoreportIntegration:
             self.valid_serial, True
         )
 
-    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
-    def test_conbus_autoreport_set_off_valid_serial(self, mock_service_class):
+    def test_conbus_autoreport_set_off_valid_serial(self):
         """Test setting auto report status to OFF with valid serial"""
 
         # Mock successful response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -158,9 +170,17 @@ class TestConbusAutoreportIntegration:
         )
         mock_service.set_autoreport_status.return_value = mock_response
 
-        # Run CLI command
+        # Mock container
+        mock_container_instance = Mock()
+        mock_container_instance.resolve.return_value = mock_service
+        mock_container = Mock()
+        mock_container.get_container.return_value = mock_container_instance
+
+        # Run CLI command with mocked container
         result = self.runner.invoke(
-            cli, ["conbus", "autoreport", "set", self.valid_serial, "off"]
+            cli,
+            ["conbus", "autoreport", "set", self.valid_serial, "off"],
+            obj={"container": mock_container},
         )
 
         # Assertions
@@ -172,13 +192,11 @@ class TestConbusAutoreportIntegration:
             self.valid_serial, False
         )
 
-    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
-    def test_conbus_autoreport_invalid_serial(self, mock_service_class):
+    def test_conbus_autoreport_invalid_serial(self):
         """Test with invalid serial number"""
 
         # Mock service that raises error
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -186,22 +204,28 @@ class TestConbusAutoreportIntegration:
             "Invalid serial number"
         )
 
-        # Run CLI command
+        # Mock container
+        mock_container_instance = Mock()
+        mock_container_instance.resolve.return_value = mock_service
+        mock_container = Mock()
+        mock_container.get_container.return_value = mock_container_instance
+
+        # Run CLI command with mocked container
         result = self.runner.invoke(
-            cli, ["conbus", "autoreport", "get", self.invalid_serial]
+            cli,
+            ["conbus", "autoreport", "get", self.invalid_serial],
+            obj={"container": mock_container},
         )
 
         # Should handle the error gracefully
         assert result.exit_code != 0
         assert "Invalid serial number" in result.output or "Error" in result.output
 
-    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
-    def test_conbus_autoreport_connection_error(self, mock_service_class):
+    def test_conbus_autoreport_connection_error(self):
         """Test handling network connection failures"""
 
         # Mock service that raises connection error
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -209,22 +233,28 @@ class TestConbusAutoreportIntegration:
             "Connection failed"
         )
 
-        # Run CLI command
+        # Mock container
+        mock_container_instance = Mock()
+        mock_container_instance.resolve.return_value = mock_service
+        mock_container = Mock()
+        mock_container.get_container.return_value = mock_container_instance
+
+        # Run CLI command with mocked container
         result = self.runner.invoke(
-            cli, ["conbus", "autoreport", "get", self.valid_serial]
+            cli,
+            ["conbus", "autoreport", "get", self.valid_serial],
+            obj={"container": mock_container},
         )
 
         # Should handle the error gracefully
         assert "Connection failed" in result.output or "Error" in result.output
         assert result.exit_code != 0
 
-    @patch("xp.cli.commands.conbus.conbus_autoreport_commands.ConbusAutoreportService")
-    def test_conbus_autoreport_invalid_response(self, mock_service_class):
+    def test_conbus_autoreport_invalid_response(self):
         """Test handling invalid responses from the server"""
 
         # Mock service with failed response
         mock_service = Mock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -235,9 +265,17 @@ class TestConbusAutoreportIntegration:
         )
         mock_service.get_autoreport_status.return_value = mock_response
 
-        # Run CLI command
+        # Mock container
+        mock_container_instance = Mock()
+        mock_container_instance.resolve.return_value = mock_service
+        mock_container = Mock()
+        mock_container.get_container.return_value = mock_container_instance
+
+        # Run CLI command with mocked container
         result = self.runner.invoke(
-            cli, ["conbus", "autoreport", "get", self.valid_serial]
+            cli,
+            ["conbus", "autoreport", "get", self.valid_serial],
+            obj={"container": mock_container},
         )
 
         # Should return the failed response
@@ -253,13 +291,11 @@ class TestConbusAutoreportService:
         """Set up test fixtures"""
         self.valid_serial = "0123450001"
 
-    @patch("xp.services.conbus.conbus_autoreport_service.ConbusDatapointService")
-    def test_get_autoreport_status_success(self, mock_datapoint_service_class):
+    def test_get_autoreport_status_success(self):
         """Test successful getting of auto report status"""
 
         # Mock datapoint service
         mock_datapoint_service = Mock()
-        mock_datapoint_service_class.return_value = mock_datapoint_service
 
         # Create mock datapoint response
         mock_datapoint_response = Mock()
@@ -272,8 +308,16 @@ class TestConbusAutoreportService:
 
         mock_datapoint_service.query_datapoint.return_value = mock_datapoint_response
 
+        # Mock other required services
+        mock_conbus_service = Mock()
+        mock_telegram_service = Mock()
+
         # Test the service
-        result = ConbusAutoreportService().get_autoreport_status(self.valid_serial)
+        result = ConbusAutoreportService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            telegram_service=mock_telegram_service,
+        ).get_autoreport_status(self.valid_serial)
 
         # Assertions
         assert result.success is True
@@ -288,13 +332,11 @@ class TestConbusAutoreportService:
             DataPointType.AUTO_REPORT_STATUS, self.valid_serial
         )
 
-    @patch("xp.services.conbus.conbus_autoreport_service.ConbusService")
-    def test_set_autoreport_status_on_success(self, mock_conbus_service_class):
+    def test_set_autoreport_status_on_success(self):
         """Test successful setting of auto report status to ON"""
 
         # Mock conbus service
         mock_conbus_service = Mock()
-        mock_conbus_service_class.return_value = mock_conbus_service
         mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_service)
         mock_conbus_service.__exit__ = Mock(return_value=None)
 
@@ -307,10 +349,21 @@ class TestConbusAutoreportService:
 
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
+        # Mock other required services
+        mock_datapoint_service = Mock()
+
+        # Mock telegram service to parse ACK correctly
+        mock_telegram_service = Mock()
+        mock_reply_telegram = Mock(spec=ReplyTelegram)
+        mock_reply_telegram.system_function = SystemFunction.ACK
+        mock_telegram_service.parse_telegram.return_value = mock_reply_telegram
+
         # Test the service
-        result = ConbusAutoreportService().set_autoreport_status(
-            self.valid_serial, True
-        )
+        result = ConbusAutoreportService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            telegram_service=mock_telegram_service,
+        ).set_autoreport_status(self.valid_serial, True)
 
         # Assertions
         assert result.success is True
@@ -324,13 +377,11 @@ class TestConbusAutoreportService:
         sent_telegram = mock_conbus_service.send_raw_telegram.call_args[0][0]
         assert "F04E21PP" in sent_telegram  # Should contain PP for ON
 
-    @patch("xp.services.conbus.conbus_autoreport_service.ConbusService")
-    def test_set_autoreport_status_off_success(self, mock_conbus_service_class):
+    def test_set_autoreport_status_off_success(self):
         """Test successful setting of auto report status to OFF"""
 
         # Mock conbus service
         mock_conbus_service = Mock()
-        mock_conbus_service_class.return_value = mock_conbus_service
         mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_service)
         mock_conbus_service.__exit__ = Mock(return_value=None)
 
@@ -343,10 +394,21 @@ class TestConbusAutoreportService:
 
         mock_conbus_service.send_raw_telegram.return_value = mock_response
 
+        # Mock other required services
+        mock_datapoint_service = Mock()
+
+        # Mock telegram service to parse ACK correctly
+        mock_telegram_service = Mock()
+        mock_reply_telegram = Mock(spec=ReplyTelegram)
+        mock_reply_telegram.system_function = SystemFunction.ACK
+        mock_telegram_service.parse_telegram.return_value = mock_reply_telegram
+
         # Test the service
-        result = ConbusAutoreportService().set_autoreport_status(
-            self.valid_serial, False
-        )
+        result = ConbusAutoreportService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            telegram_service=mock_telegram_service,
+        ).set_autoreport_status(self.valid_serial, False)
 
         # Assertions
         assert result.success is True
@@ -362,7 +424,16 @@ class TestConbusAutoreportService:
 
     def test_service_context_manager(self):
         """Test service can be used as context manager"""
-        service = ConbusAutoreportService("test.yml")
+        # Mock required services
+        mock_conbus_service = Mock()
+        mock_datapoint_service = Mock()
+        mock_telegram_service = Mock()
+
+        service = ConbusAutoreportService(
+            conbus_service=mock_conbus_service,
+            datapoint_service=mock_datapoint_service,
+            telegram_service=mock_telegram_service,
+        )
 
         with service as s:
             assert s is service

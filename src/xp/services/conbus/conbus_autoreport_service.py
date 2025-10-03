@@ -32,19 +32,16 @@ class ConbusAutoreportService:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
-        conbus_service: Optional[ConbusService] = None,
-        datapoint_service: Optional[ConbusDatapointService] = None,
-        telegram_service: Optional[TelegramService] = None,
+        conbus_service: ConbusService,
+        datapoint_service: ConbusDatapointService,
+        telegram_service: TelegramService,
     ):
         """Initialize the Conbus auto report service"""
 
-        # Service dependencies - support both DI and direct instantiation
-        self.conbus_service = conbus_service or ConbusService(config_path)
-        self.datapoint_service = datapoint_service or ConbusDatapointService(
-            config_path
-        )
-        self.telegram_service = telegram_service or TelegramService()
+        # Service dependencies
+        self.conbus_service = conbus_service
+        self.datapoint_service = datapoint_service
+        self.telegram_service = telegram_service
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

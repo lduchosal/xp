@@ -183,7 +183,6 @@ class ServiceContainer:
         self.container.register(
             ConbusAutoreportService,
             factory=lambda: ConbusAutoreportService(
-                config_path=self._config_path,
                 conbus_service=self.container.resolve(ConbusService),
                 datapoint_service=self.container.resolve(ConbusDatapointService),
                 telegram_service=self.container.resolve(TelegramService),
