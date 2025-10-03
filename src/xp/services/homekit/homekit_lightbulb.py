@@ -7,6 +7,8 @@ from pyhap.const import CATEGORY_LIGHTBULB
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.telegram.action_type import ActionType
+from xp.models.telegram.datapoint_type import DataPointType
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 
@@ -17,6 +19,7 @@ class LightBulb(Accessory):
     category = CATEGORY_LIGHTBULB
     output_service = ConbusOutputService()
     telegram_output_service = TelegramOutputService()
+    datapoint_service = ConbusDatapointService()
 
     accessory: HomekitAccessoryConfig
     module: ConsonModuleConfig
@@ -50,6 +53,19 @@ class LightBulb(Accessory):
             "On", getter_callback=self.get_on, setter_callback=self.set_on
         )
 
+    def available(self) -> bool:
+        self.logger.debug("available")
+        response = self.datapoint_service.query_datapoint(
+            datapoint_type=DataPointType.ERROR_CODE,
+            serial_number=self.module.serial_number,
+        )
+        self.logger.debug(f"result: {response}")
+        if response.datapoint_telegram is not None:
+            return response.datapoint_telegram.data_value == "00"
+
+        return False
+
+
     def set_on(self, value: bool) -> None:
         # Emit event using PyDispatcher
         self.logger.debug(f"set_on: {bool}")
@@ -66,11 +82,17 @@ class LightBulb(Accessory):
         response = self.output_service.get_output_state(
             serial_number=self.module.serial_number,
         )
-        self.logger.debug(f"result: {response}")
-        if response.received_telegrams:
-            result = self.telegram_output_service.parse_status_response(
-                response.received_telegrams[0]
-            )
-            return result[3 - self.accessory.output_number]
+        if not response.success or not response.datapoint_telegram:
+            self.logger.debug(f"result: {response}")
+            return False
 
-        return False
+        data_value = response.datapoint_telegram.data_value
+        raw_telegram = response.datapoint_telegram.raw_telegram
+
+        self.logger.debug(f"result: {data_value}, output_number: {self.accessory.output_number}")
+        result = self.telegram_output_service.parse_status_response(
+            raw_telegram
+        )
+        is_on = result[self.accessory.output_number]
+        self.logger.debug(f" is_on: {is_on}")
+        return is_on

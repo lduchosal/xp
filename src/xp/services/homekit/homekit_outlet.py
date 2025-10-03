@@ -8,6 +8,7 @@ from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.telegram.action_type import ActionType
 from xp.services.conbus.conbus_output_service import ConbusOutputService
+from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 
 
@@ -15,6 +16,7 @@ class Outlet(Accessory):
     """Fake lightbulb, logs what the client sets."""
 
     category = CATEGORY_OUTLET
+    cache_service = HomeKitCacheService()
     output_service = ConbusOutputService()
     telegram_output_service = TelegramOutputService()
 
@@ -66,7 +68,7 @@ class Outlet(Accessory):
 
     def get_outlet_in_use(self) -> bool:
         # Emit event and get response
-        self.logger.debug("get_on")
+        self.logger.debug("get_outlet_in_use")
         response = self.output_service.get_output_state(
             serial_number=self.module.serial_number,
         )
@@ -75,7 +77,7 @@ class Outlet(Accessory):
             result = self.telegram_output_service.parse_status_response(
                 response.received_telegrams[0]
             )
-            return result[3 - self.accessory.output_number]
+            return result[self.accessory.output_number]
 
         return False
 
@@ -94,11 +96,17 @@ class Outlet(Accessory):
         response = self.output_service.get_output_state(
             serial_number=self.module.serial_number,
         )
-        self.logger.debug(f"result: {response}")
-        if response.received_telegrams:
-            result = self.telegram_output_service.parse_status_response(
-                response.received_telegrams[0]
-            )
-            return result[3 - self.accessory.output_number]
+        if not response.success or not response.datapoint_telegram:
+            self.logger.debug(f"result: {response}")
+            return False
 
-        return False
+        data_value = response.datapoint_telegram.data_value
+        raw_telegram = response.datapoint_telegram.raw_telegram
+
+        self.logger.debug(f"result: {data_value}, output_number: {self.accessory.output_number}")
+        result = self.telegram_output_service.parse_status_response(
+            raw_telegram
+        )
+        is_on = result[self.accessory.output_number]
+        self.logger.debug(f" is_on: {is_on}")
+        return is_on

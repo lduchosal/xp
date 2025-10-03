@@ -248,8 +248,7 @@ class TelegramOutputService:
         except ValueError as e:
             raise XPOutputError(f"Invalid values in XP24 action telegram: {e}")
 
-    @staticmethod
-    def parse_status_response(raw_telegram: str) -> Dict[int, bool]:
+    def parse_status_response(self, raw_telegram: str) -> list[bool]:
         """
         Parse XP24 status response telegram to extract output states.
 
@@ -266,18 +265,23 @@ class TelegramOutputService:
             raise XPOutputError("Empty status response telegram")
 
         # Look for status pattern in reply telegram
-        status_match = re.search(r"F02D12xxxx(\d{4})", raw_telegram)
-        if not status_match:
-            raise XPOutputError(f"Invalid status response format: {raw_telegram}")
+        reply_telegram = self.telegram_service.parse_reply_telegram(raw_telegram)
+        if not reply_telegram or not reply_telegram.data_value:
+            raise XPOutputError("Not a reply telegram")
 
-        status_bits = status_match.group(1)
+        if not reply_telegram.datapoint_type or not reply_telegram.datapoint_type == DataPointType.MODULE_OUTPUT_STATE:
+            raise XPOutputError("Not a DataPoint telegram")
+
+        status_bits = reply_telegram.data_value
+        status_bits = status_bits.replace("xxxx", "")
+        status_bits = status_bits[::-1]
+        status_bits = status_bits[0:4]
         if len(status_bits) != 4:
-            raise XPOutputError(f"Invalid status bits length: {status_bits}")
+            raise XPOutputError("Not a module_output_state telegram")
 
-        # Map each bit to output state
-        status = {}
+        status = [False, False, False, False]
         for i in range(4):
-            status[3 - i] = status_bits[i] == "1"
+            status[i] = status_bits[i] == "1"
 
         return status
 

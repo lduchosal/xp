@@ -22,7 +22,7 @@ from xp.services.telegram.telegram_version_service import VersionService
 from xp.models.telegram.datapoint_type import DataPointType
 
 
-def demo_basic_parsing():
+def demo_basic_parsing() -> None:
     """Demonstrate basic telegram parsing"""
     print("=== Basic Telegram Parsing Demo ===\n")
 
@@ -47,7 +47,7 @@ def demo_basic_parsing():
             print(f"Error parsing {telegram_str}: {e}")
             print("-" * 50)
 
-def demo_validation():
+def demo_validation() -> None:
     """Demonstrate telegram validation"""
     print("\n=== Telegram Validation Demo ===\n")
 
@@ -70,7 +70,7 @@ def demo_validation():
             print(f"{'✗ INVALID':25} | {description:25} | {telegram_str}")
 
 
-def demo_input_types():
+def demo_input_types() -> None:
     """Demonstrate different input types"""
     print("\n=== Input Type Classification Demo ===\n")
 
@@ -97,7 +97,7 @@ def demo_input_types():
             print(f"{'ERROR':<8} | {'N/A':<16} | {description:<20} | {telegram_str}")
 
 
-def demo_module_types():
+def demo_module_types() -> None:
     """Demonstrate module type functionality"""
     print("\n=== Module Type Functionality Demo ===\n")
 
@@ -152,7 +152,7 @@ def demo_module_types():
     print()
 
 
-def demo_enhanced_telegram_parsing():
+def demo_enhanced_telegram_parsing() -> None:
     """Demonstrate enhanced telegram parsing with module information"""
     print("\n=== Enhanced Telegram Parsing Demo ===\n")
 
@@ -191,7 +191,7 @@ def demo_enhanced_telegram_parsing():
             print("-" * 65)
 
 
-def demo_version_parsing():
+def demo_version_parsing() -> None:
     """Demonstrate version telegram parsing functionality"""
     print("\n=== Version Parsing Demo ===\n")
 
@@ -349,7 +349,7 @@ def demo_version_parsing():
         print(f"Error in version service demo: {e}")
 
 
-def demo_version_edge_cases():
+def demo_version_edge_cases() -> None:
     """Demonstrate version parsing edge cases and error handling"""
     print("\n=== Version Parsing Edge Cases ===\n")
 
@@ -439,21 +439,21 @@ if __name__ == "__main__":
     print("\n" + "=" * 70)
     print("Demo completed! Try running the CLI:")
     print("\n--- Event Telegram Commands ---")
-    print("python -m xp.cli.main telegram parse '<E14L00I02MAK>'")
+    print("python -m xp.cli telegram parse '<E14L00I02MAK>'")
     print(
-        "python -m xp.cli.main telegram parse-multiple 'Data <E14L00I02MAK> more <E14L01I03BB1>'"
+        "python -m xp.cli telegram parse-multiple 'Data <E14L00I02MAK> more <E14L01I03BB1>'"
     )
-    print("python -m xp.cli.main telegram validate '<E14L00I02MAK>'")
+    print("python -m xp.cli telegram validate '<E14L00I02MAK>'")
     print("\n--- Version Commands ---")
-    print("python -m xp.cli.main version request 0012345011")
-    print("python -m xp.cli.main version parse '<R0012345011F02D02XP230_V1.00.04FI>'")
-    print("python -m xp.cli.main telegram parse '<S0012345011F02D02FM>'")
+    print("python -m xp.cli version request 0012345011")
+    print("python -m xp.cli version parse '<R0012345011F02D02XP230_V1.00.04FI>'")
+    print("python -m xp.cli telegram parse '<S0012345011F02D02FM>'")
     print("\n--- System & Reply Telegram Commands ---")
-    print("python -m xp.cli.main telegram parse '<S0012345011F02D02FM>'")
-    print("python -m xp.cli.main telegram parse '<R0012345011F02D18+26.0§CIL>'")
-    print("python -m xp.cli.main telegram parse '<R0012345011F02D02XP230_V1.00.04FI>'")
+    print("python -m xp.cli telegram parse '<S0012345011F02D02FM>'")
+    print("python -m xp.cli telegram parse '<R0012345011F02D18+26.0§CIL>'")
+    print("python -m xp.cli telegram parse '<R0012345011F02D02XP230_V1.00.04FI>'")
     print("\n--- Module Type Commands ---")
-    print("python -m xp.cli.main module info 14")
-    print("python -m xp.cli.main module list --group-by-category")
-    print("python -m xp.cli.main module search 'push button'")
-    print("python -m xp.cli.main module categories")
+    print("python -m xp.cli module info 14")
+    print("python -m xp.cli module list --group-by-category")
+    print("python -m xp.cli module search 'push button'")
+    print("python -m xp.cli module categories")

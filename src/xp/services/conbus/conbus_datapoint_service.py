@@ -60,8 +60,7 @@ class ConbusDatapointService:
         ):
             telegram = response.received_telegrams[0]
             try:
-                parsed_telegram = self.telegram_service.parse_reply_telegram(telegram)
-                datapoint_telegram = parsed_telegram
+                datapoint_telegram = self.telegram_service.parse_reply_telegram(telegram)
             except TelegramParsingError as e:
                 self.logger.debug(f"Not a reply telegram {e}")
 

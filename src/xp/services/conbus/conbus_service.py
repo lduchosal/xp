@@ -19,6 +19,7 @@ from xp.models import (
     ConbusRequest,
     ConbusResponse,
 )
+from xp.models.conbus.cli_config import CliConfig
 from xp.models.response import Response
 from xp.models.telegram.system_function import SystemFunction
 from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
@@ -61,14 +62,10 @@ class ConbusService:
         try:
             if Path(self.config_path).exists():
                 with Path(self.config_path).open("r") as file:
-                    config_data = yaml.safe_load(file)
-                    conbus_config = config_data.get("conbus", {})
-
-                    self.config.ip = conbus_config.get("ip", self.config.ip)
-                    self.config.port = conbus_config.get("port", self.config.port)
-                    self.config.timeout = conbus_config.get(
-                        "timeout", self.config.timeout
-                    )
+                    cli_config = CliConfig.from_yaml(self.config_path)
+                    self.config.ip = cli_config.conbus.ip
+                    self.config.port = cli_config.conbus.port
+                    self.config.timeout = cli_config.conbus.timeout
 
                     self.logger.info(f"Loaded configuration from {self.config_path}")
             else:

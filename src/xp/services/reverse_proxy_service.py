@@ -12,8 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional
 
-import yaml
-
+from xp.models.conbus.cli_config import CliConfig
 from xp.models.response import Response
 
 
@@ -56,19 +55,13 @@ class ReverseProxyService:
         """Load target server configuration from cli.yml"""
         try:
             if Path(self.config_path).exists():
-                with Path(self.config_path).open("r") as file:
-                    config = yaml.safe_load(file)
-                    conbus_config = config.get("conbus", {})
-
-                    self.target_ip = conbus_config.get("ip", self.target_ip)
-                    self.target_port = conbus_config.get("port", self.target_port)
-                    self.target_timeout = conbus_config.get(
-                        "timeout", self.target_timeout
-                    )
-
-                    self.logger.info(
-                        f"Loaded target server config: {self.target_ip}:{self.target_port}"
-                    )
+                cli_config = CliConfig.from_yaml(self.config_path)
+                self.target_ip = cli_config.conbus.ip
+                self.target_port = cli_config.conbus.port
+                self.target_timeout = cli_config.conbus.timeout
+                self.logger.info(
+                    f"Loaded target server config: {self.target_ip}:{self.target_port}"
+                )
             else:
                 self.logger.warning(
                     f"Config file {self.config_path} not found, using defaults"

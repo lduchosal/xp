@@ -138,21 +138,20 @@ class TestXP24ActionService:
         """Test parse_status_response with valid response."""
         result = self.service.parse_status_response("<R0012345008F02D12xxxx1110FJ>")
 
-        expected = {0: False, 1: True, 2: True, 3: True}
+        expected = [False, True, True, True]
         assert result == expected
 
     def test_parse_status_response_all_on(self):
         """Test parse_status_response with all inputs ON."""
         result = self.service.parse_status_response("<R0012345008F02D12xxxx1111FJ>")
 
-        expected = {0: True, 1: True, 2: True, 3: True}
+        expected = [True, True, True, True]
         assert result == expected
 
     def test_parse_status_response_all_off(self):
         """Test parse_status_response with all inputs OFF."""
         result = self.service.parse_status_response("<R0012345008F02D12xxxx0000FJ>")
-
-        expected = {0: False, 1: False, 2: False, 3: False}
+        expected = [False, False, False, False]
         assert result == expected
 
     def test_parse_status_response_empty(self):
@@ -162,12 +161,12 @@ class TestXP24ActionService:
 
     def test_parse_status_response_invalid_format(self):
         """Test parse_status_response with invalid format."""
-        with pytest.raises(XPOutputError, match="Invalid status response format"):
+        with pytest.raises(XPOutputError, match="Not a DataPoint telegram"):
             self.service.parse_status_response("<R0012345008F18DFA>")  # ACK telegram
 
     def test_parse_status_response_invalid_bits_length(self):
         """Test parse_status_response with invalid status bits length."""
-        with pytest.raises(XPOutputError, match="Invalid status response format"):
+        with pytest.raises(XPOutputError, match="Not a module_output_state telegram"):
             self.service.parse_status_response(
                 "<R0012345008F02D12xxxx111FJ>"
             )  # Only 3 bits

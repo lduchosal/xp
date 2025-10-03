@@ -13,7 +13,7 @@ from xp.services.homekit.homekit_config_validator import (
     CrossReferenceValidator,
     HomekitConfigValidator,
 )
-from xp.services.homekit.homekit_conson_config_service import ConsonConfigValidator
+from xp.services.homekit.homekit_conson_validator import ConsonConfigValidator
 
 
 class TestHomekitConfigValidator:

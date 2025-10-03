@@ -1,0 +1,168 @@
+digraph ServiceDependencies {
+    // Graph settings
+    rankdir=LR;
+    node [shape=box, style=filled, fillcolor=lightblue];
+
+    // Core infrastructure layer
+    subgraph cluster_core {
+        label="Core Infrastructure";
+        style=filled;
+        fillcolor=lightgray;
+
+        ConbusConnectionPool [fillcolor=orange];
+    }
+
+    // Conbus services layer
+    subgraph cluster_conbus {
+        label="Conbus Services";
+        style=filled;
+        fillcolor=lightyellow;
+
+        ConbusService [fillcolor=yellow];
+        ConbusDatapointService;
+        ConbusOutputService;
+        ConbusScanService;
+        ConbusDiscoverService;
+        ConbusBlinkService;
+        ConbusLightlevelService;
+    }
+
+    // Telegram services layer
+    subgraph cluster_telegram {
+        label="Telegram Services";
+        style=filled;
+        fillcolor=lightcyan;
+
+        TelegramService [fillcolor=orange];
+        TelegramOutputService;
+        TelegramDiscoverService;
+        TelegramBlinkService;
+    }
+
+    // ActionTable services layer
+    subgraph cluster_actiontable {
+        label="ActionTable Services";
+        style=filled;
+        fillcolor=lightpink;
+
+        ActionTableService;
+        MsActionTableService;
+    }
+
+    // HomeKit services layer
+    subgraph cluster_homekit {
+        label="HomeKit Services";
+        style=filled;
+        fillcolor=lightgreen;
+
+        HomekitService;
+        HomekitModuleService;
+        HomeKitCacheService;
+    }
+
+    // Server services layer
+    subgraph cluster_server {
+        label="Server Services";
+        style=filled;
+        fillcolor=wheat;
+
+        ServerService;
+        BaseServerService;
+        XP20ServerService;
+        XP24ServerService;
+        XP33ServerService;
+        XP130ServerService;
+        XP230ServerService;
+        CP20ServerService;
+    }
+
+    // Other services
+    ReverseProxyService [fillcolor=plum];
+
+    // Core dependencies
+    ConbusService -> ConbusConnectionPool;
+
+    // ConbusDatapointService dependencies
+    ConbusDatapointService -> ConbusService;
+    ConbusDatapointService -> TelegramService;
+
+    // ConbusOutputService dependencies
+    ConbusOutputService -> ConbusService;
+    ConbusOutputService -> ConbusDatapointService;
+    ConbusOutputService -> TelegramService;
+    ConbusOutputService -> TelegramOutputService;
+
+    // ConbusScanService dependencies
+    ConbusScanService -> ConbusService;
+    ConbusScanService -> TelegramService;
+
+    // ConbusDiscoverService dependencies
+    ConbusDiscoverService -> ConbusService;
+    ConbusDiscoverService -> TelegramService;
+    ConbusDiscoverService -> TelegramDiscoverService;
+
+    // ConbusBlinkService dependencies
+    ConbusBlinkService -> ConbusService;
+    ConbusBlinkService -> ConbusDiscoverService;
+    ConbusBlinkService -> TelegramService;
+    ConbusBlinkService -> TelegramBlinkService;
+
+    // ConbusLightlevelService dependencies
+    ConbusLightlevelService -> ConbusService;
+    ConbusLightlevelService -> ConbusDatapointService;
+    ConbusLightlevelService -> TelegramService;
+
+    // ActionTableService dependencies
+    ActionTableService -> ConbusService;
+    ActionTableService -> TelegramService;
+
+    // MsActionTableService dependencies
+    MsActionTableService -> ConbusService;
+    MsActionTableService -> TelegramService;
+
+    // HomeKitCacheService dependencies
+    HomeKitCacheService -> ConbusOutputService;
+    HomeKitCacheService -> ConbusLightlevelService;
+    HomeKitCacheService -> TelegramService;
+
+    // HomekitService dependencies
+    HomekitService -> HomekitModuleService;
+
+    // ServerService dependencies
+    ServerService -> TelegramService;
+    ServerService -> TelegramDiscoverService;
+    ServerService -> BaseServerService [style=dashed, label="creates"];
+    ServerService -> XP20ServerService [style=dashed, label="creates"];
+    ServerService -> XP24ServerService [style=dashed, label="creates"];
+    ServerService -> XP33ServerService [style=dashed, label="creates"];
+    ServerService -> XP130ServerService [style=dashed, label="creates"];
+    ServerService -> XP230ServerService [style=dashed, label="creates"];
+    ServerService -> CP20ServerService [style=dashed, label="creates"];
+
+    // Server inheritance (all server services extend BaseServerService)
+    XP20ServerService -> BaseServerService [style=dotted, label="extends"];
+    XP24ServerService -> BaseServerService [style=dotted, label="extends"];
+    XP33ServerService -> BaseServerService [style=dotted, label="extends"];
+    XP130ServerService -> BaseServerService [style=dotted, label="extends"];
+    XP230ServerService -> BaseServerService [style=dotted, label="extends"];
+    CP20ServerService -> BaseServerService [style=dotted, label="extends"];
+
+    // TelegramOutputService dependencies
+    TelegramOutputService -> TelegramService;
+
+    // Legend
+    subgraph cluster_legend {
+        label="Legend";
+        style=filled;
+        fillcolor=white;
+
+        node [shape=plaintext];
+        edge [style=solid];
+        legend1 [label="Solid = Direct Dependency"];
+        legend2 [label="Dashed = Factory/Creates"];
+        legend3 [label="Dotted = Inheritance"];
+
+        legend1 -> legend2 [style=invis];
+        legend2 -> legend3 [style=invis];
+    }
+}

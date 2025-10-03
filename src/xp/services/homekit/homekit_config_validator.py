@@ -2,7 +2,7 @@ from contextlib import suppress
 from typing import List, Set
 
 from xp.models.homekit.homekit_config import HomekitConfig
-from xp.services.homekit.homekit_conson_config_service import ConsonConfigValidator
+from xp.services.homekit.homekit_conson_validator import ConsonConfigValidator
 
 
 class HomekitConfigValidator:
