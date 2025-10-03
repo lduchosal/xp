@@ -1,6 +1,6 @@
 # Refactoring: implement IoC
 
-For each service in the list below:
+For each service in the list dev/service_refactor.txt
 
 ## Service Refactoring Steps
 
@@ -27,44 +27,40 @@ For each service in the list below:
 
 5. **Validate**
    - Run `./publish.sh --quality` until all checks pass
-   - Mark service as complete below
+   - Remove the service from dev/service_refactor.txt
 
-## Service list
+## Example Pattern
 
+**Before:**
+```python
+def __init__(
+    self,
+    config_path: str = "cli.yml",
+    conbus_service: Optional[ConbusService] = None,
+):
+    self.conbus_service = conbus_service or ConbusService(config_path)
+```
 
-[ ] ActionTableService
-[ ] MsActionTableService
-[ ] ConbusAutoreportService
-[ ] ConbusBlinkService
-[ ] ConbusCustomService
-[ ] ConbusDatapointService
-[ ] ConbusDiscoverService
-[ ] ConbusLightlevelService
-[ ] ConbusLinknumberService
-[ ] ConbusOutputService
-[ ] ConbusRawService
-[ ] ConbusReceiveService
-[ ] ConbusScanService
-[ ] ConbusService
-[ ] HomeKitCacheService
-[ ] HomekitModuleService
-[ ] HomekitService
-[ ] LogFileService
-[ ] ModuleTypeService
-[ ] ReverseProxyService
-[ ] BaseServerService
-[ ] CP20ServerService
-[ ] ServerService
-[ ] XP130ServerService
-[ ] XP20ServerService
-[ ] XP230ServerService
-[ ] XP24ServerService
-[ ] XP33ServerService
-[ ] TelegramBlinkService
-[ ] TelegramChecksumService
-[ ] DeviceInfo
-[ ] TelegramDiscoverService
-[ ] LinkNumberService
-[ ] TelegramOutputService
-[ ] TelegramService
-[ ] VersionService
+**After:**
+```python
+def __init__(
+    self,
+    conbus_service: ConbusService,
+    datapoint_service: ConbusDatapointService,
+):
+    self.conbus_service = conbus_service
+    self.datapoint_service = datapoint_service
+```
+
+**CLI Before:**
+```python
+def command():
+    service = ServiceName()
+```
+
+**CLI After:**
+```python
+@click.pass_context
+def command(ctx: Context):
+    service = ctx.obj.get("container").get_container().resolve(ServiceName)
+```
