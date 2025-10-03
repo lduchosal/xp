@@ -327,8 +327,8 @@ conbus:
             proxy = ReverseProxyService(config_path=temp_config.name, listen_port=19004)
 
             # Should load config but connections will fail
-            assert proxy.target_ip == "999.999.999.999"
-            assert proxy.target_port == 99999
+            assert proxy.cli_config.conbus.ip == "999.999.999.999"
+            assert proxy.cli_config.conbus.port == 99999
 
         finally:
             Path(temp_config.name).unlink()

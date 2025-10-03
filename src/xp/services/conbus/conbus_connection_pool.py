@@ -91,10 +91,12 @@ class ConbusConnectionPool:
 
         self._config = config
         self._connection_manager = ConbusSocketConnectionManager(
-            config.ip, config.port, config.timeout
+            config.conbus.ip, config.conbus.port, config.conbus.timeout
         )
 
-        self.logger.info(f"Initialized connection pool for {config.ip}:{config.port}")
+        self.logger.info(
+            f"Initialized connection pool for {config.conbus.ip}:{config.conbus.port}"
+        )
 
     def _is_connection_expired(self) -> bool:
         """Check if the current connection has expired"""

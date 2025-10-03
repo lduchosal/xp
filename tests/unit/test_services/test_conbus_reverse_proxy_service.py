@@ -64,9 +64,9 @@ conbus:
         service = ReverseProxyService(config_path="nonexistent.yml")
 
         # Should use defaults
-        assert service.target_ip == "127.0.0.1"
-        assert service.target_port == 10001
-        assert service.target_timeout == 0.1
+        assert service.cli_config.conbus.ip == "127.0.0.1"
+        assert service.cli_config.conbus.port == 10001
+        assert service.cli_config.conbus.timeout == 0.1
 
     def test_load_config_invalid_yaml(self):
         """Test configuration loading with invalid YAML"""

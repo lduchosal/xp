@@ -27,14 +27,23 @@ class ConbusLinknumberService:
     datapoint queries.
     """
 
-    def __init__(self, config_path: str = "cli.yml"):
+    def __init__(
+        self,
+        config_path: str = "cli.yml",
+        conbus_service: Optional[ConbusService] = None,
+        datapoint_service: Optional[ConbusDatapointService] = None,
+        link_number_service: Optional[LinkNumberService] = None,
+        telegram_service: Optional[TelegramService] = None,
+    ):
         """Initialize the Conbus link number service"""
 
-        # Service dependencies
-        self.conbus_service = ConbusService(config_path)
-        self.datapoint_service = ConbusDatapointService(config_path)
-        self.link_number_service = LinkNumberService()
-        self.telegram_service = TelegramService()
+        # Service dependencies - support both DI and direct instantiation
+        self.conbus_service = conbus_service or ConbusService(config_path)
+        self.datapoint_service = datapoint_service or ConbusDatapointService(
+            config_path
+        )
+        self.link_number_service = link_number_service or LinkNumberService()
+        self.telegram_service = telegram_service or TelegramService()
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

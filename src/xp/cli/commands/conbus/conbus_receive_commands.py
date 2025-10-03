@@ -1,6 +1,7 @@
 """Conbus receive telegrams CLI commands."""
 
 import click
+from click import Context
 
 from xp.cli.commands.conbus.conbus import conbus
 from xp.cli.utils.decorators import (
@@ -18,7 +19,8 @@ from xp.services.conbus.conbus_receive_service import (
 @click.argument("timeout", type=click.FLOAT, default=2.0)
 @connection_command()
 @handle_service_errors(ConbusReceiveError)
-def receive_telegrams(timeout: float) -> None:
+@click.pass_context
+def receive_telegrams(ctx: Context, timeout: float) -> None:
     """
     Receive waiting event telegrams from Conbus server.
 
@@ -35,7 +37,9 @@ def receive_telegrams(timeout: float) -> None:
         xp conbus receive
         xp conbus receive 5.0
     """
-    service = ConbusReceiveService()
+    # Get service from container
+    container = ctx.obj.get("container")
+    service = container.get_container().resolve(ConbusReceiveService)
 
     try:
         with service:

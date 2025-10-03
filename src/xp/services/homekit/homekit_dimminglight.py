@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from pyhap.accessory import Accessory
 from pyhap.accessory_driver import AccessoryDriver
@@ -13,21 +14,20 @@ class DimmingLight(Accessory):
     """Fake lightbulb, logs what the client sets."""
 
     category = CATEGORY_LIGHTBULB
-    lightlevel_service = ConbusLightlevelService()
-    accessory: HomekitAccessoryConfig
-    module: ConsonModuleConfig
 
     def __init__(
         self,
         driver: AccessoryDriver,
         module: ConsonModuleConfig,
         accessory: HomekitAccessoryConfig,
+        lightlevel_service: Optional[ConbusLightlevelService] = None,
     ):
         super().__init__(driver, accessory.description)
 
         self.logger = logging.getLogger(__name__)
         self.accessory = accessory
         self.module = module
+        self.lightlevel_service = lightlevel_service or ConbusLightlevelService()
 
         self.logger.info(
             "Creating DimmingLight { serial_number : %s, output_number: %s }",

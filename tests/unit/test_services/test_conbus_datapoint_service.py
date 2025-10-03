@@ -52,18 +52,18 @@ class TestServiceInitialization(TestConbusService):
         non_existent_config = str(tmp_path / "non_existent.yml")
         service = ConbusService(config_path=non_existent_config)
 
-        assert service.config.ip == "192.168.1.100"
-        assert service.config.port == 10001
-        assert service.config.timeout == 0.1
+        assert service.client_config.conbus.ip == "192.168.1.100"
+        assert service.client_config.conbus.port == 10001
+        assert service.client_config.conbus.timeout == 0.1
 
     def test_nonexistent_config_file(self):
         """Test handling of non-existent config file"""
         service = ConbusService(config_path="nonexistent.yml")
 
         # Should use defaults when config file doesn't exist
-        assert service.config.ip == "192.168.1.100"
-        assert service.config.port == 10001
-        assert service.config.timeout == 0.1
+        assert service.client_config.conbus.ip == "192.168.1.100"
+        assert service.client_config.conbus.port == 10001
+        assert service.client_config.conbus.timeout == 0.1
 
 
 class TestConnectionManagement(TestConbusService):

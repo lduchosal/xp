@@ -25,18 +25,32 @@ class HomeKitCacheService:
     """
 
     def __init__(
-        self, config_path: str = "cli.yml", cache_file: str = ".homekit_cache.json"
+        self,
+        config_path: str = "cli.yml",
+        cache_file: str = ".homekit_cache.json",
+        conbus_output_service: Optional[ConbusOutputService] = None,
+        conbus_lightlevel_service: Optional[ConbusLightlevelService] = None,
+        telegram_service: Optional[TelegramService] = None,
     ):
         """Initialize the HomeKit cache service.
 
         Args:
             config_path: Path to configuration file for ConBus service
             cache_file: Custom cache file path (defaults to ~/.homekit_cache.json)
+            conbus_output_service: Optional ConbusOutputService for dependency injection
+            conbus_lightlevel_service: Optional ConbusLightlevelService for dependency injection
+            telegram_service: Optional TelegramService for dependency injection
         """
         self.logger = logging.getLogger(__name__)
-        self.conbus_output_service = ConbusOutputService(config_path)
-        self.conbus_lightlevel_service = ConbusLightlevelService(config_path)
-        self.telegram_service = TelegramService()
+
+        # Service dependencies - support both DI and direct instantiation
+        self.conbus_output_service = conbus_output_service or ConbusOutputService(
+            config_path
+        )
+        self.conbus_lightlevel_service = (
+            conbus_lightlevel_service or ConbusLightlevelService(config_path)
+        )
+        self.telegram_service = telegram_service or TelegramService()
         self.cache_file = Path(cache_file)
 
         # In-memory cache storage

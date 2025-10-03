@@ -23,9 +23,13 @@ class ConbusRawService:
     Handles parsing and sending of raw telegram strings without validation.
     """
 
-    def __init__(self, config_path: str = "cli.yml"):
+    def __init__(
+        self,
+        config_path: str = "cli.yml",
+        conbus_service: Optional[ConbusService] = None,
+    ):
         """Initialize the Conbus raw service"""
-        self.conbus_service = ConbusService(config_path)
+        self.conbus_service = conbus_service or ConbusService(config_path)
         self.logger = logging.getLogger(__name__)
 
     def send_raw_telegrams(self, raw_input: str) -> ConbusRawResponse:

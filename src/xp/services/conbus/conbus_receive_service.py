@@ -25,9 +25,12 @@ class ConbusReceiveService:
     for collecting waiting event telegrams from the server.
     """
 
-    def __init__(self, config_path: str = "cli.yml"):
+    def __init__(
+        self,
+        conbus_service: ConbusService,
+    ):
         """Initialize the Conbus receive service"""
-        self.conbus_service = ConbusService(config_path)
+        self.conbus_service = conbus_service
         self.logger = logging.getLogger(__name__)
 
     def receive_telegrams(self, timeout: float = 2.0) -> ConbusReceiveResponse:

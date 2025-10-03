@@ -5,6 +5,7 @@ from xp.models import (
     ConbusConnectionStatus,
     ConbusDatapointResponse,
 )
+from xp.models.conbus.conbus_client_config import ClientConfig
 
 
 class TestTelegramType:
@@ -16,21 +17,21 @@ class TestConbusClientConfig:
 
     def test_default_config(self):
         """Test default configuration values"""
-        config = ConbusClientConfig()
+        config = ConbusClientConfig().conbus
         assert config.ip == "192.168.1.100"
         assert config.port == 10001
         assert config.timeout == 0.1
 
     def test_custom_config(self):
         """Test custom configuration values"""
-        config = ConbusClientConfig(ip="10.0.0.1", port=8080, timeout=30)
+        config = ClientConfig(ip="10.0.0.1", port=8080, timeout=30)
         assert config.ip == "10.0.0.1"
         assert config.port == 8080
         assert config.timeout == 30
 
     def test_to_dict(self):
         """Test conversion to dictionary"""
-        result = ConbusClientConfig(ip="192.168.1.50", port=9000, timeout=15).to_dict()
+        result = ClientConfig(ip="192.168.1.50", port=9000, timeout=15).to_dict()
 
         expected = {"ip": "192.168.1.50", "port": 9000, "timeout": 15}
         assert result == expected
@@ -135,7 +136,7 @@ class TestModelIntegration:
     def test_full_workflow_data_models(self):
         """Test complete workflow with all data models"""
         # Create config
-        config = ConbusClientConfig(ip="192.168.1.200", port=10002, timeout=20)
+        config = ConbusClientConfig().conbus
 
         # Create successful response
         response = ConbusDatapointResponse(

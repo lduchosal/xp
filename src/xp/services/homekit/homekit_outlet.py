@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from pyhap.accessory import Accessory
 from pyhap.accessory_driver import AccessoryDriver
@@ -16,24 +17,26 @@ class Outlet(Accessory):
     """Fake lightbulb, logs what the client sets."""
 
     category = CATEGORY_OUTLET
-    cache_service = HomeKitCacheService()
-    output_service = ConbusOutputService()
-    telegram_output_service = TelegramOutputService()
-
-    accessory: HomekitAccessoryConfig
-    module: ConsonModuleConfig
 
     def __init__(
         self,
         driver: AccessoryDriver,
         module: ConsonModuleConfig,
         accessory: HomekitAccessoryConfig,
+        cache_service: Optional[HomeKitCacheService] = None,
+        output_service: Optional[ConbusOutputService] = None,
+        telegram_output_service: Optional[TelegramOutputService] = None,
     ):
         super().__init__(driver=driver, display_name=accessory.description)
 
         self.logger = logging.getLogger(__name__)
         self.accessory = accessory
         self.module = module
+        self.cache_service = cache_service or HomeKitCacheService()
+        self.output_service = output_service or ConbusOutputService()
+        self.telegram_output_service = (
+            telegram_output_service or TelegramOutputService()
+        )
 
         self.logger.info(
             "Creating Outlet { serial_number : %s, output_number: %s }",

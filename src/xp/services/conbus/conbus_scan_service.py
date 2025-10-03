@@ -30,12 +30,23 @@ class ConbusScanService:
     and processes server responses.
     """
 
-    def __init__(self, config_path: str = "cli.yml"):
-        """Initialize the Conbus client send service"""
+    def __init__(
+        self,
+        config_path: str = "cli.yml",
+        telegram_service: Optional[TelegramService] = None,
+        conbus_service: Optional[ConbusService] = None,
+    ):
+        """Initialize the Conbus client send service
 
-        # Service dependencies
-        self.telegram_service = TelegramService()
-        self.conbus_service = ConbusService(config_path)
+        Args:
+            config_path: Path to configuration file
+            telegram_service: Optional TelegramService for dependency injection
+            conbus_service: Optional ConbusService for dependency injection
+        """
+
+        # Service dependencies - support both DI and direct instantiation
+        self.telegram_service = telegram_service or TelegramService()
+        self.conbus_service = conbus_service or ConbusService(config_path)
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

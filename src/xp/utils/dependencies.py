@@ -4,12 +4,17 @@ import punq
 
 from xp.services.conbus.actiontable.actiontable_service import ActionTableService
 from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
+from xp.services.conbus.conbus_autoreport_service import ConbusAutoreportService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
 from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
+from xp.services.conbus.conbus_custom_service import ConbusCustomService
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
 from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
+from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
+from xp.services.conbus.conbus_raw_service import ConbusRawService
+from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
@@ -19,6 +24,7 @@ from xp.services.reverse_proxy_service import ReverseProxyService
 from xp.services.server.server_service import ServerService
 from xp.services.telegram.telegram_blink_service import TelegramBlinkService
 from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
+from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
 
@@ -76,6 +82,7 @@ class ServiceContainer:
         self.container.register(TelegramOutputService, scope=punq.Scope.singleton)
         self.container.register(TelegramDiscoverService, scope=punq.Scope.singleton)
         self.container.register(TelegramBlinkService, scope=punq.Scope.singleton)
+        self.container.register(LinkNumberService, scope=punq.Scope.singleton)
 
         # ConbusService - depends on ConbusConnectionPool
         self.container.register(
@@ -87,69 +94,172 @@ class ServiceContainer:
         # Conbus services layer
         self.container.register(
             ConbusDatapointService,
-            factory=lambda: ConbusDatapointService(self._config_path),
+            factory=lambda: ConbusDatapointService(
+                config_path=self._config_path,
+                telegram_service=self.container.resolve(TelegramService),
+                conbus_service=self.container.resolve(ConbusService),
+            ),
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             ConbusScanService,
-            factory=lambda: ConbusScanService(self._config_path),
+            factory=lambda: ConbusScanService(
+                config_path=self._config_path,
+                telegram_service=self.container.resolve(TelegramService),
+                conbus_service=self.container.resolve(ConbusService),
+            ),
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             ConbusDiscoverService,
-            factory=lambda: ConbusDiscoverService(self._config_path),
+            factory=lambda: ConbusDiscoverService(
+                config_path=self._config_path,
+                telegram_service=self.container.resolve(TelegramService),
+                telegram_discover_service=self.container.resolve(
+                    TelegramDiscoverService
+                ),
+                conbus_service=self.container.resolve(ConbusService),
+            ),
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             ConbusBlinkService,
-            factory=lambda: ConbusBlinkService(self._config_path),
+            factory=lambda: ConbusBlinkService(
+                config_path=self._config_path,
+                conbus_service=self.container.resolve(ConbusService),
+                discover_service=self.container.resolve(ConbusDiscoverService),
+                telegram_blink_service=self.container.resolve(TelegramBlinkService),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             ConbusOutputService,
-            factory=lambda: ConbusOutputService(self._config_path),
+            factory=lambda: ConbusOutputService(
+                config_path=self._config_path,
+                telegram_service=self.container.resolve(TelegramService),
+                telegram_output_service=self.container.resolve(TelegramOutputService),
+                datapoint_service=self.container.resolve(ConbusDatapointService),
+                conbus_service=self.container.resolve(ConbusService),
+            ),
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             ConbusLightlevelService,
-            factory=lambda: ConbusLightlevelService(self._config_path),
+            factory=lambda: ConbusLightlevelService(
+                config_path=self._config_path,
+                telegram_service=self.container.resolve(TelegramService),
+                conbus_service=self.container.resolve(ConbusService),
+                datapoint_service=self.container.resolve(ConbusDatapointService),
+            ),
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             ActionTableService,
-            factory=lambda: ActionTableService(self._config_path),
+            factory=lambda: ActionTableService(
+                config_path=self._config_path,
+                conbus_service=self.container.resolve(ConbusService),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             MsActionTableService,
-            factory=lambda: MsActionTableService(self._config_path),
+            factory=lambda: MsActionTableService(
+                config_path=self._config_path,
+                conbus_service=self.container.resolve(ConbusService),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusAutoreportService,
+            factory=lambda: ConbusAutoreportService(
+                config_path=self._config_path,
+                conbus_service=self.container.resolve(ConbusService),
+                datapoint_service=self.container.resolve(ConbusDatapointService),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusLinknumberService,
+            factory=lambda: ConbusLinknumberService(
+                config_path=self._config_path,
+                conbus_service=self.container.resolve(ConbusService),
+                datapoint_service=self.container.resolve(ConbusDatapointService),
+                link_number_service=self.container.resolve(LinkNumberService),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusCustomService,
+            factory=lambda: ConbusCustomService(
+                config_path=self._config_path,
+                telegram_service=self.container.resolve(TelegramService),
+                conbus_service=self.container.resolve(ConbusService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusRawService,
+            factory=lambda: ConbusRawService(
+                config_path=self._config_path,
+                conbus_service=self.container.resolve(ConbusService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusReceiveService,
+            factory=lambda: ConbusReceiveService(
+                conbus_service=self.container.resolve(ConbusService),
+            ),
             scope=punq.Scope.singleton,
         )
 
         # HomeKit services layer
         self.container.register(
             HomekitModuleService,
-            factory=lambda: HomekitModuleService(self._conson_config_path),
+            factory=lambda: HomekitModuleService(
+                conson_modules_config=None,
+                config_path=self._conson_config_path,
+            ),
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             HomeKitCacheService,
-            factory=lambda: HomeKitCacheService(self._config_path, self._cache_file),
+            factory=lambda: HomeKitCacheService(
+                config_path=self._config_path,
+                cache_file=self._cache_file,
+                conbus_output_service=self.container.resolve(ConbusOutputService),
+                conbus_lightlevel_service=self.container.resolve(
+                    ConbusLightlevelService
+                ),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             HomekitService,
             factory=lambda: HomekitService(
-                self._homekit_config_path, self._conson_config_path
+                homekit_config_path=self._homekit_config_path,
+                conson_config_path=self._conson_config_path,
+                module_service=self.container.resolve(HomekitModuleService),
             ),
             scope=punq.Scope.singleton,
         )
@@ -157,7 +267,12 @@ class ServiceContainer:
         # Server services layer
         self.container.register(
             ServerService,
-            factory=lambda: ServerService(self._config_path, self._server_port),
+            factory=lambda: ServerService(
+                config_path="server.yml",
+                port=self._server_port,
+                telegram_service=self.container.resolve(TelegramService),
+                discover_service=self.container.resolve(TelegramDiscoverService),
+            ),
             scope=punq.Scope.singleton,
         )
 
@@ -165,7 +280,8 @@ class ServiceContainer:
         self.container.register(
             ReverseProxyService,
             factory=lambda: ReverseProxyService(
-                self._config_path, self._reverse_proxy_port
+                config_path=self._config_path,
+                listen_port=self._reverse_proxy_port,
             ),
             scope=punq.Scope.singleton,
         )

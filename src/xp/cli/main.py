@@ -19,13 +19,15 @@ from xp.cli.commands.server.server_commands import server
 # Import command groups from modular structure
 from xp.cli.commands.telegram.telegram_parse_commands import telegram
 from xp.cli.utils.click_tree import add_tree_command
+from xp.utils.dependencies import ServiceContainer
 
 
 @click.group(
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 @click.version_option()
-def cli() -> None:
+@click.pass_context
+def cli(ctx: click.Context) -> None:
     """XP CLI tool for remote console bus operations"""
     logging.basicConfig(level=logging.DEBUG)
     # Suppress pyhap.hap_protocol logs
@@ -33,7 +35,11 @@ def cli() -> None:
     logging.getLogger("pyhap.hap_handler").setLevel(logging.WARNING)
     # logging.getLogger('pyhap.accessory_driver').setLevel(logging.WARNING)
 
-    pass
+    # Initialize the service container and store it in the context
+    ctx.ensure_object(dict)
+    # Only create a new container if one doesn't already exist (for testing)
+    if "container" not in ctx.obj:
+        ctx.obj["container"] = ServiceContainer()
 
 
 # Register all command groups

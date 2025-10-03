@@ -39,7 +39,13 @@ class ServerService:
     parses Discover Request telegrams, and coordinates device responses.
     """
 
-    def __init__(self, config_path: str = "server.yml", port: int = 10001):
+    def __init__(
+        self,
+        config_path: str = "server.yml",
+        port: int = 10001,
+        telegram_service: Optional[TelegramService] = None,
+        discover_service: Optional[TelegramDiscoverService] = None,
+    ):
         """Initialize the Conbus server service"""
         self.config_path = config_path
         self.port = port
@@ -55,8 +61,10 @@ class ServerService:
                 XP130ServerService,
             ],
         ] = {}  # serial -> device service instance
-        self.telegram_service = TelegramService()
-        self.discover_service = TelegramDiscoverService()
+
+        # Service dependencies - support both DI and direct instantiation
+        self.telegram_service = telegram_service or TelegramService()
+        self.discover_service = discover_service or TelegramDiscoverService()
 
         # Set up logging
         self.logger = logging.getLogger(__name__)

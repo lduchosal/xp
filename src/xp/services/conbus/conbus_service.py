@@ -13,12 +13,11 @@ from typing import Any, List, Optional
 from typing_extensions import Callable
 
 from xp.models import (
-    ConbusClientConfig,
     ConbusConnectionStatus,
     ConbusRequest,
     ConbusResponse,
 )
-from xp.models.conbus.cli_config import CliConfig
+from xp.models.conbus.conbus_client_config import ConbusClientConfig
 from xp.models.response import Response
 from xp.models.telegram.system_function import SystemFunction
 from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
@@ -39,10 +38,19 @@ class ConbusService:
     and processes server responses.
     """
 
-    def __init__(self, config_path: str = "cli.yml"):
-        """Initialize the Conbus client send service"""
+    def __init__(
+        self,
+        config_path: str = "cli.yml",
+        client_config: Optional[ConbusClientConfig] = None,
+    ):
+        """Initialize the Conbus client send service
+
+        Args:
+            config_path: Path to configuration file
+            client_config: Optional ConbusClientConfig for dependency injection
+        """
         self.config_path = config_path
-        self.config = ConbusClientConfig()
+        self.client_config: ConbusClientConfig = client_config or ConbusClientConfig()
         self.is_connected = False
         self.last_activity: Optional[datetime] = None
 
@@ -54,16 +62,14 @@ class ConbusService:
 
         # Initialize connection pool
         self._connection_pool = ConbusConnectionPool.get_instance()
-        self._connection_pool.initialize(self.config)
+        self._connection_pool.initialize(self.client_config)
 
     def _load_config(self) -> None:
         """Load client configuration from cli.yml"""
         try:
             if Path(self.config_path).exists():
-                cli_config = CliConfig.from_yaml(self.config_path)
-                self.config.ip = cli_config.conbus.ip
-                self.config.port = cli_config.conbus.port
-                self.config.timeout = cli_config.conbus.timeout
+                cli_config = ConbusClientConfig.from_yaml(self.config_path)
+                self.client_config = cli_config
 
                 self.logger.info(f"Loaded configuration from {self.config_path}")
             else:
@@ -75,7 +81,7 @@ class ConbusService:
 
     def get_config(self) -> ConbusClientConfig:
         """Get current client configuration"""
-        return self.config
+        return self.client_config
 
     def connect(self) -> Response:
         """Test connection using the connection pool"""
@@ -86,20 +92,20 @@ class ConbusService:
                 self.last_activity = datetime.now()
 
                 self.logger.info(
-                    f"Connection pool ready for {self.config.ip}:{self.config.port}"
+                    f"Connection pool ready for {self.client_config.conbus.ip}:{self.client_config.conbus.port}"
                 )
 
                 return Response(
                     success=True,
                     data={
-                        "message": f"Connection pool ready for {self.config.ip}:{self.config.port}",
-                        "config": self.config.to_dict(),
+                        "message": f"Connection pool ready for {self.client_config.conbus.ip}:{self.client_config.conbus.port}",
+                        "config": self.client_config.conbus.to_dict(),
                     },
                     error=None,
                 )
 
         except Exception as e:
-            error_msg = f"Failed to establish connection pool to {self.config.ip}:{self.config.port}: {e}"
+            error_msg = f"Failed to establish connection pool to {self.client_config.conbus.ip}:{self.client_config.conbus.port}: {e}"
             self.logger.error(error_msg)
             self.is_connected = False
             return Response(success=False, data=None, error=error_msg)
@@ -118,8 +124,8 @@ class ConbusService:
         """Get current connection status"""
         return ConbusConnectionStatus(
             connected=self.is_connected,
-            ip=self.config.ip,
-            port=self.config.port,
+            ip=self.client_config.conbus.ip,
+            port=self.client_config.conbus.port,
             last_activity=self.last_activity,
         )
 

@@ -4,7 +4,7 @@ Tests the complete flow from CLI input to output,
 ensuring proper integration between all layers.
 """
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from click.testing import CliRunner
 
@@ -19,12 +19,10 @@ class TestConbusReceiveIntegration:
         """Set up test runner."""
         self.runner = CliRunner()
 
-    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
-    def test_conbus_receive_single_telegram(self, mock_service_class):
+    def test_conbus_receive_single_telegram(self):
         """Test conbus receive command with single telegram response."""
         # Mock the service
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -34,18 +32,22 @@ class TestConbusReceiveIntegration:
         )
         mock_service.receive_telegrams.return_value = mock_response
 
-        result = self.runner.invoke(cli, ["conbus", "receive"])
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
+        result = self.runner.invoke(
+            cli, ["conbus", "receive"], obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         assert "<R2113010000F02D12>" in result.output
         mock_service.receive_telegrams.assert_called_once()
 
-    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
-    def test_conbus_receive_multiple_telegrams(self, mock_service_class):
+    def test_conbus_receive_multiple_telegrams(self):
         """Test conbus receive command with multiple telegram responses."""
         # Mock the service
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -61,7 +63,13 @@ class TestConbusReceiveIntegration:
         )
         mock_service.receive_telegrams.return_value = mock_response
 
-        result = self.runner.invoke(cli, ["conbus", "receive"])
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
+        result = self.runner.invoke(
+            cli, ["conbus", "receive"], obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         output_lines = result.output.strip().split("\n")
@@ -71,12 +79,10 @@ class TestConbusReceiveIntegration:
         assert "<E12L1BAK>" in output_lines
         mock_service.receive_telegrams.assert_called_once()
 
-    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
-    def test_conbus_receive_connection_error(self, mock_service_class):
+    def test_conbus_receive_connection_error(self):
         """Test conbus receive command with connection error."""
         # Mock the service
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -86,19 +92,23 @@ class TestConbusReceiveIntegration:
         )
         mock_service.receive_telegrams.return_value = mock_response
 
-        result = self.runner.invoke(cli, ["conbus", "receive"])
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
+        result = self.runner.invoke(
+            cli, ["conbus", "receive"], obj={"container": mock_container}
+        )
 
         assert (
             result.exit_code == 0
         )  # CLI doesn't exit with error code, but shows error
         assert "Error: Failed to connect to server: Connection timeout" in result.output
 
-    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
-    def test_conbus_receive_no_telegrams(self, mock_service_class):
+    def test_conbus_receive_no_telegrams(self):
         """Test conbus receive command with no waiting telegrams."""
         # Mock the service
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -106,7 +116,13 @@ class TestConbusReceiveIntegration:
         mock_response = ConbusReceiveResponse(success=True, received_telegrams=[])
         mock_service.receive_telegrams.return_value = mock_response
 
-        result = self.runner.invoke(cli, ["conbus", "receive"])
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
+        result = self.runner.invoke(
+            cli, ["conbus", "receive"], obj={"container": mock_container}
+        )
 
         assert result.exit_code == 0
         # Should have no output when no telegrams received (silent success)
@@ -122,12 +138,10 @@ class TestConbusReceiveIntegration:
         assert "Receive waiting event telegrams from Conbus server" in output
         assert "xp conbus receive" in output
 
-    @patch("xp.cli.commands.conbus.conbus_receive_commands.ConbusReceiveService")
-    def test_conbus_receive_service_exception(self, mock_service_class):
+    def test_conbus_receive_service_exception(self):
         """Test conbus receive command when service raises exception."""
         # Mock the service to raise an exception
         mock_service = MagicMock()
-        mock_service_class.return_value = mock_service
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
@@ -135,7 +149,13 @@ class TestConbusReceiveIntegration:
 
         mock_service.receive_telegrams.side_effect = ConbusReceiveError("Service error")
 
-        result = self.runner.invoke(cli, ["conbus", "receive"])
+        # Mock the container
+        mock_container = MagicMock()
+        mock_container.get_container().resolve.return_value = mock_service
+
+        result = self.runner.invoke(
+            cli, ["conbus", "receive"], obj={"container": mock_container}
+        )
 
         # The CLI should handle the exception gracefully
         assert result.exit_code != 0 or "Service error" in result.output

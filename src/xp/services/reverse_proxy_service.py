@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional
 
-from xp.models.conbus.cli_config import CliConfig
+from xp.models import ConbusClientConfig
 from xp.models.response import Response
 
 
@@ -31,8 +31,16 @@ class ReverseProxyService:
     bidirectional traffic with timestamps.
     """
 
-    def __init__(self, config_path: str = "cli.yml", listen_port: int = 10001):
+    def __init__(
+        self,
+        cli_config: Optional[ConbusClientConfig] = None,
+        listen_port: int = 10001,
+        config_path: str = "cli.yml",
+    ):
         """Initialize the Conbus reverse proxy service"""
+        # Set up logging first
+        self.logger = logging.getLogger(__name__)
+
         self.config_path = config_path
         self.listen_port = listen_port
         self.server_socket: Optional[socket.socket] = None
@@ -41,33 +49,32 @@ class ReverseProxyService:
         self.connection_counter = 0
 
         # Target server configuration
-        self.target_ip = "127.0.0.1"
-        self.target_port = 10001
-        self.target_timeout = 0.1
+        self.cli_config = cli_config or self._load_config(config_path)
 
-        # Set up logging
-        self.logger = logging.getLogger(__name__)
-
-        # Load configuration
-        self._load_config()
-
-    def _load_config(self) -> None:
-        """Load target server configuration from cli.yml"""
+    def _load_config(self, config_path: str) -> ConbusClientConfig:
+        """Load configuration from file or use defaults"""
         try:
-            if Path(self.config_path).exists():
-                cli_config = CliConfig.from_yaml(self.config_path)
-                self.target_ip = cli_config.conbus.ip
-                self.target_port = cli_config.conbus.port
-                self.target_timeout = cli_config.conbus.timeout
-                self.logger.info(
-                    f"Loaded target server config: {self.target_ip}:{self.target_port}"
-                )
-            else:
-                self.logger.warning(
-                    f"Config file {self.config_path} not found, using defaults"
-                )
+            if Path(config_path).exists():
+                return ConbusClientConfig.from_yaml(config_path)
         except Exception as e:
-            self.logger.error(f"Error loading config file: {e}")
+            self.logger.warning(f"Failed to load config from {config_path}: {e}")
+
+        # Return defaults on error
+        from xp.models.conbus.conbus_client_config import ClientConfig
+
+        return ConbusClientConfig(
+            conbus=ClientConfig(ip="127.0.0.1", port=10001, timeout=0.1)
+        )
+
+    @property
+    def target_ip(self) -> str:
+        """Get target server IP"""
+        return self.cli_config.conbus.ip
+
+    @property
+    def target_port(self) -> int:
+        """Get target server port"""
+        return self.cli_config.conbus.port
 
     def start_proxy(self) -> Response:
         """Start the reverse proxy server"""
@@ -87,11 +94,15 @@ class ReverseProxyService:
 
             self.is_running = True
             self.logger.info(f"Reverse proxy started on port {self.listen_port}")
-            self.logger.info(f"Forwarding to {self.target_ip}:{self.target_port}")
+            self.logger.info(
+                f"Forwarding to {self.cli_config.conbus.ip}:{self.cli_config.conbus.port}"
+            )
 
             # Print startup message
             print(f"Conbus Reverse Proxy started on port {self.listen_port}")
-            print(f"Forwarding telegrams to {self.target_ip}:{self.target_port}")
+            print(
+                f"Forwarding telegrams to {self.cli_config.conbus.ip}:{self.cli_config.conbus.port}"
+            )
             print("Monitoring all traffic...\n")
 
             # Start accepting connections in background thread
@@ -104,8 +115,8 @@ class ReverseProxyService:
                 success=True,
                 data={
                     "listen_port": self.listen_port,
-                    "target_ip": self.target_ip,
-                    "target_port": self.target_port,
+                    "target_ip": self.cli_config.conbus.ip,
+                    "target_port": self.cli_config.conbus.port,
                     "message": "Reverse proxy started successfully",
                 },
                 error=None,
@@ -152,8 +163,8 @@ class ReverseProxyService:
             data={
                 "running": self.is_running,
                 "listen_port": self.listen_port,
-                "target_ip": self.target_ip,
-                "target_port": self.target_port,
+                "target_ip": self.cli_config.conbus.ip,
+                "target_port": self.cli_config.conbus.port,
                 "active_connections": len(self.active_connections),
                 "connections": {
                     conn_id: {
@@ -205,8 +216,10 @@ class ReverseProxyService:
         try:
             # Connect to target server
             server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            server_socket.settimeout(self.target_timeout)
-            server_socket.connect((self.target_ip, self.target_port))
+            server_socket.settimeout(self.cli_config.conbus.timeout)
+            server_socket.connect(
+                (self.cli_config.conbus.ip, self.cli_config.conbus.port)
+            )
 
             # Store connection info
             self.active_connections[conn_id] = {
@@ -218,7 +231,7 @@ class ReverseProxyService:
             }
 
             self.logger.info(
-                f"Connected to target server {self.target_ip}:{self.target_port} [{conn_id}]"
+                f"Connected to target server {self.cli_config.conbus.ip}:{self.cli_config.conbus.port} [{conn_id}]"
             )
 
             # Set timeouts for idle connections

@@ -32,8 +32,15 @@ class HomekitService:
         self,
         homekit_config_path: str = "homekit.yml",
         conson_config_path: str = "conson.yml",
+        module_service: Optional[HomekitModuleService] = None,
     ):
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus client send service
+
+        Args:
+            homekit_config_path: Path to HomeKit configuration file
+            conson_config_path: Path to Conson configuration file
+            module_service: Optional HomekitModuleService for dependency injection
+        """
         self.last_activity: Optional[datetime] = None
 
         # Set up logging
@@ -41,7 +48,11 @@ class HomekitService:
 
         # Load configuration
         self.config = HomekitConfig.from_yaml(homekit_config_path)
-        self.modules = HomekitModuleService(conson_config_path)
+
+        # Service dependencies - support both DI and direct instantiation
+        self.modules = module_service or HomekitModuleService(
+            config_path=conson_config_path
+        )
 
         # We want SIGTERM (terminate) to be handled by the driver itself,
         # so that it can gracefully stop the accessory, server and advertising.

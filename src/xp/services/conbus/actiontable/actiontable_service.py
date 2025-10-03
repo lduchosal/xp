@@ -20,10 +20,23 @@ class ActionTableError(Exception):
 class ActionTableService:
     """Service for downloading ActionTable via Conbus"""
 
-    def __init__(self, config_path: str = "cli.yml"):
-        self.conbus_service = ConbusService(config_path)
+    def __init__(
+        self,
+        config_path: str = "cli.yml",
+        conbus_service: Optional[ConbusService] = None,
+        telegram_service: Optional[TelegramService] = None,
+    ):
+        """Initialize the ActionTable service
+
+        Args:
+            config_path: Path to configuration file
+            conbus_service: Optional ConbusService for dependency injection
+            telegram_service: Optional TelegramService for dependency injection
+        """
+        # Service dependencies - support both DI and direct instantiation
+        self.conbus_service = conbus_service or ConbusService(config_path)
         self.serializer = ActionTableSerializer()
-        self.telegram_service = TelegramService()
+        self.telegram_service = telegram_service or TelegramService()
         self.logger = logging.getLogger(__name__)
 
     def download_actiontable(self, serial_number: str) -> ActionTable:
