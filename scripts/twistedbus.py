@@ -4,6 +4,8 @@ from twisted.internet import reactor, protocol
 from twisted.internet.interfaces import IAddress, IConnector
 from twisted.python.failure import Failure
 
+from xp.utils.checksum import calculate_checksum
+
 class TelegramProtocol(protocol.Protocol):
     buffer: bytes
 
@@ -12,7 +14,7 @@ class TelegramProtocol(protocol.Protocol):
 
     def connectionMade(self) -> None:
         print("Connected to 10.0.3.26:10001")
-        self.sendFrame(b"S0000000000F01D00FA")
+        self.sendFrame(b"S0000000000F01D00")
 
     def dataReceived(self, data: bytes) -> None:
         self.buffer += data
@@ -28,18 +30,30 @@ class TelegramProtocol(protocol.Protocol):
 
             frame = self.buffer[start + 1 : end]
             self.buffer = self.buffer[end + 1 :]
+            payload = frame[:-2].decode()
+            payload_checksum = frame[-2:].decode()
+            calculated_checksum = calculate_checksum(payload)
 
-            self.frameReceived(frame)
+            if payload_checksum != calculated_checksum:
+                print(f"Invalid frame: {frame.decode()} checksum: {payload_checksum}, expected {calculated_checksum}")
+                return
+
+            self.frameReceived(frame[:-2])
 
     def frameReceived(self, frame: bytes) -> None:
+
         print(f"Received: {frame.decode()}")
 
     def sendFrame(self, data: bytes) -> None:
-        frame = b"<" + data + b">"
         print(f"Sending: {data.decode()}")
-        if self.transport:
-            self.transport.write(frame)  # type: ignore
 
+        checksum = calculate_checksum(data.decode())
+        frame_data = data.decode() + checksum
+        frame = b"<" + frame_data.encode() + b">"
+        if not self.transport:
+            print(f"Invalid transport")
+            return
+        self.transport.write(frame)  # type: ignore
 
 class TelegramFactory(protocol.ClientFactory):
     def buildProtocol(self, addr: IAddress) -> TelegramProtocol:
