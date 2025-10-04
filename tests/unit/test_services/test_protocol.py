@@ -1,10 +1,10 @@
-import pytest
-from unittest.mock import Mock, MagicMock, call
+from unittest.mock import Mock
+
+from bubus import EventBus
 from twisted.internet.interfaces import IAddress, IConnector
 from twisted.python.failure import Failure
 from twisted.test import proto_helpers
 
-from bubus import EventBus
 from xp.models.protocol.conbus_protocol import (
     ConnectionFailedEvent,
     ConnectionLostEvent,

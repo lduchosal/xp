@@ -2,7 +2,7 @@
 
 """conson-xp"""
 
-__version__ = "0.11.2"
+__version__ = "0.11.3"
 __manufacturer__ = "salchichon"
 __model__ = "xp.cli"
 __serial__ = "2025.09.23.000"
