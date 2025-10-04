@@ -12,33 +12,6 @@ from twisted.python.failure import Failure
 
 from xp.utils.checksum import calculate_checksum
 
-
-class ConnectionMadeEvent(BaseEvent):
-    """Event dispatched when TCP connection is established"""
-
-    protocol: Any = Field(description="Reference to the TelegramProtocol instance")
-
-
-class ConnectionFailedEvent(BaseEvent):
-    """Event dispatched when TCP connection fails"""
-
-    reason: str = Field(description="Failure reason")
-
-
-class ConnectionLostEvent(BaseEvent):
-    """Event dispatched when TCP connection is lost"""
-
-    reason: str = Field(description="Disconnection reason")
-
-
-class TelegramReceivedEvent(BaseEvent):
-    """Event dispatched when a telegram frame is received"""
-
-    protocol: Any = Field(description="Reference to the TelegramProtocol instance")
-    telegram: str = Field(description="The received telegram payload")
-    raw_frame: str = Field(description="The raw frame with delimiters")
-
-
 class TelegramProtocol(protocol.Protocol):
     buffer: bytes
     event_bus: EventBus
@@ -99,6 +72,50 @@ class TelegramProtocol(protocol.Protocol):
             return
         self.transport.write(frame)  # type: ignore
 
+
+class ConnectionMadeEvent(BaseEvent):
+    """Event dispatched when TCP connection is established"""
+
+    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
+
+
+class ConnectionFailedEvent(BaseEvent):
+    """Event dispatched when TCP connection fails"""
+
+    reason: str = Field(description="Failure reason")
+
+
+class ConnectionLostEvent(BaseEvent):
+    """Event dispatched when TCP connection is lost"""
+
+    reason: str = Field(description="Disconnection reason")
+
+class ModuleDiscoveredEvent(BaseEvent):
+    """Event dispatched when TCP connection is lost"""
+
+    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
+    telegram: str = Field(description="The received telegram payload")
+
+class ModuleTypeReadEvent(BaseEvent):
+    """Event dispatched when TCP connection is lost"""
+
+    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
+    telegram: str = Field(description="The received telegram payload")
+
+class ModuleErrorCodeReadEvent(BaseEvent):
+    """Event dispatched when TCP connection is lost"""
+
+    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
+    telegram: str = Field(description="The received telegram payload")
+
+class TelegramReceivedEvent(BaseEvent):
+    """Event dispatched when a telegram frame is received"""
+
+    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
+    telegram: str = Field(description="The received telegram payload")
+    raw_frame: str = Field(description="The raw frame with delimiters")
+
+
 class TelegramFactory(protocol.ClientFactory):
     def __init__(self, event_bus: EventBus) -> None:
         self.event_bus = event_bus
@@ -135,9 +152,44 @@ def handle_connection_lost(event: ConnectionLostEvent) -> None:
 def handle_telegram_received(event: TelegramReceivedEvent) -> None:
     """Handle received telegram events"""
     print(f"[Event Handler] Telegram: {event.telegram}")
-    # Can interact with protocol if needed: event.protocol.sendFrame(...)
+
+    # Check if telegram is Reply (R) with Discover function (F01D)
+    if event.telegram.startswith("R") and "F01D" in event.telegram:
+        event.event_bus.dispatch(ModuleDiscoveredEvent(telegram=event.telegram, protocol=event.protocol))
+
+    # Check if telegram is Reply (R) with Read (F02) for ModuleType (D00)
+    if event.telegram.startswith("R") and "F02D00" in event.telegram:
+        event.event_bus.dispatch(ModuleTypeReadEvent(telegram=event.telegram, protocol=event.protocol))
+
+    # Check if telegram is Reply (R) with Read (F02) for ModuleErrorCode (D10)
+    if event.telegram.startswith("R") and "F02D10" in event.telegram:
+        event.event_bus.dispatch(ModuleErrorCodeReadEvent(telegram=event.telegram, protocol=event.protocol))
 
 
+def handle_module_discovered(event: ModuleDiscoveredEvent) -> None:
+
+    # Replace R with S and F01D with F02D00
+    new_telegram = event.telegram \
+        .replace("R", "S", 1) \
+        .replace("F01D", "F02D00", 1)  # module type
+
+    print(f"[Event Handler] Sending follow-up: {new_telegram}")
+    event.protocol.sendFrame(new_telegram.encode())
+
+def handle_moduletype_read(event: ModuleTypeReadEvent) -> None:
+
+    # Replace R with S and F01D with F02D00
+    new_telegram = event.telegram \
+        .replace("R", "S", 1) \
+        .replace("F02D00", "F02D10", 1) # error code
+
+    print(f"[Event Handler] Sending follow-up: {new_telegram}")
+    event.protocol.sendFrame(new_telegram.encode())
+
+
+def handle_moduleerrorcode_read(event: ModuleTypeReadEvent) -> None:
+
+    print(f"[Event Handler] finished")
 
 if __name__ == "__main__":
     # Create event bus
@@ -148,6 +200,10 @@ if __name__ == "__main__":
     bus.on(ConnectionFailedEvent, handle_connection_failed)
     bus.on(ConnectionLostEvent, handle_connection_lost)
     bus.on(TelegramReceivedEvent, handle_telegram_received)
+    bus.on(ModuleDiscoveredEvent, handle_module_discovered)
+    bus.on(ModuleTypeReadEvent, handle_moduletype_read)
+    bus.on(ModuleErrorCodeReadEvent, handle_moduleerrorcode_read)
+
 
     # Connect to TCP server
     reactor = cast(Any, reactor)
