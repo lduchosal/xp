@@ -1,5 +1,9 @@
 from typing import cast, Any
 
+# Install asyncio reactor before importing reactor
+from twisted.internet import asyncioreactor
+asyncioreactor.install()
+
 from bubus import EventBus, BaseEvent
 from pydantic import Field
 from twisted.internet import reactor, protocol
@@ -9,15 +13,28 @@ from twisted.python.failure import Failure
 from xp.utils.checksum import calculate_checksum
 
 
-class OnConnectionMadeEvent(BaseEvent):
+class ConnectionMadeEvent(BaseEvent):
     """Event dispatched when TCP connection is established"""
 
     protocol: Any = Field(description="Reference to the TelegramProtocol instance")
 
 
+class ConnectionFailedEvent(BaseEvent):
+    """Event dispatched when TCP connection fails"""
+
+    reason: str = Field(description="Failure reason")
+
+
+class ConnectionLostEvent(BaseEvent):
+    """Event dispatched when TCP connection is lost"""
+
+    reason: str = Field(description="Disconnection reason")
+
+
 class TelegramReceivedEvent(BaseEvent):
     """Event dispatched when a telegram frame is received"""
 
+    protocol: Any = Field(description="Reference to the TelegramProtocol instance")
     telegram: str = Field(description="The received telegram payload")
     raw_frame: str = Field(description="The raw frame with delimiters")
 
@@ -32,7 +49,8 @@ class TelegramProtocol(protocol.Protocol):
 
     def connectionMade(self) -> None:
         print("Connected to 10.0.3.26:10001")
-        self.sendFrame(b"S0000000000F01D00")
+        # Dispatch connection event to event bus
+        self.event_bus.dispatch(ConnectionMadeEvent(protocol=self))
 
     def dataReceived(self, data: bytes) -> None:
         self.buffer += data
@@ -67,7 +85,7 @@ class TelegramProtocol(protocol.Protocol):
 
         # Dispatch event to bubus
         event = self.event_bus.dispatch(
-            TelegramReceivedEvent(telegram=telegram, raw_frame=raw_frame)
+            TelegramReceivedEvent(protocol=self, telegram=telegram, raw_frame=raw_frame)
         )
 
     def sendFrame(self, data: bytes) -> None:
@@ -89,19 +107,36 @@ class TelegramFactory(protocol.ClientFactory):
         return TelegramProtocol(self.event_bus)
 
     def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
-        print(f"Connection failed: {reason}")
+        self.event_bus.dispatch(ConnectionFailedEvent(reason=str(reason)))
         reactor.stop()  # type: ignore
 
     def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
-        print(f"Connection lost: {reason}")
+        self.event_bus.dispatch(ConnectionLostEvent(reason=str(reason)))
         reactor.stop()  # type: ignore
 
 
-# Example event handler
-def handle_telegram(event: TelegramReceivedEvent) -> None:
+# Event handlers
+def handle_connection_made(event: ConnectionMadeEvent) -> None:
+    """Handle connection established - send initial telegram"""
+    print("[Event Handler] Connection established, sending initial telegram")
+    event.protocol.sendFrame(b"S0000000000F01D00")
+
+
+def handle_connection_failed(event: ConnectionFailedEvent) -> None:
+    """Handle connection failed"""
+    print(f"[Event Handler] Connection failed: {event.reason}")
+
+
+def handle_connection_lost(event: ConnectionLostEvent) -> None:
+    """Handle connection lost"""
+    print(f"[Event Handler] Connection lost: {event.reason}")
+
+
+def handle_telegram_received(event: TelegramReceivedEvent) -> None:
     """Handle received telegram events"""
     print(f"[Event Handler] Telegram: {event.telegram}")
-    print(f"[Event Handler] Raw frame: {event.raw_frame}")
+    # Can interact with protocol if needed: event.protocol.sendFrame(...)
+
 
 
 if __name__ == "__main__":
@@ -109,7 +144,10 @@ if __name__ == "__main__":
     bus = EventBus()
 
     # Register event handlers
-    bus.on(TelegramReceivedEvent, handle_telegram)
+    bus.on(ConnectionMadeEvent, handle_connection_made)
+    bus.on(ConnectionFailedEvent, handle_connection_failed)
+    bus.on(ConnectionLostEvent, handle_connection_lost)
+    bus.on(TelegramReceivedEvent, handle_telegram_received)
 
     # Connect to TCP server
     reactor = cast(Any, reactor)
