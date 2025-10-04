@@ -28,7 +28,7 @@ class TestReverseProxyService:
 conbus:
   ip: 192.168.1.100
   port: 10002
-  timeout: 5
+  timeout: 5.0
 """
         )
         self.temp_config.close()

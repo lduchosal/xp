@@ -1,14 +1,15 @@
+import logging
 from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path
 from typing import List, Union
 
 import yaml
-from pydantic import BaseModel, IPvAnyAddress
+from pydantic import BaseModel, Field, IPvAnyAddress
 
 
 class NetworkConfig(BaseModel):
-    ip: Union[IPvAnyAddress, IPv4Address, IPv6Address, str]  # Validates IP addresses
-    port: int
+    ip: Union[IPvAnyAddress, IPv4Address, IPv6Address, str] = "127.0.0.1"
+    port: int = 51826
 
 
 class RoomConfig(BaseModel):
@@ -17,8 +18,8 @@ class RoomConfig(BaseModel):
 
 
 class BridgeConfig(BaseModel):
-    name: str
-    rooms: List[RoomConfig]
+    name: str = "Conson Bridge"
+    rooms: List[RoomConfig] = []
 
 
 class HomekitAccessoryConfig(BaseModel):
@@ -31,13 +32,18 @@ class HomekitAccessoryConfig(BaseModel):
 
 
 class HomekitConfig(BaseModel):
-    homekit: NetworkConfig
-    conson: NetworkConfig
-    bridge: BridgeConfig
-    accessories: List[HomekitAccessoryConfig]
+    homekit: NetworkConfig = Field(default_factory=NetworkConfig)
+    conson: NetworkConfig = Field(default_factory=NetworkConfig)
+    bridge: BridgeConfig = Field(default_factory=BridgeConfig)
+    accessories: List[HomekitAccessoryConfig] = []
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "HomekitConfig":
+        if not Path(file_path).exists():
+            logger = logging.getLogger(__name__)
+            logger.error(f"File {file_path} does not exist, loading default")
+            return cls()
+
         with Path(file_path).open("r") as file:
             data = yaml.safe_load(file)
         return cls(**data)

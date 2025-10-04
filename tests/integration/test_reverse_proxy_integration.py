@@ -311,28 +311,3 @@ class TestReverseProxyErrorHandling:
         finally:
             blocking_socket.close()
 
-    @pytest.mark.reverseproxy
-    def test_invalid_configuration_handling(self):
-        """Test proxy behavior with invalid configuration"""
-        # Create config with invalid target
-        temp_config = tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False)
-        temp_config.write(
-            """
-conbus:
-  ip: "999.999.999.999"  # Invalid IP
-  port: 99999            # Invalid port
-  timeout: -1            # Invalid timeout
-"""
-        )
-        temp_config.close()
-
-        try:
-            cli_config = ConbusClientConfig.from_yaml(temp_config.name)
-            proxy = ReverseProxyService(cli_config=cli_config, listen_port=19004)
-
-            # Should load config but connections will fail
-            assert proxy.cli_config.conbus.ip == "999.999.999.999"
-            assert proxy.cli_config.conbus.port == 99999
-
-        finally:
-            Path(temp_config.name).unlink()

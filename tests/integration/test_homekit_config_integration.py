@@ -230,11 +230,6 @@ class TestHomekitConfigIntegration:
         finally:
             self.cleanup_temp_files(conson_file, homekit_file)
 
-    def test_missing_files_integration(self):
-        """Test behavior when configuration files are missing."""
-        with pytest.raises(FileNotFoundError):
-            ConfigValidationService("nonexistent_conson.yml", "nonexistent_homekit.yml")
-
     def test_malformed_yaml_integration(self):
         """Test behavior with malformed YAML files."""
         # Create malformed conson YAML

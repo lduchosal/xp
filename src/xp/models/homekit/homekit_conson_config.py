@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import List, Optional
 
@@ -19,11 +20,16 @@ class ConsonModuleConfig(BaseModel):
 
 
 class ConsonModuleListConfig(BaseModel):
-    root: List[ConsonModuleConfig]
+    root: List[ConsonModuleConfig] = []
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "ConsonModuleListConfig":
         import yaml
+
+        if not Path(file_path).exists():
+            logger = logging.getLogger(__name__)
+            logger.error(f"File {file_path} does not exist, loading default")
+            return cls()
 
         with Path(file_path).open("r") as file:
             data = yaml.safe_load(file)

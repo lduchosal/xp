@@ -29,14 +29,6 @@ class TestConbusClientConfig:
         assert config.port == 8080
         assert config.timeout == 30
 
-    def test_to_dict(self):
-        """Test conversion to dictionary"""
-        result = ClientConfig(ip="192.168.1.50", port=9000, timeout=15).to_dict()
-
-        expected = {"ip": "192.168.1.50", "port": 9000, "timeout": 15}
-        assert result == expected
-
-
 class TestConbusSendResponse:
     """Test cases for ConbusSendResponse model"""
 

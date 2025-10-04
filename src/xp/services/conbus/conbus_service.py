@@ -77,7 +77,6 @@ class ConbusService:
                     success=True,
                     data={
                         "message": f"Connection pool ready for {self.client_config.conbus.ip}:{self.client_config.conbus.port}",
-                        "config": self.client_config.conbus.to_dict(),
                     },
                     error=None,
                 )
