@@ -34,9 +34,9 @@ done
 
 # Set total steps based on mode
 if [ "$QUALITY_ONLY" = true ]; then
-    STEPS=12
+    STEPS=13
 else
-    STEPS=19
+    STEPS=20
 fi
 STEP=0
 
@@ -100,6 +100,9 @@ run_command "pdm run install-dev" "Development dependencies installation"
 
 print_step "Checking for Outdated Dependencies (pdm outdated)"
 run_command "pdm outdated" "Outdated Dependencies"
+
+print_step "Updating Dependencies (pdm update)"
+run_command "pdm update" "Dependencies update"
 
 print_step "Type Checking (typecheck)"
 run_command "pdm run typecheck" "Type checking"
