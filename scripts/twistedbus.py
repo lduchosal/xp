@@ -191,7 +191,11 @@ def handle_moduleerrorcode_read(event: ModuleTypeReadEvent) -> None:
 
     print(f"[Event Handler] finished")
 
+
+
 if __name__ == "__main__":
+
+
     # Create event bus
     bus = EventBus()
 
