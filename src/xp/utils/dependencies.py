@@ -1,6 +1,7 @@
 """Dependency injection container for XP services."""
 
 import punq
+from bubus import EventBus
 
 from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitConfig
@@ -25,9 +26,12 @@ from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_module_service import HomekitModuleService
-from xp.services.homekit.homekit_service import HomekitService
+from xp.services.homekit.homekit_module_factory import HomekitModuleFactory
+from xp.services.homekit.homekit_service import HomeKitService
 from xp.services.log_file_service import LogFileService
 from xp.services.module_type_service import ModuleTypeService
+from xp.services.protocol.protocol_factory import TelegramFactory
+from xp.services.protocol.telegram_protocol import TelegramProtocol
 from xp.services.reverse_proxy_service import ReverseProxyService
 from xp.services.server.server_service import ServerService
 from xp.services.telegram.telegram_blink_service import TelegramBlinkService
@@ -35,6 +39,10 @@ from xp.services.telegram.telegram_discover_service import TelegramDiscoverServi
 from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
+
+from twisted.internet import asyncioreactor
+asyncioreactor.install()
+from twisted.internet import reactor
 
 
 class ServiceContainer:
@@ -289,8 +297,8 @@ class ServiceContainer:
         )
 
         self.container.register(
-            HomekitService,
-            factory=lambda: HomekitService(
+            HomekitModuleFactory,
+            factory=lambda: HomekitModuleFactory(
                 homekit_config=self.container.resolve(HomekitConfig),
                 module_service=self.container.resolve(HomekitModuleService),
                 output_service=self.container.resolve(ConbusOutputService),
@@ -332,6 +340,43 @@ class ServiceContainer:
             factory=lambda: ReverseProxyService(
                 cli_config=self.container.resolve(ConbusClientConfig),
                 listen_port=self._reverse_proxy_port,
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        # Create event bus
+        self.container.register(
+            EventBus,
+            factory=lambda: EventBus(
+                max_history_size=50
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        # Create protocol
+        self.container.register(
+            TelegramProtocol,
+            factory=lambda: TelegramProtocol(
+                event_bus=self.container.resolve(EventBus),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            TelegramFactory,
+            factory=lambda: TelegramFactory(
+                event_bus=self.container.resolve(EventBus),
+                telegram_protocol=self.container.resolve(TelegramProtocol),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            HomeKitService,
+            factory=lambda: HomeKitService(
+                event_bus=self.container.resolve(EventBus),
+                telegram_factory=self.container.resolve(TelegramFactory),
+                reactor=reactor,
             ),
             scope=punq.Scope.singleton,
         )

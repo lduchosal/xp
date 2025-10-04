@@ -1,161 +1,94 @@
-import logging
-import signal
-from datetime import datetime
-from typing import Optional
+# Install asyncio reactor before importing reactor
+from typing import cast, Any
 
-from pyhap.accessory import Accessory, Bridge
-from pyhap.accessory_driver import AccessoryDriver
-from typing_extensions import Union
+from bubus import EventBus
 
-import xp
-from xp.models.homekit.homekit_accessory import TemperatureSensor
-from xp.models.homekit.homekit_config import (
-    HomekitAccessoryConfig,
-    HomekitConfig,
-    RoomConfig,
+from xp.models.protocol.conbus_protocol import (
+    ConnectionMadeEvent,
+    ConnectionFailedEvent,
+    ConnectionLostEvent,
+    TelegramReceivedEvent,
+    ModuleDiscoveredEvent,
+    ModuleTypeReadEvent,
+    ModuleErrorCodeReadEvent
 )
-from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
-from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
-from xp.services.conbus.conbus_output_service import ConbusOutputService
-from xp.services.homekit.homekit_cache_service import HomeKitCacheService
-from xp.services.homekit.homekit_dimminglight import DimmingLight
-from xp.services.homekit.homekit_lightbulb import LightBulb
-from xp.services.homekit.homekit_module_service import HomekitModuleService
-from xp.services.homekit.homekit_outlet import Outlet
-from xp.services.telegram.telegram_output_service import TelegramOutputService
+from xp.services.protocol.protocol_factory import TelegramFactory
+from xp.services.protocol.telegram_protocol import TelegramProtocol
 
+class HomeKitService:
 
-class HomekitService:
-    """
-    HomeKit services.
+    def __init__(self, event_bus: EventBus, telegram_factory: TelegramFactory, reactor: Any):
 
-    Manages TCP socket connections, handles telegram generation and transmission,
-    and processes server responses.
-    """
+        self.reactor = reactor
+        self.telegram_factory = telegram_factory
+        self.event_bus = event_bus
 
-    def __init__(
-        self,
-        homekit_config: HomekitConfig,
-        module_service: HomekitModuleService,
-        output_service: ConbusOutputService,
-        telegram_output_service: TelegramOutputService,
-        datapoint_service: ConbusDatapointService,
-        cache_service: HomeKitCacheService,
-        lightlevel_service: ConbusLightlevelService,
-    ):
-        """Initialize the Conbus client send service
-
-        Args:
-            homekit_config: Conson configuration file
-            module_service: HomekitModuleService for dependency injection
-            output_service: ConbusOutputService for dependency injection
-            telegram_output_service: TelegramOutputService for dependency injection
-            datapoint_service: ConbusDatapointService for dependency injection
-            cache_service: HomeKitCacheService for dependency injection
-            lightlevel_service: ConbusLightlevelService for dependency injection
-        """
-        self.last_activity: Optional[datetime] = None
-
-        # Set up logging
-        self.logger = logging.getLogger(__name__)
-
-        # Load configuration
-        self.config = homekit_config
-
-        # Service dependencies
-        self.modules = module_service
-        self.output_service = output_service
-        self.telegram_output_service = telegram_output_service
-        self.datapoint_service = datapoint_service
-        self.cache_service = cache_service
-        self.lightlevel_service = lightlevel_service
-
-        # We want SIGTERM (terminate) to be handled by the driver itself,
-        # so that it can gracefully stop the accessory, server and advertising.
-        driver = AccessoryDriver(
-            port=self.config.homekit.port,
-        )
-        signal.signal(signal.SIGTERM, driver.signal_handler)
-        self.driver: AccessoryDriver = driver
+        # Register event handlers
+        event_bus.on(ConnectionMadeEvent, self.handle_connection_made)
+        event_bus.on(ConnectionFailedEvent, self.handle_connection_failed)
+        event_bus.on(ConnectionLostEvent, self.handle_connection_lost)
+        event_bus.on(TelegramReceivedEvent, self.handle_telegram_received)
+        event_bus.on(ModuleDiscoveredEvent, self.handle_module_discovered)
+        event_bus.on(ModuleTypeReadEvent, self.handle_module_type_read)
+        event_bus.on(ModuleErrorCodeReadEvent, self.handle_module_error_code_read)
 
     def run(self) -> None:
-        """Get current client configuration"""
-        self.load_accessories()
 
-        # Start it!
-        self.driver.start()
+        # Connect to TCP server
+        self.reactor.connectTCP("10.0.3.26", 10001, self.telegram_factory)
+        self.reactor.run()
 
-    def load_accessories(self) -> None:
-        bridge_config = self.config.bridge
-        bridge = Bridge(self.driver, bridge_config.name)
-        bridge.set_info_service(
-            xp.__version__, xp.__manufacturer__, xp.__model__, xp.__serial__
-        )
+    # Event handlers
+    def handle_connection_made(self, event: ConnectionMadeEvent) -> None:
+        """Handle connection established - send initial telegram"""
+        print("[connection_made] : sending initial telegram")
+        event.protocol.sendFrame(b"S0000000000F01D00")
 
-        for room in bridge_config.rooms:
-            self.add_room(bridge, room)
+    def handle_connection_failed(self, event: ConnectionFailedEvent) -> None:
+        """Handle connection failed"""
+        print(f"[connection_failed] : {event.reason}")
 
-        self.driver.add_accessory(accessory=bridge)
+    def handle_connection_lost(self, event: ConnectionLostEvent) -> None:
+        """Handle connection lost"""
+        print(f"[connection_lost] : {event.reason}")
 
-    def add_room(self, bridge: Bridge, room: RoomConfig) -> None:
-        """Call this method to get a Bridge instead of a standalone accessory."""
-        temperature = TemperatureSensor(self.driver, room.name)
-        bridge.add_accessory(temperature)
+    def handle_telegram_received(self, event: TelegramReceivedEvent) -> None:
+        """Handle received telegram events"""
+        print(f"[telegram_received] Telegram: {event.telegram}")
 
-        for accessory_name in room.accessories:
-            homekit_accessory = self.get_accessory_by_name(accessory_name)
-            if homekit_accessory is None:
-                self.logger.warning("Accessory '{}' not found".format(accessory_name))
-                continue
+        # Check if telegram is Reply (R) with Discover function (F01D)
+        if event.telegram.startswith("R") and "F01D" in event.telegram:
+            event.event_bus.dispatch(ModuleDiscoveredEvent(telegram=event.telegram, protocol=event.protocol))
 
-            accessory = self.get_accessory(homekit_accessory)
-            bridge.add_accessory(accessory)
+        # Check if telegram is Reply (R) with Read (F02) for ModuleType (D00)
+        if event.telegram.startswith("R") and "F02D00" in event.telegram:
+            event.event_bus.dispatch(ModuleTypeReadEvent(telegram=event.telegram, protocol=event.protocol))
 
-    def get_accessory(
-        self, homekit_accessory: HomekitAccessoryConfig
-    ) -> Union[Accessory, LightBulb, Outlet, None]:
-        """Call this method to get a standalone Accessory."""
-        module_config = self.modules.get_module_by_serial(
-            homekit_accessory.serial_number
-        )
-        if module_config is None:
-            self.logger.warning(
-                "Accessory '{}' not found".format(homekit_accessory.name)
-            )
-            return None
+        # Check if telegram is Reply (R) with Read (F02) for ModuleErrorCode (D10)
+        if event.telegram.startswith("R") and "F02D10" in event.telegram:
+            event.event_bus.dispatch(ModuleErrorCodeReadEvent(telegram=event.telegram, protocol=event.protocol))
 
-        if homekit_accessory.service == "lightbulb":
-            return LightBulb(
-                driver=self.driver,
-                module=module_config,
-                accessory=homekit_accessory,
-                output_service=self.output_service,
-                telegram_output_service=self.telegram_output_service,
-                datapoint_service=self.datapoint_service,
-            )
+    def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> None:
 
-        if homekit_accessory.service == "outlet":
-            return Outlet(
-                driver=self.driver,
-                module=module_config,
-                accessory=homekit_accessory,
-                cache_service=self.cache_service,
-                output_service=self.output_service,
-                telegram_output_service=self.telegram_output_service,
-            )
+        # Replace R with S and F01D with F02D00
+        new_telegram = event.telegram \
+            .replace("R", "S", 1) \
+            .replace("F01D", "F02D00", 1)  # module type
 
-        if homekit_accessory.service == "dimminglight":
-            return DimmingLight(
-                driver=self.driver,
-                module=module_config,
-                accessory=homekit_accessory,
-                lightlevel_service=self.lightlevel_service,
-            )
+        print(f"[module_discovered] Sending follow-up: {new_telegram}")
+        event.protocol.sendFrame(new_telegram.encode())
 
-        self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))
-        return None
+    def handle_module_type_read(self, event: ModuleTypeReadEvent) -> None:
 
-    def get_accessory_by_name(self, name: str) -> Optional[HomekitAccessoryConfig]:
-        return next(
-            (module for module in self.config.accessories if module.name == name), None
-        )
+        # Replace R with S and F01D with F02D00
+        new_telegram = event.telegram \
+            .replace("R", "S", 1) \
+            .replace("F02D00", "F02D10", 1)  # error code
+
+        print(f"[moduletype_read] Sending follow-up: {new_telegram}")
+        event.protocol.sendFrame(new_telegram.encode())
+
+    def handle_module_error_code_read(self, event: ModuleTypeReadEvent) -> None:
+
+        print(f"[module_error_code] finished")
+

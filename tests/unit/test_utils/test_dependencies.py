@@ -18,7 +18,7 @@ from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_module_service import HomekitModuleService
-from xp.services.homekit.homekit_service import HomekitService
+from xp.services.homekit.homekit_module_factory import HomekitModuleFactory
 from xp.services.reverse_proxy_service import ReverseProxyService
 from xp.services.server.server_service import ServerService
 from xp.services.telegram.telegram_blink_service import TelegramBlinkService
@@ -152,8 +152,8 @@ class TestServiceContainer:
 
     def test_resolve_homekit_service(self):
         """Test resolving HomekitService."""
-        service = ServiceContainer().get_container().resolve(HomekitService)
-        assert isinstance(service, HomekitService)
+        service = ServiceContainer().get_container().resolve(HomekitModuleFactory)
+        assert isinstance(service, HomekitModuleFactory)
 
     # Test resolving server services
     def test_resolve_server_service(self):
@@ -204,7 +204,7 @@ class TestServiceContainer:
             MsActionTableService,
             HomekitModuleService,
             HomeKitCacheService,
-            HomekitService,
+            HomekitModuleFactory,
             ServerService,
             ReverseProxyService,
         ],
