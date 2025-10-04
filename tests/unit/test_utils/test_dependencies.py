@@ -17,8 +17,8 @@ from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
-from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.homekit.homekit_module_factory import HomekitModuleFactory
+from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.reverse_proxy_service import ReverseProxyService
 from xp.services.server.server_service import ServerService
 from xp.services.telegram.telegram_blink_service import TelegramBlinkService

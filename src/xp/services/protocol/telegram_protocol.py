@@ -3,8 +3,13 @@ import logging
 from bubus import EventBus
 from twisted.internet import protocol
 
-from xp.models.protocol.conbus_protocol import ConnectionMadeEvent, InvalidTelegramReceivedEvent, TelegramReceivedEvent
+from xp.models.protocol.conbus_protocol import (
+    ConnectionMadeEvent,
+    InvalidTelegramReceivedEvent,
+    TelegramReceivedEvent,
+)
 from xp.utils import calculate_checksum
+
 
 class TelegramProtocol(protocol.Protocol):
     buffer: bytes
@@ -72,4 +77,3 @@ class TelegramProtocol(protocol.Protocol):
             self.logger.info("Invalid transport")
             return
         self.transport.write(frame)  # type: ignore
-

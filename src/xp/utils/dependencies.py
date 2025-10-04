@@ -2,7 +2,7 @@
 
 import punq
 from bubus import EventBus
-from twisted.internet.interfaces import IConnector
+from twisted.internet import asyncioreactor
 
 from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitConfig
@@ -26,8 +26,8 @@ from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
-from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.homekit.homekit_module_factory import HomekitModuleFactory
+from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.homekit.homekit_service import HomeKitService
 from xp.services.log_file_service import LogFileService
 from xp.services.module_type_service import ModuleTypeService
@@ -41,10 +41,8 @@ from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
 
-from twisted.internet import asyncioreactor
 asyncioreactor.install()
-from twisted.internet import reactor
-
+from twisted.internet import reactor  # noqa: E402
 
 
 class ServiceContainer:
@@ -349,9 +347,7 @@ class ServiceContainer:
         # Create event bus
         self.container.register(
             EventBus,
-            factory=lambda: EventBus(
-                max_history_size=50
-            ),
+            factory=lambda: EventBus(max_history_size=50),
             scope=punq.Scope.singleton,
         )
 
@@ -365,17 +361,10 @@ class ServiceContainer:
         )
 
         self.container.register(
-            IConnector,
-            factory=lambda: reactor,
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
             TelegramFactory,
             factory=lambda: TelegramFactory(
                 event_bus=self.container.resolve(EventBus),
                 telegram_protocol=self.container.resolve(TelegramProtocol),
-                reactor=self.container.resolve(IConnector),
             ),
             scope=punq.Scope.singleton,
         )

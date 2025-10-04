@@ -4,19 +4,22 @@ from typing import Any
 from bubus import EventBus
 
 from xp.models.protocol.conbus_protocol import (
-    ConnectionMadeEvent,
     ConnectionFailedEvent,
     ConnectionLostEvent,
-    TelegramReceivedEvent,
+    ConnectionMadeEvent,
     ModuleDiscoveredEvent,
+    ModuleErrorCodeReadEvent,
     ModuleTypeReadEvent,
-    ModuleErrorCodeReadEvent
+    TelegramReceivedEvent,
 )
 from xp.services.protocol.protocol_factory import TelegramFactory
 
+
 class HomeKitService:
 
-    def __init__(self, event_bus: EventBus, telegram_factory: TelegramFactory, reactor: Any):
+    def __init__(
+        self, event_bus: EventBus, telegram_factory: TelegramFactory, reactor: Any
+    ):
 
         self.reactor = reactor
         self.telegram_factory = telegram_factory
@@ -57,22 +60,30 @@ class HomeKitService:
 
         # Check if telegram is Reply (R) with Discover function (F01D)
         if event.telegram.startswith("R") and "F01D" in event.telegram:
-            event.event_bus.dispatch(ModuleDiscoveredEvent(telegram=event.telegram, protocol=event.protocol))
+            event.event_bus.dispatch(
+                ModuleDiscoveredEvent(telegram=event.telegram, protocol=event.protocol)
+            )
 
         # Check if telegram is Reply (R) with Read (F02) for ModuleType (D00)
         if event.telegram.startswith("R") and "F02D00" in event.telegram:
-            event.event_bus.dispatch(ModuleTypeReadEvent(telegram=event.telegram, protocol=event.protocol))
+            event.event_bus.dispatch(
+                ModuleTypeReadEvent(telegram=event.telegram, protocol=event.protocol)
+            )
 
         # Check if telegram is Reply (R) with Read (F02) for ModuleErrorCode (D10)
         if event.telegram.startswith("R") and "F02D10" in event.telegram:
-            event.event_bus.dispatch(ModuleErrorCodeReadEvent(telegram=event.telegram, protocol=event.protocol))
+            event.event_bus.dispatch(
+                ModuleErrorCodeReadEvent(
+                    telegram=event.telegram, protocol=event.protocol
+                )
+            )
 
     def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> None:
 
         # Replace R with S and F01D with F02D00
-        new_telegram = event.telegram \
-            .replace("R", "S", 1) \
-            .replace("F01D", "F02D00", 1)  # module type
+        new_telegram = event.telegram.replace("R", "S", 1).replace(
+            "F01D", "F02D00", 1
+        )  # module type
 
         print(f"[module_discovered] Sending follow-up: {new_telegram}")
         event.protocol.sendFrame(new_telegram.encode())
@@ -80,9 +91,9 @@ class HomeKitService:
     def handle_module_type_read(self, event: ModuleTypeReadEvent) -> None:
 
         # Replace R with S and F01D with F02D00
-        new_telegram = event.telegram \
-            .replace("R", "S", 1) \
-            .replace("F02D00", "F02D10", 1)  # error code
+        new_telegram = event.telegram.replace("R", "S", 1).replace(
+            "F02D00", "F02D10", 1
+        )  # error code
 
         print(f"[moduletype_read] Sending follow-up: {new_telegram}")
         event.protocol.sendFrame(new_telegram.encode())
@@ -90,4 +101,3 @@ class HomeKitService:
     def handle_module_error_code_read(self, event: ModuleTypeReadEvent) -> None:
 
         print("[module_error_code] finished")
-
