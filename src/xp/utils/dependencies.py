@@ -3,6 +3,7 @@
 import punq
 from bubus import EventBus
 from twisted.internet import asyncioreactor
+from twisted.internet.posixbase import PosixReactorBase
 
 from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitConfig
@@ -370,11 +371,17 @@ class ServiceContainer:
         )
 
         self.container.register(
+            PosixReactorBase,
+            factory=lambda: reactor,
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
             HomeKitService,
             factory=lambda: HomeKitService(
                 event_bus=self.container.resolve(EventBus),
                 telegram_factory=self.container.resolve(TelegramFactory),
-                reactor=reactor,
+                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )
