@@ -261,7 +261,7 @@ class TestConbusDatapointService:
 
         # Mock send_telegram to return success for some, failure for others
         def mock_send_telegram(datapoint_type, _serial_number):
-            if datapoint_type == DataPointType.ERROR_CODE:
+            if datapoint_type == DataPointType.MODULE_TYPE:
                 mock_reply = Mock()
                 mock_reply.data_value = "XP33LED"
 
@@ -285,5 +285,5 @@ class TestConbusDatapointService:
         assert result.success is True
         assert result.serial_number == self.valid_serial
         assert result.datapoints is not None
-        assert len(result.datapoints) == 1  # Only ERROR_CODE succeeded
-        assert result.datapoints[0] == {"ERROR_CODE": "XP33LED"}
+        assert len(result.datapoints) == 1  # Only MODULE_TYPE succeeded
+        assert result.datapoints[0] == {"MODULE_TYPE": "XP33LED"}

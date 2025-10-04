@@ -45,7 +45,7 @@ class BaseServerService(ABC):
             DataPointType.TEMPERATURE: self.temperature,
             DataPointType.MODULE_TYPE_CODE: f"{self.module_type_code:02X}",
             DataPointType.SW_VERSION: self.software_version,
-            DataPointType.ERROR_CODE: self.device_status,
+            DataPointType.MODULE_TYPE: self.device_status,
             DataPointType.LINK_NUMBER: f"{self.link_number:02X}",
             DataPointType.VOLTAGE: self.voltage,
             DataPointType.HW_VERSION: self.hardware_version,

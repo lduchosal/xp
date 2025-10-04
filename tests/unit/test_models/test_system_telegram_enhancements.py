@@ -89,7 +89,7 @@ class TestSystemTelegramEnhancements:
         ack_telegram = SystemTelegram(
             serial_number="0012345005",
             system_function=SystemFunction.ACK,
-            datapoint_type=DataPointType.ERROR_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE,
             checksum="FB",
             raw_telegram="<R0012345005F18DFB>",
         )
@@ -100,7 +100,7 @@ class TestSystemTelegramEnhancements:
         nak_telegram = SystemTelegram(
             serial_number="0012345005",
             system_function=SystemFunction.NAK,
-            datapoint_type=DataPointType.ERROR_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE,
             checksum="FA",
             raw_telegram="<R0012345005F19DFA>",
         )
@@ -194,7 +194,7 @@ class TestSystemTelegramEnhancements:
     def test_all_data_point_types_from_code(self):
         """Test that all data point types can be retrieved by code"""
         test_cases = [
-            ("00", DataPointType.ERROR_CODE),
+            ("00", DataPointType.MODULE_TYPE),
             ("04", DataPointType.LINK_NUMBER),
             ("18", DataPointType.TEMPERATURE),
             ("19", DataPointType.SW_TOP_VERSION),

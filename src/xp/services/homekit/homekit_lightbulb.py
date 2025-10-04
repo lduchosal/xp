@@ -57,7 +57,7 @@ class LightBulb(Accessory):
     def available(self) -> bool:
         self.logger.debug("available")
         response = self.datapoint_service.query_datapoint(
-            datapoint_type=DataPointType.ERROR_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE,
             serial_number=self.module.serial_number,
         )
         self.logger.debug(f"result: {response}")

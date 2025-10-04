@@ -46,7 +46,7 @@ class ReplyTelegram(Telegram):
             return self._parse_voltage_value()
         elif self.datapoint_type == DataPointType.MODULE_ENERGY_LEVEL:
             return self._parse_current_value()
-        elif self.datapoint_type == DataPointType.ERROR_CODE:
+        elif self.datapoint_type == DataPointType.MODULE_TYPE:
             return self._parse_module_type_value()
         elif self.datapoint_type == DataPointType.SW_VERSION:
             return self._parse_sw_version_value()

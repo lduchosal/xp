@@ -50,7 +50,7 @@ class TestDataPointType:
         assert DataPointType.from_code("19") == DataPointType.SW_TOP_VERSION
         assert DataPointType.from_code("20") == DataPointType.VOLTAGE
         assert DataPointType.from_code("17") == DataPointType.MODULE_ENERGY_LEVEL
-        assert DataPointType.from_code("00") == DataPointType.ERROR_CODE
+        assert DataPointType.from_code("00") == DataPointType.MODULE_TYPE
         assert DataPointType.from_code("02") == DataPointType.SW_VERSION
         assert DataPointType.from_code("04") == DataPointType.LINK_NUMBER
         assert DataPointType.from_code("07") == DataPointType.MODULE_TYPE_CODE
@@ -72,7 +72,7 @@ class TestDataPointType:
         assert DataPointType.SW_TOP_VERSION.value == "19"
         assert DataPointType.VOLTAGE.value == "20"
         assert DataPointType.MODULE_ENERGY_LEVEL.value == "17"
-        assert DataPointType.ERROR_CODE.value == "00"
+        assert DataPointType.MODULE_TYPE.value == "00"
         assert DataPointType.SW_VERSION.value == "02"
         assert DataPointType.LINK_NUMBER.value == "04"
         assert DataPointType.MODULE_TYPE_CODE.value == "07"
@@ -162,8 +162,8 @@ class TestSystemTelegram:
         telegram.datapoint_type = DataPointType.MODULE_ENERGY_LEVEL
         assert telegram.datapoint_type.name == "MODULE_ENERGY_LEVEL"
 
-        telegram.datapoint_type = DataPointType.ERROR_CODE
-        assert telegram.datapoint_type.name == "ERROR_CODE"
+        telegram.datapoint_type = DataPointType.MODULE_TYPE
+        assert telegram.datapoint_type.name == "MODULE_TYPE"
 
     def test_to_dict(self):
         """Test to_dict method."""

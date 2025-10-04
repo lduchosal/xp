@@ -288,7 +288,7 @@ class TestReplyTelegram:
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
-            datapoint_type=DataPointType.ERROR_CODE,
+            datapoint_type=DataPointType.MODULE_TYPE,
             data_value="CUSTOM_STATUS",
             checksum="CS",
             raw_telegram="<R0020012521F02D00CUSTOM_STATUSCS>",

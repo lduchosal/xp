@@ -45,7 +45,7 @@ The current XP device server services (`xp24_server_service.py`, `xp20_server_se
   ```python
   def generate_status_response(self, request: SystemTelegram) -> Optional[str]:
       if (request.system_function == SystemFunction.READ_DATAPOINT and
-          request.datapoint_type == DataPointType.ERROR_CODE):  # or STATUS_QUERY for XP33
+          request.datapoint_type == DataPointType.MODULE_TYPE):  # or STATUS_QUERY for XP33
           data_part = f"R{self.serial_number}F02D00{self.device_status}"
           checksum = calculate_checksum(data_part)
           telegram = f"<{data_part}{checksum}>"
@@ -138,7 +138,7 @@ def generate_discover_response(self) -> str:
     def generate_version_response(self, request: SystemTelegram) -> Optional[str]
 
     def generate_status_response(self, request: SystemTelegram,
-                                 status_data_point: DataPointType = DataPointType.ERROR_CODE) -> Optional[str]
+                                 status_data_point: DataPointType = DataPointType.MODULE_TYPE) -> Optional[str]
 
     def generate_link_number_response(self, request: SystemTelegram) -> Optional[str]
 
@@ -195,7 +195,7 @@ def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
     """Handle RETURN_DATA requests - can be overridden by subclasses"""
     if request.datapoint_type == DataPointType.SW_VERSION:
         return self.generate_version_response(request)
-    elif request.datapoint_type in (DataPointType.ERROR_CODE, DataPointType.MODULE_ERROR_CODE):
+    elif request.datapoint_type in (DataPointType.MODULE_TYPE, DataPointType.MODULE_ERROR_CODE):
         return self.generate_error_code_response(request, request.datapoint_type)
     elif request.datapoint_type == DataPointType.LINK_NUMBER:
         return self.generate_link_number_response(request)
