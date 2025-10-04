@@ -310,4 +310,3 @@ class TestReverseProxyErrorHandling:
 
         finally:
             blocking_socket.close()
-

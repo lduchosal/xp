@@ -32,4 +32,3 @@ class ConbusClientConfig(BaseModel):
             logger.error(f"File {file_path} is not valid")
             # Return default config if YAML parsing fails
             return cls()
-

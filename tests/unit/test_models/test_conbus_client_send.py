@@ -29,6 +29,7 @@ class TestConbusClientConfig:
         assert config.port == 8080
         assert config.timeout == 30
 
+
 class TestConbusSendResponse:
     """Test cases for ConbusSendResponse model"""
 
