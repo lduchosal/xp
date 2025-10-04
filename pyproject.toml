@@ -58,7 +58,7 @@ addopts = [
     "--cov=src/xp",
     "--cov-report=html",
     "--cov-report=term-missing",
-    "--cov-fail-under=60"
+    "--cov-fail-under=80"
 ]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
@@ -66,6 +66,9 @@ markers = [
     "unit: marks tests as unit tests",
     "reverseproxy: marks tests as unit tests",
 ]
+filterwarnings = [
+      "ignore::DeprecationWarning:click_help_colors.*",
+  ]
 
 [tool.coverage.run]
 source = ["src/xp"]
