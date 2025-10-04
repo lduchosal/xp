@@ -9,7 +9,10 @@ from xp.services.conbus.actiontable.actiontable_service import ActionTableServic
 from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
 from xp.services.conbus.conbus_autoreport_service import ConbusAutoreportService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
-from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool, ConbusSocketConnectionManager
+from xp.services.conbus.conbus_connection_pool import (
+    ConbusConnectionPool,
+    ConbusSocketConnectionManager,
+)
 from xp.services.conbus.conbus_custom_service import ConbusCustomService
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_discover_service import ConbusDiscoverService

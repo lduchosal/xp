@@ -8,7 +8,6 @@ import logging
 import socket
 import threading
 import time
-from contextlib import suppress
 from typing import Any, Optional
 
 from xp.models import ConbusClientConfig
@@ -72,7 +71,6 @@ class ConbusConnectionPool:
         self.max_lifetime = 21600  # 6 hours
         self._initialized = True
 
-
     def _is_connection_expired(self) -> bool:
         """Check if the current connection has expired"""
         if self._connection_created_at is None:
@@ -135,7 +133,6 @@ class ConbusConnectionPool:
         if hasattr(self, "_current_connection") and self._current_connection:
             self.release_connection(self._current_connection)
             self._current_connection = None
-
 
     def close(self) -> None:
         """Close the connection pool and cleanup resources"""
