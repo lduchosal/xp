@@ -78,10 +78,9 @@ class ServiceContainer:
         # Core infrastructure layer - ConbusConnectionPool (singleton)
         self.container.register(
             ConbusConnectionPool,
-            instance=ConbusConnectionPool.get_instance(),
+            instance=ConbusConnectionPool(),
             scope=punq.Scope.singleton,
         )
-
         # Telegram services layer
         self.container.register(TelegramService, scope=punq.Scope.singleton)
         self.container.register(
@@ -266,6 +265,7 @@ class ServiceContainer:
             ),
             scope=punq.Scope.singleton,
         )
+
 
         # HomeKit conson config
         self.container.register(

@@ -63,7 +63,7 @@ git clone <repository-url>
 
 pip install pdm
 
-pdm install -G dev
+pdm install -G scripts
 
 ```
 
