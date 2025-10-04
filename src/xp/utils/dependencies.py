@@ -9,7 +9,7 @@ from xp.services.conbus.actiontable.actiontable_service import ActionTableServic
 from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
 from xp.services.conbus.conbus_autoreport_service import ConbusAutoreportService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
-from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
+from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool, ConbusSocketConnectionManager
 from xp.services.conbus.conbus_custom_service import ConbusCustomService
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
@@ -75,12 +75,30 @@ class ServiceContainer:
     def _register_services(self) -> None:
         """Register all services in the container based on dependency graph."""
 
-        # Core infrastructure layer - ConbusConnectionPool (singleton)
+        # ConbusClientConfig (needed by ConbusConnectionPool)
         self.container.register(
-            ConbusConnectionPool,
-            instance=ConbusConnectionPool(),
+            ConbusClientConfig,
+            factory=lambda: ConbusClientConfig.from_yaml(self._config_path),
             scope=punq.Scope.singleton,
         )
+
+        # Core infrastructure layer - ConbusConnectionPool (singleton)
+        self.container.register(
+            ConbusSocketConnectionManager,
+            factory=lambda: ConbusSocketConnectionManager(
+                cli_config=self.container.resolve(ConbusClientConfig)
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusConnectionPool,
+            factory=lambda: ConbusConnectionPool(
+                connection_manager=self.container.resolve(ConbusSocketConnectionManager)
+            ),
+            scope=punq.Scope.singleton,
+        )
+
         # Telegram services layer
         self.container.register(TelegramService, scope=punq.Scope.singleton)
         self.container.register(
@@ -94,18 +112,12 @@ class ServiceContainer:
         self.container.register(TelegramBlinkService, scope=punq.Scope.singleton)
         self.container.register(LinkNumberService, scope=punq.Scope.singleton)
 
-        # ConbusClientConfig
-        self.container.register(
-            ConbusClientConfig,
-            factory=lambda: ConbusClientConfig.from_yaml(self._config_path),
-            scope=punq.Scope.singleton,
-        )
-
         # ConbusService - depends on ConbusConnectionPool
         self.container.register(
             ConbusService,
             factory=lambda: ConbusService(
                 client_config=self.container.resolve(ConbusClientConfig),
+                connection_pool=self.container.resolve(ConbusConnectionPool),
             ),
             scope=punq.Scope.singleton,
         )
@@ -265,7 +277,6 @@ class ServiceContainer:
             ),
             scope=punq.Scope.singleton,
         )
-
 
         # HomeKit conson config
         self.container.register(

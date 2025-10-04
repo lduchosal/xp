@@ -40,22 +40,23 @@ class ConbusService:
     def __init__(
         self,
         client_config: ConbusClientConfig,
+        connection_pool: ConbusConnectionPool,
     ):
         """Initialize the Conbus client send service
 
         Args:
-            client_config: Optional ConbusClientConfig for dependency injection
+            client_config: ConbusClientConfig for dependency injection
+            connection_pool: ConbusConnectionPool for dependency injection
         """
-        self.client_config: ConbusClientConfig = client_config or ConbusClientConfig()
+        self.client_config: ConbusClientConfig = client_config
         self.is_connected = False
         self.last_activity: Optional[datetime] = None
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-        # Initialize connection pool
-        self._connection_pool = ConbusConnectionPool.get_instance()
-        self._connection_pool.initialize(self.client_config)
+        # Use injected connection pool
+        self._connection_pool = connection_pool
 
     def get_config(self) -> ConbusClientConfig:
         """Get current client configuration"""

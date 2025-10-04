@@ -1,9 +1,12 @@
 """Integration tests for XP24 action functionality."""
 
+from unittest.mock import MagicMock
+
 import pytest
 
 from xp.models import ConbusClientConfig
 from xp.models.telegram.action_type import ActionType
+from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_service import ConbusService
 from xp.services.telegram.telegram_output_service import (
@@ -19,7 +22,8 @@ class TestOutputIntegration:
     def setup_method(self):
         """Set up test fixtures."""
         cli_config = ConbusClientConfig.from_yaml("cli.yml")
-        conbus_service = ConbusService(cli_config)
+        mock_pool = MagicMock(spec=ConbusConnectionPool)
+        conbus_service = ConbusService(cli_config, mock_pool)
         telegram_service = TelegramService()
         self.output_service = TelegramOutputService(telegram_service=telegram_service)
         self.conbus_service = ConbusDatapointService(

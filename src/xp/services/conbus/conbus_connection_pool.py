@@ -17,19 +17,17 @@ from xp.models import ConbusClientConfig
 class ConbusSocketConnectionManager:
     """Connection manager for TCP socket connections to Conbus servers"""
 
-    def __init__(self, host: str, port: int, timeout: float):
-        self.host = host
-        self.port = port
-        self.timeout = timeout
+    def __init__(self, cli_config: ConbusClientConfig):
+        self.config = cli_config.conbus
         self.logger = logging.getLogger(__name__)
 
     def create(self) -> socket.socket:
         """Create and configure a new TCP socket connection"""
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(self.timeout)
-        sock.connect((self.host, self.port))
+        sock.settimeout(self.config.timeout)
+        sock.connect((self.config.ip, self.config.port))
         self.logger.info(
-            f"Created new connection to {self.host}:{self.port} (timeout: {self.timeout})"
+            f"Created new connection to {self.config.ip}:{self.config.port} (timeout: {self.config.timeout})"
         )
         return sock
 
@@ -56,25 +54,15 @@ class ConbusSocketConnectionManager:
 class ConbusConnectionPool:
     """Singleton connection pool for Conbus TCP connections"""
 
-    _instance: Optional["ConbusConnectionPool"] = None
     _lock = threading.Lock()
 
-    def __new__(cls) -> "ConbusConnectionPool":
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super().__new__(cls)
-        return cls._instance
-
-    def __init__(self) -> None:
+    def __init__(self, connection_manager: ConbusSocketConnectionManager) -> None:
         if hasattr(self, "_initialized"):
             return
 
-        self._initialized = True
-        self._config: Optional[ConbusClientConfig] = None
+        self._connection_manager = connection_manager
         self._connection: Optional[socket.socket] = None
         self._current_connection: Optional[socket.socket] = None
-        self._connection_manager: Optional[ConbusSocketConnectionManager] = None
         self._connection_created_at: Optional[float] = None
         self._lock = threading.Lock()
         self.logger = logging.getLogger(__name__)
@@ -82,21 +70,8 @@ class ConbusConnectionPool:
         # Configuration
         self.idle_timeout = 21600  # 6 hours
         self.max_lifetime = 21600  # 6 hours
+        self._initialized = True
 
-    def initialize(self, config: ConbusClientConfig) -> None:
-        """Initialize the connection pool with configuration"""
-        if self._config is not None:
-            self.logger.info("Connection pool already initialized")
-            return
-
-        self._config = config
-        self._connection_manager = ConbusSocketConnectionManager(
-            config.conbus.ip, config.conbus.port, config.conbus.timeout
-        )
-
-        self.logger.info(
-            f"Initialized connection pool for {config.conbus.ip}:{config.conbus.port}"
-        )
 
     def _is_connection_expired(self) -> bool:
         """Check if the current connection has expired"""
@@ -161,21 +136,6 @@ class ConbusConnectionPool:
             self.release_connection(self._current_connection)
             self._current_connection = None
 
-    @classmethod
-    def get_instance(cls) -> "ConbusConnectionPool":
-        """Get the singleton instance"""
-        return cls()
-
-    @classmethod
-    def reset_instance(cls) -> None:
-        """Reset singleton for testing"""
-        with cls._lock:
-            if cls._instance:
-                # Clean up existing connection
-                if hasattr(cls._instance, "_connection") and cls._instance._connection:
-                    with suppress(Exception):
-                        cls._instance._connection.close()
-            cls._instance = None
 
     def close(self) -> None:
         """Close the connection pool and cleanup resources"""

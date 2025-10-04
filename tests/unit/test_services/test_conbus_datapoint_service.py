@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 
 from xp.models.conbus.conbus_client_config import ClientConfig, ConbusClientConfig
+from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
 from xp.services.conbus.conbus_service import ConbusService
 
 
@@ -18,9 +19,16 @@ class TestConbusService:
         return ConbusClientConfig(conbus=client_config)
 
     @pytest.fixture
-    def service(self, mock_config):
+    def mock_connection_pool(self):
+        """Create a mock connection pool"""
+        return MagicMock(spec=ConbusConnectionPool)
+
+    @pytest.fixture
+    def service(self, mock_config, mock_connection_pool):
         """Create service instance with test config"""
-        return ConbusService(client_config=mock_config)
+        return ConbusService(
+            client_config=mock_config, connection_pool=mock_connection_pool
+        )
 
     @pytest.fixture
     def mock_socket(self):
@@ -42,7 +50,8 @@ class TestServiceInitialization(TestConbusService):
         """Test service initialization with default config"""
         # Create service with default config
         default_config = ConbusClientConfig()
-        service = ConbusService(client_config=default_config)
+        mock_pool = MagicMock(spec=ConbusConnectionPool)
+        service = ConbusService(client_config=default_config, connection_pool=mock_pool)
 
         assert service.client_config.conbus.ip == "192.168.1.100"
         assert service.client_config.conbus.port == 10001
@@ -53,7 +62,8 @@ class TestServiceInitialization(TestConbusService):
         # Create service with custom config
         custom_client_config = ClientConfig(ip="10.1.1.1", port=9999, timeout=5.0)
         custom_config = ConbusClientConfig(conbus=custom_client_config)
-        service = ConbusService(client_config=custom_config)
+        mock_pool = MagicMock(spec=ConbusConnectionPool)
+        service = ConbusService(client_config=custom_config, connection_pool=mock_pool)
 
         assert service.client_config.conbus.ip == "10.1.1.1"
         assert service.client_config.conbus.port == 9999
