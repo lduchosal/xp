@@ -25,17 +25,18 @@ TelegramReceivedEvent.model_rebuild()
 
 
 class TelegramFactory(protocol.ClientFactory):
-    def __init__(self, event_bus: EventBus, telegram_protocol: TelegramProtocol) -> None:
+    def __init__(self, event_bus: EventBus, telegram_protocol: TelegramProtocol, reactor: IConnector) -> None:
         self.event_bus = event_bus
         self.telegram_protocol = telegram_protocol
+        self.reactor = reactor
 
     def buildProtocol(self, addr: IAddress) -> TelegramProtocol:
         return self.telegram_protocol
 
     def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
         self.event_bus.dispatch(ConnectionFailedEvent(reason=str(reason)))
-        reactor.stop()  # type: ignore
+        self.reactor.stop()
 
     def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
         self.event_bus.dispatch(ConnectionLostEvent(reason=str(reason)))
-        reactor.stop()  # type: ignore
+        self.reactor.stop()

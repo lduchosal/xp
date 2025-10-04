@@ -2,6 +2,7 @@
 
 import punq
 from bubus import EventBus
+from twisted.internet.interfaces import IConnector
 
 from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitConfig
@@ -43,6 +44,7 @@ from xp.services.telegram.telegram_service import TelegramService
 from twisted.internet import asyncioreactor
 asyncioreactor.install()
 from twisted.internet import reactor
+
 
 
 class ServiceContainer:
@@ -363,10 +365,17 @@ class ServiceContainer:
         )
 
         self.container.register(
+            IConnector,
+            factory=lambda: reactor,
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
             TelegramFactory,
             factory=lambda: TelegramFactory(
                 event_bus=self.container.resolve(EventBus),
                 telegram_protocol=self.container.resolve(TelegramProtocol),
+                reactor=self.container.resolve(IConnector),
             ),
             scope=punq.Scope.singleton,
         )

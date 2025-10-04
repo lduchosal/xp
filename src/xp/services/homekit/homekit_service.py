@@ -1,5 +1,5 @@
 # Install asyncio reactor before importing reactor
-from typing import cast, Any
+from typing import Any
 
 from bubus import EventBus
 
@@ -13,7 +13,6 @@ from xp.models.protocol.conbus_protocol import (
     ModuleErrorCodeReadEvent
 )
 from xp.services.protocol.protocol_factory import TelegramFactory
-from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 class HomeKitService:
 
@@ -90,5 +89,5 @@ class HomeKitService:
 
     def handle_module_error_code_read(self, event: ModuleTypeReadEvent) -> None:
 
-        print(f"[module_error_code] finished")
+        print("[module_error_code] finished")
 
