@@ -1,5 +1,4 @@
 # Install asyncio reactor before importing reactor
-from typing import Any
 
 from bubus import EventBus
 from twisted.internet.posixbase import PosixReactorBase
@@ -15,13 +14,14 @@ from xp.models.protocol.conbus_protocol import (
 )
 from xp.services.protocol.protocol_factory import TelegramFactory
 
+
 class HomeKitService:
 
     def __init__(
-            self,
-            event_bus: EventBus,
-            telegram_factory: TelegramFactory,
-            reactor: PosixReactorBase
+        self,
+        event_bus: EventBus,
+        telegram_factory: TelegramFactory,
+        reactor: PosixReactorBase,
     ):
 
         self.reactor = reactor

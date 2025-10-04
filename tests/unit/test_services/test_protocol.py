@@ -191,17 +191,23 @@ class TestTelegramFactory:
         """Setup test fixtures"""
         self.event_bus = Mock(spec=EventBus)
         self.telegram_protocol = Mock(spec=TelegramProtocol)
-        self.factory = TelegramFactory(self.event_bus, self.telegram_protocol)
+        self.connector = Mock(spec=IConnector)
+        self.connector.stop = Mock()
+        self.factory = TelegramFactory(
+            self.event_bus, self.telegram_protocol, self.connector
+        )
 
     def test_init(self):
         """Test factory initialization"""
         event_bus = Mock(spec=EventBus)
         telegram_protocol = Mock(spec=TelegramProtocol)
+        connector = Mock(spec=IConnector)
 
-        factory = TelegramFactory(event_bus, telegram_protocol)
+        factory = TelegramFactory(event_bus, telegram_protocol, connector)
 
         assert factory.event_bus == event_bus
         assert factory.telegram_protocol == telegram_protocol
+        assert factory.connector == connector
         assert factory.logger is not None
 
     def test_build_protocol(self):
@@ -215,7 +221,6 @@ class TestTelegramFactory:
     def test_client_connection_failed(self):
         """Test clientConnectionFailed dispatches event and stops connector"""
         connector = Mock(spec=IConnector)
-        connector.stop = Mock()
         reason = Failure(Exception("Connection failed"))
 
         self.factory.clientConnectionFailed(connector, reason)
@@ -227,13 +232,12 @@ class TestTelegramFactory:
         assert isinstance(call_args, ConnectionFailedEvent)
         assert "Connection failed" in call_args.reason
 
-        # Should stop the connector
-        connector.stop.assert_called_once()
+        # Should stop the factory's connector
+        self.connector.stop.assert_called_once()
 
     def test_client_connection_lost(self):
         """Test clientConnectionLost dispatches event and stops connector"""
         connector = Mock(spec=IConnector)
-        connector.stop = Mock()
         reason = Failure(Exception("Connection lost"))
 
         self.factory.clientConnectionLost(connector, reason)
@@ -245,13 +249,12 @@ class TestTelegramFactory:
         assert isinstance(call_args, ConnectionLostEvent)
         assert "Connection lost" in call_args.reason
 
-        # Should stop the connector
-        connector.stop.assert_called_once()
+        # Should stop the factory's connector
+        self.connector.stop.assert_called_once()
 
     def test_client_connection_failed_reason_conversion(self):
         """Test that Failure reason is converted to string in ConnectionFailedEvent"""
         connector = Mock(spec=IConnector)
-        connector.stop = Mock()
         reason = Failure(ConnectionRefusedError("Port closed"))
 
         self.factory.clientConnectionFailed(connector, reason)
@@ -259,11 +262,11 @@ class TestTelegramFactory:
         call_args = self.event_bus.dispatch.call_args[0][0]
         assert isinstance(call_args.reason, str)
         assert len(call_args.reason) > 0
+        self.connector.stop.assert_called_once()
 
     def test_client_connection_lost_reason_conversion(self):
         """Test that Failure reason is converted to string in ConnectionLostEvent"""
         connector = Mock(spec=IConnector)
-        connector.stop = Mock()
         reason = Failure(ConnectionError("Network error"))
 
         self.factory.clientConnectionLost(connector, reason)
@@ -271,6 +274,7 @@ class TestTelegramFactory:
         call_args = self.event_bus.dispatch.call_args[0][0]
         assert isinstance(call_args.reason, str)
         assert len(call_args.reason) > 0
+        self.connector.stop.assert_called_once()
 
 
 class TestTelegramProtocolIntegration:

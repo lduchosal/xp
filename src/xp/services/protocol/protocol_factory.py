@@ -31,9 +31,12 @@ class TelegramFactory(protocol.ClientFactory):
         self,
         event_bus: EventBus,
         telegram_protocol: TelegramProtocol,
+        connector: IConnector,
     ) -> None:
+
         self.event_bus = event_bus
         self.telegram_protocol = telegram_protocol
+        self.connector = connector
         self.logger = logging.getLogger(__name__)
 
     def buildProtocol(self, addr: IAddress) -> TelegramProtocol:
@@ -42,8 +45,8 @@ class TelegramFactory(protocol.ClientFactory):
 
     def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
         self.event_bus.dispatch(ConnectionFailedEvent(reason=str(reason)))
-        connector.stop()
+        self.connector.stop()
 
     def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
         self.event_bus.dispatch(ConnectionLostEvent(reason=str(reason)))
-        connector.stop()
+        self.connector.stop()

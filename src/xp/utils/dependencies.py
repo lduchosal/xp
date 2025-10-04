@@ -3,6 +3,7 @@
 import punq
 from bubus import EventBus
 from twisted.internet import asyncioreactor
+from twisted.internet.interfaces import IConnector
 from twisted.internet.posixbase import PosixReactorBase
 
 from xp.models import ConbusClientConfig
@@ -362,10 +363,17 @@ class ServiceContainer:
         )
 
         self.container.register(
+            IConnector,
+            factory=lambda: reactor,
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
             TelegramFactory,
             factory=lambda: TelegramFactory(
                 event_bus=self.container.resolve(EventBus),
                 telegram_protocol=self.container.resolve(TelegramProtocol),
+                connector=self.container.resolve(IConnector),
             ),
             scope=punq.Scope.singleton,
         )
