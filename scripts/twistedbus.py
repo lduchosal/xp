@@ -7,4 +7,4 @@ if __name__ == "__main__":
 
     container = ServiceContainer()
     homekit_service = container.get_container().resolve(HomeKitService)
-    homekit_service.run()
+    homekit_service.start()

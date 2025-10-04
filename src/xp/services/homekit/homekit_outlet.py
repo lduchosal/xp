@@ -1,30 +1,33 @@
+import asyncio
 import logging
 
+from bubus import EventBus
 from pyhap.accessory import Accessory
 from pyhap.accessory_driver import AccessoryDriver
 from pyhap.const import CATEGORY_OUTLET
 
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
-from xp.models.telegram.action_type import ActionType
-from xp.services.conbus.conbus_output_service import ConbusOutputService
-from xp.services.homekit.homekit_cache_service import HomeKitCacheService
-from xp.services.telegram.telegram_output_service import TelegramOutputService
+from xp.models.protocol.conbus_protocol import (
+    OutletGetInUseEvent,
+    OutletGetOnEvent,
+    OutletSetInUseEvent,
+    OutletSetOnEvent,
+)
 
 
 class Outlet(Accessory):
     """Fake lightbulb, logs what the client sets."""
 
     category = CATEGORY_OUTLET
+    event_bus: EventBus
 
     def __init__(
         self,
         driver: AccessoryDriver,
         module: ConsonModuleConfig,
         accessory: HomekitAccessoryConfig,
-        cache_service: HomeKitCacheService,
-        output_service: ConbusOutputService,
-        telegram_output_service: TelegramOutputService,
+        event_bus: EventBus,
     ):
         super().__init__(driver=driver, display_name=accessory.description)
 
@@ -32,9 +35,7 @@ class Outlet(Accessory):
         self.accessory = accessory
         self.module = module
 
-        self.cache_service = cache_service
-        self.output_service = output_service
-        self.telegram_output_service = telegram_output_service
+        self.event_bus = event_bus
         self.logger.info(
             "Creating Outlet { serial_number : %s, output_number: %s }",
             module.serial_number,
@@ -59,54 +60,79 @@ class Outlet(Accessory):
 
     def set_outlet_in_use(self, value: bool) -> None:
         self.logger.debug(f"set_outlet_in_use: {bool}")
-        result = self.output_service.send_action(
-            serial_number=self.module.serial_number,
-            output_number=self.accessory.output_number,
-            action_type=(ActionType.ON_RELEASE if value else ActionType.OFF_PRESS),
+        self.event_bus.dispatch(
+            OutletSetInUseEvent(
+                serial_number=self.accessory.serial_number,
+                output_number=self.accessory.output_number,
+                module=self.module,
+                accessory=self.accessory,
+                value=value
+            )
         )
-        self.logger.debug(f"result: {result}")
 
     def get_outlet_in_use(self) -> bool:
         # Emit event and get response
         self.logger.debug("get_outlet_in_use")
-        response = self.output_service.get_output_state(
-            serial_number=self.module.serial_number,
-        )
-        self.logger.debug(f"result: {response}")
-        if response.received_telegrams:
-            result = self.telegram_output_service.parse_status_response(
-                response.received_telegrams[0]
-            )
-            return result[self.accessory.output_number]
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                future = asyncio.run_coroutine_threadsafe(self._async_get_outlet_in_use(), loop)
+                return future.result(timeout=1)
+            else:
+                return asyncio.run(self._async_get_outlet_in_use())
+        except Exception as e:
+            self.logger.error(f"Error in get_outlet_in_use: {e}")
+            return False
 
-        return False
+    async def _async_get_outlet_in_use(self) -> bool:
+        """Async helper for get_outlet_in_use"""
+        event = await self.event_bus.dispatch(
+            OutletGetInUseEvent(
+                serial_number=self.accessory.serial_number,
+                output_number=self.accessory.output_number,
+                module=self.module,
+                accessory=self.accessory,
+            )
+        )
+        returned_value: bool = await event.event_result(timeout=1)
+        return returned_value
 
     def set_on(self, value: bool) -> None:
+        # Emit event using PyDispatcher
         self.logger.debug(f"set_on: {bool}")
-        result = self.output_service.send_action(
-            serial_number=self.module.serial_number,
-            output_number=self.accessory.output_number,
-            action_type=(ActionType.ON_RELEASE if value else ActionType.OFF_PRESS),
+        self.event_bus.dispatch(
+            OutletSetOnEvent(
+                serial_number=self.accessory.serial_number,
+                output_number=self.accessory.output_number,
+                module=self.module,
+                accessory=self.accessory,
+                value=value
+            )
         )
-        self.logger.debug(f"result: {result}")
 
     def get_on(self) -> bool:
         # Emit event and get response
         self.logger.debug("get_on")
-        response = self.output_service.get_output_state(
-            serial_number=self.module.serial_number,
-        )
-        if not response.success or not response.datapoint_telegram:
-            self.logger.debug(f"result: {response}")
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                future = asyncio.run_coroutine_threadsafe(self._async_get_on(), loop)
+                return future.result(timeout=1)
+            else:
+                return asyncio.run(self._async_get_on())
+        except Exception as e:
+            self.logger.error(f"Error in get_on: {e}")
             return False
 
-        data_value = response.datapoint_telegram.data_value
-        raw_telegram = response.datapoint_telegram.raw_telegram
-
-        self.logger.debug(
-            f"result: {data_value}, output_number: {self.accessory.output_number}"
+    async def _async_get_on(self) -> bool:
+        """Async helper for get_on"""
+        event = await self.event_bus.dispatch(
+            OutletGetOnEvent(
+                serial_number=self.accessory.serial_number,
+                output_number=self.accessory.output_number,
+                module=self.module,
+                accessory=self.accessory,
+            )
         )
-        result = self.telegram_output_service.parse_status_response(raw_telegram)
-        is_on = result[self.accessory.output_number]
-        self.logger.debug(f" is_on: {is_on}")
-        return is_on
+        returned_value: bool = await event.event_result(timeout=1)
+        return returned_value

@@ -3,6 +3,7 @@ import signal
 from datetime import datetime
 from typing import Optional
 
+from bubus import EventBus
 from pyhap.accessory import Accessory, Bridge
 from pyhap.accessory_driver import AccessoryDriver
 from typing_extensions import Union
@@ -14,15 +15,10 @@ from xp.models.homekit.homekit_config import (
     HomekitConfig,
     RoomConfig,
 )
-from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
-from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
-from xp.services.conbus.conbus_output_service import ConbusOutputService
-from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_dimminglight import DimmingLight
 from xp.services.homekit.homekit_lightbulb import LightBulb
 from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.homekit.homekit_outlet import Outlet
-from xp.services.telegram.telegram_output_service import TelegramOutputService
 
 
 class HomekitModuleFactory:
@@ -33,26 +29,20 @@ class HomekitModuleFactory:
     and processes server responses.
     """
 
+    event_bus: EventBus
+
     def __init__(
         self,
         homekit_config: HomekitConfig,
         module_service: HomekitModuleService,
-        output_service: ConbusOutputService,
-        telegram_output_service: TelegramOutputService,
-        datapoint_service: ConbusDatapointService,
-        cache_service: HomeKitCacheService,
-        lightlevel_service: ConbusLightlevelService,
+        event_bus: EventBus,
     ):
         """Initialize the Conbus client send service
 
         Args:
             homekit_config: Conson configuration file
             module_service: HomekitModuleService for dependency injection
-            output_service: ConbusOutputService for dependency injection
-            telegram_output_service: TelegramOutputService for dependency injection
-            datapoint_service: ConbusDatapointService for dependency injection
-            cache_service: HomeKitCacheService for dependency injection
-            lightlevel_service: ConbusLightlevelService for dependency injection
+            event_bus: EventBus for dependency injection
         """
         self.last_activity: Optional[datetime] = None
 
@@ -64,11 +54,7 @@ class HomekitModuleFactory:
 
         # Service dependencies
         self.modules = module_service
-        self.output_service = output_service
-        self.telegram_output_service = telegram_output_service
-        self.datapoint_service = datapoint_service
-        self.cache_service = cache_service
-        self.lightlevel_service = lightlevel_service
+        self.event_bus = event_bus
 
         # We want SIGTERM (terminate) to be handled by the driver itself,
         # so that it can gracefully stop the accessory, server and advertising.
@@ -119,9 +105,7 @@ class HomekitModuleFactory:
             homekit_accessory.serial_number
         )
         if module_config is None:
-            self.logger.warning(
-                "Accessory '{}' not found".format(homekit_accessory.name)
-            )
+            self.logger.warning(f"Accessory '{homekit_accessory.name}' not found")
             return None
 
         if homekit_accessory.service == "lightbulb":
@@ -129,9 +113,7 @@ class HomekitModuleFactory:
                 driver=self.driver,
                 module=module_config,
                 accessory=homekit_accessory,
-                output_service=self.output_service,
-                telegram_output_service=self.telegram_output_service,
-                datapoint_service=self.datapoint_service,
+                event_bus=self.event_bus,
             )
 
         if homekit_accessory.service == "outlet":
@@ -139,9 +121,7 @@ class HomekitModuleFactory:
                 driver=self.driver,
                 module=module_config,
                 accessory=homekit_accessory,
-                cache_service=self.cache_service,
-                output_service=self.output_service,
-                telegram_output_service=self.telegram_output_service,
+                event_bus=self.event_bus,
             )
 
         if homekit_accessory.service == "dimminglight":
@@ -149,10 +129,10 @@ class HomekitModuleFactory:
                 driver=self.driver,
                 module=module_config,
                 accessory=homekit_accessory,
-                lightlevel_service=self.lightlevel_service,
+                event_bus=self.event_bus,
             )
 
-        self.logger.warning("Accessory '{}' not found".format(homekit_accessory.name))
+        self.logger.warning(f"Accessory '{homekit_accessory.name}' not found")
         return None
 
     def get_accessory_by_name(self, name: str) -> Optional[HomekitAccessoryConfig]:

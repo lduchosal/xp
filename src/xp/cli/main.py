@@ -1,6 +1,7 @@
 """XP CLI tool entry point with modular command structure."""
 
 import logging
+from typing import Optional
 
 import click
 from click_help_colors import HelpColorsGroup
@@ -27,7 +28,7 @@ from xp.utils.dependencies import ServiceContainer
 )
 @click.version_option()
 @click.pass_context
-def cli(ctx: click.Context, service_container: ServiceContainer | None = None) -> None:
+def cli(ctx: click.Context, service_container: Optional[ServiceContainer] = None) -> None:
     """XP CLI tool for remote console bus operations"""
     logging.basicConfig(level=logging.DEBUG)
     # Suppress pyhap.hap_protocol logs
