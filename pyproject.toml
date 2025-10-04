@@ -15,6 +15,7 @@ dependencies = [
     "pydantic>=2.11",
     "HAP-python[QRCode]>=5.0.0",
     "punq>=0.7.0",
+    "twisted>=25.5.0",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
