@@ -6,9 +6,7 @@ import click
 from click import Context
 
 from xp.cli.commands.homekit.homekit import homekit
-from xp.services.homekit.homekit_module_factory import HomekitModuleFactory
 from xp.services.homekit.homekit_service import HomeKitService
-
 
 @homekit.command("start")
 @click.pass_context
@@ -26,13 +24,11 @@ def homekit_start(ctx: Context) -> None:
         xp homekit start
 
     """
-    # Validate workers and reload options
     click.echo("Starting XP Protocol HomeKit server...")
 
     try:
-
         service = ctx.obj.get("container").get_container().resolve(HomeKitService)
-        service.start()
+        service.start()  # Blocking call - reactor.run() never returns
 
     except KeyboardInterrupt:
         click.echo("\nShutting down server...")

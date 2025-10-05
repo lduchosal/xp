@@ -90,7 +90,7 @@ class DimmingLight(Accessory):
             else:
                 return asyncio.run(self._async_get_on())
         except Exception as e:
-            self.logger.error(f"Error in get_on: {e}")
+            self.logger.error(f"Error in get_on: {e.__class__.__name__}")
             return False
 
     async def _async_get_on(self) -> bool:
@@ -128,7 +128,7 @@ class DimmingLight(Accessory):
             else:
                 return asyncio.run(self._async_get_brightness())
         except Exception as e:
-            self.logger.error(f"Error in get_brightness: {e}")
+            self.logger.error(f"Error in get_brightness: {e.__class__.__name__}")
             return 0
 
     async def _async_get_brightness(self) -> int:

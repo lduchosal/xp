@@ -2,7 +2,6 @@
 
 import punq
 from bubus import EventBus
-from twisted.internet import asyncioreactor
 from twisted.internet.interfaces import IConnector
 from twisted.internet.posixbase import PosixReactorBase
 

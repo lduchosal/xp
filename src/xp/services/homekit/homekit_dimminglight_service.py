@@ -30,27 +30,27 @@ class HomeKitDimmingLightService:
         self.event_bus.on(DimmingLightGetBrightnessEvent, self.handle_dimminglight_get_brightness)
 
 
-    def handle_dimminglight_get_on(self, event: DimmingLightGetOnEvent) -> bool:
+    async def handle_dimminglight_get_on(self, event: DimmingLightGetOnEvent) -> bool:
         self.logger.debug(f"dimminglight_get_on {event}")
         datapoint_type = DataPointType.MODULE_OUTPUT_STATE
         read_datapoint = ReadDatapointEvent(
             serial_number=event.serial_number,
             datapoint_type=datapoint_type
         )
-        self.event_bus.dispatch(read_datapoint)
+        await self.event_bus.dispatch(read_datapoint)
 
         is_our_response = lambda response_event: (
                 response_event.serial_number == read_datapoint.serial_number
                 and response_event.datapoint_type == datapoint_type
         )
-        response_event: DatapointReceivedEvent = self.event_bus.expect(
+        response_event: DatapointReceivedEvent = await self.event_bus.expect(
             DatapointReceivedEvent,
             include=lambda e: is_our_response(e),
             timeout=2,  # raises asyncio.TimeoutError if no match is seen within 30sec
         )
         return response_event.data_value[event.output_number] == "1"
 
-    def handle_dimminglight_set_on(self, event: DimmingLightSetOnEvent) -> None:
+    async def handle_dimminglight_set_on(self, event: DimmingLightSetOnEvent) -> None:
         self.logger.debug(f"dimminglight_set_on {event}")
         datapoint_type = DataPointType.MODULE_LIGHT_LEVEL
         value = 0 if event.value else 60
@@ -60,9 +60,9 @@ class HomeKitDimmingLightService:
             datapoint_type=datapoint_type,
             value=value
         )
-        self.event_bus.dispatch(send_action)
+        await self.event_bus.dispatch(send_action)
 
-    def handle_dimminglight_set_brightness(self, event: DimmingLightSetBrightnessEvent) -> None:
+    async def handle_dimminglight_set_brightness(self, event: DimmingLightSetBrightnessEvent) -> None:
         self.logger.debug(f"dimminglight_set_brightness {event}")
         datapoint_type = DataPointType.MODULE_LIGHT_LEVEL
         send_action = SendWriteConfigEvent(
@@ -71,23 +71,23 @@ class HomeKitDimmingLightService:
             datapoint_type=datapoint_type,
             value=event.value
         )
-        self.event_bus.dispatch(send_action)
+        await self.event_bus.dispatch(send_action)
 
 
-    def handle_dimminglight_get_brightness(self, event: DimmingLightGetBrightnessEvent) -> int:
+    async def handle_dimminglight_get_brightness(self, event: DimmingLightGetBrightnessEvent) -> int:
         self.logger.debug(f"dimminglight_get_brightness {event}")
         datapoint_type = DataPointType.MODULE_LIGHT_LEVEL
         read_datapoint = ReadDatapointEvent(
             serial_number=event.serial_number,
             datapoint_type=datapoint_type
         )
-        self.event_bus.dispatch(read_datapoint)
+        await self.event_bus.dispatch(read_datapoint)
 
         is_our_response = lambda response_event: (
                 response_event.serial_number == read_datapoint.serial_number
                 and response_event.datapoint_type == datapoint_type
         )
-        response_event: DatapointReceivedEvent = self.event_bus.expect(
+        response_event: DatapointReceivedEvent = await self.event_bus.expect(
             DatapointReceivedEvent,
             include=lambda e: is_our_response(e),
             timeout=2,  # raises asyncio.TimeoutError if no match is seen within 30sec

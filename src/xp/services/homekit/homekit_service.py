@@ -59,88 +59,114 @@ class HomeKitService:
 
 
     def start(self) -> None:
+        self.logger.info("Starting HomeKit service...")
         self.logger.debug(f"start")
 
         # Connect to TCP server
+        self.logger.info("Connecting to TCP server 10.0.3.26:10001")
         self.reactor.connectTCP("10.0.3.26", 10001, self.telegram_factory)
 
         # Schedule module factory to start after reactor is running
-        self.reactor.callWhenRunning(self._start_module_factory)
+        # Use callLater(0) to ensure event loop is actually running
+        self.reactor.callLater(0, self._start_module_factory)
 
         # Run the reactor (which now uses asyncio underneath)
+        self.logger.info("Starting reactor event loop...")
         self.reactor.run()
 
     def _start_module_factory(self) -> None:
         """Start module factory after reactor starts"""
-        self.logger.debug("Starting module factory")
-        # Run in separate thread if driver.start() is blocking
-        factory_thread = threading.Thread(
-            target=self.module_factory.run,
-            daemon=True,
-            name="ModuleFactoryThread"
-        )
-        factory_thread.start()
+        self.logger.info("Starting module factory...")
+        self.logger.debug(f"callWhenRunning executed, scheduling async task")
+
+        # Run HAP-python driver asynchronously in the reactor's event loop
+        async def async_start() -> None:
+            self.logger.info("async_start executing...")
+            try:
+                await self.module_factory.async_start()
+                self.logger.info("Module factory started successfully")
+            except Exception as e:
+                self.logger.error(f"Error starting module factory: {e}", exc_info=True)
+
+        # Schedule on reactor's event loop (which is asyncio)
+        try:
+            task = asyncio.create_task(async_start())
+            self.logger.debug(f"Created module factory task: {task}")
+            task.add_done_callback(lambda t: self.logger.debug(f"Module factory task completed: {t}"))
+        except Exception as e:
+            self.logger.error(f"Error creating async task: {e}", exc_info=True)
+
 
     # Event handlers
-    def handle_connection_made(self, event: ConnectionMadeEvent) -> None:
+    async def handle_connection_made(self, event: ConnectionMadeEvent) -> None:
         """Handle connection established - send initial telegram"""
-        self.logger.debug(f"connection_made {event}")
+        self.logger.debug("Connection established successfully")
+        self.logger.debug("Sending initial discovery telegram: S0000000000F01D00")
         event.protocol.sendFrame(b"S0000000000F01D00")
 
-    def handle_connection_failed(self, event: ConnectionFailedEvent) -> None:
+    async def handle_connection_failed(self, event: ConnectionFailedEvent) -> None:
         """Handle connection failed"""
-        self.logger.debug(f"connection_failed {event.reason}")
+        self.logger.error(f"Connection failed: {event.reason}")
 
-    def handle_connection_lost(self, event: ConnectionLostEvent) -> None:
+    async def handle_connection_lost(self, event: ConnectionLostEvent) -> None:
         """Handle connection lost"""
-        self.logger.debug(f"connection_lost {event}")
+        self.logger.warning(f"Connection lost: {event.reason if hasattr(event, 'reason') else 'Unknown reason'}")
 
-    def handle_telegram_received(self, event: TelegramReceivedEvent) -> None:
+    async def handle_telegram_received(self, event: TelegramReceivedEvent) -> None:
         """Handle received telegram events"""
-        self.logger.debug(f"telegram_received {event}")
+        self.logger.debug(f"Received telegram: {event.telegram}")
 
         # Check if telegram is Reply (R) with Discover function (F01D)
         if event.telegram.startswith("R") and "F01D" in event.telegram:
-            event.event_bus.dispatch(
+            self.logger.debug("Module discovered, dispatching ModuleDiscoveredEvent")
+            await event.event_bus.dispatch(
                 ModuleDiscoveredEvent(telegram=event.telegram, protocol=event.protocol)
             )
+            return
 
         # Check if telegram is Reply (R) with Read (F02) for ModuleType (D00)
         if event.telegram.startswith("R") and "F02D00" in event.telegram:
-            event.event_bus.dispatch(
+            self.logger.debug("Module type read, dispatching ModuleTypeReadEvent")
+            await event.event_bus.dispatch(
                 ModuleTypeReadEvent(telegram=event.telegram, protocol=event.protocol)
             )
+            return
 
         # Check if telegram is Reply (R) with Read (F02) for ModuleErrorCode (D10)
         if event.telegram.startswith("R") and "F02D10" in event.telegram:
-            event.event_bus.dispatch(
+            self.logger.debug("Module error code read, dispatching ModuleErrorCodeReadEvent")
+            await event.event_bus.dispatch(
                 ModuleErrorCodeReadEvent(
                     telegram=event.telegram, protocol=event.protocol
                 )
             )
+            return
 
-    def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> None:
-        self.logger.debug(f"module_discovered {event}")
+        self.logger.warning(f"Unhandled telegram received: {event.telegram}")
+        self.logger.debug(f"telegram_received unhanlded event{event}")
+
+    async def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> None:
+        self.logger.debug(f"Handling module discovered event")
 
         # Replace R with S and F01D with F02D00
         new_telegram = event.telegram.replace("R", "S", 1).replace(
             "F01D", "F02D00", 1
         )  # module type
 
-        self.logger.debug(f"module_discovered followup {new_telegram}")
+        self.logger.debug(f"Sending module type request: {new_telegram}")
         event.protocol.sendFrame(new_telegram.encode())
 
-    def handle_module_type_read(self, event: ModuleTypeReadEvent) -> None:
-        self.logger.debug(f"module_type_read {event}")
+    async def handle_module_type_read(self, event: ModuleTypeReadEvent) -> None:
+        self.logger.debug(f"Handling module type read event")
 
         # Replace R with S and F01D with F02D00
         new_telegram = event.telegram.replace("R", "S", 1).replace(
             "F02D00", "F02D10", 1
         )  # error code
 
-        self.logger.debug(f"module_type_read followup {new_telegram}")
+        self.logger.debug(f"Sending error code request: {new_telegram}")
         event.protocol.sendFrame(new_telegram.encode())
 
-    def handle_module_error_code_read(self, event: ModuleErrorCodeReadEvent) -> None:
-        self.logger.debug(f"module_error_code_read {event}")
-        self.logger.debug(f"module_error_code_read finish")
+    async def handle_module_error_code_read(self, event: ModuleErrorCodeReadEvent) -> None:
+        self.logger.debug(f"Handling module error code read event")
+        self.logger.debug(f"Module initialization complete")

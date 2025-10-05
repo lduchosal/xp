@@ -76,7 +76,7 @@ class LightBulb(Accessory):
                 # No loop running, use asyncio.run
                 return asyncio.run(self._async_get_on())
         except Exception as e:
-            self.logger.error(f"Error in get_on: {e}")
+            self.logger.error(f"Error in get_on: {e.__class__.__name__}", e)
             return False
 
     async def _async_get_on(self) -> bool:

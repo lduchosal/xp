@@ -64,12 +64,12 @@ class HomekitModuleFactory:
         signal.signal(signal.SIGTERM, driver.signal_handler)
         self.driver: AccessoryDriver = driver
 
-    def run(self) -> None:
+    async def async_start(self) -> None:
         """Get current client configuration"""
         self.load_accessories()
 
         # Start it!
-        self.driver.start()
+        await self.driver.async_start()
 
     def load_accessories(self) -> None:
         bridge_config = self.config.bridge
