@@ -8,11 +8,9 @@ from xp.models.protocol.conbus_protocol import (
     DimmingLightSetBrightnessEvent,
     DimmingLightGetBrightnessEvent,
     SendWriteConfigEvent,
-    DatapointReceivedEvent,
     ReadDatapointEvent
 )
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 
 class HomeKitDimmingLightService:

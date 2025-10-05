@@ -46,7 +46,6 @@ from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
 
-import asyncio
 from twisted.internet import asyncioreactor
 asyncioreactor.install()
 from twisted.internet import reactor  # noqa: E402
@@ -420,7 +419,7 @@ class ServiceContainer:
 
         self.container.register(
             TelegramService,
-            factory=lambda: TelegramService(),
+            factory=TelegramService,
             scope=punq.Scope.singleton,
         )
 

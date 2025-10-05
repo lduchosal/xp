@@ -59,7 +59,7 @@ class HomeKitService:
 
     def start(self) -> None:
         self.logger.info("Starting HomeKit service...")
-        self.logger.debug(f"start")
+        self.logger.debug("start")
 
         # Run reactor in its own dedicated thread
         self.logger.info("Starting reactor in dedicated thread...")
@@ -96,7 +96,7 @@ class HomeKitService:
     def _start_module_factory(self) -> None:
         """Start module factory after reactor starts"""
         self.logger.info("Starting module factory...")
-        self.logger.debug(f"callWhenRunning executed, scheduling async task")
+        self.logger.debug("callWhenRunning executed, scheduling async task")
 
         # Run HAP-python driver asynchronously in the reactor's event loop
         async def async_start() -> None:
@@ -172,7 +172,7 @@ class HomeKitService:
 
 
     def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> str:
-        self.logger.debug(f"Handling module discovered event")
+        self.logger.debug("Handling module discovered event")
 
         # Replace R with S and F01D with F02D00
         new_telegram = event.telegram.replace("R", "S", 1).replace(

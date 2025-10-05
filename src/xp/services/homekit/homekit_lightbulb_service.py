@@ -5,7 +5,6 @@ from bubus import EventBus
 from xp.models.protocol.conbus_protocol import (
     LightBulbGetOnEvent,
     ReadDatapointEvent,
-    DatapointReceivedEvent,
     LightBulbSetOnEvent,
     SendActionEvent
 )

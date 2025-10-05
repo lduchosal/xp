@@ -1,7 +1,6 @@
 """XP CLI tool entry point with modular command structure."""
 
 import logging
-from typing import Optional
 
 import click
 from click_help_colors import HelpColorsGroup

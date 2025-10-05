@@ -99,7 +99,7 @@ class TelegramProtocol(protocol.Protocol):
             self.logger.debug(f"frameReceived payload: {payload}, checksum: {checksum}")
 
             # Dispatch event to bubus with await
-            self.logger.debug(f"frameReceived about to dispatch TelegramReceivedEvent")
+            self.logger.debug("frameReceived about to dispatch TelegramReceivedEvent")
             await self.event_bus.dispatch(
                 TelegramReceivedEvent(
                     protocol=self,
@@ -110,7 +110,7 @@ class TelegramProtocol(protocol.Protocol):
                     checksum=checksum
                 )
             )
-            self.logger.debug(f"frameReceived TelegramReceivedEvent dispatched successfully")
+            self.logger.debug("frameReceived TelegramReceivedEvent dispatched successfully")
 
 
     def sendFrame(self, data: bytes) -> None:

@@ -1,5 +1,4 @@
-import asyncio
-from unittest.mock import Mock, MagicMock, call, patch
+from unittest.mock import Mock, MagicMock, patch
 import pytest
 
 from bubus import EventBus
@@ -19,8 +18,6 @@ from xp.models.protocol.conbus_protocol import (
     LightBulbGetOnEvent,
     LightBulbSetOnEvent,
     ModuleDiscoveredEvent,
-    ModuleErrorCodeReadEvent,
-    ModuleTypeReadEvent,
     OutletGetInUseEvent,
     OutletGetOnEvent,
     OutletSetOnEvent,
@@ -30,6 +27,7 @@ from xp.models.protocol.conbus_protocol import (
     TelegramReceivedEvent,
 )
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.services import TelegramService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
 from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
@@ -473,6 +471,7 @@ class TestHomeKitService:
         self.dimminglight_service = Mock(spec=HomeKitDimmingLightService)
         self.conbus_service = Mock(spec=HomeKitConbusService)
         self.module_factory = Mock(spec=HomekitHapService)
+        self.telegram_service = Mock(spec=TelegramService)
 
         self.service = HomeKitService(
             self.event_bus,
@@ -483,6 +482,7 @@ class TestHomeKitService:
             self.dimminglight_service,
             self.conbus_service,
             self.module_factory,
+            self.telegram_service
         )
 
     def test_init(self):
@@ -546,9 +546,11 @@ class TestHomeKitService:
         protocol = Mock(spec=TelegramProtocol)
         event = TelegramReceivedEvent(
             protocol=protocol,
+            frame="<R1234567890F02D00XX>",
             telegram="R1234567890F02D00XX",
-            raw_frame="<R1234567890F02D00XX>",
-            event_bus=self.event_bus
+            serial_number="1234567890",
+            payload="R1234567890F02D00",
+            checksum="XX",
         )
 
         self.service.handle_telegram_received(event)

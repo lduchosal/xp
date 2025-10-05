@@ -5,7 +5,6 @@ from bubus import EventBus
 from xp.models.protocol.conbus_protocol import (
     OutletGetOnEvent,
     ReadDatapointEvent,
-    DatapointReceivedEvent,
     OutletSetOnEvent,
     SendActionEvent,
     OutletGetInUseEvent
@@ -67,5 +66,5 @@ class HomeKitOutletService:
 
         self.logger.debug(f"Dispatching ReadDatapointEvent for {event.serial_number}")
         self.event_bus.dispatch(read_datapoint)
-        self.logger.debug(f"Dispatching ReadDatapointEvent (timeout: 2s)")
+        self.logger.debug("Dispatching ReadDatapointEvent (timeout: 2s)")
         return True
