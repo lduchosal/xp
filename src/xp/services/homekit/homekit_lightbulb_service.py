@@ -35,7 +35,6 @@ class HomeKitLightbulbService:
         )
 
         self.logger.debug(f"Dispatching ReadDatapointEvent for {event.serial_number}")
-        # Use dispatch_nowait to avoid blocking - we'll wait for the response with expect()
         self.event_bus.dispatch(read_datapoint)
         self.logger.debug(f"Dispatched ReadDatapointEvent for {event.serial_number}")
 

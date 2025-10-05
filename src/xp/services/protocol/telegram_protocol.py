@@ -23,12 +23,6 @@ class TelegramProtocol(protocol.Protocol):
 
     def connectionMade(self) -> None:
         self.logger.debug("connectionMade")
-        if self.transport:
-            peer = self.transport.getPeer()
-            self.logger.info(f"TCP connection established to {peer}")
-        else:
-            self.logger.warning("connectionMade called with no transport")
-        # Schedule async handler using asyncio (since we're using asyncio reactor)
         try:
             self.logger.debug("Scheduling async connection handler")
             task = asyncio.create_task(self._async_connectionMade())

@@ -117,21 +117,21 @@ class HomeKitService:
 
 
     # Event handlers
-    async def handle_connection_made(self, event: ConnectionMadeEvent) -> None:
+    def handle_connection_made(self, event: ConnectionMadeEvent) -> None:
         """Handle connection established - send initial telegram"""
         self.logger.debug("Connection established successfully")
         self.logger.debug("Sending initial discovery telegram: S0000000000F01D00")
         event.protocol.sendFrame(b"S0000000000F01D00")
 
-    async def handle_connection_failed(self, event: ConnectionFailedEvent) -> None:
+    def handle_connection_failed(self, event: ConnectionFailedEvent) -> None:
         """Handle connection failed"""
         self.logger.error(f"Connection failed: {event.reason}")
 
-    async def handle_connection_lost(self, event: ConnectionLostEvent) -> None:
+    def handle_connection_lost(self, event: ConnectionLostEvent) -> None:
         """Handle connection lost"""
         self.logger.warning(f"Connection lost: {event.reason if hasattr(event, 'reason') else 'Unknown reason'}")
 
-    async def handle_telegram_received(self, event: TelegramReceivedEvent) -> str:
+    def handle_telegram_received(self, event: TelegramReceivedEvent) -> str:
         """Handle received telegram events"""
         self.logger.debug(f"handle_telegram_received ENTERED with telegram: {event.telegram}")
 
@@ -171,7 +171,7 @@ class HomeKitService:
         return event.frame
 
 
-    async def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> str:
+    def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> str:
         self.logger.debug(f"Handling module discovered event")
 
         # Replace R with S and F01D with F02D00

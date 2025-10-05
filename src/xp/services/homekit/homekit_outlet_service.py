@@ -26,9 +26,8 @@ class HomeKitOutletService:
         self.event_bus.on(OutletGetInUseEvent, self.handle_outlet_get_in_use)
 
 
-    async def handle_outlet_get_on(self, event: OutletGetOnEvent) -> bool:
-        self.logger.info(f"Getting outlet state for serial {event.serial_number}, output {event.output_number}")
-        self.logger.debug(f"outlet_get_on {event}")
+    def handle_outlet_get_on(self, event: OutletGetOnEvent) -> bool:
+        self.logger.debug(f"Getting outlet state for serial {event.serial_number}, output {event.output_number}")
 
         datapoint_type = DataPointType.MODULE_OUTPUT_STATE
         read_datapoint = ReadDatapointEvent(
@@ -37,8 +36,7 @@ class HomeKitOutletService:
         )
 
         self.logger.debug(f"Dispatching ReadDatapointEvent for {event.serial_number}")
-        # Use dispatch_nowait to avoid blocking - we'll wait for the response with expect()
-        await self.event_bus.dispatch(read_datapoint)
+        self.event_bus.dispatch(read_datapoint)
         self.logger.debug(f"Dispatched ReadDatapointEvent for {event.serial_number}")
         return True
 
@@ -68,7 +66,6 @@ class HomeKitOutletService:
         )
 
         self.logger.debug(f"Dispatching ReadDatapointEvent for {event.serial_number}")
-        # Use dispatch_nowait to avoid blocking - we'll wait for the response with expect()
         self.event_bus.dispatch(read_datapoint)
         self.logger.debug(f"Dispatching ReadDatapointEvent (timeout: 2s)")
         return True
