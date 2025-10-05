@@ -21,7 +21,15 @@ class ReplyTelegram(Telegram):
 
     Format: <R{serial_number}F{function_code}D{data}{checksum}>
     Format: <R{serial_number}F{function_code}D{datapoint_type}{data_value}{checksum}>
-    Examples: <R0020012521F02D18+26,0§CIL>
+    Examples:
+        - raw_telegram: <R0020012521F02D18+26,0§CIL>
+        - telegram_type : ReplyTelegram (R)
+        - serial_number: 0020012521
+        - function_code: 02
+        - data: 18+26,0§C
+        - datapoint_type: 18
+        - data_value: +26,0§C
+        - checksum: IL
     """
 
     serial_number: str = ""

@@ -30,7 +30,7 @@ from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
 from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
-from xp.services.homekit.homekit_module_factory import HomekitModuleFactory
+from xp.services.homekit.homekit_hap_service import HomekitHapService
 from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.homekit.homekit_outlet_service import HomeKitOutletService
 from xp.services.homekit.homekit_service import HomeKitService
@@ -299,7 +299,7 @@ class ServiceContainer:
         # Create event bus
         self.container.register(
             EventBus,
-            factory=lambda: EventBus(max_history_size=50),
+            factory=lambda: EventBus(max_history_size=500),
             scope=punq.Scope.singleton,
         )
 
@@ -311,8 +311,8 @@ class ServiceContainer:
         )
 
         self.container.register(
-            HomekitModuleFactory,
-            factory=lambda: HomekitModuleFactory(
+            HomekitHapService,
+            factory=lambda: HomekitHapService(
                 homekit_config=self.container.resolve(HomekitConfig),
                 module_service=self.container.resolve(HomekitModuleService),
                 event_bus=self.container.resolve(EventBus),
@@ -419,6 +419,12 @@ class ServiceContainer:
         )
 
         self.container.register(
+            TelegramService,
+            factory=lambda: TelegramService(),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
             HomeKitService,
             factory=lambda: HomeKitService(
                 event_bus=self.container.resolve(EventBus),
@@ -428,7 +434,8 @@ class ServiceContainer:
                 outlet_service=self.container.resolve(HomeKitOutletService),
                 dimminglight_service=self.container.resolve(HomeKitDimmingLightService),
                 conbus_service=self.container.resolve(HomeKitConbusService),
-                module_factory=self.container.resolve(HomekitModuleFactory),
+                module_factory=self.container.resolve(HomekitHapService),
+                telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,
         )

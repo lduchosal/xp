@@ -37,28 +37,12 @@ class HomeKitOutletService:
         )
 
         self.logger.debug(f"Dispatching ReadDatapointEvent for {event.serial_number}")
-        received_event = await self.event_bus.dispatch(read_datapoint)
+        # Use dispatch_nowait to avoid blocking - we'll wait for the response with expect()
+        await self.event_bus.dispatch(read_datapoint)
+        self.logger.debug(f"Dispatched ReadDatapointEvent for {event.serial_number}")
+        return True
 
-        is_our_response = lambda response_event: (
-                response_event.serial_number == read_datapoint.serial_number
-                and response_event.datapoint_type == datapoint_type
-        )
-
-        self.logger.debug(f"Waiting for DatapointReceivedEvent (timeout: 2s)")
-        try:
-            response_event: DatapointReceivedEvent = await self.event_bus.expect(
-                DatapointReceivedEvent,
-                include=lambda e: is_our_response(e),
-                timeout=2,  # raises asyncio.TimeoutError if no match is seen within 2sec
-            )
-            state = response_event.data_value[event.output_number] == "1"
-            self.logger.info(f"Outlet state for {event.serial_number} output {event.output_number}: {'ON' if state else 'OFF'}")
-            return state
-        except Exception as e:
-            self.logger.error(f"Error getting outlet state: {e}", exc_info=True)
-            raise
-
-    async def handle_outlet_set_on(self, event: OutletSetOnEvent) -> None:
+    def handle_outlet_set_on(self, event: OutletSetOnEvent) -> bool:
         self.logger.info(f"Setting outlet for serial {event.serial_number}, output {event.output_number} to {'ON' if event.value else 'OFF'}")
         self.logger.debug(f"outlet_set_on {event}")
 
@@ -69,14 +53,11 @@ class HomeKitOutletService:
         )
 
         self.logger.debug(f"Dispatching SendActionEvent for {event.serial_number}")
-        try:
-            await self.event_bus.dispatch(send_action)
-            self.logger.info(f"Outlet set command sent successfully for {event.serial_number}")
-        except Exception as e:
-            self.logger.error(f"Error setting outlet state: {e}", exc_info=True)
-            raise
+        self.event_bus.dispatch(send_action)
+        self.logger.info(f"Outlet set command sent successfully for {event.serial_number}")
+        return True
 
-    async def handle_outlet_get_in_use(self, event: OutletGetInUseEvent) -> bool:
+    def handle_outlet_get_in_use(self, event: OutletGetInUseEvent) -> bool:
         self.logger.info(f"Getting outlet in-use status for serial {event.serial_number}")
         self.logger.debug(f"outlet_get_in_use {event}")
 
@@ -87,23 +68,7 @@ class HomeKitOutletService:
         )
 
         self.logger.debug(f"Dispatching ReadDatapointEvent for {event.serial_number}")
-        received_event = await self.event_bus.dispatch(read_datapoint)
-
-        is_our_response = lambda response_event: (
-                response_event.serial_number == read_datapoint.serial_number
-                and response_event.datapoint_type == datapoint_type
-        )
-
-        self.logger.debug(f"Waiting for DatapointReceivedEvent (timeout: 2s)")
-        try:
-            response_event: DatapointReceivedEvent = await self.event_bus.expect(
-                DatapointReceivedEvent,
-                include=lambda e: is_our_response(e),
-                timeout=2,  # raises asyncio.TimeoutError if no match is seen within 2sec
-            )
-            in_use = response_event.data_value == "ON"
-            self.logger.info(f"Outlet in-use status for {event.serial_number}: {in_use}")
-            return in_use
-        except Exception as e:
-            self.logger.error(f"Error getting outlet in-use status: {e}", exc_info=True)
-            raise
+        # Use dispatch_nowait to avoid blocking - we'll wait for the response with expect()
+        self.event_bus.dispatch(read_datapoint)
+        self.logger.debug(f"Dispatching ReadDatapointEvent (timeout: 2s)")
+        return True

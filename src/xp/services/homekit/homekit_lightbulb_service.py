@@ -24,7 +24,7 @@ class HomeKitLightbulbService:
         self.event_bus.on(LightBulbSetOnEvent, self.handle_lightbulb_set_on)
 
 
-    async def handle_lightbulb_get_on(self, event: LightBulbGetOnEvent) -> bool:
+    def handle_lightbulb_get_on(self, event: LightBulbGetOnEvent) -> None:
         self.logger.info(f"Getting lightbulb state for serial {event.serial_number}, output {event.output_number}")
         self.logger.debug(f"lightbulb_get_on {event}")
 
@@ -35,28 +35,12 @@ class HomeKitLightbulbService:
         )
 
         self.logger.debug(f"Dispatching ReadDatapointEvent for {event.serial_number}")
-        received_event = await self.event_bus.dispatch(read_datapoint)
+        # Use dispatch_nowait to avoid blocking - we'll wait for the response with expect()
+        self.event_bus.dispatch(read_datapoint)
+        self.logger.debug(f"Dispatched ReadDatapointEvent for {event.serial_number}")
 
-        is_our_response = lambda response_event: (
-                response_event.serial_number == read_datapoint.serial_number
-                and response_event.datapoint_type == datapoint_type
-        )
 
-        self.logger.debug(f"Waiting for DatapointReceivedEvent (timeout: 2s)")
-        try:
-            response_event: DatapointReceivedEvent = await self.event_bus.expect(
-                DatapointReceivedEvent,
-                include=lambda e: is_our_response(e),
-                timeout=2,  # raises asyncio.TimeoutError if no match is seen within 2sec
-            )
-            state = response_event.data_value[event.output_number] == "1"
-            self.logger.info(f"Lightbulb state for {event.serial_number} output {event.output_number}: {'ON' if state else 'OFF'}")
-            return state
-        except Exception as e:
-            self.logger.error(f"Error getting lightbulb state: {e}", exc_info=True)
-            raise
-
-    async def handle_lightbulb_set_on(self, event: LightBulbSetOnEvent) -> None:
+    def handle_lightbulb_set_on(self, event: LightBulbSetOnEvent) -> None:
         self.logger.info(f"Setting lightbulb for serial {event.serial_number}, output {event.output_number} to {'ON' if event.value else 'OFF'}")
         self.logger.debug(f"lightbulb_set_on {event}")
 
@@ -67,10 +51,6 @@ class HomeKitLightbulbService:
         )
 
         self.logger.debug(f"Dispatching SendActionEvent for {event.serial_number}")
-        try:
-            await self.event_bus.dispatch(send_action)
-            self.logger.info(f"Lightbulb set command sent successfully for {event.serial_number}")
-        except Exception as e:
-            self.logger.error(f"Error setting lightbulb state: {e}", exc_info=True)
-            raise
+        self.event_bus.dispatch(send_action)
+        self.logger.debug(f"Dispatched SendActionEvent for {event.serial_number}")
 

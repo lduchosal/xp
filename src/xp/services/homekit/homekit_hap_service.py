@@ -1,5 +1,7 @@
+import asyncio
 import logging
 import signal
+import threading
 from datetime import datetime
 from typing import Optional
 
@@ -21,7 +23,7 @@ from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.homekit.homekit_outlet import Outlet
 
 
-class HomekitModuleFactory:
+class HomekitHapService:
     """
     HomeKit services.
 
@@ -70,19 +72,21 @@ class HomekitModuleFactory:
         self.load_accessories()
         self.logger.info("Accessories loaded successfully")
 
-        # Start it!
-        self.logger.info("Starting HAP-python driver (async_start)...")
-        # Don't await - let it run as a background task
-        import asyncio
-        asyncio.create_task(self._run_driver())
-        self.logger.info("HAP-python driver task created")
+        # Start HAP-python in a separate thread to avoid event loop conflicts
+        self.logger.info("Starting HAP-python driver in separate thread...")
+        hap_thread = threading.Thread(target=self._run_driver_in_thread, daemon=True, name="HAP-Python")
+        hap_thread.start()
+        self.logger.info("HAP-python driver thread started")
 
-    def _run_driver(self) -> None:
-        """Run the HAP-python driver"""
+    def _run_driver_in_thread(self) -> None:
+        """Run the HAP-python driver in a separate thread with its own event loop"""
         try:
-            self.logger.info("HAP-python driver starting...")
+            self.logger.info("HAP-python thread starting, creating new event loop...")
+            # Create a new event loop for this thread
+
+            self.logger.info("Starting HAP-python driver...")
             self.driver.start()
-            self.logger.info("HAP-python driver ended (this should not happed)")
+            self.logger.info("HAP-python driver started successfully")
         except Exception as e:
             self.logger.error(f"HAP-python driver error: {e}", exc_info=True)
 

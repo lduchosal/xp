@@ -62,7 +62,7 @@ class LightBulbSetOnEvent(ModuleEvent):
     value: bool = Field(description="On or Off the light bulb set")
 
 
-class LightBulbGetOnEvent(ModuleEvent):
+class LightBulbGetOnEvent(ModuleEvent, BaseEvent[bool]):
     """Event dispatched when light bulb set is on"""
 
     pass
@@ -85,7 +85,7 @@ class OutletGetInUseEvent(ModuleEvent):
     pass
 
 
-class OutletSetInUseEvent(ModuleEvent):
+class OutletSetInUseEvent(ModuleEvent, BaseEvent[bool]):
     """Event dispatched when outlet set is on"""
     value: bool = Field(description="On or Off the light bulb set")
 
@@ -118,38 +118,23 @@ class ConnectionLostEvent(BaseEvent):
 
     reason: str = Field(description="Disconnection reason")
 
-
-class ModuleDiscoveredEvent(BaseEvent):
-    """Event dispatched when TCP connection is lost"""
-
+class TelegramEvent(BaseEvent):
     protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
-    telegram: str = Field(description="The received telegram payload")
+    frame: str = Field(description="Frame <S0020040129F02D12FK>")
+    telegram: str = Field(description="Telegram: S0020040129F02D12FK")
+    payload: str = Field(description="Payload: S0020040129F02D12")
+    serial_number: str = Field(description="Serial number: 0020040129")
+    checksum: str = Field(description="Checksum: FK")
 
-
-class ModuleTypeReadEvent(BaseEvent):
+class ModuleDiscoveredEvent(TelegramEvent):
     """Event dispatched when TCP connection is lost"""
+    pass
 
-    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
-    telegram: str = Field(description="The received telegram payload")
-
-
-class ModuleErrorCodeReadEvent(BaseEvent):
-    """Event dispatched when TCP connection is lost"""
-
-    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
-    telegram: str = Field(description="The received telegram payload")
-
-
-class TelegramReceivedEvent(BaseEvent):
+class TelegramReceivedEvent(TelegramEvent):
     """Event dispatched when a telegram frame is received"""
+    pass
 
-    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
-    telegram: str = Field(description="The received telegram payload")
-    raw_frame: str = Field(description="The raw frame with delimiters")
-
-
-class InvalidTelegramReceivedEvent(BaseEvent):
+class InvalidTelegramReceivedEvent(TelegramEvent):
     """Event dispatched when a telegram frame is received"""
-
-    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
-    telegram: str = Field(description="The received telegram payload")
+    error: str = Field(description="Error with the received telegram")
+    pass

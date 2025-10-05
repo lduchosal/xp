@@ -30,11 +30,23 @@ from xp.utils.dependencies import ServiceContainer
 @click.pass_context
 def cli(ctx: click.Context) -> None:
     """XP CLI tool for remote console bus operations"""
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%H:%M:%S'
-    )
+    # Configure logging with thread information
+    log_format = '%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s'
+    date_format = '%H:%M:%S'
+
+    # Force format on root logger and all handlers
+    formatter = logging.Formatter(log_format, datefmt=date_format)
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+
+    # Update all existing handlers or create new one
+    if root_logger.handlers:
+        for handler in root_logger.handlers:
+            handler.setFormatter(formatter)
+    else:
+        handler = logging.StreamHandler()
+        handler.setFormatter(formatter)
+        root_logger.addHandler(handler)
     # Suppress pyhap.hap_protocol logs
     logging.getLogger("pyhap.hap_protocol").setLevel(logging.WARNING)
     logging.getLogger("pyhap.hap_handler").setLevel(logging.WARNING)
@@ -46,6 +58,7 @@ def cli(ctx: click.Context) -> None:
     logging.getLogger("xp.services.homekit.homekit_service").setLevel(logging.INFO)
     #logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
     logging.getLogger("pyhap").setLevel(logging.DEBUG)
+    logging.getLogger("bubus").setLevel(logging.DEBUG)
 
     # Initialize the service container and store it in the context
     ctx.ensure_object(dict)

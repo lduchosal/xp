@@ -11,8 +11,6 @@ from xp.models.protocol.conbus_protocol import (
     ConnectionMadeEvent,
     InvalidTelegramReceivedEvent,
     ModuleDiscoveredEvent,
-    ModuleErrorCodeReadEvent,
-    ModuleTypeReadEvent,
     TelegramReceivedEvent,
 )
 from xp.services.protocol.telegram_protocol import TelegramProtocol
@@ -21,8 +19,6 @@ from xp.services.protocol.telegram_protocol import TelegramProtocol
 ConnectionMadeEvent.model_rebuild()
 InvalidTelegramReceivedEvent.model_rebuild()
 ModuleDiscoveredEvent.model_rebuild()
-ModuleErrorCodeReadEvent.model_rebuild()
-ModuleTypeReadEvent.model_rebuild()
 TelegramReceivedEvent.model_rebuild()
 
 

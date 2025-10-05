@@ -75,35 +75,49 @@ class TelegramProtocol(protocol.Protocol):
             if end == -1:
                 break
 
-            frame = self.buffer[start + 1 : end]
+            frame = self.buffer[start : end+1]
             self.buffer = self.buffer[end + 1 :]
-            payload = frame[:-2].decode()
-            payload_checksum = frame[-2:].decode()
+            telegram = frame[1:-1]
+            payload = telegram[:-2].decode()
+            serial_number = telegram[1:11].decode()
+            checksum = telegram[-2:].decode()
             calculated_checksum = calculate_checksum(payload)
 
-            if payload_checksum != calculated_checksum:
+            if checksum != calculated_checksum:
                 await self.event_bus.dispatch(
-                    InvalidTelegramReceivedEvent(protocol=self, telegram=self.buffer)
+                    InvalidTelegramReceivedEvent(
+                        protocol=self,
+                        frame=frame.decode(),
+                        telegram=telegram.decode(),
+                        payload=payload,
+                        serial_number=serial_number,
+                        checksum=checksum,
+                        error="Invalid checksum"
+                    )
                 )
                 self.logger.debug(
                     f"Invalid frame: {frame.decode()} "
-                    f"checksum: {payload_checksum}, "
+                    f"checksum: {checksum}, "
                     f"expected {calculated_checksum}"
                 )
                 return
 
-            await self._async_frameReceived(frame[:-2])
+            self.logger.debug(f"frameReceived payload: {payload}, checksum: {checksum}")
 
-    async def _async_frameReceived(self, frame: bytes) -> None:
-        """Async handler for received frame"""
-        self.logger.debug(f"frameReceived {frame.decode()}")
-        telegram = frame.decode()
-        raw_frame = f"<{frame.decode()}>"
+            # Dispatch event to bubus with await
+            self.logger.debug(f"frameReceived about to dispatch TelegramReceivedEvent")
+            await self.event_bus.dispatch(
+                TelegramReceivedEvent(
+                    protocol=self,
+                    frame=frame.decode(),
+                    telegram=telegram.decode(),
+                    payload=payload,
+                    serial_number=serial_number,
+                    checksum=checksum
+                )
+            )
+            self.logger.debug(f"frameReceived TelegramReceivedEvent dispatched successfully")
 
-        # Dispatch event to bubus with await
-        await self.event_bus.dispatch(
-            TelegramReceivedEvent(protocol=self, telegram=telegram, raw_frame=raw_frame)
-        )
 
     def sendFrame(self, data: bytes) -> None:
         self.logger.debug(f"sendFrame {data.decode()}")

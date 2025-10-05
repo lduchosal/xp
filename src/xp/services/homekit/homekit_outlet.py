@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import Optional
 
 from bubus import EventBus
 from pyhap.accessory import Accessory
@@ -12,8 +13,9 @@ from xp.models.protocol.conbus_protocol import (
     OutletGetInUseEvent,
     OutletGetOnEvent,
     OutletSetInUseEvent,
-    OutletSetOnEvent,
+    OutletSetOnEvent, DatapointReceivedEvent,
 )
+from xp.models.telegram.datapoint_type import DataPointType
 
 
 class Outlet(Accessory):
@@ -41,6 +43,9 @@ class Outlet(Accessory):
             module.serial_number,
             accessory.output_number,
         )
+        self.is_on = False
+        self.is_in_use = False
+        self.event_bus.on(DatapointReceivedEvent, self.on_datapoint_received)
 
         serial = f"{module.serial_number}.{accessory.output_number:02d}"
         version = accessory.id
@@ -48,9 +53,10 @@ class Outlet(Accessory):
         model = ("XP24_outlet",)
         serv_outlet = self.add_preload_service("Outlet")
         self.set_info_service(version, manufacturer, model, serial)
-
         self.char_on = serv_outlet.configure_char(
-            "On", setter_callback=self.set_on, getter_callback=self.get_on
+            "On",
+            setter_callback=self.set_on,
+            getter_callback=self.get_on
         )
         self.char_outlet_in_use = serv_outlet.configure_char(
             "OutletInUse",
@@ -58,8 +64,30 @@ class Outlet(Accessory):
             getter_callback=self.get_outlet_in_use,
         )
 
+    def on_datapoint_received(self, event: DatapointReceivedEvent) -> Optional[bool]:
+
+        if (event.serial_number != self.module.serial_number
+            or event.datapoint_type != DataPointType.MODULE_OUTPUT_STATE
+        ):
+            return None
+
+        is_on = event.data_value[::-1][self.accessory.output_number] == "1"
+        self.is_on = is_on
+        self.is_in_use = is_on
+        self.logger.debug(
+            f"on_datapoint_received "
+            f"serial_number: {event.serial_number}, "
+            f"output_number: {self.accessory.output_number}, "
+            f"data_vale: {event.data_value}"
+            f"is_on: {is_on}"
+        )
+        return is_on
+
+
     def set_outlet_in_use(self, value: bool) -> None:
-        self.logger.debug(f"set_outlet_in_use: {bool}")
+        self.logger.debug(f"set_outlet_in_use {value}")
+
+        self.is_in_use = value
         self.event_bus.dispatch(
             OutletSetInUseEvent(
                 serial_number=self.accessory.serial_number,
@@ -69,15 +97,14 @@ class Outlet(Accessory):
                 value=value
             )
         )
+        self.logger.debug(f"set_outlet_in_use {value} end")
 
     def get_outlet_in_use(self) -> bool:
         # Emit event and get response
         self.logger.debug("get_outlet_in_use")
-        return asyncio.run(self._async_get_outlet_in_use())
 
-    async def _async_get_outlet_in_use(self) -> bool:
-        """Async helper for get_outlet_in_use"""
-        event = await self.event_bus.dispatch(
+        # Dispatch event from HAP thread (thread-safe)
+        self.event_bus.dispatch(
             OutletGetInUseEvent(
                 serial_number=self.accessory.serial_number,
                 output_number=self.accessory.output_number,
@@ -85,12 +112,13 @@ class Outlet(Accessory):
                 accessory=self.accessory,
             )
         )
-        returned_value: bool = await event.event_result(timeout=1)
-        return returned_value
+        return self.is_in_use
 
     def set_on(self, value: bool) -> None:
-        # Emit event using PyDispatcher
-        self.logger.debug(f"set_on: {bool}")
+        # Emit set event
+        self.logger.debug(f"set_on {value}")
+        self.is_on = value
+
         self.event_bus.dispatch(
             OutletSetOnEvent(
                 serial_number=self.accessory.serial_number,
@@ -104,11 +132,9 @@ class Outlet(Accessory):
     def get_on(self) -> bool:
         # Emit event and get response
         self.logger.debug("get_on")
-        return asyncio.run(self._async_get_on())
 
-    async def _async_get_on(self) -> bool:
-        """Async helper for get_on"""
-        event = await self.event_bus.dispatch(
+        # Dispatch event from HAP thread (thread-safe)
+        self.event_bus.dispatch(
             OutletGetOnEvent(
                 serial_number=self.accessory.serial_number,
                 output_number=self.accessory.output_number,
@@ -116,5 +142,4 @@ class Outlet(Accessory):
                 accessory=self.accessory,
             )
         )
-        returned_value: bool = await event.event_result(timeout=1)
-        return returned_value
+        return self.is_on
