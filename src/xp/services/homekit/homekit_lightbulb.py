@@ -8,7 +8,11 @@ from pyhap.const import CATEGORY_LIGHTBULB
 
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
-from xp.models.protocol.conbus_protocol import LightBulbGetOnEvent, LightBulbSetOnEvent, DatapointReceivedEvent
+from xp.models.protocol.conbus_protocol import (
+    DatapointReceivedEvent,
+    LightBulbGetOnEvent,
+    LightBulbSetOnEvent,
+)
 from xp.models.telegram.datapoint_type import DataPointType
 
 
@@ -49,14 +53,13 @@ class LightBulb(Accessory):
         self.set_info_service(version, manufacturer, model, serial)
 
         self.char_on = serv_light.configure_char(
-            "On",
-            getter_callback=self.get_on,
-            setter_callback=self.set_on
+            "On", getter_callback=self.get_on, setter_callback=self.set_on
         )
 
     def on_datapoint_received(self, event: DatapointReceivedEvent) -> Optional[bool]:
 
-        if (event.serial_number != self.module.serial_number
+        if (
+            event.serial_number != self.module.serial_number
             or event.datapoint_type != DataPointType.MODULE_OUTPUT_STATE
         ):
             return None
@@ -72,7 +75,6 @@ class LightBulb(Accessory):
         )
         return is_on
 
-
     def set_on(self, value: bool) -> None:
         # Emit set event
         self.logger.debug(f"set_on {value}")
@@ -83,7 +85,7 @@ class LightBulb(Accessory):
                 output_number=self.accessory.output_number,
                 module=self.module,
                 accessory=self.accessory,
-                value=value
+                value=value,
             )
         )
 

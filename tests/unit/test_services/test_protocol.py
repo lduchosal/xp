@@ -1,5 +1,7 @@
-from unittest.mock import Mock
+import asyncio
+from unittest.mock import AsyncMock, Mock
 
+import pytest
 from bubus import EventBus
 from twisted.internet.interfaces import IAddress, IConnector
 from twisted.python.failure import Failure
@@ -22,9 +24,9 @@ class TestTelegramProtocol:
     def setup_method(self):
         """Setup test fixtures"""
         self.event_bus = Mock(spec=EventBus)
+        self.event_bus.dispatch = AsyncMock()
         self.protocol = TelegramProtocol(self.event_bus)
         self.transport = proto_helpers.StringTransport()
-        self.protocol.makeConnection(self.transport)
 
     def test_init(self):
         """Test protocol initialization"""
@@ -35,18 +37,29 @@ class TestTelegramProtocol:
         assert protocol.event_bus == event_bus
         assert protocol.logger is not None
 
-    def test_connection_made(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_connection_made(self):
         """Test connectionMade dispatches ConnectionMadeEvent"""
+        self.protocol.makeConnection(self.transport)
+
+        # Wait for the async task to complete
+        await asyncio.sleep(0.01)
         self.event_bus.dispatch.assert_called_once()
         call_args = self.event_bus.dispatch.call_args[0][0]
 
         assert isinstance(call_args, ConnectionMadeEvent)
         assert call_args.protocol == self.protocol
 
-    def test_data_received_single_complete_frame(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_data_received_single_complete_frame(self):
         """Test receiving a single complete frame"""
+        self.protocol.makeConnection(self.transport)
+
         # Create a frame with valid checksum (TEST checksum is BG)
         self.protocol.dataReceived(b"<TESTBG>")
+
+        # Wait for async processing
+        await asyncio.sleep(0.01)
 
         # Should dispatch TelegramReceivedEvent
         assert self.event_bus.dispatch.call_count == 2  # 1 for connection, 1 for frame
@@ -54,13 +67,19 @@ class TestTelegramProtocol:
 
         assert isinstance(call_args, TelegramReceivedEvent)
         assert call_args.protocol == self.protocol
-        assert call_args.telegram == "TEST"
-        assert call_args.raw_frame == "<TEST>"
+        assert call_args.telegram == "TESTBG"
+        assert call_args.frame == "<TESTBG>"
 
-    def test_data_received_multiple_frames(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_data_received_multiple_frames(self):
         """Test receiving multiple frames in one data chunk"""
+        self.protocol.makeConnection(self.transport)
+
         # TEST checksum is BG, DATA checksum is BA
         self.protocol.dataReceived(b"<TESTBG><DATABA>")
+
+        # Wait for async processing
+        await asyncio.sleep(0.01)
 
         # Should dispatch 2 TelegramReceivedEvents (plus 1 ConnectionMadeEvent)
         assert self.event_bus.dispatch.call_count == 3
@@ -68,46 +87,69 @@ class TestTelegramProtocol:
         # Check first frame
         first_call = self.event_bus.dispatch.call_args_list[1][0][0]
         assert isinstance(first_call, TelegramReceivedEvent)
-        assert first_call.telegram == "TEST"
+        assert first_call.telegram == "TESTBG"
 
         # Check second frame
         second_call = self.event_bus.dispatch.call_args_list[2][0][0]
         assert isinstance(second_call, TelegramReceivedEvent)
-        assert second_call.telegram == "DATA"
+        assert second_call.telegram == "DATABA"
 
-    def test_data_received_partial_frame(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_data_received_partial_frame(self):
         """Test receiving partial frame data"""
+        self.protocol.makeConnection(self.transport)
+
         # Send first part
         self.protocol.dataReceived(b"<TE")
+        await asyncio.sleep(0.01)
         assert self.event_bus.dispatch.call_count == 1  # Only ConnectionMadeEvent
 
         # Send rest of frame (TEST checksum is BG)
         self.protocol.dataReceived(b"STBG>")
+        await asyncio.sleep(0.01)
         assert self.event_bus.dispatch.call_count == 2  # Now TelegramReceivedEvent too
 
         call_args = self.event_bus.dispatch.call_args[0][0]
         assert isinstance(call_args, TelegramReceivedEvent)
-        assert call_args.telegram == "TEST"
+        assert call_args.telegram == "TESTBG"
 
-    def test_data_received_no_start_delimiter(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_data_received_no_start_delimiter(self):
         """Test receiving data without start delimiter"""
+        self.protocol.makeConnection(self.transport)
+
         self.protocol.dataReceived(b"NOSTART>")
+
+        # Wait for async processing
+        await asyncio.sleep(0.01)
 
         # Should not dispatch any telegram event, only ConnectionMadeEvent
         assert self.event_bus.dispatch.call_count == 1
 
-    def test_data_received_no_end_delimiter(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_data_received_no_end_delimiter(self):
         """Test receiving data without end delimiter"""
+        self.protocol.makeConnection(self.transport)
+
         self.protocol.dataReceived(b"<NOEND")
+
+        # Wait for async processing
+        await asyncio.sleep(0.01)
 
         # Should buffer the data but not dispatch
         assert self.event_bus.dispatch.call_count == 1  # Only ConnectionMadeEvent
         assert self.protocol.buffer == b"<NOEND"
 
-    def test_data_received_invalid_checksum(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_data_received_invalid_checksum(self):
         """Test receiving frame with invalid checksum"""
+        self.protocol.makeConnection(self.transport)
+
         # Create a frame with invalid checksum
         self.protocol.dataReceived(b"<TESTXX>")
+
+        # Wait for async processing
+        await asyncio.sleep(0.01)
 
         # Should dispatch InvalidTelegramReceivedEvent
         assert self.event_bus.dispatch.call_count == 2
@@ -116,46 +158,54 @@ class TestTelegramProtocol:
         assert isinstance(call_args, InvalidTelegramReceivedEvent)
         assert call_args.protocol == self.protocol
 
-    def test_data_received_buffer_accumulation(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_data_received_buffer_accumulation(self):
         """Test that buffer accumulates data correctly"""
+        self.protocol.makeConnection(self.transport)
+
         self.protocol.dataReceived(b"<TE")
+        await asyncio.sleep(0.01)
         assert self.protocol.buffer == b"<TE"
 
         self.protocol.dataReceived(b"ST12>")
+        await asyncio.sleep(0.01)
         # After processing, buffer should be empty
         assert self.protocol.buffer == b""
 
-    def test_data_received_junk_before_frame(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_data_received_junk_before_frame(self):
         """Test receiving junk data before valid frame"""
+        self.protocol.makeConnection(self.transport)
+
         # TEST checksum is BG
         self.protocol.dataReceived(b"JUNK<TESTBG>")
+
+        # Wait for async processing
+        await asyncio.sleep(0.01)
 
         # Should still process the frame correctly
         assert self.event_bus.dispatch.call_count == 2
         call_args = self.event_bus.dispatch.call_args[0][0]
         assert isinstance(call_args, TelegramReceivedEvent)
-        assert call_args.telegram == "TEST"
+        assert call_args.telegram == "TESTBG"
 
-    def test_data_received_multiple_frames_with_junk(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_data_received_multiple_frames_with_junk(self):
         """Test receiving multiple frames with junk data"""
+        self.protocol.makeConnection(self.transport)
+
         # TEST checksum is BG, DATA checksum is BA
         self.protocol.dataReceived(b"JUNK<TESTBG>MORE<DATABA>")
+
+        # Wait for async processing
+        await asyncio.sleep(0.01)
 
         # Should process both frames
         assert self.event_bus.dispatch.call_count == 3  # 1 connection + 2 frames
 
-    def test_frame_received(self):
-        """Test frameReceived method directly"""
-        frame = b"HELLO"
-        self.protocol.frameReceived(frame)
-
-        call_args = self.event_bus.dispatch.call_args[0][0]
-        assert isinstance(call_args, TelegramReceivedEvent)
-        assert call_args.telegram == "HELLO"
-        assert call_args.raw_frame == "<HELLO>"
-
     def test_send_frame(self):
         """Test sending a frame with checksum"""
+        self.protocol.makeConnection(self.transport)
         self.protocol.sendFrame(b"TEST")
 
         # Check what was written to transport
@@ -168,12 +218,12 @@ class TestTelegramProtocol:
         """Test sending frame when transport is not available"""
         protocol = TelegramProtocol(self.event_bus)
         # Don't connect transport
-        protocol.sendFrame(b"TEST")
-
-        # Should not raise an error, just log
+        with pytest.raises(IOError, match="Transport is not open"):
+            protocol.sendFrame(b"TEST")
 
     def test_send_frame_includes_checksum(self):
         """Test that sendFrame calculates and includes checksum"""
+        self.protocol.makeConnection(self.transport)
         self.protocol.sendFrame(b"DATA")
 
         sent_data = self.transport.value()
@@ -280,15 +330,20 @@ class TestTelegramFactory:
 class TestTelegramProtocolIntegration:
     """Integration tests for TelegramProtocol with event bus"""
 
-    def test_full_flow_receive_and_send(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_full_flow_receive_and_send(self):
         """Test full flow of receiving and sending telegrams"""
         event_bus = Mock(spec=EventBus)
+        event_bus.dispatch = AsyncMock()
         protocol = TelegramProtocol(event_bus)
         transport = proto_helpers.StringTransport()
         protocol.makeConnection(transport)
 
         # Receive a frame
         protocol.dataReceived(b"<TEST12>")
+
+        # Wait for async processing
+        await asyncio.sleep(0.01)
 
         # Send a frame
         protocol.sendFrame(b"REPLY")
@@ -301,12 +356,17 @@ class TestTelegramProtocolIntegration:
         assert sent_data.startswith(b"<REPLY")
         assert sent_data.endswith(b">")
 
-    def test_protocol_event_bus_integration(self):
+    @pytest.mark.anyio(backends=["asyncio"])
+    async def test_protocol_event_bus_integration(self):
         """Test that protocol correctly dispatches events to event bus"""
         event_bus = Mock(spec=EventBus)
+        event_bus.dispatch = AsyncMock()
         protocol = TelegramProtocol(event_bus)
         transport = proto_helpers.StringTransport()
         protocol.makeConnection(transport)
+
+        # Wait for connection event to process
+        await asyncio.sleep(0.01)
 
         # Clear the connection made event
         event_bus.dispatch.reset_mock()
@@ -314,9 +374,12 @@ class TestTelegramProtocolIntegration:
         # Receive a frame (DATA checksum is BA)
         protocol.dataReceived(b"<DATABA>")
 
+        # Wait for async processing
+        await asyncio.sleep(0.01)
+
         # Verify TelegramReceivedEvent was dispatched
         event_bus.dispatch.assert_called_once()
         call_args = event_bus.dispatch.call_args[0][0]
         assert isinstance(call_args, TelegramReceivedEvent)
-        assert call_args.telegram == "DATA"
+        assert call_args.telegram == "DATABA"
         assert call_args.protocol == protocol

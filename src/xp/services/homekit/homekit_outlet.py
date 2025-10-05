@@ -9,10 +9,11 @@ from pyhap.const import CATEGORY_OUTLET
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.protocol.conbus_protocol import (
+    DatapointReceivedEvent,
     OutletGetInUseEvent,
     OutletGetOnEvent,
     OutletSetInUseEvent,
-    OutletSetOnEvent, DatapointReceivedEvent,
+    OutletSetOnEvent,
 )
 from xp.models.telegram.datapoint_type import DataPointType
 
@@ -53,9 +54,7 @@ class Outlet(Accessory):
         serv_outlet = self.add_preload_service("Outlet")
         self.set_info_service(version, manufacturer, model, serial)
         self.char_on = serv_outlet.configure_char(
-            "On",
-            setter_callback=self.set_on,
-            getter_callback=self.get_on
+            "On", setter_callback=self.set_on, getter_callback=self.get_on
         )
         self.char_outlet_in_use = serv_outlet.configure_char(
             "OutletInUse",
@@ -65,7 +64,8 @@ class Outlet(Accessory):
 
     def on_datapoint_received(self, event: DatapointReceivedEvent) -> Optional[bool]:
 
-        if (event.serial_number != self.module.serial_number
+        if (
+            event.serial_number != self.module.serial_number
             or event.datapoint_type != DataPointType.MODULE_OUTPUT_STATE
         ):
             return None
@@ -82,7 +82,6 @@ class Outlet(Accessory):
         )
         return is_on
 
-
     def set_outlet_in_use(self, value: bool) -> None:
         self.logger.debug(f"set_outlet_in_use {value}")
 
@@ -93,7 +92,7 @@ class Outlet(Accessory):
                 output_number=self.accessory.output_number,
                 module=self.module,
                 accessory=self.accessory,
-                value=value
+                value=value,
             )
         )
         self.logger.debug(f"set_outlet_in_use {value} end")
@@ -124,7 +123,7 @@ class Outlet(Accessory):
                 output_number=self.accessory.output_number,
                 module=self.module,
                 accessory=self.accessory,
-                value=value
+                value=value,
             )
         )
 

@@ -34,7 +34,9 @@ class TelegramProtocol(protocol.Protocol):
         """Callback when async task completes"""
         try:
             if task.exception():
-                self.logger.error(f"Async task failed: {task.exception()}", exc_info=task.exception())
+                self.logger.error(
+                    f"Async task failed: {task.exception()}", exc_info=task.exception()
+                )
             else:
                 self.logger.debug("Async task completed successfully")
         except Exception as e:
@@ -48,7 +50,9 @@ class TelegramProtocol(protocol.Protocol):
             await self.event_bus.dispatch(ConnectionMadeEvent(protocol=self))
             self.logger.debug("ConnectionMadeEvent dispatched successfully")
         except Exception as e:
-            self.logger.error(f"Error dispatching ConnectionMadeEvent: {e}", exc_info=True)
+            self.logger.error(
+                f"Error dispatching ConnectionMadeEvent: {e}", exc_info=True
+            )
 
     def dataReceived(self, data: bytes) -> None:
         """Sync callback from Twisted - delegates to async implementation"""
@@ -69,7 +73,7 @@ class TelegramProtocol(protocol.Protocol):
             if end == -1:
                 break
 
-            frame = self.buffer[start : end+1]
+            frame = self.buffer[start : end + 1]
             self.buffer = self.buffer[end + 1 :]
             telegram = frame[1:-1]
             payload = telegram[:-2].decode()
@@ -86,7 +90,7 @@ class TelegramProtocol(protocol.Protocol):
                         payload=payload,
                         serial_number=serial_number,
                         checksum=checksum,
-                        error="Invalid checksum"
+                        error="Invalid checksum",
                     )
                 )
                 self.logger.debug(
@@ -107,11 +111,12 @@ class TelegramProtocol(protocol.Protocol):
                     telegram=telegram.decode(),
                     payload=payload,
                     serial_number=serial_number,
-                    checksum=checksum
+                    checksum=checksum,
                 )
             )
-            self.logger.debug("frameReceived TelegramReceivedEvent dispatched successfully")
-
+            self.logger.debug(
+                "frameReceived TelegramReceivedEvent dispatched successfully"
+            )
 
     def sendFrame(self, data: bytes) -> None:
         self.logger.debug(f"sendFrame {data.decode()}")

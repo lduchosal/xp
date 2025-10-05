@@ -2,6 +2,7 @@
 
 import punq
 from bubus import EventBus
+from twisted.internet import asyncioreactor
 from twisted.internet.interfaces import IConnector
 from twisted.internet.posixbase import PosixReactorBase
 
@@ -29,8 +30,8 @@ from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
-from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
 from xp.services.homekit.homekit_hap_service import HomekitHapService
+from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
 from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.homekit.homekit_outlet_service import HomeKitOutletService
 from xp.services.homekit.homekit_service import HomeKitService
@@ -46,7 +47,6 @@ from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
 
-from twisted.internet import asyncioreactor
 asyncioreactor.install()
 from twisted.internet import reactor  # noqa: E402
 

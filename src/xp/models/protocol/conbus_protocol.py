@@ -16,7 +16,9 @@ if TYPE_CHECKING:
 class ConnectionMadeEvent(BaseEvent):
     """Event dispatched when TCP connection is established"""
 
-    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
+    protocol: TelegramProtocol = Field(
+        description="Reference to the TelegramProtocol instance"
+    )
 
 
 class ConnectionFailedEvent(BaseEvent):
@@ -42,23 +44,31 @@ class DatapointEvent(BaseEvent):
     serial_number: str = Field(description="Serial number of the light bulb set")
     datapoint_type: DataPointType = Field(description="Datapoint type")
 
+
 class DatapointReceivedEvent(DatapointEvent):
     data_value: str = Field(description="Data value")
 
+
 class ReadDatapointEvent(DatapointEvent):
     pass
+
 
 class ModuleEvent(BaseEvent):
     """Event dispatched when light bulb set is on"""
 
     serial_number: str = Field(description="Serial number of the light bulb set")
     output_number: int = Field(description="Output number of the light bulb set")
-    module: ConsonModuleConfig = Field(description="ConsonModuleConfig of the light bulb set")
-    accessory: HomekitAccessoryConfig = Field(description="HomekitAccessoryConfig of the light bulb set")
+    module: ConsonModuleConfig = Field(
+        description="ConsonModuleConfig of the light bulb set"
+    )
+    accessory: HomekitAccessoryConfig = Field(
+        description="HomekitAccessoryConfig of the light bulb set"
+    )
 
 
 class LightBulbSetOnEvent(ModuleEvent):
     """Event dispatched when light bulb set is on"""
+
     value: bool = Field(description="On or Off the light bulb set")
 
 
@@ -70,6 +80,7 @@ class LightBulbGetOnEvent(ModuleEvent, BaseEvent[bool]):
 
 class OutletSetOnEvent(ModuleEvent):
     """Event dispatched when outlet set is on"""
+
     value: bool = Field(description="On or Off the light bulb set")
 
 
@@ -87,11 +98,13 @@ class OutletGetInUseEvent(ModuleEvent):
 
 class OutletSetInUseEvent(ModuleEvent, BaseEvent[bool]):
     """Event dispatched when outlet set is on"""
+
     value: bool = Field(description="On or Off the light bulb set")
 
 
 class DimmingLightSetOnEvent(ModuleEvent):
     """Event dispatched when dimming light set is on"""
+
     value: bool = Field(description="On or Off the light bulb set")
 
 
@@ -118,23 +131,32 @@ class ConnectionLostEvent(BaseEvent):
 
     reason: str = Field(description="Disconnection reason")
 
+
 class TelegramEvent(BaseEvent):
-    protocol: TelegramProtocol = Field(description="Reference to the TelegramProtocol instance")
+    protocol: TelegramProtocol = Field(
+        description="Reference to the TelegramProtocol instance"
+    )
     frame: str = Field(description="Frame <S0020040129F02D12FK>")
     telegram: str = Field(description="Telegram: S0020040129F02D12FK")
     payload: str = Field(description="Payload: S0020040129F02D12")
     serial_number: str = Field(description="Serial number: 0020040129")
     checksum: str = Field(description="Checksum: FK")
 
+
 class ModuleDiscoveredEvent(TelegramEvent):
     """Event dispatched when TCP connection is lost"""
+
     pass
+
 
 class TelegramReceivedEvent(TelegramEvent):
     """Event dispatched when a telegram frame is received"""
+
     pass
+
 
 class InvalidTelegramReceivedEvent(TelegramEvent):
     """Event dispatched when a telegram frame is received"""
+
     error: str = Field(description="Error with the received telegram")
     pass

@@ -1,6 +1,6 @@
-from unittest.mock import Mock, MagicMock, patch
-import pytest
+from unittest.mock import Mock, patch
 
+import pytest
 from bubus import EventBus
 from twisted.internet.posixbase import PosixReactorBase
 
@@ -10,7 +10,6 @@ from xp.models.protocol.conbus_protocol import (
     ConnectionFailedEvent,
     ConnectionLostEvent,
     ConnectionMadeEvent,
-    DatapointReceivedEvent,
     DimmingLightGetBrightnessEvent,
     DimmingLightGetOnEvent,
     DimmingLightSetBrightnessEvent,
@@ -30,8 +29,8 @@ from xp.models.telegram.datapoint_type import DataPointType
 from xp.services import TelegramService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
-from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
 from xp.services.homekit.homekit_hap_service import HomekitHapService
+from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
 from xp.services.homekit.homekit_outlet_service import HomeKitOutletService
 from xp.services.homekit.homekit_service import HomeKitService
 from xp.services.protocol.protocol_factory import TelegramFactory
@@ -46,7 +45,7 @@ def mock_module():
         serial_number="1234567890",
         module_type="XP24",
         module_type_code=24,
-        link_number=1
+        link_number=1,
     )
 
 
@@ -58,7 +57,7 @@ def mock_accessory():
         serial_number="1234567890",
         output_number=2,
         description="Test Description",
-        service="lightbulb"
+        service="lightbulb",
     )
 
 
@@ -80,55 +79,31 @@ class TestHomeKitLightbulbService:
 
         # Verify event handlers are registered
         assert event_bus.on.call_count == 2
-        event_bus.on.assert_any_call(LightBulbGetOnEvent, service.handle_lightbulb_get_on)
-        event_bus.on.assert_any_call(LightBulbSetOnEvent, service.handle_lightbulb_set_on)
+        event_bus.on.assert_any_call(
+            LightBulbGetOnEvent, service.handle_lightbulb_get_on
+        )
+        event_bus.on.assert_any_call(
+            LightBulbSetOnEvent, service.handle_lightbulb_set_on
+        )
 
-    def test_handle_lightbulb_get_on_returns_true(self, mock_module, mock_accessory):
-        """Test handle_lightbulb_get_on returns True when output is on"""
+    def test_handle_lightbulb_get_on_dispatches_read_event(
+        self, mock_module, mock_accessory
+    ):
+        """Test handle_lightbulb_get_on dispatches ReadDatapointEvent"""
         event = LightBulbGetOnEvent(
             serial_number="1234567890",
             output_number=2,
             module=mock_module,
-            accessory=mock_accessory
+            accessory=mock_accessory,
         )
 
-        # Mock the expect response - data_value is a string indexed by output_number
-        response = DatapointReceivedEvent(
-            serial_number="1234567890",
-            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
-            data_value="001"  # Output 2 (index 2) is on ('1')
-        )
-        # Use MagicMock to avoid AsyncMock behavior
-        self.event_bus.expect = MagicMock(return_value=response)
+        self.service.handle_lightbulb_get_on(event)
 
-        result = self.service.handle_lightbulb_get_on(event)
-
-        assert result is True
         self.event_bus.dispatch.assert_called_once()
         dispatched_event = self.event_bus.dispatch.call_args[0][0]
         assert isinstance(dispatched_event, ReadDatapointEvent)
         assert dispatched_event.serial_number == "1234567890"
         assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
-
-    def test_handle_lightbulb_get_on_returns_false(self, mock_module, mock_accessory):
-        """Test handle_lightbulb_get_on returns False when output is off"""
-        event = LightBulbGetOnEvent(
-            serial_number="1234567890",
-            output_number=2,
-            module=mock_module,
-            accessory=mock_accessory
-        )
-
-        response = DatapointReceivedEvent(
-            serial_number="1234567890",
-            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
-            data_value="0000"  # Output 2 (index 2) is off ('0')
-        )
-        self.event_bus.expect = MagicMock(return_value=response)
-
-        result = self.service.handle_lightbulb_get_on(event)
-
-        assert result is False
 
     def test_handle_lightbulb_set_on(self, mock_module, mock_accessory):
         """Test handle_lightbulb_set_on dispatches SendActionEvent"""
@@ -137,7 +112,7 @@ class TestHomeKitLightbulbService:
             output_number=5,
             module=mock_module,
             accessory=mock_accessory,
-            value=True
+            value=True,
         )
 
         self.service.handle_lightbulb_set_on(event)
@@ -170,28 +145,25 @@ class TestHomeKitOutletService:
         assert event_bus.on.call_count == 3
         event_bus.on.assert_any_call(OutletGetOnEvent, service.handle_outlet_get_on)
         event_bus.on.assert_any_call(OutletSetOnEvent, service.handle_outlet_set_on)
-        event_bus.on.assert_any_call(OutletGetInUseEvent, service.handle_outlet_get_in_use)
+        event_bus.on.assert_any_call(
+            OutletGetInUseEvent, service.handle_outlet_get_in_use
+        )
 
     def test_handle_outlet_get_on(self, mock_module, mock_accessory):
-        """Test handle_outlet_get_on"""
+        """Test handle_outlet_get_on dispatches ReadDatapointEvent"""
         event = OutletGetOnEvent(
             serial_number="1234567890",
             output_number=1,
             module=mock_module,
-            accessory=mock_accessory
+            accessory=mock_accessory,
         )
 
-        response = DatapointReceivedEvent(
-            serial_number="1234567890",
-            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
-            data_value="010"  # Output 1 (index 1) is on
-        )
-        self.event_bus.expect = MagicMock(return_value=response)
+        self.service.handle_outlet_get_on(event)
 
-        result = self.service.handle_outlet_get_on(event)
-
-        assert result is True
         self.event_bus.dispatch.assert_called_once()
+        dispatched_event = self.event_bus.dispatch.call_args[0][0]
+        assert isinstance(dispatched_event, ReadDatapointEvent)
+        assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_handle_outlet_set_on(self, mock_module, mock_accessory):
         """Test handle_outlet_set_on"""
@@ -200,7 +172,7 @@ class TestHomeKitOutletService:
             output_number=3,
             module=mock_module,
             accessory=mock_accessory,
-            value=False
+            value=False,
         )
 
         self.service.handle_outlet_set_on(event)
@@ -209,47 +181,21 @@ class TestHomeKitOutletService:
         assert isinstance(dispatched_event, SendActionEvent)
         assert dispatched_event.value is False
 
-    def test_handle_outlet_get_in_use_returns_true(self, mock_module, mock_accessory):
-        """Test handle_outlet_get_in_use returns True when outlet is in use"""
+    def test_handle_outlet_get_in_use(self, mock_module, mock_accessory):
+        """Test handle_outlet_get_in_use dispatches ReadDatapointEvent"""
         event = OutletGetInUseEvent(
             serial_number="1234567890",
             output_number=0,
             module=mock_module,
-            accessory=mock_accessory
+            accessory=mock_accessory,
         )
 
-        response = DatapointReceivedEvent(
-            serial_number="1234567890",
-            datapoint_type=DataPointType.MODULE_STATE,
-            data_value="ON"
-        )
+        self.service.handle_outlet_get_in_use(event)
 
-        # Mock expect to return the response directly
-        self.event_bus.expect = MagicMock(return_value=response)
-
-        result = self.service.handle_outlet_get_in_use(event)
-
-        assert result is True
-
-    def test_handle_outlet_get_in_use_returns_false(self, mock_module, mock_accessory):
-        """Test handle_outlet_get_in_use returns False when outlet is not in use"""
-        event = OutletGetInUseEvent(
-            serial_number="1234567890",
-            output_number=0,
-            module=mock_module,
-            accessory=mock_accessory
-        )
-
-        response = DatapointReceivedEvent(
-            serial_number="1234567890",
-            datapoint_type=DataPointType.MODULE_STATE,
-            data_value="OFF"
-        )
-        self.event_bus.expect = MagicMock(return_value=response)
-
-        result = self.service.handle_outlet_get_in_use(event)
-
-        assert result is False
+        self.event_bus.dispatch.assert_called_once()
+        dispatched_event = self.event_bus.dispatch.call_args[0][0]
+        assert isinstance(dispatched_event, ReadDatapointEvent)
+        assert dispatched_event.datapoint_type == DataPointType.MODULE_STATE
 
 
 class TestHomeKitDimmingLightService:
@@ -272,24 +218,20 @@ class TestHomeKitDimmingLightService:
         assert event_bus.on.call_count == 4
 
     def test_handle_dimminglight_get_on(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_get_on"""
+        """Test handle_dimminglight_get_on dispatches ReadDatapointEvent"""
         event = DimmingLightGetOnEvent(
             serial_number="1234567890",
             output_number=0,
             module=mock_module,
-            accessory=mock_accessory
+            accessory=mock_accessory,
         )
 
-        response = DatapointReceivedEvent(
-            serial_number="1234567890",
-            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
-            data_value="1"  # Output 0 (index 0) is on
-        )
-        self.event_bus.expect = MagicMock(return_value=response)
+        self.service.handle_dimminglight_get_on(event)
 
-        result = self.service.handle_dimminglight_get_on(event)
-
-        assert result is True
+        self.event_bus.dispatch.assert_called_once()
+        dispatched_event = self.event_bus.dispatch.call_args[0][0]
+        assert isinstance(dispatched_event, ReadDatapointEvent)
+        assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_handle_dimminglight_set_on_true(self, mock_module, mock_accessory):
         """Test handle_dimminglight_set_on with value=True sets brightness to 0 (implementation bug)"""
@@ -298,7 +240,7 @@ class TestHomeKitDimmingLightService:
             output_number=2,
             module=mock_module,
             accessory=mock_accessory,
-            value=True
+            value=True,
         )
 
         self.service.handle_dimminglight_set_on(event)
@@ -315,7 +257,7 @@ class TestHomeKitDimmingLightService:
             output_number=2,
             module=mock_module,
             accessory=mock_accessory,
-            value=False
+            value=False,
         )
 
         self.service.handle_dimminglight_set_on(event)
@@ -325,59 +267,37 @@ class TestHomeKitDimmingLightService:
         assert dispatched_event.value == 60
 
     def test_handle_dimminglight_set_brightness(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_set_brightness"""
+        """Test handle_dimminglight_set_brightness dispatches SendWriteConfigEvent"""
         event = DimmingLightSetBrightnessEvent(
             serial_number="1234567890",
             output_number=1,
             module=mock_module,
             accessory=mock_accessory,
-            brightness=75  # Correct field name is 'brightness', not 'value'
+            brightness=75,
         )
 
-        # Note: handler has a bug - it accesses event.value instead of event.brightness
-        # This test will fail unless the handler is fixed
-        with pytest.raises(AttributeError):
-            self.service.handle_dimminglight_set_brightness(event)
+        self.service.handle_dimminglight_set_brightness(event)
+
+        self.event_bus.dispatch.assert_called_once()
+        dispatched_event = self.event_bus.dispatch.call_args[0][0]
+        assert isinstance(dispatched_event, SendWriteConfigEvent)
+        assert dispatched_event.value == 75
 
     def test_handle_dimminglight_get_brightness(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_get_brightness parses response correctly"""
+        """Test handle_dimminglight_get_brightness dispatches ReadDatapointEvent"""
         event = DimmingLightGetBrightnessEvent(
             serial_number="1234567890",
             output_number=1,
             module=mock_module,
-            accessory=mock_accessory
+            accessory=mock_accessory,
         )
 
-        response = DatapointReceivedEvent(
-            serial_number="1234567890",
-            datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
-            data_value="00:050,01:025,02:100"
-        )
-        self.event_bus.expect = MagicMock(return_value=response)
+        self.service.handle_dimminglight_get_brightness(event)
 
-        result = self.service.handle_dimminglight_get_brightness(event)
-
-        assert result == 25  # Output 1 has brightness 25
-
-    def test_handle_dimminglight_get_brightness_output_not_found(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_get_brightness returns 0 when output not found"""
-        event = DimmingLightGetBrightnessEvent(
-            serial_number="1234567890",
-            output_number=5,
-            module=mock_module,
-            accessory=mock_accessory
-        )
-
-        response = DatapointReceivedEvent(
-            serial_number="1234567890",
-            datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
-            data_value="00:050,01:025"
-        )
-        self.event_bus.expect = MagicMock(return_value=response)
-
-        result = self.service.handle_dimminglight_get_brightness(event)
-
-        assert result == 0
+        self.event_bus.dispatch.assert_called_once()
+        dispatched_event = self.event_bus.dispatch.call_args[0][0]
+        assert isinstance(dispatched_event, ReadDatapointEvent)
+        assert dispatched_event.datapoint_type == DataPointType.MODULE_LIGHT_LEVEL
 
 
 class TestHomeKitConbusService:
@@ -405,8 +325,7 @@ class TestHomeKitConbusService:
     def test_handle_read_datapoint_event(self, mock_module, mock_accessory):
         """Test handle_read_datapoint_event sends correct telegram"""
         event = ReadDatapointEvent(
-            serial_number="1234567890",
-            datapoint_type=DataPointType.MODULE_OUTPUT_STATE
+            serial_number="1234567890", datapoint_type=DataPointType.MODULE_OUTPUT_STATE
         )
 
         self.service.handle_read_datapoint_event(event)
@@ -421,7 +340,7 @@ class TestHomeKitConbusService:
             serial_number="1234567890",
             output_number=3,
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
-            value=75
+            value=75,
         )
 
         self.service.handle_send_write_config_event(event)
@@ -431,11 +350,7 @@ class TestHomeKitConbusService:
 
     def test_handle_send_action_event_on(self, mock_module, mock_accessory):
         """Test handle_send_action_event for turning on"""
-        event = SendActionEvent(
-            serial_number="1234567890",
-            output_number=2,
-            value=True
-        )
+        event = SendActionEvent(serial_number="1234567890", output_number=2, value=True)
 
         self.service.handle_send_action_event(event)
 
@@ -445,9 +360,7 @@ class TestHomeKitConbusService:
     def test_handle_send_action_event_off(self, mock_module, mock_accessory):
         """Test handle_send_action_event for turning off"""
         event = SendActionEvent(
-            serial_number="1234567890",
-            output_number=5,
-            value=False
+            serial_number="1234567890", output_number=5, value=False
         )
 
         self.service.handle_send_action_event(event)
@@ -482,7 +395,7 @@ class TestHomeKitService:
             self.dimminglight_service,
             self.conbus_service,
             self.module_factory,
-            self.telegram_service
+            self.telegram_service,
         )
 
     def test_init(self):
@@ -498,7 +411,7 @@ class TestHomeKitService:
         assert self.service.module_factory == self.module_factory
 
         # Verify event handlers are registered
-        assert self.event_bus.on.call_count == 7
+        assert self.event_bus.on.call_count == 5
 
     def test_handle_connection_made(self, mock_module, mock_accessory):
         """Test handle_connection_made sends initial discovery telegram"""
@@ -529,8 +442,10 @@ class TestHomeKitService:
         event = TelegramReceivedEvent(
             protocol=protocol,
             telegram="R1234567890F01D00XX",
-            raw_frame="<R1234567890F01D00XX>",
-            event_bus=self.event_bus
+            frame="<R1234567890F01D00XX>",
+            payload="R1234567890F01D00",
+            serial_number="1234567890",
+            checksum="XX",
         )
 
         self.service.handle_telegram_received(event)
@@ -541,44 +456,16 @@ class TestHomeKitService:
         assert dispatched.telegram == "R1234567890F01D00XX"
         assert dispatched.protocol == protocol
 
-    def test_handle_telegram_received_module_type(self, mock_module, mock_accessory):
-        """Test handle_telegram_received dispatches ModuleTypeReadEvent"""
-        protocol = Mock(spec=TelegramProtocol)
-        event = TelegramReceivedEvent(
-            protocol=protocol,
-            frame="<R1234567890F02D00XX>",
-            telegram="R1234567890F02D00XX",
-            serial_number="1234567890",
-            payload="R1234567890F02D00",
-            checksum="XX",
-        )
-
-        self.service.handle_telegram_received(event)
-
-        dispatched = self.event_bus.dispatch.call_args[0][0]
-        assert isinstance(dispatched, ModuleTypeReadEvent)
-
-    def test_handle_telegram_received_error_code(self, mock_module, mock_accessory):
-        """Test handle_telegram_received dispatches ModuleErrorCodeReadEvent"""
-        protocol = Mock(spec=TelegramProtocol)
-        event = TelegramReceivedEvent(
-            protocol=protocol,
-            telegram="R1234567890F02D10XX",
-            raw_frame="<R1234567890F02D10XX>",
-            event_bus=self.event_bus
-        )
-
-        self.service.handle_telegram_received(event)
-
-        dispatched = self.event_bus.dispatch.call_args[0][0]
-        assert isinstance(dispatched, ModuleErrorCodeReadEvent)
-
     def test_handle_module_discovered(self, mock_module, mock_accessory):
         """Test handle_module_discovered sends module type query"""
         protocol = Mock(spec=TelegramProtocol)
         event = ModuleDiscoveredEvent(
             telegram="R1234567890F01D00XX",
-            protocol=protocol
+            protocol=protocol,
+            frame="<R1234567890F01D00XX>",
+            payload="R1234567890F01D00",
+            serial_number="1234567890",
+            checksum="XX",
         )
 
         self.service.handle_module_discovered(event)
@@ -586,40 +473,15 @@ class TestHomeKitService:
         # Note: F01D00 becomes F02D0000 due to string replacement
         protocol.sendFrame.assert_called_once_with(b"S1234567890F02D0000XX")
 
-    def test_handle_module_type_read(self, mock_module, mock_accessory):
-        """Test handle_module_type_read sends error code query"""
-        protocol = Mock(spec=TelegramProtocol)
-        event = ModuleTypeReadEvent(
-            telegram="R1234567890F02D00XX",
-            protocol=protocol
-        )
-
-        self.service.handle_module_type_read(event)
-
-        protocol.sendFrame.assert_called_once_with(b"S1234567890F02D10XX")
-
-    def test_handle_module_error_code_read(self, mock_module, mock_accessory):
-        """Test handle_module_error_code_read completes discovery"""
-        protocol = Mock(spec=TelegramProtocol)
-        event = ModuleErrorCodeReadEvent(
-            telegram="R1234567890F02D10XX",
-            protocol=protocol
-        )
-
-        # Should not raise
-        self.service.handle_module_error_code_read(event)
-
     def test_start_module_factory(self):
-        """Test _start_module_factory runs in separate thread"""
-        with patch('threading.Thread') as mock_thread:
-            thread_instance = Mock()
-            mock_thread.return_value = thread_instance
+        """Test _start_module_factory creates async task"""
+        with patch("asyncio.create_task") as mock_create_task:
+            mock_task = Mock()
+            mock_create_task.return_value = mock_task
 
             self.service._start_module_factory()
 
-            mock_thread.assert_called_once_with(
-                target=self.module_factory.run,
-                daemon=True,
-                name="ModuleFactoryThread"
-            )
-            thread_instance.start.assert_called_once()
+            # Should have created an async task
+            mock_create_task.assert_called_once()
+            # Should have added a done callback to the task
+            mock_task.add_done_callback.assert_called_once()

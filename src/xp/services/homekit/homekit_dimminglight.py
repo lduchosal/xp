@@ -9,10 +9,11 @@ from pyhap.const import CATEGORY_LIGHTBULB
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.protocol.conbus_protocol import (
+    DatapointReceivedEvent,
     DimmingLightGetBrightnessEvent,
     DimmingLightGetOnEvent,
     DimmingLightSetBrightnessEvent,
-    DimmingLightSetOnEvent, DatapointReceivedEvent,
+    DimmingLightSetOnEvent,
 )
 from xp.models.telegram.datapoint_type import DataPointType
 
@@ -28,7 +29,7 @@ class DimmingLight(Accessory):
         driver: AccessoryDriver,
         module: ConsonModuleConfig,
         accessory: HomekitAccessoryConfig,
-        event_bus: EventBus
+        event_bus: EventBus,
     ):
         super().__init__(driver, accessory.description)
 
@@ -64,10 +65,7 @@ class DimmingLight(Accessory):
         self.set_info_service(version, manufacturer, model, serial)
 
         self.char_on = serv_light.configure_char(
-            "On",
-            getter_callback=self.get_on,
-            setter_callback=self.set_on,
-            value=False
+            "On", getter_callback=self.get_on, setter_callback=self.set_on, value=False
         )
         self.char_brightness = serv_light.configure_char(
             "Brightness",
@@ -78,7 +76,8 @@ class DimmingLight(Accessory):
 
     def on_is_on_received(self, event: DatapointReceivedEvent) -> Optional[bool]:
 
-        if (event.serial_number != self.module.serial_number
+        if (
+            event.serial_number != self.module.serial_number
             or event.datapoint_type != DataPointType.MODULE_OUTPUT_STATE
         ):
             return None
@@ -96,7 +95,8 @@ class DimmingLight(Accessory):
 
     def on_brightness_received(self, event: DatapointReceivedEvent) -> Optional[int]:
 
-        if (event.serial_number != self.module.serial_number
+        if (
+            event.serial_number != self.module.serial_number
             or event.datapoint_type != DataPointType.MODULE_LIGHT_LEVEL
         ):
             return None
@@ -133,7 +133,7 @@ class DimmingLight(Accessory):
                 output_number=self.accessory.output_number,
                 module=self.module,
                 accessory=self.accessory,
-                value=value
+                value=value,
             )
         )
 
@@ -151,7 +151,6 @@ class DimmingLight(Accessory):
             )
         )
         return self.is_on
-
 
     def set_brightness(self, value: int) -> None:
         self.logger.debug(f"set_brightness {value}")

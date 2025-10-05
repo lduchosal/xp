@@ -30,8 +30,8 @@ from xp.utils.dependencies import ServiceContainer
 def cli(ctx: click.Context) -> None:
     """XP CLI tool for remote console bus operations"""
     # Configure logging with thread information
-    log_format = '%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s'
-    date_format = '%H:%M:%S'
+    log_format = "%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s"
+    date_format = "%H:%M:%S"
 
     # Force format on root logger and all handlers
     formatter = logging.Formatter(log_format, datefmt=date_format)
@@ -54,13 +54,15 @@ def cli(ctx: click.Context) -> None:
     # Ensure xp module logs at DEBUG level
     logging.getLogger("xp").setLevel(logging.DEBUG)
     logging.getLogger("xp.services.homekit.homekit_service").setLevel(logging.INFO)
-    #logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
+    # logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
     logging.getLogger("pyhap").setLevel(logging.DEBUG)
     logging.getLogger("bubus").setLevel(logging.DEBUG)
 
     # Initialize the service container and store it in the context
     ctx.ensure_object(dict)
-    ctx.obj["container"] = ServiceContainer()
+    # Only create a new container if one wasn't provided (e.g., for testing)
+    if "container" not in ctx.obj:
+        ctx.obj["container"] = ServiceContainer()
 
 
 # Register all command groups

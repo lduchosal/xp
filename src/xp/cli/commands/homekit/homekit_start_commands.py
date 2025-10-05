@@ -8,6 +8,7 @@ from click import Context
 from xp.cli.commands.homekit.homekit import homekit
 from xp.services.homekit.homekit_service import HomeKitService
 
+
 @homekit.command("start")
 @click.pass_context
 def homekit_start(ctx: Context) -> None:

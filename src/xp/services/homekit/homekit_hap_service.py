@@ -73,7 +73,9 @@ class HomekitHapService:
 
         # Start HAP-python in a separate thread to avoid event loop conflicts
         self.logger.info("Starting HAP-python driver in separate thread...")
-        hap_thread = threading.Thread(target=self._run_driver_in_thread, daemon=True, name="HAP-Python")
+        hap_thread = threading.Thread(
+            target=self._run_driver_in_thread, daemon=True, name="HAP-Python"
+        )
         hap_thread.start()
         self.logger.info("HAP-python driver thread started")
 

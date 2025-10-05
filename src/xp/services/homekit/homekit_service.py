@@ -11,17 +11,18 @@ from xp.models.protocol.conbus_protocol import (
     ConnectionFailedEvent,
     ConnectionLostEvent,
     ConnectionMadeEvent,
+    DatapointReceivedEvent,
     ModuleDiscoveredEvent,
     TelegramReceivedEvent,
-    DatapointReceivedEvent,
 )
 from xp.services import TelegramService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
-from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
 from xp.services.homekit.homekit_hap_service import HomekitHapService
+from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
 from xp.services.homekit.homekit_outlet_service import HomeKitOutletService
 from xp.services.protocol.protocol_factory import TelegramFactory
+
 
 class HomeKitService:
 
@@ -64,9 +65,7 @@ class HomeKitService:
         # Run reactor in its own dedicated thread
         self.logger.info("Starting reactor in dedicated thread...")
         reactor_thread = threading.Thread(
-            target=self._run_reactor_in_thread,
-            daemon=True,
-            name="ReactorThread"
+            target=self._run_reactor_in_thread, daemon=True, name="ReactorThread"
         )
         reactor_thread.start()
 
@@ -111,10 +110,11 @@ class HomeKitService:
         try:
             task = asyncio.create_task(async_start())
             self.logger.debug(f"Created module factory task: {task}")
-            task.add_done_callback(lambda t: self.logger.debug(f"Module factory task completed: {t}"))
+            task.add_done_callback(
+                lambda t: self.logger.debug(f"Module factory task completed: {t}")
+            )
         except Exception as e:
             self.logger.error(f"Error creating async task: {e}", exc_info=True)
-
 
     # Event handlers
     def handle_connection_made(self, event: ConnectionMadeEvent) -> None:
@@ -129,21 +129,25 @@ class HomeKitService:
 
     def handle_connection_lost(self, event: ConnectionLostEvent) -> None:
         """Handle connection lost"""
-        self.logger.warning(f"Connection lost: {event.reason if hasattr(event, 'reason') else 'Unknown reason'}")
+        self.logger.warning(
+            f"Connection lost: {event.reason if hasattr(event, 'reason') else 'Unknown reason'}"
+        )
 
     def handle_telegram_received(self, event: TelegramReceivedEvent) -> str:
         """Handle received telegram events"""
-        self.logger.debug(f"handle_telegram_received ENTERED with telegram: {event.telegram}")
+        self.logger.debug(
+            f"handle_telegram_received ENTERED with telegram: {event.telegram}"
+        )
 
         # Check if telegram is Reply (R) with Discover function (F01D)
         if event.telegram.startswith("R") and "F01D" in event.telegram:
             self.logger.debug("Module discovered, dispatching ModuleDiscoveredEvent")
-            event.event_bus.dispatch(
+            self.event_bus.dispatch(
                 ModuleDiscoveredEvent(
                     frame=event.frame,
                     telegram=event.telegram,
                     payload=event.payload,
-                    serial_number = event.serial_number,
+                    serial_number=event.serial_number,
                     checksum=event.checksum,
                     protocol=event.protocol,
                 )
@@ -155,13 +159,16 @@ class HomeKitService:
         if event.telegram.startswith("R") and "F02D" in event.telegram:
             self.logger.debug("Module Read Datapoint, parsing telegram...")
             reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
-            self.logger.debug(f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}")
+            self.logger.debug(
+                f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
+            )
             self.logger.debug("About to dispatch DatapointReceivedEvent")
-            event.event_bus.dispatch(
+            self.event_bus.dispatch(
                 DatapointReceivedEvent(
                     serial_number=reply_telegram.serial_number,
                     datapoint_type=reply_telegram.datapoint_type,
-                    data_value=reply_telegram.data_value)
+                    data_value=reply_telegram.data_value,
+                )
             )
             self.logger.debug("DatapointReceivedEvent dispatched successfully")
             return event.frame
@@ -169,7 +176,6 @@ class HomeKitService:
         self.logger.warning(f"Unhandled telegram received: {event.telegram}")
         self.logger.info(f"telegram_received unhandled event {event}")
         return event.frame
-
 
     def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> str:
         self.logger.debug("Handling module discovered event")
@@ -182,6 +188,3 @@ class HomeKitService:
         self.logger.debug(f"Sending module type request: {new_telegram}")
         event.protocol.sendFrame(new_telegram.encode())
         return event.serial_number
-
-
-
