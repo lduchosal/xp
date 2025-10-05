@@ -73,16 +73,7 @@ class Outlet(Accessory):
     def get_outlet_in_use(self) -> bool:
         # Emit event and get response
         self.logger.debug("get_outlet_in_use")
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                future = asyncio.run_coroutine_threadsafe(self._async_get_outlet_in_use(), loop)
-                return future.result(timeout=1)
-            else:
-                return asyncio.run(self._async_get_outlet_in_use())
-        except Exception as e:
-            self.logger.error(f"Error in get_outlet_in_use: {e}")
-            return False
+        return asyncio.run(self._async_get_outlet_in_use())
 
     async def _async_get_outlet_in_use(self) -> bool:
         """Async helper for get_outlet_in_use"""
@@ -113,16 +104,7 @@ class Outlet(Accessory):
     def get_on(self) -> bool:
         # Emit event and get response
         self.logger.debug("get_on")
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                future = asyncio.run_coroutine_threadsafe(self._async_get_on(), loop)
-                return future.result(timeout=1)
-            else:
-                return asyncio.run(self._async_get_on())
-        except Exception as e:
-            self.logger.error(f"Error in get_on: {e}")
-            return False
+        return asyncio.run(self._async_get_on())
 
     async def _async_get_on(self) -> bool:
         """Async helper for get_on"""

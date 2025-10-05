@@ -113,5 +113,5 @@ class TelegramProtocol(protocol.Protocol):
         frame = b"<" + frame_data.encode() + b">"
         if not self.transport:
             self.logger.info("Invalid transport")
-            return
+            raise IOError("Transport is not open")
         self.transport.write(frame)  # type: ignore

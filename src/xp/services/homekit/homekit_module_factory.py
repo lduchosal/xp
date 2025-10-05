@@ -66,10 +66,25 @@ class HomekitModuleFactory:
 
     async def async_start(self) -> None:
         """Get current client configuration"""
+        self.logger.info("Loading accessories...")
         self.load_accessories()
+        self.logger.info("Accessories loaded successfully")
 
         # Start it!
-        await self.driver.async_start()
+        self.logger.info("Starting HAP-python driver (async_start)...")
+        # Don't await - let it run as a background task
+        import asyncio
+        asyncio.create_task(self._run_driver())
+        self.logger.info("HAP-python driver task created")
+
+    def _run_driver(self) -> None:
+        """Run the HAP-python driver"""
+        try:
+            self.logger.info("HAP-python driver starting...")
+            self.driver.start()
+            self.logger.info("HAP-python driver ended (this should not happed)")
+        except Exception as e:
+            self.logger.error(f"HAP-python driver error: {e}", exc_info=True)
 
     def load_accessories(self) -> None:
         bridge_config = self.config.bridge

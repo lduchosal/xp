@@ -41,7 +41,10 @@ def cli(ctx: click.Context) -> None:
     # logging.getLogger('pyhap.accessory_driver').setLevel(logging.WARNING)
 
     # Ensure xp module logs at DEBUG level
-    # logging.getLogger("xp").setLevel(logging.DEBUG)
+    logging.getLogger("xp").setLevel(logging.DEBUG)
+    logging.getLogger("xp.services.homekit.homekit_module_factory").setLevel(logging.INFO)
+    logging.getLogger("xp.services.homekit.homekit_service").setLevel(logging.INFO)
+    #logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
     logging.getLogger("pyhap").setLevel(logging.DEBUG)
 
     # Initialize the service container and store it in the context

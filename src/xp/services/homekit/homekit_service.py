@@ -143,7 +143,7 @@ class HomeKitService:
             return
 
         self.logger.warning(f"Unhandled telegram received: {event.telegram}")
-        self.logger.debug(f"telegram_received unhanlded event{event}")
+        self.logger.info(f"telegram_received unhanlded event{event}")
 
     async def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> None:
         self.logger.debug(f"Handling module discovered event")

@@ -66,21 +66,11 @@ class LightBulb(Accessory):
         self.logger.debug("get_on")
 
         # Run the async event bus dispatch in the current event loop
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # Create a future and run it
-                future = asyncio.run_coroutine_threadsafe(self._async_get_on(), loop)
-                return future.result(timeout=1)
-            else:
-                # No loop running, use asyncio.run
-                return asyncio.run(self._async_get_on())
-        except Exception as e:
-            self.logger.error(f"Error in get_on: {e.__class__.__name__}", e)
-            return False
+        return asyncio.run(self._async_get_on())
 
     async def _async_get_on(self) -> bool:
         """Async helper for get_on"""
+        self.logger.debug(f"_async_get_on")
         event = await self.event_bus.dispatch(
             LightBulbGetOnEvent(
                 serial_number=self.accessory.serial_number,
@@ -89,5 +79,7 @@ class LightBulb(Accessory):
                 accessory=self.accessory,
             )
         )
+        self.logger.debug(f"_async_get_on: dispatch")
         returned_value: bool = await event.event_result(timeout=1)
+        self.logger.debug(f"_async_get_on: returned_value {returned_value}")
         return returned_value
