@@ -1,4 +1,5 @@
 """Pytest configuration for the XP project."""
+
 import pytest
 
 
