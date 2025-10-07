@@ -4,6 +4,7 @@ import pytest
 from bubus import EventBus
 from twisted.internet.posixbase import PosixReactorBase
 
+from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.protocol.conbus_protocol import (
@@ -374,6 +375,10 @@ class TestHomeKitService:
 
     def setup_method(self):
         """Setup test fixtures"""
+        self.cli_config = Mock(spec=ConbusClientConfig)
+        self.cli_config.conbus = (
+            Mock()
+        )  # Add the conbus attribute that HomeKitService expects
         self.event_bus = Mock(spec=EventBus)
         self.telegram_factory = Mock(spec=TelegramFactory)
         self.telegram_protocol = Mock(spec=TelegramProtocol)
@@ -387,6 +392,7 @@ class TestHomeKitService:
         self.telegram_service = Mock(spec=TelegramService)
 
         self.service = HomeKitService(
+            self.cli_config,
             self.event_bus,
             self.telegram_factory,
             self.reactor,
@@ -400,6 +406,7 @@ class TestHomeKitService:
 
     def test_init(self):
         """Test service initialization"""
+        assert self.service.cli_config == self.cli_config.conbus
         assert self.service.event_bus == self.event_bus
         assert self.service.telegram_factory == self.telegram_factory
         assert self.service.protocol == self.telegram_protocol

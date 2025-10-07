@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from bubus import EventBus
 from pyhap.accessory import Accessory
@@ -9,13 +8,11 @@ from pyhap.const import CATEGORY_OUTLET
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.protocol.conbus_protocol import (
-    DatapointReceivedEvent,
     OutletGetInUseEvent,
     OutletGetOnEvent,
     OutletSetInUseEvent,
     OutletSetOnEvent,
 )
-from xp.models.telegram.datapoint_type import DataPointType
 
 
 class Outlet(Accessory):
@@ -34,6 +31,13 @@ class Outlet(Accessory):
         super().__init__(driver=driver, display_name=accessory.description)
 
         self.logger = logging.getLogger(__name__)
+
+        identifier = f"{module.serial_number}.{accessory.output_number:02d}"
+        version = accessory.id
+        manufacturer = "Conson"
+        model = ("XP24_outlet",)
+
+        self.identifier = identifier
         self.accessory = accessory
         self.module = module
 
@@ -45,14 +49,9 @@ class Outlet(Accessory):
         )
         self.is_on = False
         self.is_in_use = False
-        self.event_bus.on(DatapointReceivedEvent, self.on_datapoint_received)
 
-        serial = f"{module.serial_number}.{accessory.output_number:02d}"
-        version = accessory.id
-        manufacturer = "Conson"
-        model = ("XP24_outlet",)
         serv_outlet = self.add_preload_service("Outlet")
-        self.set_info_service(version, manufacturer, model, serial)
+        self.set_info_service(version, manufacturer, model, identifier)
         self.char_on = serv_outlet.configure_char(
             "On", setter_callback=self.set_on, getter_callback=self.get_on
         )
@@ -61,26 +60,6 @@ class Outlet(Accessory):
             setter_callback=self.set_outlet_in_use,
             getter_callback=self.get_outlet_in_use,
         )
-
-    def on_datapoint_received(self, event: DatapointReceivedEvent) -> Optional[bool]:
-
-        if (
-            event.serial_number != self.module.serial_number
-            or event.datapoint_type != DataPointType.MODULE_OUTPUT_STATE
-        ):
-            return None
-
-        is_on = event.data_value[::-1][self.accessory.output_number] == "1"
-        self.is_on = is_on
-        self.is_in_use = is_on
-        self.logger.debug(
-            f"on_datapoint_received "
-            f"serial_number: {event.serial_number}, "
-            f"output_number: {self.accessory.output_number}, "
-            f"data_vale: {event.data_value}"
-            f"is_on: {is_on}"
-        )
-        return is_on
 
     def set_outlet_in_use(self, value: bool) -> None:
         self.logger.debug(f"set_outlet_in_use {value}")

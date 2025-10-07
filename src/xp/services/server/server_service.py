@@ -211,7 +211,7 @@ class ServerService:
         """Handle individual client connection"""
         try:
             # Set timeout for idle connections (30 seconds as per spec)
-            client_socket.settimeout(30.0)
+            client_socket.settimeout(300.0)
 
             while True:
                 # Receive data from client

@@ -426,6 +426,7 @@ class ServiceContainer:
         self.container.register(
             HomeKitService,
             factory=lambda: HomeKitService(
+                cli_config=self.container.resolve(ConbusClientConfig),
                 event_bus=self.container.resolve(EventBus),
                 telegram_factory=self.container.resolve(TelegramFactory),
                 reactor=self.container.resolve(PosixReactorBase),

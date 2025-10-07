@@ -7,12 +7,13 @@ import threading
 from bubus import EventBus
 from twisted.internet.posixbase import PosixReactorBase
 
+from xp.models import ConbusClientConfig
 from xp.models.protocol.conbus_protocol import (
     ConnectionFailedEvent,
     ConnectionLostEvent,
     ConnectionMadeEvent,
-    DatapointReceivedEvent,
     ModuleDiscoveredEvent,
+    OutputStateReceivedEvent,
     TelegramReceivedEvent,
 )
 from xp.services import TelegramService
@@ -28,6 +29,7 @@ class HomeKitService:
 
     def __init__(
         self,
+        cli_config: ConbusClientConfig,
         event_bus: EventBus,
         telegram_factory: TelegramFactory,
         reactor: PosixReactorBase,
@@ -39,6 +41,7 @@ class HomeKitService:
         telegram_service: TelegramService,
     ):
 
+        self.cli_config = cli_config.conbus
         self.reactor = reactor
         self.telegram_factory = telegram_factory
         self.protocol = telegram_factory.telegram_protocol
@@ -81,8 +84,12 @@ class HomeKitService:
         # We just need to use it
 
         # Connect to TCP server
-        self.logger.info("Connecting to TCP server 10.0.3.26:10001")
-        self.reactor.connectTCP("10.0.3.26", 10001, self.telegram_factory)
+        self.logger.info(
+            f"Connecting to TCP server {self.cli_config.ip}:{self.cli_config.port}"
+        )
+        self.reactor.connectTCP(
+            self.cli_config.ip, self.cli_config.port, self.telegram_factory
+        )
 
         # Schedule module factory to start after reactor is running
         # Use callLater(0) to ensure event loop is actually running
@@ -155,8 +162,8 @@ class HomeKitService:
             self.logger.debug("ModuleDiscoveredEvent dispatched successfully")
             return event.frame
 
-        # Check if telegram is Reply (R) with Read Datapoint (F02D)
-        if event.telegram.startswith("R") and "F02D" in event.telegram:
+        # Check if telegram is Reply (R) with Read Datapoint (F02) OUTPUT_STATE (D12)
+        if event.telegram.startswith("R") and "F02D12" in event.telegram:
             self.logger.debug("Module Read Datapoint, parsing telegram...")
             reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
             self.logger.debug(
@@ -164,7 +171,25 @@ class HomeKitService:
             )
             self.logger.debug("About to dispatch DatapointReceivedEvent")
             self.event_bus.dispatch(
-                DatapointReceivedEvent(
+                OutputStateReceivedEvent(
+                    serial_number=reply_telegram.serial_number,
+                    datapoint_type=reply_telegram.datapoint_type,
+                    data_value=reply_telegram.data_value,
+                )
+            )
+            self.logger.debug("DatapointReceivedEvent dispatched successfully")
+            return event.frame
+
+        # Check if telegram is Reply (R) with Read Datapoint (F02) LIGHT_LEVEL (D15)
+        if event.telegram.startswith("R") and "F02D15" in event.telegram:
+            self.logger.debug("Module Read Datapoint, parsing telegram...")
+            reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
+            self.logger.debug(
+                f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
+            )
+            self.logger.debug("About to dispatch DatapointReceivedEvent")
+            self.event_bus.dispatch(
+                OutputStateReceivedEvent(
                     serial_number=reply_telegram.serial_number,
                     datapoint_type=reply_telegram.datapoint_type,
                     data_value=reply_telegram.data_value,

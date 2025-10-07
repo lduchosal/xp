@@ -54,7 +54,7 @@ def cli(ctx: click.Context) -> None:
     # Ensure xp module logs at DEBUG level
     logging.getLogger("xp").setLevel(logging.DEBUG)
     logging.getLogger("xp.services.homekit.homekit_service").setLevel(logging.INFO)
-    # logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
+    logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
     logging.getLogger("pyhap").setLevel(logging.DEBUG)
     logging.getLogger("bubus").setLevel(logging.DEBUG)
 

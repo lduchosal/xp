@@ -1,7 +1,7 @@
 import logging
 from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 import yaml
 from pydantic import BaseModel, Field, IPvAnyAddress
@@ -29,6 +29,7 @@ class HomekitAccessoryConfig(BaseModel):
     output_number: int
     description: str
     service: str
+    hap_accessory: Optional[int] = None
 
 
 class HomekitConfig(BaseModel):

@@ -45,7 +45,11 @@ class DatapointEvent(BaseEvent):
     datapoint_type: DataPointType = Field(description="Datapoint type")
 
 
-class DatapointReceivedEvent(DatapointEvent):
+class OutputStateReceivedEvent(DatapointEvent):
+    data_value: str = Field(description="Data value")
+
+
+class LightLevelReceivedEvent(DatapointEvent):
     data_value: str = Field(description="Data value")
 
 
@@ -144,7 +148,7 @@ class TelegramEvent(BaseEvent):
 
 
 class ModuleDiscoveredEvent(TelegramEvent):
-    """Event dispatched when TCP connection is lost"""
+    """Event dispatched when module is discovered"""
 
     pass
 
@@ -156,7 +160,7 @@ class TelegramReceivedEvent(TelegramEvent):
 
 
 class InvalidTelegramReceivedEvent(TelegramEvent):
-    """Event dispatched when a telegram frame is received"""
+    """Event dispatched when an invalid telegram frame is received"""
 
     error: str = Field(description="Error with the received telegram")
     pass

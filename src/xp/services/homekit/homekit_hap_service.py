@@ -2,10 +2,10 @@ import logging
 import signal
 import threading
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional
 
 from bubus import EventBus
-from pyhap.accessory import Accessory, Bridge
+from pyhap.accessory import Bridge
 from pyhap.accessory_driver import AccessoryDriver
 from typing_extensions import Union
 
@@ -15,6 +15,10 @@ from xp.models.homekit.homekit_config import (
     HomekitAccessoryConfig,
     HomekitConfig,
     RoomConfig,
+)
+from xp.models.protocol.conbus_protocol import (
+    LightLevelReceivedEvent,
+    OutputStateReceivedEvent,
 )
 from xp.services.homekit.homekit_dimminglight import DimmingLight
 from xp.services.homekit.homekit_lightbulb import LightBulb
@@ -52,6 +56,7 @@ class HomekitHapService:
 
         # Load configuration
         self.config = homekit_config
+        self.accessory_registry: Dict[str, Union[LightBulb, Outlet, DimmingLight]] = {}
 
         # Service dependencies
         self.modules = module_service
@@ -68,7 +73,7 @@ class HomekitHapService:
     async def async_start(self) -> None:
         """Get current client configuration"""
         self.logger.info("Loading accessories...")
-        self.load_accessories()
+        self.build_bridge()
         self.logger.info("Accessories loaded successfully")
 
         # Start HAP-python in a separate thread to avoid event loop conflicts
@@ -91,7 +96,64 @@ class HomekitHapService:
         except Exception as e:
             self.logger.error(f"HAP-python driver error: {e}", exc_info=True)
 
-    def load_accessories(self) -> None:
+    def on_datapoint_received(self, event: OutputStateReceivedEvent) -> str:
+
+        output_number = 0
+        for output in event.data_value[::-1].split(""):
+            if output == "x":
+                break
+            identifier = f"{event.serial_number}.{output_number:02X}"
+            accessory = self.accessory_registry.get(identifier)
+
+            if not accessory:
+                self.logger.warning(
+                    f"Invalid accessory: {event.serial_number} (not found)"
+                )
+            else:
+                accessory.is_on = True if output == "1" else False
+            output_number += 1
+
+        self.logger.debug(
+            f"on_datapoint_received "
+            f"serial_number: {event.serial_number}, "
+            f"data_vale: {event.data_value}"
+        )
+        return event.data_value
+
+    def on_brightness_received(self, event: LightLevelReceivedEvent) -> str:
+
+        # Parse response format like "00:050,01:025,02:100"
+        self.logger.debug(f"Parsing brightness from response: {event.data_value}")
+        output_number = 0
+        for output_data in event.data_value.split(","):
+            if ":" in output_data:
+                output_str, level_str = output_data.split(":")
+                output_number = int(output_str)
+                brightness = int(level_str)
+                identifier = f"{event.serial_number}.{output_number:02X}"
+                accessory = self.accessory_registry.get(identifier)
+
+                if not accessory:
+                    self.logger.warning(
+                        f"Invalid accessory: {event.serial_number} (not found)"
+                    )
+                elif not isinstance(accessory, DimmingLight):
+                    self.logger.warning(
+                        f"Invalid accessory: {event.serial_number} (not dimming light)"
+                    )
+                else:
+                    accessory.brightness = brightness
+
+            output_number += 1
+
+        self.logger.debug(
+            f"on_brightness_received "
+            f"serial_number: {event.serial_number}, "
+            f"data_vale: {event.data_value}"
+        )
+        return event.data_value
+
+    def build_bridge(self) -> None:
         bridge_config = self.config.bridge
         bridge = Bridge(self.driver, bridge_config.name)
         bridge.set_info_service(
@@ -115,11 +177,13 @@ class HomekitHapService:
                 continue
 
             accessory = self.get_accessory(homekit_accessory)
-            bridge.add_accessory(accessory)
+            if accessory:
+                bridge.add_accessory(accessory)
+                self.accessory_registry[accessory.identifier] = accessory
 
     def get_accessory(
         self, homekit_accessory: HomekitAccessoryConfig
-    ) -> Union[Accessory, LightBulb, Outlet, None]:
+    ) -> Union[LightBulb, Outlet, DimmingLight, None]:
         """Call this method to get a standalone Accessory."""
         module_config = self.modules.get_module_by_serial(
             homekit_accessory.serial_number
