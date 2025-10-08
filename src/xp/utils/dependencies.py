@@ -27,7 +27,6 @@ from xp.services.conbus.conbus_raw_service import ConbusRawService
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.conbus_service import ConbusService
-from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
 from xp.services.homekit.homekit_hap_service import HomekitHapService
@@ -64,7 +63,6 @@ class ServiceContainer:
         config_path: str = "cli.yml",
         homekit_config_path: str = "homekit.yml",
         conson_config_path: str = "conson.yml",
-        cache_file: str = ".homekit_cache.json",
         server_port: int = 10001,
         reverse_proxy_port: int = 10001,
     ):
@@ -75,7 +73,6 @@ class ServiceContainer:
             config_path: Path to the Conbus CLI configuration file
             homekit_config_path: Path to the HomeKit configuration file
             conson_config_path: Path to the Conson configuration file
-            cache_file: Path to the HomeKit cache file
             server_port: Port for the server service
             reverse_proxy_port: Port for the reverse proxy service
         """
@@ -83,7 +80,6 @@ class ServiceContainer:
         self._config_path = config_path
         self._homekit_config_path = homekit_config_path
         self._conson_config_path = conson_config_path
-        self._cache_file = cache_file
         self._server_port = server_port
         self._reverse_proxy_port = reverse_proxy_port
 
@@ -278,19 +274,6 @@ class ServiceContainer:
             HomekitModuleService,
             factory=lambda: HomekitModuleService(
                 conson_modules_config=self.container.resolve(ConsonModuleListConfig),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            HomeKitCacheService,
-            factory=lambda: HomeKitCacheService(
-                cache_file=self._cache_file,
-                conbus_output_service=self.container.resolve(ConbusOutputService),
-                conbus_lightlevel_service=self.container.resolve(
-                    ConbusLightlevelService
-                ),
-                telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,
         )

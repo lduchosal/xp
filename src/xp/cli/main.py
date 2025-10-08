@@ -7,7 +7,6 @@ from click_help_colors import HelpColorsGroup
 
 from xp.cli.commands import homekit
 from xp.cli.commands.api import api
-from xp.cli.commands.cache_commands import cache
 from xp.cli.commands.conbus.conbus import conbus
 from xp.cli.commands.file_commands import file
 from xp.cli.commands.module_commands import module
@@ -66,7 +65,6 @@ def cli(ctx: click.Context) -> None:
 
 
 # Register all command groups
-cli.add_command(cache)
 cli.add_command(conbus)
 cli.add_command(homekit)
 cli.add_command(telegram)

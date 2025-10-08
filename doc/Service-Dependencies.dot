@@ -52,7 +52,6 @@ digraph ServiceDependencies {
 
         HomekitService;
         HomekitModuleService;
-        HomeKitCacheService;
     }
 
     // Server services layer
@@ -111,11 +110,6 @@ digraph ServiceDependencies {
     // MsActionTableService dependencies
     MsActionTableService -> ConbusService;
     MsActionTableService -> TelegramService [lhead=cluster_telegram];
-
-    // HomeKitCacheService dependencies
-    HomeKitCacheService -> ConbusOutputService;
-    HomeKitCacheService -> ConbusLightlevelService;
-    HomeKitCacheService -> TelegramService [lhead=cluster_telegram];
 
     // HomekitService dependencies
     HomekitService -> HomekitModuleService;

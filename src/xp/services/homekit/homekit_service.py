@@ -12,6 +12,7 @@ from xp.models.protocol.conbus_protocol import (
     ConnectionFailedEvent,
     ConnectionLostEvent,
     ConnectionMadeEvent,
+    LightLevelReceivedEvent,
     ModuleDiscoveredEvent,
     OutputStateReceivedEvent,
     TelegramReceivedEvent,
@@ -169,7 +170,7 @@ class HomeKitService:
             self.logger.debug(
                 f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
             )
-            self.logger.debug("About to dispatch DatapointReceivedEvent")
+            self.logger.debug("About to dispatch OutputStateReceivedEvent")
             self.event_bus.dispatch(
                 OutputStateReceivedEvent(
                     serial_number=reply_telegram.serial_number,
@@ -177,25 +178,25 @@ class HomeKitService:
                     data_value=reply_telegram.data_value,
                 )
             )
-            self.logger.debug("DatapointReceivedEvent dispatched successfully")
+            self.logger.debug("OutputStateReceivedEvent dispatched successfully")
             return event.frame
 
         # Check if telegram is Reply (R) with Read Datapoint (F02) LIGHT_LEVEL (D15)
         if event.telegram.startswith("R") and "F02D15" in event.telegram:
-            self.logger.debug("Module Read Datapoint, parsing telegram...")
+            self.logger.debug("Light level Datapoint, parsing telegram...")
             reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
             self.logger.debug(
                 f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
             )
-            self.logger.debug("About to dispatch DatapointReceivedEvent")
+            self.logger.debug("About to dispatch LightLevelReceivedEvent")
             self.event_bus.dispatch(
-                OutputStateReceivedEvent(
+                LightLevelReceivedEvent(
                     serial_number=reply_telegram.serial_number,
                     datapoint_type=reply_telegram.datapoint_type,
                     data_value=reply_telegram.data_value,
                 )
             )
-            self.logger.debug("DatapointReceivedEvent dispatched successfully")
+            self.logger.debug("LightLevelReceivedEvent dispatched successfully")
             return event.frame
 
         self.logger.warning(f"Unhandled telegram received: {event.telegram}")

@@ -16,7 +16,6 @@ from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.conbus_service import ConbusService
-from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_hap_service import HomekitHapService
 from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.reverse_proxy_service import ReverseProxyService
@@ -48,7 +47,6 @@ class TestServiceContainer:
             config_path="custom-cli.yml",
             homekit_config_path="custom-homekit.yml",
             conson_config_path="custom-conson.yml",
-            cache_file=".custom_cache.json",
             server_port=8080,
             reverse_proxy_port=9090,
         )
@@ -56,7 +54,6 @@ class TestServiceContainer:
         assert container._config_path == "custom-cli.yml"
         assert container._homekit_config_path == "custom-homekit.yml"
         assert container._conson_config_path == "custom-conson.yml"
-        assert container._cache_file == ".custom_cache.json"
         assert container._server_port == 8080
         assert container._reverse_proxy_port == 9090
 
@@ -145,11 +142,6 @@ class TestServiceContainer:
         service = ServiceContainer().get_container().resolve(HomekitModuleService)
         assert isinstance(service, HomekitModuleService)
 
-    def test_resolve_homekit_cache_service(self):
-        """Test resolving HomeKitCacheService."""
-        service = ServiceContainer().get_container().resolve(HomeKitCacheService)
-        assert isinstance(service, HomeKitCacheService)
-
     def test_resolve_homekit_service(self):
         """Test resolving HomekitService."""
         service = ServiceContainer().get_container().resolve(HomekitHapService)
@@ -203,7 +195,6 @@ class TestServiceContainer:
             ActionTableService,
             MsActionTableService,
             HomekitModuleService,
-            HomeKitCacheService,
             HomekitHapService,
             ServerService,
             ReverseProxyService,
