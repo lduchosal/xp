@@ -73,14 +73,16 @@ class TelegramProtocol(protocol.Protocol):
             if end == -1:
                 break
 
-            frame = self.buffer[start : end + 1]     # <S0123450001F02D12FK>
+            frame = self.buffer[start : end + 1]  # <S0123450001F02D12FK>
             self.buffer = self.buffer[end + 1 :]
-            telegram = frame[1:-1]                   # S0123450001F02D12FK
-            payload = telegram[:-2]                  # S0123450001F02D12
-            telegram_type = telegram[0:1].decode()   # S
-            serial_number = telegram[1:11] if telegram_type in "S" else bytes() # 0123450001
-            checksum = telegram[-2:].decode()        # FK
-            calculated_checksum = calculate_checksum(payload.decode(encoding='latin-1'))
+            telegram = frame[1:-1]  # S0123450001F02D12FK
+            payload = telegram[:-2]  # S0123450001F02D12
+            telegram_type = telegram[0:1].decode()  # S
+            serial_number = (
+                telegram[1:11] if telegram_type in "S" else b""
+            )  # 0123450001
+            checksum = telegram[-2:].decode()  # FK
+            calculated_checksum = calculate_checksum(payload.decode(encoding="latin-1"))
 
             if checksum != calculated_checksum:
                 self.logger.debug(
@@ -97,7 +99,9 @@ class TelegramProtocol(protocol.Protocol):
                 )
                 return
 
-            self.logger.debug(f"frameReceived payload: {payload.decode()}, checksum: {checksum}")
+            self.logger.debug(
+                f"frameReceived payload: {payload.decode()}, checksum: {checksum}"
+            )
             # Dispatch event to bubus with await
             self.logger.debug("frameReceived about to dispatch TelegramReceivedEvent")
             await self.event_bus.dispatch(

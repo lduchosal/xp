@@ -154,6 +154,7 @@ class TelegramEvent(BaseEvent):
 
 class EventTelegramReceivedEvent(TelegramEvent):
     """Event telegram received"""
+
     pass
 
 

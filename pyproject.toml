@@ -56,11 +56,6 @@ python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--verbose",
-    "--cov=src/xp",
-    "--cov-report=html",
-    "--cov-report=term-missing",
-    "--cov-fail-under=75"
 ]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
@@ -144,11 +139,11 @@ version = {source = "file", path = "src/xp/__init__.py"}
 
 [tool.pdm.scripts]
 test = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=term-missing"
-test-quick = "env PYTHONPATH=src python -m pytest tests/ --tb=no -q"
+test-quick = "env PYTHONPATH=src python -m pytest tests/ --tb=short -qq"
 test-ci = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-branch --cov-report=xml -m 'not reverseproxy'"
 test-unit = "env PYTHONPATH=src python -m pytest tests/unit/ -v"
 test-integration = "env PYTHONPATH=src python -m pytest tests/integration/ -v"
-test-cov = "env PYTHONPATH=src python -m pytest tests/ -v --cov=src/xp --cov-report=html --cov-report=term-missing"
+test-cov = "env PYTHONPATH=src python -m pytest tests/ --quiet --cov=src/xp --cov-report=html --cov-report=term-missing --cov-fail-under=75"
 lint = "ruff check --fix src/ tests/"
 format = "black src/ tests/"
 typecheck = "mypy src/ tests/"
@@ -157,7 +152,7 @@ refurb = "refurb src/ tests/"
 isort = "isort src/ tests/"
 absolufy = {shell = "find src tests -name '*.py' -type f -exec absolufy-imports --application-directories=src:tests {} +"}
 update-readme = {shell = "xp help > /tmp/xp-help.txt && sed -i '' -e '/<!-- BEGIN CLI HELP -->/,/<!-- END CLI HELP -->/{//!d;}' -e '/<!-- BEGIN CLI HELP -->/r /tmp/xp-help.txt' README.md && rm /tmp/xp-help.txt"}
-check = ["lint", "format", "typecheck", "refurb", "deadvar", "test"]
+check = {composite = ["clean", "lint", "format", "typecheck", "vulture", "refurb", "isort", "absolufy", "test-quick", "test-cov", "update-readme"] }
 bump-version = "pdm bump -v patch"
 env = "echo ${PATH}"
 install = "pdm install"

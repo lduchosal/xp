@@ -225,14 +225,6 @@ xp api
 xp api start
 
 
-xp cache
-xp cache clear
-xp cache get
-xp cache items
-xp cache set
-xp cache stats
-
-
 xp conbus
 
 xp conbus actiontable

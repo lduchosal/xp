@@ -12,10 +12,11 @@ from xp.models.protocol.conbus_protocol import (
     ConnectionFailedEvent,
     ConnectionLostEvent,
     ConnectionMadeEvent,
+    EventTelegramReceivedEvent,
     LightLevelReceivedEvent,
     ModuleDiscoveredEvent,
     OutputStateReceivedEvent,
-    TelegramReceivedEvent, EventTelegramReceivedEvent,
+    TelegramReceivedEvent,
 )
 from xp.services import TelegramService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
@@ -206,8 +207,12 @@ class HomeKitService:
         )
         self.logger.debug("OutputStateReceivedEvent dispatched successfully")
 
-    def dispatch_event_telegram_received_event(self, event: TelegramReceivedEvent) -> None:
-        self.logger.debug("Event telegram received, dispatching EventTelegramReceivedEvent")
+    def dispatch_event_telegram_received_event(
+        self, event: TelegramReceivedEvent
+    ) -> None:
+        self.logger.debug(
+            "Event telegram received, dispatching EventTelegramReceivedEvent"
+        )
         self.event_bus.dispatch(
             EventTelegramReceivedEvent(
                 protocol=event.protocol,
