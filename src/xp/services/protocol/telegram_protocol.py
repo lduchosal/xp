@@ -73,35 +73,31 @@ class TelegramProtocol(protocol.Protocol):
             if end == -1:
                 break
 
-            frame = self.buffer[start : end + 1]
+            frame = self.buffer[start : end + 1]     # <S0123450001F02D12FK>
             self.buffer = self.buffer[end + 1 :]
-            telegram = frame[1:-1]
-            payload = telegram[:-2].decode()
-            serial_number = telegram[1:11].decode()
-            checksum = telegram[-2:].decode()
-            calculated_checksum = calculate_checksum(payload)
+            telegram = frame[1:-1]                   # S0123450001F02D12FK
+            payload = telegram[:-2]                  # S0123450001F02D12
+            telegram_type = telegram[0:1].decode()   # S
+            serial_number = telegram[1:11] if telegram_type in "S" else bytes() # 0123450001
+            checksum = telegram[-2:].decode()        # FK
+            calculated_checksum = calculate_checksum(payload.decode(encoding='latin-1'))
 
             if checksum != calculated_checksum:
-                await self.event_bus.dispatch(
-                    InvalidTelegramReceivedEvent(
-                        protocol=self,
-                        frame=frame.decode(),
-                        telegram=telegram.decode(),
-                        payload=payload,
-                        serial_number=serial_number,
-                        checksum=checksum,
-                        error="Invalid checksum",
-                    )
-                )
                 self.logger.debug(
                     f"Invalid frame: {frame.decode()} "
                     f"checksum: {checksum}, "
                     f"expected {calculated_checksum}"
                 )
+                await self.event_bus.dispatch(
+                    InvalidTelegramReceivedEvent(
+                        protocol=self,
+                        frame=frame.decode(),
+                        error=f"Invalid checksum ({calculated_checksum} != {checksum})",
+                    )
+                )
                 return
 
-            self.logger.debug(f"frameReceived payload: {payload}, checksum: {checksum}")
-
+            self.logger.debug(f"frameReceived payload: {payload.decode()}, checksum: {checksum}")
             # Dispatch event to bubus with await
             self.logger.debug("frameReceived about to dispatch TelegramReceivedEvent")
             await self.event_bus.dispatch(
@@ -109,7 +105,8 @@ class TelegramProtocol(protocol.Protocol):
                     protocol=self,
                     frame=frame.decode(),
                     telegram=telegram.decode(),
-                    payload=payload,
+                    payload=payload.decode(),
+                    telegram_type=telegram_type,
                     serial_number=serial_number,
                     checksum=checksum,
                 )

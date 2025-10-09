@@ -143,14 +143,18 @@ class ConnectionLostEvent(BaseEvent):
 
 
 class TelegramEvent(BaseEvent):
-    protocol: TelegramProtocol = Field(
-        description="Reference to the TelegramProtocol instance"
-    )
-    frame: str = Field(description="Frame <S0020040129F02D12FK>")
-    telegram: str = Field(description="Telegram: S0020040129F02D12FK")
-    payload: str = Field(description="Payload: S0020040129F02D12")
-    serial_number: str = Field(description="Serial number: 0020040129")
+    protocol: TelegramProtocol = Field(description="TelegramProtocol instance")
+    frame: str = Field(description="Frame <S0123450001F02D12FK>")
+    telegram: str = Field(description="Telegram: S0123450001F02D12FK")
+    payload: str = Field(description="Payload: S0123450001F02D12")
+    telegram_type: str = Field(description="Telegram type: S")
+    serial_number: str = Field(description="Serial number: 0123450001 or empty")
     checksum: str = Field(description="Checksum: FK")
+
+
+class EventTelegramReceivedEvent(TelegramEvent):
+    """Event telegram received"""
+    pass
 
 
 class ModuleDiscoveredEvent(TelegramEvent):
@@ -165,8 +169,10 @@ class TelegramReceivedEvent(TelegramEvent):
     pass
 
 
-class InvalidTelegramReceivedEvent(TelegramEvent):
+class InvalidTelegramReceivedEvent(BaseEvent):
     """Event dispatched when an invalid telegram frame is received"""
 
+    protocol: TelegramProtocol = Field(description="TelegramProtocol instance")
+    frame: str = Field(description="Frame <S0123450001F02D12FK>")
     error: str = Field(description="Error with the received telegram")
     pass

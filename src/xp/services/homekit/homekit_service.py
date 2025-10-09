@@ -15,7 +15,7 @@ from xp.models.protocol.conbus_protocol import (
     LightLevelReceivedEvent,
     ModuleDiscoveredEvent,
     OutputStateReceivedEvent,
-    TelegramReceivedEvent,
+    TelegramReceivedEvent, EventTelegramReceivedEvent,
 )
 from xp.services import TelegramService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
@@ -151,60 +151,90 @@ class HomeKitService:
         )
 
         # Check if telegram is Reply (R) with Discover function (F01D)
-        if event.telegram.startswith("R") and "F01D" in event.telegram:
-            self.logger.debug("Module discovered, dispatching ModuleDiscoveredEvent")
-            self.event_bus.dispatch(
-                ModuleDiscoveredEvent(
-                    frame=event.frame,
-                    telegram=event.telegram,
-                    payload=event.payload,
-                    serial_number=event.serial_number,
-                    checksum=event.checksum,
-                    protocol=event.protocol,
-                )
-            )
-            self.logger.debug("ModuleDiscoveredEvent dispatched successfully")
+        if event.telegram_type in ("E"):
+            self.dispatch_event_telegram_received_event(event)
+            return event.frame
+
+        # Check if telegram is Reply (R) with Discover function (F01D)
+        if event.telegram_type in ("R") and "F01D" in event.telegram:
+            self.dispatch_module_discovered_event(event)
             return event.frame
 
         # Check if telegram is Reply (R) with Read Datapoint (F02) OUTPUT_STATE (D12)
-        if event.telegram.startswith("R") and "F02D12" in event.telegram:
-            self.logger.debug("Module Read Datapoint, parsing telegram...")
-            reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
-            self.logger.debug(
-                f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
-            )
-            self.logger.debug("About to dispatch OutputStateReceivedEvent")
-            self.event_bus.dispatch(
-                OutputStateReceivedEvent(
-                    serial_number=reply_telegram.serial_number,
-                    datapoint_type=reply_telegram.datapoint_type,
-                    data_value=reply_telegram.data_value,
-                )
-            )
-            self.logger.debug("OutputStateReceivedEvent dispatched successfully")
+        if event.telegram_type in ("R") and "F02D12" in event.telegram:
+            self.dispatch_output_state_event(event)
             return event.frame
 
         # Check if telegram is Reply (R) with Read Datapoint (F02) LIGHT_LEVEL (D15)
-        if event.telegram.startswith("R") and "F02D15" in event.telegram:
-            self.logger.debug("Light level Datapoint, parsing telegram...")
-            reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
-            self.logger.debug(
-                f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
-            )
-            self.logger.debug("About to dispatch LightLevelReceivedEvent")
-            self.event_bus.dispatch(
-                LightLevelReceivedEvent(
-                    serial_number=reply_telegram.serial_number,
-                    datapoint_type=reply_telegram.datapoint_type,
-                    data_value=reply_telegram.data_value,
-                )
-            )
-            self.logger.debug("LightLevelReceivedEvent dispatched successfully")
+        if event.telegram_type in ("R") and "F02D15" in event.telegram:
+            self.dispatch_light_level_event(event)
             return event.frame
 
         self.logger.warning(f"Unhandled telegram received: {event.telegram}")
         self.logger.info(f"telegram_received unhandled event {event}")
         return event.frame
+
+    def dispatch_light_level_event(self, event: TelegramReceivedEvent) -> None:
+        self.logger.debug("Light level Datapoint, parsing telegram...")
+        reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
+        self.logger.debug(
+            f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
+        )
+        self.logger.debug("About to dispatch LightLevelReceivedEvent")
+        self.event_bus.dispatch(
+            LightLevelReceivedEvent(
+                serial_number=reply_telegram.serial_number,
+                datapoint_type=reply_telegram.datapoint_type,
+                data_value=reply_telegram.data_value,
+            )
+        )
+        self.logger.debug("LightLevelReceivedEvent dispatched successfully")
+
+    def dispatch_output_state_event(self, event: TelegramReceivedEvent) -> None:
+        self.logger.debug("Module Read Datapoint, parsing telegram...")
+        reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
+        self.logger.debug(
+            f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
+        )
+        self.logger.debug("About to dispatch OutputStateReceivedEvent")
+        self.event_bus.dispatch(
+            OutputStateReceivedEvent(
+                serial_number=reply_telegram.serial_number,
+                datapoint_type=reply_telegram.datapoint_type,
+                data_value=reply_telegram.data_value,
+            )
+        )
+        self.logger.debug("OutputStateReceivedEvent dispatched successfully")
+
+    def dispatch_event_telegram_received_event(self, event: TelegramReceivedEvent) -> None:
+        self.logger.debug("Event telegram received, dispatching EventTelegramReceivedEvent")
+        self.event_bus.dispatch(
+            EventTelegramReceivedEvent(
+                protocol=event.protocol,
+                frame=event.frame,
+                telegram=event.telegram,
+                payload=event.payload,
+                telegram_type=event.telegram_type,
+                serial_number=event.serial_number,
+                checksum=event.checksum,
+            )
+        )
+        self.logger.debug("EventTelegramReceivedEvent dispatched successfully")
+
+    def dispatch_module_discovered_event(self, event: TelegramReceivedEvent) -> None:
+        self.logger.debug("Module discovered, dispatching ModuleDiscoveredEvent")
+        self.event_bus.dispatch(
+            ModuleDiscoveredEvent(
+                frame=event.frame,
+                telegram=event.telegram,
+                payload=event.payload,
+                telegram_type=event.telegram_type,
+                serial_number=event.serial_number,
+                checksum=event.checksum,
+                protocol=event.protocol,
+            )
+        )
+        self.logger.debug("ModuleDiscoveredEvent dispatched successfully")
 
     def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> str:
         self.logger.debug("Handling module discovered event")
