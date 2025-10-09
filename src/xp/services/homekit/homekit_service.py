@@ -18,6 +18,7 @@ from xp.models.protocol.conbus_protocol import (
     TelegramReceivedEvent,
 )
 from xp.services import TelegramService
+from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
 from xp.services.homekit.homekit_hap_service import HomekitHapService
@@ -37,6 +38,7 @@ class HomeKitService:
         lightbulb_service: HomeKitLightbulbService,
         outlet_service: HomeKitOutletService,
         dimminglight_service: HomeKitDimmingLightService,
+        cache_service: HomeKitCacheService,
         conbus_service: HomeKitConbusService,
         module_factory: HomekitHapService,
         telegram_service: TelegramService,
@@ -50,6 +52,7 @@ class HomeKitService:
         self.lightbulb_service = lightbulb_service
         self.dimminglight_service = dimminglight_service
         self.outlet_service = outlet_service
+        self.cache_service = cache_service
         self.conbus_service = conbus_service
         self.module_factory = module_factory
         self.telegram_service = telegram_service

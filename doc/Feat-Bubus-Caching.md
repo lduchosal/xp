@@ -140,21 +140,50 @@ class ReadDatapointEvent(DatapointEvent):
 
 ## Implementation Steps
 
-1. Create `BubusCacheService` class
-2. Implement cache storage (dict with tuple keys)
-3. Register event handlers with appropriate priority
-4. Implement cache write logic for received events
-5. Implement cache read/forward logic for query events
-6. Add logging for cache hits/misses
-7. Write unit tests
-8. Write integration tests
-9. Update service initialization in application bootstrap
+1. ✅ Create `HomeKitCacheService` class
+2. ✅ Implement cache storage (dict with tuple keys)
+3. ✅ Create `ReadDatapointFromProtocolEvent` for internal protocol forwarding
+4. ✅ Modify `HomeKitConbusService` to listen to `ReadDatapointFromProtocolEvent`
+5. ✅ Register event handlers in cache service
+6. ✅ Implement cache write logic for received events
+7. ✅ Implement cache read/forward logic for query events
+8. ✅ Add logging for cache hits/misses
+9. ✅ Write unit tests (12 test cases)
+10. ✅ Update service initialization in dependency injection container
+11. ✅ Update existing tests for modified services
+
+## Implementation Summary
+
+**Status:** ✅ Complete
+
+The caching mechanism has been successfully implemented with the following components:
+
+1. **New Event:** `ReadDatapointFromProtocolEvent` (conbus_protocol.py:60-63)
+   - Internal event for cache misses to forward to protocol
+
+2. **Cache Service:** `HomeKitCacheService` (homekit_cache_service.py)
+   - Maintains in-memory cache with (serial_number, datapoint_type) keys
+   - Intercepts `ReadDatapointEvent` and checks cache
+   - Caches `OutputStateReceivedEvent` and `LightLevelReceivedEvent`
+   - Includes cache management methods (clear_cache, get_cache_stats)
+
+3. **Modified Service:** `HomeKitConbusService` (homekit_conbus_service.py:27-28)
+   - Now listens to `ReadDatapointFromProtocolEvent` instead of `ReadDatapointEvent`
+   - Protocol queries only happen on cache misses
+
+4. **Dependency Injection:** Updated in dependencies.py:395-403
+   - Cache service registered before conbus service for proper initialization order
+   - Integrated into HomeKitService constructor
+
+5. **Tests:** 12 unit tests in test_homekit_cache_service.py
+   - All tests passing ✅
+   - Coverage: cache hit/miss, key uniqueness, cache operations
 
 ## Future Enhancements
 
 - TTL-based cache expiration
-- Cache statistics (hit rate, miss rate)
+- Cache statistics (hit rate, miss rate tracking)
 - Cache size limits (LRU eviction)
-- Cache bypass flag
+- Cache bypass flag in ReadDatapointEvent
 - Cache warming on startup
 - Persistent cache across restarts

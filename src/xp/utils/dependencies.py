@@ -27,6 +27,7 @@ from xp.services.conbus.conbus_raw_service import ConbusRawService
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.conbus_service import ConbusService
+from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
 from xp.services.homekit.homekit_hap_service import HomekitHapService
@@ -391,6 +392,16 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
+        # Cache service must be registered BEFORE HomeKitConbusService
+        # so it intercepts ReadDatapointEvent first
+        self.container.register(
+            HomeKitCacheService,
+            factory=lambda: HomeKitCacheService(
+                event_bus=self.container.resolve(EventBus),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
         self.container.register(
             HomeKitConbusService,
             factory=lambda: HomeKitConbusService(
@@ -416,6 +427,7 @@ class ServiceContainer:
                 lightbulb_service=self.container.resolve(HomeKitLightbulbService),
                 outlet_service=self.container.resolve(HomeKitOutletService),
                 dimminglight_service=self.container.resolve(HomeKitDimmingLightService),
+                cache_service=self.container.resolve(HomeKitCacheService),
                 conbus_service=self.container.resolve(HomeKitConbusService),
                 module_factory=self.container.resolve(HomekitHapService),
                 telegram_service=self.container.resolve(TelegramService),

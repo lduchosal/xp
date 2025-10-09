@@ -57,6 +57,12 @@ class ReadDatapointEvent(DatapointEvent):
     pass
 
 
+class ReadDatapointFromProtocolEvent(DatapointEvent):
+    """Internal event for cache service to forward to protocol when cache misses"""
+
+    pass
+
+
 class ModuleEvent(BaseEvent):
     """Event dispatched when light bulb set is on"""
 

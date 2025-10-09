@@ -3,7 +3,7 @@ import logging
 from bubus import EventBus
 
 from xp.models.protocol.conbus_protocol import (
-    ReadDatapointEvent,
+    ReadDatapointFromProtocolEvent,
     SendActionEvent,
     SendWriteConfigEvent,
 )
@@ -24,11 +24,15 @@ class HomeKitConbusService:
         self.telegram_protocol = telegram_protocol
 
         # Register event handlers
-        self.event_bus.on(ReadDatapointEvent, self.handle_read_datapoint_event)
+        self.event_bus.on(
+            ReadDatapointFromProtocolEvent, self.handle_read_datapoint_event
+        )
         self.event_bus.on(SendActionEvent, self.handle_send_action_event)
         self.event_bus.on(SendWriteConfigEvent, self.handle_send_write_config_event)
 
-    def handle_read_datapoint_event(self, event: ReadDatapointEvent) -> None:
+    def handle_read_datapoint_event(
+        self, event: ReadDatapointFromProtocolEvent
+    ) -> None:
         self.logger.debug(f"read_datapoint_event {event}")
 
         system_function = SystemFunction.READ_DATAPOINT.value

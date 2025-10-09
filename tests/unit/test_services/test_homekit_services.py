@@ -22,12 +22,14 @@ from xp.models.protocol.conbus_protocol import (
     OutletGetOnEvent,
     OutletSetOnEvent,
     ReadDatapointEvent,
+    ReadDatapointFromProtocolEvent,
     SendActionEvent,
     SendWriteConfigEvent,
     TelegramReceivedEvent,
 )
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.services import TelegramService
+from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
 from xp.services.homekit.homekit_hap_service import HomekitHapService
@@ -325,7 +327,7 @@ class TestHomeKitConbusService:
 
     def test_handle_read_datapoint_event(self, mock_module, mock_accessory):
         """Test handle_read_datapoint_event sends correct telegram"""
-        event = ReadDatapointEvent(
+        event = ReadDatapointFromProtocolEvent(
             serial_number="1234567890", datapoint_type=DataPointType.MODULE_OUTPUT_STATE
         )
 
@@ -387,6 +389,7 @@ class TestHomeKitService:
         self.lightbulb_service = Mock(spec=HomeKitLightbulbService)
         self.outlet_service = Mock(spec=HomeKitOutletService)
         self.dimminglight_service = Mock(spec=HomeKitDimmingLightService)
+        self.cache_service = Mock(spec=HomeKitCacheService)
         self.conbus_service = Mock(spec=HomeKitConbusService)
         self.module_factory = Mock(spec=HomekitHapService)
         self.telegram_service = Mock(spec=TelegramService)
@@ -399,6 +402,7 @@ class TestHomeKitService:
             self.lightbulb_service,
             self.outlet_service,
             self.dimminglight_service,
+            self.cache_service,
             self.conbus_service,
             self.module_factory,
             self.telegram_service,
@@ -414,6 +418,7 @@ class TestHomeKitService:
         assert self.service.lightbulb_service == self.lightbulb_service
         assert self.service.outlet_service == self.outlet_service
         assert self.service.dimminglight_service == self.dimminglight_service
+        assert self.service.cache_service == self.cache_service
         assert self.service.conbus_service == self.conbus_service
         assert self.service.module_factory == self.module_factory
 
