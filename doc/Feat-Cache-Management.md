@@ -456,3 +456,40 @@ No changes required to configuration file formats. Accessories already have acce
 - ✅ Unit test coverage ≥ 90% for new code
 - ✅ Integration tests verify end-to-end event-driven cache refresh
 - ✅ No performance degradation (cache operations remain efficient)
+
+## Quality Criteria
+
+This implementation must adhere to project quality standards:
+
+### Code Quality (see [`doc/Specs/Coding.md`](Specs/Coding.md))
+- ✅ Type safety: All new code fully typed (Pydantic models, mypy strict mode)
+- ✅ No `Any` types except in unavoidable generic scenarios
+- ✅ Pydantic models for all event definitions (`ModuleStateChangedEvent`)
+- ✅ Error handling: Graceful degradation when modules not found in registry
+- ✅ Logging: Appropriate levels (debug for flow, info for actions, warning for issues)
+
+### Architecture Compliance (see [`doc/Specs/Architecture.md`](Specs/Architecture.md))
+- ✅ Event-driven: All communication via EventBus (bubus)
+- ✅ Dependency injection: Services resolved from ServiceContainer
+- ✅ Layer separation: Protocol events → Services → State updates
+- ✅ No business logic in event models (pure data carriers)
+
+### Testing Standards (see [`doc/Specs/Quality.md`](Specs/Quality.md))
+- ✅ Unit test coverage ≥ 90% for new/modified code
+- ✅ Integration tests for end-to-end event flow
+- ✅ Test isolation: Mock external dependencies (EventBus, registries)
+- ✅ Edge cases: Unknown modules, empty registries, multiple accessories
+
+### Dependency Management (see [`doc/Specs/Dependencies.dot`](Specs/Dependencies.dot))
+- ✅ No circular dependencies introduced
+- ✅ `HomekitHapService` depends on `EventBus` (existing)
+- ✅ `HomeKitCacheService` depends on `EventBus` (existing)
+- ✅ New event flows through existing bubus infrastructure
+- ✅ Services remain independently testable
+
+### Performance Requirements
+- ✅ O(1) lookup via `module_registry` (no iteration over all accessories)
+- ✅ Cache operations < 10ms
+- ✅ Event dispatching does not block protocol layer
+- ✅ Registry population during startup (one-time cost)
+
