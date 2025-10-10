@@ -73,15 +73,18 @@ class TelegramProtocol(protocol.Protocol):
             if end == -1:
                 break
 
-            frame = self.buffer[start : end + 1]  # <S0123450001F02D12FK>
+            # <S0123450001F02D12FK>
+            # <R0123450001F02D12FK>
+            # <E12L01I08MAK>
+            frame = self.buffer[start : end + 1] # <S0123450001F02D12FK>
             self.buffer = self.buffer[end + 1 :]
             telegram = frame[1:-1]  # S0123450001F02D12FK
-            payload = telegram[:-2]  # S0123450001F02D12
             telegram_type = telegram[0:1].decode()  # S
+            payload = telegram[:-2]  # S0123450001F02D12
+            checksum = telegram[-2:].decode()  # FK
             serial_number = (
                 telegram[1:11] if telegram_type in "S" else b""
             )  # 0123450001
-            checksum = telegram[-2:].decode()  # FK
             calculated_checksum = calculate_checksum(payload.decode(encoding="latin-1"))
 
             if checksum != calculated_checksum:

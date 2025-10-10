@@ -55,7 +55,7 @@ class ServiceContainer:
     """
     Service container that manages dependency injection for all XP services.
 
-    Uses the service dependency graph from Service-Dependencies.dot to properly
+    Uses the service dependency graph from Dependencies.dot to properly
     wire up all services with their dependencies.
     """
 

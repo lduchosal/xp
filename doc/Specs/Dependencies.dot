@@ -11,6 +11,7 @@ digraph ServiceDependencies {
         fillcolor=lightgray;
 
         ConbusConnectionPool [fillcolor=orange];
+        EventBus [fillcolor=orange];
     }
 
     // Conbus services layer
@@ -26,10 +27,14 @@ digraph ServiceDependencies {
         ConbusDiscoverService;
         ConbusBlinkService;
         ConbusLightlevelService;
+        ConbusAutoreportService;
+        ConbusLinknumberService;
+        ConbusRawService;
+        ConbusReceiveService;
+        ConbusCustomService;
 
         ActionTableService;
         MsActionTableService;
-
     }
 
     // Telegram services layer
@@ -42,6 +47,19 @@ digraph ServiceDependencies {
         TelegramOutputService;
         TelegramDiscoverService;
         TelegramBlinkService;
+        TelegramChecksumService;
+        TelegramLinkNumberService;
+        TelegramVersionService;
+    }
+
+    // Protocol services layer
+    subgraph cluster_protocol {
+        label="Protocol Services";
+        style=filled;
+        fillcolor=lightpink;
+
+        TelegramFactory;
+        TelegramProtocol;
     }
 
     // HomeKit services layer
@@ -50,8 +68,14 @@ digraph ServiceDependencies {
         style=filled;
         fillcolor=lightgreen;
 
-        HomekitService;
+        HomekitService [fillcolor=lightgreen];
         HomekitModuleService;
+        HomekitHapService;
+        HomekitConbusService;
+        HomekitCacheService;
+        HomekitLightbulbService;
+        HomekitOutletService;
+        HomekitDimmingLightService;
     }
 
     // Server services layer
@@ -72,50 +96,70 @@ digraph ServiceDependencies {
 
     // Other services
     ReverseProxyService [fillcolor=plum];
+    LogFileService [fillcolor=plum];
+    ModuleTypeService [fillcolor=plum];
 
     // Core dependencies
     ConbusService -> ConbusConnectionPool;
 
     // ConbusDatapointService dependencies
     ConbusDatapointService -> ConbusService;
-    ConbusDatapointService -> TelegramService [lhead=cluster_telegram];
+    ConbusDatapointService -> TelegramService;
 
     // ConbusOutputService dependencies
     ConbusOutputService -> ConbusService;
     ConbusOutputService -> ConbusDatapointService;
-    ConbusOutputService -> TelegramService [lhead=cluster_telegram];
+    ConbusOutputService -> TelegramService;
+    ConbusOutputService -> TelegramOutputService;
 
     // ConbusScanService dependencies
     ConbusScanService -> ConbusService;
-    ConbusScanService -> TelegramService [lhead=cluster_telegram];
+    ConbusScanService -> TelegramService;
 
     // ConbusDiscoverService dependencies
     ConbusDiscoverService -> ConbusService;
-    ConbusDiscoverService -> TelegramService [lhead=cluster_telegram];
+    ConbusDiscoverService -> TelegramService;
+    ConbusDiscoverService -> TelegramDiscoverService;
 
     // ConbusBlinkService dependencies
     ConbusBlinkService -> ConbusService;
     ConbusBlinkService -> ConbusDiscoverService;
-    ConbusBlinkService -> TelegramService [lhead=cluster_telegram];
+    ConbusBlinkService -> TelegramService;
+    ConbusBlinkService -> TelegramBlinkService;
 
     // ConbusLightlevelService dependencies
     ConbusLightlevelService -> ConbusService;
     ConbusLightlevelService -> ConbusDatapointService;
-    ConbusLightlevelService -> TelegramService [lhead=cluster_telegram];
+    ConbusLightlevelService -> TelegramService;
 
     // ActionTableService dependencies
     ActionTableService -> ConbusService;
-    ActionTableService -> TelegramService [lhead=cluster_telegram];
+    ActionTableService -> TelegramService;
 
-    // MsActionTableService dependencies
-    MsActionTableService -> ConbusService;
-    MsActionTableService -> TelegramService [lhead=cluster_telegram];
+    // Telegram service dependencies
+    TelegramOutputService -> TelegramService;
+    TelegramDiscoverService [fillcolor=lightcyan];
+    TelegramBlinkService [fillcolor=lightcyan];
 
-    // HomekitService dependencies
+    // HomeKit service dependencies
+    HomekitService -> EventBus;
+    HomekitService -> TelegramFactory;
+    HomekitService -> TelegramService;
     HomekitService -> HomekitModuleService;
+    HomekitService -> HomekitHapService;
+    HomekitService -> HomekitConbusService;
+    HomekitService -> HomekitCacheService;
+    HomekitService -> HomekitLightbulbService;
+    HomekitService -> HomekitOutletService;
+    HomekitService -> HomekitDimmingLightService;
+
+    // Protocol dependencies
+    TelegramFactory -> TelegramProtocol [style=dashed, label="creates"];
+    TelegramFactory -> EventBus;
 
     // ServerService dependencies
-    ServerService -> TelegramService [lhead=cluster_telegram];
+    ServerService -> TelegramService;
+    ServerService -> TelegramDiscoverService;
     ServerService -> BaseServerService [style=dashed, label="creates"];
     ServerService -> XP20ServerService [style=dashed, label="creates"];
     ServerService -> XP24ServerService [style=dashed, label="creates"];
@@ -131,9 +175,6 @@ digraph ServiceDependencies {
     XP130ServerService -> BaseServerService [style=dotted, label="extends"];
     XP230ServerService -> BaseServerService [style=dotted, label="extends"];
     CP20ServerService -> BaseServerService [style=dotted, label="extends"];
-
-    // TelegramOutputService dependencies
-    TelegramOutputService -> TelegramService;
 
     // Legend
     subgraph cluster_legend {
