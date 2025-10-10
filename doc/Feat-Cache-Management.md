@@ -89,27 +89,57 @@ CacheEntry = {
 
 ## Proposed Solution
 
-### Accessory-Driven Cache Refresh
+### HAP Service-Driven Cache Refresh
 
-When an Event Telegram is received, notify the affected accessories (LightBulb, Outlet, DimmingLight) so they can request a cache refresh. Accessories already know their `module_type_code` and `link_number` via `ConsonModuleConfig`.
+When an Event Telegram is received, the `HomekitHapService` handles the event, looks up affected accessories using a dual-key registry structure, and requests cache refresh for them.
+
+#### Dual-Key Registry Structure
+
+The `HomekitHapService` maintains two registries for efficient bidirectional lookup:
+
+```python
+# Registry 1: Lookup by serial_number.output_number (existing - for state updates from protocol)
+accessory_registry: Dict[str, Union[LightBulb, Outlet, DimmingLight]] = {}
+# Key format: "{serial_number}.{output_number:02X}"
+# Example: "0020044991.00"
+# Usage: on_datapoint_received() uses this to update specific accessory states
+
+# Registry 2: Lookup by (module_type_code, link_number) (NEW - for event-driven refresh)
+module_registry: Dict[tuple[int, int], List[Union[LightBulb, Outlet, DimmingLight]]] = {}
+# Key format: (module_type_code, link_number)
+# Example: (7, 2) → [LightBulb("0020044991.00"), LightBulb("0020044991.01"), ...]
+# Usage: handle_module_state_changed() uses this for O(1) lookup by module
+# Note: One module can have multiple accessories (different output_numbers)
+```
+
+**Both registries are populated during `add_room()` / `build_bridge()`:**
+```python
+# Existing code
+self.accessory_registry[accessory.identifier] = accessory
+
+# NEW code to add
+module_key = (accessory.module.module_type_code, accessory.module.link_number)
+if module_key not in self.module_registry:
+    self.module_registry[module_key] = []
+self.module_registry[module_key].append(accessory)
+```
 
 #### Advantages
-- Accessories control their own state refresh
-- No central lookup required - accessories already have module configuration
-- Accessories can trigger immediate state refresh when they detect their module changed
-- Clean separation: cache service handles invalidation, accessories decide when to refresh
+- Centralized event handling in HAP service
+- Dual-key registry enables O(1) lookup by both `serial_number.output` and `(module_type_code, link_number)`
+- HAP service coordinates state refresh for all affected accessories
+- Clean separation: HAP service orchestrates, cache service handles invalidation
 
 #### Implementation Flow
 
 1. **Event Reception**: `EventTelegramReceivedEvent` dispatched with telegram payload `E12L01I83MAK`
 2. **Parse Event**: Extract `module_type_code=12`, `link_number=01`, `input_number=03`
-3. **Accessory Notification**: Dispatch `ModuleStateChangedEvent` with parsed event telegram data
-4. **Accessory Handling**: Each accessory (LightBulb, Outlet, DimmingLight) checks if event matches its module:
-   - Compare `event.module_type_code == self.module.module_type_code`
-   - Compare `event.link_number == self.module.link_number`
-5. **Cache Refresh Request**: Matching accessory dispatches `ReadDatapointEvent` with `refresh_cache=True` flag
-6. **Cache Invalidation**: Cache service sees `refresh_cache=True`, invalidates entry, forwards to protocol
-7. **State Update**: Fresh state received from protocol, cache updated, accessory updated
+3. **Dispatch Event**: Dispatch `ModuleStateChangedEvent` with parsed event telegram data
+4. **HAP Service Handling**: `HomekitHapService.handle_module_state_changed()` receives event
+5. **Accessory Lookup**: O(1) lookup via `module_registry.get((event.module_type_code, event.link_number), [])`
+6. **Cache Refresh Request**: For each matching accessory, dispatch `ReadDatapointEvent` with `refresh_cache=True`
+7. **Cache Invalidation**: Cache service sees `refresh_cache=True`, invalidates entry, forwards to protocol
+8. **State Update**: Fresh state received from protocol, cache updated, accessory state updated via `on_datapoint_received()`
 
 #### New Event: ModuleStateChangedEvent
 
@@ -157,36 +187,60 @@ def dispatch_event_telegram_received_event(self, event: TelegramReceivedEvent) -
     )
 ```
 
-#### Code Example: LightBulb Accessory
+#### Code Example: HomekitHapService
 
 ```python
-class LightBulb(Accessory):
-    def __init__(self, driver, module, accessory, event_bus):
-        super().__init__(driver, accessory.description)
-        self.module = module  # Contains module_type_code, link_number
+class HomekitHapService:
+    def __init__(self, homekit_config, module_service, event_bus):
         self.event_bus = event_bus
+        self.accessory_registry: Dict[str, Union[LightBulb, Outlet, DimmingLight]] = {}
+        self.module_registry: Dict[tuple[int, int], List[Union[LightBulb, Outlet, DimmingLight]]] = {}
 
         # Subscribe to module state changes
         self.event_bus.on(ModuleStateChangedEvent, self.handle_module_state_changed)
 
     def handle_module_state_changed(self, event: ModuleStateChangedEvent) -> None:
-        """Check if this event affects this accessory's module"""
-        if (event.module_type_code == self.module.module_type_code and
-            event.link_number == self.module.link_number):
+        """Handle module state change by refreshing affected accessories"""
+        self.logger.debug(
+            f"Module state changed: module_type={event.module_type_code}, "
+            f"link={event.link_number}, input={event.input_number}"
+        )
 
+        # O(1) lookup using module_registry
+        module_key = (event.module_type_code, event.link_number)
+        affected_accessories = self.module_registry.get(module_key, [])
+
+        if not affected_accessories:
+            self.logger.debug(
+                f"No accessories found for module_type={event.module_type_code}, "
+                f"link={event.link_number}"
+            )
+            return
+
+        # Request cache refresh for each affected accessory
+        for accessory in affected_accessories:
             self.logger.info(
-                f"State change detected for my module, requesting refresh: "
-                f"serial={self.module.serial_number}"
+                f"Requesting cache refresh for accessory: {accessory.identifier}"
             )
 
-            # Request fresh state with cache refresh
+            # Request OUTPUT_STATE refresh
             self.event_bus.dispatch(
                 ReadDatapointEvent(
-                    serial_number=self.module.serial_number,
+                    serial_number=accessory.module.serial_number,
                     datapoint_type=DataPointType.OUTPUT_STATE,
                     refresh_cache=True
                 )
             )
+
+            # If dimming light, also refresh LIGHT_LEVEL
+            if isinstance(accessory, DimmingLight):
+                self.event_bus.dispatch(
+                    ReadDatapointEvent(
+                        serial_number=accessory.module.serial_number,
+                        datapoint_type=DataPointType.LIGHT_LEVEL,
+                        refresh_cache=True
+                    )
+                )
 ```
 
 #### Code Example: HomeKitCacheService
@@ -235,39 +289,35 @@ def handle_read_datapoint_event(self, event: ReadDatapointEvent) -> None:
 
 1. **`src/xp/models/protocol/conbus_protocol.py`**
    - Add `ModuleStateChangedEvent` class
-   - Add `refresh_cache: bool` field to `ReadDatapointEvent`
+   - Add `refresh_cache: bool` field to `ReadDatapointEvent` (default: False)
 
 2. **`src/xp/services/homekit/homekit_service.py`**
    - Modify `dispatch_event_telegram_received_event()` to parse event telegram
    - Dispatch `ModuleStateChangedEvent` with parsed event data
 
-3. **`src/xp/services/homekit/homekit_cache_service.py`**
+3. **`src/xp/services/homekit/homekit_hap_service.py`**
+   - Add `module_registry: Dict[tuple[int, int], List[...]]` instance variable
+   - Modify `add_room()` to populate both `accessory_registry` and `module_registry`
+   - Add handler for `ModuleStateChangedEvent`
+   - Implement `handle_module_state_changed()` to:
+     - Lookup `module_registry.get((module_type_code, link_number), [])`
+     - For each matching accessory, dispatch `ReadDatapointEvent(refresh_cache=True)`
+     - Handle DimmingLight accessories (also refresh LIGHT_LEVEL)
+
+4. **`src/xp/services/homekit/homekit_cache_service.py`**
    - Modify `handle_read_datapoint_event()` to check `refresh_cache` flag
    - Implement cache invalidation when `refresh_cache=True`
 
-4. **`src/xp/services/homekit/homekit_lightbulb.py`**
-   - Add handler for `ModuleStateChangedEvent`
-   - Implement `handle_module_state_changed()` to check module match
-   - Dispatch `ReadDatapointEvent` with `refresh_cache=True` when matched
-
-5. **`src/xp/services/homekit/homekit_outlet.py`**
-   - Add handler for `ModuleStateChangedEvent`
-   - Implement `handle_module_state_changed()` to check module match
-   - Dispatch `ReadDatapointEvent` with `refresh_cache=True` when matched
-
-6. **`src/xp/services/homekit/homekit_dimminglight.py`**
-   - Add handler for `ModuleStateChangedEvent`
-   - Implement `handle_module_state_changed()` to check module match
-   - Dispatch `ReadDatapointEvent` with `refresh_cache=True` when matched
-
-7. **`tests/unit/test_services/test_homekit_cache_service.py`**
+5. **`tests/unit/test_services/test_homekit_cache_service.py`**
    - Test `ReadDatapointEvent` with `refresh_cache=True` invalidates cache
    - Test `ReadDatapointEvent` with `refresh_cache=False` uses cache
    - Test cache invalidation only affects specified entry
 
-8. **`tests/unit/test_services/test_homekit_lightbulb.py`** (or similar)
-   - Test `ModuleStateChangedEvent` triggers refresh when module matches
-   - Test `ModuleStateChangedEvent` ignored when module doesn't match
+6. **`tests/unit/test_services/test_homekit_hap_service.py`**
+   - Test `ModuleStateChangedEvent` triggers refresh for matching accessories
+   - Test `ModuleStateChangedEvent` ignored when no accessories match
+   - Test multiple accessories on same module all get refreshed
+   - Test DimmingLight accessories get both OUTPUT_STATE and LIGHT_LEVEL refreshed
 
 ### Dependencies
 
@@ -300,17 +350,19 @@ def handle_read_datapoint_event(self, event: ReadDatapointEvent) -> None:
          ↓
 [Dispatch ModuleStateChangedEvent] ← NEW
          ↓
-[All accessories receive event]
+[HomekitHapService.handle_module_state_changed()] ← NEW
          ↓
-[LightBulb checks: event.module_type_code == self.module.module_type_code?]
-         ↓ (YES)
-[LightBulb.handle_module_state_changed()] ← NEW
+[O(1) lookup: module_registry.get((12, 01))]
+         ↓
+[Found matching LightBulb(s) for module_type_code=12, link=01]
+         ↓
+[For each matching accessory:]
          ↓
 [Dispatch ReadDatapointEvent(refresh_cache=True)] ← NEW FLAG
          ↓
 [HomeKitCacheService sees refresh_cache=True] ← MODIFIED
          ↓
-[Invalidate cache entry for (serial_number, datapoint_type)]
+[Invalidate cache entry for (serial_number, OUTPUT_STATE)]
          ↓
 [Dispatch ReadDatapointFromProtocolEvent]
          ↓
@@ -318,7 +370,7 @@ def handle_read_datapoint_event(self, event: ReadDatapointEvent) -> None:
          ↓
 [Cache updated with fresh state]
          ↓
-[Accessory receives OutputStateReceivedEvent]
+[HomekitHapService.on_datapoint_received() updates accessory.is_on]
          ↓
 [HomeKit UI shows updated state]
 ```
@@ -332,11 +384,13 @@ def handle_read_datapoint_event(self, event: ReadDatapointEvent) -> None:
    - Test `ModuleStateChangedEvent` dispatched with correct `module_type_code`, `link_number`, `input_number`
    - Test both button press (M) and release (B) events
 
-2. **Accessory Event Handling**
-   - Test LightBulb receives `ModuleStateChangedEvent` and checks module match
-   - Test LightBulb ignores event when module doesn't match
-   - Test LightBulb dispatches `ReadDatapointEvent(refresh_cache=True)` when matched
-   - Test same behavior for Outlet and DimmingLight accessories
+2. **HAP Service Event Handling**
+   - Test `HomekitHapService.handle_module_state_changed()` uses module_registry for lookup
+   - Test matching accessories found via `module_registry.get((module_type_code, link_number))`
+   - Test `ReadDatapointEvent(refresh_cache=True)` dispatched for matching LightBulb
+   - Test `ReadDatapointEvent(refresh_cache=True)` dispatched for matching Outlet
+   - Test DimmingLight gets both OUTPUT_STATE and LIGHT_LEVEL refresh requests
+   - Test no refresh request when no accessories match (empty list returned)
 
 3. **Cache Refresh Flag**
    - Given: Cache contains `(serial_number, OUTPUT_STATE)` entry
@@ -358,16 +412,19 @@ def handle_read_datapoint_event(self, event: ReadDatapointEvent) -> None:
 1. **End-to-End Event-Driven Cache Refresh**
    - Setup: Populate cache with module state (OUTPUT_STATE = OFF)
    - Action: Dispatch `EventTelegramReceivedEvent` for button press on module
-   - Verify: Matching accessory dispatches `ReadDatapointEvent(refresh_cache=True)`
+   - Verify: `ModuleStateChangedEvent` dispatched
+   - Verify: HAP service finds matching accessory in registry
+   - Verify: `ReadDatapointEvent(refresh_cache=True)` dispatched
    - Verify: Cache invalidated
    - Verify: Protocol query triggered
    - Verify: Fresh state received and cached
+   - Verify: `on_datapoint_received()` updates accessory state
 
 2. **Multi-Accessory Scenario**
-   - Setup: Multiple LightBulb accessories for different modules
+   - Setup: Multiple accessories (LightBulb, Outlet) for different modules in registry
    - Action: `ModuleStateChangedEvent` for module A
-   - Verify: Only accessory for module A refreshes
-   - Verify: Other accessories ignore event
+   - Verify: Only accessories for module A get refresh requests
+   - Verify: Accessories for other modules are not affected
 
 ## Configuration Changes
 
@@ -378,6 +435,7 @@ No changes required to configuration file formats. Accessories already have acce
 - **Event Telegram Model**: `src/xp/models/telegram/event_telegram.py`
 - **Telegram Protocol**: `src/xp/services/protocol/telegram_protocol.py:78` (Event telegram example)
 - **HomeKit Service**: `src/xp/services/homekit/homekit_service.py:155-157` (Event forwarding)
+- **HAP Service**: `src/xp/services/homekit/homekit_hap_service.py` (Accessory registry and state updates)
 - **Cache Service**: `src/xp/services/homekit/homekit_cache_service.py`
 - **Conson Config**: `src/xp/models/homekit/homekit_conson_config.py`
 - **Existing Cache Spec**: `doc/Feat-Bubus-Caching.md`
@@ -386,12 +444,15 @@ No changes required to configuration file formats. Accessories already have acce
 ## Success Criteria
 
 - ✅ Event telegrams are parsed and dispatched as `ModuleStateChangedEvent`
-- ✅ Accessories (LightBulb, Outlet, DimmingLight) subscribe to `ModuleStateChangedEvent`
-- ✅ Accessories compare event `module_type_code` and `link_number` to their own module config
-- ✅ Matching accessories dispatch `ReadDatapointEvent(refresh_cache=True)`
+- ✅ `HomekitHapService` subscribes to `ModuleStateChangedEvent`
+- ✅ HAP service uses `module_registry` for O(1) lookup by `(module_type_code, link_number)`
+- ✅ Dual-key registries (`accessory_registry` and `module_registry`) maintained during build
+- ✅ HAP service dispatches `ReadDatapointEvent(refresh_cache=True)` for each match
+- ✅ DimmingLight accessories get both OUTPUT_STATE and LIGHT_LEVEL refresh
 - ✅ Cache service invalidates entry when `refresh_cache=True` flag is set
 - ✅ Fresh protocol query triggered after cache invalidation
-- ✅ Non-matching accessories ignore events (no unnecessary queries)
+- ✅ `on_datapoint_received()` updates accessory state with fresh data
+- ✅ Non-matching accessories not affected (no unnecessary queries)
 - ✅ Unit test coverage ≥ 90% for new code
 - ✅ Integration tests verify end-to-end event-driven cache refresh
 - ✅ No performance degradation (cache operations remain efficient)
