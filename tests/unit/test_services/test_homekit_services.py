@@ -18,6 +18,7 @@ from xp.models.protocol.conbus_protocol import (
     LightBulbGetOnEvent,
     LightBulbSetOnEvent,
     ModuleDiscoveredEvent,
+    ModuleStateChangedEvent,
     OutletGetInUseEvent,
     OutletGetOnEvent,
     OutletSetOnEvent,
@@ -456,6 +457,7 @@ class TestHomeKitService:
             telegram="R1234567890F01D00XX",
             frame="<R1234567890F01D00XX>",
             payload="R1234567890F01D00",
+            telegram_type="R",
             serial_number="1234567890",
             checksum="XX",
         )
@@ -476,6 +478,7 @@ class TestHomeKitService:
             protocol=protocol,
             frame="<R1234567890F01D00XX>",
             payload="R1234567890F01D00",
+            telegram_type="R",
             serial_number="1234567890",
             checksum="XX",
         )
@@ -497,3 +500,207 @@ class TestHomeKitService:
             mock_create_task.assert_called_once()
             # Should have added a done callback to the task
             mock_task.add_done_callback.assert_called_once()
+
+
+class TestHomekitHapServiceModuleRegistry:
+    """Test cases for HomekitHapService module registry and state change handling"""
+
+    def setup_method(self):
+        """Setup test fixtures"""
+        from unittest.mock import MagicMock, patch
+
+        # Create mock event bus
+        self.event_bus = Mock(spec=EventBus)
+
+        # Create mock homekit config with proper nested structure
+        self.homekit_config = MagicMock()
+        self.homekit_config.homekit.port = 51826
+        self.homekit_config.bridge.name = "Test Bridge"
+        self.homekit_config.bridge.rooms = []
+        self.homekit_config.accessories = []
+
+        # Create mock module service
+        from xp.services.homekit.homekit_module_service import HomekitModuleService
+
+        self.module_service = Mock(spec=HomekitModuleService)
+
+        # Patch AccessoryDriver to prevent actual HAP-python initialization
+        with patch("xp.services.homekit.homekit_hap_service.AccessoryDriver"):
+            # Create HAP service
+            self.hap_service = HomekitHapService(
+                self.homekit_config, self.module_service, self.event_bus
+            )
+
+    def test_module_registry_initialization(self):
+        """Test that module_registry is initialized as empty dict"""
+        assert self.hap_service.module_registry == {}
+        assert self.hap_service.accessory_registry == {}
+
+    def test_module_state_changed_event_subscription(self):
+        """Test that HAP service subscribes to ModuleStateChangedEvent"""
+        # Verify event handler is registered
+        self.event_bus.on.assert_any_call(
+            ModuleStateChangedEvent, self.hap_service.handle_module_state_changed
+        )
+
+    def test_handle_module_state_changed_no_accessories(self):
+        """Test handle_module_state_changed when no accessories are registered"""
+        event = ModuleStateChangedEvent(
+            module_type_code=24, link_number=1, input_number=0, event_type="M"
+        )
+
+        # Should not raise, should not dispatch any events
+        self.hap_service.handle_module_state_changed(event)
+
+        # Should not dispatch any events
+        self.event_bus.dispatch.assert_not_called()
+
+    def test_handle_module_state_changed_with_lightbulb(self):
+        """Test handle_module_state_changed dispatches ReadDatapointEvent for lightbulb"""
+        from xp.services.homekit.homekit_lightbulb import LightBulb
+
+        # Create mock lightbulb accessory
+        mock_module = ConsonModuleConfig(
+            name="Test Module",
+            serial_number="1234567890",
+            module_type="XP24",
+            module_type_code=24,
+            link_number=1,
+        )
+        mock_lightbulb = Mock(spec=LightBulb)
+        mock_lightbulb.module = mock_module
+        mock_lightbulb.identifier = "1234567890.00"
+
+        # Add to module_registry
+        module_key = (24, 1)
+        self.hap_service.module_registry[module_key] = [mock_lightbulb]
+
+        # Create state changed event
+        event = ModuleStateChangedEvent(
+            module_type_code=24, link_number=1, input_number=0, event_type="M"
+        )
+
+        # Handle event
+        self.hap_service.handle_module_state_changed(event)
+
+        # Should dispatch ReadDatapointEvent with refresh_cache=True
+        self.event_bus.dispatch.assert_called_once()
+        dispatched_event = self.event_bus.dispatch.call_args[0][0]
+        assert isinstance(dispatched_event, ReadDatapointEvent)
+        assert dispatched_event.serial_number == "1234567890"
+        assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
+        assert dispatched_event.refresh_cache is True
+
+    def test_handle_module_state_changed_with_dimminglight(self):
+        """Test handle_module_state_changed dispatches both OUTPUT_STATE and LIGHT_LEVEL for dimming light"""
+        from xp.services.homekit.homekit_dimminglight import DimmingLight
+
+        # Create mock dimming light accessory
+        mock_module = ConsonModuleConfig(
+            name="Test Module",
+            serial_number="9876543210",
+            module_type="XP24",
+            module_type_code=24,
+            link_number=2,
+        )
+        mock_dimming = Mock(spec=DimmingLight)
+        mock_dimming.module = mock_module
+        mock_dimming.identifier = "9876543210.00"
+
+        # Add to module_registry
+        module_key = (24, 2)
+        self.hap_service.module_registry[module_key] = [mock_dimming]
+
+        # Create state changed event
+        event = ModuleStateChangedEvent(
+            module_type_code=24, link_number=2, input_number=5, event_type="M"
+        )
+
+        # Handle event
+        self.hap_service.handle_module_state_changed(event)
+
+        # Should dispatch TWO ReadDatapointEvents: MODULE_OUTPUT_STATE and MODULE_LIGHT_LEVEL
+        assert self.event_bus.dispatch.call_count == 2
+
+        # First call: MODULE_OUTPUT_STATE
+        first_call = self.event_bus.dispatch.call_args_list[0][0][0]
+        assert isinstance(first_call, ReadDatapointEvent)
+        assert first_call.serial_number == "9876543210"
+        assert first_call.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
+        assert first_call.refresh_cache is True
+
+        # Second call: MODULE_LIGHT_LEVEL
+        second_call = self.event_bus.dispatch.call_args_list[1][0][0]
+        assert isinstance(second_call, ReadDatapointEvent)
+        assert second_call.serial_number == "9876543210"
+        assert second_call.datapoint_type == DataPointType.MODULE_LIGHT_LEVEL
+        assert second_call.refresh_cache is True
+
+    def test_handle_module_state_changed_with_multiple_accessories(self):
+        """Test handle_module_state_changed with multiple accessories on same module"""
+        from xp.services.homekit.homekit_lightbulb import LightBulb
+        from xp.services.homekit.homekit_outlet import Outlet
+
+        # Create mock module
+        mock_module = ConsonModuleConfig(
+            name="Test Module",
+            serial_number="1111111111",
+            module_type="XP24",
+            module_type_code=24,
+            link_number=3,
+        )
+
+        # Create multiple accessories on same module
+        mock_lightbulb = Mock(spec=LightBulb)
+        mock_lightbulb.module = mock_module
+        mock_lightbulb.identifier = "1111111111.00"
+
+        mock_outlet = Mock(spec=Outlet)
+        mock_outlet.module = mock_module
+        mock_outlet.identifier = "1111111111.01"
+
+        # Add both to module_registry
+        module_key = (24, 3)
+        self.hap_service.module_registry[module_key] = [mock_lightbulb, mock_outlet]
+
+        # Create state changed event
+        event = ModuleStateChangedEvent(
+            module_type_code=24, link_number=3, input_number=2, event_type="M"
+        )
+
+        # Handle event
+        self.hap_service.handle_module_state_changed(event)
+
+        # Should dispatch ReadDatapointEvent for EACH accessory
+        assert self.event_bus.dispatch.call_count == 2
+
+        # Both should be MODULE_OUTPUT_STATE requests with refresh_cache=True
+        for call in self.event_bus.dispatch.call_args_list:
+            dispatched_event = call[0][0]
+            assert isinstance(dispatched_event, ReadDatapointEvent)
+            assert dispatched_event.serial_number == "1111111111"
+            assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
+            assert dispatched_event.refresh_cache is True
+
+    def test_module_registry_key_format(self):
+        """Test that module_registry uses (module_type_code, link_number) tuple as key"""
+        from xp.services.homekit.homekit_lightbulb import LightBulb
+
+        # Create mock accessory
+        mock_module = ConsonModuleConfig(
+            name="Test Module",
+            serial_number="5555555555",
+            module_type="XP33",
+            module_type_code=33,
+            link_number=7,
+        )
+        mock_lightbulb = Mock(spec=LightBulb)
+        mock_lightbulb.module = mock_module
+
+        # Add to registry
+        module_key = (33, 7)
+        self.hap_service.module_registry[module_key] = [mock_lightbulb]
+
+        # Verify key format
+        assert (33, 7) in self.hap_service.module_registry
+        assert self.hap_service.module_registry[(33, 7)] == [mock_lightbulb]

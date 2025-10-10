@@ -281,3 +281,132 @@ class TestHomeKitCacheService:
         dispatched_event = self.event_bus.dispatch.call_args[0][0]
         assert isinstance(dispatched_event, ReadDatapointFromProtocolEvent)
         assert dispatched_event.datapoint_type == DataPointType.MODULE_LIGHT_LEVEL
+
+    def test_refresh_cache_invalidates_cache_entry(self):
+        """Test that refresh_cache=True invalidates cache and forces protocol query"""
+        # First, cache an event
+        cached_event = OutputStateReceivedEvent(
+            serial_number="1234567890",
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+            data_value="01:1",
+        )
+        self.service.handle_output_state_received_event(cached_event)
+
+        # Verify event is cached
+        cache_key = ("1234567890", DataPointType.MODULE_OUTPUT_STATE)
+        assert cache_key in self.service.cache
+
+        # Reset mock to clear previous calls
+        self.event_bus.dispatch.reset_mock()
+
+        # Now request refresh_cache=True
+        refresh_event = ReadDatapointEvent(
+            serial_number="1234567890",
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+            refresh_cache=True,
+        )
+
+        self.service.handle_read_datapoint_event(refresh_event)
+
+        # Cache entry should be invalidated
+        assert cache_key not in self.service.cache
+
+        # Should dispatch ReadDatapointFromProtocolEvent (force fresh query)
+        self.event_bus.dispatch.assert_called_once()
+        dispatched_event = self.event_bus.dispatch.call_args[0][0]
+        assert isinstance(dispatched_event, ReadDatapointFromProtocolEvent)
+        assert dispatched_event.serial_number == "1234567890"
+        assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
+
+    def test_refresh_cache_without_existing_cache_forces_query(self):
+        """Test that refresh_cache=True works even when no cache entry exists"""
+        # No cached event
+
+        # Request refresh_cache=True
+        refresh_event = ReadDatapointEvent(
+            serial_number="1234567890",
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+            refresh_cache=True,
+        )
+
+        self.service.handle_read_datapoint_event(refresh_event)
+
+        # Should dispatch ReadDatapointFromProtocolEvent
+        self.event_bus.dispatch.assert_called_once()
+        dispatched_event = self.event_bus.dispatch.call_args[0][0]
+        assert isinstance(dispatched_event, ReadDatapointFromProtocolEvent)
+        assert dispatched_event.serial_number == "1234567890"
+        assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
+
+    def test_refresh_cache_false_uses_normal_cache_logic(self):
+        """Test that refresh_cache=False uses normal cache hit/miss logic"""
+        # Cache an event
+        cached_event = OutputStateReceivedEvent(
+            serial_number="1234567890",
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+            data_value="01:1",
+        )
+        self.service.handle_output_state_received_event(cached_event)
+
+        # Reset mock
+        self.event_bus.dispatch.reset_mock()
+
+        # Query with refresh_cache=False (default)
+        query_event = ReadDatapointEvent(
+            serial_number="1234567890",
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+            refresh_cache=False,
+        )
+
+        self.service.handle_read_datapoint_event(query_event)
+
+        # Should return cached event (cache hit)
+        self.event_bus.dispatch.assert_called_once()
+        dispatched_event = self.event_bus.dispatch.call_args[0][0]
+        assert isinstance(dispatched_event, OutputStateReceivedEvent)
+        assert dispatched_event == cached_event
+
+    def test_refresh_cache_only_invalidates_specified_entry(self):
+        """Test that refresh_cache only invalidates the specified cache entry"""
+        # Cache multiple events
+        event1 = OutputStateReceivedEvent(
+            serial_number="1234567890",
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+            data_value="01:1",
+        )
+        event2 = LightLevelReceivedEvent(
+            serial_number="1234567890",
+            datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
+            data_value="02:050",
+        )
+        event3 = OutputStateReceivedEvent(
+            serial_number="9876543210",
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+            data_value="01:0",
+        )
+
+        self.service.handle_output_state_received_event(event1)
+        self.service.handle_light_level_received_event(event2)
+        self.service.handle_output_state_received_event(event3)
+
+        # Verify all three are cached
+        assert len(self.service.cache) == 3
+
+        # Refresh only event1
+        refresh_event = ReadDatapointEvent(
+            serial_number="1234567890",
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+            refresh_cache=True,
+        )
+
+        self.service.handle_read_datapoint_event(refresh_event)
+
+        # Only event1 should be invalidated, event2 and event3 should remain
+        assert len(self.service.cache) == 2
+        cache_key1 = ("1234567890", DataPointType.MODULE_OUTPUT_STATE)
+        cache_key2 = ("1234567890", DataPointType.MODULE_LIGHT_LEVEL)
+        cache_key3 = ("9876543210", DataPointType.MODULE_OUTPUT_STATE)
+
+        assert cache_key1 not in self.service.cache
+        assert cache_key2 in self.service.cache
+        assert cache_key3 in self.service.cache

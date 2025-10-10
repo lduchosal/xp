@@ -80,9 +80,9 @@ class TelegramService:
                     f"Link number out of range (0-99): {link_number}"
                 )
 
-            if not (0 <= output_number <= 90):
+            if not (0 <= output_number <= 99):
                 raise TelegramParsingError(
-                    f"Input number out of range (0-90): {output_number}"
+                    f"Input number out of range (0-99): {output_number}"
                 )
 
             # Parse event type

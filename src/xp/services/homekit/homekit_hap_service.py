@@ -2,7 +2,7 @@ import logging
 import signal
 import threading
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from bubus import EventBus
 from pyhap.accessory import Bridge
@@ -18,8 +18,11 @@ from xp.models.homekit.homekit_config import (
 )
 from xp.models.protocol.conbus_protocol import (
     LightLevelReceivedEvent,
+    ModuleStateChangedEvent,
     OutputStateReceivedEvent,
+    ReadDatapointEvent,
 )
+from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.homekit.homekit_dimminglight import DimmingLight
 from xp.services.homekit.homekit_lightbulb import LightBulb
 from xp.services.homekit.homekit_module_service import HomekitModuleService
@@ -57,10 +60,16 @@ class HomekitHapService:
         # Load configuration
         self.config = homekit_config
         self.accessory_registry: Dict[str, Union[LightBulb, Outlet, DimmingLight]] = {}
+        self.module_registry: Dict[
+            tuple[int, int], List[Union[LightBulb, Outlet, DimmingLight]]
+        ] = {}
 
         # Service dependencies
         self.modules = module_service
         self.event_bus = event_bus
+
+        # Subscribe to module state changes
+        self.event_bus.on(ModuleStateChangedEvent, self.handle_module_state_changed)
 
         # We want SIGTERM (terminate) to be handled by the driver itself,
         # so that it can gracefully stop the accessory, server and advertising.
@@ -179,7 +188,17 @@ class HomekitHapService:
             accessory = self.get_accessory(homekit_accessory)
             if accessory:
                 bridge.add_accessory(accessory)
+                # Add to accessory_registry
                 self.accessory_registry[accessory.identifier] = accessory
+
+                # Add to module_registry for event-driven lookup
+                module_key = (
+                    accessory.module.module_type_code,
+                    accessory.module.link_number,
+                )
+                if module_key not in self.module_registry:
+                    self.module_registry[module_key] = []
+                self.module_registry[module_key].append(accessory)
 
     def get_accessory(
         self, homekit_accessory: HomekitAccessoryConfig
@@ -223,3 +242,46 @@ class HomekitHapService:
         return next(
             (module for module in self.config.accessories if module.name == name), None
         )
+
+    def handle_module_state_changed(self, event: ModuleStateChangedEvent) -> None:
+        """Handle module state change by refreshing affected accessories"""
+        self.logger.debug(
+            f"Module state changed: module_type={event.module_type_code}, "
+            f"link={event.link_number}, input={event.input_number}"
+        )
+
+        # O(1) lookup using module_registry
+        module_key = (event.module_type_code, event.link_number)
+        affected_accessories = self.module_registry.get(module_key, [])
+
+        if not affected_accessories:
+            self.logger.debug(
+                f"No accessories found for module_type={event.module_type_code}, "
+                f"link={event.link_number}"
+            )
+            return
+
+        # Request cache refresh for each affected accessory
+        for accessory in affected_accessories:
+            self.logger.info(
+                f"Requesting cache refresh for accessory: {accessory.identifier}"
+            )
+
+            # Request OUTPUT_STATE refresh
+            self.event_bus.dispatch(
+                ReadDatapointEvent(
+                    serial_number=accessory.module.serial_number,
+                    datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+                    refresh_cache=True,
+                )
+            )
+
+            # If dimming light, also refresh LIGHT_LEVEL
+            if isinstance(accessory, DimmingLight):
+                self.event_bus.dispatch(
+                    ReadDatapointEvent(
+                        serial_number=accessory.module.serial_number,
+                        datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
+                        refresh_cache=True,
+                    )
+                )

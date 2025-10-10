@@ -90,8 +90,10 @@ class TestTelegramService:
     def test_parse_out_of_range_values_raises_error(self):
         """Test that out-of-range values raise TelegramParsingError"""
         # Input number out of range
-        with pytest.raises(TelegramParsingError, match="Input number out of range"):
-            self.service.parse_event_telegram("<E14L00I91MAK>")
+        with pytest.raises(
+            TelegramParsingError, match="Invalid telegram format: <E14L00IAAMAK>"
+        ):
+            self.service.parse_event_telegram("<E14L00IAAMAK>")
 
         # Test invalid formats that don't match regex
         with pytest.raises(TelegramParsingError, match="Invalid telegram format"):

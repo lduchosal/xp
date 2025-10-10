@@ -76,7 +76,7 @@ class TelegramProtocol(protocol.Protocol):
             # <S0123450001F02D12FK>
             # <R0123450001F02D12FK>
             # <E12L01I08MAK>
-            frame = self.buffer[start : end + 1] # <S0123450001F02D12FK>
+            frame = self.buffer[start : end + 1]  # <S0123450001F02D12FK>
             self.buffer = self.buffer[end + 1 :]
             telegram = frame[1:-1]  # S0123450001F02D12FK
             telegram_type = telegram[0:1].decode()  # S

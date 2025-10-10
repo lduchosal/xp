@@ -88,38 +88,57 @@ class HomeKitCacheService:
 
     def handle_read_datapoint_event(self, event: ReadDatapointEvent) -> None:
         """
-        Handle ReadDatapointEvent by checking cache.
+        Handle ReadDatapointEvent by checking cache or refresh flag.
 
+        On refresh_cache=True: invalidate cache and force protocol query
         On cache hit: dispatch cached response event
         On cache miss: forward to protocol via ReadDatapointFromProtocolEvent
         """
         self.logger.debug(
-            f"Handling ReadDatapointEvent: serial={event.serial_number}, "
-            f"type={event.datapoint_type}"
+            f"Handling ReadDatapointEvent: "
+            f"serial={event.serial_number}, "
+            f"type={event.datapoint_type}, "
+            f"refresh_cache={event.refresh_cache}"
         )
 
-        # Check cache
+        # Check if cache refresh requested
+        if event.refresh_cache:
+            self.logger.info(
+                f"Cache refresh requested: "
+                f"serial={event.serial_number}, "
+                f"type={event.datapoint_type}"
+            )
+            # Invalidate cache entry
+            cache_key = self._get_cache_key(event.serial_number, event.datapoint_type)
+            if cache_key in self.cache:
+                del self.cache[cache_key]
+                self.logger.debug(f"Invalidated cache entry: {cache_key}")
+
+        # Normal cache lookup flow
         cached_event = self._get_cached_event(event.serial_number, event.datapoint_type)
 
         if cached_event:
             # Cache hit - dispatch the cached event
             self.logger.info(
-                f"Returning cached response for serial={event.serial_number}, "
+                f"Returning cached response: "
+                f"serial={event.serial_number}, "
                 f"type={event.datapoint_type}"
             )
             self.event_bus.dispatch(cached_event)
-        else:
-            # Cache miss - forward to protocol
-            self.logger.debug(
-                f"Forwarding to protocol: serial={event.serial_number}, "
-                f"type={event.datapoint_type}"
+            return
+
+        # Cache miss - forward to protocol
+        self.logger.debug(
+            f"Forwarding to protocol: "
+            f"serial={event.serial_number}, "
+            f"type={event.datapoint_type}"
+        )
+        self.event_bus.dispatch(
+            ReadDatapointFromProtocolEvent(
+                serial_number=event.serial_number,
+                datapoint_type=event.datapoint_type,
             )
-            self.event_bus.dispatch(
-                ReadDatapointFromProtocolEvent(
-                    serial_number=event.serial_number,
-                    datapoint_type=event.datapoint_type,
-                )
-            )
+        )
 
     def handle_output_state_received_event(
         self, event: OutputStateReceivedEvent

@@ -15,6 +15,7 @@ from xp.models.protocol.conbus_protocol import (
     EventTelegramReceivedEvent,
     LightLevelReceivedEvent,
     ModuleDiscoveredEvent,
+    ModuleStateChangedEvent,
     OutputStateReceivedEvent,
     TelegramReceivedEvent,
 )
@@ -210,9 +211,34 @@ class HomeKitService:
     def dispatch_event_telegram_received_event(
         self, event: TelegramReceivedEvent
     ) -> None:
+        self.logger.debug("Event telegram received, parsing...")
+
+        # Parse event telegram to extract module information
+        event_telegram = self.telegram_service.parse_event_telegram(event.frame)
+
         self.logger.debug(
-            "Event telegram received, dispatching EventTelegramReceivedEvent"
+            f"Parsed event: "
+            f"module_type={event_telegram.module_type}, "
+            f"link={event_telegram.link_number}, "
+            f"input={event_telegram.input_number}"
         )
+
+        # Dispatch ModuleStateChangedEvent for cache refresh
+        self.event_bus.dispatch(
+            ModuleStateChangedEvent(
+                module_type_code=event_telegram.module_type,
+                link_number=event_telegram.link_number,
+                input_number=event_telegram.input_number,
+                event_type=(
+                    event_telegram.event_type.value
+                    if event_telegram.event_type
+                    else "M"
+                ),
+            )
+        )
+        self.logger.debug("ModuleStateChangedEvent dispatched successfully")
+
+        # Also dispatch EventTelegramReceivedEvent for backward compatibility
         self.event_bus.dispatch(
             EventTelegramReceivedEvent(
                 protocol=event.protocol,

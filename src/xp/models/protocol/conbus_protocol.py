@@ -54,7 +54,10 @@ class LightLevelReceivedEvent(DatapointEvent):
 
 
 class ReadDatapointEvent(DatapointEvent):
-    pass
+    refresh_cache: bool = Field(
+        default=False,
+        description="If True, force cache invalidation and fresh protocol query",
+    )
 
 
 class ReadDatapointFromProtocolEvent(DatapointEvent):
@@ -150,6 +153,15 @@ class TelegramEvent(BaseEvent):
     telegram_type: str = Field(description="Telegram type: S")
     serial_number: str = Field(description="Serial number: 0123450001 or empty")
     checksum: str = Field(description="Checksum: FK")
+
+
+class ModuleStateChangedEvent(BaseEvent):
+    """Event dispatched when a module's state changes (from event telegram)"""
+
+    module_type_code: int = Field(description="Module type code from event telegram")
+    link_number: int = Field(description="Link number from event telegram")
+    input_number: int = Field(description="Input number that triggered the event")
+    event_type: str = Field(description="Event type (M=press, B=release)")
 
 
 class EventTelegramReceivedEvent(TelegramEvent):
