@@ -11,7 +11,7 @@ from xp.models.protocol.conbus_protocol import (
     ConnectionMadeEvent,
     InvalidTelegramReceivedEvent,
     ModuleDiscoveredEvent,
-    TelegramReceivedEvent,
+    TelegramReceivedEvent, EventTelegramReceivedEvent,
 )
 from xp.services.protocol.telegram_protocol import TelegramProtocol
 
@@ -20,6 +20,7 @@ ConnectionMadeEvent.model_rebuild()
 InvalidTelegramReceivedEvent.model_rebuild()
 ModuleDiscoveredEvent.model_rebuild()
 TelegramReceivedEvent.model_rebuild()
+EventTelegramReceivedEvent.model_rebuild()
 
 
 class TelegramFactory(protocol.ClientFactory):
