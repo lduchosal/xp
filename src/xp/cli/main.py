@@ -57,7 +57,9 @@ def cli(ctx: click.Context) -> None:
     logging.getLogger("xp.services.homekit").setLevel(logging.INFO)
     logging.getLogger("xp.services.homekit.homekit_service").setLevel(logging.DEBUG)
     logging.getLogger("xp.services.homekit.homekit_hap_service").setLevel(logging.DEBUG)
-    logging.getLogger("xp.services.homekit.homekit_dimminglight_service").setLevel(logging.DEBUG)
+    logging.getLogger("xp.services.homekit.homekit_dimminglight_service").setLevel(
+        logging.DEBUG
+    )
     logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
 
     logging.getLogger("pyhap").setLevel(logging.INFO)

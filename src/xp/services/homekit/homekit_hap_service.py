@@ -118,9 +118,7 @@ class HomekitHapService:
             accessory = self.accessory_registry.get(identifier)
 
             if not accessory:
-                self.logger.warning(
-                    f"Invalid accessory: {identifier} (not found)"
-                )
+                self.logger.warning(f"Invalid accessory: {identifier} (not found)")
             else:
                 accessory.is_on = True if output == "1" else False
             output_number += 1
