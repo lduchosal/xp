@@ -12,7 +12,6 @@ from xp.models.protocol.conbus_protocol import (
     ConnectionFailedEvent,
     ConnectionLostEvent,
     ConnectionMadeEvent,
-    EventTelegramReceivedEvent,
     LightLevelReceivedEvent,
     ModuleDiscoveredEvent,
     ModuleStateChangedEvent,

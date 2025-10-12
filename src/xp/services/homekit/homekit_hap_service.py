@@ -119,7 +119,7 @@ class HomekitHapService:
 
             if not accessory:
                 self.logger.warning(
-                    f"Invalid accessory: {event.serial_number} (not found)"
+                    f"Invalid accessory: {identifier} (not found)"
                 )
             else:
                 accessory.is_on = True if output == "1" else False

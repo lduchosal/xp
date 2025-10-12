@@ -57,9 +57,11 @@ def cli(ctx: click.Context) -> None:
     logging.getLogger("xp.services.homekit").setLevel(logging.INFO)
     logging.getLogger("xp.services.homekit.homekit_service").setLevel(logging.DEBUG)
     logging.getLogger("xp.services.homekit.homekit_hap_service").setLevel(logging.DEBUG)
+    logging.getLogger("xp.services.homekit.homekit_dimminglight_service").setLevel(logging.DEBUG)
     logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
-    logging.getLogger("pyhap").setLevel(logging.DEBUG)
-    logging.getLogger('pyhap.hap_protocol').setLevel(logging.DEBUG)
+
+    logging.getLogger("pyhap").setLevel(logging.INFO)
+    logging.getLogger("pyhap.hap_protocol").setLevel(logging.INFO)
 
     # Initialize the service container and store it in the context
     ctx.ensure_object(dict)

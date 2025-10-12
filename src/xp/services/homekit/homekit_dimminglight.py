@@ -71,8 +71,9 @@ class DimmingLight(Accessory):
             setter_callback=self.set_brightness,
         )
         self.logger.debug(f"char_on properties: {self.char_on.properties}")
-        self.logger.debug(f"char_brightness properties: {self.char_brightness.properties}")
-
+        self.logger.debug(
+            f"char_brightness properties: {self.char_brightness.properties}"
+        )
 
     def set_on(self, value: bool) -> None:
         # Emit set event
@@ -132,4 +133,3 @@ class DimmingLight(Accessory):
             )
         )
         return self.brightness
-

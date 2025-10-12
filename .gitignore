@@ -15,6 +15,9 @@ rp.yml
 .idea/workspace.xml
 coverage.xml
 
+# Cache directory
+/.cache/
+
 # Python cache files
 __pycache__/
 *.py[cod]

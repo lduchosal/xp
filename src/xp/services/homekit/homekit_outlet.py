@@ -107,7 +107,6 @@ class Outlet(Accessory):
                 )
             )
 
-
     def get_on(self) -> bool:
         # Emit event and get response
         self.logger.debug("get_on")

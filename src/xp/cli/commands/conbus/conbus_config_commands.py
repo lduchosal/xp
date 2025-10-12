@@ -27,7 +27,7 @@ def show_config(ctx: Context) -> None:
 
     try:
         config = service.get_config()
-        click.echo(json.dumps(config.conbus.to_dict(), indent=2))
+        click.echo(json.dumps(config.conbus, indent=2))
 
     except Exception as e:
         CLIErrorHandler.handle_service_error(e, "configuration retrieval")

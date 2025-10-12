@@ -9,9 +9,10 @@ from xp.models.protocol.conbus_protocol import (
     ConnectionFailedEvent,
     ConnectionLostEvent,
     ConnectionMadeEvent,
+    EventTelegramReceivedEvent,
     InvalidTelegramReceivedEvent,
     ModuleDiscoveredEvent,
-    TelegramReceivedEvent, EventTelegramReceivedEvent,
+    TelegramReceivedEvent,
 )
 from xp.services.protocol.telegram_protocol import TelegramProtocol
 

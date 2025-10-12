@@ -1,6 +1,6 @@
 """Integration tests for event-driven cache refresh flow"""
 
-import asyncio
+from typing import Any
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
@@ -9,22 +9,19 @@ from bubus import EventBus
 
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.protocol.conbus_protocol import (
-    EventTelegramReceivedEvent,
-    LightLevelReceivedEvent,
     ModuleStateChangedEvent,
     OutputStateReceivedEvent,
     ReadDatapointEvent,
     ReadDatapointFromProtocolEvent,
 )
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.models.telegram.event_telegram import EventTelegram, EventType
+from xp.models.telegram.event_telegram import EventType
 from xp.services import TelegramService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_dimminglight import DimmingLight
 from xp.services.homekit.homekit_hap_service import HomekitHapService
 from xp.services.homekit.homekit_lightbulb import LightBulb
 from xp.services.homekit.homekit_outlet import Outlet
-from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 
 class TestEndToEndCacheRefresh:
@@ -36,8 +33,10 @@ class TestEndToEndCacheRefresh:
         # Create real EventBus
         self.event_bus = EventBus()
 
-        # Create real cache service
-        self.cache_service = HomeKitCacheService(self.event_bus)
+        # Create real cache service (disable persistence for tests)
+        self.cache_service = HomeKitCacheService(
+            self.event_bus, enable_persistence=False
+        )
 
         # Create mock HAP service components
         self.homekit_config = MagicMock()
@@ -57,7 +56,7 @@ class TestEndToEndCacheRefresh:
             )
 
         # Track dispatched events for verification
-        self.dispatched_events = []
+        self.dispatched_events: list[Any] = []
 
         # Wrap dispatch to capture events
         original_dispatch = self.event_bus.dispatch
@@ -109,10 +108,12 @@ class TestEndToEndCacheRefresh:
         state_changed_event = ModuleStateChangedEvent(
             module_type_code=24, link_number=1, input_number=0, telegram_event_type="M"
         )
-        await self.event_bus.dispatch(state_changed_event)
+        self.event_bus.dispatch(state_changed_event)
 
         # Verify: ReadDatapointEvent with refresh_cache=True was dispatched
-        read_events = [e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)]
+        read_events = [
+            e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)
+        ]
         assert len(read_events) == 1
         assert read_events[0].serial_number == "1234567890"
         assert read_events[0].datapoint_type == DataPointType.MODULE_OUTPUT_STATE
@@ -123,7 +124,9 @@ class TestEndToEndCacheRefresh:
 
         # Verify: ReadDatapointFromProtocolEvent was dispatched (cache miss)
         protocol_events = [
-            e for e in self.dispatched_events if isinstance(e, ReadDatapointFromProtocolEvent)
+            e
+            for e in self.dispatched_events
+            if isinstance(e, ReadDatapointFromProtocolEvent)
         ]
         assert len(protocol_events) == 1
         assert protocol_events[0].serial_number == "1234567890"
@@ -135,7 +138,7 @@ class TestEndToEndCacheRefresh:
             datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
             data_value="1x",  # Output 0 is ON
         )
-        await self.event_bus.dispatch(fresh_state_event)
+        self.event_bus.dispatch(fresh_state_event)
 
         # Verify: Cache was updated with fresh state
         assert cache_key in self.cache_service.cache
@@ -190,10 +193,12 @@ class TestEndToEndCacheRefresh:
         state_changed_event = ModuleStateChangedEvent(
             module_type_code=24, link_number=1, input_number=2, telegram_event_type="M"
         )
-        await self.event_bus.dispatch(state_changed_event)
+        self.event_bus.dispatch(state_changed_event)
 
         # Verify: Only module A accessories got refresh requests
-        read_events = [e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)]
+        read_events = [
+            e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)
+        ]
 
         # Should have 2 requests (one for each accessory on module A)
         assert len(read_events) == 2
@@ -234,10 +239,12 @@ class TestEndToEndCacheRefresh:
         state_changed_event = ModuleStateChangedEvent(
             module_type_code=24, link_number=5, input_number=0, telegram_event_type="M"
         )
-        await self.event_bus.dispatch(state_changed_event)
+        self.event_bus.dispatch(state_changed_event)
 
         # Verify: Two ReadDatapointEvents dispatched
-        read_events = [e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)]
+        read_events = [
+            e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)
+        ]
         assert len(read_events) == 2
 
         # Verify: One for OUTPUT_STATE, one for LIGHT_LEVEL
@@ -310,7 +317,7 @@ class TestEndToEndCacheRefresh:
         state_changed_event = ModuleStateChangedEvent(
             module_type_code=24, link_number=1, input_number=0, telegram_event_type="M"
         )
-        await self.event_bus.dispatch(state_changed_event)
+        self.event_bus.dispatch(state_changed_event)
 
         # Verify: Module 1's cache was invalidated
         assert cache_key_1 not in self.cache_service.cache
@@ -329,17 +336,21 @@ class TestEndToEndCacheRefresh:
         state_changed_event = ModuleStateChangedEvent(
             module_type_code=99, link_number=99, input_number=0, telegram_event_type="M"
         )
-        await self.event_bus.dispatch(state_changed_event)
+        self.event_bus.dispatch(state_changed_event)
 
         # Verify: No ReadDatapointEvent dispatched
-        read_events = [e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)]
-        assert len(read_events) == 0
+        read_events = [
+            e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)
+        ]
+        assert not read_events
 
         # Verify: No protocol requests
         protocol_events = [
-            e for e in self.dispatched_events if isinstance(e, ReadDatapointFromProtocolEvent)
+            e
+            for e in self.dispatched_events
+            if isinstance(e, ReadDatapointFromProtocolEvent)
         ]
-        assert len(protocol_events) == 0
+        assert not protocol_events
 
 
 class TestEventTelegramToCacheRefreshFlow:
@@ -349,7 +360,9 @@ class TestEventTelegramToCacheRefreshFlow:
     async def setup_method(self):
         """Setup test fixtures"""
         self.event_bus = EventBus()
-        self.cache_service = HomeKitCacheService(self.event_bus)
+        self.cache_service = HomeKitCacheService(
+            self.event_bus, enable_persistence=False
+        )
         self.telegram_service = TelegramService()
 
         # Create mock HAP service
@@ -369,7 +382,7 @@ class TestEventTelegramToCacheRefreshFlow:
             )
 
         # Track dispatched events
-        self.dispatched_events = []
+        self.dispatched_events: list[Any] = []
         original_dispatch = self.event_bus.dispatch
 
         def capture_dispatch(event):
@@ -418,10 +431,12 @@ class TestEventTelegramToCacheRefreshFlow:
             input_number=parsed.input_number,
             telegram_event_type=parsed.event_type.value,
         )
-        await self.event_bus.dispatch(state_changed)
+        self.event_bus.dispatch(state_changed)
 
         # Verify: ReadDatapointEvent with refresh_cache=True was dispatched
-        read_events = [e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)]
+        read_events = [
+            e for e in self.dispatched_events if isinstance(e, ReadDatapointEvent)
+        ]
         assert len(read_events) == 1
         assert read_events[0].serial_number == "1234567890"
         assert read_events[0].refresh_cache is True

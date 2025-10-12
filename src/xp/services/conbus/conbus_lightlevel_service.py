@@ -185,6 +185,7 @@ class ConbusLightlevelService:
                     if ":" in output_data:
                         output_str, level_str = output_data.split(":")
                         if int(output_str) == output_number:
+                            level_str = level_str.replace("[%]", "")
                             level = int(level_str)
                             break
             except (ValueError, AttributeError) as e:

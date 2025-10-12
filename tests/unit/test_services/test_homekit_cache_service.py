@@ -20,12 +20,12 @@ class TestHomeKitCacheService:
     def setup_method(self):
         """Setup test fixtures"""
         self.event_bus = Mock(spec=EventBus)
-        self.service = HomeKitCacheService(self.event_bus)
+        self.service = HomeKitCacheService(self.event_bus, enable_persistence=False)
 
     def test_init(self):
         """Test service initialization"""
         event_bus = Mock(spec=EventBus)
-        service = HomeKitCacheService(event_bus)
+        service = HomeKitCacheService(event_bus, enable_persistence=False)
 
         assert service.event_bus == event_bus
         assert service.logger is not None

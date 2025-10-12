@@ -1,8 +1,10 @@
 """Bubus cache service for caching datapoint responses."""
 
+import json
 import logging
 from datetime import datetime
-from typing import TypedDict, Union
+from pathlib import Path
+from typing import Any, TypedDict, Union
 
 from bubus import EventBus
 
@@ -13,6 +15,10 @@ from xp.models.protocol.conbus_protocol import (
     ReadDatapointFromProtocolEvent,
 )
 from xp.models.telegram.datapoint_type import DataPointType
+
+# Cache file configuration
+CACHE_DIR = Path(".cache")
+CACHE_FILE = CACHE_DIR / "homekit_cache.json"
 
 
 class CacheEntry(TypedDict):
@@ -32,10 +38,15 @@ class HomeKitCacheService:
     - Forwards to protocol via ReadDatapointFromProtocolEvent (cache miss)
     """
 
-    def __init__(self, event_bus: EventBus):
+    def __init__(self, event_bus: EventBus, enable_persistence: bool = True):
         self.logger = logging.getLogger(__name__)
         self.event_bus = event_bus
         self.cache: dict[tuple[str, DataPointType], CacheEntry] = {}
+        self.enable_persistence = enable_persistence
+
+        # Load cache from disk
+        if self.enable_persistence:
+            self._load_cache()
 
         # Register event handlers
         # Note: These must be registered BEFORE HomeKitConbusService registers its handlers
@@ -47,7 +58,96 @@ class HomeKitCacheService:
             LightLevelReceivedEvent, self.handle_light_level_received_event
         )
 
-        self.logger.info("HomeKitCacheService initialized")
+        self.logger.info(
+            f"HomeKitCacheService initialized with {len(self.cache)} cached entries"
+        )
+
+    def _serialize_cache_key(self, key: tuple[str, DataPointType]) -> str:
+        """Serialize cache key to JSON-compatible string."""
+        serial_number, datapoint_type = key
+        return f"{serial_number}.{datapoint_type.value}"
+
+    def _deserialize_cache_key(self, key_str: str) -> tuple[str, DataPointType]:
+        """Deserialize cache key from JSON string."""
+        serial_number, datapoint_type_str = key_str.rsplit(".", 1)
+        return (serial_number, DataPointType(datapoint_type_str))
+
+    def _serialize_cache(self) -> dict[str, Any]:
+        """Serialize cache to JSON-compatible dict."""
+        serialized = {}
+        for key, entry in self.cache.items():
+            key_str = self._serialize_cache_key(key)
+            serialized[key_str] = {
+                "event": entry["event"].model_dump(mode="json"),
+                "timestamp": entry["timestamp"].isoformat(),
+            }
+        return serialized
+
+    def _deserialize_cache(
+        self, data: dict[str, Any]
+    ) -> dict[tuple[str, DataPointType], CacheEntry]:
+        """Deserialize cache from JSON dict."""
+        cache: dict[tuple[str, DataPointType], CacheEntry] = {}
+        for key_str, entry_data in data.items():
+            try:
+                key = self._deserialize_cache_key(key_str)
+                event_data = entry_data["event"]
+
+                # Reconstruct event based on datapoint_type
+                if key[1] == DataPointType.MODULE_OUTPUT_STATE:
+                    event = OutputStateReceivedEvent(**event_data)
+                elif key[1] == DataPointType.MODULE_LIGHT_LEVEL:
+                    event = LightLevelReceivedEvent(**event_data)
+                else:
+                    self.logger.warning(f"Unknown datapoint type in cache: {key[1]}")
+                    continue
+
+                cache[key] = {
+                    "event": event,
+                    "timestamp": datetime.fromisoformat(entry_data["timestamp"]),
+                }
+            except Exception as e:
+                self.logger.warning(f"Failed to deserialize cache entry {key_str}: {e}")
+                continue
+
+        return cache
+
+    def _load_cache(self) -> None:
+        """Load cache from disk."""
+        if not CACHE_FILE.exists():
+            self.logger.debug("No cache file found, starting with empty cache")
+            return
+
+        try:
+            with CACHE_FILE.open("r") as f:
+                data = json.load(f)
+
+            self.cache = self._deserialize_cache(data)
+            self.logger.info(f"Loaded {len(self.cache)} entries from cache file")
+        except Exception as e:
+            self.logger.error(f"Failed to load cache from disk: {e}")
+            self.cache = {}
+
+    def _save_cache(self) -> None:
+        """Save cache to disk atomically."""
+        if not self.enable_persistence:
+            return
+
+        try:
+            # Ensure cache directory exists
+            CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+            # Atomic write: write to temp file, then rename
+            temp_file = CACHE_FILE.with_suffix(".tmp")
+            with temp_file.open("w") as f:
+                json.dump(self._serialize_cache(), f, indent=2)
+
+            # Atomic rename
+            temp_file.replace(CACHE_FILE)
+
+            self.logger.debug(f"Saved {len(self.cache)} entries to cache file")
+        except Exception as e:
+            self.logger.error(f"Failed to save cache to disk: {e}")
 
     def _get_cache_key(
         self, serial_number: str, datapoint_type: DataPointType
@@ -69,6 +169,9 @@ class HomeKitCacheService:
             f"Cached event: serial={event.serial_number}, "
             f"type={event.datapoint_type}, value={event.data_value}"
         )
+
+        # Persist to disk
+        self._save_cache()
 
     def _get_cached_event(
         self, serial_number: str, datapoint_type: DataPointType
@@ -113,6 +216,8 @@ class HomeKitCacheService:
             if cache_key in self.cache:
                 del self.cache[cache_key]
                 self.logger.debug(f"Invalidated cache entry: {cache_key}")
+                # Persist invalidation
+                self._save_cache()
 
         # Normal cache lookup flow
         cached_event = self._get_cached_event(event.serial_number, event.datapoint_type)
@@ -162,6 +267,7 @@ class HomeKitCacheService:
         """Clear all cached entries."""
         self.logger.info("Clearing cache")
         self.cache.clear()
+        self._save_cache()
 
     def get_cache_stats(self) -> dict[str, int]:
         """Get cache statistics."""

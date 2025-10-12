@@ -84,4 +84,3 @@ class LightBulb(Accessory):
         self.logger.debug(f"get_on from dispatch: {self.is_on}")
 
         return self.is_on
-
