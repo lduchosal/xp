@@ -50,12 +50,16 @@ def cli(ctx: click.Context) -> None:
     logging.getLogger("pyhap.hap_handler").setLevel(logging.WARNING)
     # logging.getLogger('pyhap.accessory_driver').setLevel(logging.WARNING)
 
+    logging.getLogger("bubus").setLevel(logging.INFO)
+
     # Ensure xp module logs at DEBUG level
     logging.getLogger("xp").setLevel(logging.DEBUG)
-    logging.getLogger("xp.services.homekit.homekit_service").setLevel(logging.INFO)
+    logging.getLogger("xp.services.homekit").setLevel(logging.INFO)
+    logging.getLogger("xp.services.homekit.homekit_service").setLevel(logging.DEBUG)
+    logging.getLogger("xp.services.homekit.homekit_hap_service").setLevel(logging.DEBUG)
     logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
     logging.getLogger("pyhap").setLevel(logging.DEBUG)
-    logging.getLogger("bubus").setLevel(logging.DEBUG)
+    logging.getLogger('pyhap.hap_protocol').setLevel(logging.DEBUG)
 
     # Initialize the service container and store it in the context
     ctx.ensure_object(dict)

@@ -229,7 +229,7 @@ class HomeKitService:
                 module_type_code=event_telegram.module_type,
                 link_number=event_telegram.link_number,
                 input_number=event_telegram.input_number,
-                event_type=(
+                telegram_event_type=(
                     event_telegram.event_type.value
                     if event_telegram.event_type
                     else "M"
@@ -237,20 +237,6 @@ class HomeKitService:
             )
         )
         self.logger.debug("ModuleStateChangedEvent dispatched successfully")
-
-        # Also dispatch EventTelegramReceivedEvent for backward compatibility
-        self.event_bus.dispatch(
-            EventTelegramReceivedEvent(
-                protocol=event.protocol,
-                frame=event.frame,
-                telegram=event.telegram,
-                payload=event.payload,
-                telegram_type=event.telegram_type,
-                serial_number=event.serial_number,
-                checksum=event.checksum,
-            )
-        )
-        self.logger.debug("EventTelegramReceivedEvent dispatched successfully")
 
     def dispatch_module_discovered_event(self, event: TelegramReceivedEvent) -> None:
         self.logger.debug("Module discovered, dispatching ModuleDiscoveredEvent")

@@ -9,8 +9,8 @@
 accessory.state
 cli*.yml
 server.yml
-conson.yml
-homekit.yml
+conson.yml*
+homekit.yml*
 rp.yml
 .idea/workspace.xml
 coverage.xml

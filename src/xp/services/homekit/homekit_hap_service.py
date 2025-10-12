@@ -68,8 +68,10 @@ class HomekitHapService:
         self.modules = module_service
         self.event_bus = event_bus
 
-        # Subscribe to module state changes
+        # Subscribe to events
         self.event_bus.on(ModuleStateChangedEvent, self.handle_module_state_changed)
+        self.event_bus.on(OutputStateReceivedEvent, self.handle_output_state_received)
+        self.event_bus.on(LightLevelReceivedEvent, self.handle_light_level_received)
 
         # We want SIGTERM (terminate) to be handled by the driver itself,
         # so that it can gracefully stop the accessory, server and advertising.
@@ -105,10 +107,11 @@ class HomekitHapService:
         except Exception as e:
             self.logger.error(f"HAP-python driver error: {e}", exc_info=True)
 
-    def on_datapoint_received(self, event: OutputStateReceivedEvent) -> str:
+    def handle_output_state_received(self, event: OutputStateReceivedEvent) -> str:
 
+        self.logger.debug(f"Received OutputStateReceivedEvent {event}")
         output_number = 0
-        for output in event.data_value[::-1].split(""):
+        for output in event.data_value[::-1]:
             if output == "x":
                 break
             identifier = f"{event.serial_number}.{output_number:02X}"
@@ -123,20 +126,21 @@ class HomekitHapService:
             output_number += 1
 
         self.logger.debug(
-            f"on_datapoint_received "
+            f"handle_output_state_received "
             f"serial_number: {event.serial_number}, "
             f"data_vale: {event.data_value}"
         )
         return event.data_value
 
-    def on_brightness_received(self, event: LightLevelReceivedEvent) -> str:
+    def handle_light_level_received(self, event: LightLevelReceivedEvent) -> str:
 
         # Parse response format like "00:050,01:025,02:100"
-        self.logger.debug(f"Parsing brightness from response: {event.data_value}")
+        self.logger.debug("Received LightLevelReceivedEvent", extra={"event": event})
         output_number = 0
         for output_data in event.data_value.split(","):
             if ":" in output_data:
                 output_str, level_str = output_data.split(":")
+                level_str = level_str.replace("[%]", "")
                 output_number = int(output_str)
                 brightness = int(level_str)
                 identifier = f"{event.serial_number}.{output_number:02X}"
@@ -156,7 +160,7 @@ class HomekitHapService:
             output_number += 1
 
         self.logger.debug(
-            f"on_brightness_received "
+            f"handle_light_level_received "
             f"serial_number: {event.serial_number}, "
             f"data_vale: {event.data_value}"
         )

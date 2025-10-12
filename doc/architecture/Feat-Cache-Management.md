@@ -182,7 +182,7 @@ def dispatch_event_telegram_received_event(self, event: TelegramReceivedEvent) -
             module_type_code=event_telegram.module_type,
             link_number=event_telegram.link_number,
             input_number=event_telegram.input_number,
-            event_type=event_telegram.event_type.value if event_telegram.event_type else "M"
+            event_type=event_telegram.telegram_event_type.value if event_telegram.telegram_event_type else "M"
         )
     )
 ```

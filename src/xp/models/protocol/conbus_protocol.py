@@ -161,7 +161,7 @@ class ModuleStateChangedEvent(BaseEvent):
     module_type_code: int = Field(description="Module type code from event telegram")
     link_number: int = Field(description="Link number from event telegram")
     input_number: int = Field(description="Input number that triggered the event")
-    event_type: str = Field(description="Event type (M=press, B=release)")
+    telegram_event_type: str = Field(description="Event type (M=press, B=release)")
 
 
 class EventTelegramReceivedEvent(TelegramEvent):

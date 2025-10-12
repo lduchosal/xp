@@ -45,7 +45,8 @@ dev = [
     "refurb>=2.2.0",
     "pdm-backend>=2.4.5",
     "isort>=6.0.1",
-    "absolufy-imports>=0.3.1"
+    "absolufy-imports>=0.3.1",
+    "pytest-asyncio>=1.2.0",
 ]
 
 [tool.pytest.ini_options]
@@ -62,6 +63,7 @@ markers = [
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
     "reverseproxy: marks tests as unit tests",
+    "asyncio: marks tests as asyncio tests",
 ]
 filterwarnings = [
       "ignore::DeprecationWarning:click_help_colors.*",

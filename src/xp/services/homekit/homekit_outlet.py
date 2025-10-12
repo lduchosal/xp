@@ -94,17 +94,19 @@ class Outlet(Accessory):
     def set_on(self, value: bool) -> None:
         # Emit set event
         self.logger.debug(f"set_on {value}")
-        self.is_on = value
 
-        self.event_bus.dispatch(
-            OutletSetOnEvent(
-                serial_number=self.accessory.serial_number,
-                output_number=self.accessory.output_number,
-                module=self.module,
-                accessory=self.accessory,
-                value=value,
+        if value != self.is_on:
+            self.is_on = value
+            self.event_bus.dispatch(
+                OutletSetOnEvent(
+                    serial_number=self.accessory.serial_number,
+                    output_number=self.accessory.output_number,
+                    module=self.module,
+                    accessory=self.accessory,
+                    value=value,
+                )
             )
-        )
+
 
     def get_on(self) -> bool:
         # Emit event and get response

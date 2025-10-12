@@ -17,8 +17,10 @@ from xp.models.protocol.conbus_protocol import (
     DimmingLightSetOnEvent,
     LightBulbGetOnEvent,
     LightBulbSetOnEvent,
+    LightLevelReceivedEvent,
     ModuleDiscoveredEvent,
     ModuleStateChangedEvent,
+    OutputStateReceivedEvent,
     OutletGetInUseEvent,
     OutletGetOnEvent,
     OutletSetOnEvent,
@@ -543,10 +545,24 @@ class TestHomekitHapServiceModuleRegistry:
             ModuleStateChangedEvent, self.hap_service.handle_module_state_changed
         )
 
+    def test_output_state_received_event_subscription(self):
+        """Test that HAP service subscribes to OutputStateReceivedEvent"""
+        # Verify event handler is registered
+        self.event_bus.on.assert_any_call(
+            OutputStateReceivedEvent, self.hap_service.handle_output_state_received
+        )
+
+    def test_light_level_received_event_subscription(self):
+        """Test that HAP service subscribes to LightLevelReceivedEvent"""
+        # Verify event handler is registered
+        self.event_bus.on.assert_any_call(
+            LightLevelReceivedEvent, self.hap_service.handle_light_level_received
+        )
+
     def test_handle_module_state_changed_no_accessories(self):
         """Test handle_module_state_changed when no accessories are registered"""
         event = ModuleStateChangedEvent(
-            module_type_code=24, link_number=1, input_number=0, event_type="M"
+            module_type_code=24, link_number=1, input_number=0, telegram_event_type="M"
         )
 
         # Should not raise, should not dispatch any events
@@ -577,7 +593,7 @@ class TestHomekitHapServiceModuleRegistry:
 
         # Create state changed event
         event = ModuleStateChangedEvent(
-            module_type_code=24, link_number=1, input_number=0, event_type="M"
+            module_type_code=24, link_number=1, input_number=0, telegram_event_type="M"
         )
 
         # Handle event
@@ -613,7 +629,7 @@ class TestHomekitHapServiceModuleRegistry:
 
         # Create state changed event
         event = ModuleStateChangedEvent(
-            module_type_code=24, link_number=2, input_number=5, event_type="M"
+            module_type_code=24, link_number=2, input_number=5, telegram_event_type="M"
         )
 
         # Handle event
@@ -665,7 +681,7 @@ class TestHomekitHapServiceModuleRegistry:
 
         # Create state changed event
         event = ModuleStateChangedEvent(
-            module_type_code=24, link_number=3, input_number=2, event_type="M"
+            module_type_code=24, link_number=3, input_number=2, telegram_event_type="M"
         )
 
         # Handle event

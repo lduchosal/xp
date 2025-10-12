@@ -70,21 +70,25 @@ class DimmingLight(Accessory):
             getter_callback=self.get_brightness,
             setter_callback=self.set_brightness,
         )
+        self.logger.debug(f"char_on properties: {self.char_on.properties}")
+        self.logger.debug(f"char_brightness properties: {self.char_brightness.properties}")
+
 
     def set_on(self, value: bool) -> None:
         # Emit set event
         self.logger.debug(f"set_on {value}")
 
-        self.is_on = value
-        self.event_bus.dispatch(
-            DimmingLightSetOnEvent(
-                serial_number=self.accessory.serial_number,
-                output_number=self.accessory.output_number,
-                module=self.module,
-                accessory=self.accessory,
-                value=value,
+        if value != self.is_on:
+            self.is_on = value
+            self.event_bus.dispatch(
+                DimmingLightSetOnEvent(
+                    serial_number=self.accessory.serial_number,
+                    output_number=self.accessory.output_number,
+                    module=self.module,
+                    accessory=self.accessory,
+                    value=value,
+                )
             )
-        )
 
     def get_on(self) -> bool:
         # Emit event and get response
@@ -128,3 +132,4 @@ class DimmingLight(Accessory):
             )
         )
         return self.brightness
+
