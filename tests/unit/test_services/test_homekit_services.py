@@ -240,37 +240,39 @@ class TestHomeKitDimmingLightService:
         assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_handle_dimminglight_set_on_true(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_set_on with value=True sets brightness to 0 (implementation bug)"""
+        """Test handle_dimminglight_set_on with value=True sets brightness to the provided brightness"""
         event = DimmingLightSetOnEvent(
             serial_number="1234567890",
             output_number=2,
             module=mock_module,
             accessory=mock_accessory,
             value=True,
+            brightness=60,
         )
 
         self.service.handle_dimminglight_set_on(event)
 
         dispatched_event = self.event_bus.dispatch.call_args[0][0]
         assert isinstance(dispatched_event, SendWriteConfigEvent)
-        # Note: implementation has inverted logic - True sets to 0
-        assert dispatched_event.value == 0
+        # When value is True, it should use the provided brightness
+        assert dispatched_event.value == 60
 
     def test_handle_dimminglight_set_on_false(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_set_on with value=False sets brightness to 60 (implementation bug)"""
+        """Test handle_dimminglight_set_on with value=False sets brightness to 0"""
         event = DimmingLightSetOnEvent(
             serial_number="1234567890",
             output_number=2,
             module=mock_module,
             accessory=mock_accessory,
             value=False,
+            brightness=75,
         )
 
         self.service.handle_dimminglight_set_on(event)
 
         dispatched_event = self.event_bus.dispatch.call_args[0][0]
-        # Note: implementation has inverted logic - False sets to 60
-        assert dispatched_event.value == 60
+        # When value is False, brightness should be set to 0
+        assert dispatched_event.value == 0
 
     def test_handle_dimminglight_set_brightness(self, mock_module, mock_accessory):
         """Test handle_dimminglight_set_brightness dispatches SendWriteConfigEvent"""
