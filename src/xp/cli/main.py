@@ -45,25 +45,21 @@ def cli(ctx: click.Context) -> None:
         handler = logging.StreamHandler()
         handler.setFormatter(formatter)
         root_logger.addHandler(handler)
-    # Suppress pyhap.hap_protocol logs
-    logging.getLogger("pyhap.hap_protocol").setLevel(logging.WARNING)
-    logging.getLogger("pyhap.hap_handler").setLevel(logging.WARNING)
-    # logging.getLogger('pyhap.accessory_driver').setLevel(logging.WARNING)
 
+    # Suppress pyhap.hap_protocol logs
+
+    # bubus
     logging.getLogger("bubus").setLevel(logging.INFO)
 
-    # Ensure xp module logs at DEBUG level
-    logging.getLogger("xp").setLevel(logging.DEBUG)
+    # xp
+    logging.getLogger("xp").setLevel(logging.INFO)
     logging.getLogger("xp.services.homekit").setLevel(logging.INFO)
-    logging.getLogger("xp.services.homekit.homekit_service").setLevel(logging.DEBUG)
-    logging.getLogger("xp.services.homekit.homekit_hap_service").setLevel(logging.DEBUG)
-    logging.getLogger("xp.services.homekit.homekit_dimminglight_service").setLevel(
-        logging.DEBUG
-    )
-    logging.getLogger("xp.services.protocol.telegram_protocol").setLevel(logging.INFO)
 
+    # pyhap
     logging.getLogger("pyhap").setLevel(logging.INFO)
+    logging.getLogger("pyhap.hap_handler").setLevel(logging.WARNING)
     logging.getLogger("pyhap.hap_protocol").setLevel(logging.INFO)
+    # logging.getLogger('pyhap.accessory_driver').setLevel(logging.WARNING)
 
     # Initialize the service container and store it in the context
     ctx.ensure_object(dict)

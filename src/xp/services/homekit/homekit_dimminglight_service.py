@@ -48,8 +48,8 @@ class HomeKitDimmingLightService:
         self.logger.debug(f"Dispatched ReadDatapointEvent for {event.serial_number}")
 
     def handle_dimminglight_set_on(self, event: DimmingLightSetOnEvent) -> None:
-        brightness = 60 if event.value else 0
-        self.logger.info(
+        brightness = event.brightness if event.value else 0
+        self.logger.debug(
             f"Setting on light for "
             f"serial {event.serial_number}, "
             f"output {event.output_number}, "

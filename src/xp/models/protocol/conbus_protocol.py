@@ -119,6 +119,7 @@ class DimmingLightSetOnEvent(ModuleEvent):
     """Event dispatched when dimming light set is on"""
 
     value: bool = Field(description="On or Off the light bulb set")
+    brightness: int = Field(description="Brightness of the light bulb set")
 
 
 class DimmingLightGetOnEvent(ModuleEvent):

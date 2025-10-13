@@ -88,6 +88,7 @@ class DimmingLight(Accessory):
                     module=self.module,
                     accessory=self.accessory,
                     value=value,
+                    brightness=self.brightness,
                 )
             )
 

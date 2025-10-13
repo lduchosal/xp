@@ -166,8 +166,10 @@ class HomeKitCacheService:
         }
         self.cache[cache_key] = cache_entry
         self.logger.debug(
-            f"Cached event: serial={event.serial_number}, "
-            f"type={event.datapoint_type}, value={event.data_value}"
+            f"Cached event: "
+            f"serial={event.serial_number}, "
+            f"type={event.datapoint_type}, "
+            f"value={event.data_value}"
         )
 
         # Persist to disk
@@ -182,7 +184,9 @@ class HomeKitCacheService:
 
         if cache_entry:
             self.logger.debug(
-                f"Cache hit: serial={serial_number}, type={datapoint_type}"
+                f"Cache hit: "
+                f"serial={serial_number}, "
+                f"type={datapoint_type}"
             )
             return cache_entry["event"]
 
@@ -224,7 +228,7 @@ class HomeKitCacheService:
 
         if cached_event:
             # Cache hit - dispatch the cached event
-            self.logger.info(
+            self.logger.debug(
                 f"Returning cached response: "
                 f"serial={event.serial_number}, "
                 f"type={event.datapoint_type}"
@@ -250,16 +254,20 @@ class HomeKitCacheService:
     ) -> None:
         """Cache OutputStateReceivedEvent for future queries."""
         self.logger.debug(
-            f"Caching OutputStateReceivedEvent: serial={event.serial_number}, "
-            f"type={event.datapoint_type}, value={event.data_value}"
+            f"Caching OutputStateReceivedEvent: "
+            f"serial={event.serial_number}, "
+            f"type={event.datapoint_type}, "
+            f"value={event.data_value}"
         )
         self._cache_event(event)
 
     def handle_light_level_received_event(self, event: LightLevelReceivedEvent) -> None:
         """Cache LightLevelReceivedEvent for future queries."""
         self.logger.debug(
-            f"Caching LightLevelReceivedEvent: serial={event.serial_number}, "
-            f"type={event.datapoint_type}, value={event.data_value}"
+            f"Caching LightLevelReceivedEvent: "
+            f"serial={event.serial_number}, "
+            f"type={event.datapoint_type}, "
+            f"value={event.data_value}"
         )
         self._cache_event(event)
 

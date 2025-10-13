@@ -25,7 +25,7 @@ class TelegramProtocol(protocol.Protocol):
         self.logger.debug("connectionMade")
         try:
             self.logger.debug("Scheduling async connection handler")
-            task = asyncio.create_task(self._async_connectionMade())
+            task = asyncio.create_task(self._async_connection_made())
             task.add_done_callback(self._on_task_done)
         except Exception as e:
             self.logger.error(f"Error scheduling async handler: {e}", exc_info=True)
@@ -42,7 +42,8 @@ class TelegramProtocol(protocol.Protocol):
         except Exception as e:
             self.logger.error(f"Error in task done callback: {e}", exc_info=True)
 
-    async def _async_connectionMade(self) -> None:
+
+    async def _async_connection_made(self) -> None:
         """Async handler for connection made"""
         self.logger.debug("_async_connectionMade starting")
         self.logger.info("Dispatching ConnectionMadeEvent")
@@ -123,6 +124,11 @@ class TelegramProtocol(protocol.Protocol):
             )
 
     def sendFrame(self, data: bytes) -> None:
+        """Sync callback from Twisted - delegates to async implementation"""
+        task = asyncio.create_task(self._async_sendFrame(data))
+        task.add_done_callback(self._on_task_done)
+
+    async def _async_sendFrame(self, data: bytes) -> None:
         self.logger.debug(f"sendFrame {data.decode()}")
 
         checksum = calculate_checksum(data.decode())
