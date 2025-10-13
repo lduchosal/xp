@@ -184,9 +184,7 @@ class HomeKitCacheService:
 
         if cache_entry:
             self.logger.debug(
-                f"Cache hit: "
-                f"serial={serial_number}, "
-                f"type={datapoint_type}"
+                f"Cache hit: " f"serial={serial_number}, " f"type={datapoint_type}"
             )
             return cache_entry["event"]
 

@@ -42,7 +42,6 @@ class TelegramProtocol(protocol.Protocol):
         except Exception as e:
             self.logger.error(f"Error in task done callback: {e}", exc_info=True)
 
-
     async def _async_connection_made(self) -> None:
         """Async handler for connection made"""
         self.logger.debug("_async_connectionMade starting")
