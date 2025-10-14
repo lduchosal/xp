@@ -38,6 +38,7 @@ from xp.services.homekit.homekit_service import HomeKitService
 from xp.services.log_file_service import LogFileService
 from xp.services.module_type_service import ModuleTypeService
 from xp.services.protocol.protocol_factory import TelegramFactory
+from xp.services.protocol.telegram_debounce_service import TelegramDebounceService
 from xp.services.protocol.telegram_protocol import TelegramProtocol
 from xp.services.reverse_proxy_service import ReverseProxyService
 from xp.services.server.server_service import ServerService
@@ -402,6 +403,18 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
+        # Debounce service must be registered BEFORE HomeKitConbusService
+        # so it handles ReadDatapointFromProtocolEvent (which was removed from HomeKitConbusService)
+        self.container.register(
+            TelegramDebounceService,
+            factory=lambda: TelegramDebounceService(
+                event_bus=self.container.resolve(EventBus),
+                telegram_protocol=self.container.resolve(TelegramProtocol),
+                debounce_ms=50,
+            ),
+            scope=punq.Scope.singleton,
+        )
+
         self.container.register(
             HomeKitConbusService,
             factory=lambda: HomeKitConbusService(
@@ -428,6 +441,7 @@ class ServiceContainer:
                 outlet_service=self.container.resolve(HomeKitOutletService),
                 dimminglight_service=self.container.resolve(HomeKitDimmingLightService),
                 cache_service=self.container.resolve(HomeKitCacheService),
+                debounce_service=self.container.resolve(TelegramDebounceService),
                 conbus_service=self.container.resolve(HomeKitConbusService),
                 module_factory=self.container.resolve(HomekitHapService),
                 telegram_service=self.container.resolve(TelegramService),

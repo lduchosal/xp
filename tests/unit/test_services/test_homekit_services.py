@@ -328,19 +328,12 @@ class TestHomeKitConbusService:
         assert service.logger is not None
 
         # Verify event handlers are registered
-        assert event_bus.on.call_count == 3
-
-    def test_handle_read_datapoint_event(self, mock_module, mock_accessory):
-        """Test handle_read_datapoint_event sends correct telegram"""
-        event = ReadDatapointFromProtocolEvent(
-            serial_number="1234567890", datapoint_type=DataPointType.MODULE_OUTPUT_STATE
+        # Note: ReadDatapointFromProtocolEvent is now handled by TelegramDebounceService
+        assert event_bus.on.call_count == 2
+        event_bus.on.assert_any_call(SendActionEvent, service.handle_send_action_event)
+        event_bus.on.assert_any_call(
+            SendWriteConfigEvent, service.handle_send_write_config_event
         )
-
-        self.service.handle_read_datapoint_event(event)
-
-        self.telegram_protocol.sendFrame.assert_called_once()
-        sent_data = self.telegram_protocol.sendFrame.call_args[0][0]
-        assert sent_data == b"S1234567890F02D12"
 
     def test_handle_send_write_config_event(self, mock_module, mock_accessory):
         """Test handle_send_write_config_event formats telegram correctly"""
