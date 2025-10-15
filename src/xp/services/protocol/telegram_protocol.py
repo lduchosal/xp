@@ -1,5 +1,7 @@
 import asyncio
 import logging
+import time
+from typing import Dict, List, Optional
 
 from bubus import EventBus
 from twisted.internet import protocol
@@ -13,13 +15,25 @@ from xp.utils import calculate_checksum
 
 
 class TelegramProtocol(protocol.Protocol):
+    """
+    Twisted protocol for XP telegram communication with built-in debouncing.
+
+    Automatically deduplicates identical telegram frames sent within a
+    configurable time window (default 50ms).
+    """
+
     buffer: bytes
     event_bus: EventBus
 
-    def __init__(self, event_bus: EventBus) -> None:
+    def __init__(self, event_bus: EventBus, debounce_ms: int = 50) -> None:
         self.buffer = b""
         self.event_bus = event_bus
+        self.debounce_ms = debounce_ms
         self.logger = logging.getLogger(__name__)
+
+        # Debounce state
+        self.send_queue: Dict[bytes, List[float]] = {}  # frame -> [timestamps]
+        self.timer_handle: Optional[asyncio.TimerHandle] = None
 
     def connectionMade(self) -> None:
         self.logger.debug("connectionMade")
@@ -128,12 +142,92 @@ class TelegramProtocol(protocol.Protocol):
         task.add_done_callback(self._on_task_done)
 
     async def _async_sendFrame(self, data: bytes) -> None:
-        self.logger.debug(f"sendFrame {data.decode()}")
+        """
+        Send telegram frame with automatic deduplication.
 
+        Args:
+            data: Raw telegram payload (without checksum/framing)
+        """
+        # Calculate full frame (add checksum and brackets)
         checksum = calculate_checksum(data.decode())
         frame_data = data.decode() + checksum
         frame = b"<" + frame_data.encode() + b">"
+
+        # Apply debouncing and send
+        await self._send_frame_debounce(frame)
+
+    async def _send_frame_debounce(self, frame: bytes) -> None:
+        """
+        Apply debouncing logic and send frame if not a duplicate.
+
+        Identical frames within debounce_ms window are deduplicated.
+        Only the first occurrence is actually sent to the wire.
+
+        Args:
+            frame: Complete telegram frame (with checksum and brackets)
+        """
+        current_time = time.time()
+
+        # Check if identical frame was recently sent
+        if frame in self.send_queue:
+            recent_sends = [
+                ts
+                for ts in self.send_queue[frame]
+                if current_time - ts < (self.debounce_ms / 1000.0)
+            ]
+
+            if recent_sends:
+                # Duplicate detected - skip sending
+                self.logger.debug(
+                    f"Debounced duplicate frame: {frame.decode()} "
+                    f"(sent {len(recent_sends)} times in last {self.debounce_ms}ms)"
+                )
+                return
+
+        # Not a duplicate - send it
+        await self._send_frame_immediate(frame)
+
+        # Track this send
+        if frame not in self.send_queue:
+            self.send_queue[frame] = []
+        self.send_queue[frame].append(current_time)
+
+        # Schedule cleanup of old timestamps
+        self._schedule_cleanup()
+
+    async def _send_frame_immediate(self, frame: bytes) -> None:
+        """Actually send frame to TCP transport."""
         if not self.transport:
             self.logger.info("Invalid transport")
             raise IOError("Transport is not open")
+
+        self.logger.debug(f"Sending frame: {frame.decode()}")
         self.transport.write(frame)  # type: ignore
+
+    def _schedule_cleanup(self) -> None:
+        """Schedule cleanup of old timestamp tracking."""
+        if self.timer_handle:
+            self.timer_handle.cancel()
+
+        loop = asyncio.get_event_loop()
+        self.timer_handle = loop.call_later(
+            (self.debounce_ms / 1000.0) * 2,  # Cleanup after 2x debounce window
+            self._cleanup_old_timestamps,
+        )
+
+    def _cleanup_old_timestamps(self) -> None:
+        """Remove old timestamps to prevent memory leak."""
+        current_time = time.time()
+        cutoff = current_time - (self.debounce_ms / 1000.0)
+
+        for frame in list(self.send_queue.keys()):
+            # Keep only recent timestamps
+            self.send_queue[frame] = [
+                ts for ts in self.send_queue[frame] if ts >= cutoff
+            ]
+
+            # Remove frame if no recent sends
+            if not self.send_queue[frame]:
+                del self.send_queue[frame]
+
+        self.timer_handle = None

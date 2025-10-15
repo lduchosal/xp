@@ -26,7 +26,6 @@ from xp.services.homekit.homekit_hap_service import HomekitHapService
 from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
 from xp.services.homekit.homekit_outlet_service import HomeKitOutletService
 from xp.services.protocol.protocol_factory import TelegramFactory
-from xp.services.protocol.telegram_debounce_service import TelegramDebounceService
 
 
 class HomeKitService:
@@ -41,7 +40,6 @@ class HomeKitService:
         outlet_service: HomeKitOutletService,
         dimminglight_service: HomeKitDimmingLightService,
         cache_service: HomeKitCacheService,
-        debounce_service: TelegramDebounceService,
         conbus_service: HomeKitConbusService,
         module_factory: HomekitHapService,
         telegram_service: TelegramService,
@@ -56,7 +54,6 @@ class HomeKitService:
         self.dimminglight_service = dimminglight_service
         self.outlet_service = outlet_service
         self.cache_service = cache_service
-        self.debounce_service = debounce_service
         self.conbus_service = conbus_service
         self.module_factory = module_factory
         self.telegram_service = telegram_service

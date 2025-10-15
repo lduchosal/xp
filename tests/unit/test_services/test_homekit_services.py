@@ -328,8 +328,10 @@ class TestHomeKitConbusService:
         assert service.logger is not None
 
         # Verify event handlers are registered
-        # Note: ReadDatapointFromProtocolEvent is now handled by TelegramDebounceService
-        assert event_bus.on.call_count == 2
+        assert event_bus.on.call_count == 3
+        event_bus.on.assert_any_call(
+            ReadDatapointFromProtocolEvent, service.handle_read_datapoint_request
+        )
         event_bus.on.assert_any_call(SendActionEvent, service.handle_send_action_event)
         event_bus.on.assert_any_call(
             SendWriteConfigEvent, service.handle_send_write_config_event
