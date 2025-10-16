@@ -83,8 +83,8 @@ class TestVersionIntegration(unittest.TestCase):
     def test_auto_detect_version_telegrams(self):
         """Test auto-detecting version telegrams using the generic parse method."""
         test_cases = [
-            ("<S0012345011F02D02FM>", "system"),
-            ("<R0012345011F02D02XP230_V1.00.04FI>", "reply"),
+            ("<S0012345011F02D02FM>", "S"),
+            ("<R0012345011F02D02XP230_V1.00.04FI>", "R"),
         ]
 
         for raw_telegram, expected_type in test_cases:
@@ -93,12 +93,12 @@ class TestVersionIntegration(unittest.TestCase):
 
                 self.assertEqual(parsed.to_dict()["telegram_type"], expected_type)
 
-                if expected_type == "system":
+                if expected_type == "s":
                     assert isinstance(parsed, SystemTelegram)
                     validation = self.version_service.validate_version_telegram(parsed)
                     self.assertTrue(validation.success)
                     self.assertTrue(validation.data["is_version_request"])
-                elif expected_type == "reply":
+                elif expected_type == "r":
                     assert isinstance(parsed, ReplyTelegram)
                     version_result = self.version_service.parse_version_reply(parsed)
                     self.assertTrue(version_result.success)

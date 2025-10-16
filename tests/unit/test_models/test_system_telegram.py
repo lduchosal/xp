@@ -183,7 +183,7 @@ class TestSystemTelegram:
         assert result["datapoint_type"]["description"] == "TEMPERATURE"
         assert result["checksum"] == "FN"
         assert result["raw_telegram"] == "<S0020012521F02D18FN>"
-        assert result["telegram_type"] == "system"
+        assert result["telegram_type"] == "S"
         assert "timestamp" in result
         assert result["timestamp"] is not None
 

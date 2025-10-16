@@ -32,6 +32,7 @@ xp = "xp.cli:cli"
 
 [dependency-groups]
 dev = [
+    "pdm>=2.26.0",
     "pytest>=8.4",
     "pytest-cov>=7.0",
     "black>=25.9",

@@ -33,7 +33,7 @@ class TestSystemTelegramCLI:
         assert output_data["system_function"]["description"] == "READ_DATAPOINT"
         assert output_data["datapoint_type"]["description"] == "TEMPERATURE"
         assert output_data["checksum"] == "FN"
-        assert output_data["telegram_type"] == "system"
+        assert output_data["telegram_type"] == "S"
 
     def test_parse_system_telegram_json_output(self):
         """Test telegram parse command with JSON output."""
@@ -50,7 +50,7 @@ class TestSystemTelegramCLI:
         assert output_data["datapoint_type"]["code"] == "18"
         assert output_data["datapoint_type"]["description"] == "TEMPERATURE"
         assert output_data["checksum"] == "FN"
-        assert output_data["telegram_type"] == "system"
+        assert output_data["telegram_type"] == "S"
         assert "timestamp" in output_data
 
     def test_parse_system_telegram_different_functions(self):
@@ -141,7 +141,7 @@ class TestReplyTelegramCLI:
         assert output_data["data_value"]["parsed"]["value"] == 26.0
         assert output_data["data_value"]["parsed"]["unit"] == "°C"
         assert output_data["checksum"] == "IL"
-        assert output_data["telegram_type"] == "reply"
+        assert output_data["telegram_type"] == "R"
 
     def test_parse_reply_telegram_json_output(self):
         """Test telegram parse command with JSON output."""
@@ -169,7 +169,7 @@ class TestReplyTelegramCLI:
         assert output_data["data_value"]["parsed"]["value"] == 26.0
         assert output_data["data_value"]["parsed"]["unit"] == "°C"
         assert output_data["checksum"] == "IL"
-        assert output_data["telegram_type"] == "reply"
+        assert output_data["telegram_type"] == "R"
 
     def test_parse_reply_telegram_different_data_types(self):
         """Test parsing different reply data types."""
@@ -288,7 +288,7 @@ class TestAutoDetectTelegramCLI:
         output_data = json.loads(result.output)
 
         # Should use system telegram formatting
-        assert output_data["telegram_type"] == "system"
+        assert output_data["telegram_type"] == "S"
         assert output_data["system_function"]["description"] == "READ_DATAPOINT"
         assert output_data["datapoint_type"]["description"] == "TEMPERATURE"
 
@@ -304,7 +304,7 @@ class TestAutoDetectTelegramCLI:
         output_data = json.loads(result.output)
 
         # Should use reply telegram formatting
-        assert output_data["telegram_type"] == "reply"
+        assert output_data["telegram_type"] == "R"
         assert output_data["data_value"]["parsed"]["value"] == 26.0
         assert output_data["data_value"]["parsed"]["unit"] == "°C"
 
@@ -323,7 +323,7 @@ class TestAutoDetectTelegramCLI:
 
         assert result.exit_code == 0
         output_data = json.loads(result.output)
-        assert output_data["telegram_type"] == "system"
+        assert output_data["telegram_type"] == "S"
         assert "serial_number" in output_data
 
         # Reply telegram
@@ -333,7 +333,7 @@ class TestAutoDetectTelegramCLI:
 
         assert result.exit_code == 0
         output_data = json.loads(result.output)
-        assert output_data["telegram_type"] == "reply"
+        assert output_data["telegram_type"] == "R"
         assert "data_value" in output_data
 
     def test_parse_telegram_unknown_type(self):
@@ -372,9 +372,9 @@ class TestAutoDetectTelegramCLI:
     @pytest.mark.parametrize(
         "telegram,expected_type",
         [
-            ("<E14L00I02MAK>", "event"),
-            ("<S0020012521F02D18FN>", "system"),
-            ("<R0020012521F02D18+26,0§CIL>", "reply"),
+            ("<E14L00I02MAK>", "E"),
+            ("<S0020012521F02D18FN>", "S"),
+            ("<R0020012521F02D18+26,0§CIL>", "R"),
         ],
     )
     def test_parse_telegram_type_detection(self, telegram, expected_type):
@@ -384,7 +384,7 @@ class TestAutoDetectTelegramCLI:
         assert result.exit_code == 0
         output_data = json.loads(result.output)
 
-        if expected_type == "event":
+        if expected_type == "E":
             # Event telegrams don't have telegram_type field but have unique fields
             assert "module_type" in output_data
             assert "event_type" in output_data

@@ -9,3 +9,4 @@ class TelegramType(str, Enum):
     EVENT = "E"
     REPLY = "R"
     SYSTEM = "S"
+    CPEVENT = "O"

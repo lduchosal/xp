@@ -275,7 +275,7 @@ class TestLogFileService:
         event_entry = Mock(spec=LogEntry)
         event_entry.is_valid_parse = True
         event_entry.direction = "RX"
-        event_entry.telegram_type = "event"
+        event_entry.telegram_type = "E"
         event_entry.checksum_validated = True
         event_entry.timestamp = datetime(2023, 1, 1, 22, 44, 20, 352000)
 
@@ -290,7 +290,7 @@ class TestLogFileService:
         system_entry = Mock(spec=LogEntry)
         system_entry.is_valid_parse = True
         system_entry.direction = "TX"
-        system_entry.telegram_type = "system"
+        system_entry.telegram_type = "S"
         system_entry.checksum_validated = True
         system_entry.timestamp = datetime(2023, 1, 1, 22, 44, 25, 500000)
 

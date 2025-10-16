@@ -58,7 +58,7 @@ class TestVersionSystemTelegram(unittest.TestCase):
         self.assertEqual(result["datapoint_type"]["description"], "SW_VERSION")
         self.assertEqual(result["checksum"], "FM")
         self.assertTrue(result["checksum_validated"])
-        self.assertEqual(result["telegram_type"], "system")
+        self.assertEqual(result["telegram_type"], "S")
 
     def test_version_system_telegram_str(self):
         """Test string representation of version system telegram."""
@@ -151,7 +151,7 @@ class TestVersionReplyTelegram(unittest.TestCase):
         self.assertEqual(result["data_value"]["parsed"]["product"], "XP230")
         self.assertEqual(result["checksum"], "FI")
         self.assertTrue(result["checksum_validated"])
-        self.assertEqual(result["telegram_type"], "reply")
+        self.assertEqual(result["telegram_type"], "R")
 
     def test_version_formats(self):
         """Test various version formats from the specification."""

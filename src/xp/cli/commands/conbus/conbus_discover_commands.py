@@ -1,4 +1,5 @@
 """Conbus client operations CLI commands."""
+
 import json
 
 import click
@@ -33,8 +34,4 @@ def send_discover_telegram(ctx: click.Context) -> None:
         pass
 
     service = ctx.obj.get("container").get_container().resolve(ConbusDiscoverService)
-    service.run(
-        progress,
-        finish,
-        0.5
-    )
+    service.run(progress, finish, 0.5)

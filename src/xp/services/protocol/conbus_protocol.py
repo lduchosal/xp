@@ -102,9 +102,7 @@ class ConbusProtocol(protocol.Protocol):
         system_function: SystemFunction,
         data_value: str,
     ) -> None:
-        payload = (
-            f"{telegram_type.value}{serial_number}F{system_function.value}D{data_value}".encode()
-        )
+        payload = f"{telegram_type.value}{serial_number}F{system_function.value}D{data_value}".encode()
         self.sendFrame(payload)
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:

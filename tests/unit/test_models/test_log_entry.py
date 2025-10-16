@@ -71,7 +71,7 @@ class TestLogEntry:
             line_number=1,
         )
 
-        assert entry.telegram_type == "event"
+        assert entry.telegram_type == "e"
         assert entry.is_valid_parse is True
 
     def test_telegram_type_with_system_telegram(self):
@@ -92,7 +92,7 @@ class TestLogEntry:
             line_number=1,
         )
 
-        assert entry.telegram_type == "system"
+        assert entry.telegram_type == "s"
         assert entry.is_valid_parse is True
 
     def test_telegram_type_with_reply_telegram(self):
@@ -114,7 +114,7 @@ class TestLogEntry:
             line_number=1,
         )
 
-        assert entry.telegram_type == "reply"
+        assert entry.telegram_type == "r"
         assert entry.is_valid_parse is True
 
     def test_telegram_type_unknown(self):
@@ -197,7 +197,7 @@ class TestLogEntry:
             "timestamp": "22:44:20.352",
             "direction": "RX",
             "raw_telegram": "<E14L00I02MAK>",
-            "telegram_type": "event",
+            "telegram_type": "e",
             "is_valid_parse": True,
             "parse_error": None,
             "parsed": event_telegram.to_dict(),

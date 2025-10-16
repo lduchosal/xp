@@ -211,9 +211,9 @@ class LogFileService:
         rx_count = len([e for e in entries if e.direction == "RX"])
 
         # Type counts
-        event_count = len([e for e in entries if e.telegram_type == "event"])
-        system_count = len([e for e in entries if e.telegram_type == "system"])
-        reply_count = len([e for e in entries if e.telegram_type == "reply"])
+        event_count = len([e for e in entries if e.telegram_type == "E"])
+        system_count = len([e for e in entries if e.telegram_type == "S"])
+        reply_count = len([e for e in entries if e.telegram_type == "R"])
         unknown_count = len([e for e in entries if e.telegram_type == "unknown"])
 
         # Checksum validation

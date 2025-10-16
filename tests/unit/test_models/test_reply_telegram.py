@@ -261,7 +261,7 @@ class TestReplyTelegram:
         assert result["data_value"]["parsed"]["value"] == 26.0
         assert result["checksum"] == "IL"
         assert result["raw_telegram"] == "<R0020012521F02D18+26,0§CIL>"
-        assert result["telegram_type"] == "reply"
+        assert result["telegram_type"] == "R"
         assert "timestamp" in result
 
     def test_str_representation(self):

@@ -154,7 +154,7 @@ class TestSystemTelegramEnhancements:
         assert result["checksum"] == "FO"
         assert result["checksum_validated"] is True
         assert result["raw_telegram"] == "<S0012345005F04D0425FO>"
-        assert result["telegram_type"] == "system"
+        assert result[("telegram_type")] == "S"
 
     def test_str_representation_with_link_number(self):
         """Test string representation with link number"""

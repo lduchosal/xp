@@ -121,11 +121,12 @@ class ConbusDiscoverService(ConbusProtocol, protocol.ClientFactory):
             self.logger.info("Stopping reactor")
             self.reactor.stop()
 
-    def run(self,
-            progress_callback: Callable[[str], None],
-            finish_callback: Callable[[list[str]], None],
-            timeout_seconds: Optional[float] = None,
-            ) -> None:
+    def run(
+        self,
+        progress_callback: Callable[[str], None],
+        finish_callback: Callable[[list[str]], None],
+        timeout_seconds: Optional[float] = None,
+    ) -> None:
         """Run reactor in dedicated thread with its own event loop"""
         self.logger.info("Starting discovery")
         if timeout_seconds:

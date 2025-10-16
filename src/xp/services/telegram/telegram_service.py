@@ -8,6 +8,7 @@ from xp.models.telegram.output_telegram import OutputTelegram
 from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
+from xp.models.telegram.telegram_type import TelegramType
 from xp.utils.checksum import calculate_checksum
 
 
@@ -310,11 +311,11 @@ class TelegramService:
             raw_telegram.strip()[1] if len(raw_telegram.strip()) > 1 else ""
         )
 
-        if telegram_type_code in ("E", "O"):
+        if telegram_type_code in (TelegramType.EVENT.value, TelegramType.CPEVENT.value):
             return self.parse_event_telegram(raw_telegram)
-        elif telegram_type_code == "S":
+        elif telegram_type_code == TelegramType.SYSTEM.value:
             return self.parse_system_telegram(raw_telegram)
-        elif telegram_type_code == "R":
+        elif telegram_type_code == TelegramType.REPLY.value:
             return self.parse_reply_telegram(raw_telegram)
         else:
             raise TelegramParsingError(

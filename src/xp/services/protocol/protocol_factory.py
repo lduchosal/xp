@@ -5,7 +5,10 @@ from twisted.internet import protocol
 from twisted.internet.interfaces import IAddress, IConnector
 from twisted.python.failure import Failure
 
-from xp.models.protocol.conbus_protocol import ConnectionFailedEvent, ConnectionLostEvent
+from xp.models.protocol.conbus_protocol import (
+    ConnectionFailedEvent,
+    ConnectionLostEvent,
+)
 from xp.services.protocol import TelegramProtocol
 
 

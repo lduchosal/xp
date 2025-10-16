@@ -148,7 +148,9 @@ class ConnectionLostEvent(BaseEvent):
 
 
 class TelegramEvent(BaseEvent):
-    protocol: Union[TelegramProtocol, ConbusProtocol] = Field(description="TelegramProtocol instance")
+    protocol: Union[TelegramProtocol, ConbusProtocol] = Field(
+        description="TelegramProtocol instance"
+    )
     frame: str = Field(description="Frame <S0123450001F02D12FK>")
     telegram: str = Field(description="Telegram: S0123450001F02D12FK")
     payload: str = Field(description="Payload: S0123450001F02D12")

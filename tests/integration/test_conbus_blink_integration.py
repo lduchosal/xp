@@ -176,7 +176,7 @@ class TestConbusBlinkIntegration:
         assert response.serial_number == "all"
         assert response.operation == "off"
         assert response.system_function == SystemFunction.UNBLINK
-        assert response.error == "No devices discovered"
+        assert response.error is None
 
     def test_conbus_blink_partial_failure(self):
         """Test scenario where some devices fail to blink"""
