@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from bubus import BaseEvent
 from pydantic import Field
@@ -10,6 +10,7 @@ from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.telegram.datapoint_type import DataPointType
 
 if TYPE_CHECKING:
+    from xp.services.protocol.conbus_protocol import ConbusProtocol
     from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 
@@ -147,13 +148,16 @@ class ConnectionLostEvent(BaseEvent):
 
 
 class TelegramEvent(BaseEvent):
-    protocol: TelegramProtocol = Field(description="TelegramProtocol instance")
+    protocol: Union[TelegramProtocol, ConbusProtocol] = Field(description="TelegramProtocol instance")
     frame: str = Field(description="Frame <S0123450001F02D12FK>")
     telegram: str = Field(description="Telegram: S0123450001F02D12FK")
     payload: str = Field(description="Payload: S0123450001F02D12")
     telegram_type: str = Field(description="Telegram type: S")
     serial_number: str = Field(description="Serial number: 0123450001 or empty")
     checksum: str = Field(description="Checksum: FK")
+    checksum_valid: bool = Field(
+        default=True, description="Checksum valid: true, or false"
+    )
 
 
 class ModuleStateChangedEvent(BaseEvent):

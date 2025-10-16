@@ -3,9 +3,9 @@
 from enum import Enum
 
 
-class TelegramType(Enum):
+class TelegramType(str, Enum):
     """Enumeration of telegram types in the console bus system."""
 
-    EVENT = "event"
-    REPLY = "reply"
-    SYSTEM = "system"
+    EVENT = "E"
+    REPLY = "R"
+    SYSTEM = "S"

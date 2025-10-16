@@ -158,11 +158,8 @@ class ServiceContainer:
         self.container.register(
             ConbusDiscoverService,
             factory=lambda: ConbusDiscoverService(
-                telegram_service=self.container.resolve(TelegramService),
-                telegram_discover_service=self.container.resolve(
-                    TelegramDiscoverService
-                ),
-                conbus_service=self.container.resolve(ConbusService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )
@@ -171,7 +168,9 @@ class ServiceContainer:
             ConbusBlinkService,
             factory=lambda: ConbusBlinkService(
                 conbus_service=self.container.resolve(ConbusService),
-                discover_service=self.container.resolve(ConbusDiscoverService),
+                telegram_discover_service=self.container.resolve(
+                    TelegramDiscoverService
+                ),
                 telegram_blink_service=self.container.resolve(TelegramBlinkService),
                 telegram_service=self.container.resolve(TelegramService),
             ),

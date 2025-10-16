@@ -5,23 +5,8 @@ from twisted.internet import protocol
 from twisted.internet.interfaces import IAddress, IConnector
 from twisted.python.failure import Failure
 
-from xp.models.protocol.conbus_protocol import (
-    ConnectionFailedEvent,
-    ConnectionLostEvent,
-    ConnectionMadeEvent,
-    EventTelegramReceivedEvent,
-    InvalidTelegramReceivedEvent,
-    ModuleDiscoveredEvent,
-    TelegramReceivedEvent,
-)
-from xp.services.protocol.telegram_protocol import TelegramProtocol
-
-# Rebuild models after TelegramProtocol is imported to resolve forward references
-ConnectionMadeEvent.model_rebuild()
-InvalidTelegramReceivedEvent.model_rebuild()
-ModuleDiscoveredEvent.model_rebuild()
-TelegramReceivedEvent.model_rebuild()
-EventTelegramReceivedEvent.model_rebuild()
+from xp.models.protocol.conbus_protocol import ConnectionFailedEvent, ConnectionLostEvent
+from xp.services.protocol import TelegramProtocol
 
 
 class TelegramFactory(protocol.ClientFactory):

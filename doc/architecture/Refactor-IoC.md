@@ -33,23 +33,25 @@ For each service in the list dev/service_refactor_agentX.txt
 ## Example Pattern
 
 **Before:**
+
 ```python
 def __init__(
-    self,
-    config_path: str = "cli.yml",
-    conbus_service: Optional[ConbusService] = None,
+        self,
+        config_path: str = "cli.yml",
+        conbus_service: Optional[ConbusService] = None,
 ):
-    self.conbus_service = conbus_service or ConbusService(config_path)
+    self.telegram_protocol = conbus_service or ConbusService(config_path)
 ```
 
 **After:**
+
 ```python
 def __init__(
-    self,
-    conbus_service: ConbusService,
-    datapoint_service: ConbusDatapointService,
+        self,
+        conbus_service: ConbusService,
+        datapoint_service: ConbusDatapointService,
 ):
-    self.conbus_service = conbus_service
+    self.telegram_protocol = conbus_service
     self.datapoint_service = datapoint_service
 ```
 

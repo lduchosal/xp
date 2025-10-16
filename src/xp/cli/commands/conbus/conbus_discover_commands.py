@@ -1,5 +1,4 @@
 """Conbus client operations CLI commands."""
-
 import json
 
 import click
@@ -7,10 +6,8 @@ import click
 from xp.cli.commands.conbus.conbus import conbus
 from xp.cli.utils.decorators import (
     connection_command,
-    handle_service_errors,
 )
 from xp.services.conbus.conbus_discover_service import (
-    ConbusDiscoverError,
     ConbusDiscoverService,
 )
 
@@ -18,7 +15,6 @@ from xp.services.conbus.conbus_discover_service import (
 @conbus.command("discover")
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusDiscoverError)
 def send_discover_telegram(ctx: click.Context) -> None:
     """
     Send discover telegram to Conbus server.
@@ -28,10 +24,17 @@ def send_discover_telegram(ctx: click.Context) -> None:
     \b
         xp conbus discover
     """
+
+    def finish(discovered_devices: list[str]) -> None:
+        click.echo(json.dumps(discovered_devices, indent=2))
+
+    def progress(_serial_number: str) -> None:
+        # click.echo(f"Discovered : {serial_number}")
+        pass
+
     service = ctx.obj.get("container").get_container().resolve(ConbusDiscoverService)
-
-    # Send telegram
-    with service:
-        response = service.send_discover_telegram()
-
-    click.echo(json.dumps(response.to_dict(), indent=2))
+    service.run(
+        progress,
+        finish,
+        0.5
+    )

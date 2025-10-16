@@ -7,10 +7,11 @@ various types of telegrams including discover, version, and sensor data requests
 import logging
 from typing import Any, Optional
 
+from xp.models import ConbusResponse
 from xp.models.conbus.conbus_blink import ConbusBlinkResponse
 from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
-from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
+from xp.services import TelegramDiscoverService
 from xp.services.conbus.conbus_service import ConbusService
 from xp.services.telegram.telegram_blink_service import TelegramBlinkService
 from xp.services.telegram.telegram_service import TelegramService
@@ -27,7 +28,7 @@ class ConbusBlinkService:
     def __init__(
         self,
         conbus_service: ConbusService,
-        discover_service: ConbusDiscoverService,
+        telegram_discover_service: TelegramDiscoverService,
         telegram_blink_service: TelegramBlinkService,
         telegram_service: TelegramService,
     ):
@@ -35,7 +36,7 @@ class ConbusBlinkService:
 
         # Service dependencies
         self.conbus_service = conbus_service
-        self.discover_service = discover_service
+        self.telegram_discover_service = telegram_discover_service
         self.telegram_blink_service = telegram_blink_service
         self.blink_service = (
             self.telegram_blink_service
@@ -118,9 +119,7 @@ class ConbusBlinkService:
         # to avoid connection conflicts
         with self.conbus_service:
             # First discover all devices using the same connection
-            telegram = (
-                self.discover_service.telegram_discover_service.generate_discover_telegram()
-            )
+            telegram = self.telegram_discover_service.generate_discover_telegram()
             discover_responses = self.conbus_service.send_raw_telegram(telegram)
 
             if not discover_responses.success:
@@ -137,9 +136,7 @@ class ConbusBlinkService:
                 )
 
             # Parse received telegrams to extract device information
-            discovered_devices = self.discover_service.parse_discovered_devices(
-                discover_responses
-            )
+            discovered_devices = self.parse_discovered_devices(discover_responses)
 
             # If no devices discovered, return success with appropriate message
             if not discovered_devices:
@@ -177,3 +174,23 @@ class ConbusBlinkService:
                 ),
                 received_telegrams=response.received_telegrams,
             )
+
+    def parse_discovered_devices(self, responses: ConbusResponse) -> list[str]:
+        discovered_devices: list[str] = []
+        if responses.received_telegrams is None:
+            return discovered_devices
+        for telegrams_str in responses.received_telegrams:
+            for telegram_str in telegrams_str.split("\n"):
+                try:
+                    # Parse telegram using TelegramService
+                    telegram_result = self.telegram_service.parse_telegram(telegram_str)
+                    # Only process telegrams that have a serial_number attribute
+                    if hasattr(telegram_result, "serial_number"):
+                        discovered_devices.append(telegram_result.serial_number)
+
+                except Exception as e:
+                    self.logger.warning(
+                        f"Failed to parse telegram '{telegram_str}': {e}"
+                    )
+                    continue
+        return discovered_devices

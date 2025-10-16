@@ -9,7 +9,7 @@ by adding optional dependency injection parameters.
 import ast
 import re
 from pathlib import Path
-from typing import List, Tuple, Dict, Set
+from typing import List, Dict
 
 
 class ServiceRefactorAnalyzer(ast.NodeVisitor):

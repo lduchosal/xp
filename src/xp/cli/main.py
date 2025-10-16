@@ -35,7 +35,7 @@ def cli(ctx: click.Context) -> None:
     # Force format on root logger and all handlers
     formatter = logging.Formatter(log_format, datefmt=date_format)
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)
+    root_logger.setLevel(logging.WARNING)
 
     # Update all existing handlers or create new one
     if root_logger.handlers:
@@ -49,16 +49,16 @@ def cli(ctx: click.Context) -> None:
     # Suppress pyhap.hap_protocol logs
 
     # bubus
-    logging.getLogger("bubus").setLevel(logging.INFO)
+    logging.getLogger("bubus").setLevel(logging.WARNING)
 
     # xp
-    logging.getLogger("xp").setLevel(logging.INFO)
-    logging.getLogger("xp.services.homekit").setLevel(logging.INFO)
+    logging.getLogger("xp").setLevel(logging.WARNING)
+    logging.getLogger("xp.services.homekit").setLevel(logging.WARNING)
 
     # pyhap
-    logging.getLogger("pyhap").setLevel(logging.INFO)
+    logging.getLogger("pyhap").setLevel(logging.WARNING)
     logging.getLogger("pyhap.hap_handler").setLevel(logging.WARNING)
-    logging.getLogger("pyhap.hap_protocol").setLevel(logging.INFO)
+    logging.getLogger("pyhap.hap_protocol").setLevel(logging.WARNING)
     # logging.getLogger('pyhap.accessory_driver').setLevel(logging.WARNING)
 
     # Initialize the service container and store it in the context
