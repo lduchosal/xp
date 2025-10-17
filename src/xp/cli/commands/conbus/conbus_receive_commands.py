@@ -1,4 +1,5 @@
 """Conbus receive telegrams CLI commands."""
+
 import json
 
 import click
@@ -35,6 +36,7 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
         xp conbus receive
         xp conbus receive 5.0
     """
+
     def finish(response_received: ConbusReceiveResponse) -> None:
         click.echo(json.dumps(response_received.to_dict(), indent=2))
 

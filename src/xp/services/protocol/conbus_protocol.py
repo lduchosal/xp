@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Any
+from typing import Any, Optional
 
 from twisted.internet import protocol
 from twisted.internet.base import DelayedCall
@@ -181,7 +181,6 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         # Run the reactor (which now uses asyncio underneath)
         self.logger.info("Starting reactor event loop...")
         self.reactor.run()
-
 
     def __enter__(self) -> "ConbusProtocol":
         """Context manager entry"""

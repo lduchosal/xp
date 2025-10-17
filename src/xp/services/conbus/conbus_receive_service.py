@@ -5,7 +5,7 @@ allowing clients to receive waiting event telegrams using empty telegram sends.
 """
 
 import logging
-from typing import Any, Optional, Callable
+from typing import Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
 from twisted.python.failure import Failure
@@ -23,6 +23,7 @@ class ConbusReceiveService(ConbusProtocol):
     Uses composition with ConbusService to provide receive-only functionality
     for collecting waiting event telegrams from the server.
     """
+
     def __init__(
         self,
         cli_config: ConbusClientConfig,
@@ -32,7 +33,9 @@ class ConbusReceiveService(ConbusProtocol):
         super().__init__(cli_config, reactor)
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.finish_callback: Optional[Callable[[ConbusReceiveResponse], None]] = None
-        self.receive_response: ConbusReceiveResponse = ConbusReceiveResponse(success=True)
+        self.receive_response: ConbusReceiveResponse = ConbusReceiveResponse(
+            success=True
+        )
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
