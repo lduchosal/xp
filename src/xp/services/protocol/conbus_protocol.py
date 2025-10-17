@@ -1,9 +1,13 @@
 import logging
+from typing import Optional
 
 from twisted.internet import protocol
-from twisted.internet.interfaces import IConnector
+from twisted.internet.base import DelayedCall
+from twisted.internet.interfaces import IAddress, IConnector
+from twisted.internet.posixbase import PosixReactorBase
 from twisted.python.failure import Failure
 
+from xp.models import ConbusClientConfig
 from xp.models.protocol.conbus_protocol import (
     TelegramReceivedEvent,
 )
@@ -12,20 +16,30 @@ from xp.models.telegram.telegram_type import TelegramType
 from xp.utils import calculate_checksum
 
 
-class ConbusProtocol(protocol.Protocol):
+class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
     """
     Twisted protocol for XP telegram communication.
     """
 
     buffer: bytes
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        cli_config: ConbusClientConfig,
+        reactor: PosixReactorBase,
+    ) -> None:
         self.buffer = b""
         self.logger = logging.getLogger(__name__)
+        self.cli_config = cli_config.conbus
+        self.reactor = reactor
+        self.timeout_seconds = self.cli_config.timeout
+        self.timeout_call: Optional[DelayedCall] = None
 
     def connectionMade(self) -> None:
         self.logger.debug("connectionMade")
         self.connection_established()
+        # Start inactivity timeout
+        self._reset_timeout()
 
     def dataReceived(self, data: bytes) -> None:
         self.logger.debug("dataReceived")
@@ -63,7 +77,10 @@ class ConbusProtocol(protocol.Protocol):
             self.logger.debug(
                 f"frameReceived payload: {payload.decode()}, checksum: {checksum}"
             )
-            # Dispatch event to bubus with await
+
+            # Reset timeout on activity
+            self._reset_timeout()
+
             telegram_received = TelegramReceivedEvent(
                 protocol=self,
                 frame=frame.decode(),
@@ -94,6 +111,7 @@ class ConbusProtocol(protocol.Protocol):
 
         self.logger.debug(f"Sending frame: {frame.decode()}")
         self.transport.write(frame)  # type: ignore
+        self.telegram_sent(frame.decode())
 
     def send_telegram(
         self,
@@ -102,8 +120,13 @@ class ConbusProtocol(protocol.Protocol):
         system_function: SystemFunction,
         data_value: str,
     ) -> None:
-        payload = f"{telegram_type.value}{serial_number}F{system_function.value}D{data_value}".encode()
-        self.sendFrame(payload)
+        payload = (
+            f"{telegram_type.value}{serial_number}F{system_function.value}D{data_value}"
+        )
+        self.sendFrame(payload.encode())
+
+    def telegram_sent(self, telegram_sent: str) -> None:
+        pass
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         pass
@@ -111,10 +134,65 @@ class ConbusProtocol(protocol.Protocol):
     def connection_established(self) -> None:
         pass
 
-    def client_connection_failed(self, connector: IConnector, reason: Failure) -> None:
-        self.logger.debug(f"Client connection failed: {reason}")
-        connector.stop()
+    def client_connection_failed(self, reason: Failure) -> None:
+        pass
 
-    def client_connection_lost(self, connector: IConnector, reason: Failure) -> None:
-        self.logger.debug(f"Client connection failed: {reason}")
-        connector.stop()
+    def client_connection_lost(self, reason: Failure) -> None:
+        pass
+
+    def on_timeout(self) -> None:
+        pass
+
+    def buildProtocol(self, addr: IAddress) -> protocol.Protocol:
+        self.logger.debug(f"buildProtocol: {addr}")
+        return self
+
+    def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
+        self.logger.debug(f"clientConnectionFailed: {reason}")
+        self.client_connection_failed(reason)
+        self._cancel_timeout()
+        self._stop_reactor()
+
+    def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
+        self.logger.debug(f"clientConnectionLost: {reason}")
+        self.client_connection_lost(reason)
+        self._cancel_timeout()
+        self._stop_reactor()
+
+    def _reset_timeout(self) -> None:
+        """Reset the inactivity timeout"""
+        self._cancel_timeout()
+        self.timeout_call = self.reactor.callLater(
+            self.timeout_seconds, self._on_timeout
+        )
+        self.logger.debug(f"Timeout set for {self.timeout_seconds} seconds")
+
+    def _cancel_timeout(self) -> None:
+        """Cancel the inactivity timeout"""
+        if self.timeout_call and self.timeout_call.active():
+            self.timeout_call.cancel()
+            self.logger.debug("Timeout cancelled")
+
+    def _on_timeout(self) -> None:
+        """Called when inactivity timeout expires"""
+        self.logger.debug(f"Conbus timeout after {self.timeout_seconds} seconds")
+        self.on_timeout()
+        self._stop_reactor()
+
+    def _stop_reactor(self) -> None:
+        """Stop the reactor if it's running"""
+        if self.reactor.running:
+            self.logger.info("Stopping reactor")
+            self.reactor.stop()
+
+    def start_reactor(self) -> None:
+        """Start the reactor if it's running"""
+        # Connect to TCP server
+        self.logger.info(
+            f"Connecting to TCP server {self.cli_config.ip}:{self.cli_config.port}"
+        )
+        self.reactor.connectTCP(self.cli_config.ip, self.cli_config.port, self)
+
+        # Run the reactor (which now uses asyncio underneath)
+        self.logger.info("Starting reactor event loop...")
+        self.reactor.run()

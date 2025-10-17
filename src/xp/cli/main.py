@@ -35,7 +35,7 @@ def cli(ctx: click.Context) -> None:
     # Force format on root logger and all handlers
     formatter = logging.Formatter(log_format, datefmt=date_format)
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.WARNING)
+    root_logger.setLevel(logging.DEBUG)
 
     # Update all existing handlers or create new one
     if root_logger.handlers:
@@ -52,7 +52,7 @@ def cli(ctx: click.Context) -> None:
     logging.getLogger("bubus").setLevel(logging.WARNING)
 
     # xp
-    logging.getLogger("xp").setLevel(logging.WARNING)
+    logging.getLogger("xp").setLevel(logging.DEBUG)
     logging.getLogger("xp.services.homekit").setLevel(logging.WARNING)
 
     # pyhap

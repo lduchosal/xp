@@ -7,20 +7,17 @@ various types of telegrams including discover, version, and sensor data requests
 import logging
 from typing import Callable, Optional
 
-from twisted.internet import protocol
-from twisted.internet.base import DelayedCall
-from twisted.internet.interfaces import IAddress, IConnector
 from twisted.internet.posixbase import PosixReactorBase
 from twisted.python.failure import Failure
 
-from xp.models import ConbusClientConfig
+from xp.models import ConbusClientConfig, ConbusDiscoverResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol.conbus_protocol import ConbusProtocol
 
 
-class ConbusDiscoverService(ConbusProtocol, protocol.ClientFactory):
+class ConbusDiscoverService(ConbusProtocol):
     """
     TCP client service for sending telegrams to Conbus servers.
 
@@ -32,18 +29,13 @@ class ConbusDiscoverService(ConbusProtocol, protocol.ClientFactory):
         self,
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
-        timeout_seconds: float = 0.5,
     ) -> None:
         """Initialize the Conbus client send service"""
-        super().__init__()
-        self.cli_config = cli_config.conbus
-        self.reactor = reactor
+        super().__init__(cli_config, reactor)
         self.progress_callback: Optional[Callable[[str], None]] = None
-        self.finish_callback: Optional[Callable[[list[str]], None]] = None
+        self.finish_callback: Optional[Callable[[ConbusDiscoverResponse], None]] = None
 
-        self.timeout_seconds = timeout_seconds
-        self.timeout_call: Optional[DelayedCall] = None
-        self.discovered_device_result: list[str] = []
+        self.discovered_device_result = ConbusDiscoverResponse(success=False)
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
@@ -55,14 +47,17 @@ class ConbusDiscoverService(ConbusProtocol, protocol.ClientFactory):
             system_function=SystemFunction.DISCOVERY,
             data_value="00",
         )
-        # Start inactivity timeout
-        self._reset_timeout()
+
+    def telegram_sent(self, telegram_sent: str) -> None:
+        self.logger.debug(f"Telegram sent: {telegram_sent}")
+        self.discovered_device_result.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
 
         self.logger.debug(f"Telegram received: {telegram_received}")
-        # Reset timeout on activity
-        self._reset_timeout()
+        if not self.discovered_device_result.received_telegrams:
+            self.discovered_device_result.received_telegrams = []
+        self.discovered_device_result.received_telegrams.append(telegram_received.frame)
 
         if (
             telegram_received.telegram_type == TelegramType.REPLY.value
@@ -76,55 +71,29 @@ class ConbusDiscoverService(ConbusProtocol, protocol.ClientFactory):
 
     def discovered_device(self, serial_number: str) -> None:
         self.logger.info("discovered_device: %s", serial_number)
-        self.discovered_device_result.append(serial_number)
+        if not self.discovered_device_result.discovered_devices:
+            self.discovered_device_result.discovered_devices = []
+        self.discovered_device_result.discovered_devices.append(serial_number)
         if self.progress_callback:
             self.progress_callback(serial_number)
 
-    def buildProtocol(self, addr: IAddress) -> ConbusProtocol:
-        self.logger.debug(f"buildProtocol: {addr}")
-        return self
-
-    def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
-        self.logger.debug(f"clientConnectionFailed: {reason}")
-        self._cancel_timeout()
-        self._stop_reactor()
-
-    def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
-        self.logger.debug(f"clientConnectionLost: {reason}")
-        self._cancel_timeout()
-        self._stop_reactor()
-
-    def _reset_timeout(self) -> None:
-        """Reset the inactivity timeout"""
-        self._cancel_timeout()
-        self.timeout_call = self.reactor.callLater(
-            self.timeout_seconds, self._on_timeout
-        )
-        self.logger.debug(f"Timeout set for {self.timeout_seconds} seconds")
-
-    def _cancel_timeout(self) -> None:
-        """Cancel the inactivity timeout"""
-        if self.timeout_call and self.timeout_call.active():
-            self.timeout_call.cancel()
-            self.logger.debug("Timeout cancelled")
-
-    def _on_timeout(self) -> None:
-        """Called when inactivity timeout expires"""
-        self.logger.info(f"Discovery timeout after {self.timeout_seconds} seconds")
+    def on_timeout(self) -> None:
+        self.logger.info("Discovery stopped after: %ss", self.timeout_seconds)
+        self.discovered_device_result.success = True
         if self.finish_callback:
             self.finish_callback(self.discovered_device_result)
-        self._stop_reactor()
 
-    def _stop_reactor(self) -> None:
-        """Stop the reactor if it's running"""
-        if self.reactor.running:
-            self.logger.info("Stopping reactor")
-            self.reactor.stop()
+    def client_connection_failed(self, reason: Failure) -> None:
+        self.logger.debug(f"Client connection failed: {reason}")
+        self.discovered_device_result.success = False
+        self.discovered_device_result.error = f"Client connection failed: {reason}"
+        if self.finish_callback:
+            self.finish_callback(self.discovered_device_result)
 
-    def run(
+    def send_discover(
         self,
         progress_callback: Callable[[str], None],
-        finish_callback: Callable[[list[str]], None],
+        finish_callback: Callable[[ConbusDiscoverResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Run reactor in dedicated thread with its own event loop"""
@@ -133,12 +102,4 @@ class ConbusDiscoverService(ConbusProtocol, protocol.ClientFactory):
             self.timeout_seconds = timeout_seconds
         self.progress_callback = progress_callback
         self.finish_callback = finish_callback
-        # Connect to TCP server
-        self.logger.info(
-            f"Connecting to TCP server {self.cli_config.ip}:{self.cli_config.port}"
-        )
-        self.reactor.connectTCP(self.cli_config.ip, self.cli_config.port, self)
-
-        # Run the reactor (which now uses asyncio underneath)
-        self.logger.info("Starting reactor event loop...")
-        self.reactor.run()
+        self.start_reactor()

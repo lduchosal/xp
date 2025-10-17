@@ -9,8 +9,8 @@ class ConbusDiscoverResponse:
 
     success: bool
     sent_telegram: Optional[str] = None
-    received_telegrams: Optional[list] = None
-    discovered_devices: Optional[list] = None
+    received_telegrams: Optional[list[str]] = None
+    discovered_devices: Optional[list[str]] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 

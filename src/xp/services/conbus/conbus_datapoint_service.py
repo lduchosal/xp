@@ -63,10 +63,7 @@ class ConbusDatapointService:
             serial_number, system_function, datapoint_code
         )
         datapoint_telegram: Optional[ReplyTelegram] = None
-        if (
-            response.received_telegrams is not None
-            and len(response.received_telegrams) > 0
-        ):
+        if response.received_telegrams and len(response.received_telegrams) > 0:
             telegram = response.received_telegrams[0]
             try:
                 datapoint_telegram = self.telegram_service.parse_reply_telegram(
