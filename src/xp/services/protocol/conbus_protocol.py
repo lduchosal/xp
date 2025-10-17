@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, Any
 
 from twisted.internet import protocol
 from twisted.internet.base import DelayedCall
@@ -121,27 +121,12 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         data_value: str,
     ) -> None:
         payload = (
-            f"{telegram_type.value}{serial_number}F{system_function.value}D{data_value}"
+            f"{telegram_type.value}"
+            f"{serial_number}"
+            f"F{system_function.value}"
+            f"D{data_value}"
         )
         self.sendFrame(payload.encode())
-
-    def telegram_sent(self, telegram_sent: str) -> None:
-        pass
-
-    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        pass
-
-    def connection_established(self) -> None:
-        pass
-
-    def client_connection_failed(self, reason: Failure) -> None:
-        pass
-
-    def client_connection_lost(self, reason: Failure) -> None:
-        pass
-
-    def on_timeout(self) -> None:
-        pass
 
     def buildProtocol(self, addr: IAddress) -> protocol.Protocol:
         self.logger.debug(f"buildProtocol: {addr}")
@@ -149,13 +134,13 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
 
     def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
         self.logger.debug(f"clientConnectionFailed: {reason}")
-        self.client_connection_failed(reason)
+        self.connection_failed(reason)
         self._cancel_timeout()
         self._stop_reactor()
 
     def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
         self.logger.debug(f"clientConnectionLost: {reason}")
-        self.client_connection_lost(reason)
+        self.connection_lost(reason)
         self._cancel_timeout()
         self._stop_reactor()
 
@@ -176,7 +161,7 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
     def _on_timeout(self) -> None:
         """Called when inactivity timeout expires"""
         self.logger.debug(f"Conbus timeout after {self.timeout_seconds} seconds")
-        self.on_timeout()
+        self.timeout()
         self._stop_reactor()
 
     def _stop_reactor(self) -> None:
@@ -196,3 +181,38 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         # Run the reactor (which now uses asyncio underneath)
         self.logger.info("Starting reactor event loop...")
         self.reactor.run()
+
+
+    def __enter__(self) -> "ConbusProtocol":
+        """Context manager entry"""
+        return self
+
+    def __exit__(
+        self,
+        _exc_type: Optional[type],
+        _exc_val: Optional[BaseException],
+        _exc_tb: Optional[Any],
+    ) -> None:
+        """Context manager exit - ensure connection is closed"""
+        self.logger.debug("Exiting the event loop...")
+        self._stop_reactor()
+
+    """Override methods"""
+
+    def telegram_sent(self, telegram_sent: str) -> None:
+        pass
+
+    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        pass
+
+    def connection_established(self) -> None:
+        pass
+
+    def connection_failed(self, reason: Failure) -> None:
+        pass
+
+    def connection_lost(self, reason: Failure) -> None:
+        pass
+
+    def timeout(self) -> None:
+        pass

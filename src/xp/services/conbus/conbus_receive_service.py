@@ -5,71 +5,76 @@ allowing clients to receive waiting event telegrams using empty telegram sends.
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Callable
 
+from twisted.internet.posixbase import PosixReactorBase
+from twisted.python.failure import Failure
+
+from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_receive import ConbusReceiveResponse
-from xp.services.conbus.conbus_service import ConbusError, ConbusService
+from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+from xp.services.protocol import ConbusProtocol
 
 
-class ConbusReceiveError(ConbusError):
-    """Raised when Conbus receive operations fail"""
-
-    pass
-
-
-class ConbusReceiveService:
+class ConbusReceiveService(ConbusProtocol):
     """
     Service for receiving telegrams from Conbus servers.
 
     Uses composition with ConbusService to provide receive-only functionality
     for collecting waiting event telegrams from the server.
     """
-
     def __init__(
         self,
-        conbus_service: ConbusService,
-    ):
-        """Initialize the Conbus receive service"""
-        self.conbus_service = conbus_service
+        cli_config: ConbusClientConfig,
+        reactor: PosixReactorBase,
+    ) -> None:
+        """Initialize the Conbus client send service"""
+        super().__init__(cli_config, reactor)
+        self.progress_callback: Optional[Callable[[str], None]] = None
+        self.finish_callback: Optional[Callable[[ConbusReceiveResponse], None]] = None
+        self.receive_response: ConbusReceiveResponse = ConbusReceiveResponse(success=True)
+
+        # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def receive_telegrams(self, timeout: float = 2.0) -> ConbusReceiveResponse:
-        """
-        Receive waiting telegrams from the Conbus server.
+    def connection_established(self) -> None:
+        self.logger.debug("Connection established, waiting for telegrams...")
 
-        Uses send_raw_telegram with empty string to connect and receive
-        any waiting event telegrams from the server.
+    def telegram_sent(self, telegram_sent: str) -> None:
+        pass
 
-        Args:
-            timeout: Timeout in seconds for receiving telegrams (default: 2.0)
+    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
 
-        Returns:
-            ConbusReceiveResponse: Response containing received telegrams or error
-        """
-        try:
-            # Send empty telegram to trigger receive operation
-            response = self.conbus_service.receive_responses(timeout=timeout)
-            return ConbusReceiveResponse(
-                success=True,
-                received_telegrams=response,
-            )
+        self.logger.debug(f"Telegram received: {telegram_received}")
+        if self.progress_callback:
+            self.progress_callback(telegram_received.frame)
 
-        except Exception as e:
-            error_msg = f"Failed to receive telegrams: {e}"
-            self.logger.error(error_msg)
-            return ConbusReceiveResponse(
-                success=False,
-                error=error_msg,
-            )
+        if not self.receive_response.received_telegrams:
+            self.receive_response.received_telegrams = []
+        self.receive_response.received_telegrams.append(telegram_received.frame)
 
-    def __enter__(self) -> "ConbusReceiveService":
-        """Context manager entry"""
-        return self
+    def timeout(self) -> None:
+        self.logger.info("Discovery stopped after: %ss", self.timeout_seconds)
+        if self.finish_callback:
+            self.finish_callback(self.receive_response)
 
-    def __exit__(
+    def connection_failed(self, reason: Failure) -> None:
+        self.logger.debug(f"Client connection failed: {reason}")
+        self.receive_response.success = False
+        self.receive_response.error = reason.getErrorMessage()
+        if self.finish_callback:
+            self.finish_callback(self.receive_response)
+
+    def start(
         self,
-        _exc_type: Optional[type],
-        _exc_val: Optional[BaseException],
-        _exc_tb: Optional[Any],
+        progress_callback: Callable[[str], None],
+        finish_callback: Callable[[ConbusReceiveResponse], None],
+        timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Context manager exit - ensure connection is closed"""
+        """Run reactor in dedicated thread with its own event loop"""
+        self.logger.info("Starting discovery")
+        if timeout_seconds:
+            self.timeout_seconds = timeout_seconds
+        self.progress_callback = progress_callback
+        self.finish_callback = finish_callback
+        self.start_reactor()

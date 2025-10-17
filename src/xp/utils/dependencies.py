@@ -257,7 +257,8 @@ class ServiceContainer:
         self.container.register(
             ConbusReceiveService,
             factory=lambda: ConbusReceiveService(
-                conbus_service=self.container.resolve(ConbusService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )

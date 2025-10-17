@@ -77,20 +77,20 @@ class ConbusDiscoverService(ConbusProtocol):
         if self.progress_callback:
             self.progress_callback(serial_number)
 
-    def on_timeout(self) -> None:
+    def timeout(self) -> None:
         self.logger.info("Discovery stopped after: %ss", self.timeout_seconds)
         self.discovered_device_result.success = True
         if self.finish_callback:
             self.finish_callback(self.discovered_device_result)
 
-    def client_connection_failed(self, reason: Failure) -> None:
+    def connection_failed(self, reason: Failure) -> None:
         self.logger.debug(f"Client connection failed: {reason}")
         self.discovered_device_result.success = False
-        self.discovered_device_result.error = f"Client connection failed: {reason}"
+        self.discovered_device_result.error = reason.getErrorMessage()
         if self.finish_callback:
             self.finish_callback(self.discovered_device_result)
 
-    def send_discover(
+    def start(
         self,
         progress_callback: Callable[[str], None],
         finish_callback: Callable[[ConbusDiscoverResponse], None],
