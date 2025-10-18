@@ -11,7 +11,8 @@ from xp.models.homekit.homekit_config import HomekitConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.services.conbus.actiontable.actiontable_service import ActionTableService
 from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
-from xp.services.conbus.conbus_autoreport_service import ConbusAutoreportService
+from xp.services.conbus.conbus_autoreport_get_service import ConbusAutoreportGetService
+from xp.services.conbus.conbus_autoreport_set_service import ConbusAutoreportSetService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
 from xp.services.conbus.conbus_connection_pool import (
     ConbusConnectionPool,
@@ -217,11 +218,20 @@ class ServiceContainer:
         )
 
         self.container.register(
-            ConbusAutoreportService,
-            factory=lambda: ConbusAutoreportService(
-                conbus_service=self.container.resolve(ConbusService),
-                datapoint_service=self.container.resolve(ConbusDatapointService),
+            ConbusAutoreportSetService,
+            factory=lambda: ConbusAutoreportSetService(
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusAutoreportGetService,
+            factory=lambda: ConbusAutoreportGetService(
                 telegram_service=self.container.resolve(TelegramService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )
