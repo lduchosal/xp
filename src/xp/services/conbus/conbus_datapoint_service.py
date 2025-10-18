@@ -1,20 +1,21 @@
-"""Conbus Client Send Service for TCP communication with Conbus servers.
+"""Conbus Datapoint Service for querying module datapoints.
 
-This service implements a TCP client that connects to Conbus servers and sends
-various types of telegrams including discover, version, and sensor data requests.
+This service handles datapoint query operations for modules through Conbus telegrams.
 """
 
 import logging
-from typing import Dict, List, Optional
+from datetime import datetime
+from typing import Callable, Optional
 
-from xp.models import (
-    ConbusDatapointResponse,
-)
+from twisted.internet.posixbase import PosixReactorBase
+
+from xp.models import ConbusClientConfig, ConbusDatapointResponse
+from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
-from xp.services.conbus.conbus_service import ConbusService
-from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
+from xp.models.telegram.telegram_type import TelegramType
+from xp.services.protocol import ConbusProtocol
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class ConbusDatapointError(Exception):
@@ -23,118 +24,124 @@ class ConbusDatapointError(Exception):
     pass
 
 
-class ConbusDatapointService:
+class ConbusDatapointService(ConbusProtocol):
     """
-    TCP client service for sending telegrams to Conbus servers.
+    Service for querying datapoints from Conbus modules.
 
-    Manages TCP socket connections, handles telegram generation and transmission,
-    and processes server responses.
+    Uses ConbusProtocol to provide datapoint query functionality
+    for reading sensor data and module information.
     """
 
     def __init__(
         self,
         telegram_service: TelegramService,
-        conbus_service: ConbusService,
-    ):
-        """Initialize the Conbus client send service
-
-        Args:
-            telegram_service: TelegramService for dependency injection
-            conbus_service: ConbusService for dependency injection
-        """
-
-        # Service dependencies
+        cli_config: ConbusClientConfig,
+        reactor: PosixReactorBase,
+    ) -> None:
+        """Initialize the Conbus datapoint service"""
+        super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
-        self.conbus_service = conbus_service
+        self.serial_number: str = ""
+        self.datapoint_type: Optional[DataPointType] = None
+        self.finish_callback: Optional[Callable[[ConbusDatapointResponse], None]] = None
+        self.service_response: ConbusDatapointResponse = ConbusDatapointResponse(
+            success=False,
+            serial_number=self.serial_number,
+        )
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def query_datapoint(
-        self, datapoint_type: DataPointType, serial_number: str
-    ) -> ConbusDatapointResponse:
-        """Send a telegram to the Conbus server"""
-
-        system_function = SystemFunction.READ_DATAPOINT
-        datapoint_code = datapoint_type.value
-
-        # Send telegram
-        response = self.conbus_service.send_telegram(
-            serial_number, system_function, datapoint_code
+    def connection_established(self) -> None:
+        self.logger.debug(
+            f"Connection established, querying datapoint {self.datapoint_type}..."
         )
-        datapoint_telegram: Optional[ReplyTelegram] = None
-        if response.received_telegrams and len(response.received_telegrams) > 0:
-            telegram = response.received_telegrams[0]
-            try:
-                datapoint_telegram = self.telegram_service.parse_reply_telegram(
-                    telegram
-                )
-            except TelegramParsingError as e:
-                self.logger.debug(f"Not a reply telegram {e}")
+        if self.datapoint_type is None:
+            self.failed("Datapoint type not set")
+            return
 
-        return ConbusDatapointResponse(
-            success=response.success,
-            serial_number=serial_number,
-            system_function=system_function,
-            datapoint_type=datapoint_type,
-            sent_telegram=response.sent_telegram,
-            received_telegrams=response.received_telegrams,
-            datapoint_telegram=datapoint_telegram,
-            error=response.error,
-        )
-
-    def query_all_datapoints(self, serial_number: str) -> ConbusDatapointResponse:
-        """Query all available datapoints for a given serial number"""
-
-        datapoints: List[Dict[str, str]] = []
-        has_any_success = False
-        last_error = None
-
-        # Query each datapoint type
-        for datapoint_type in DataPointType:
-            try:
-                response = self.query_datapoint(datapoint_type, serial_number)
-
-                if response.success and response.datapoint_telegram:
-                    # Extract datapoint name and value
-                    datapoint_name = datapoint_type.name
-                    datapoint_value = str(response.datapoint_telegram.data_value)
-                    datapoints.append({datapoint_name: datapoint_value})
-                    has_any_success = True
-                elif response.error:
-                    last_error = response.error
-
-            except Exception as e:
-                self.logger.debug(f"Failed to query datapoint {datapoint_type}: {e}")
-                last_error = str(e)
-                # Continue with other datapoints even if one fails
-                continue
-
-        # If no datapoints were successfully retrieved, return error
-        if not has_any_success and last_error:
-            return ConbusDatapointResponse(
-                success=False,
-                serial_number=serial_number,
-                system_function=SystemFunction.READ_DATAPOINT,
-                error=last_error,
-                datapoints=[],
-            )
-
-        return ConbusDatapointResponse(
-            success=True,
-            serial_number=serial_number,
+        self.send_telegram(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number=self.serial_number,
             system_function=SystemFunction.READ_DATAPOINT,
-            datapoints=datapoints,
+            data_value=str(self.datapoint_type.value),
         )
 
-    def __enter__(self) -> "ConbusDatapointService":
-        return self
+    def telegram_sent(self, telegram_sent: str) -> None:
+        self.service_response.sent_telegram = telegram_sent
 
-    def __exit__(
+    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+
+        self.logger.debug(f"Telegram received: {telegram_received}")
+        if not self.service_response.received_telegrams:
+            self.service_response.received_telegrams = []
+        self.service_response.received_telegrams.append(telegram_received.frame)
+
+        if (
+            telegram_received.telegram_type != TelegramType.REPLY
+            or telegram_received.serial_number != self.serial_number
+        ):
+            self.logger.debug("Not a reply for our serial number")
+            return
+
+        # Parse the reply telegram
+        datapoint_telegram = self.telegram_service.parse_reply_telegram(
+            telegram_received.frame
+        )
+
+        if (
+            not datapoint_telegram
+            or datapoint_telegram.system_function != SystemFunction.READ_DATAPOINT
+            or datapoint_telegram.datapoint_type != self.datapoint_type
+        ):
+            self.logger.debug("Not a reply for our datapoint type")
+            return
+
+        self.logger.debug("Received datapoint telegram")
+        self.service_response.success = True
+        self.service_response.timestamp = datetime.now()
+        self.service_response.serial_number = self.serial_number
+        self.service_response.system_function = SystemFunction.READ_DATAPOINT
+        self.service_response.datapoint_type = self.datapoint_type
+        self.service_response.datapoint_telegram = datapoint_telegram
+
+        if self.finish_callback:
+            self.finish_callback(self.service_response)
+
+    def failed(self, message: str) -> None:
+        self.logger.debug(f"Failed with message: {message}")
+        self.service_response.success = False
+        self.service_response.timestamp = datetime.now()
+        self.service_response.error = message
+        if self.finish_callback:
+            self.finish_callback(self.service_response)
+
+    def query_datapoint(
         self,
-        _exc_type: type[BaseException] | None,
-        _exc_val: BaseException | None,
-        _exc_tb: object | None,
+        serial_number: str,
+        datapoint_type: DataPointType,
+        finish_callback: Callable[[ConbusDatapointResponse], None],
+        timeout_seconds: Optional[float] = None,
     ) -> None:
-        # Cleanup logic if needed
-        pass
+        """
+        Query a specific datapoint from a module.
+
+        Args:
+            serial_number: 10-digit module serial number
+            datapoint_type: Type of datapoint to query
+            finish_callback: callback function to call when the datapoint is received
+            timeout_seconds: timeout in seconds
+
+        Returns:
+            ConbusDatapointResponse with operation result and datapoint value
+        """
+
+        self.logger.info("Starting query_datapoint")
+        if timeout_seconds:
+            self.timeout_seconds = timeout_seconds
+        self.finish_callback = finish_callback
+        self.serial_number = serial_number
+        self.datapoint_type = datapoint_type
+        self.start_reactor()
+
+

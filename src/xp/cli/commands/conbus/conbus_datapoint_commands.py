@@ -19,6 +19,7 @@ from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
     ConbusDatapointService,
 )
+from xp.services.conbus.conbus_datapoint_queryall_service import ConbusDatapointQueryAllService
 
 
 @click.command("query")
@@ -42,13 +43,16 @@ def query_datapoint(ctx: Context, serial_number: str, datapoint: DataPointType) 
     """
     service = ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
 
+    def on_finish(service_response):
+        click.echo(json.dumps(service_response.to_dict(), indent=2))
+
     # Send telegram
     with service:
-        response = service.query_datapoint(
-            datapoint_type=datapoint, serial_number=serial_number
+        service.query_datapoint(
+            serial_number=serial_number,
+            datapoint_type=datapoint,
+            finish_callback=on_finish,
         )
-
-    click.echo(json.dumps(response.to_dict(), indent=2))
 
 
 # Add the single datapoint query command to the group
@@ -69,9 +73,17 @@ def query_all_datapoints(ctx: Context, serial_number: str) -> None:
     \b
         xp conbus datapoint all 0123450001
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
+    service = (
+        ctx.obj.get("container")
+        .get_container()
+        .resolve(ConbusDatapointQueryAllService)
+    )
+
+    def on_finish(service_response):
+        click.echo(json.dumps(service_response.to_dict(), indent=2))
 
     with service:
-        response = service.query_all_datapoints(serial_number=serial_number)
-
-    click.echo(json.dumps(response.to_dict(), indent=2))
+        service.query_all_datapoints(
+            serial_number=serial_number,
+            finish_callback=on_finish,
+        )

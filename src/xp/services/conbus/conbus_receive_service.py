@@ -58,13 +58,14 @@ class ConbusReceiveService(ConbusProtocol):
 
     def timeout(self) -> None:
         self.logger.info("Discovery stopped after: %ss", self.timeout_seconds)
+        self.receive_response.success = True
         if self.finish_callback:
             self.finish_callback(self.receive_response)
 
-    def connection_failed(self, reason: Failure) -> None:
-        self.logger.debug(f"Client connection failed: {reason}")
+    def failed(self, message: str) -> None:
+        self.logger.debug(f"Failed %s:", message)
         self.receive_response.success = False
-        self.receive_response.error = reason.getErrorMessage()
+        self.receive_response.error = message
         if self.finish_callback:
             self.finish_callback(self.receive_response)
 

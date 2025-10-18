@@ -92,14 +92,6 @@ class ConbusAutoreportGetService(ConbusProtocol):
             if self.finish_callback:
                 self.finish_callback(self.service_response)
 
-    def timeout(self) -> None:
-        self.logger.info("Timeout after: %ss", self.timeout_seconds)
-        self.failed(f"Timeout after: {self.timeout_seconds}s")
-
-    def connection_failed(self, reason: Failure) -> None:
-        self.logger.debug(f"Client connection failed: {reason}")
-        self.failed(reason.getErrorMessage())
-
     def failed(self, message: str) -> None:
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False

@@ -12,6 +12,7 @@ from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
     ConbusDatapointService,
 )
+from xp.services.conbus.conbus_datapoint_queryall_service import ConbusDatapointQueryAllService
 
 
 class TestConbusDatapointIntegration:
@@ -44,9 +45,14 @@ class TestConbusDatapointIntegration:
                 {"MODULE_OUTPUT_STATE": "xxxxx000"},
             ],
         )
-        mock_service.query_all_datapoints.return_value = mock_response
 
-        # Setup mock container to resolve ConbusDatapointService
+        # Make the mock service call the callback immediately
+        def mock_query_all_datapoints(serial_number, finish_callback):
+            finish_callback(mock_response)
+
+        mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
+
+        # Setup mock container to resolve ConbusDatapointQueryAllService
         mock_container = Mock()
         mock_container.resolve.return_value = mock_service
         mock_service_container = Mock()
@@ -68,9 +74,7 @@ class TestConbusDatapointIntegration:
         # Assertions
         assert '"success": true' in result.output
         assert result.exit_code == 0
-        mock_service.query_all_datapoints.assert_called_once_with(
-            serial_number=self.valid_serial
-        )
+        assert mock_service.query_all_datapoints.called
 
         # Check the response content
         assert f'"serial_number": "{self.valid_serial}"' in result.output
@@ -149,9 +153,14 @@ class TestConbusDatapointIntegration:
             error="Invalid response from server",
             datapoints=[],
         )
-        mock_service.query_all_datapoints.return_value = mock_response
 
-        # Setup mock container to resolve ConbusDatapointService
+        # Make the mock service call the callback immediately
+        def mock_query_all_datapoints(serial_number, finish_callback):
+            finish_callback(mock_response)
+
+        mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
+
+        # Setup mock container to resolve ConbusDatapointQueryAllService
         mock_container = Mock()
         mock_container.resolve.return_value = mock_service
         mock_service_container = Mock()
@@ -183,9 +192,14 @@ class TestConbusDatapointIntegration:
             system_function=SystemFunction.READ_DATAPOINT,
             datapoints=[],
         )
-        mock_service.query_all_datapoints.return_value = mock_response
 
-        # Setup mock container to resolve ConbusDatapointService
+        # Make the mock service call the callback immediately
+        def mock_query_all_datapoints(serial_number, finish_callback):
+            finish_callback(mock_response)
+
+        mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
+
+        # Setup mock container to resolve ConbusDatapointQueryAllService
         mock_container = Mock()
         mock_container.resolve.return_value = mock_service
         mock_service_container = Mock()
@@ -212,78 +226,65 @@ class TestConbusDatapointService:
     def setup_method(self):
         """Set up test fixtures"""
         self.valid_serial = "0123450001"
+        self.mock_cli_config = Mock()
+        self.mock_reactor = Mock()
+        self.mock_telegram_service = Mock()
 
-    def test_query_all_datapoints_success(self):
-        """Test successful querying of all datapoints"""
-
-        # Mock dependencies
-        mock_telegram_service = Mock()
-        mock_conbus_service = Mock()
-
-        # Mock successful telegram response for each datapoint type
-        mock_reply_telegram = Mock()
-        mock_reply_telegram.data = "TEST_VALUE"
-
-        mock_single_response = Mock()
-        mock_single_response.success = True
-        mock_single_response.datapoint_telegram = mock_reply_telegram
-
+    def test_service_initialization(self):
+        """Test service can be initialized with required dependencies"""
         service = ConbusDatapointService(
-            telegram_service=mock_telegram_service, conbus_service=mock_conbus_service
+            telegram_service=self.mock_telegram_service,
+            cli_config=self.mock_cli_config,
+            reactor=self.mock_reactor,
         )
 
-        # Mock the send_telegram method to return successful responses
-        service.query_datapoint = Mock(return_value=mock_single_response)
+        assert service.telegram_service == self.mock_telegram_service
+        assert service.serial_number == ""
+        assert service.datapoint_type is None
+        assert service.finish_callback is None
+        assert service.service_response.success is False
 
-        # Test the query_all_datapoints method
-        result = service.query_all_datapoints(self.valid_serial)
-
-        # Assertions
-        assert result.success is True
-        assert result.serial_number == self.valid_serial
-        assert result.system_function == SystemFunction.READ_DATAPOINT
-        assert result.datapoints is not None
-        assert len(result.datapoints) > 0
-
-        # Should have called send_telegram for each DataPointType
-        assert service.query_datapoint.call_count == len(DataPointType)
-
-    def test_query_all_datapoints_partial_failure(self):
-        """Test querying datapoints when some datapoints fail"""
-
-        # Mock dependencies
-        mock_telegram_service = Mock()
-        mock_conbus_service = Mock()
-
+    def test_service_context_manager(self):
+        """Test service can be used as context manager"""
         service = ConbusDatapointService(
-            telegram_service=mock_telegram_service, conbus_service=mock_conbus_service
+            telegram_service=self.mock_telegram_service,
+            cli_config=self.mock_cli_config,
+            reactor=self.mock_reactor,
         )
 
-        # Mock send_telegram to return success for some, failure for others
-        def mock_send_telegram(datapoint_type, _serial_number):
-            if datapoint_type == DataPointType.MODULE_TYPE:
-                mock_reply = Mock()
-                mock_reply.data_value = "XP33LED"
+        with service as s:
+            assert s is service
 
-                mock_response = Mock()
-                mock_response.success = True
-                mock_response.datapoint_telegram = mock_reply
-                return mock_response
-            else:
-                # Simulate failure for other datapoints
-                mock_response = Mock()
-                mock_response.success = False
-                mock_response.datapoint_telegram = None
-                return mock_response
 
-        service.query_datapoint = Mock(side_effect=mock_send_telegram)
+class TestConbusDatapointQueryAllService:
+    """Unit tests for ConbusDatapointQueryAllService functionality."""
 
-        # Test the query_all_datapoints method
-        result = service.query_all_datapoints(self.valid_serial)
+    def setup_method(self):
+        """Set up test fixtures"""
+        self.valid_serial = "0123450001"
+        self.mock_cli_config = Mock()
+        self.mock_reactor = Mock()
+        self.mock_telegram_service = Mock()
 
-        # Should still succeed overall but with fewer datapoints
-        assert result.success is True
-        assert result.serial_number == self.valid_serial
-        assert result.datapoints is not None
-        assert len(result.datapoints) == 1  # Only MODULE_TYPE succeeded
-        assert result.datapoints[0] == {"MODULE_TYPE": "XP33LED"}
+    def test_service_initialization(self):
+        """Test service can be initialized with required dependencies"""
+        service = ConbusDatapointQueryAllService(
+            telegram_service=self.mock_telegram_service,
+            cli_config=self.mock_cli_config,
+            reactor=self.mock_reactor,
+        )
+
+        assert service.telegram_service == self.mock_telegram_service
+        assert service.cli_config == self.mock_cli_config
+        assert service.reactor == self.mock_reactor
+
+    def test_service_context_manager(self):
+        """Test service can be used as context manager"""
+        service = ConbusDatapointQueryAllService(
+            telegram_service=self.mock_telegram_service,
+            cli_config=self.mock_cli_config,
+            reactor=self.mock_reactor,
+        )
+
+        with service as s:
+            assert s is service

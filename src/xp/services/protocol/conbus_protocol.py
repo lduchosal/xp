@@ -144,6 +144,14 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self._cancel_timeout()
         self._stop_reactor()
 
+    def timeout(self) -> None:
+        self.logger.info("Timeout after: %ss", self.timeout_seconds)
+        self.failed(f"Timeout after: {self.timeout_seconds}s")
+
+    def connection_failed(self, reason: Failure) -> None:
+        self.logger.debug(f"Client connection failed: {reason}")
+        self.failed(reason.getErrorMessage())
+
     def _reset_timeout(self) -> None:
         """Reset the inactivity timeout"""
         self._cancel_timeout()
@@ -207,11 +215,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
     def connection_established(self) -> None:
         pass
 
-    def connection_failed(self, reason: Failure) -> None:
-        pass
-
     def connection_lost(self, reason: Failure) -> None:
         pass
 
-    def timeout(self) -> None:
+    def failed(self, message: str) -> None:
         pass

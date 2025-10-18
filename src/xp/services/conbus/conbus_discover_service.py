@@ -83,10 +83,10 @@ class ConbusDiscoverService(ConbusProtocol):
         if self.finish_callback:
             self.finish_callback(self.discovered_device_result)
 
-    def connection_failed(self, reason: Failure) -> None:
-        self.logger.debug(f"Client connection failed: {reason}")
+    def failed(self, message: str) -> None:
+        self.logger.debug(f"Failed: {message}")
         self.discovered_device_result.success = False
-        self.discovered_device_result.error = reason.getErrorMessage()
+        self.discovered_device_result.error = message
         if self.finish_callback:
             self.finish_callback(self.discovered_device_result)
 
