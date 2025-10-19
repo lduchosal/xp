@@ -4,76 +4,99 @@ This service handles sending raw telegram strings without prior validation.
 """
 
 import logging
-from typing import Any, Optional
+from datetime import datetime
+from typing import Callable, Optional
 
+from twisted.internet.posixbase import PosixReactorBase
+
+from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_raw import ConbusRawResponse
-from xp.services.conbus.conbus_service import ConbusService
+from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+from xp.services.protocol import ConbusProtocol
 
 
-class ConbusRawError(Exception):
-    """Raised when Conbus raw operations fail"""
-
-    pass
-
-
-class ConbusRawService:
+class ConbusRawService(ConbusProtocol):
     """
-    Service for sending raw telegram sequences to Conbus servers.
+    Service for querying datapoints from Conbus modules.
 
-    Handles parsing and sending of raw telegram strings without validation.
+    Uses ConbusProtocol to provide datapoint query functionality
+    for reading sensor data and module information.
     """
 
     def __init__(
         self,
-        conbus_service: ConbusService,
-    ):
-        """Initialize the Conbus raw service"""
-        self.conbus_service = conbus_service
+        cli_config: ConbusClientConfig,
+        reactor: PosixReactorBase,
+    ) -> None:
+        """Initialize the Conbus datapoint service"""
+        super().__init__(cli_config, reactor)
+        self.raw_input: str = ""
+        self.progress_callback: Optional[Callable[[str], None]] = None
+        self.finish_callback: Optional[Callable[[ConbusRawResponse], None]] = None
+        self.service_response: ConbusRawResponse = ConbusRawResponse(
+            success=False,
+        )
+        # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def send_raw_telegrams(self, raw_input: str) -> ConbusRawResponse:
+    def connection_established(self) -> None:
+        self.logger.debug(f"Connection established, sending {self.raw_input}")
+        self.sendFrame(self.raw_input.encode())
+
+    def telegram_sent(self, telegram_sent: str) -> None:
+        self.service_response.success = True
+        self.service_response.sent_telegrams = telegram_sent
+        self.service_response.timestamp = datetime.now()
+        self.service_response.received_telegrams = []
+        pass
+
+    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        self.logger.debug(f"Telegram received: {telegram_received}")
+        if not self.service_response.received_telegrams:
+            self.service_response.received_telegrams = []
+        self.service_response.received_telegrams.append(telegram_received.frame)
+
+        if self.progress_callback:
+            self.progress_callback(telegram_received.frame)
+
+    def timeout(self) -> bool:
+        self.logger.debug(f"Timeout: {self.timeout_seconds}s")
+        if self.finish_callback:
+            self.finish_callback(self.service_response)
+        return False
+
+    def failed(self, message: str) -> None:
+        self.logger.debug(f"Failed with message: {message}")
+        self.service_response.success = False
+        self.service_response.timestamp = datetime.now()
+        self.service_response.error = message
+        if self.finish_callback:
+            self.finish_callback(self.service_response)
+
+    def send_raw_telegram(
+        self,
+        raw_input: str,
+        progress_callback: Callable[[str], None],
+        finish_callback: Callable[[ConbusRawResponse], None],
+        timeout_seconds: Optional[float] = None,
+    ) -> None:
         """
-        Send raw telegram sequence to Conbus server.
+        Query a specific datapoint from a module.
 
         Args:
-            raw_input: Raw string containing one or more telegrams
+            serial_number: 10-digit module serial number
+            datapoint_type: Type of datapoint to query
+            finish_callback: callback function to call when the datapoint is received
+            timeout_seconds: timeout in seconds
 
         Returns:
-            ConbusRawResponse containing results
+            ConbusDatapointResponse with operation result and datapoint value
         """
-        try:
 
-            self.logger.info(f"Sending raw telegram: {raw_input}")
-
-            response = self.conbus_service.send_raw_telegram(raw_input)
-
-            if not response.success:
-                return ConbusRawResponse(
-                    success=False,
-                    sent_telegrams=raw_input,
-                    error=f"Failed to send telegram {raw_input}: {response.error}",
-                )
-
-            return ConbusRawResponse(
-                success=True,
-                sent_telegrams=raw_input,
-                received_telegrams=response.received_telegrams,
-            )
-
-        except Exception as e:
-            error_msg = f"Failed to send raw telegrams: {e}"
-            self.logger.error(error_msg)
-            return ConbusRawResponse(success=False, error=error_msg)
-
-    def __enter__(self) -> "ConbusRawService":
-        """Context manager entry"""
-        return self
-
-    def __exit__(
-        self,
-        _exc_type: Optional[type],
-        _exc_val: Optional[BaseException],
-        _exc_tb: Optional[Any],
-    ) -> None:
-        """Context manager exit - ensure connection is closed"""
-        self.conbus_service.disconnect()
+        self.logger.info("Starting query_datapoint")
+        if timeout_seconds:
+            self.timeout_seconds = timeout_seconds
+        self.progress_callback = progress_callback
+        self.finish_callback = finish_callback
+        self.raw_input = raw_input
+        self.start_reactor()

@@ -159,10 +159,6 @@ class TestConbusRawIntegration:
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
-        from xp.services.conbus.conbus_raw_service import ConbusRawError
-
-        mock_service.send_raw_telegrams.side_effect = ConbusRawError("Service error")
-
         # Mock the container
         mock_container = MagicMock()
         mock_container.get_container().resolve.return_value = mock_service
