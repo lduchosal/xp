@@ -52,10 +52,7 @@ class BaseServerService(ABC):
             DataPointType.HW_VERSION: self.hardware_version,
             DataPointType.MODULE_ERROR_CODE: "00",
         }
-        data_value = datapoint_values.get(datapoint_type)
-        if not data_value:
-            data_value = "00"
-
+        data_value = datapoint_values.get(datapoint_type) or "00"
         data_part = f"R{self.serial_number}F02D{datapoint_type.value}{data_value}"
         telegram = self._build_response_telegram(data_part)
 

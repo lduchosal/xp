@@ -51,9 +51,7 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
-        self.logger.debug(
-            f"Connection established, querying datapoints..."
-        )
+        self.logger.debug("Connection established, querying datapoints...")
         self.next_datapoint()
 
     def next_datapoint(self) -> bool:
@@ -76,9 +74,8 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         self.current_index += 1
         return True
 
-
     def timeout(self) -> bool:
-        self.logger.debug(f"Timeout, querying next datapoint")
+        self.logger.debug("Timeout, querying next datapoint")
         query_next_datapoint = self.next_datapoint()
         if not query_next_datapoint:
             if self.finish_callback:
@@ -90,7 +87,6 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
                 self.finish_callback(self.service_response)
                 return False
         return True
-
 
     def telegram_sent(self, telegram_sent: str) -> None:
         self.service_response.sent_telegram = telegram_sent
@@ -120,7 +116,6 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         ):
             self.logger.debug("Not a reply for our datapoint type")
             return
-
 
         self.logger.debug("Received a datapoint telegram")
         if self.progress_callback:

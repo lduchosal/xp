@@ -92,7 +92,7 @@ class TestBaseServerServiceDatapointResponse:
     def test_generate_datapoint_type_response_error_code(self):
         """Test generating error code datapoint response."""
         response = ConcreteServerService("12345").generate_datapoint_type_response(
-            DataPointType.MODULE_TYPE
+            DataPointType.MODULE_STATE
         )
 
         assert response is not None
