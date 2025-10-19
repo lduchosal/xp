@@ -11,8 +11,8 @@ from typing import Callable, Optional
 from twisted.internet.posixbase import PosixReactorBase
 
 from xp.models import (
-    ConbusResponse,
     ConbusClientConfig,
+    ConbusResponse,
 )
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.services.protocol import ConbusProtocol

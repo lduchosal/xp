@@ -4,7 +4,7 @@ This service handles setting link numbers for modules through Conbus telegrams.
 """
 
 import logging
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
 
