@@ -24,19 +24,32 @@ from xp.services.conbus.actiontable.msactiontable_service import (
 @click.argument("xpmoduletype", type=XP_MODULE_TYPE)
 @click.pass_context
 @connection_command()
-@handle_service_errors(MsActionTableError)
 def conbus_download_msactiontable(
     ctx: Context, serial_number: str, xpmoduletype: str
 ) -> None:
     """Download MS action table from XP24 module"""
     service = ctx.obj.get("container").get_container().resolve(MsActionTableService)
 
-    with service:
-        action_table = service.download_action_table(serial_number, xpmoduletype)
+    def progress_callback(progress: str) -> None:
+        click.echo(progress, nl=False)
+
+    def finish_callback(action_table) -> None:
         output = {
             "serial_number": serial_number,
             "xpmoduletype": xpmoduletype,
             "action_table": asdict(action_table),
         }
-
         click.echo(json.dumps(output, indent=2, default=str))
+
+    def error_callback(error: str) -> None:
+        click.echo(f"Error: {error}")
+        raise click.Abort()
+
+    with service:
+        service.start(
+            serial_number=serial_number,
+            xpmoduletype=xpmoduletype,
+            progress_callback=progress_callback,
+            finish_callback=finish_callback,
+            error_callback=error_callback,
+        )

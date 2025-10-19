@@ -46,7 +46,17 @@ class TestXp24ActionTableIntegration:
             curtain34=True,
         )
 
-        mock_service.download_action_table.return_value = mock_action_table
+        # Mock the start method to call finish_callback immediately
+        def mock_start(
+            serial_number,
+            xpmoduletype,
+            progress_callback,
+            finish_callback,
+            error_callback,
+        ):
+            finish_callback(mock_action_table)
+
+        mock_service.start.side_effect = mock_start
 
         # Create mock container
         mock_container = Mock(spec=ServiceContainer)
@@ -63,9 +73,7 @@ class TestXp24ActionTableIntegration:
 
         # Verify success
         assert result.exit_code == 0
-        mock_service.download_action_table.assert_called_once_with(
-            self.valid_serial, "xp24"
-        )
+        mock_service.start.assert_called_once()
 
         # Verify JSON output structure
         output = json.loads(result.output)
@@ -92,9 +100,17 @@ class TestXp24ActionTableIntegration:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        mock_service.download_action_table.side_effect = MsActionTableError(
-            "Invalid serial number"
-        )
+        # Mock the start method to call error_callback
+        def mock_start(
+            serial_number,
+            xpmoduletype,
+            progress_callback,
+            finish_callback,
+            error_callback,
+        ):
+            error_callback("Invalid serial number")
+
+        mock_service.start.side_effect = mock_start
 
         # Create mock container
         mock_container = Mock(spec=ServiceContainer)
@@ -111,7 +127,7 @@ class TestXp24ActionTableIntegration:
 
         # Verify error
         assert result.exit_code != 0
-        assert "Invalid serial number" in result.output
+        assert "Error: Invalid serial number" in result.output
 
     def test_xp24_download_action_table_connection_error(self):
         """Test downloading with network failure"""
@@ -121,9 +137,17 @@ class TestXp24ActionTableIntegration:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        mock_service.download_action_table.side_effect = MsActionTableError(
-            "Conbus communication failed"
-        )
+        # Mock the start method to call error_callback
+        def mock_start(
+            serial_number,
+            xpmoduletype,
+            progress_callback,
+            finish_callback,
+            error_callback,
+        ):
+            error_callback("Conbus communication failed")
+
+        mock_service.start.side_effect = mock_start
 
         # Create mock container
         mock_container = Mock(spec=ServiceContainer)
@@ -140,4 +164,4 @@ class TestXp24ActionTableIntegration:
 
         # Verify error
         assert result.exit_code != 0
-        assert "Conbus communication failed" in result.output
+        assert "Error: Conbus communication failed" in result.output

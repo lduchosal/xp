@@ -56,10 +56,19 @@ class TestXp20ActionTableIntegration:
         # without actually making network calls
         from unittest.mock import Mock
 
-        mock_conbus = Mock()
+        mock_cli_config = Mock()
+        mock_reactor = Mock()
+        mock_xp20_serializer = Mock()
+        mock_xp24_serializer = Mock()
+        mock_xp33_serializer = Mock()
         mock_telegram = Mock()
+
         service = MsActionTableService(
-            conbus_service=mock_conbus,
+            cli_config=mock_cli_config,
+            reactor=mock_reactor,
+            xp20ms_serializer=mock_xp20_serializer,
+            xp24ms_serializer=mock_xp24_serializer,
+            xp33ms_serializer=mock_xp33_serializer,
             telegram_service=mock_telegram,
         )
 
@@ -69,7 +78,8 @@ class TestXp20ActionTableIntegration:
 
         # Check that the service can be instantiated
         assert service is not None
-        assert service.conbus_service is not None
+        assert service.xp20ms_serializer is not None
+        assert service.telegram_service is not None
 
     def test_complex_configuration_round_trip(self):
         """Test complex configuration through full serialization cycle"""
