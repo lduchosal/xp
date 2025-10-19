@@ -218,7 +218,7 @@ class ServiceContainer:
 
         self.container.register(
             ActionTableSerializer,
-            factory=lambda: ActionTableSerializer(),
+            factory=lambda: ActionTableSerializer,
             scope=punq.Scope.singleton,
         )
 

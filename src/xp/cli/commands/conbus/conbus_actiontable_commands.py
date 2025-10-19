@@ -40,8 +40,8 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
 
     with service:
         service.start(
-            serial_number = serial_number,
-            progress_callback = progress_callback,
-            finish_callback = finish_callback,
-            error_callback = error_callback,
+            serial_number=serial_number,
+            progress_callback=progress_callback,
+            finish_callback=finish_callback,
+            error_callback=error_callback,
         )

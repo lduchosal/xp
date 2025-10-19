@@ -8,22 +8,42 @@ from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.conbus.actiontable.actiontable_service import (
-    ActionTableService,
-)
+from xp.services.conbus.actiontable.actiontable_service import ActionTableService
 
 
 class TestActionTableService:
     """Test cases for ActionTableService"""
 
     @pytest.fixture
-    def service(self):
+    def mock_cli_config(self):
+        """Create mock CLI config"""
+        return Mock()
+
+    @pytest.fixture
+    def mock_reactor(self):
+        """Create mock reactor"""
+        return Mock()
+
+    @pytest.fixture
+    def mock_serializer(self):
+        """Create mock ActionTableSerializer"""
+        return Mock()
+
+    @pytest.fixture
+    def mock_telegram_service(self):
+        """Create mock TelegramService"""
+        return Mock()
+
+    @pytest.fixture
+    def service(
+        self, mock_cli_config, mock_reactor, mock_serializer, mock_telegram_service
+    ):
         """Create service instance for testing"""
-        mock_conbus = Mock()
-        mock_telegram = Mock()
         return ActionTableService(
-            conbus_service=mock_conbus,
-            telegram_service=mock_telegram,
+            cli_config=mock_cli_config,
+            reactor=mock_reactor,
+            actiontable_serializer=mock_serializer,
+            telegram_service=mock_telegram_service,
         )
 
     @pytest.fixture
@@ -51,141 +71,209 @@ class TestActionTableService:
         ]
         return ActionTable(entries=entries)
 
-    def test_format_decoded_output(self, service, sample_actiontable):
-        """Test formatting ActionTable as decoded output"""
-        result = service.format_decoded_output(sample_actiontable)
-
-        expected_lines = ["CP20 0 0 > 1 TURNOFF;", "CP20 0 1 > 1 ~TURNON;"]
-
-        assert result == "\n".join(expected_lines)
-
-    def test_format_encoded_output(self, service, sample_actiontable):
-        """Test formatting ActionTable as encoded output"""
-        result = service.format_encoded_output(sample_actiontable)
-
-        # Should return a base64-like encoded string
-        assert isinstance(result, str)
-        assert len(result) > 0
-
-    def test_download_actiontable_success(self):
-        """Test successful actiontable download"""
-        from xp.models.telegram.system_function import SystemFunction
-
-        # Setup mocks
-        mock_conbus = Mock()
-        mock_telegram = Mock()
-
+    def test_service_initialization(
+        self, mock_cli_config, mock_reactor, mock_serializer, mock_telegram_service
+    ):
+        """Test service can be initialized with required dependencies"""
         service = ActionTableService(
-            conbus_service=mock_conbus,
-            telegram_service=mock_telegram,
+            cli_config=mock_cli_config,
+            reactor=mock_reactor,
+            actiontable_serializer=mock_serializer,
+            telegram_service=mock_telegram_service,
         )
 
-        # Mock calls to simulate the communication flow
-        call_count = [0]
+        assert service.serializer == mock_serializer
+        assert service.telegram_service == mock_telegram_service
+        assert service.serial_number == ""
+        assert service.progress_callback is None
+        assert service.error_callback is None
+        assert service.finish_callback is None
+        assert service.actiontable_data == []
 
-        def mock_send_telegram(_serial, _function, _data, callback):
-            call_count[0] += 1
-            if call_count[0] == 1:
-                # First call: simulate receiving actiontable data
-                mock_actiontable_reply = Mock()
-                mock_actiontable_reply.system_function = SystemFunction.ACTIONTABLE
-                mock_actiontable_reply.raw_telegram = "AAAAACAAAABAAAAC"
-                mock_actiontable_reply.data_value = (
-                    "XXAAAAACAAAABAAAAC"  # Add data_value for slicing
-                )
-                mock_telegram.parse_reply_telegram.return_value = mock_actiontable_reply
-                callback(["<R0123450001F17DAAAAACAAAABAAAAC>"])
-            elif call_count[0] == 2:
-                # Second call: simulate receiving EOF
-                mock_eof_reply = Mock()
-                mock_eof_reply.system_function = SystemFunction.EOF
-                mock_eof_reply.raw_telegram = "<R0123450001F16DEO>"
-                mock_telegram.parse_reply_telegram.return_value = mock_eof_reply
-                callback(["<R0123450001F16DEO>"])
+    def test_connection_established(self, service):
+        """Test connection_established sends DOWNLOAD_ACTIONTABLE telegram"""
+        service.serial_number = "0123450001"
 
-        mock_conbus.send_telegram.side_effect = mock_send_telegram
+        with patch.object(service, "send_telegram") as mock_send:
+            service.connection_established()
 
-        # Mock receive_responses to not interfere
-        mock_conbus.receive_responses.return_value = None
+            from xp.models.telegram.system_function import SystemFunction
+            from xp.models.telegram.telegram_type import TelegramType
 
-        # Mock serializer to return a valid ActionTable
-        with patch.object(
-            service.serializer, "from_encoded_string"
-        ) as mock_deserialize:
-            mock_deserialize.return_value = ActionTable(entries=[])
+            mock_send.assert_called_once_with(
+                telegram_type=TelegramType.SYSTEM,
+                serial_number="0123450001",
+                system_function=SystemFunction.DOWNLOAD_ACTIONTABLE,
+                data_value="00",
+            )
 
-            # Test the download
-            result = service.download_actiontable("012345")
-
-            assert isinstance(result, ActionTable)
-            assert mock_conbus.send_telegram.called
-
-    def test_download_actiontable_communication_error(self, service):
-        """Test actiontable download with communication error"""
-        with patch.object(service.conbus_service, "send_telegram") as mock_send:
-            mock_send.side_effect = Exception("Connection failed")
-
-            with pytest.raises(ActionTableError) as exc_info:
-                service.download_actiontable("012345")
-
-            assert "communication failed" in str(exc_info.value).lower()
-
-    def test_is_eof_true(self, service):
-        """Test _is_eof returns True for EOF telegrams"""
+    def test_telegram_received_actiontable_data(self, service, sample_actiontable):
+        """Test receiving ACTIONTABLE telegram appends data and sends ACK"""
+        from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.system_function import SystemFunction
+        from xp.models.telegram.telegram_type import TelegramType
 
-        mock_reply = Mock()
-        mock_reply.system_function = SystemFunction.EOF
+        service.serial_number = "0123450001"
+        mock_progress = Mock()
+        service.progress_callback = mock_progress
 
-        with patch.object(
-            service.telegram_service, "parse_reply_telegram", return_value=mock_reply
-        ):
-            result = service._is_eof(["<R0123450001F16DFO>"])
-            assert result is True
+        # Create mock telegram received event
+        telegram_event = TelegramReceivedEvent(
+            protocol=service,
+            frame="<R0123450001F17DXXAAAAACAAAABAAAACFK>",
+            telegram="R0123450001F17DXXAAAAACAAAABAAAACFK",
+            payload="R0123450001F17DXXAAAAACAAAABAAAAC",
+            telegram_type=TelegramType.REPLY.value,
+            serial_number="0123450001",
+            checksum="FK",
+            checksum_valid=True,
+        )
 
-    def test_is_eof_false(self, service):
-        """Test _is_eof returns False for non-EOF telegrams"""
-        from xp.models.telegram.system_function import SystemFunction
-
-        mock_reply = Mock()
-        mock_reply.system_function = SystemFunction.ACK
-
-        with patch.object(
-            service.telegram_service, "parse_reply_telegram", return_value=mock_reply
-        ):
-            result = service._is_eof(["<R0123450001F18DFA>"])
-            assert result is False
-
-    def test_get_actiontable_data_found(self, service):
-        """Test _get_actiontable_data extracts data successfully"""
-        from xp.models.telegram.system_function import SystemFunction
-
+        # Mock the reply telegram parsing
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACTIONTABLE
-        mock_reply.raw_telegram = "<R0123450001F17DAAAAACAAAABAAAACFK>"
-        mock_reply.data_value = "XXAAAAACAAAABAAAAC"  # Add data_value for slicing
+        mock_reply.data_value = "XXAAAAACAAAABAAAAC"
+        service.telegram_service.parse_reply_telegram.return_value = mock_reply
 
-        with patch.object(
-            service.telegram_service, "parse_reply_telegram", return_value=mock_reply
-        ):
-            result = service._get_actiontable_data(
-                ["<R0123450001F17DAAAAACAAAABAAAACFK>"]
+        with patch.object(service, "send_telegram") as mock_send:
+            service.telegram_received(telegram_event)
+
+            # Should append data (without first 2 chars)
+            assert service.actiontable_data == ["AAAAACAAAABAAAAC"]
+
+            # Should call progress callback
+            mock_progress.assert_called_once_with(".")
+
+            # Should send ACK
+            mock_send.assert_called_once_with(
+                telegram_type=TelegramType.SYSTEM,
+                serial_number="0123450001",
+                system_function=SystemFunction.ACK,
+                data_value="00",
             )
-            assert result is not None
-            assert isinstance(result, str)
 
-    def test_get_actiontable_data_not_found(self, service):
-        """Test _get_actiontable_data returns None when no data found"""
+    def test_telegram_received_eof(self, service, sample_actiontable):
+        """Test receiving EOF telegram deserializes and calls finish_callback"""
+        from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.system_function import SystemFunction
+        from xp.models.telegram.telegram_type import TelegramType
 
+        service.serial_number = "0123450001"
+        service.actiontable_data = ["AAAAACAAAABAAAAC"]
+
+        mock_finish = Mock()
+        service.finish_callback = mock_finish
+
+        # Mock serializer to return sample actiontable
+        service.serializer.from_encoded_string.return_value = sample_actiontable
+
+        # Create mock telegram received event
+        telegram_event = TelegramReceivedEvent(
+            protocol=service,
+            frame="<R0123450001F16DEO>",
+            telegram="R0123450001F16DEO",
+            payload="R0123450001F16D",
+            telegram_type=TelegramType.REPLY.value,
+            serial_number="0123450001",
+            checksum="EO",
+            checksum_valid=True,
+        )
+
+        # Mock the reply telegram parsing
         mock_reply = Mock()
-        mock_reply.system_function = SystemFunction.ACK
+        mock_reply.system_function = SystemFunction.EOF
+        service.telegram_service.parse_reply_telegram.return_value = mock_reply
 
-        with patch.object(
-            service.telegram_service, "parse_reply_telegram", return_value=mock_reply
-        ):
-            result = service._get_actiontable_data(["<R0123450001F18DFA>"])
-            assert result is None
+        service.telegram_received(telegram_event)
+
+        # Should deserialize all collected data
+        service.serializer.from_encoded_string.assert_called_once_with(
+            "AAAAACAAAABAAAAC"
+        )
+
+        # Should call finish callback with actiontable
+        mock_finish.assert_called_once_with(sample_actiontable)
+
+    def test_telegram_received_invalid_checksum(self, service):
+        """Test telegram with invalid checksum is ignored"""
+        from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+        from xp.models.telegram.telegram_type import TelegramType
+
+        service.serial_number = "0123450001"
+
+        telegram_event = TelegramReceivedEvent(
+            protocol=service,
+            frame="<R0123450001F17DINVALIDFK>",
+            telegram="R0123450001F17DINVALIDFK",
+            payload="R0123450001F17DINVALID",
+            telegram_type=TelegramType.REPLY.value,
+            serial_number="0123450001",
+            checksum="FK",
+            checksum_valid=False,  # Invalid checksum
+        )
+
+        with patch.object(service, "send_telegram") as mock_send:
+            service.telegram_received(telegram_event)
+
+            # Should not process the telegram
+            assert service.actiontable_data == []
+            mock_send.assert_not_called()
+
+    def test_telegram_received_wrong_serial(self, service):
+        """Test telegram for different serial number is ignored"""
+        from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+        from xp.models.telegram.telegram_type import TelegramType
+
+        service.serial_number = "0123450001"
+
+        telegram_event = TelegramReceivedEvent(
+            protocol=service,
+            frame="<R9999999999F17DXXAAAAACFK>",
+            telegram="R9999999999F17DXXAAAAACFK",
+            payload="R9999999999F17DXXAAAAAC",
+            telegram_type=TelegramType.REPLY.value,
+            serial_number="9999999999",  # Different serial
+            checksum="FK",
+            checksum_valid=True,
+        )
+
+        with patch.object(service, "send_telegram") as mock_send:
+            service.telegram_received(telegram_event)
+
+            # Should not process the telegram
+            assert service.actiontable_data == []
+            mock_send.assert_not_called()
+
+    def test_failed_callback(self, service):
+        """Test failed method calls error_callback"""
+        mock_error = Mock()
+        service.error_callback = mock_error
+
+        service.failed("Connection timeout")
+
+        mock_error.assert_called_once_with("Connection timeout")
+
+    def test_start_method(self, service):
+        """Test start method sets up callbacks and starts reactor"""
+        mock_progress = Mock()
+        mock_error = Mock()
+        mock_finish = Mock()
+
+        with patch.object(service, "start_reactor") as mock_start_reactor:
+            service.start(
+                serial_number="0123450001",
+                progress_callback=mock_progress,
+                error_callback=mock_error,
+                finish_callback=mock_finish,
+                timeout_seconds=10.0,
+            )
+
+            assert service.serial_number == "0123450001"
+            assert service.progress_callback == mock_progress
+            assert service.error_callback == mock_error
+            assert service.finish_callback == mock_finish
+            assert service.timeout_seconds == 10.0
+            mock_start_reactor.assert_called_once()
 
     def test_context_manager(self, service):
         """Test service works as context manager"""

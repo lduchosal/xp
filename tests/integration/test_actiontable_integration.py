@@ -1,6 +1,5 @@
 """Integration tests for ActionTable functionality."""
 
-import json
 from unittest.mock import Mock
 
 import pytest
@@ -15,7 +14,6 @@ from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.conbus.actiontable.actiontable_service import (
     ActionTableSerializer,
-    ActionTableService,
 )
 
 
@@ -98,32 +96,20 @@ class TestActionTableIntegration:
         assert isinstance(encoded, str)
         assert len(encoded) > 0
 
-    def test_service_serializer_integration(self, sample_actiontable):
-        """Test ActionTableService and ActionTableSerializer integration"""
-        # Setup service with mocked dependencies
-        mock_conbus = Mock()
-        mock_telegram = Mock()
-        service = ActionTableService(
-            conbus_service=mock_conbus,
-            telegram_service=mock_telegram,
-        )
-
-        # Test formatting methods work
-        decoded = service.format_decoded_output(sample_actiontable)
-        encoded = service.format_encoded_output(sample_actiontable)
-
-        assert isinstance(decoded, str)
-        assert isinstance(encoded, str)
-        assert "CP20 0 0 > 1 TURNOFF;" in decoded
-        assert len(encoded) > 0
-
     def test_end_to_end_cli_download(self, sample_actiontable):
         """Test end-to-end CLI download functionality"""
         # Setup mock service
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
-        mock_service.download_actiontable.return_value = sample_actiontable
+
+        # Mock the start method to call finish_callback immediately
+        def mock_start(
+            serial_number, progress_callback, finish_callback, error_callback
+        ):
+            finish_callback(sample_actiontable)
+
+        mock_service.start.side_effect = mock_start
 
         # Setup mock container
         mock_container = Mock()
@@ -142,14 +128,13 @@ class TestActionTableIntegration:
         # Verify successful execution
         assert result.exit_code == 0
 
-        # Verify output is valid JSON
-        output_data = json.loads(result.output)
-        assert "serial_number" in output_data
-        assert "actiontable" in output_data
-        assert output_data["serial_number"] == "0000012345"
+        # Verify output contains actiontable data
+        # The output contains progress dots and then the JSON, so we check for the serial number
+        assert "0000012345" in result.output
+        assert "actiontable" in result.output
 
-        # Verify service was called correctly
-        mock_service.download_actiontable.assert_called_once_with("0000012345")
+        # Verify service.start was called
+        assert mock_service.start.called
 
     def test_bcd_encoding_decoding(self):
         """Test BCD encoding/decoding functionality"""

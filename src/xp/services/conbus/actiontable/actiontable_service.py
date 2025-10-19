@@ -1,7 +1,7 @@
 """Service for downloading ActionTable via Conbus protocol."""
 
 import logging
-from typing import Any, Optional, Callable
+from typing import Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
 
@@ -12,7 +12,8 @@ from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.conbus.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.protocol import ConbusProtocol
-from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
+from xp.services.telegram.telegram_service import TelegramService
+
 
 class ActionTableService(ConbusProtocol):
     """
@@ -21,6 +22,7 @@ class ActionTableService(ConbusProtocol):
     Manages TCP socket connections, handles telegram generation and transmission,
     and processes server responses.
     """
+
     def __init__(
         self,
         cli_config: ConbusClientConfig,
@@ -63,14 +65,17 @@ class ActionTableService(ConbusProtocol):
             return
 
         reply_telegram = self.telegram_service.parse_reply_telegram(telegram_received)
-        if not reply_telegram.system_function in (SystemFunction.ACTIONTABLE, SystemFunction.EOF):
+        if reply_telegram.system_function not in (
+            SystemFunction.ACTIONTABLE,
+            SystemFunction.EOF,
+        ):
             self.logger.debug("Not a actiontable response")
             return
 
         if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
             self.logger.debug("Saving actiontable response")
-            actiontable_data_part = reply_telegram.data_value[2:]
-            self.actiontable_data.append(actiontable_data_part)
+            data_part = reply_telegram.data_value[2:]
+            self.actiontable_data.append(data_part)
             if self.progress_callback:
                 self.progress_callback(".")
 
