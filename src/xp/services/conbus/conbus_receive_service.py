@@ -8,7 +8,6 @@ import logging
 from typing import Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
-from twisted.python.failure import Failure
 
 from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_receive import ConbusReceiveResponse
@@ -57,13 +56,13 @@ class ConbusReceiveService(ConbusProtocol):
         self.receive_response.received_telegrams.append(telegram_received.frame)
 
     def timeout(self) -> None:
-        self.logger.info("Discovery stopped after: %ss", self.timeout_seconds)
+        self.logger.info("Receive stopped after: %ss", self.timeout_seconds)
         self.receive_response.success = True
         if self.finish_callback:
             self.finish_callback(self.receive_response)
 
     def failed(self, message: str) -> None:
-        self.logger.debug(f"Failed %s:", message)
+        self.logger.debug("Failed %s:", message)
         self.receive_response.success = False
         self.receive_response.error = message
         if self.finish_callback:

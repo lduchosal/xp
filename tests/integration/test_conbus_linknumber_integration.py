@@ -358,7 +358,8 @@ class TestConbusLinknumberIntegration:
         from xp.models.telegram.datapoint_type import DataPointType
 
         mock_datapoint_service.query_datapoint.assert_called_once_with(
-            DataPointType.LINK_NUMBER, "0123450001"
+            serial_number="0123450001",
+            datapoint_type=DataPointType.LINK_NUMBER,
         )
 
     def test_conbus_get_linknumber_query_failed(self):

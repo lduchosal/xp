@@ -478,7 +478,8 @@ class TestConbusLightlevelService:
         from xp.models.telegram.datapoint_type import DataPointType
 
         mock_datapoint_service.query_datapoint.assert_called_once_with(
-            DataPointType.MODULE_LIGHT_LEVEL, self.valid_serial
+            serial_number=self.valid_serial,
+            datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
         )
 
     def test_service_context_manager(self):

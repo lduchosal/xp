@@ -157,9 +157,11 @@ class ConbusLightlevelService:
             ConbusLightlevelResponse with current light level
         """
 
+        # TODO: Migrate to new ConbusDatapointService callback-based API
         # Query MODULE_LIGHT_LEVEL datapoint
-        datapoint_response = self.datapoint_service.query_datapoint(
-            DataPointType.MODULE_LIGHT_LEVEL, serial_number
+        datapoint_response = self.datapoint_service.query_datapoint(  # type: ignore[call-arg,func-returns-value]
+            serial_number=serial_number,
+            datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
         )
 
         if not datapoint_response.success:

@@ -145,9 +145,11 @@ class ConbusLinknumberService:
             Exception: If datapoint query fails
         """
         try:
+            # TODO: Migrate to new ConbusDatapointService callback-based API
             # Query the LINK_NUMBER datapoint
-            datapoint_response = self.datapoint_service.query_datapoint(
-                DataPointType.LINK_NUMBER, serial_number
+            datapoint_response = self.datapoint_service.query_datapoint(  # type: ignore[call-arg,func-returns-value]
+                serial_number=serial_number,
+                datapoint_type=DataPointType.LINK_NUMBER,
             )
 
             if datapoint_response.success and datapoint_response.datapoint_telegram:

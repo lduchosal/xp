@@ -14,12 +14,16 @@ from xp.cli.utils.decorators import (
     handle_service_errors,
 )
 from xp.cli.utils.serial_number_type import SERIAL
+from xp.models.conbus.conbus_datapoint import ConbusDatapointResponse
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.reply_telegram import ReplyTelegram
+from xp.services.conbus.conbus_datapoint_queryall_service import (
+    ConbusDatapointQueryAllService,
+)
 from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
     ConbusDatapointService,
 )
-from xp.services.conbus.conbus_datapoint_queryall_service import ConbusDatapointQueryAllService
 
 
 @click.command("query")
@@ -43,7 +47,7 @@ def query_datapoint(ctx: Context, serial_number: str, datapoint: DataPointType) 
     """
     service = ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
 
-    def on_finish(service_response):
+    def on_finish(service_response: ConbusDatapointResponse) -> None:
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
     # Send telegram
@@ -74,16 +78,18 @@ def query_all_datapoints(ctx: Context, serial_number: str) -> None:
         xp conbus datapoint all 0123450001
     """
     service = (
-        ctx.obj.get("container")
-        .get_container()
-        .resolve(ConbusDatapointQueryAllService)
+        ctx.obj.get("container").get_container().resolve(ConbusDatapointQueryAllService)
     )
 
-    def on_finish(service_response):
+    def on_finish(service_response: ConbusDatapointResponse) -> None:
         click.echo(json.dumps(service_response.to_dict(), indent=2))
+
+    def on_progress(reply_telegram:ReplyTelegram) -> None:
+        click.echo(json.dumps(reply_telegram.to_dict(), indent=2))
 
     with service:
         service.query_all_datapoints(
             serial_number=serial_number,
             finish_callback=on_finish,
+            progress_callback=on_progress,
         )

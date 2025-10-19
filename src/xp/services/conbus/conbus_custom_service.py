@@ -18,6 +18,7 @@ from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol import ConbusProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
+
 class ConbusCustomService(ConbusProtocol):
     """
     Service for sending custom telegrams to Conbus modules.

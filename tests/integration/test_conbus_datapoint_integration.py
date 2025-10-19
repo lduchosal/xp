@@ -6,13 +6,14 @@ from click.testing import CliRunner
 
 from xp.cli.main import cli
 from xp.models.conbus.conbus_datapoint import ConbusDatapointResponse
-from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
+from xp.services.conbus.conbus_datapoint_queryall_service import (
+    ConbusDatapointQueryAllService,
+)
 from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
     ConbusDatapointService,
 )
-from xp.services.conbus.conbus_datapoint_queryall_service import ConbusDatapointQueryAllService
 
 
 class TestConbusDatapointIntegration:
@@ -275,7 +276,7 @@ class TestConbusDatapointQueryAllService:
         )
 
         assert service.telegram_service == self.mock_telegram_service
-        assert service.cli_config == self.mock_cli_config
+        assert service.cli_config == self.mock_cli_config.conbus
         assert service.reactor == self.mock_reactor
 
     def test_service_context_manager(self):

@@ -8,7 +8,6 @@ import logging
 from typing import Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
-from twisted.python.failure import Failure
 
 from xp.models import ConbusClientConfig, ConbusDiscoverResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent

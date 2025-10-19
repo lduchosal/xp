@@ -8,7 +8,6 @@ from datetime import datetime
 from typing import Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
-from twisted.python.failure import Failure
 
 from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_autoreport import ConbusAutoreportResponse

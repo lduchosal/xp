@@ -12,6 +12,7 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.error_handlers import CLIErrorHandler
 from xp.cli.utils.serial_number_type import SERIAL
+from xp.models.conbus.conbus_custom import ConbusCustomResponse
 from xp.services.conbus.conbus_custom_service import ConbusCustomService
 from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointError,
@@ -39,13 +40,17 @@ def send_custom_telegram(
     """
     service = ctx.obj.get("container").get_container().resolve(ConbusCustomService)
 
+    def on_finish(service_response: "ConbusCustomResponse") -> None:
+        click.echo(json.dumps(service_response.to_dict(), indent=2))
+
     try:
         with service:
-            response = service.send_custom_telegram(
-                serial_number, function_code, datapoint_code
+            service.send_custom_telegram(
+                serial_number=serial_number,
+                function_code=function_code,
+                data=datapoint_code,
+                finish_callback=on_finish,
             )
-
-        click.echo(json.dumps(response.to_dict(), indent=2))
 
     except ConbusDatapointError as e:
         CLIErrorHandler.handle_service_error(

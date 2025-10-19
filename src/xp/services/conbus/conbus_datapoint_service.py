@@ -17,13 +17,6 @@ from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol import ConbusProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
-
-class ConbusDatapointError(Exception):
-    """Raised when Conbus client send operations fail"""
-
-    pass
-
-
 class ConbusDatapointService(ConbusProtocol):
     """
     Service for querying datapoints from Conbus modules.
@@ -143,5 +136,3 @@ class ConbusDatapointService(ConbusProtocol):
         self.serial_number = serial_number
         self.datapoint_type = datapoint_type
         self.start_reactor()
-
-
