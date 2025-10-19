@@ -12,6 +12,9 @@ from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.services.conbus.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.conbus.actiontable.actiontable_service import ActionTableService
 from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
+from xp.services.conbus.actiontable.msactiontable_xp20_serializer import Xp20MsActionTableSerializer
+from xp.services.conbus.actiontable.msactiontable_xp24_serializer import Xp24MsActionTableSerializer
+from xp.services.conbus.actiontable.msactiontable_xp33_serializer import Xp33MsActionTableSerializer
 from xp.services.conbus.conbus_autoreport_get_service import ConbusAutoreportGetService
 from xp.services.conbus.conbus_autoreport_set_service import ConbusAutoreportSetService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
@@ -234,9 +237,31 @@ class ServiceContainer:
         )
 
         self.container.register(
+            Xp20MsActionTableSerializer,
+            factory=lambda: Xp20MsActionTableSerializer,
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            Xp24MsActionTableSerializer,
+            factory=lambda: Xp24MsActionTableSerializer,
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            Xp33MsActionTableSerializer,
+            factory=lambda: Xp33MsActionTableSerializer,
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
             MsActionTableService,
             factory=lambda: MsActionTableService(
-                conbus_service=self.container.resolve(ConbusService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
+                xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
+                xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
+                xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
                 telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,

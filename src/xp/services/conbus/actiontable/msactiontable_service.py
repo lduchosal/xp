@@ -2,12 +2,17 @@
 
 import logging
 from contextlib import suppress
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, Callable
 
+from twisted.internet.posixbase import PosixReactorBase
+
+from xp.models import ConbusClientConfig
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
+from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.telegram_type import TelegramType
 from xp.services.conbus.actiontable.msactiontable_xp20_serializer import (
     Xp20MsActionTableSerializer,
 )
@@ -18,6 +23,7 @@ from xp.services.conbus.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
 from xp.services.conbus.conbus_service import ConbusError, ConbusService
+from xp.services.protocol import ConbusProtocol
 from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
 
@@ -26,128 +32,120 @@ class MsActionTableError(Exception):
 
     pass
 
+class MsActionTableService(ConbusProtocol):
+    """
+    TCP client service for sending telegrams to Conbus servers.
 
-class MsActionTableService:
-    """Service for downloading XP24 action tables via Conbus"""
+    Manages TCP socket connections, handles telegram generation and transmission,
+    and processes server responses.
+    """
 
     def __init__(
         self,
-        conbus_service: ConbusService,
+        cli_config: ConbusClientConfig,
+        reactor: PosixReactorBase,
+        xp20ms_serializer: Xp20MsActionTableSerializer,
+        xp24ms_serializer: Xp24MsActionTableSerializer,
+        xp33ms_serializer: Xp33MsActionTableSerializer,
         telegram_service: TelegramService,
-    ):
-        # Service dependencies
-        self.conbus_service = conbus_service
-        self.serializer = Xp24MsActionTableSerializer()
+    ) -> None:
+        """Initialize the Conbus client send service"""
+        super().__init__(cli_config, reactor)
+        self.xp20ms_serializer = xp20ms_serializer
+        self.xp24ms_serializer = xp24ms_serializer
+        self.xp33ms_serializer = xp33ms_serializer
+        self.serializer: Union[Xp20MsActionTableSerializer, Xp24MsActionTableSerializer, Xp33MsActionTableSerializer] = xp20ms_serializer
         self.telegram_service = telegram_service
+        self.serial_number: str = ""
+        self.xpmoduletype: str = ""
+        self.progress_callback: Optional[Callable[[str], None]] = None
+        self.error_callback: Optional[Callable[[str], None]] = None
+        self.finish_callback: Optional[Callable[[Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]], None]] = None
+        self.msactiontable_data: list[str] = []
+        # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def download_action_table(
-        self, serial_number: str, xpmoduletype: str
-    ) -> Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]:
-        """Download action table from XP module"""
-        try:
-            msactiontable_received = False
-            eof_received = False
-            msactiontable_telegrams: list[str] = []
+    def connection_established(self) -> None:
+        self.logger.debug("Connection established, sending discover telegram")
+        self.send_telegram(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number=self.serial_number,
+            system_function=SystemFunction.DOWNLOAD_MSACTIONTABLE,
+            data_value="00",
+        )
 
-            # Usage
-            def on_data_received(telegrams: list[str]) -> None:
+    def telegram_sent(self, telegram_sent: str) -> None:
+        self.logger.debug(f"Telegram sent: {telegram_sent}")
 
-                nonlocal msactiontable_received, msactiontable_telegrams, eof_received
+    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        self.logger.debug(f"Telegram received: {telegram_received}")
+        if (
+            not telegram_received.checksum_valid
+            or telegram_received.telegram_type != TelegramType.REPLY.value
+            or telegram_received.serial_number != self.serial_number
+        ):
+            self.logger.debug("Not a reply response")
+            return
 
-                self.logger.debug(f"Data received telegrams: {telegrams}")
+        reply_telegram = self.telegram_service.parse_reply_telegram(telegram_received)
+        if reply_telegram.system_function not in (
+            SystemFunction.MSACTIONTABLE,
+            SystemFunction.EOF,
+        ):
+            self.logger.debug("Not a msactiontable response")
+            return
 
-                if self._is_eof(telegrams):
-                    self.logger.debug("Received eof")
-                    eof_received = True
+        if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
+            self.logger.debug("Saving msactiontable response")
+            self.msactiontable_data.append(reply_telegram.data_value)
+            if self.progress_callback:
+                self.progress_callback(".")
 
-                msactiontable_telegram = self._get_msactiontable_telegram(telegrams)
-                if msactiontable_telegram is not None:
-                    msactiontable_received = True
-                    msactiontable_telegrams.append(msactiontable_telegram)
-                    self.logger.debug("Received msactiontable_telegram")
-
-                if msactiontable_received:
-                    msactiontable_received = False
-                    self.conbus_service.send_telegram(
-                        serial_number,
-                        SystemFunction.ACK,  # F18
-                        "00",  # MS action table query
-                        on_data_received,
-                    )
-                    return
-
-                if not eof_received:
-                    self.conbus_service.receive_responses(0.01, on_data_received)
-
-            # Send F13 query to request MS action table
-            self.conbus_service.send_telegram(
-                serial_number,
-                SystemFunction.DOWNLOAD_MSACTIONTABLE,  # F13
-                "00",  # MS action table query
-                on_data_received,
+            self.send_telegram(
+                telegram_type=TelegramType.SYSTEM,
+                serial_number=self.serial_number,
+                system_function=SystemFunction.ACK,
+                data_value="00",
             )
+            return
 
-            # Deserialize from received telegrams
-            self.logger.debug(
-                f"Received msactiontable_telegrams: {msactiontable_telegrams}"
-            )
-            if not msactiontable_telegrams:
-                raise MsActionTableError("No msactiontable telegrams")
+        if reply_telegram.system_function == SystemFunction.EOF:
+            all_data = "".join(self.msactiontable_data)
+            # Deserialize from received data
+            msactiontable = self.serializer.from_data(all_data)
+            if self.finish_callback:
+                self.finish_callback(msactiontable)
 
-            msactiontable_telegram = msactiontable_telegrams[0]
-            self.logger.debug(f"Deserialize {xpmoduletype}: {msactiontable_telegram}")
+    def failed(self, message: str) -> None:
+        self.logger.debug(f"Failed: {message}")
+        if self.error_callback:
+            self.error_callback(message)
 
-            if xpmoduletype == "xp20":
-                return Xp20MsActionTableSerializer.from_telegrams(
-                    msactiontable_telegram
-                )
-            elif xpmoduletype == "xp24":
-                return Xp24MsActionTableSerializer.from_telegrams(
-                    msactiontable_telegram
-                )
-            elif xpmoduletype == "xp33":
-                return Xp33MsActionTableSerializer.from_telegrams(
-                    msactiontable_telegram
-                )
-            else:
-                raise MsActionTableError(f"Unsupported module type: {xpmoduletype}")
-
-        except ConbusError as e:
-            raise MsActionTableError(f"Conbus communication failed: {e}") from e
-
-    def _is_eof(self, received_telegrams: list[str]) -> bool:
-
-        for response in received_telegrams:
-            with suppress(TelegramParsingError):
-                reply_telegram = self.telegram_service.parse_reply_telegram(response)
-                if reply_telegram.system_function == SystemFunction.EOF:
-                    return True
-
-        return False
-
-    def _get_msactiontable_telegram(
-        self, received_telegrams: list[str]
-    ) -> Optional[str]:
-
-        for telegram in received_telegrams:
-            with suppress(TelegramParsingError):
-                reply_telegram = self.telegram_service.parse_reply_telegram(telegram)
-                if reply_telegram.system_function == SystemFunction.MSACTIONTABLE:
-                    return reply_telegram.raw_telegram
-
-        return None
-
-    def __enter__(self) -> "MsActionTableService":
-        """Context manager entry"""
-        return self
-
-    def __exit__(
+    def start(
         self,
-        _exc_type: Optional[type],
-        _exc_val: Optional[Exception],
-        _exc_tb: Optional[Any],
+        serial_number: str,
+        xpmoduletype: str,
+        progress_callback: Callable[[str], None],
+        error_callback: Callable[[str], None],
+        finish_callback: Callable[[Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]], None],
+        timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Context manager exit"""
-        # ConbusService handles connection cleanup automatically
-        pass
+        """Run reactor in dedicated thread with its own event loop"""
+        self.logger.info("Starting msactiontable")
+        self.serial_number = serial_number
+        self.xpmoduletype = xpmoduletype
+        if xpmoduletype == "xp20":
+            self.serializer = self.xp20ms_serializer
+        elif xpmoduletype == "xp24":
+            self.serializer = self.xp24ms_serializer
+        elif xpmoduletype == "xp33":
+            self.serializer = self.xp33ms_serializer
+        else:
+            raise MsActionTableError(f"Unsupported module type: {xpmoduletype}")
+
+        if timeout_seconds:
+            self.timeout_seconds = timeout_seconds
+        self.progress_callback = progress_callback
+        self.error_callback = error_callback
+        self.finish_callback = finish_callback
+        self.start_reactor()
