@@ -19,8 +19,10 @@ from xp.services.telegram.telegram_version_service import (
 @click.argument("serial_number", type=SERIAL)
 @handle_service_errors(VersionParsingError)
 def generate_version_request(serial_number: str) -> None:
-    """
-    Generate a telegram to request version information from a device.
+    """Generate a telegram to request version information from a device.
+
+    Args:
+        serial_number: 10-digit module serial number.
 
     Examples:
 

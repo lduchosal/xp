@@ -27,7 +27,13 @@ from xp.services.conbus.conbus_lightlevel_set_service import (
 def xp_lightlevel_set(
     ctx: click.Context, serial_number: str, output_number: int, level: int
 ) -> None:
-    """Set light level for output_number on XP module serial_number
+    """Set light level for output_number on XP module serial_number.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        output_number: Output number (0-8).
+        level: Light level (0-100).
 
     Examples:
 
@@ -56,7 +62,12 @@ def xp_lightlevel_set(
 def xp_lightlevel_off(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    """Turn off light for output_number on XP module serial_number (set level to 0)
+    """Turn off light for output_number on XP module serial_number (set level to 0).
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        output_number: Output number (0-8).
 
     Examples:
 
@@ -85,7 +96,12 @@ def xp_lightlevel_off(
 def xp_lightlevel_on(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    """Turn on light for output_number on XP module serial_number (set level to 80%)
+    """Turn on light for output_number on XP module serial_number (set level to 80%).
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        output_number: Output number (0-8).
 
     Examples:
 
@@ -114,8 +130,15 @@ def xp_lightlevel_on(
 def xp_lightlevel_get(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    """Get current light level for output_number on XP module serial_number
+    """Get current light level for output_number on XP module serial_number.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        output_number: Output number (0-8).
+
     Examples:
+
     \b
         xp conbus lightlevel get 0123450001 2   # Get light level for output 2
         xp conbus lightlevel get 0011223344 0   # Get light level for output 0

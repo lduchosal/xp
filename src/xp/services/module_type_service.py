@@ -21,7 +21,7 @@ class ModuleTypeService:
     """
 
     def __init__(self) -> None:
-        """Initialize the module type service"""
+        """Initialize the module type service."""
         pass
 
     @staticmethod
@@ -193,7 +193,14 @@ class ModuleTypeService:
 
     @staticmethod
     def _format_module_summary(module_type: ModuleType) -> str:
-        """Format a single module type for display"""
+        """Format a single module type for display.
+
+        Args:
+            module_type: The module type to format.
+
+        Returns:
+            Formatted string with module information.
+        """
         summary = f"Module: {module_type.name} (Code {module_type.code})\n"
         summary += f"Description: {module_type.description}\n"
         summary += f"Category: {module_type.category}\n"
@@ -213,7 +220,11 @@ class ModuleTypeService:
 
     @staticmethod
     def _format_all_modules() -> str:
-        """Format all modules in a simple list"""
+        """Format all modules in a simple list.
+
+        Returns:
+            Formatted string with all modules.
+        """
         modules = get_all_module_types()
         lines = ["Code | Name       | Description", "-" * 60]
 
@@ -224,7 +235,11 @@ class ModuleTypeService:
 
     @staticmethod
     def _format_modules_by_category() -> str:
-        """Format modules grouped by category"""
+        """Format modules grouped by category.
+
+        Returns:
+            Formatted string with modules grouped by category.
+        """
         categories = get_module_types_by_category()
         lines = []
 

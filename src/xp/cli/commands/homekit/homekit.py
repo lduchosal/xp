@@ -10,11 +10,7 @@ from xp.cli.utils.decorators import service_command
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def homekit() -> None:
-    """
-    HomeKit management commands.
-
-    Manage the HomeKit server for XP Protocol operations.
-    """
+    """Manage the HomeKit server for XP Protocol operations."""
     pass
 
 
@@ -22,7 +18,7 @@ def homekit() -> None:
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def config() -> None:
-    """HomeKit configuration management"""
+    """Manage HomeKit configuration."""
     pass
 
 
@@ -39,7 +35,12 @@ def config() -> None:
 )
 @service_command()
 def validate(conson_config: str, homekit_config: str) -> None:
-    """Validate homekit.yml and conson.yml coherence"""
+    """Validate homekit.yml and conson.yml coherence.
+
+    Args:
+        conson_config: Path to conson.yml configuration file.
+        homekit_config: Path to homekit.yml configuration file.
+    """
     from xp.services.homekit.homekit_config_validator import ConfigValidationService
 
     try:
@@ -97,7 +98,12 @@ def validate(conson_config: str, homekit_config: str) -> None:
 )
 @service_command()
 def show_config(conson_config: str, homekit_config: str) -> None:
-    """Display parsed configuration summary"""
+    """Display parsed configuration summary.
+
+    Args:
+        conson_config: Path to conson.yml configuration file.
+        homekit_config: Path to homekit.yml configuration file.
+    """
     from xp.services.homekit.homekit_config_validator import ConfigValidationService
 
     try:

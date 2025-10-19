@@ -1,4 +1,4 @@
-"""Protocol layer services for XP"""
+"""Protocol layer services for XP."""
 
 from xp.models.protocol.conbus_protocol import (
     ConnectionMadeEvent,

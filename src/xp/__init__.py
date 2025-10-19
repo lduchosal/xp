@@ -1,6 +1,7 @@
-"""XP CLI tool for remote console bus operations"""
+"""XP CLI tool for remote console bus operations.
 
-"""conson-xp"""
+conson-xp package.
+"""
 
 __version__ = "1.1.0"
 __manufacturer__ = "salchichon"

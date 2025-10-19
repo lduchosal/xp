@@ -30,10 +30,18 @@ async def custom_function(
     function_code: str = "02",
     data: str = "00",
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
-    """
-    Initiate a Datapoint operation to find devices on the network.
+    """Execute a custom function on a device.
 
-    Sends a broadcastDatapoint telegram and collects responses from all connected devices.
+    Sends a custom telegram with specified function code and data.
+
+    Args:
+        request: FastAPI request object.
+        serial_number: Serial number of the device.
+        function_code: Function code to execute.
+        data: Data to send with the function.
+
+    Returns:
+        API response with custom function result or error.
     """
     service = request.app.state.container.get_container().resolve(ConbusCustomService)
     # SendDatapoint telegram and receive responses

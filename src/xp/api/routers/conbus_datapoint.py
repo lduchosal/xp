@@ -30,10 +30,17 @@ async def datapoint_devices(
     datapoint: DataPointType = DataPointType.SW_VERSION,
     serial_number: str = "1702033007",
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
-    """
-    Initiate a Datapoint operation to find devices on the network.
+    """Query a datapoint value from a device.
 
-    Sends a broadcastDatapoint telegram and collects responses from all connected devices.
+    Sends a datapoint query telegram and retrieves the requested datapoint value.
+
+    Args:
+        request: FastAPI request object.
+        datapoint: Type of datapoint to query (default: SW_VERSION).
+        serial_number: Serial number of the device.
+
+    Returns:
+        API response with datapoint value or error.
     """
     service = request.app.state.container.get_container().resolve(
         ConbusDatapointService

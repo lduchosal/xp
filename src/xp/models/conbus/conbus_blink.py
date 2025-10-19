@@ -1,3 +1,5 @@
+"""Conbus blink response model."""
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, Optional
@@ -10,7 +12,20 @@ from xp.models.telegram.system_telegram import SystemTelegram
 
 @dataclass
 class ConbusBlinkResponse:
-    """Represents a response from Conbus send operation"""
+    """Represents a response from Conbus send operation.
+
+    Attributes:
+        success: Whether the operation was successful.
+        serial_number: Serial number of the device.
+        operation: Operation type (get or set).
+        system_function: System function used.
+        response: Response from Conbus operation.
+        reply_telegram: Reply telegram received.
+        sent_telegram: System telegram sent.
+        received_telegrams: List of telegrams received.
+        error: Error message if operation failed.
+        timestamp: Timestamp of the response.
+    """
 
     success: bool
     serial_number: str
@@ -24,13 +39,18 @@ class ConbusBlinkResponse:
     timestamp: Optional[datetime] = None
 
     def __post_init__(self) -> None:
+        """Initialize timestamp and received_telegrams if not provided."""
         if self.timestamp is None:
             self.timestamp = datetime.now()
         if self.received_telegrams is None:
             self.received_telegrams = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the response.
+        """
         result = {
             "success": self.success,
             "serial_number": self.serial_number,

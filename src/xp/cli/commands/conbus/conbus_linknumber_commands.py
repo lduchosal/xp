@@ -22,11 +22,12 @@ from xp.services.conbus.conbus_linknumber_set_service import ConbusLinknumberSet
 def set_linknumber_command(
     ctx: click.Context, serial_number: str, link_number: int
 ) -> None:
-    """
-    Set the link number for a specific module.
+    """Set the link number for a specific module.
 
-    SERIAL_NUMBER: 10-digit module serial number
-    LINK_NUMBER: Link number to set (0-99)
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        link_number: Link number to set (0-99).
 
     Examples:
 
@@ -53,10 +54,11 @@ def set_linknumber_command(
 @click.pass_context
 @connection_command()
 def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
-    """
-    Get the current link number for a specific module.
+    """Get the current link number for a specific module.
 
-    SERIAL_NUMBER: 10-digit module serial number
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
 
     Examples:
 

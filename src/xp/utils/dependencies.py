@@ -101,7 +101,6 @@ class ServiceContainer:
 
     def _register_services(self) -> None:
         """Register all services in the container based on dependency graph."""
-
         # ConbusClientConfig
         self.container.register(
             ConbusClientConfig,

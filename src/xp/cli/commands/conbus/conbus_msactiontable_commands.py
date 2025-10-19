@@ -26,7 +26,13 @@ from xp.services.conbus.actiontable.msactiontable_service import (
 def conbus_download_msactiontable(
     ctx: Context, serial_number: str, xpmoduletype: str
 ) -> None:
-    """Download MS action table from XP24 module."""
+    """Download MS action table from XP24 module.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        xpmoduletype: XP module type.
+    """
     service = ctx.obj.get("container").get_container().resolve(MsActionTableService)
 
     def progress_callback(progress: str) -> None:

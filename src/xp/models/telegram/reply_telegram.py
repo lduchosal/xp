@@ -16,11 +16,11 @@ from xp.models.telegram.telegram_type import TelegramType
 
 @dataclass
 class ReplyTelegram(Telegram):
-    """
-    Represents a parsed reply telegram from the console bus.
+    """Represents a parsed reply telegram from the console bus.
 
     Format: <R{serial_number}F{function_code}D{data}{checksum}>
     Format: <R{serial_number}F{function_code}D{datapoint_type}{data_value}{checksum}>
+
     Examples:
         - raw_telegram: <R0020012521F02D18+26,0§CIL>
         - telegram_type : ReplyTelegram (R)
@@ -30,6 +30,13 @@ class ReplyTelegram(Telegram):
         - datapoint_type: 18
         - data_value: +26,0§C
         - checksum: IL
+
+    Attributes:
+        serial_number: Serial number of the device.
+        system_function: System function code.
+        data: Raw data payload.
+        datapoint_type: Type of datapoint.
+        data_value: Parsed data value.
     """
 
     serial_number: str = ""
@@ -39,13 +46,18 @@ class ReplyTelegram(Telegram):
     data_value: str = ""
 
     def __post_init__(self) -> None:
+        """Initialize timestamp and telegram type."""
         if self.timestamp is None:
             self.timestamp = datetime.now()
         self.telegram_type = TelegramType.REPLY
 
     @property
     def parse_datapoint_value(self) -> dict[str, Any]:
-        """Parse the data value based on data point type"""
+        """Parse the data value based on data point type.
+
+        Returns:
+            Dictionary containing parsed value and metadata.
+        """
         if self.datapoint_type == DataPointType.TEMPERATURE:
             return self._parse_temperature_value()
         elif self.datapoint_type == DataPointType.SW_TOP_VERSION:
@@ -198,7 +210,11 @@ class ReplyTelegram(Telegram):
             }
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the reply telegram.
+        """
         parsed_data = self.parse_datapoint_value
 
         return {
@@ -234,7 +250,11 @@ class ReplyTelegram(Telegram):
         }
 
     def __str__(self) -> str:
-        """Human-readable string representation"""
+        """Human-readable string representation.
+
+        Returns:
+            Formatted string representation.
+        """
         parsed = self.parse_datapoint_value
         if parsed.get("parsed", False) and "formatted" in parsed:
             value_display = parsed["formatted"]

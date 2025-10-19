@@ -7,7 +7,15 @@ from xp.models.telegram.timeparam_type import TimeParam
 
 @dataclass
 class Xp33Output:
-    """Represents an XP33 output configuration"""
+    """Represents an XP33 output configuration.
+
+    Attributes:
+        min_level: Minimum output level (0-100).
+        max_level: Maximum output level (0-100).
+        scene_outputs: Enable scene outputs.
+        start_at_full: Start at full brightness.
+        leading_edge: Use leading edge dimming.
+    """
 
     min_level: int = 0
     max_level: int = 100
@@ -18,7 +26,14 @@ class Xp33Output:
 
 @dataclass
 class Xp33Scene:
-    """Represents a scene configuration"""
+    """Represents a scene configuration.
+
+    Attributes:
+        output1_level: Output level for output 1 (0-100).
+        output2_level: Output level for output 2 (0-100).
+        output3_level: Output level for output 3 (0-100).
+        time: Time parameter for scene transition.
+    """
 
     output1_level: int = 0
     output2_level: int = 0
@@ -28,8 +43,16 @@ class Xp33Scene:
 
 @dataclass
 class Xp33MsActionTable:
-    """
-    XP33 Action Table for managing outputs and scenes
+    """XP33 Action Table for managing outputs and scenes.
+
+    Attributes:
+        output1: Configuration for output 1.
+        output2: Configuration for output 2.
+        output3: Configuration for output 3.
+        scene1: Configuration for scene 1.
+        scene2: Configuration for scene 2.
+        scene3: Configuration for scene 3.
+        scene4: Configuration for scene 4.
     """
 
     output1: Xp33Output = field(default_factory=Xp33Output)

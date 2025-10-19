@@ -26,7 +26,7 @@ from xp.services.telegram.telegram_service import TelegramService
 
 
 class MsActionTableError(Exception):
-    """Raised when XP24 action table operations fail"""
+    """Raised when XP24 action table operations fail."""
 
     pass
 
@@ -48,7 +48,16 @@ class MsActionTableService(ConbusProtocol):
         xp33ms_serializer: Xp33MsActionTableSerializer,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus client send service.
+
+        Args:
+            cli_config: Conbus client configuration.
+            reactor: Twisted reactor instance.
+            xp20ms_serializer: XP20 MS action table serializer.
+            xp24ms_serializer: XP24 MS action table serializer.
+            xp33ms_serializer: XP33 MS action table serializer.
+            telegram_service: Telegram service for parsing.
+        """
         super().__init__(cli_config, reactor)
         self.xp20ms_serializer = xp20ms_serializer
         self.xp24ms_serializer = xp24ms_serializer
@@ -73,6 +82,7 @@ class MsActionTableService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
+        """Handle connection established event."""
         self.logger.debug("Connection established, sending discover telegram")
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
@@ -82,9 +92,19 @@ class MsActionTableService(ConbusProtocol):
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         self.logger.debug(f"Telegram sent: {telegram_sent}")
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
+
+        Args:
+            telegram_received: The telegram received event.
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if (
             not telegram_received.checksum_valid
@@ -124,6 +144,11 @@ class MsActionTableService(ConbusProtocol):
                 self.finish_callback(msactiontable)
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+        Args:
+            message: Failure message.
+        """
         self.logger.debug(f"Failed: {message}")
         if self.error_callback:
             self.error_callback(message)
@@ -139,7 +164,19 @@ class MsActionTableService(ConbusProtocol):
         ],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Run reactor in dedicated thread with its own event loop"""
+        """Run reactor in dedicated thread with its own event loop.
+
+        Args:
+            serial_number: Module serial number.
+            xpmoduletype: XP module type (xp20, xp24, xp33).
+            progress_callback: Callback for progress updates.
+            error_callback: Callback for errors.
+            finish_callback: Callback when download completes.
+            timeout_seconds: Optional timeout in seconds.
+
+        Raises:
+            MsActionTableError: If unsupported module type is provided.
+        """
         self.logger.info("Starting msactiontable")
         self.serial_number = serial_number
         self.xpmoduletype = xpmoduletype

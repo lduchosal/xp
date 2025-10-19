@@ -22,8 +22,11 @@ from xp.services.telegram.telegram_checksum_service import TelegramChecksumServi
 )
 @handle_service_errors(Exception)
 def calculate_checksum(data: str, algorithm: str) -> None:
-    """
-    Calculate checksum for given data string.
+    """Calculate checksum for given data string.
+
+    Args:
+        data: Data string to calculate checksum for.
+        algorithm: Checksum algorithm to use.
 
     Examples:
 
@@ -65,8 +68,12 @@ def calculate_checksum(data: str, algorithm: str) -> None:
 )
 @handle_service_errors(Exception)
 def validate_checksum(data: str, expected_checksum: str, algorithm: str) -> None:
-    """
-    Validate data against expected checksum.
+    """Validate data against expected checksum.
+
+    Args:
+        data: Data string to validate.
+        expected_checksum: Expected checksum value.
+        algorithm: Checksum algorithm to use.
 
     Examples:
 

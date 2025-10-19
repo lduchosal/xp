@@ -22,7 +22,12 @@ from xp.services.conbus.actiontable.actiontable_service import (
 @click.pass_context
 @connection_command()
 def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
-    """Download action table from XP module."""
+    """Download action table from XP module.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+    """
     service = ctx.obj.get("container").get_container().resolve(ActionTableService)
 
     def progress_callback(progress: str) -> None:

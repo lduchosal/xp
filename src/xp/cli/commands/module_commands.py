@@ -17,9 +17,7 @@ from xp.services.module_type_service import ModuleTypeNotFoundError, ModuleTypeS
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def module() -> None:
-    """
-    Module type operations
-    """
+    """Perform module type operations."""
     pass
 
 
@@ -28,8 +26,11 @@ def module() -> None:
 @click.pass_context
 @list_command(ModuleTypeNotFoundError)
 def module_info(ctx: Context, identifier: str) -> None:
-    """
-    Get information about a module type by code or name.
+    """Get information about a module type by code or name.
+
+    Args:
+        ctx: Click context object.
+        identifier: Module code or name.
 
     Examples:
 
@@ -63,8 +64,12 @@ def module_info(ctx: Context, identifier: str) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
-    """
-    List module types, optionally filtered by category.
+    """List module types, optionally filtered by category.
+
+    Args:
+        ctx: Click context object.
+        category: Filter by category.
+        group_by_category: Group modules by category.
 
     Examples:
 
@@ -115,8 +120,12 @@ def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_search(ctx: Context, query: str, field: tuple) -> None:
-    """
-    Search for module types by name or description.
+    """Search for module types by name or description.
+
+    Args:
+        ctx: Click context object.
+        query: Search query.
+        field: Fields to search in.
 
     Examples:
 
@@ -147,8 +156,10 @@ def module_search(ctx: Context, query: str, field: tuple) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_categories(ctx: Context) -> None:
-    """
-    List all available module categories.
+    """List all available module categories.
+
+    Args:
+        ctx: Click context object.
 
     Examples:
 

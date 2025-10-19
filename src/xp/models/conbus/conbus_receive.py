@@ -1,3 +1,5 @@
+"""Conbus receive response model."""
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -5,7 +7,14 @@ from typing import Any, Dict, List, Optional
 
 @dataclass
 class ConbusReceiveResponse:
-    """Represents a response from Conbus receive operation"""
+    """Represents a response from Conbus receive operation.
+
+    Attributes:
+        success: Whether the operation was successful.
+        received_telegrams: List of telegrams received.
+        error: Error message if operation failed.
+        timestamp: Timestamp of the response.
+    """
 
     success: bool
     received_telegrams: Optional[List[str]] = None
@@ -13,13 +22,18 @@ class ConbusReceiveResponse:
     timestamp: Optional[datetime] = None
 
     def __post_init__(self) -> None:
+        """Initialize timestamp and received_telegrams if not provided."""
         if self.timestamp is None:
             self.timestamp = datetime.now()
         if self.received_telegrams is None:
             self.received_telegrams = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the response.
+        """
         return {
             "success": self.success,
             "received_telegrams": self.received_telegrams,

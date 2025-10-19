@@ -1,14 +1,32 @@
+"""Click parameter type for serial number validation."""
+
 from typing import Any, Optional
 
 import click
 
 
 class SerialNumberParamType(click.ParamType):
+    """Click parameter type for validating and formatting serial numbers.
+
+    Attributes:
+        name: The parameter type name.
+    """
+
     name = "serial_number"
 
     def convert(
         self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]
     ) -> Optional[str]:
+        """Convert and validate serial number input.
+
+        Args:
+            value: The input value to convert.
+            param: The Click parameter.
+            ctx: The Click context.
+
+        Returns:
+            10-character zero-padded serial number string, or None if input is None.
+        """
         if value is None:
             return None
 

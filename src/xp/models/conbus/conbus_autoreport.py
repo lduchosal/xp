@@ -1,3 +1,5 @@
+"""Conbus auto report response model."""
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, Optional
@@ -5,7 +7,18 @@ from typing import Any, Dict, Optional
 
 @dataclass
 class ConbusAutoreportResponse:
-    """Represents a response from Conbus auto report operations (get/set)"""
+    """Represents a response from Conbus auto report operations (get/set).
+
+    Attributes:
+        success: Whether the operation was successful.
+        serial_number: Serial number of the device.
+        auto_report_status: Current auto report status.
+        result: Result message from set operation.
+        sent_telegram: Telegram sent to device.
+        received_telegrams: List of telegrams received.
+        error: Error message if operation failed.
+        timestamp: Timestamp of the response.
+    """
 
     success: bool
     serial_number: str
@@ -17,13 +30,18 @@ class ConbusAutoreportResponse:
     timestamp: Optional[datetime] = None
 
     def __post_init__(self) -> None:
+        """Initialize timestamp and received_telegrams if not provided."""
         if self.timestamp is None:
             self.timestamp = datetime.now()
         if self.received_telegrams is None:
             self.received_telegrams = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the response.
+        """
         result_dict: Dict[str, Any] = {
             "success": self.success,
             "serial_number": self.serial_number,

@@ -22,10 +22,11 @@ from xp.services.conbus.conbus_autoreport_set_service import ConbusAutoreportSet
 @connection_command()
 @click.pass_context
 def get_autoreport_command(ctx: Context, serial_number: str) -> None:
-    """
-    Get the current auto report status for a specific module.
+    """Get the current auto report status for a specific module.
 
-    SERIAL_NUMBER: 10-digit module serial number
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
 
     Examples:
 
@@ -53,11 +54,12 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
 @connection_command()
 @click.pass_context
 def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> None:
-    """
-    Set the auto report status for a specific module.
+    """Set the auto report status for a specific module.
 
-    SERIAL_NUMBER: 10-digit module serial number
-    STATUS: Auto report status - either 'on' or 'off'
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        status: Auto report status - either 'on' or 'off'.
 
     Examples:
 

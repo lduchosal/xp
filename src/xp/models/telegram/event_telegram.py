@@ -1,3 +1,5 @@
+"""Event telegram model for console bus communication."""
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Optional
@@ -11,14 +13,20 @@ from xp.models.telegram.telegram_type import TelegramType
 
 @dataclass
 class EventTelegram(Telegram):
-    """
-    Represents a parsed event telegram from the console bus.
+    r"""Represents a parsed event telegram from the console bus.
 
     Format: <[EO]{module_type}L{link_number}I{input_number}{event_type}{checksum}>
-    Examples:
 
+    Examples:
         \b
         <E14L00I02MAK>
+
+    Attributes:
+        event_telegram_type: Event telegram type (E or O).
+        module_type: Module type code.
+        link_number: Link number.
+        input_number: Input number.
+        event_type: Type of event (press or release).
     """
 
     event_telegram_type: str = "E"  # E or O
@@ -28,18 +36,27 @@ class EventTelegram(Telegram):
     event_type: Optional[EventType] = None
 
     def __post_init__(self) -> None:
+        """Initialize timestamp and telegram type."""
         if self.timestamp is None:
             self.timestamp = datetime.now()
         self.telegram_type = TelegramType.EVENT
 
     @property
     def module_info(self) -> Optional[ModuleType]:
-        """Get module type information for this telegram"""
+        """Get module type information for this telegram.
+
+        Returns:
+            ModuleType instance if found, None otherwise.
+        """
         return ModuleType.from_code(self.module_type)
 
     @property
     def input_type(self) -> InputType:
-        """Determines the input type based on input number"""
+        """Determines the input type based on input number.
+
+        Returns:
+            InputType enum value.
+        """
         if 0 <= self.input_number <= 9:
             return InputType.PUSH_BUTTON
         elif 10 <= self.input_number <= 89:
@@ -51,16 +68,28 @@ class EventTelegram(Telegram):
 
     @property
     def is_button_press(self) -> bool:
-        """True if this is a button press event"""
+        """True if this is a button press event.
+
+        Returns:
+            True if event is a button press, False otherwise.
+        """
         return self.event_type == EventType.BUTTON_PRESS
 
     @property
     def is_button_release(self) -> bool:
-        """True if this is a button release event"""
+        """True if this is a button release event.
+
+        Returns:
+            True if event is a button release, False otherwise.
+        """
         return self.event_type == EventType.BUTTON_RELEASE
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the event telegram.
+        """
         result: dict[str, Any] = {
             "module_type": self.module_type,
             "link_number": self.link_number,
@@ -90,7 +119,11 @@ class EventTelegram(Telegram):
         return result
 
     def __str__(self) -> str:
-        """Human-readable string representation"""
+        """Human-readable string representation.
+
+        Returns:
+            Formatted string representation.
+        """
         event_desc = "pressed" if self.is_button_press else "released"
 
         # Include module name if available

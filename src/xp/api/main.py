@@ -18,7 +18,11 @@ logger = logging.getLogger(__name__)
 
 
 def load_api_config() -> dict[str, Any]:
-    """Load API configuration from api.yml or environment variables."""
+    """Load API configuration from api.yml or environment variables.
+
+    Returns:
+        Dictionary containing API configuration settings.
+    """
     config = {
         "title": "XP Protocol API",
         "description": "REST API for XP Protocol Conbus operations",
@@ -63,6 +67,9 @@ def create_app(container: ServiceContainer) -> FastAPI:
 
     Args:
         container: Optional ServiceContainer instance. If not provided, a new one will be created.
+
+    Returns:
+        Configured FastAPI application instance.
     """
     config = load_api_config()
 
@@ -92,13 +99,21 @@ def create_app(container: ServiceContainer) -> FastAPI:
     # Health check endpoint
     @fastapi.get("/health")
     async def health_check() -> dict[str, str]:
-        """Health check endpoint."""
+        """Return health status of the API.
+
+        Returns:
+            Dictionary containing status and service information.
+        """
         return {"status": "healthy", "service": "xp-api"}
 
     # Root endpoint
     @fastapi.get("/")
     async def root() -> dict[str, str]:
-        """Root endpoint with API information."""
+        """Return API information and available endpoints.
+
+        Returns:
+            Dictionary containing API metadata and endpoint links.
+        """
         return {
             "message": "XP Protocol API",
             "version": config["version"],

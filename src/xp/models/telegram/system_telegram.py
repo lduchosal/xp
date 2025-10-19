@@ -16,11 +16,16 @@ from xp.models.telegram.telegram_type import TelegramType
 
 @dataclass
 class SystemTelegram(Telegram):
-    """
-    Represents a parsed system telegram from the console bus.
+    """Represents a parsed system telegram from the console bus.
 
     Format: <S{serial_number}F{function_code}D{datapoint_type}{checksum}>
     Examples: <S0020012521F02D18FN>
+
+    Attributes:
+        serial_number: Serial number of the device.
+        system_function: System function code.
+        data: Data payload.
+        datapoint_type: Type of datapoint.
     """
 
     serial_number: str = ""
@@ -29,12 +34,17 @@ class SystemTelegram(Telegram):
     datapoint_type: Optional[DataPointType] = None
 
     def __post_init__(self) -> None:
+        """Initialize timestamp and telegram type."""
         if self.timestamp is None:
             self.timestamp = datetime.now()
         self.telegram_type = TelegramType.SYSTEM
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the system telegram.
+        """
         return {
             "serial_number": self.serial_number,
             "system_function": (
@@ -67,7 +77,11 @@ class SystemTelegram(Telegram):
         }
 
     def __str__(self) -> str:
-        """Human-readable string representation"""
+        """Human-readable string representation.
+
+        Returns:
+            Formatted string representation.
+        """
         system_func_name = (
             self.system_function.name if self.system_function else "Unknown"
         )

@@ -153,6 +153,9 @@ def de_nibble(nibble_str: str) -> int:
 
     Returns:
         Byte value (0-255)
+
+    Raises:
+        ValueError: If nibble string is not exactly 2 characters
     """
     if len(nibble_str) != 2:
         raise ValueError("Nibble string must be exactly 2 characters")
@@ -177,6 +180,9 @@ def de_nibbles(str_val: str) -> bytearray:
 
     Returns:
         List of integers representing the decoded bytes
+
+    Raises:
+        ValueError: If string length is not even for nibble conversion
     """
     if len(str_val) % 2 != 0:
         raise ValueError("String length must be even for nibble conversion")

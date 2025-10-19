@@ -23,8 +23,13 @@ from xp.services.conbus.conbus_custom_service import ConbusCustomService
 def send_custom_telegram(
     ctx: Context, serial_number: str, function_code: str, datapoint_code: str
 ) -> None:
-    """
-    Send custom telegram with specified function and data point codes.
+    """Send custom telegram with specified function and data point codes.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        function_code: Function code.
+        datapoint_code: Data point code.
 
     Examples:
 

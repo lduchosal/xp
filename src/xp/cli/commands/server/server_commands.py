@@ -20,9 +20,7 @@ _server_instance: Optional[ServerService] = None
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def server() -> None:
-    """
-    Conbus emulator server operations
-    """
+    """Perform Conbus emulator server operations."""
     pass
 
 
@@ -34,8 +32,12 @@ def server() -> None:
 @click.pass_context
 @handle_service_errors(ServerError)
 def start_server(ctx: Context, port: int, config: str) -> None:
-    """
-    Start the Conbus emulator server.
+    """Start the Conbus emulator server.
+
+    Args:
+        ctx: Click context object.
+        port: Port to listen on.
+        config: Configuration file path.
 
     Examples:
 
@@ -76,8 +78,7 @@ def start_server(ctx: Context, port: int, config: str) -> None:
 @server.command("stop")
 @handle_service_errors(ServerError)
 def stop_server() -> None:
-    """
-    Stop the running Conbus emulator server.
+    """Stop the running Conbus emulator server.
 
     Examples:
 
@@ -104,8 +105,7 @@ def stop_server() -> None:
 @server.command("status")
 @handle_service_errors(Exception)
 def server_status() -> None:
-    """
-    Get status of the Conbus emulator server.
+    """Get status of the Conbus emulator server.
 
     Examples:
 

@@ -12,18 +12,19 @@ from xp.services.homekit.homekit_service import HomeKitService
 @homekit.command("start")
 @click.pass_context
 def homekit_start(ctx: Context) -> None:
-    """
-    Start the HomeKit server.
+    """Start the HomeKit server.
 
     This command starts the XP Protocol HomeKit server using HAP-python.
     The server provides HomeKit endpoints for Conbus operations.
+
+    Args:
+        ctx: Click context object.
 
     Examples:
 
     \b
         # Start server on default host and port
         xp homekit start
-
     """
     click.echo("Starting XP Protocol HomeKit server...")
 

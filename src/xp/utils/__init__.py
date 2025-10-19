@@ -1,4 +1,4 @@
-"""Utility functions for XP CLI tool"""
+"""Utility functions for XP CLI tool."""
 
 from xp.utils.checksum import calculate_checksum
 from xp.utils.event_helper import get_first_response

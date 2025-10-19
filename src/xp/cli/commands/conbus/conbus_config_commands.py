@@ -12,8 +12,10 @@ from xp.models import ConbusClientConfig
 @click.pass_context
 @handle_service_errors(Exception)
 def show_config(ctx: Context) -> None:
-    """
-    Display current Conbus client configuration.
+    """Display current Conbus client configuration.
+
+    Args:
+        ctx: Click context object.
 
     Examples:
 

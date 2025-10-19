@@ -1,4 +1,4 @@
-"""CLI interface for XP tool"""
+"""CLI interface for XP tool."""
 
 from xp.cli.main import cli
 

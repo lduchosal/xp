@@ -30,8 +30,12 @@ from xp.services.conbus.conbus_datapoint_service import (
 @click.pass_context
 @connection_command()
 def query_datapoint(ctx: Context, serial_number: str, datapoint: DataPointType) -> None:
-    """
-    Query a specific datapoint from Conbus server.
+    """Query a specific datapoint from Conbus server.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        datapoint: Datapoint type to query.
 
     Examples:
 
@@ -65,8 +69,11 @@ conbus_datapoint.add_command(query_datapoint)
 @click.pass_context
 @connection_command()
 def query_all_datapoints(ctx: Context, serial_number: str) -> None:
-    """
-    Query all datapoints from a specific module.
+    """Query all datapoints from a specific module.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
 
     Examples:
 

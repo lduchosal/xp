@@ -1,3 +1,5 @@
+"""Conbus connection status model."""
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, Optional
@@ -5,7 +7,15 @@ from typing import Any, Dict, Optional
 
 @dataclass
 class ConbusConnectionStatus:
-    """Represents the current connection status"""
+    """Represents the current connection status.
+
+    Attributes:
+        connected: Whether currently connected.
+        ip: IP address of the connection.
+        port: Port number of the connection.
+        last_activity: Timestamp of last activity.
+        error: Error message if connection failed.
+    """
 
     connected: bool
     ip: str
@@ -14,7 +24,11 @@ class ConbusConnectionStatus:
     error: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the connection status.
+        """
         return {
             "connected": self.connected,
             "ip": self.ip,

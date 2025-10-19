@@ -18,8 +18,12 @@ from xp.services.conbus.conbus_scan_service import ConbusScanService
 @click.pass_context
 @connection_command()
 def scan_module(ctx: Context, serial_number: str, function_code: str) -> None:
-    """
-    Scan all datapoints of a function_code for a module.
+    """Scan all datapoints of a function_code for a module.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        function_code: Function code.
 
     Examples:
 

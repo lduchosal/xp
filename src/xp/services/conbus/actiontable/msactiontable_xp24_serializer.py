@@ -11,7 +11,14 @@ class Xp24MsActionTableSerializer:
 
     @staticmethod
     def to_data(action_table: Xp24MsActionTable) -> str:
-        """Serialize action table to telegram format."""
+        """Serialize action table to telegram format.
+
+        Args:
+            action_table: XP24 MS action table to serialize.
+
+        Returns:
+            Serialized action table data string.
+        """
         data_parts: list[str] = []
 
         # Encode all 4 input actions
@@ -46,8 +53,17 @@ class Xp24MsActionTableSerializer:
 
     @staticmethod
     def from_data(msactiontable_rawdata: str) -> Xp24MsActionTable:
-        """Deserialize action table from raw data parts."""
+        """Deserialize action table from raw data parts.
 
+        Args:
+            msactiontable_rawdata: Raw action table data string.
+
+        Returns:
+            Deserialized XP24 MS action table.
+
+        Raises:
+            ValueError: If data length is not 68 bytes.
+        """
         raw_length = len(msactiontable_rawdata)
         if raw_length != 68:
             raise ValueError(f"Msactiontable is not 68 bytes long ({raw_length})")
@@ -84,6 +100,15 @@ class Xp24MsActionTableSerializer:
 
     @staticmethod
     def _decode_input_action(raw_bytes: bytearray, pos: int) -> InputAction:
+        """Decode input action from raw bytes.
+
+        Args:
+            raw_bytes: Raw byte array containing action data.
+            pos: Position of the action to decode.
+
+        Returns:
+            Decoded input action.
+        """
         function_id = raw_bytes[2 * pos]
         param_id = raw_bytes[2 * pos + 1]
 
@@ -95,7 +120,14 @@ class Xp24MsActionTableSerializer:
 
     @staticmethod
     def from_telegrams(ms_telegrams: str) -> Xp24MsActionTable:
-        """Legacy method for backward compatibility. Use from_data() instead."""
+        """Legacy method for backward compatibility. Use from_data() instead.
+
+        Args:
+            ms_telegrams: Telegram data string.
+
+        Returns:
+            Deserialized XP24 MS action table.
+        """
         # For backward compatibility, assume full telegrams and extract data
         data_parts = ms_telegrams[16:84]
 

@@ -18,9 +18,7 @@ from xp.cli.utils.formatters import OutputFormatter, StatisticsFormatter
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def file() -> None:
-    """
-    File operations for console bus logs
-    """
+    """Perform file operations for console bus logs."""
     pass
 
 
@@ -38,8 +36,15 @@ def decode_log_file(
     time_range: str,
     summary: bool,
 ) -> None:
-    """
-    Decode and parse console bus log file.
+    """Decode and parse console bus log file.
+
+    Args:
+        ctx: Click context object.
+        log_file_path: Path to the log file to decode.
+        filter_type: Filter by telegram type.
+        filter_direction: Filter by telegram direction.
+        time_range: Filter by time range.
+        summary: Show summary statistics only.
 
     Examples:
 
@@ -105,8 +110,11 @@ def decode_log_file(
 @click.pass_context
 @handle_service_errors(Exception)
 def analyze_log_file(ctx: Context, log_file_path: str) -> None:
-    """
-    Analyze console bus log file for patterns and statistics.
+    """Analyze console bus log file for patterns and statistics.
+
+    Args:
+        ctx: Click context object.
+        log_file_path: Path to the log file to analyze.
 
     Examples:
 
@@ -135,8 +143,11 @@ def analyze_log_file(ctx: Context, log_file_path: str) -> None:
 @click.pass_context
 @handle_service_errors(Exception)
 def validate_log_file(ctx: Context, log_file_path: str) -> None:
-    """
-    Validate console bus log file format and telegram checksums.
+    """Validate console bus log file format and telegram checksums.
+
+    Args:
+        ctx: Click context object.
+        log_file_path: Path to the log file to validate.
 
     Examples:
 

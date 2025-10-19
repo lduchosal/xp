@@ -31,6 +31,16 @@ class Xp20MsActionTable:
     Contains configuration for 8 input channels (input1 through input8),
     each with flags for inversion, short/long press detection, group functions,
     AND functions, SA functions, and TA functions.
+
+    Attributes:
+        input1: Configuration for input channel 1.
+        input2: Configuration for input channel 2.
+        input3: Configuration for input channel 3.
+        input4: Configuration for input channel 4.
+        input5: Configuration for input channel 5.
+        input6: Configuration for input channel 6.
+        input7: Configuration for input channel 7.
+        input8: Configuration for input channel 8.
     """
 
     input1: InputChannel = field(default_factory=InputChannel)

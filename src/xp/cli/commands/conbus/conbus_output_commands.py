@@ -23,7 +23,12 @@ from xp.services.conbus.conbus_output_service import ConbusOutputService
 @click.pass_context
 @connection_command()
 def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> None:
-    """Send ON command for output_number XP module serial_number
+    """Send ON command for output_number XP module serial_number.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        output_number: Output number.
 
     Examples:
 
@@ -50,7 +55,12 @@ def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> 
 @click.pass_context
 @connection_command()
 def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) -> None:
-    """Send OFF command for output_number XP module serial_number
+    """Send OFF command for output_number XP module serial_number.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        output_number: Output number.
 
     Examples:
 
@@ -78,6 +88,10 @@ def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) ->
 def xp_output_status(ctx: click.Context, serial_number: str) -> None:
     """Query output state command to XP module serial_number.
 
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+
     Examples:
 
     \b
@@ -103,7 +117,11 @@ def xp_output_status(ctx: click.Context, serial_number: str) -> None:
 @click.pass_context
 @connection_command()
 def xp_module_state(ctx: click.Context, serial_number: str) -> None:
-    """Query module state of the XP module serial_number
+    """Query module state of the XP module serial_number.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
 
     Examples:
 

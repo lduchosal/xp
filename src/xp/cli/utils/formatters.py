@@ -8,10 +8,22 @@ class OutputFormatter:
     """Handles standardized output formatting for CLI commands."""
 
     def __init__(self, json_output: bool = False):
+        """Initialize the output formatter.
+
+        Args:
+            json_output: Whether to format output as JSON (default: False).
+        """
         self.json_output = json_output
 
     def success_response(self, data: Dict[str, Any]) -> str:
-        """Format a successful response."""
+        """Format a successful response.
+
+        Args:
+            data: Response data to format.
+
+        Returns:
+            Formatted success response as string.
+        """
         if self.json_output:
             return json.dumps(data, indent=2)
         return self._format_text_response(data)
@@ -19,7 +31,15 @@ class OutputFormatter:
     def error_response(
         self, error: str, extra_data: Optional[Dict[str, Any]] = None
     ) -> str:
-        """Format an error response."""
+        """Format an error response.
+
+        Args:
+            error: Error message.
+            extra_data: Additional error data to include.
+
+        Returns:
+            Formatted error response as string.
+        """
         error_data = {"success": False, "error": error}
         if extra_data:
             error_data.update(extra_data)
@@ -29,7 +49,15 @@ class OutputFormatter:
         return f"Error: {error}"
 
     def validation_response(self, is_valid: bool, data: Dict[str, Any]) -> str:
-        """Format a validation response."""
+        """Format a validation response.
+
+        Args:
+            is_valid: Whether validation passed.
+            data: Validation data to include.
+
+        Returns:
+            Formatted validation response as string.
+        """
         if self.json_output:
             response_data = {"valid": is_valid} | data
             return json.dumps(response_data, indent=2)
@@ -38,7 +66,14 @@ class OutputFormatter:
         return f"Status: {status}"
 
     def checksum_status(self, is_valid: bool) -> str:
-        """Format checksum validation status."""
+        """Format checksum validation status.
+
+        Args:
+            is_valid: Whether checksum is valid.
+
+        Returns:
+            Formatted checksum status as string.
+        """
         if self.json_output:
             return json.dumps({"checksum_valid": is_valid}, indent=2)
 
@@ -46,7 +81,14 @@ class OutputFormatter:
 
     @staticmethod
     def _format_text_response(data: Dict[str, Any]) -> str:
-        """Format data for human-readable text output."""
+        """Format data for human-readable text output.
+
+        Args:
+            data: Data dictionary to format.
+
+        Returns:
+            Formatted text output as string.
+        """
         lines = []
 
         # Handle common data patterns
@@ -77,7 +119,15 @@ class TelegramFormatter(OutputFormatter):
     def format_telegram_summary(
         self, telegram_data: Dict[str, Any], service_formatter_method: Any = None
     ) -> str:
-        """Format telegram summary using service method when available."""
+        """Format telegram summary using service method when available.
+
+        Args:
+            telegram_data: Telegram data to format.
+            service_formatter_method: Optional service formatter method.
+
+        Returns:
+            Formatted telegram summary as string.
+        """
         if self.json_output:
             return json.dumps(telegram_data, indent=2)
 
@@ -98,7 +148,16 @@ class TelegramFormatter(OutputFormatter):
     def format_validation_result(
         self, parsed_telegram: Any, checksum_valid: Optional[bool], service_summary: str
     ) -> str:
-        """Format telegram validation results."""
+        """Format telegram validation results.
+
+        Args:
+            parsed_telegram: Parsed telegram object.
+            checksum_valid: Whether checksum is valid.
+            service_summary: Summary from service.
+
+        Returns:
+            Formatted validation result as string.
+        """
         if self.json_output:
             output = parsed_telegram.to_dict()
             output["checksum_valid"] = checksum_valid
@@ -118,7 +177,16 @@ class ListFormatter(OutputFormatter):
     def format_list_response(
         self, items: list, title: str, item_formatter: Any = None
     ) -> str:
-        """Format a list of items with optional custom formatter."""
+        """Format a list of items with optional custom formatter.
+
+        Args:
+            items: List of items to format.
+            title: Title for the list.
+            item_formatter: Optional custom formatter function.
+
+        Returns:
+            Formatted list as string.
+        """
         if self.json_output:
             return json.dumps(
                 {
@@ -144,7 +212,15 @@ class ListFormatter(OutputFormatter):
         return "\n".join(lines)
 
     def format_search_results(self, matches: list, query: str) -> str:
-        """Format search results."""
+        """Format search results.
+
+        Args:
+            matches: List of matching items.
+            query: Search query string.
+
+        Returns:
+            Formatted search results as string.
+        """
         if self.json_output:
             return json.dumps(
                 {
@@ -181,7 +257,16 @@ class StatisticsFormatter(OutputFormatter):
     def format_file_statistics(
         self, file_path: str, stats: Dict[str, Any], entry_count: int
     ) -> str:
-        """Format file analysis statistics."""
+        """Format file analysis statistics.
+
+        Args:
+            file_path: Path to the analyzed file.
+            stats: Statistics dictionary.
+            entry_count: Total number of entries.
+
+        Returns:
+            Formatted statistics as string.
+        """
         if self.json_output:
             return json.dumps(
                 {

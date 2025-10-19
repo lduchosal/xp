@@ -1,3 +1,5 @@
+"""Conbus datapoint response model."""
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -9,7 +11,20 @@ from xp.models.telegram.system_function import SystemFunction
 
 @dataclass
 class ConbusDatapointResponse:
-    """Represents a response from Conbus send operation"""
+    """Represents a response from Conbus send operation.
+
+    Attributes:
+        success: Whether the operation was successful.
+        serial_number: Serial number of the device.
+        system_function: System function used for query.
+        datapoint_type: Type of datapoint queried.
+        sent_telegram: Telegram sent to device.
+        received_telegrams: List of telegrams received.
+        datapoint_telegram: Parsed datapoint telegram.
+        datapoints: List of datapoint values.
+        error: Error message if operation failed.
+        timestamp: Timestamp of the response.
+    """
 
     success: bool
     serial_number: Optional[str] = None
@@ -23,6 +38,7 @@ class ConbusDatapointResponse:
     timestamp: Optional[datetime] = None
 
     def __post_init__(self) -> None:
+        """Initialize timestamp, received_telegrams, and datapoints if not provided."""
         if self.timestamp is None:
             self.timestamp = datetime.now()
         if self.received_telegrams is None:
@@ -31,7 +47,11 @@ class ConbusDatapointResponse:
             self.datapoints = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the response.
+        """
         result: Dict[str, Any] = {
             "success": self.success,
             "serial_number": self.serial_number,

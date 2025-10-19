@@ -30,7 +30,14 @@ class ActionTableService(ConbusProtocol):
         actiontable_serializer: ActionTableSerializer,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus client send service.
+
+        Args:
+            cli_config: Conbus client configuration.
+            reactor: Twisted reactor instance.
+            actiontable_serializer: Action table serializer.
+            telegram_service: Telegram service for parsing.
+        """
         super().__init__(cli_config, reactor)
         self.serializer = actiontable_serializer
         self.telegram_service = telegram_service
@@ -43,6 +50,7 @@ class ActionTableService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
+        """Handle connection established event."""
         self.logger.debug("Connection established, sending discover telegram")
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
@@ -52,9 +60,19 @@ class ActionTableService(ConbusProtocol):
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         self.logger.debug(f"Telegram sent: {telegram_sent}")
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
+
+        Args:
+            telegram_received: The telegram received event.
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if (
             not telegram_received.checksum_valid
@@ -95,6 +113,11 @@ class ActionTableService(ConbusProtocol):
                 self.finish_callback(actiontable)
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+        Args:
+            message: Failure message.
+        """
         self.logger.debug(f"Failed: {message}")
         if self.error_callback:
             self.error_callback(message)
@@ -107,7 +130,15 @@ class ActionTableService(ConbusProtocol):
         finish_callback: Callable[[ActionTable], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Run reactor in dedicated thread with its own event loop"""
+        """Run reactor in dedicated thread with its own event loop.
+
+        Args:
+            serial_number: Module serial number.
+            progress_callback: Callback for progress updates.
+            error_callback: Callback for errors.
+            finish_callback: Callback when download completes.
+            timeout_seconds: Optional timeout in seconds.
+        """
         self.logger.info("Starting actiontable")
         self.serial_number = serial_number
         if timeout_seconds:

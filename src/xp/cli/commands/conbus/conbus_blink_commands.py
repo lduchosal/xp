@@ -23,8 +23,11 @@ from xp.services.telegram.telegram_blink_service import BlinkError
 @connection_command()
 @handle_service_errors(BlinkError)
 def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
-    """
-    Send blink command to start blinking module LED.
+    """Send blink command to start blinking module LED.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
 
     Examples:
 
@@ -48,8 +51,11 @@ def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
 @connection_command()
 @handle_service_errors(BlinkError)
 def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
-    """
-    Send blink command to start blinking module LED.
+    """Send blink command to stop blinking module LED.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
 
     Examples:
 
@@ -69,9 +75,7 @@ def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
 
 @conbus_blink.group("all", short_help="Control blink state for all devices")
 def conbus_blink_all() -> None:
-    """
-    Control blink state for all discovered devices.
-    """
+    """Control blink state for all discovered devices."""
     pass
 
 
@@ -80,8 +84,10 @@ def conbus_blink_all() -> None:
 @connection_command()
 @handle_service_errors(BlinkError)
 def blink_all_off(ctx: Context) -> None:
-    """
-    Turn off blinking for all discovered devices.
+    """Turn off blinking for all discovered devices.
+
+    Args:
+        ctx: Click context object.
 
     Examples:
 
@@ -108,8 +114,10 @@ def blink_all_off(ctx: Context) -> None:
 @connection_command()
 @handle_service_errors(BlinkError)
 def blink_all_on(ctx: Context) -> None:
-    """
-    Turn on blinking for all discovered devices.
+    """Turn on blinking for all discovered devices.
+
+    Args:
+        ctx: Click context object.
 
     Examples:
 

@@ -8,9 +8,5 @@ from click_help_colors import HelpColorsGroup
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def api() -> None:
-    """
-    API server management commands.
-
-    Manage the FastAPI server for XP Protocol operations.
-    """
+    """Manage the FastAPI server for XP Protocol operations."""
     pass

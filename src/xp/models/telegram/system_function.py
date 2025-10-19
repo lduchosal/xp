@@ -1,9 +1,30 @@
+"""System function enumeration for system telegrams."""
+
 from enum import Enum
 from typing import Optional
 
 
 class SystemFunction(str, Enum):
-    """System function codes for system telegrams"""
+    """System function codes for system telegrams.
+
+    Attributes:
+        NONE: Undefined function.
+        DISCOVERY: Discover function.
+        READ_DATAPOINT: Read datapoint.
+        READ_CONFIG: Read configuration.
+        WRITE_CONFIG: Write configuration.
+        BLINK: Blink LED function.
+        UNBLINK: Unblink LED function.
+        DOWNLOAD_MSACTIONTABLE: Download module specific action table.
+        DOWNLOAD_ACTIONTABLE: Download ActionTable.
+        EOF: End of msactiontable response.
+        MSACTIONTABLE: Module specific action table response.
+        ACTIONTABLE: Module specific action table response.
+        ACK: Acknowledge response.
+        NAK: Not acknowledge response.
+        UNKNOWN_26: Used after discover, unknown purpose.
+        ACTION: Action function.
+    """
 
     NONE = "00"  # Undefined
     DISCOVERY = "01"  # Discover function
@@ -25,7 +46,11 @@ class SystemFunction(str, Enum):
     ACTION = "27"  # Action function
 
     def get_description(self) -> str:
-        """Get the description of the SystemFunction"""
+        """Get the description of the SystemFunction.
+
+        Returns:
+            Human-readable description of the function.
+        """
         return (
             {
                 self.DISCOVERY: "Discover function",
@@ -47,7 +72,14 @@ class SystemFunction(str, Enum):
 
     @classmethod
     def from_code(cls, code: str) -> Optional["SystemFunction"]:
-        """Get SystemFunction from code string"""
+        """Get SystemFunction from code string.
+
+        Args:
+            code: Function code string.
+
+        Returns:
+            SystemFunction instance if found, None otherwise.
+        """
         for func in cls:
             if func.value.lower() == code.lower():
                 return func

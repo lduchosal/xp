@@ -32,10 +32,18 @@ async def input_action(
     serial: str = "1702033007",
     device_input: int = 0,
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
-    """
-    Initiate Input operation to find devices on the network.
+    """Initiate Input operation to find devices on the network.
 
-    Sends a broadcastInput telegram and collects responses from all connected devices.
+    Sends a broadcast Input telegram and collects responses from all connected devices.
+
+    Args:
+        request: FastAPI request object.
+        action: Action type to perform (default: OFF_PRESS).
+        serial: Serial number of the device.
+        device_input: Device input number.
+
+    Returns:
+        API response with operation result or error.
     """
     service = request.app.state.container.get_container().resolve(ConbusOutputService)
 
@@ -77,10 +85,16 @@ async def output_status(
     request: Request,
     serial_number: str,
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
-    """
-    Initiate Input operation to find devices on the network.
+    """Query output status from a device.
 
-    Sends a broadcastInput telegram and collects responses from all connected devices.
+    Sends a status query telegram and retrieves the output state.
+
+    Args:
+        request: FastAPI request object.
+        serial_number: Serial number of the device to query.
+
+    Returns:
+        API response with output status or error.
     """
     service = request.app.state.container.get_container().resolve(ConbusOutputService)
 
@@ -119,10 +133,16 @@ async def output_state(
     request: Request,
     serial_number: str,
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
-    """
-    Initiate Input operation to find devices on the network.
+    """Query module state from a device.
 
-    Sends a broadcastInput telegram and collects responses from all connected devices.
+    Sends a state query telegram and retrieves the module state.
+
+    Args:
+        request: FastAPI request object.
+        serial_number: Serial number of the device to query.
+
+    Returns:
+        API response with module state or error.
     """
     service = request.app.state.container.get_container().resolve(ConbusOutputService)
 

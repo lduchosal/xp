@@ -37,7 +37,14 @@ class Xp33MsActionTableSerializer:
 
     @staticmethod
     def to_data(action_table: Xp33MsActionTable) -> str:
-        """Serialize action table to telegram format."""
+        """Serialize action table to telegram format.
+
+        Args:
+            action_table: XP33 MS action table to serialize.
+
+        Returns:
+            Serialized action table data string.
+        """
         # Create 32-byte array
         raw_bytes = bytearray(32)
 
@@ -99,7 +106,17 @@ class Xp33MsActionTableSerializer:
 
     @staticmethod
     def from_data(msactiontable_rawdata: str) -> Xp33MsActionTable:
-        """Deserialize action table from raw data parts."""
+        """Deserialize action table from raw data parts.
+
+        Args:
+            msactiontable_rawdata: Raw action table data string.
+
+        Returns:
+            Deserialized XP33 MS action table.
+
+        Raises:
+            ValueError: If data length is less than 68 characters.
+        """
         raw_length = len(msactiontable_rawdata)
         if raw_length < 68:  # Minimum: 4 char prefix + 64 chars data
             raise ValueError(
@@ -138,7 +155,15 @@ class Xp33MsActionTableSerializer:
 
     @staticmethod
     def _decode_output(raw_bytes: bytearray, output_index: int) -> Xp33Output:
-        """Extract output configuration from raw bytes."""
+        """Extract output configuration from raw bytes.
+
+        Args:
+            raw_bytes: Raw byte array containing output data.
+            output_index: Index of the output to decode.
+
+        Returns:
+            Decoded XP33 output configuration.
+        """
         # Read min/max levels from appropriate offsets
         min_level = Xp33MsActionTableSerializer._byte_to_percentage(
             raw_bytes[2 * output_index]
@@ -184,7 +209,15 @@ class Xp33MsActionTableSerializer:
 
     @staticmethod
     def _decode_scene(raw_bytes: bytearray, scene_index: int) -> Xp33Scene:
-        """Extract scene configuration from raw bytes."""
+        """Extract scene configuration from raw bytes.
+
+        Args:
+            raw_bytes: Raw byte array containing scene data.
+            scene_index: Index of the scene to decode.
+
+        Returns:
+            Decoded XP33 scene configuration.
+        """
         # Calculate scene offset: 6 + (4 * scene_index)
         offset = 6 + (4 * scene_index)
 
@@ -209,7 +242,14 @@ class Xp33MsActionTableSerializer:
 
     @staticmethod
     def from_telegrams(ms_telegrams: str) -> Xp33MsActionTable:
-        """Legacy method for backward compatibility. Use from_data() instead."""
+        """Legacy method for backward compatibility. Use from_data() instead.
+
+        Args:
+            ms_telegrams: Telegram data string.
+
+        Returns:
+            Deserialized XP33 MS action table.
+        """
         # For backward compatibility, assume full telegrams and extract data
         data_parts = ms_telegrams[16:152]  # Adjusted for XP33 length
 

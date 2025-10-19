@@ -20,15 +20,15 @@ from xp.services.conbus.conbus_receive_service import (
 @connection_command()
 @click.pass_context
 def receive_telegrams(ctx: Context, timeout: float) -> None:
-    """
-    Receive waiting event telegrams from Conbus server.
+    """Receive waiting event telegrams from Conbus server.
 
     Connects to the Conbus server and receives any waiting event telegrams
     without sending any data first. Useful for collecting pending notifications
     or events from the server.
 
-    Arguments:
-        :param timeout: Timeout in seconds for receiving telegrams (default: 2.0)
+    Args:
+        ctx: Click context object.
+        timeout: Timeout in seconds for receiving telegrams (default: 2.0).
 
     Examples:
 

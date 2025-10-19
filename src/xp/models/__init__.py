@@ -1,4 +1,4 @@
-"""Data models for XP CLI tool"""
+"""Data models for XP CLI tool."""
 
 from xp.models.conbus.conbus import ConbusRequest, ConbusResponse
 from xp.models.conbus.conbus_client_config import ConbusClientConfig

@@ -18,8 +18,10 @@ from xp.services.conbus.conbus_discover_service import (
 @click.pass_context
 @connection_command()
 def send_discover_telegram(ctx: click.Context) -> None:
-    """
-    Send discover telegram to Conbus server.
+    """Send discover telegram to Conbus server.
+
+    Args:
+        ctx: Click context object.
 
     Examples:
 

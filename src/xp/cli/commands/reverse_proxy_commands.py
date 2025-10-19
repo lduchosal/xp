@@ -29,9 +29,7 @@ global_proxy_instance: Optional[ReverseProxyService] = None
     help_options_color="green",
 )
 def reverse_proxy() -> None:
-    """
-    Conbus reverse proxy operations
-    """
+    """Perform Conbus reverse proxy operations."""
     pass
 
 
@@ -43,12 +41,16 @@ def reverse_proxy() -> None:
 @handle_service_errors(ReverseProxyError)
 @click.pass_context
 def start_proxy(ctx: Context, port: int, config: str) -> None:
-    """
-    Start the Conbus reverse proxy server.
+    """Start the Conbus reverse proxy server.
 
     The proxy listens on the specified port and forwards all telegrams
     to the target server configured in cli.yml. All traffic is monitored
     and printed with timestamps.
+
+    Args:
+        ctx: Click context object.
+        port: Port to listen on.
+        config: Configuration file path.
 
     Examples:
 
@@ -104,8 +106,7 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
 @reverse_proxy.command("stop")
 @handle_service_errors(ReverseProxyError)
 def stop_proxy() -> None:
-    """
-    Stop the running Conbus reverse proxy server.
+    """Stop the running Conbus reverse proxy server.
 
     Examples:
 
@@ -135,8 +136,7 @@ def stop_proxy() -> None:
 @reverse_proxy.command("status")
 @handle_service_errors(Exception)
 def proxy_status() -> None:
-    """
-    Get status of the Conbus reverse proxy server.
+    """Get status of the Conbus reverse proxy server.
 
     Shows current running state, listen port, target server,
     and active connection details.

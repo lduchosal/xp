@@ -29,10 +29,16 @@ async def blink_on(
     request: Request,
     serial_number: str = "1702033007",
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
-    """
-    Initiate Input operation to find devices on the network.
+    """Turn on device blinking.
 
-    Sends a broadcastInput telegram and collects responses from all connected devices.
+    Sends a blink on telegram to make the device blink.
+
+    Args:
+        request: FastAPI request object.
+        serial_number: Serial number of the device.
+
+    Returns:
+        API response with blink result or error.
     """
     service = request.app.state.container.get_container().resolve(ConbusBlinkService)
 
@@ -74,10 +80,16 @@ async def blink_off(
     request: Request,
     serial_number: str = "1702033007",
 ) -> Union[ApiResponse, ApiErrorResponse, JSONResponse]:
-    """
-    Initiate Input operation to find devices on the network.
+    """Turn off device blinking.
 
-    Sends a broadcastInput telegram and collects responses from all connected devices.
+    Sends a blink off telegram to stop the device from blinking.
+
+    Args:
+        request: FastAPI request object.
+        serial_number: Serial number of the device.
+
+    Returns:
+        API response with blink result or error.
     """
     service = request.app.state.container.get_container().resolve(ConbusBlinkService)
 

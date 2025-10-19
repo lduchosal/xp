@@ -1,4 +1,4 @@
-"""Service layer for XP CLI tool"""
+"""Service layer for XP CLI tool."""
 
 from xp.services.log_file_service import LogFileParsingError, LogFileService
 from xp.services.module_type_service import ModuleTypeNotFoundError, ModuleTypeService

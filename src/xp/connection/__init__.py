@@ -1,4 +1,4 @@
-"""Connection layer for XP CLI tool"""
+"""Connection layer for XP CLI tool."""
 
 from xp.connection.exceptions import (
     ProtocolError,

@@ -8,9 +8,7 @@ from click_help_colors import HelpColorsGroup
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def conbus() -> None:
-    """
-    Conbus client operations for sending telegrams to remote servers
-    """
+    """Perform Conbus client operations for sending telegrams to remote servers."""
     pass
 
 
@@ -21,9 +19,7 @@ def conbus() -> None:
     help_options_color="green",
 )
 def conbus_blink() -> None:
-    """
-    Conbus client operations for sending blink telegrams to remote servers
-    """
+    """Perform Conbus client operations for sending blink telegrams to remote servers."""
     pass
 
 
@@ -34,9 +30,7 @@ def conbus_blink() -> None:
     help_options_color="green",
 )
 def conbus_output() -> None:
-    """
-    Conbus input operations to remote servers
-    """
+    """Perform Conbus input operations to remote servers."""
     pass
 
 
@@ -47,9 +41,7 @@ def conbus_output() -> None:
     help_options_color="green",
 )
 def conbus_datapoint() -> None:
-    """
-    Conbus datapoint operations for querying module datapoints
-    """
+    """Perform Conbus datapoint operations for querying module datapoints."""
     pass
 
 
@@ -61,11 +53,7 @@ def conbus_datapoint() -> None:
     short_help="Link number operations",
 )
 def conbus_linknumber() -> None:
-    """
-    Link number operations for modules.
-
-    Set or get the link number for specific modules.
-    """
+    """Set or get the link number for specific modules."""
     pass
 
 
@@ -77,11 +65,7 @@ def conbus_linknumber() -> None:
     short_help="Auto report status operations",
 )
 def conbus_autoreport() -> None:
-    """
-    Auto report status operations for modules.
-
-    Get or set the auto report status for specific modules.
-    """
+    """Get or set the auto report status for specific modules."""
     pass
 
 
@@ -93,11 +77,7 @@ def conbus_autoreport() -> None:
     short_help="Light level operations",
 )
 def conbus_lightlevel() -> None:
-    """
-    Light level operations for modules.
-
-    Control light level (dimming) of outputs on Conbus modules.
-    """
+    """Control light level (dimming) of outputs on Conbus modules."""
     pass
 
 
@@ -109,11 +89,7 @@ def conbus_lightlevel() -> None:
     short_help="MSActionTable operations",
 )
 def conbus_msactiontable() -> None:
-    """
-    msactiontable operations for modules.
-
-    Download msactiontable on Conbus modules.
-    """
+    """Download msactiontable on Conbus modules."""
     pass
 
 
@@ -125,11 +101,7 @@ def conbus_msactiontable() -> None:
     short_help="ActionTable operations",
 )
 def conbus_actiontable() -> None:
-    """
-    ActionTable operations for modules.
-
-    Download ActionTable from Conbus modules.
-    """
+    """Download ActionTable from Conbus modules."""
     pass
 
 

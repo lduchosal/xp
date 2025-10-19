@@ -8,7 +8,12 @@ from xp.models.telegram.timeparam_type import TimeParam
 
 @dataclass
 class InputAction:
-    """Represents an input action with type and parameter"""
+    """Represents an input action with type and parameter.
+
+    Attributes:
+        type: The input action type.
+        param: Time parameter for the action.
+    """
 
     type: InputActionType = InputActionType.TOGGLE
     param: TimeParam = TimeParam.NONE
@@ -16,11 +21,23 @@ class InputAction:
 
 @dataclass
 class Xp24MsActionTable:
-    """
-    XP24 Action Table for managing input actions and settings.
+    """XP24 Action Table for managing input actions and settings.
 
     Each input has an action type (TOGGLE, TURNON, LEVELSET, etc.)
     with an optional parameter string.
+
+    Attributes:
+        MS300: Timing constant for 300ms.
+        MS500: Timing constant for 500ms.
+        input1_action: Action configuration for input 1.
+        input2_action: Action configuration for input 2.
+        input3_action: Action configuration for input 3.
+        input4_action: Action configuration for input 4.
+        mutex12: Mutual exclusion between inputs 1-2.
+        mutex34: Mutual exclusion between inputs 3-4.
+        curtain12: Curtain setting for inputs 1-2.
+        curtain34: Curtain setting for inputs 3-4.
+        mutual_deadtime: Master timing (MS300=12 or MS500=20).
     """
 
     # MS timing constants

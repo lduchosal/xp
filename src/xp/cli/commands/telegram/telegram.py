@@ -8,9 +8,7 @@ from click_help_colors import HelpColorsGroup
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def telegram() -> None:
-    """
-    Event telegram operations
-    """
+    """Perform event telegram operations."""
     pass
 
 
@@ -18,9 +16,7 @@ def telegram() -> None:
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def linknumber() -> None:
-    """
-    Link number operations for module configuration
-    """
+    """Perform link number operations for module configuration."""
     pass
 
 
@@ -28,9 +24,7 @@ def linknumber() -> None:
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def blink() -> None:
-    """
-    Blink operations for module LED control
-    """
+    """Perform blink operations for module LED control."""
     pass
 
 
@@ -38,9 +32,7 @@ def blink() -> None:
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 def checksum() -> None:
-    """
-    Checksum calculation and validation operations
-    """
+    """Perform checksum calculation and validation operations."""
     pass
 
 

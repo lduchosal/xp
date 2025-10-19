@@ -18,11 +18,14 @@ from xp.services.conbus.conbus_raw_service import ConbusRawService
 @click.pass_context
 @connection_command()
 def send_raw_telegrams(ctx: Context, raw_telegrams: str) -> None:
-    """
-    Send raw telegram sequence to Conbus server.
+    """Send raw telegram sequence to Conbus server.
 
     Accepts a string containing one or more telegrams in format <...>.
     Multiple telegrams should be concatenated without separators.
+
+    Args:
+        ctx: Click context object.
+        raw_telegrams: Raw telegram string(s).
 
     Examples:
 

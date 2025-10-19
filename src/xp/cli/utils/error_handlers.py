@@ -19,9 +19,12 @@ class CLIErrorHandler:
         """Handle telegram parsing errors with JSON formatting.
 
         Args:
-            error: The parsing error that occurred
-            raw_input: The raw input that failed to parse
-            context: Additional context information
+            error: The parsing error that occurred.
+            raw_input: The raw input that failed to parse.
+            context: Additional context information.
+
+        Raises:
+            SystemExit: Always exits with code 1 after displaying error.
         """
         formatter = OutputFormatter(True)
         error_data = {"raw_input": raw_input}
@@ -40,8 +43,11 @@ class CLIErrorHandler:
         """Handle connection/network errors with JSON formatting.
 
         Args:
-            error: The connection error that occurred
-            config: Configuration information (IP, port, timeout)
+            error: The connection error that occurred.
+            config: Configuration information (IP, port, timeout).
+
+        Raises:
+            SystemExit: Always exits with code 1 after displaying error.
         """
         formatter = OutputFormatter(True)
 
@@ -73,9 +79,12 @@ class CLIErrorHandler:
         """Handle general service errors with JSON formatting.
 
         Args:
-            error: The service error that occurred
-            operation: Description of the operation that failed
-            context: Additional context information
+            error: The service error that occurred.
+            operation: Description of the operation that failed.
+            context: Additional context information.
+
+        Raises:
+            SystemExit: Always exits with code 1 after displaying error.
         """
         formatter = OutputFormatter(True)
         error_data = {"operation": operation}
@@ -92,8 +101,11 @@ class CLIErrorHandler:
         """Handle validation errors with JSON formatting.
 
         Args:
-            error: The validation error that occurred
-            input_data: The input that failed validation
+            error: The validation error that occurred.
+            input_data: The input that failed validation.
+
+        Raises:
+            SystemExit: Always exits with code 1 after displaying error.
         """
         formatter = OutputFormatter(True)
         error_data = {"valid_format": False, "raw_input": input_data}
@@ -111,9 +123,12 @@ class CLIErrorHandler:
         """Handle file operation errors with JSON formatting.
 
         Args:
-            error: The file error that occurred
-            file_path: Path to the file that caused the error
-            operation: Type of file operation (parsing, reading, etc.)
+            error: The file error that occurred.
+            file_path: Path to the file that caused the error.
+            operation: Type of file operation (parsing, reading, etc.).
+
+        Raises:
+            SystemExit: Always exits with code 1 after displaying error.
         """
         formatter = OutputFormatter(True)
         error_data = {"file_path": file_path, "operation": operation}
@@ -129,9 +144,12 @@ class CLIErrorHandler:
         """Handle 'not found' errors with JSON formatting.
 
         Args:
-            error: The not found error that occurred
-            item_type: Type of item that was not found
-            identifier: Identifier used to search for the item
+            error: The not found error that occurred.
+            item_type: Type of item that was not found.
+            identifier: Identifier used to search for the item.
+
+        Raises:
+            SystemExit: Always exits with code 1 after displaying error.
         """
         formatter = OutputFormatter(True)
         error_data = {"item_type": item_type, "identifier": identifier}
@@ -148,7 +166,16 @@ class ServerErrorHandler(CLIErrorHandler):
     def handle_server_startup_error(
         error: Exception, port: int, config_path: str
     ) -> None:
-        """Handle server startup errors with JSON formatting."""
+        """Handle server startup errors with JSON formatting.
+
+        Args:
+            error: The server startup error that occurred.
+            port: Port number the server attempted to use.
+            config_path: Path to the configuration file.
+
+        Raises:
+            SystemExit: Always exits with code 1 after displaying error.
+        """
         formatter = OutputFormatter(True)
         error_data = {
             "port": port,
@@ -162,7 +189,11 @@ class ServerErrorHandler(CLIErrorHandler):
 
     @staticmethod
     def handle_server_not_running_error() -> None:
-        """Handle errors when server is not running with JSON formatting."""
+        """Handle errors when server is not running with JSON formatting.
+
+        Raises:
+            SystemExit: Always exits with code 1 after displaying error.
+        """
         error_response = OutputFormatter(True).error_response(
             "No server is currently running"
         )
