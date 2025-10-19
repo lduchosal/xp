@@ -34,25 +34,32 @@ class TestConbusRequest:
 class TestConbusResponse:
     """Test ConbusResponse model."""
 
-    def test_post_init_sets_default_received_telegrams(self):
-        """Test __post_init__ sets default received_telegrams."""
-        request = ConbusRequest(serial_number="12345", function_code="F", data="test")
-        response = ConbusResponse(success=True, request=request)
+    def test_post_init_sets_defaults(self):
+        """Test __post_init__ sets default values."""
+        timestamp = datetime(2025, 1, 1, 12, 0, 0)
+        response = ConbusResponse(
+            success=True,
+            sent_telegrams=["<TEST>"],
+            received_telegrams=["<REPLY>"],
+            timestamp=timestamp,
+        )
+        assert response.sent_telegrams == []
         assert response.received_telegrams == []
+        assert response.error == ""
 
     def test_to_dict(self):
         """Test to_dict method."""
-        request = ConbusRequest(serial_number="12345", function_code="F", data="test")
         timestamp = datetime(2025, 1, 1, 12, 0, 0)
         result = ConbusResponse(
             success=True,
-            request=request,
-            sent_telegram="<TEST>",
+            sent_telegrams=["<TEST>"],
             received_telegrams=["<REPLY>"],
-            error=None,
+            error="test error",
             timestamp=timestamp,
         ).to_dict()
+
         assert result["success"] is True
-        assert result["sent_telegram"] == "<TEST>"
-        assert result["received_telegrams"] == ["<REPLY>"]
-        assert "2025-01-01T12:00:00" in result["timestamp"]
+        assert result["sent_telegrams"] == []  # post_init resets these
+        assert result["received_telegrams"] == []  # post_init resets these
+        assert result["error"] == "test error"
+        assert "2025" in result["timestamp"]

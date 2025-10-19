@@ -25,10 +25,6 @@ from xp.services.conbus.conbus_autoreport_get_service import ConbusAutoreportGet
 from xp.services.conbus.conbus_autoreport_set_service import ConbusAutoreportSetService
 from xp.services.conbus.conbus_blink_all_service import ConbusBlinkAllService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
-from xp.services.conbus.conbus_connection_pool import (
-    ConbusConnectionPool,
-    ConbusSocketConnectionManager,
-)
 from xp.services.conbus.conbus_custom_service import ConbusCustomService
 from xp.services.conbus.conbus_datapoint_queryall_service import (
     ConbusDatapointQueryAllService,
@@ -110,23 +106,6 @@ class ServiceContainer:
         self.container.register(
             ConbusClientConfig,
             factory=lambda: ConbusClientConfig.from_yaml(self._config_path),
-            scope=punq.Scope.singleton,
-        )
-
-        # Core infrastructure layer
-        self.container.register(
-            ConbusSocketConnectionManager,
-            factory=lambda: ConbusSocketConnectionManager(
-                cli_config=self.container.resolve(ConbusClientConfig)
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            ConbusConnectionPool,
-            factory=lambda: ConbusConnectionPool(
-                connection_manager=self.container.resolve(ConbusSocketConnectionManager)
-            ),
             scope=punq.Scope.singleton,
         )
 

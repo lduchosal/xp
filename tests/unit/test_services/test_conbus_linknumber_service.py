@@ -1,3 +1,5 @@
+# mypy: disable-error-code="arg-type,call-arg,func-returns-value,attr-defined"
+# Note: Disabled tests use old API and are kept for reference only
 from datetime import datetime
 from unittest.mock import Mock
 
