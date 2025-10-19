@@ -13,8 +13,6 @@ from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.conbus.actiontable.actiontable_service import ActionTableError
-
 
 class TestConbusActionTableCommands:
     """Test cases for conbus actiontable CLI commands"""
@@ -127,9 +125,6 @@ class TestConbusActionTableCommands:
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
-        mock_service.download_actiontable.side_effect = ActionTableError(
-            "Communication failed"
-        )
 
         # Setup mock container to resolve ActionTableService
         mock_container = Mock()

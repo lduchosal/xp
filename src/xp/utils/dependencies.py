@@ -9,6 +9,7 @@ from twisted.internet.posixbase import PosixReactorBase
 from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
+from xp.services.conbus.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.conbus.actiontable.actiontable_service import ActionTableService
 from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
 from xp.services.conbus.conbus_autoreport_get_service import ConbusAutoreportGetService
@@ -216,9 +217,17 @@ class ServiceContainer:
         )
 
         self.container.register(
+            ActionTableSerializer,
+            factory=lambda: ActionTableSerializer(),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
             ActionTableService,
             factory=lambda: ActionTableService(
-                conbus_service=self.container.resolve(ConbusService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
+                actiontable_serializer=self.container.resolve(ActionTableSerializer),
                 telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,

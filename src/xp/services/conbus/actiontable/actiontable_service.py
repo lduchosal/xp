@@ -1,138 +1,113 @@
 """Service for downloading ActionTable via Conbus protocol."""
 
 import logging
-from contextlib import suppress
-from typing import Any, Optional
+from typing import Any, Optional, Callable
 
+from twisted.internet.posixbase import PosixReactorBase
+
+from xp.models import ConbusClientConfig
 from xp.models.actiontable.actiontable import ActionTable
+from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.telegram_type import TelegramType
 from xp.services.conbus.actiontable.actiontable_serializer import ActionTableSerializer
-from xp.services.conbus.conbus_service import ConbusError, ConbusService
+from xp.services.protocol import ConbusProtocol
 from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
+class ActionTableService(ConbusProtocol):
+    """
+    TCP client service for sending telegrams to Conbus servers.
 
-class ActionTableError(Exception):
-    """Raised when ActionTable operations fail"""
-
-    pass
-
-
-class ActionTableService:
-    """Service for downloading ActionTable via Conbus"""
-
+    Manages TCP socket connections, handles telegram generation and transmission,
+    and processes server responses.
+    """
     def __init__(
         self,
-        conbus_service: ConbusService,
+        cli_config: ConbusClientConfig,
+        reactor: PosixReactorBase,
+        actiontable_serializer: ActionTableSerializer,
         telegram_service: TelegramService,
-    ):
-        """Initialize the ActionTable service
-
-        Args:
-            conbus_service: ConbusService for dependency injection
-            telegram_service: TelegramService for dependency injection
-        """
-        self.conbus_service = conbus_service
-        self.serializer = ActionTableSerializer()
+    ) -> None:
+        """Initialize the Conbus client send service"""
+        super().__init__(cli_config, reactor)
+        self.serializer = actiontable_serializer
         self.telegram_service = telegram_service
+        self.serial_number: str = ""
+        self.progress_callback: Optional[Callable[[str], None]] = None
+        self.error_callback: Optional[Callable[[str], None]] = None
+        self.finish_callback: Optional[Callable[[ActionTable], None]] = None
+        self.actiontable_data: list[str] = []
+        # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def download_actiontable(self, serial_number: str) -> ActionTable:
-        """Download action table from XP module"""
-        try:
-            actiontable_received = False
-            eof_received = False
-            actiontable_data: list[str] = []
+    def connection_established(self) -> None:
+        self.logger.debug("Connection established, sending discover telegram")
+        self.send_telegram(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number=self.serial_number,
+            system_function=SystemFunction.DOWNLOAD_ACTIONTABLE,
+            data_value="00",
+        )
 
-            def on_data_received(telegrams: list[str]) -> None:
-                nonlocal actiontable_received, actiontable_data, eof_received
+    def telegram_sent(self, telegram_sent: str) -> None:
+        self.logger.debug(f"Telegram sent: {telegram_sent}")
 
-                self.logger.debug(
-                    f"Data received telegrams: {telegrams}  actiontable: {actiontable_received}"
-                )
+    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        self.logger.debug(f"Telegram received: {telegram_received}")
+        if (
+            not telegram_received.checksum_valid
+            or telegram_received.telegram_type != TelegramType.REPLY.value
+            or telegram_received.serial_number != self.serial_number
+        ):
+            self.logger.debug("Not a reply response")
+            return
 
-                if self._is_eof(telegrams):
-                    self.logger.debug("Received EOF")
-                    eof_received = True
+        reply_telegram = self.telegram_service.parse_reply_telegram(telegram_received)
+        if not reply_telegram.system_function in (SystemFunction.ACTIONTABLE, SystemFunction.EOF):
+            self.logger.debug("Not a actiontable response")
+            return
 
-                table_data = self._get_actiontable_data(telegrams)
-                if table_data is not None:
-                    self.logger.debug("Received ACTIONTABLE")
-                    actiontable_received = True
-                    actiontable_data.append(table_data)
+        if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
+            self.logger.debug("Saving actiontable response")
+            actiontable_data_part = reply_telegram.data_value[2:]
+            self.actiontable_data.append(actiontable_data_part)
+            if self.progress_callback:
+                self.progress_callback(".")
 
-                    # Send continue signal to get next chunk
-                    self.conbus_service.send_telegram(
-                        serial_number,
-                        SystemFunction.ACK,  # F18
-                        "00",  # Continue signal
-                        on_data_received,
-                    )
-
-                if not eof_received:
-                    self.conbus_service.receive_responses(0.01, on_data_received)
-
-            # Send F11D query to request ActionTable
-            self.conbus_service.send_telegram(
-                serial_number,
-                SystemFunction.DOWNLOAD_ACTIONTABLE,  # F11D
-                "00",  # ActionTable query
-                on_data_received,
+            self.send_telegram(
+                telegram_type=TelegramType.SYSTEM,
+                serial_number=self.serial_number,
+                system_function=SystemFunction.ACK,
+                data_value="00",
             )
+            return
 
-            # Combine all received data chunks
-            self.logger.debug(
-                f"Received actiontable_data chunks: {len(actiontable_data)}"
-            )
-            if not actiontable_data:
-                raise ActionTableError("No actiontable data received")
-
-            all_datas = "".join(actiontable_data)
+        if reply_telegram.system_function == SystemFunction.EOF:
+            all_data = "".join(self.actiontable_data)
             # Deserialize from received data
-            return self.serializer.from_encoded_string(all_datas)
+            actiontable = self.serializer.from_encoded_string(all_data)
+            if self.finish_callback:
+                self.finish_callback(actiontable)
 
-        except ConbusError as e:
-            raise ActionTableError(f"Conbus communication failed: {e}") from e
-        except Exception as e:
-            raise ActionTableError(f"Conbus communication failed: {e}") from e
+    def failed(self, message: str) -> None:
+        self.logger.debug(f"Failed: {message}")
+        if self.error_callback:
+            self.error_callback(message)
 
-    def format_decoded_output(self, actiontable: ActionTable) -> str:
-        """Format action table as decoded output"""
-        return self.serializer.format_decoded_output(actiontable)
-
-    def format_encoded_output(self, actiontable: ActionTable) -> str:
-        """Format action table as encoded output"""
-        return self.serializer.to_encoded_string(actiontable)
-
-    def _is_eof(self, received_telegrams: list[str]) -> bool:
-        """Check if any telegram is an EOF response"""
-        for response in received_telegrams:
-            with suppress(TelegramParsingError):
-                reply_telegram = self.telegram_service.parse_reply_telegram(response)
-                if reply_telegram.system_function == SystemFunction.EOF:
-                    return True
-        return False
-
-    def _get_actiontable_data(self, received_telegrams: list[str]) -> Optional[str]:
-        """Extract actiontable data from received telegrams"""
-        for telegram in received_telegrams:
-            with suppress(TelegramParsingError):
-                reply_telegram = self.telegram_service.parse_reply_telegram(telegram)
-                # Look for F17D (TABLE) responses containing actiontable data
-                if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
-                    # Extract the data portion and decode from base64-like format
-                    return reply_telegram.data_value[2:]
-        return None
-
-    def __enter__(self) -> "ActionTableService":
-        """Context manager entry"""
-        return self
-
-    def __exit__(
+    def start(
         self,
-        _exc_type: Optional[type],
-        _exc_val: Optional[Exception],
-        _exc_tb: Optional[Any],
+        serial_number: str,
+        progress_callback: Callable[[str], None],
+        error_callback: Callable[[str], None],
+        finish_callback: Callable[[ActionTable], None],
+        timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Context manager exit"""
-        # ConbusService handles connection cleanup automatically
-        pass
+        """Run reactor in dedicated thread with its own event loop"""
+        self.logger.info("Starting actiontable")
+        self.serial_number = serial_number
+        if timeout_seconds:
+            self.timeout_seconds = timeout_seconds
+        self.progress_callback = progress_callback
+        self.error_callback = error_callback
+        self.finish_callback = finish_callback
+        self.start_reactor()

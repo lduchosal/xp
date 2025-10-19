@@ -76,7 +76,8 @@ class ConbusCustomService(ConbusProtocol):
         self.service_response.received_telegrams.append(telegram_received.frame)
 
         if (
-            telegram_received.telegram_type != TelegramType.REPLY
+            not telegram_received.checksum_valid
+            or telegram_received.telegram_type != TelegramType.REPLY
             or telegram_received.serial_number != self.serial_number
         ):
             self.logger.debug("Not a reply for our serial number")

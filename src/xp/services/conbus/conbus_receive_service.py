@@ -46,7 +46,6 @@ class ConbusReceiveService(ConbusProtocol):
         pass
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-
         self.logger.debug(f"Telegram received: {telegram_received}")
         if self.progress_callback:
             self.progress_callback(telegram_received.frame)

@@ -70,20 +70,24 @@ class ConbusAutoreportSetService(ConbusProtocol):
             self.service_response.received_telegrams = []
         self.service_response.received_telegrams.append(telegram_received.frame)
 
-        if (
-            telegram_received.telegram_type == TelegramType.REPLY
+        if not (
+            telegram_received.checksum_valid
+            and telegram_received.telegram_type == TelegramType.REPLY
             and telegram_received.serial_number == self.serial_number
             and telegram_received.system_function
             in (SystemFunction.ACK, SystemFunction.NAK)
         ):
-            self.service_response.success = True
-            self.service_response.timestamp = datetime.now()
-            self.service_response.result = telegram_received.system_function.name
-            self.service_response.auto_report_status = "on" if self.status else "off"
+            self.logger.debug(f"Not a reply telegram received: {telegram_received}")
+            return
 
-            self.logger.debug("Received autoreport reply telegram")
-            if self.finish_callback:
-                self.finish_callback(self.service_response)
+        self.service_response.success = True
+        self.service_response.timestamp = datetime.now()
+        self.service_response.result = telegram_received.system_function.name
+        self.service_response.auto_report_status = "on" if self.status else "off"
+
+        self.logger.debug("Received autoreport reply telegram")
+        if self.finish_callback:
+            self.finish_callback(self.service_response)
 
     def failed(self, message: str) -> None:
         self.logger.debug(f"Failed with message: {message}")
