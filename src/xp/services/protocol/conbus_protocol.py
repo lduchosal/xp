@@ -144,9 +144,10 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self._cancel_timeout()
         self._stop_reactor()
 
-    def timeout(self) -> None:
+    def timeout(self) -> bool:
         self.logger.info("Timeout after: %ss", self.timeout_seconds)
         self.failed(f"Timeout after: {self.timeout_seconds}s")
+        return False
 
     def connection_failed(self, reason: Failure) -> None:
         self.logger.debug(f"Client connection failed: {reason}")
@@ -169,8 +170,9 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
     def _on_timeout(self) -> None:
         """Called when inactivity timeout expires"""
         self.logger.debug(f"Conbus timeout after {self.timeout_seconds} seconds")
-        self.timeout()
-        self._stop_reactor()
+        continue_work = self.timeout()
+        if not continue_work:
+            self._stop_reactor()
 
     def _stop_reactor(self) -> None:
         """Stop the reactor if it's running"""

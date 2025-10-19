@@ -51,18 +51,46 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
+        self.logger.debug(
+            f"Connection established, querying datapoints..."
+        )
+        self.next_datapoint()
+
+    def next_datapoint(self) -> bool:
+
+        self.logger.debug("Querying next datapoint")
+
+        if self.current_index >= len(self.datapoint_types):
+            return False
+
         datapoint_type_code = self.datapoint_types[self.current_index]
         datapoint_type = DataPointType(datapoint_type_code)
-        self.logger.debug(
-            f"Connection established, querying datapoint {datapoint_type}..."
-        )
 
+        self.logger.debug(f"Datapoint: {datapoint_type}")
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
             system_function=SystemFunction.READ_DATAPOINT,
             data_value=str(datapoint_type.value),
         )
+        self.current_index += 1
+        return True
+
+
+    def timeout(self) -> bool:
+        self.logger.debug(f"Timeout, querying next datapoint")
+        query_next_datapoint = self.next_datapoint()
+        if not query_next_datapoint:
+            if self.finish_callback:
+                self.logger.debug("Received all datapoints telegram")
+                self.service_response.success = True
+                self.service_response.timestamp = datetime.now()
+                self.service_response.serial_number = self.serial_number
+                self.service_response.system_function = SystemFunction.READ_DATAPOINT
+                self.finish_callback(self.service_response)
+                return False
+        return True
+
 
     def telegram_sent(self, telegram_sent: str) -> None:
         self.service_response.sent_telegram = telegram_sent
@@ -86,29 +114,13 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         datapoint_telegram = self.telegram_service.parse_reply_telegram(
             telegram_received.frame
         )
-        datapoint_type_code = self.datapoint_types[self.current_index]
-        datapoint_type = DataPointType(datapoint_type_code)
         if (
             not datapoint_telegram
             or datapoint_telegram.system_function != SystemFunction.READ_DATAPOINT
-            or datapoint_telegram.datapoint_type != datapoint_type
         ):
             self.logger.debug("Not a reply for our datapoint type")
             return
 
-        self.current_index += 1
-        if self.current_index >= len(self.datapoint_types):
-            if self.finish_callback:
-                self.logger.debug("Received all datapoints telegram")
-                self.service_response.success = True
-                self.service_response.timestamp = datetime.now()
-                self.service_response.serial_number = self.serial_number
-                self.service_response.system_function = SystemFunction.READ_DATAPOINT
-                self.service_response.datapoint_type = datapoint_telegram.datapoint_type
-                self.service_response.datapoint_telegram = datapoint_telegram
-
-                self.finish_callback(self.service_response)
-                return
 
         self.logger.debug("Received a datapoint telegram")
         if self.progress_callback:

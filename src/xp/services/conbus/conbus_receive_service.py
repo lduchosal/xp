@@ -54,11 +54,12 @@ class ConbusReceiveService(ConbusProtocol):
             self.receive_response.received_telegrams = []
         self.receive_response.received_telegrams.append(telegram_received.frame)
 
-    def timeout(self) -> None:
+    def timeout(self) -> bool:
         self.logger.info("Receive stopped after: %ss", self.timeout_seconds)
         self.receive_response.success = True
         if self.finish_callback:
             self.finish_callback(self.receive_response)
+        return False
 
     def failed(self, message: str) -> None:
         self.logger.debug("Failed %s:", message)

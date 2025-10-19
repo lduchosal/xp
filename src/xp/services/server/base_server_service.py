@@ -45,12 +45,18 @@ class BaseServerService(ABC):
             DataPointType.TEMPERATURE: self.temperature,
             DataPointType.MODULE_TYPE_CODE: f"{self.module_type_code:02X}",
             DataPointType.SW_VERSION: self.software_version,
-            DataPointType.MODULE_TYPE: self.device_status,
+            DataPointType.MODULE_STATE: self.device_status,
+            DataPointType.MODULE_TYPE: self.device_type,
             DataPointType.LINK_NUMBER: f"{self.link_number:02X}",
             DataPointType.VOLTAGE: self.voltage,
             DataPointType.HW_VERSION: self.hardware_version,
+            DataPointType.MODULE_ERROR_CODE: "00",
         }
-        data_part = f"R{self.serial_number}F02{datapoint_type.value}{self.module_type_code}{datapoint_values.get(datapoint_type)}"
+        data_value = datapoint_values.get(datapoint_type)
+        if not data_value:
+            data_value = "00"
+
+        data_part = f"R{self.serial_number}F02D{datapoint_type.value}{data_value}"
         telegram = self._build_response_telegram(data_part)
 
         self.logger.debug(
@@ -125,7 +131,7 @@ class BaseServerService(ABC):
 
     def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
         """Handle RETURN_DATA requests - can be overridden by subclasses"""
-        self.logger.warning(
+        self.logger.debug(
             f"_handle_return_data_request {self.device_type} request: {request}"
         )
         if request.datapoint_type:
