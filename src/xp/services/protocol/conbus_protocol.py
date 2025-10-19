@@ -112,6 +112,7 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.logger.debug(f"Sending frame: {frame.decode()}")
         self.transport.write(frame)  # type: ignore
         self.telegram_sent(frame.decode())
+        self._reset_timeout()
 
     def send_telegram(
         self,

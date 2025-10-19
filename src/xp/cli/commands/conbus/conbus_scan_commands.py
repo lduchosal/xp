@@ -12,7 +12,6 @@ from xp.cli.utils.serial_number_type import SERIAL
 from xp.models import ConbusResponse
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 
-
 @conbus.command("scan")
 @click.argument("serial_number", type=SERIAL)
 @click.argument("function_code", type=str)
@@ -35,7 +34,7 @@ def scan_module(
         click.echo(progress)
 
     def on_finish(service_response: ConbusResponse) -> None:
-        click.echo(json.dumps(service_response, indent=2))
+        click.echo(json.dumps(service_response.to_dict(), indent=2))
 
     with service:
         service.scan_module(
