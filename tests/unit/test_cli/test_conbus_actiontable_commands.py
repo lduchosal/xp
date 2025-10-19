@@ -15,16 +15,16 @@ from xp.models.telegram.timeparam_type import TimeParam
 
 
 class TestConbusActionTableCommands:
-    """Test cases for conbus actiontable CLI commands"""
+    """Test cases for conbus actiontable CLI commands."""
 
     @pytest.fixture
     def runner(self):
-        """Create CLI test runner"""
+        """Create CLI test runner."""
         return CliRunner()
 
     @pytest.fixture
     def sample_actiontable(self):
-        """Create sample ActionTable for testing"""
+        """Create sample ActionTable for testing."""
         entries = [
             ActionTableEntry(
                 module_type=ModuleTypeCode.CP20,
@@ -39,7 +39,7 @@ class TestConbusActionTableCommands:
         return ActionTable(entries=entries)
 
     def _create_mock_service(self, actiontable=None, error=None):
-        """Helper to create mock service with callback pattern"""
+        """Helper to create mock service with callback pattern."""
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
@@ -57,7 +57,7 @@ class TestConbusActionTableCommands:
         return mock_service
 
     def test_conbus_download_actiontable_success(self, runner, sample_actiontable):
-        """Test successful actiontable download command"""
+        """Test successful actiontable download command."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
 
@@ -85,7 +85,7 @@ class TestConbusActionTableCommands:
     def test_conbus_download_actiontable_output_format(
         self, runner, sample_actiontable
     ):
-        """Test actiontable download command output format"""
+        """Test actiontable download command output format."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
 
@@ -112,7 +112,7 @@ class TestConbusActionTableCommands:
         assert "entries" in result.output
 
     def test_conbus_download_actiontable_error_handling(self, runner):
-        """Test actiontable download command error handling"""
+        """Test actiontable download command error handling."""
         # Setup mock service to call error_callback
         mock_service = self._create_mock_service(error="Communication failed")
 
@@ -133,7 +133,7 @@ class TestConbusActionTableCommands:
         assert "Communication failed" in result.output
 
     def test_conbus_download_actiontable_invalid_serial(self, runner):
-        """Test actiontable download command with invalid serial number"""
+        """Test actiontable download command with invalid serial number."""
         # Execute command with invalid serial
         result = runner.invoke(conbus_download_actiontable, ["invalid"])
 
@@ -143,7 +143,7 @@ class TestConbusActionTableCommands:
     def test_conbus_download_actiontable_context_manager(
         self, runner, sample_actiontable
     ):
-        """Test that service is properly used as context manager"""
+        """Test that service is properly used as context manager."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
 
@@ -166,7 +166,7 @@ class TestConbusActionTableCommands:
         mock_service.__exit__.assert_called_once()
 
     def test_conbus_download_actiontable_help(self, runner):
-        """Test actiontable download command help"""
+        """Test actiontable download command help."""
         result = runner.invoke(conbus_download_actiontable, ["--help"])
 
         assert result.exit_code == 0
@@ -174,7 +174,7 @@ class TestConbusActionTableCommands:
         assert "SERIAL_NUMBER" in result.output
 
     def test_conbus_download_actiontable_json_serialization(self, runner):
-        """Test that complex objects are properly serialized to JSON"""
+        """Test that complex objects are properly serialized to JSON."""
         # Create actiontable with enum values
         entry = ActionTableEntry(
             module_type=ModuleTypeCode.CP20,

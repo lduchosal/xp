@@ -27,7 +27,7 @@ from xp.utils.dependencies import ServiceContainer
 @click.version_option()
 @click.pass_context
 def cli(ctx: click.Context) -> None:
-    """XP CLI tool for remote console bus operations"""
+    """XP CLI tool for remote console bus operations."""
     # Configure logging with thread information
     log_format = "%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s"
     date_format = "%H:%M:%S"

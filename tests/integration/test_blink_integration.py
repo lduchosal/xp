@@ -1,4 +1,4 @@
-"""Integration tests for blink functionality"""
+"""Integration tests for blink functionality."""
 
 import pytest
 
@@ -10,10 +10,10 @@ from xp.services.telegram.telegram_service import TelegramParsingError, Telegram
 
 
 class TestBlinkIntegration:
-    """Integration test cases for blink operations"""
+    """Integration test cases for blink operations."""
 
     def test_complete_blink_workflow(self):
-        """Test complete workflow: generate blink -> parse -> validate"""
+        """Test complete workflow: generate blink -> parse -> validate."""
         blink_service = TelegramBlinkService()
         telegram_service = TelegramService()
 
@@ -34,7 +34,7 @@ class TestBlinkIntegration:
         assert parsed_telegram.checksum_validated is True  # Should auto-validate
 
     def test_complete_unblink_workflow(self):
-        """Test complete workflow: generate unblink -> parse -> validate"""
+        """Test complete workflow: generate unblink -> parse -> validate."""
         blink_service = TelegramBlinkService()
         telegram_service = TelegramService()
 
@@ -55,7 +55,7 @@ class TestBlinkIntegration:
         assert parsed_telegram.checksum_validated is True
 
     def test_parse_specification_examples(self):
-        """Test parsing the examples from the specification"""
+        """Test parsing the examples from the specification."""
         telegram_service = TelegramService()
         blink_service = TelegramBlinkService()
 
@@ -94,7 +94,7 @@ class TestBlinkIntegration:
                     assert blink_service.is_nak_response(parsed) is False
 
     def test_telegram_object_creation_and_parsing_consistency(self):
-        """Test that created telegram objects match parsed ones"""
+        """Test that created telegram objects match parsed ones."""
         blink_service = TelegramBlinkService()
         telegram_service = TelegramService()
 
@@ -143,7 +143,7 @@ class TestBlinkIntegration:
         )
 
     def test_checksum_validation_integration(self):
-        """Test that checksum validation works for generated telegrams"""
+        """Test that checksum validation works for generated telegrams."""
         blink_service = TelegramBlinkService()
         telegram_service = TelegramService()
 
@@ -184,7 +184,7 @@ class TestBlinkIntegration:
             ), f"Manual unblink checksum validation failed for serial {serial}"
 
     def test_error_handling_integration(self):
-        """Test error handling across services"""
+        """Test error handling across services."""
         blink_service = TelegramBlinkService()
         telegram_service = TelegramService()
 
@@ -211,7 +211,7 @@ class TestBlinkIntegration:
         assert parsed_unblink is not None
 
     def test_end_to_end_workflow_with_replies(self):
-        """Test complete end-to-end workflow including reply handling"""
+        """Test complete end-to-end workflow including reply handling."""
         blink_service = TelegramBlinkService()
         telegram_service = TelegramService()
 
@@ -244,7 +244,7 @@ class TestBlinkIntegration:
         assert unblink_ack_reply.checksum_validated is True
 
     def test_boundary_values_integration(self):
-        """Test boundary values across the entire system"""
+        """Test boundary values across the entire system."""
         blink_service = TelegramBlinkService()
         telegram_service = TelegramService()
 
@@ -286,7 +286,7 @@ class TestBlinkIntegration:
             assert f"S{serial}F06D00" in unblink_telegram_str
 
     def test_blink_unblink_command_distinction(self):
-        """Test that blink and unblink commands are correctly distinguished"""
+        """Test that blink and unblink commands are correctly distinguished."""
         blink_service = TelegramBlinkService()
         telegram_service = TelegramService()
 

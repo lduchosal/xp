@@ -15,16 +15,16 @@ ConbusLinknumberService = ConbusLinknumberSetService
 
 
 class TestConbusLinknumberSetService:
-    """Test cases for ConbusLinknumberSetService"""
+    """Test cases for ConbusLinknumberSetService."""
 
     @pytest.fixture
     def mock_telegram_service(self):
-        """Create mock TelegramService"""
+        """Create mock TelegramService."""
         return Mock()
 
     @pytest.fixture
     def mock_cli_config(self):
-        """Create mock ConbusClientConfig"""
+        """Create mock ConbusClientConfig."""
         mock_config = Mock()
         mock_config.conbus = Mock()
         mock_config.conbus.ip = "127.0.0.1"
@@ -34,12 +34,12 @@ class TestConbusLinknumberSetService:
 
     @pytest.fixture
     def mock_reactor(self):
-        """Create mock reactor"""
+        """Create mock reactor."""
         return Mock()
 
     @pytest.fixture
     def service(self, mock_telegram_service, mock_cli_config, mock_reactor):
-        """Create service instance with mocked dependencies"""
+        """Create service instance with mocked dependencies."""
         return ConbusLinknumberSetService(
             telegram_service=mock_telegram_service,
             cli_config=mock_cli_config,
@@ -49,7 +49,7 @@ class TestConbusLinknumberSetService:
     def test_service_initialization(
         self, mock_telegram_service, mock_cli_config, mock_reactor
     ):
-        """Test service initialization"""
+        """Test service initialization."""
         service = ConbusLinknumberSetService(
             telegram_service=mock_telegram_service,
             cli_config=mock_cli_config,
@@ -66,7 +66,7 @@ class TestConbusLinknumberSetService:
     # Integration tests should be used instead for testing the full async flow.
 
     def xtest_set_linknumber_success_ack(self):
-        """Test successful link number setting with ACK response"""
+        """Test successful link number setting with ACK response."""
         # Setup mocks
         mock_conbus_service = Mock()
         mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_service)
@@ -114,7 +114,7 @@ class TestConbusLinknumberSetService:
         assert result.error is None
 
     def xtest_set_linknumber_success_nak(self):
-        """Test link number setting with NAK response"""
+        """Test link number setting with NAK response."""
         # Setup mocks
         mock_conbus_service = Mock()
         mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_service)
@@ -159,7 +159,7 @@ class TestConbusLinknumberSetService:
         assert result.serial_number == "0123450001"
 
     def xtest_set_linknumber_connection_failure(self):
-        """Test link number setting with connection failure"""
+        """Test link number setting with connection failure."""
         # Setup mocks
         mock_conbus_service = Mock()
         mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_service)
@@ -198,7 +198,7 @@ class TestConbusLinknumberSetService:
         assert result.error == "Connection timeout"
 
     def xtest_set_linknumber_invalid_parameters(self):
-        """Test link number setting with invalid parameters"""
+        """Test link number setting with invalid parameters."""
         # Setup mocks
         mock_conbus_service = Mock()
 
@@ -227,12 +227,12 @@ class TestConbusLinknumberSetService:
         assert result.error == "Invalid link number"
 
     def xtest_context_manager(self, service):
-        """Test service can be used as context manager"""
+        """Test service can be used as context manager."""
         with service as s:
             assert s is service
 
     def xtest_set_linknumber_no_received_telegrams(self):
-        """Test link number setting with no received telegrams"""
+        """Test link number setting with no received telegrams."""
         # Setup mocks
         mock_conbus_service = Mock()
         mock_conbus_service.__enter__ = Mock(return_value=mock_conbus_service)
@@ -270,7 +270,7 @@ class TestConbusLinknumberSetService:
         assert result.result == "NAK"
 
     def xtest_get_linknumber_success(self):
-        """Test successful link number retrieval"""
+        """Test successful link number retrieval."""
         # Setup mocks
         mock_conbus_service = Mock()
 
@@ -316,7 +316,7 @@ class TestConbusLinknumberSetService:
         )
 
     def xtest_get_linknumber_query_failed(self):
-        """Test link number retrieval when datapoint query fails"""
+        """Test link number retrieval when datapoint query fails."""
         # Setup mocks
         mock_conbus_service = Mock()
 
@@ -354,7 +354,7 @@ class TestConbusLinknumberSetService:
         assert result.error == "Connection timeout"
 
     def xtest_get_linknumber_parse_error(self):
-        """Test link number retrieval when parsing fails"""
+        """Test link number retrieval when parsing fails."""
         # Setup mocks
         mock_conbus_service = Mock()
 
@@ -394,7 +394,7 @@ class TestConbusLinknumberSetService:
         )
 
     def xtest_get_linknumber_exception(self):
-        """Test link number retrieval when exception occurs"""
+        """Test link number retrieval when exception occurs."""
         # Setup mocks
         mock_conbus_service = Mock()
 

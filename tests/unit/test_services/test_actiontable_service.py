@@ -12,33 +12,33 @@ from xp.services.conbus.actiontable.actiontable_service import ActionTableServic
 
 
 class TestActionTableService:
-    """Test cases for ActionTableService"""
+    """Test cases for ActionTableService."""
 
     @pytest.fixture
     def mock_cli_config(self):
-        """Create mock CLI config"""
+        """Create mock CLI config."""
         return Mock()
 
     @pytest.fixture
     def mock_reactor(self):
-        """Create mock reactor"""
+        """Create mock reactor."""
         return Mock()
 
     @pytest.fixture
     def mock_serializer(self):
-        """Create mock ActionTableSerializer"""
+        """Create mock ActionTableSerializer."""
         return Mock()
 
     @pytest.fixture
     def mock_telegram_service(self):
-        """Create mock TelegramService"""
+        """Create mock TelegramService."""
         return Mock()
 
     @pytest.fixture
     def service(
         self, mock_cli_config, mock_reactor, mock_serializer, mock_telegram_service
     ):
-        """Create service instance for testing"""
+        """Create service instance for testing."""
         return ActionTableService(
             cli_config=mock_cli_config,
             reactor=mock_reactor,
@@ -48,7 +48,7 @@ class TestActionTableService:
 
     @pytest.fixture
     def sample_actiontable(self):
-        """Create sample ActionTable for testing"""
+        """Create sample ActionTable for testing."""
         entries = [
             ActionTableEntry(
                 module_type=ModuleTypeCode.CP20,
@@ -74,7 +74,7 @@ class TestActionTableService:
     def test_service_initialization(
         self, mock_cli_config, mock_reactor, mock_serializer, mock_telegram_service
     ):
-        """Test service can be initialized with required dependencies"""
+        """Test service can be initialized with required dependencies."""
         service = ActionTableService(
             cli_config=mock_cli_config,
             reactor=mock_reactor,
@@ -91,7 +91,7 @@ class TestActionTableService:
         assert service.actiontable_data == []
 
     def test_connection_established(self, service):
-        """Test connection_established sends DOWNLOAD_ACTIONTABLE telegram"""
+        """Test connection_established sends DOWNLOAD_ACTIONTABLE telegram."""
         service.serial_number = "0123450001"
 
         with patch.object(service, "send_telegram") as mock_send:
@@ -108,7 +108,7 @@ class TestActionTableService:
             )
 
     def test_telegram_received_actiontable_data(self, service, sample_actiontable):
-        """Test receiving ACTIONTABLE telegram appends data and sends ACK"""
+        """Test receiving ACTIONTABLE telegram appends data and sends ACK."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -153,7 +153,7 @@ class TestActionTableService:
             )
 
     def test_telegram_received_eof(self, service, sample_actiontable):
-        """Test receiving EOF telegram deserializes and calls finish_callback"""
+        """Test receiving EOF telegram deserializes and calls finish_callback."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -195,7 +195,7 @@ class TestActionTableService:
         mock_finish.assert_called_once_with(sample_actiontable)
 
     def test_telegram_received_invalid_checksum(self, service):
-        """Test telegram with invalid checksum is ignored"""
+        """Test telegram with invalid checksum is ignored."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.telegram_type import TelegramType
 
@@ -220,7 +220,7 @@ class TestActionTableService:
             mock_send.assert_not_called()
 
     def test_telegram_received_wrong_serial(self, service):
-        """Test telegram for different serial number is ignored"""
+        """Test telegram for different serial number is ignored."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.telegram_type import TelegramType
 
@@ -245,7 +245,7 @@ class TestActionTableService:
             mock_send.assert_not_called()
 
     def test_failed_callback(self, service):
-        """Test failed method calls error_callback"""
+        """Test failed method calls error_callback."""
         mock_error = Mock()
         service.error_callback = mock_error
 
@@ -254,7 +254,7 @@ class TestActionTableService:
         mock_error.assert_called_once_with("Connection timeout")
 
     def test_start_method(self, service):
-        """Test start method sets up callbacks and starts reactor"""
+        """Test start method sets up callbacks and starts reactor."""
         mock_progress = Mock()
         mock_error = Mock()
         mock_finish = Mock()
@@ -276,6 +276,6 @@ class TestActionTableService:
             mock_start_reactor.assert_called_once()
 
     def test_context_manager(self, service):
-        """Test service works as context manager"""
+        """Test service works as context manager."""
         with service as ctx_service:
             assert ctx_service is service

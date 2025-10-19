@@ -17,11 +17,11 @@ from xp.utils.serialization import de_nibbles
 
 
 class TestXp33MsActionTableSerializer:
-    """Test cases for Xp33MsActionTableSerializer"""
+    """Test cases for Xp33MsActionTableSerializer."""
 
     @pytest.fixture
     def sample_action_table(self):
-        """Create sample action table for testing"""
+        """Create sample action table for testing."""
         return Xp33MsActionTable(
             output1=Xp33Output(
                 min_level=10,
@@ -72,11 +72,11 @@ class TestXp33MsActionTableSerializer:
 
     @pytest.fixture
     def sample_telegram_data(self):
-        """Sample telegram data for testing - based on specification example"""
+        """Sample telegram data for testing - based on specification example."""
         return "AAAABOGEBOGEBOGEAABECIDMAADMFACIAABEBEBEAAGEGEGEAHAAAAAAAAAAAAAAAAAA"
 
     def test_serialization_round_trip(self, sample_action_table):
-        """Test that serialization and deserialization produce the same data"""
+        """Test that serialization and deserialization produce the same data."""
         # Serialize to telegram format
         serialized = Xp33MsActionTableSerializer.to_data(sample_action_table)
 
@@ -187,7 +187,7 @@ class TestXp33MsActionTableSerializer:
         assert deserialized.scene4.time == sample_action_table.scene4.time
 
     def test_from_data_basic(self, sample_telegram_data):
-        """Test basic telegram parsing"""
+        """Test basic telegram parsing."""
         action_table = Xp33MsActionTableSerializer.from_data(sample_telegram_data)
 
         # Verify it's a valid Xp33MsActionTable
@@ -205,7 +205,7 @@ class TestXp33MsActionTableSerializer:
         assert action_table.scene4 is not None
 
     def test_from_data_invalid_length(self):
-        """Test that invalid telegram length raises ValueError"""
+        """Test that invalid telegram length raises ValueError."""
         # Too short
         with pytest.raises(ValueError, match="is too short"):
             Xp33MsActionTableSerializer.from_data("AAAA")
@@ -214,7 +214,7 @@ class TestXp33MsActionTableSerializer:
             Xp33MsActionTableSerializer.from_data("AAA")  # Even shorter
 
     def test_boundary_values(self):
-        """Test boundary value handling"""
+        """Test boundary value handling."""
         # Create action table with boundary values
         action_table = Xp33MsActionTable(
             output1=Xp33Output(min_level=0, max_level=100),
@@ -259,7 +259,7 @@ class TestXp33MsActionTableSerializer:
         assert deserialized.scene2.output2_level == 0
 
     def test_bit_flags_handling(self):
-        """Test proper handling of bit flags for outputs"""
+        """Test proper handling of bit flags for outputs."""
         # Test all combinations of flags
         action_table = Xp33MsActionTable(
             output1=Xp33Output(
@@ -291,7 +291,7 @@ class TestXp33MsActionTableSerializer:
         assert deserialized.output3.leading_edge
 
     def test_time_param_handling(self):
-        """Test TimeParam enum handling"""
+        """Test TimeParam enum handling."""
         action_table = Xp33MsActionTable(
             scene1=Xp33Scene(time=TimeParam.NONE),
             scene2=Xp33Scene(time=TimeParam.T5SEC),
@@ -310,7 +310,7 @@ class TestXp33MsActionTableSerializer:
         assert deserialized.scene4.time == TimeParam.T120MIN
 
     def test_percentage_conversions(self):
-        """Test percentage conversion utility methods"""
+        """Test percentage conversion utility methods."""
         # Test percentage to byte
         assert Xp33MsActionTableSerializer._percentage_to_byte(0) == 0
         assert Xp33MsActionTableSerializer._percentage_to_byte(50) == 50
@@ -329,7 +329,7 @@ class TestXp33MsActionTableSerializer:
         )  # Clamped to 100
 
     def test_time_param_conversions(self):
-        """Test TimeParam conversion utility methods"""
+        """Test TimeParam conversion utility methods."""
         # Test time param to byte
         assert Xp33MsActionTableSerializer._time_param_to_byte(TimeParam.NONE) == 0
         assert Xp33MsActionTableSerializer._time_param_to_byte(TimeParam.T5SEC) == 4
@@ -344,7 +344,7 @@ class TestXp33MsActionTableSerializer:
         )  # Invalid value defaults to NONE
 
     def test_byte_to_bits_conversion(self):
-        """Test byte to bits conversion"""
+        """Test byte to bits conversion."""
         from xp.utils.serialization import byte_to_bits
 
         # Test various byte values
@@ -358,7 +358,7 @@ class TestXp33MsActionTableSerializer:
         assert byte_to_bits(5) == expected
 
     def test_bits_to_byte_conversion(self):
-        """Test bits to byte conversion"""
+        """Test bits to byte conversion."""
         from xp.utils.serialization import bits_to_byte
 
         # Test various bit patterns
@@ -372,7 +372,7 @@ class TestXp33MsActionTableSerializer:
         assert bits_to_byte(bits) == 5
 
     def test_exception_handling_for_dim_function(self):
-        """Test exception handling for dimFunction bit extraction"""
+        """Test exception handling for dimFunction bit extraction."""
         # Create a mock raw_bytes that would cause an exception
         # This simulates the exception handling mentioned in the specification
         raw_bytes = bytearray(25)  # Only 25 bytes instead of 32
@@ -383,7 +383,7 @@ class TestXp33MsActionTableSerializer:
             assert not output.leading_edge
 
     def test_from_telegrams_legacy_method(self):
-        """Test legacy from_telegrams method for backward compatibility"""
+        """Test legacy from_telegrams method for backward compatibility."""
         # Create a mock telegram that would work with the legacy method
         # Adjust the offset to account for XP33 telegram structure
         mock_telegram = "0123456789ABCDEF" + "AAAA" + "A" * 64 + "A" * 68
@@ -397,7 +397,7 @@ class TestXp33MsActionTableSerializer:
             assert callable(Xp33MsActionTableSerializer.from_telegrams)
 
     def test_de_nibble_integration(self):
-        """Test integration with de_nibble utility"""
+        """Test integration with de_nibble utility."""
         # Test with simple nibble data
         nibble_data = "AAAB"  # Should decode to [0, 1]
         result = de_nibbles(nibble_data)
@@ -410,7 +410,7 @@ class TestXp33MsActionTableSerializer:
         assert result == expected
 
     def test_default_values(self):
-        """Test that default values work correctly"""
+        """Test that default values work correctly."""
         # Create action table with default values
         action_table = Xp33MsActionTable()
 

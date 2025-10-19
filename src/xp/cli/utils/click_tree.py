@@ -5,7 +5,7 @@ import click
 
 
 def add_tree_command(cli_group: click.Group, command_name: str = "help") -> Any:
-    """Add a tree command to any Click group"""
+    """Add a tree command to any Click group."""
 
     def print_command_tree(group: click.Group, ctx: click.Context, suffix: str) -> None:
         for name in sorted(group.list_commands(ctx)):
@@ -23,7 +23,7 @@ def add_tree_command(cli_group: click.Group, command_name: str = "help") -> Any:
     @cli_group.command(command_name)
     @click.pass_context
     def tree_command(ctx: click.Context) -> None:
-        """Show complete command tree"""
+        """Show complete command tree."""
         root = ctx.find_root().command
         root_ctx = ctx.find_root()
         root_name = root_ctx.info_name or "cli"

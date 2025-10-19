@@ -1,4 +1,4 @@
-"""Tests for LogEntry model"""
+"""Tests for LogEntry model."""
 
 from datetime import datetime
 
@@ -12,10 +12,10 @@ from xp.models.telegram.system_telegram import SystemTelegram
 
 
 class TestLogEntry:
-    """Test cases for LogEntry model"""
+    """Test cases for LogEntry model."""
 
     def test_basic_log_entry(self):
-        """Test creating a basic log entry"""
+        """Test creating a basic log entry."""
         timestamp = datetime(2023, 1, 1, 22, 44, 20, 352000)
         entry = LogEntry(
             timestamp=timestamp,
@@ -32,7 +32,7 @@ class TestLogEntry:
         assert entry.parse_error is None
 
     def test_transmitted_received_properties(self):
-        """Test is_transmitted and is_received properties"""
+        """Test is_transmitted and is_received properties."""
         tx_entry = LogEntry(
             timestamp=datetime.now(),
             direction="TX",
@@ -53,7 +53,7 @@ class TestLogEntry:
         assert rx_entry.is_received is True
 
     def test_telegram_type_with_event_telegram(self):
-        """Test telegram_type property with event telegram"""
+        """Test telegram_type property with event telegram."""
         event_telegram = EventTelegram(
             module_type=14,
             link_number=0,
@@ -75,7 +75,7 @@ class TestLogEntry:
         assert entry.is_valid_parse is True
 
     def test_telegram_type_with_system_telegram(self):
-        """Test telegram_type property with system telegram"""
+        """Test telegram_type property with system telegram."""
         system_telegram = SystemTelegram(
             serial_number="0012345008",
             system_function=SystemFunction.READ_DATAPOINT,
@@ -96,7 +96,7 @@ class TestLogEntry:
         assert entry.is_valid_parse is True
 
     def test_telegram_type_with_reply_telegram(self):
-        """Test telegram_type property with reply telegram"""
+        """Test telegram_type property with reply telegram."""
         reply_telegram = ReplyTelegram(
             serial_number="0012345008",
             system_function=SystemFunction.READ_DATAPOINT,
@@ -118,7 +118,7 @@ class TestLogEntry:
         assert entry.is_valid_parse is True
 
     def test_telegram_type_unknown(self):
-        """Test telegram_type property with no parsed telegram"""
+        """Test telegram_type property with no parsed telegram."""
         entry = LogEntry(
             timestamp=datetime.now(),
             direction="TX",
@@ -130,7 +130,7 @@ class TestLogEntry:
         assert entry.is_valid_parse is False
 
     def test_parse_error_handling(self):
-        """Test log entry with parse error"""
+        """Test log entry with parse error."""
         entry = LogEntry(
             timestamp=datetime.now(),
             direction="RX",
@@ -144,7 +144,7 @@ class TestLogEntry:
         assert entry.telegram_type == "unknown"
 
     def test_checksum_validated_property(self):
-        """Test checksum_validated property"""
+        """Test checksum_validated property."""
         # Test with event telegram that has checksum validation
         event_telegram = EventTelegram(
             module_type=14,
@@ -172,7 +172,7 @@ class TestLogEntry:
         assert checksum_result is False
 
     def test_to_dict(self):
-        """Test to_dict serialization"""
+        """Test to_dict serialization."""
         timestamp = datetime(2023, 1, 1, 22, 44, 20, 352000)
         event_telegram = EventTelegram(
             module_type=14,
@@ -207,7 +207,7 @@ class TestLogEntry:
         assert result == expected
 
     def test_to_dict_with_error(self):
-        """Test to_dict with parse error"""
+        """Test to_dict with parse error."""
         timestamp = datetime(2023, 1, 1, 22, 44, 20, 352000)
         result = LogEntry(
             timestamp=timestamp,
@@ -230,7 +230,7 @@ class TestLogEntry:
         assert result == expected
 
     def test_str_representation(self):
-        """Test string representation"""
+        """Test string representation."""
         timestamp = datetime(2023, 1, 1, 22, 44, 20, 352000)
         event_telegram = EventTelegram(
             module_type=14,
@@ -255,7 +255,7 @@ class TestLogEntry:
         assert result == expected
 
     def test_str_representation_with_error(self):
-        """Test string representation with parse error"""
+        """Test string representation with parse error."""
         timestamp = datetime(2023, 1, 1, 22, 44, 20, 352000)
         entry = LogEntry(
             timestamp=timestamp,
@@ -270,7 +270,7 @@ class TestLogEntry:
         assert result == expected
 
     def test_str_representation_invalid_checksum(self):
-        """Test string representation with invalid checksum"""
+        """Test string representation with invalid checksum."""
         timestamp = datetime(2023, 1, 1, 22, 44, 20, 352000)
         event_telegram = EventTelegram(
             module_type=14,

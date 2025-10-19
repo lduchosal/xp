@@ -8,10 +8,10 @@ from xp.models.telegram.module_type_code import MODULE_TYPE_REGISTRY
 
 
 class TestModuleType:
-    """Test cases for ModuleType model"""
+    """Test cases for ModuleType model."""
 
     def test_create_module_type_from_valid_code(self):
-        """Test creating ModuleType from valid code"""
+        """Test creating ModuleType from valid code."""
         module = ModuleType.from_code(14)
 
         assert module is not None
@@ -20,12 +20,12 @@ class TestModuleType:
         assert module.description == "5 way push button panel with sesam, L-Team design"
 
     def test_create_module_type_from_invalid_code(self):
-        """Test creating ModuleType from invalid code returns None"""
+        """Test creating ModuleType from invalid code returns None."""
         module = ModuleType.from_code(999)
         assert module is None
 
     def test_create_module_type_from_valid_name(self):
-        """Test creating ModuleType from valid name"""
+        """Test creating ModuleType from valid name."""
         module = ModuleType.from_name("XP2606")
 
         assert module is not None
@@ -34,7 +34,7 @@ class TestModuleType:
         assert module.description == "5 way push button panel with sesam, L-Team design"
 
     def test_create_module_type_from_valid_name_case_insensitive(self):
-        """Test creating ModuleType from name is case-insensitive"""
+        """Test creating ModuleType from name is case-insensitive."""
         module = ModuleType.from_name("xp2606")
         assert module is not None
         assert module.name == "XP2606"
@@ -44,12 +44,12 @@ class TestModuleType:
         assert module.name == "XP2606"
 
     def test_create_module_type_from_invalid_name(self):
-        """Test creating ModuleType from invalid name returns None"""
+        """Test creating ModuleType from invalid name returns None."""
         module = ModuleType.from_name("INVALID")
         assert module is None
 
     def test_is_reserved_property(self):
-        """Test is_reserved property"""
+        """Test is_reserved property."""
         reserved1 = ModuleType.from_code(17)  # XP26X1
         reserved2 = ModuleType.from_code(18)  # XP26X2
         not_reserved = ModuleType.from_code(14)  # XP2606
@@ -63,7 +63,7 @@ class TestModuleType:
         assert not_reserved.is_reserved is False
 
     def test_is_push_button_panel_property(self):
-        """Test is_push_button_panel property"""
+        """Test is_push_button_panel property."""
         panel1 = ModuleType.from_code(14)  # XP2606
         panel2 = ModuleType.from_code(19)  # XP2506
         panel3 = ModuleType.from_code(22)  # XPX1_8
@@ -80,7 +80,7 @@ class TestModuleType:
         assert not_panel.is_push_button_panel is False
 
     def test_is_ir_capable_property(self):
-        """Test is_ir_capable property"""
+        """Test is_ir_capable property."""
         ir_capable1 = ModuleType.from_code(3)  # CP70A (38kHz)
         ir_capable2 = ModuleType.from_code(4)  # CP70B (B&O)
         ir_capable3 = ModuleType.from_code(15)  # XP2606A
@@ -97,7 +97,7 @@ class TestModuleType:
         assert not_ir_capable.is_ir_capable is False
 
     def test_category_property(self):
-        """Test category property"""
+        """Test category property."""
         system_module = ModuleType.from_code(0)  # NOMOD - System
         cp_module = ModuleType.from_code(2)  # CP20 - CP Link Modules
         xp_module = ModuleType.from_code(7)  # XP24 - XP Control Modules
@@ -114,7 +114,7 @@ class TestModuleType:
         assert interface_module.category == "Interface Panels"
 
     def test_to_dict(self):
-        """Test dictionary serialization"""
+        """Test dictionary serialization."""
         module = ModuleType.from_code(14)  # XP2606
 
         assert module is not None
@@ -139,18 +139,18 @@ class TestModuleType:
         assert result["is_ir_capable"] is False
 
     def test_str_representation(self):
-        """Test human-readable string representation"""
+        """Test human-readable string representation."""
         module = ModuleType.from_code(14)
         expected = "XP2606 (Code 14): 5 way push button panel with sesam, L-Team design"
         assert str(module) == expected
 
     def test_all_module_codes_covered(self):
-        """Test that all codes in enum are in registry"""
+        """Test that all codes in enum are in registry."""
         for code in range(25):  # 0-24 are defined in the spec including XP230
             assert code in MODULE_TYPE_REGISTRY
 
     def test_module_registry_completeness(self):
-        """Test that module registry contains all expected entries"""
+        """Test that module registry contains all expected entries."""
         assert len(MODULE_TYPE_REGISTRY) == 37
 
         # Test some specific entries
@@ -162,10 +162,10 @@ class TestModuleType:
 
 
 class TestModuleTypeFunctions:
-    """Test cases for module type utility functions"""
+    """Test cases for module type utility functions."""
 
     def test_get_all_module_types(self):
-        """Test getting all module types"""
+        """Test getting all module types."""
         modules = get_all_module_types()
 
         assert len(modules) == 37
@@ -176,7 +176,7 @@ class TestModuleTypeFunctions:
         assert codes == sorted(codes)
 
     def test_get_module_types_by_category(self):
-        """Test getting module types grouped by category"""
+        """Test getting module types grouped by category."""
         categories = get_module_types_by_category()
 
         expected_categories = {
@@ -195,7 +195,7 @@ class TestModuleTypeFunctions:
         assert any(m.name == "ALLMOD" for m in system_modules)
 
     def test_is_valid_module_code(self):
-        """Test module code validation"""
+        """Test module code validation."""
         # Valid codes
         assert is_valid_module_code(0) is True
         assert is_valid_module_code(14) is True

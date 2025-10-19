@@ -1,4 +1,4 @@
-"""Integration tests for link number functionality"""
+"""Integration tests for link number functionality."""
 
 import pytest
 
@@ -14,10 +14,10 @@ from xp.services.telegram.telegram_service import TelegramParsingError, Telegram
 
 
 class TestLinkNumberIntegration:
-    """Integration test cases for link number operations"""
+    """Integration test cases for link number operations."""
 
     def test_complete_set_link_number_workflow(self):
-        """Test complete workflow: generate -> parse -> validate"""
+        """Test complete workflow: generate -> parse -> validate."""
         link_service = LinkNumberService()
         telegram_service = TelegramService()
 
@@ -41,7 +41,7 @@ class TestLinkNumberIntegration:
         assert parsed_telegram.checksum_validated is True  # Should auto-validate
 
     def test_complete_read_link_number_workflow(self):
-        """Test complete workflow for reading link number"""
+        """Test complete workflow for reading link number."""
         link_service = LinkNumberService()
         telegram_service = TelegramService()
 
@@ -60,7 +60,7 @@ class TestLinkNumberIntegration:
         assert parsed_telegram.checksum_validated is True
 
     def test_parse_specification_examples(self):
-        """Test parsing the examples from the specification"""
+        """Test parsing the examples from the specification."""
         telegram_service = TelegramService()
         link_service = LinkNumberService()
 
@@ -97,7 +97,7 @@ class TestLinkNumberIntegration:
                     assert link_service.is_ack_response(parsed) is False
 
     def test_telegram_object_creation_and_parsing_consistency(self):
-        """Test that created telegram objects match parsed ones"""
+        """Test that created telegram objects match parsed ones."""
         link_service = LinkNumberService()
         telegram_service = TelegramService()
 
@@ -119,7 +119,7 @@ class TestLinkNumberIntegration:
         assert created_telegram.raw_telegram == parsed_telegram.raw_telegram
 
     def test_checksum_validation_integration(self):
-        """Test that checksum validation works for generated telegrams"""
+        """Test that checksum validation works for generated telegrams."""
         link_service = LinkNumberService()
         telegram_service = TelegramService()
 
@@ -147,7 +147,7 @@ class TestLinkNumberIntegration:
             ), f"Manual checksum validation failed for link number {link_num}"
 
     def test_error_handling_integration(self):
-        """Test error handling across services"""
+        """Test error handling across services."""
         link_service = LinkNumberService()
         telegram_service = TelegramService()
 
@@ -167,7 +167,7 @@ class TestLinkNumberIntegration:
         assert parsed is not None
 
     def test_end_to_end_workflow_with_replies(self):
-        """Test complete end-to-end workflow including reply handling"""
+        """Test complete end-to-end workflow including reply handling."""
         link_service = LinkNumberService()
         telegram_service = TelegramService()
 
@@ -196,7 +196,7 @@ class TestLinkNumberIntegration:
         assert nak_reply.checksum_validated is True
 
     def test_boundary_values_integration(self):
-        """Test boundary values across the entire system"""
+        """Test boundary values across the entire system."""
         link_service = LinkNumberService()
         telegram_service = TelegramService()
 

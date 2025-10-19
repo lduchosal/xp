@@ -13,7 +13,7 @@ from typing import Optional
 
 
 class Latin1TestServer:
-    """Test server that sends responses with Latin-1 extended characters"""
+    """Test server that sends responses with Latin-1 extended characters."""
 
     def __init__(self, port=10003):
         self.port = port
@@ -22,7 +22,7 @@ class Latin1TestServer:
         self.received_messages = []
 
     def start(self):
-        """Start the test server"""
+        """Start the test server."""
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind(("localhost", self.port))
@@ -34,13 +34,13 @@ class Latin1TestServer:
         time.sleep(0.1)  # Give server time to start
 
     def stop(self):
-        """Stop the test server"""
+        """Stop the test server."""
         self.is_running = False
         if self.server_socket:
             self.server_socket.close()
 
     def _accept_connections(self):
-        """Accept and handle client connections"""
+        """Accept and handle client connections."""
         while self.is_running:
             try:
                 if not self.server_socket:
@@ -51,7 +51,7 @@ class Latin1TestServer:
                 break
 
     def _handle_client(self, client_socket):
-        """Handle individual client connection"""
+        """Handle individual client connection."""
         try:
             client_socket.settimeout(2.0)
 
@@ -78,7 +78,7 @@ class Latin1TestServer:
 
     @staticmethod
     def _generate_latin1_response(message):
-        """Generate responses containing Latin-1 extended characters"""
+        """Generate responses containing Latin-1 extended characters."""
         # Map of requests to responses with extended characters
         return {
             # Temperature request with § symbol (0xa7)
@@ -97,10 +97,10 @@ class Latin1TestServer:
 
 
 class TestEncodingConsistency:
-    """Test encoding consistency across the communication pipeline"""
+    """Test encoding consistency across the communication pipeline."""
 
     def test_round_trip_encoding(self):
-        """Test that messages can be encoded and decoded consistently"""
+        """Test that messages can be encoded and decoded consistently."""
         test_messages = [
             "<S0020012521F02D18FN>",  # Normal ASCII message
             "<R0020012521F02D18+31,5§CIE>",  # Message with § symbol
@@ -125,7 +125,7 @@ class TestEncodingConsistency:
                     assert char in decoded
 
     def test_latin1_character_range(self):
-        """Test that all Latin-1 characters (0-255) can be handled"""
+        """Test that all Latin-1 characters (0-255) can be handled."""
         # Test all possible byte values
         for byte_value in range(256):
             char = chr(byte_value)

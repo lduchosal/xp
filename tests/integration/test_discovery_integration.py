@@ -1,4 +1,4 @@
-"""Integration tests for device discover functionality"""
+"""Integration tests for device discover functionality."""
 
 import pytest
 
@@ -11,10 +11,10 @@ from xp.services.telegram.telegram_service import TelegramParsingError, Telegram
 
 
 class TestDiscoverIntegration:
-    """Integration test cases for discover operations"""
+    """Integration test cases for discover operations."""
 
     def test_complete_discover_workflow(self):
-        """Test complete workflow: generate -> parse -> analyze"""
+        """Test complete workflow: generate -> parse -> analyze."""
         discover_service = TelegramDiscoverService()
         telegram_service = TelegramService()
 
@@ -33,7 +33,7 @@ class TestDiscoverIntegration:
         assert parsed_system.checksum_validated is True
 
     def test_discover_telegram_object_creation_and_parsing_consistency(self):
-        """Test that created telegram objects match parsed ones"""
+        """Test that created telegram objects match parsed ones."""
         discover_service = TelegramDiscoverService()
         telegram_service = TelegramService()
 
@@ -53,7 +53,7 @@ class TestDiscoverIntegration:
         assert created_telegram.raw_telegram == parsed_telegram.raw_telegram
 
     def test_checksum_validation_integration(self):
-        """Test that checksum validation works for discover telegrams"""
+        """Test that checksum validation works for discover telegrams."""
         discover_service = TelegramDiscoverService()
         telegram_service = TelegramService()
 
@@ -87,7 +87,7 @@ class TestDiscoverIntegration:
             assert is_valid is True
 
     def test_error_handling_integration(self):
-        """Test error handling across services"""
+        """Test error handling across services."""
         discover_service = TelegramDiscoverService()
         telegram_service = TelegramService()
 
@@ -101,7 +101,7 @@ class TestDiscoverIntegration:
         assert parsed is not None
 
     def test_discover_response_format_validation_integration(self):
-        """Test discover response format validation with real telegrams"""
+        """Test discover response format validation with real telegrams."""
         telegram_service = TelegramService()
         discover_service = TelegramDiscoverService()
 

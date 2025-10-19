@@ -1,4 +1,4 @@
-"""Tests for LinkNumberService"""
+"""Tests for LinkNumberService."""
 
 from unittest.mock import Mock
 
@@ -15,15 +15,15 @@ from xp.services.telegram.telegram_link_number_service import (
 
 
 class TestLinkNumberService:
-    """Test cases for LinkNumberService"""
+    """Test cases for LinkNumberService."""
 
     def test_init(self):
-        """Test initialization"""
+        """Test initialization."""
         service = LinkNumberService()
         assert isinstance(service, LinkNumberService)
 
     def test_generate_set_link_number_telegram_valid(self):
-        """Test generating valid set link number telegram"""
+        """Test generating valid set link number telegram."""
         service = LinkNumberService()
 
         # Test case from specification
@@ -46,7 +46,7 @@ class TestLinkNumberService:
         assert result == "<S1234567890F04D0499FA>"
 
     def test_generate_set_link_number_telegram_invalid_serial(self):
-        """Test generating telegram with invalid serial number"""
+        """Test generating telegram with invalid serial number."""
         service = LinkNumberService()
 
         # Test empty serial
@@ -68,7 +68,7 @@ class TestLinkNumberService:
             service.generate_set_link_number_telegram("123456789A", 25)
 
     def test_generate_set_link_number_telegram_invalid_link_number(self):
-        """Test generating telegram with invalid link number"""
+        """Test generating telegram with invalid link number."""
         service = LinkNumberService()
 
         # Test negative link number
@@ -80,14 +80,14 @@ class TestLinkNumberService:
             service.generate_set_link_number_telegram("0012345005", 100)
 
     def test_generate_read_link_number_telegram_valid(self):
-        """Test generating valid read link number telegram"""
+        """Test generating valid read link number telegram."""
         result = LinkNumberService().generate_read_link_number_telegram("0012345005")
         assert result.startswith("<S0012345005F03D04")
         assert result.endswith(">")
         assert len(result) == 21  # <S{10}F03D04{2}> = 21 chars
 
     def test_generate_read_link_number_telegram_invalid_serial(self):
-        """Test generating read telegram with invalid serial number"""
+        """Test generating read telegram with invalid serial number."""
         service = LinkNumberService()
 
         # Test invalid serials (same validation as set)
@@ -100,7 +100,7 @@ class TestLinkNumberService:
             service.generate_read_link_number_telegram("123456789A")
 
     def test_create_set_link_number_telegram_object(self):
-        """Test creating SystemTelegram object for set operation"""
+        """Test creating SystemTelegram object for set operation."""
         telegram = LinkNumberService().create_set_link_number_telegram_object(
             "0012345005", 25
         )
@@ -113,7 +113,7 @@ class TestLinkNumberService:
         assert telegram.checksum == "FC"
 
     def test_create_read_link_number_telegram_object(self):
-        """Test creating SystemTelegram object for read operation"""
+        """Test creating SystemTelegram object for read operation."""
         telegram = LinkNumberService().create_read_link_number_telegram_object(
             "0012345005"
         )
@@ -126,7 +126,7 @@ class TestLinkNumberService:
         assert len(telegram.checksum) == 2
 
     def test_parse_link_number_from_reply_valid(self):
-        """Test parsing link number from valid reply telegram"""
+        """Test parsing link number from valid reply telegram."""
         service = LinkNumberService()
 
         # Create a mock reply telegram with link number data
@@ -148,7 +148,7 @@ class TestLinkNumberService:
         assert result == 99
 
     def test_parse_link_number_from_reply_invalid(self):
-        """Test parsing link number from invalid reply telegram"""
+        """Test parsing link number from invalid reply telegram."""
         service = LinkNumberService()
 
         # Wrong data point type
@@ -185,7 +185,7 @@ class TestLinkNumberService:
         assert result is None
 
     def test_is_ack_response(self):
-        """Test identifying ACK responses"""
+        """Test identifying ACK responses."""
         service = LinkNumberService()
 
         # Create mock ACK response
@@ -207,7 +207,7 @@ class TestLinkNumberService:
         assert service.is_ack_response(other_reply) is False
 
     def test_is_nak_response(self):
-        """Test identifying NAK responses"""
+        """Test identifying NAK responses."""
         service = LinkNumberService()
 
         # Create mock NAK response

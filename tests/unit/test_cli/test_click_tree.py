@@ -14,12 +14,12 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Test CLI"""
+            """Test CLI."""
             pass
 
         @cli.command()
         def subcommand():
-            """A subcommand"""
+            """A subcommand."""
             pass
 
         tree_cmd = add_tree_command(cli, "tree")
@@ -31,17 +31,17 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Test CLI"""
+            """Test CLI."""
             pass
 
         @cli.command()
         def cmd1():
-            """First command"""
+            """First command."""
             pass
 
         @cli.command()
         def cmd2():
-            """Second command"""
+            """Second command."""
             pass
 
         add_tree_command(cli, "tree")
@@ -57,22 +57,22 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Main CLI"""
+            """Main CLI."""
             pass
 
         @cli.group()
         def group1():
-            """First group"""
+            """First group."""
             pass
 
         @group1.command("nested")
         def nested_cmd():
-            """Nested command"""
+            """Nested command."""
             pass
 
         @cli.command("top-level")
         def top_level_cmd():
-            """Top level command"""
+            """Top level command."""
             pass
 
         add_tree_command(cli, "tree")
@@ -89,7 +89,7 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Test CLI"""
+            """Test CLI."""
             pass
 
         tree_cmd = add_tree_command(cli)
@@ -100,7 +100,7 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Test CLI"""
+            """Test CLI."""
             pass
 
         tree_cmd = add_tree_command(cli, "mytree")
@@ -111,7 +111,7 @@ class TestAddTreeCommand:
 
         @click.group(short_help="Short description")
         def cli():
-            """Test CLI"""
+            """Test CLI."""
             pass
 
         add_tree_command(cli, "tree")
@@ -125,7 +125,7 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Empty CLI"""
+            """Empty CLI."""
             pass
 
         add_tree_command(cli, "tree")
@@ -139,22 +139,22 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Main CLI"""
+            """Main CLI."""
             pass
 
         @cli.group()
         def level1():
-            """Level 1 group"""
+            """Level 1 group."""
             pass
 
         @level1.group()
         def level2():
-            """Level 2 group"""
+            """Level 2 group."""
             pass
 
         @level2.command("deep")
         def deep_cmd():
-            """Deep command"""
+            """Deep command."""
             pass
 
         add_tree_command(cli, "tree")
@@ -171,27 +171,27 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Main CLI"""
+            """Main CLI."""
             pass
 
         @cli.group()
         def group1():
-            """First group"""
+            """First group."""
             pass
 
         @cli.group()
         def group2():
-            """Second group"""
+            """Second group."""
             pass
 
         @group1.command()
         def cmd1():
-            """Command 1"""
+            """Command 1."""
             pass
 
         @group2.command()
         def cmd2():
-            """Command 2"""
+            """Command 2."""
             pass
 
         add_tree_command(cli, "tree")

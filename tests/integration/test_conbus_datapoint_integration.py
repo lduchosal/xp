@@ -19,13 +19,13 @@ class TestConbusDatapointIntegration:
     """Integration tests for conbus datapoint CLI operations."""
 
     def setup_method(self):
-        """Set up test fixtures"""
+        """Set up test fixtures."""
         self.runner = CliRunner()
         self.valid_serial = "0123450001"
         self.invalid_serial = "invalid"
 
     def test_conbus_datapoint_all_valid_serial(self):
-        """Test querying all datapoints with valid serial number"""
+        """Test querying all datapoints with valid serial number."""
 
         # Mock successful response
         mock_service = Mock()
@@ -84,7 +84,7 @@ class TestConbusDatapointIntegration:
         assert '"MODULE_TYPE": "XP33LED"' in result.output
 
     def test_conbus_datapoint_all_invalid_serial(self):
-        """Test querying all datapoints with invalid serial number"""
+        """Test querying all datapoints with invalid serial number."""
 
         # Mock service that raises error
         mock_service = Mock()
@@ -109,7 +109,7 @@ class TestConbusDatapointIntegration:
         assert "Invalid serial number" in result.output or "Error" in result.output
 
     def test_conbus_datapoint_invalid_response(self):
-        """Test handling invalid responses from the server"""
+        """Test handling invalid responses from the server."""
 
         # Mock service with failed response
         mock_service = Mock()
@@ -150,7 +150,7 @@ class TestConbusDatapointIntegration:
         assert "Invalid response from server" in result.output
 
     def test_conbus_datapoint_empty_datapoints(self):
-        """Test handling when no datapoints are returned"""
+        """Test handling when no datapoints are returned."""
 
         # Mock service with successful but empty response
         mock_service = Mock()
@@ -197,14 +197,14 @@ class TestConbusDatapointService:
     """Unit tests for ConbusDatapointService functionality."""
 
     def setup_method(self):
-        """Set up test fixtures"""
+        """Set up test fixtures."""
         self.valid_serial = "0123450001"
         self.mock_cli_config = Mock()
         self.mock_reactor = Mock()
         self.mock_telegram_service = Mock()
 
     def test_service_initialization(self):
-        """Test service can be initialized with required dependencies"""
+        """Test service can be initialized with required dependencies."""
         service = ConbusDatapointService(
             telegram_service=self.mock_telegram_service,
             cli_config=self.mock_cli_config,
@@ -218,7 +218,7 @@ class TestConbusDatapointService:
         assert service.service_response.success is False
 
     def test_service_context_manager(self):
-        """Test service can be used as context manager"""
+        """Test service can be used as context manager."""
         service = ConbusDatapointService(
             telegram_service=self.mock_telegram_service,
             cli_config=self.mock_cli_config,
@@ -233,14 +233,14 @@ class TestConbusDatapointQueryAllService:
     """Unit tests for ConbusDatapointQueryAllService functionality."""
 
     def setup_method(self):
-        """Set up test fixtures"""
+        """Set up test fixtures."""
         self.valid_serial = "0123450001"
         self.mock_cli_config = Mock()
         self.mock_reactor = Mock()
         self.mock_telegram_service = Mock()
 
     def test_service_initialization(self):
-        """Test service can be initialized with required dependencies"""
+        """Test service can be initialized with required dependencies."""
         service = ConbusDatapointQueryAllService(
             telegram_service=self.mock_telegram_service,
             cli_config=self.mock_cli_config,
@@ -252,7 +252,7 @@ class TestConbusDatapointQueryAllService:
         assert service.reactor == self.mock_reactor
 
     def test_service_context_manager(self):
-        """Test service can be used as context manager"""
+        """Test service can be used as context manager."""
         service = ConbusDatapointQueryAllService(
             telegram_service=self.mock_telegram_service,
             cli_config=self.mock_cli_config,

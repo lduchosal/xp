@@ -1,6 +1,6 @@
 # mypy: disable-error-code="arg-type,call-arg,func-returns-value,attr-defined"
 # Note: Disabled tests use old API and are kept for reference only
-"""Integration tests for Conbus link number functionality"""
+"""Integration tests for Conbus link number functionality."""
 
 from unittest.mock import Mock
 
@@ -19,7 +19,7 @@ class TestConbusLinknumberIntegration:
     def _create_mock_conbus_response(
         success=True, serial_number="0123450001", error=None, telegrams=None
     ):
-        """Helper to create a properly formed ConbusResponse"""
+        """Helper to create a properly formed ConbusResponse."""
         if telegrams is None:
             telegrams = [f"<R{serial_number}F18DFA>"] if success else []
 
@@ -32,7 +32,7 @@ class TestConbusLinknumberIntegration:
         return mock_response
 
     def _create_mock_conbus_service(self, success=True, ack_response=True):
-        """Helper to create a properly mocked ConbusService"""
+        """Helper to create a properly mocked ConbusService."""
         mock_conbus_instance = Mock()
         mock_conbus_instance.__enter__ = Mock(return_value=mock_conbus_instance)
         mock_conbus_instance.__exit__ = Mock(return_value=False)
@@ -52,7 +52,7 @@ class TestConbusLinknumberIntegration:
         return mock_conbus_instance
 
     def xtest_conbus_linknumber_valid(self):
-        """Test setting valid link number"""
+        """Test setting valid link number."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -105,7 +105,7 @@ class TestConbusLinknumberIntegration:
         assert args[0] == "<S0123450001F04D0425FG>"
 
     def xtest_conbus_linknumber_invalid_response(self):
-        """Test handling invalid/NAK responses"""
+        """Test handling invalid/NAK responses."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -143,7 +143,7 @@ class TestConbusLinknumberIntegration:
         assert result.serial_number == "0123450001"
 
     def xtest_conbus_linknumber_connection_failure(self):
-        """Test handling connection failures"""
+        """Test handling connection failures."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -175,7 +175,7 @@ class TestConbusLinknumberIntegration:
         assert result.serial_number == "0123450001"
 
     def xtest_conbus_linknumber_invalid_serial_number(self):
-        """Test handling invalid serial number"""
+        """Test handling invalid serial number."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -208,7 +208,7 @@ class TestConbusLinknumberIntegration:
         )
 
     def xtest_conbus_linknumber_invalid_link_number(self):
-        """Test handling invalid link number"""
+        """Test handling invalid link number."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -241,7 +241,7 @@ class TestConbusLinknumberIntegration:
         )
 
     def xtest_conbus_linknumber_edge_cases(self):
-        """Test edge cases for link number values"""
+        """Test edge cases for link number values."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -291,7 +291,7 @@ class TestConbusLinknumberIntegration:
         assert result.result == "ACK"
 
     def xtest_service_context_manager(self):
-        """Test service can be used as context manager"""
+        """Test service can be used as context manager."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -312,7 +312,7 @@ class TestConbusLinknumberIntegration:
     def _create_mock_datapoint_response(
         success=True, serial_number="0123450001", link_number=25, error=None
     ):
-        """Helper to create a properly formed ConbusDatapointResponse"""
+        """Helper to create a properly formed ConbusDatapointResponse."""
         mock_response = Mock()
         mock_response.success = success
         mock_response.sent_telegram = f"<S{serial_number}F03D04FG>"
@@ -331,7 +331,7 @@ class TestConbusLinknumberIntegration:
         return mock_response
 
     def xtest_conbus_get_linknumber_valid(self):
-        """Test getting valid link number"""
+        """Test getting valid link number."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -369,7 +369,7 @@ class TestConbusLinknumberIntegration:
         )
 
     def xtest_conbus_get_linknumber_query_failed(self):
-        """Test handling datapoint query failures"""
+        """Test handling datapoint query failures."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -399,7 +399,7 @@ class TestConbusLinknumberIntegration:
         assert result.error is not None and "Connection timeout" in result.error
 
     def xtest_conbus_get_linknumber_parse_error(self):
-        """Test handling invalid link number data"""
+        """Test handling invalid link number data."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()
@@ -437,7 +437,7 @@ class TestConbusLinknumberIntegration:
         )
 
     def xtest_conbus_get_linknumber_service_exception(self):
-        """Test handling service exceptions"""
+        """Test handling service exceptions."""
         # Mock service dependencies
         mock_telegram_service = Mock()
         mock_conbus_service = Mock()

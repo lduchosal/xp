@@ -1,4 +1,4 @@
-"""Integration tests for Conbus auto report functionality"""
+"""Integration tests for Conbus auto report functionality."""
 
 from unittest.mock import Mock
 
@@ -15,10 +15,10 @@ from xp.services.conbus.conbus_autoreport_set_service import (
 
 
 class TestConbusAutoreportIntegration:
-    """Integration test cases for Conbus auto report operations"""
+    """Integration test cases for Conbus auto report operations."""
 
     def setup_method(self):
-        """Set up test fixtures"""
+        """Set up test fixtures."""
         self.runner = CliRunner()
         self.valid_serial = "0123450001"
         self.invalid_serial = "invalid"
@@ -27,7 +27,7 @@ class TestConbusAutoreportIntegration:
     def _create_mock_conbus_response(
         success=True, serial_number="0123450001", error=None, telegrams=None
     ):
-        """Helper to create a properly formed ConbusResponse"""
+        """Helper to create a properly formed ConbusResponse."""
         if telegrams is None:
             telegrams = [f"<R{serial_number}F18DFA>"] if success else []
 
@@ -40,7 +40,7 @@ class TestConbusAutoreportIntegration:
         return mock_response
 
     def _create_mock_conbus_service(self, success=True, ack_response=True):
-        """Helper to create a properly mocked ConbusService"""
+        """Helper to create a properly mocked ConbusService."""
         mock_conbus_instance = Mock()
         mock_conbus_instance.__enter__ = Mock(return_value=mock_conbus_instance)
         mock_conbus_instance.__exit__ = Mock(return_value=False)
@@ -63,7 +63,7 @@ class TestConbusAutoreportIntegration:
     def _create_mock_datapoint_response(
         success=True, serial_number="0123450001", auto_report_status="AA", error=None
     ):
-        """Helper to create a properly formed ConbusDatapointResponse"""
+        """Helper to create a properly formed ConbusDatapointResponse."""
         mock_response = Mock()
         mock_response.success = success
         mock_response.sent_telegram = f"<S{serial_number}F02D21FG>"
@@ -82,7 +82,7 @@ class TestConbusAutoreportIntegration:
         return mock_response
 
     def test_conbus_autoreport_get_valid_serial(self):
-        """Test getting auto report status with valid serial number"""
+        """Test getting auto report status with valid serial number."""
 
         # Mock successful response
         mock_service = Mock()
@@ -122,7 +122,7 @@ class TestConbusAutoreportIntegration:
         assert mock_service.get_autoreport_status.called
 
     def test_conbus_autoreport_set_on_valid_serial(self):
-        """Test setting auto report status to ON with valid serial"""
+        """Test setting auto report status to ON with valid serial."""
 
         # Mock successful response
         mock_service = Mock()
@@ -163,7 +163,7 @@ class TestConbusAutoreportIntegration:
         assert mock_service.set_autoreport_status.called
 
     def test_conbus_autoreport_set_off_valid_serial(self):
-        """Test setting auto report status to OFF with valid serial"""
+        """Test setting auto report status to OFF with valid serial."""
 
         # Mock successful response
         mock_service = Mock()
@@ -204,7 +204,7 @@ class TestConbusAutoreportIntegration:
         assert mock_service.set_autoreport_status.called
 
     def test_conbus_autoreport_invalid_response(self):
-        """Test handling invalid responses from the server"""
+        """Test handling invalid responses from the server."""
 
         # Mock service with failed response
         mock_service = Mock()
@@ -246,14 +246,14 @@ class TestConbusAutoreportGetService:
     """Unit tests for ConbusAutoreportGetService functionality."""
 
     def setup_method(self):
-        """Set up test fixtures"""
+        """Set up test fixtures."""
         self.valid_serial = "0123450001"
         self.mock_cli_config = Mock()
         self.mock_reactor = Mock()
         self.mock_telegram_service = Mock()
 
     def test_service_initialization(self):
-        """Test service can be initialized with required dependencies"""
+        """Test service can be initialized with required dependencies."""
         service = ConbusAutoreportGetService(
             telegram_service=self.mock_telegram_service,
             cli_config=self.mock_cli_config,
@@ -266,7 +266,7 @@ class TestConbusAutoreportGetService:
         assert service.service_response.success is False
 
     def test_service_context_manager(self):
-        """Test service can be used as context manager"""
+        """Test service can be used as context manager."""
         service = ConbusAutoreportGetService(
             telegram_service=self.mock_telegram_service,
             cli_config=self.mock_cli_config,
@@ -281,13 +281,13 @@ class TestConbusAutoreportSetService:
     """Unit tests for ConbusAutoreportSetService functionality."""
 
     def setup_method(self):
-        """Set up test fixtures"""
+        """Set up test fixtures."""
         self.valid_serial = "0123450001"
         self.mock_cli_config = Mock()
         self.mock_reactor = Mock()
 
     def test_service_initialization(self):
-        """Test service can be initialized with required dependencies"""
+        """Test service can be initialized with required dependencies."""
         service = ConbusAutoreportSetService(
             cli_config=self.mock_cli_config,
             reactor=self.mock_reactor,
@@ -299,7 +299,7 @@ class TestConbusAutoreportSetService:
         assert service.service_response.success is False
 
     def test_service_context_manager(self):
-        """Test service can be used as context manager"""
+        """Test service can be used as context manager."""
         service = ConbusAutoreportSetService(
             cli_config=self.mock_cli_config,
             reactor=self.mock_reactor,

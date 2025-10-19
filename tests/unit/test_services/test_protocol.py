@@ -19,17 +19,17 @@ from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 
 class TestTelegramProtocol:
-    """Test cases for TelegramProtocol"""
+    """Test cases for TelegramProtocol."""
 
     def setup_method(self):
-        """Setup test fixtures"""
+        """Setup test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.event_bus.dispatch = AsyncMock()
         self.protocol = TelegramProtocol(self.event_bus)
         self.transport = proto_helpers.StringTransport()
 
     def test_init(self):
-        """Test protocol initialization"""
+        """Test protocol initialization."""
         event_bus = Mock(spec=EventBus)
         protocol = TelegramProtocol(event_bus)
 
@@ -39,7 +39,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_connection_made(self):
-        """Test connectionMade dispatches ConnectionMadeEvent"""
+        """Test connectionMade dispatches ConnectionMadeEvent."""
         self.protocol.makeConnection(self.transport)
 
         # Wait for the async task to complete
@@ -52,7 +52,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_data_received_single_complete_frame(self):
-        """Test receiving a single complete frame"""
+        """Test receiving a single complete frame."""
         self.protocol.makeConnection(self.transport)
 
         # Create a frame with valid checksum (TEST checksum is BG)
@@ -72,7 +72,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_data_received_multiple_frames(self):
-        """Test receiving multiple frames in one data chunk"""
+        """Test receiving multiple frames in one data chunk."""
         self.protocol.makeConnection(self.transport)
 
         # TEST checksum is BG, DATA checksum is BA
@@ -96,7 +96,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_data_received_partial_frame(self):
-        """Test receiving partial frame data"""
+        """Test receiving partial frame data."""
         self.protocol.makeConnection(self.transport)
 
         # Send first part
@@ -115,7 +115,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_data_received_no_start_delimiter(self):
-        """Test receiving data without start delimiter"""
+        """Test receiving data without start delimiter."""
         self.protocol.makeConnection(self.transport)
 
         self.protocol.dataReceived(b"NOSTART>")
@@ -128,7 +128,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_data_received_no_end_delimiter(self):
-        """Test receiving data without end delimiter"""
+        """Test receiving data without end delimiter."""
         self.protocol.makeConnection(self.transport)
 
         self.protocol.dataReceived(b"<NOEND")
@@ -142,7 +142,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_data_received_invalid_checksum(self):
-        """Test receiving frame with invalid checksum"""
+        """Test receiving frame with invalid checksum."""
         self.protocol.makeConnection(self.transport)
 
         # Create a frame with invalid checksum
@@ -160,7 +160,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_data_received_buffer_accumulation(self):
-        """Test that buffer accumulates data correctly"""
+        """Test that buffer accumulates data correctly."""
         self.protocol.makeConnection(self.transport)
 
         self.protocol.dataReceived(b"<TE")
@@ -174,7 +174,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_data_received_junk_before_frame(self):
-        """Test receiving junk data before valid frame"""
+        """Test receiving junk data before valid frame."""
         self.protocol.makeConnection(self.transport)
 
         # TEST checksum is BG
@@ -191,7 +191,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_data_received_multiple_frames_with_junk(self):
-        """Test receiving multiple frames with junk data"""
+        """Test receiving multiple frames with junk data."""
         self.protocol.makeConnection(self.transport)
 
         # TEST checksum is BG, DATA checksum is BA
@@ -205,7 +205,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_send_frame(self):
-        """Test sending a frame with checksum"""
+        """Test sending a frame with checksum."""
         self.protocol.makeConnection(self.transport)
         self.protocol.sendFrame(b"TEST")
 
@@ -220,7 +220,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_send_frame_no_transport(self):
-        """Test sending frame when transport is not available"""
+        """Test sending frame when transport is not available."""
         protocol = TelegramProtocol(self.event_bus)
         # Don't connect transport
         protocol.sendFrame(b"TEST")
@@ -234,7 +234,7 @@ class TestTelegramProtocol:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_send_frame_includes_checksum(self):
-        """Test that sendFrame calculates and includes checksum"""
+        """Test that sendFrame calculates and includes checksum."""
         self.protocol.makeConnection(self.transport)
         self.protocol.sendFrame(b"DATA")
 
@@ -250,10 +250,10 @@ class TestTelegramProtocol:
 
 
 class TestTelegramFactory:
-    """Test cases for TelegramFactory"""
+    """Test cases for TelegramFactory."""
 
     def setup_method(self):
-        """Setup test fixtures"""
+        """Setup test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.telegram_protocol = Mock(spec=TelegramProtocol)
         self.connector = Mock(spec=IConnector)
@@ -263,7 +263,7 @@ class TestTelegramFactory:
         )
 
     def test_init(self):
-        """Test factory initialization"""
+        """Test factory initialization."""
         event_bus = Mock(spec=EventBus)
         telegram_protocol = Mock(spec=TelegramProtocol)
         connector = Mock(spec=IConnector)
@@ -276,7 +276,7 @@ class TestTelegramFactory:
         assert factory.logger is not None
 
     def test_build_protocol(self):
-        """Test buildProtocol returns the configured protocol"""
+        """Test buildProtocol returns the configured protocol."""
         addr = Mock(spec=IAddress)
 
         protocol = self.factory.buildProtocol(addr)
@@ -284,7 +284,7 @@ class TestTelegramFactory:
         assert protocol == self.telegram_protocol
 
     def test_client_connection_failed(self):
-        """Test clientConnectionFailed dispatches event and stops connector"""
+        """Test clientConnectionFailed dispatches event and stops connector."""
         connector = Mock(spec=IConnector)
         reason = Failure(Exception("Connection failed"))
 
@@ -301,7 +301,7 @@ class TestTelegramFactory:
         self.connector.stop.assert_called_once()
 
     def test_client_connection_lost(self):
-        """Test clientConnectionLost dispatches event and stops connector"""
+        """Test clientConnectionLost dispatches event and stops connector."""
         connector = Mock(spec=IConnector)
         reason = Failure(Exception("Connection lost"))
 
@@ -318,7 +318,7 @@ class TestTelegramFactory:
         self.connector.stop.assert_called_once()
 
     def test_client_connection_failed_reason_conversion(self):
-        """Test that Failure reason is converted to string in ConnectionFailedEvent"""
+        """Test that Failure reason is converted to string in ConnectionFailedEvent."""
         connector = Mock(spec=IConnector)
         reason = Failure(ConnectionRefusedError("Port closed"))
 
@@ -330,7 +330,7 @@ class TestTelegramFactory:
         self.connector.stop.assert_called_once()
 
     def test_client_connection_lost_reason_conversion(self):
-        """Test that Failure reason is converted to string in ConnectionLostEvent"""
+        """Test that Failure reason is converted to string in ConnectionLostEvent."""
         connector = Mock(spec=IConnector)
         reason = Failure(ConnectionError("Network error"))
 
@@ -343,11 +343,11 @@ class TestTelegramFactory:
 
 
 class TestTelegramProtocolIntegration:
-    """Integration tests for TelegramProtocol with event bus"""
+    """Integration tests for TelegramProtocol with event bus."""
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_full_flow_receive_and_send(self):
-        """Test full flow of receiving and sending telegrams"""
+        """Test full flow of receiving and sending telegrams."""
         event_bus = Mock(spec=EventBus)
         event_bus.dispatch = AsyncMock()
         protocol = TelegramProtocol(event_bus)
@@ -376,7 +376,7 @@ class TestTelegramProtocolIntegration:
 
     @pytest.mark.anyio(backends=["asyncio"])
     async def test_protocol_event_bus_integration(self):
-        """Test that protocol correctly dispatches events to event bus"""
+        """Test that protocol correctly dispatches events to event bus."""
         event_bus = Mock(spec=EventBus)
         event_bus.dispatch = AsyncMock()
         protocol = TelegramProtocol(event_bus)

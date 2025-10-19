@@ -1,4 +1,4 @@
-"""Unit tests for HomeKitCacheService"""
+"""Unit tests for HomeKitCacheService."""
 
 from unittest.mock import Mock
 
@@ -15,15 +15,15 @@ from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 
 
 class TestHomeKitCacheService:
-    """Test cases for HomeKitCacheService"""
+    """Test cases for HomeKitCacheService."""
 
     def setup_method(self):
-        """Setup test fixtures"""
+        """Setup test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.service = HomeKitCacheService(self.event_bus, enable_persistence=False)
 
     def test_init(self):
-        """Test service initialization"""
+        """Test service initialization."""
         event_bus = Mock(spec=EventBus)
         service = HomeKitCacheService(event_bus, enable_persistence=False)
 
@@ -44,7 +44,7 @@ class TestHomeKitCacheService:
         )
 
     def test_cache_output_state_received_event(self):
-        """Test caching OutputStateReceivedEvent"""
+        """Test caching OutputStateReceivedEvent."""
         event = OutputStateReceivedEvent(
             serial_number="1234567890",
             datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
@@ -60,7 +60,7 @@ class TestHomeKitCacheService:
         assert "timestamp" in self.service.cache[cache_key]
 
     def test_cache_light_level_received_event(self):
-        """Test caching LightLevelReceivedEvent"""
+        """Test caching LightLevelReceivedEvent."""
         event = LightLevelReceivedEvent(
             serial_number="1234567890",
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
@@ -75,7 +75,7 @@ class TestHomeKitCacheService:
         assert self.service.cache[cache_key]["event"] == event
 
     def test_read_datapoint_cache_miss_forwards_to_protocol(self):
-        """Test ReadDatapointEvent with cache miss forwards to protocol"""
+        """Test ReadDatapointEvent with cache miss forwards to protocol."""
         event = ReadDatapointEvent(
             serial_number="1234567890",
             datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
@@ -91,7 +91,7 @@ class TestHomeKitCacheService:
         assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_read_datapoint_cache_hit_returns_cached(self):
-        """Test ReadDatapointEvent with cache hit returns cached event"""
+        """Test ReadDatapointEvent with cache hit returns cached event."""
         # First, cache an event
         cached_event = OutputStateReceivedEvent(
             serial_number="1234567890",
@@ -120,7 +120,7 @@ class TestHomeKitCacheService:
         assert dispatched_event.data_value == "01:1"
 
     def test_cache_key_uniqueness_by_serial_number(self):
-        """Test that different serial numbers have separate cache entries"""
+        """Test that different serial numbers have separate cache entries."""
         event1 = OutputStateReceivedEvent(
             serial_number="1111111111",
             datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
@@ -143,7 +143,7 @@ class TestHomeKitCacheService:
         assert self.service.cache[cache_key2]["event"] == event2
 
     def test_cache_key_uniqueness_by_datapoint_type(self):
-        """Test that different datapoint types have separate cache entries"""
+        """Test that different datapoint types have separate cache entries."""
         event1 = OutputStateReceivedEvent(
             serial_number="1234567890",
             datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
@@ -166,7 +166,7 @@ class TestHomeKitCacheService:
         assert self.service.cache[cache_key2]["event"] == event2
 
     def test_cache_overwrite_on_duplicate(self):
-        """Test that caching the same key twice overwrites the previous value"""
+        """Test that caching the same key twice overwrites the previous value."""
         event1 = OutputStateReceivedEvent(
             serial_number="1234567890",
             datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
@@ -189,7 +189,7 @@ class TestHomeKitCacheService:
         assert cached_event.data_value == "01:1"
 
     def test_clear_cache(self):
-        """Test clearing the cache"""
+        """Test clearing the cache."""
         # Add some events
         event1 = OutputStateReceivedEvent(
             serial_number="1234567890",
@@ -213,7 +213,7 @@ class TestHomeKitCacheService:
         assert len(self.service.cache) == 0
 
     def test_get_cache_stats(self):
-        """Test getting cache statistics"""
+        """Test getting cache statistics."""
         # Initially empty
         stats = self.service.get_cache_stats()
         assert stats["total_entries"] == 0
@@ -237,7 +237,7 @@ class TestHomeKitCacheService:
         assert stats["total_entries"] == 2
 
     def test_read_datapoint_different_serial_cache_miss(self):
-        """Test that querying different serial number results in cache miss"""
+        """Test that querying different serial number results in cache miss."""
         # Cache event for serial 1111111111
         cached_event = OutputStateReceivedEvent(
             serial_number="1111111111",
@@ -260,7 +260,7 @@ class TestHomeKitCacheService:
         assert dispatched_event.serial_number == "2222222222"
 
     def test_read_datapoint_different_type_cache_miss(self):
-        """Test that querying different datapoint type results in cache miss"""
+        """Test that querying different datapoint type results in cache miss."""
         # Cache OUTPUT_STATE
         cached_event = OutputStateReceivedEvent(
             serial_number="1234567890",
@@ -283,7 +283,7 @@ class TestHomeKitCacheService:
         assert dispatched_event.datapoint_type == DataPointType.MODULE_LIGHT_LEVEL
 
     def test_refresh_cache_invalidates_cache_entry(self):
-        """Test that refresh_cache=True invalidates cache and forces protocol query"""
+        """Test that refresh_cache=True invalidates cache and forces protocol query."""
         # First, cache an event
         cached_event = OutputStateReceivedEvent(
             serial_number="1234567890",
@@ -319,7 +319,7 @@ class TestHomeKitCacheService:
         assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_refresh_cache_without_existing_cache_forces_query(self):
-        """Test that refresh_cache=True works even when no cache entry exists"""
+        """Test that refresh_cache=True works even when no cache entry exists."""
         # No cached event
 
         # Request refresh_cache=True
@@ -339,7 +339,7 @@ class TestHomeKitCacheService:
         assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_refresh_cache_false_uses_normal_cache_logic(self):
-        """Test that refresh_cache=False uses normal cache hit/miss logic"""
+        """Test that refresh_cache=False uses normal cache hit/miss logic."""
         # Cache an event
         cached_event = OutputStateReceivedEvent(
             serial_number="1234567890",
@@ -367,7 +367,7 @@ class TestHomeKitCacheService:
         assert dispatched_event == cached_event
 
     def test_refresh_cache_only_invalidates_specified_entry(self):
-        """Test that refresh_cache only invalidates the specified cache entry"""
+        """Test that refresh_cache only invalidates the specified cache entry."""
         # Cache multiple events
         event1 = OutputStateReceivedEvent(
             serial_number="1234567890",

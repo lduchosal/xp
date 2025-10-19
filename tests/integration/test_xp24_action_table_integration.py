@@ -19,13 +19,13 @@ class TestXp24ActionTableIntegration:
     """Integration tests for XP24 action table CLI operations."""
 
     def setup_method(self):
-        """Set up test fixtures"""
+        """Set up test fixtures."""
         self.runner = CliRunner()
         self.valid_serial = "0123450001"
         self.invalid_serial = "1234567890"  # Valid format but will cause service error
 
     def test_xp24_download_action_table(self):
-        """Test downloading action table from module"""
+        """Test downloading action table from module."""
 
         # Create mock service
         mock_service = Mock(spec=MsActionTableService)
@@ -92,7 +92,7 @@ class TestXp24ActionTableIntegration:
         assert action_table["curtain34"] is True
 
     def test_xp24_download_action_table_invalid_serial(self):
-        """Test downloading with invalid serial number"""
+        """Test downloading with invalid serial number."""
 
         # Create mock service with error
         mock_service = Mock(spec=MsActionTableService)
@@ -129,7 +129,7 @@ class TestXp24ActionTableIntegration:
         assert "Error: Invalid serial number" in result.output
 
     def test_xp24_download_action_table_connection_error(self):
-        """Test downloading with network failure"""
+        """Test downloading with network failure."""
 
         # Create mock service with error
         mock_service = Mock(spec=MsActionTableService)

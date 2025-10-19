@@ -12,11 +12,11 @@ from xp.utils.serialization import de_nibbles
 
 
 class TestXp24MsActionTableSerializer:
-    """Test cases for Xp24MsActionTableSerializer"""
+    """Test cases for Xp24MsActionTableSerializer."""
 
     @pytest.fixture
     def sample_action_table(self):
-        """Create sample action table for testing"""
+        """Create sample action table for testing."""
         return Xp24MsActionTable(
             input1_action=InputAction(InputActionType.TOGGLE, TimeParam.NONE),
             input2_action=InputAction(InputActionType.TURNON, TimeParam.T5SEC),
@@ -31,7 +31,7 @@ class TestXp24MsActionTableSerializer:
 
     @pytest.fixture
     def sample_telegrams(self):
-        """Create sample telegrams for testing"""
+        """Create sample telegrams for testing."""
         return [
             "<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>",
             "<R0020044966F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFB>",
@@ -41,7 +41,7 @@ class TestXp24MsActionTableSerializer:
         ]
 
     def test_from_telegrams_basic(self, sample_telegrams: list[str]) -> None:
-        """Test basic telegram parsing"""
+        """Test basic telegram parsing."""
 
         assert sample_telegrams
         action_table = Xp24MsActionTableSerializer.from_telegrams(sample_telegrams[0])
@@ -56,7 +56,7 @@ class TestXp24MsActionTableSerializer:
         assert action_table.input4_action is not None
 
     def test_from_telegrams_invalid_hex_data(self):
-        """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
+        """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
         # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>'
         valid_telegram = (
@@ -80,7 +80,7 @@ class TestXp24MsActionTableSerializer:
         assert not msactiontable.mutex34
 
     def test_from_telegrams_invalid_hex_data2(self):
-        """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
+        """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
         # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044964F17DAAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFD>'
         valid_telegram = (
@@ -104,28 +104,28 @@ class TestXp24MsActionTableSerializer:
         assert not msactiontable.mutex34
 
     def test_from_telegrams_de_nibble_0(self):
-        """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
+        """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
         nibble = "AA"
 
         result = de_nibbles(nibble)
         assert bytearray([0]) == result
 
     def test_from_telegrams_de_nibble_1(self):
-        """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
+        """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
         nibble = "AB"
 
         result = de_nibbles(nibble)
         assert bytearray([1]) == result
 
     def test_from_telegrams_de_nibble_01(self):
-        """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
+        """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
         nibble = "AAAB"
 
         result = de_nibbles(nibble)
         assert bytearray([0, 1]) == result
 
     def test_from_telegrams_de_nibble_big(self):
-        """Test that invalid hex data raises ValueError with non-hexadecimal characters"""
+        """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
         nibble = "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
         result = de_nibbles(nibble)

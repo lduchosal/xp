@@ -15,10 +15,10 @@ from xp.services.reverse_proxy_service import (
 
 
 class TestReverseProxyService:
-    """Test cases for ReverseProxyService"""
+    """Test cases for ReverseProxyService."""
 
     def setup_method(self):
-        """Set up test fixtures"""
+        """Set up test fixtures."""
         # Create temporary config file
         self.temp_config = tempfile.NamedTemporaryFile(
             mode="w", suffix=".yml", delete=False
@@ -37,7 +37,7 @@ conbus:
         self.service = ReverseProxyService(cli_config=cli_config, listen_port=10003)
 
     def teardown_method(self):
-        """Clean up test fixtures"""
+        """Clean up test fixtures."""
         if self.service.is_running:
             self.service.stop_proxy()
 
@@ -46,7 +46,7 @@ conbus:
             Path(self.temp_config.name).unlink()
 
     def test_init_with_defaults(self):
-        """Test service initialization with default values"""
+        """Test service initialization with default values."""
         cli_config = ConbusClientConfig.from_yaml("cli.yml")
         service = ReverseProxyService(cli_config=cli_config, listen_port=10001)
 
@@ -56,7 +56,7 @@ conbus:
         assert service.connection_counter == 0
 
     def test_load_config_invalid_yaml(self):
-        """Test configuration loading with invalid YAML"""
+        """Test configuration loading with invalid YAML."""
         temp_invalid = tempfile.NamedTemporaryFile(
             mode="w", suffix=".yml", delete=False
         )
@@ -74,7 +74,7 @@ conbus:
 
     @patch("socket.socket")
     def test_start_proxy_success(self, mock_socket_class):
-        """Test successful proxy startup"""
+        """Test successful proxy startup."""
         mock_socket = Mock()
         mock_socket_class.return_value = mock_socket
 
@@ -93,7 +93,7 @@ conbus:
         mock_socket.listen.assert_called_with(5)
 
     def test_start_proxy_already_running(self):
-        """Test starting proxy when already running"""
+        """Test starting proxy when already running."""
         self.service.is_running = True
 
         result = self.service.start_proxy()
@@ -104,7 +104,7 @@ conbus:
 
     @patch("socket.socket")
     def test_start_proxy_socket_error(self, mock_socket_class):
-        """Test proxy startup with socket error"""
+        """Test proxy startup with socket error."""
         mock_socket = Mock()
         mock_socket_class.return_value = mock_socket
         mock_socket.bind.side_effect = OSError("Address already in use")
@@ -117,7 +117,7 @@ conbus:
         assert not self.service.is_running
 
     def test_stop_proxy_not_running(self):
-        """Test stopping proxy when not running"""
+        """Test stopping proxy when not running."""
         result = self.service.stop_proxy()
 
         assert not result.success
@@ -125,7 +125,7 @@ conbus:
         assert "not running" in result.error
 
     def test_get_status_not_running(self):
-        """Test status when proxy is not running"""
+        """Test status when proxy is not running."""
         result = self.service.get_status()
 
         assert result.success
@@ -136,7 +136,7 @@ conbus:
         assert data["connections"] == {}
 
     def test_get_status_with_connections(self):
-        """Test status with active connections"""
+        """Test status with active connections."""
         from datetime import datetime
 
         # Mock some active connections
@@ -164,7 +164,7 @@ conbus:
         assert data["connections"]["conn_1"]["bytes_relayed"] == 1024
 
     def test_timestamp_format(self):
-        """Test timestamp format generation"""
+        """Test timestamp format generation."""
         timestamp = self.service.timestamp()
 
         # Should be in format HH:MM:SS,mmm
@@ -174,7 +174,7 @@ conbus:
         assert timestamp[8] == ","
 
     def test_close_connection_pair(self):
-        """Test closing connection pair"""
+        """Test closing connection pair."""
         # Mock connection info
         mock_client_socket = Mock()
         mock_server_socket = Mock()
@@ -197,13 +197,13 @@ conbus:
         assert conn_id not in self.service.active_connections
 
     def test_close_connection_pair_nonexistent(self):
-        """Test closing non-existent connection pair"""
+        """Test closing non-existent connection pair."""
         # Should not raise exception
         self.service._close_connection_pair("nonexistent")
         assert len(self.service.active_connections) == 0
 
     def test_close_connection_pair_socket_error(self):
-        """Test closing connection pair with socket errors"""
+        """Test closing connection pair with socket errors."""
         # Mock connection info with sockets that raise exceptions
         mock_client_socket = Mock()
         mock_server_socket = Mock()
@@ -226,10 +226,10 @@ conbus:
 
 
 class TestReverseProxyServiceIntegration:
-    """Integration tests for ReverseProxyService"""
+    """Integration tests for ReverseProxyService."""
 
     def setup_method(self):
-        """Set up integration test fixtures"""
+        """Set up integration test fixtures."""
         # Use a high port number to avoid conflicts
         self.listen_port = 19999
         self.target_port = 19998
@@ -254,7 +254,7 @@ conbus:
         )
 
     def teardown_method(self):
-        """Clean up integration test fixtures"""
+        """Clean up integration test fixtures."""
         if self.service.is_running:
             self.service.stop_proxy()
 
@@ -262,7 +262,7 @@ conbus:
             Path(self.temp_config.name).unlink()
 
     def test_proxy_lifecycle(self):
-        """Test complete proxy lifecycle: start, status, stop"""
+        """Test complete proxy lifecycle: start, status, stop."""
         # Start proxy
         with patch("threading.Thread"):
             result = self.service.start_proxy()
@@ -281,7 +281,7 @@ conbus:
         assert not self.service.is_running
 
     def test_error_handling_start_failure(self):
-        """Test error handling when start_proxy fails"""
+        """Test error handling when start_proxy fails."""
         with patch.object(self.service, "start_proxy") as mock_start:
             mock_start.return_value.success = False
             mock_start.return_value.error = "Test error"

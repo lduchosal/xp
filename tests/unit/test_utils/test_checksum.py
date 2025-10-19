@@ -2,7 +2,7 @@
 
 Tests the checksum calculation functions to ensure they match
 the expected behavior
-"""
+."""
 
 import pytest
 

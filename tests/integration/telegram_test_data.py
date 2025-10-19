@@ -1,4 +1,4 @@
-"""Test data fixtures for telegram testing"""
+"""Test data fixtures for telegram testing."""
 
 from xp.models import EventType
 from xp.models.telegram.event_telegram import EventTelegram
@@ -137,7 +137,7 @@ def create_test_telegram(
     event_type=EventType.BUTTON_PRESS,
     checksum="AK",
 ):
-    """Create a test EventTelegram object with specified parameters"""
+    """Create a test EventTelegram object with specified parameters."""
     raw_telegram = f"<E{module_type}L{link_number:02d}I{output_number:02d}{event_type.value}{checksum}>"
 
     return EventTelegram(

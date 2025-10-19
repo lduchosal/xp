@@ -19,36 +19,36 @@ from xp.services.conbus.actiontable.msactiontable_service import (
 
 
 class TestMsActionTableService:
-    """Test cases for MsActionTableService"""
+    """Test cases for MsActionTableService."""
 
     @pytest.fixture
     def mock_cli_config(self):
-        """Create mock CLI config"""
+        """Create mock CLI config."""
         return Mock()
 
     @pytest.fixture
     def mock_reactor(self):
-        """Create mock reactor"""
+        """Create mock reactor."""
         return Mock()
 
     @pytest.fixture
     def mock_xp20_serializer(self):
-        """Create mock XP20 serializer"""
+        """Create mock XP20 serializer."""
         return Mock()
 
     @pytest.fixture
     def mock_xp24_serializer(self):
-        """Create mock XP24 serializer"""
+        """Create mock XP24 serializer."""
         return Mock()
 
     @pytest.fixture
     def mock_xp33_serializer(self):
-        """Create mock XP33 serializer"""
+        """Create mock XP33 serializer."""
         return Mock()
 
     @pytest.fixture
     def mock_telegram_service(self):
-        """Create mock TelegramService"""
+        """Create mock TelegramService."""
         return Mock()
 
     @pytest.fixture
@@ -61,7 +61,7 @@ class TestMsActionTableService:
         mock_xp33_serializer,
         mock_telegram_service,
     ):
-        """Create service instance for testing"""
+        """Create service instance for testing."""
         return MsActionTableService(
             cli_config=mock_cli_config,
             reactor=mock_reactor,
@@ -73,7 +73,7 @@ class TestMsActionTableService:
 
     @pytest.fixture
     def sample_xp24_msactiontable(self):
-        """Create sample XP24 MsActionTable for testing"""
+        """Create sample XP24 MsActionTable for testing."""
         return Xp24MsActionTable(
             input1_action=Xp24InputAction(InputActionType.TOGGLE, TimeParam.NONE),
             input2_action=Xp24InputAction(InputActionType.TURNON, TimeParam.T5SEC),
@@ -88,12 +88,12 @@ class TestMsActionTableService:
 
     @pytest.fixture
     def sample_xp20_msactiontable(self):
-        """Create sample XP20 MsActionTable for testing"""
+        """Create sample XP20 MsActionTable for testing."""
         return Xp20MsActionTable()
 
     @pytest.fixture
     def sample_xp33_msactiontable(self):
-        """Create sample XP33 MsActionTable for testing"""
+        """Create sample XP33 MsActionTable for testing."""
         return Xp33MsActionTable()
 
     def test_service_initialization(
@@ -105,7 +105,7 @@ class TestMsActionTableService:
         mock_xp33_serializer,
         mock_telegram_service,
     ):
-        """Test service can be initialized with required dependencies"""
+        """Test service can be initialized with required dependencies."""
         service = MsActionTableService(
             cli_config=mock_cli_config,
             reactor=mock_reactor,
@@ -127,7 +127,7 @@ class TestMsActionTableService:
         assert service.msactiontable_data == []
 
     def test_connection_established(self, service):
-        """Test connection_established sends DOWNLOAD_MSACTIONTABLE telegram"""
+        """Test connection_established sends DOWNLOAD_MSACTIONTABLE telegram."""
         service.serial_number = "0123450001"
 
         with patch.object(service, "send_telegram") as mock_send:
@@ -146,7 +146,7 @@ class TestMsActionTableService:
     def test_telegram_received_msactiontable_data(
         self, service, sample_xp24_msactiontable
     ):
-        """Test receiving MSACTIONTABLE telegram appends data and sends ACK"""
+        """Test receiving MSACTIONTABLE telegram appends data and sends ACK."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -191,7 +191,7 @@ class TestMsActionTableService:
             )
 
     def test_telegram_received_eof(self, service, sample_xp24_msactiontable):
-        """Test receiving EOF telegram deserializes and calls finish_callback"""
+        """Test receiving EOF telegram deserializes and calls finish_callback."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -233,7 +233,7 @@ class TestMsActionTableService:
         mock_finish.assert_called_once_with(sample_xp24_msactiontable)
 
     def test_telegram_received_invalid_checksum(self, service):
-        """Test telegram with invalid checksum is ignored"""
+        """Test telegram with invalid checksum is ignored."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.telegram_type import TelegramType
 
@@ -258,7 +258,7 @@ class TestMsActionTableService:
             mock_send.assert_not_called()
 
     def test_telegram_received_wrong_serial(self, service):
-        """Test telegram for different serial number is ignored"""
+        """Test telegram for different serial number is ignored."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.telegram_type import TelegramType
 
@@ -283,7 +283,7 @@ class TestMsActionTableService:
             mock_send.assert_not_called()
 
     def test_failed_callback(self, service):
-        """Test failed method calls error_callback"""
+        """Test failed method calls error_callback."""
         mock_error = Mock()
         service.error_callback = mock_error
 
@@ -292,7 +292,7 @@ class TestMsActionTableService:
         mock_error.assert_called_once_with("Connection timeout")
 
     def test_start_method_xp24(self, service):
-        """Test start method with xp24 module type"""
+        """Test start method with xp24 module type."""
         mock_progress = Mock()
         mock_error = Mock()
         mock_finish = Mock()
@@ -317,7 +317,7 @@ class TestMsActionTableService:
             mock_start_reactor.assert_called_once()
 
     def test_start_method_xp20(self, service):
-        """Test start method with xp20 module type"""
+        """Test start method with xp20 module type."""
         mock_progress = Mock()
         mock_error = Mock()
         mock_finish = Mock()
@@ -336,7 +336,7 @@ class TestMsActionTableService:
             mock_start_reactor.assert_called_once()
 
     def test_start_method_xp33(self, service):
-        """Test start method with xp33 module type"""
+        """Test start method with xp33 module type."""
         mock_progress = Mock()
         mock_error = Mock()
         mock_finish = Mock()
@@ -355,7 +355,7 @@ class TestMsActionTableService:
             mock_start_reactor.assert_called_once()
 
     def test_start_method_invalid_module_type(self, service):
-        """Test start method with invalid module type raises error"""
+        """Test start method with invalid module type raises error."""
         mock_progress = Mock()
         mock_error = Mock()
         mock_finish = Mock()
@@ -370,6 +370,6 @@ class TestMsActionTableService:
             )
 
     def test_context_manager(self, service):
-        """Test service works as context manager"""
+        """Test service works as context manager."""
         with service as ctx_service:
             assert ctx_service is service

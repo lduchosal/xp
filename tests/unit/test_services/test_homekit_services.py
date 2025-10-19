@@ -68,15 +68,15 @@ def mock_accessory():
 
 
 class TestHomeKitLightbulbService:
-    """Test cases for HomeKitLightbulbService"""
+    """Test cases for HomeKitLightbulbService."""
 
     def setup_method(self):
-        """Setup test fixtures"""
+        """Setup test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.service = HomeKitLightbulbService(self.event_bus)
 
     def test_init(self):
-        """Test service initialization"""
+        """Test service initialization."""
         event_bus = Mock(spec=EventBus)
         service = HomeKitLightbulbService(event_bus)
 
@@ -95,7 +95,7 @@ class TestHomeKitLightbulbService:
     def test_handle_lightbulb_get_on_dispatches_read_event(
         self, mock_module, mock_accessory
     ):
-        """Test handle_lightbulb_get_on dispatches ReadDatapointEvent"""
+        """Test handle_lightbulb_get_on dispatches ReadDatapointEvent."""
         event = LightBulbGetOnEvent(
             serial_number="1234567890",
             output_number=2,
@@ -112,7 +112,7 @@ class TestHomeKitLightbulbService:
         assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_handle_lightbulb_set_on(self, mock_module, mock_accessory):
-        """Test handle_lightbulb_set_on dispatches SendActionEvent"""
+        """Test handle_lightbulb_set_on dispatches SendActionEvent."""
         event = LightBulbSetOnEvent(
             serial_number="1234567890",
             output_number=5,
@@ -132,15 +132,15 @@ class TestHomeKitLightbulbService:
 
 
 class TestHomeKitOutletService:
-    """Test cases for HomeKitOutletService"""
+    """Test cases for HomeKitOutletService."""
 
     def setup_method(self):
-        """Setup test fixtures"""
+        """Setup test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.service = HomeKitOutletService(self.event_bus)
 
     def test_init(self):
-        """Test service initialization"""
+        """Test service initialization."""
         event_bus = Mock(spec=EventBus)
         service = HomeKitOutletService(event_bus)
 
@@ -156,7 +156,7 @@ class TestHomeKitOutletService:
         )
 
     def test_handle_outlet_get_on(self, mock_module, mock_accessory):
-        """Test handle_outlet_get_on dispatches ReadDatapointEvent"""
+        """Test handle_outlet_get_on dispatches ReadDatapointEvent."""
         event = OutletGetOnEvent(
             serial_number="1234567890",
             output_number=1,
@@ -172,7 +172,7 @@ class TestHomeKitOutletService:
         assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_handle_outlet_set_on(self, mock_module, mock_accessory):
-        """Test handle_outlet_set_on"""
+        """Test handle_outlet_set_on."""
         event = OutletSetOnEvent(
             serial_number="1234567890",
             output_number=3,
@@ -188,7 +188,7 @@ class TestHomeKitOutletService:
         assert dispatched_event.value is False
 
     def test_handle_outlet_get_in_use(self, mock_module, mock_accessory):
-        """Test handle_outlet_get_in_use dispatches ReadDatapointEvent"""
+        """Test handle_outlet_get_in_use dispatches ReadDatapointEvent."""
         event = OutletGetInUseEvent(
             serial_number="1234567890",
             output_number=0,
@@ -205,15 +205,15 @@ class TestHomeKitOutletService:
 
 
 class TestHomeKitDimmingLightService:
-    """Test cases for HomeKitDimmingLightService"""
+    """Test cases for HomeKitDimmingLightService."""
 
     def setup_method(self):
-        """Setup test fixtures"""
+        """Setup test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.service = HomeKitDimmingLightService(self.event_bus)
 
     def test_init(self):
-        """Test service initialization"""
+        """Test service initialization."""
         event_bus = Mock(spec=EventBus)
         service = HomeKitDimmingLightService(event_bus)
 
@@ -224,7 +224,7 @@ class TestHomeKitDimmingLightService:
         assert event_bus.on.call_count == 4
 
     def test_handle_dimminglight_get_on(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_get_on dispatches ReadDatapointEvent"""
+        """Test handle_dimminglight_get_on dispatches ReadDatapointEvent."""
         event = DimmingLightGetOnEvent(
             serial_number="1234567890",
             output_number=0,
@@ -240,7 +240,7 @@ class TestHomeKitDimmingLightService:
         assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_handle_dimminglight_set_on_true(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_set_on with value=True sets brightness to the provided brightness"""
+        """Test handle_dimminglight_set_on with value=True sets brightness to the provided brightness."""
         event = DimmingLightSetOnEvent(
             serial_number="1234567890",
             output_number=2,
@@ -258,7 +258,7 @@ class TestHomeKitDimmingLightService:
         assert dispatched_event.value == 60
 
     def test_handle_dimminglight_set_on_false(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_set_on with value=False sets brightness to 0"""
+        """Test handle_dimminglight_set_on with value=False sets brightness to 0."""
         event = DimmingLightSetOnEvent(
             serial_number="1234567890",
             output_number=2,
@@ -275,7 +275,7 @@ class TestHomeKitDimmingLightService:
         assert dispatched_event.value == 0
 
     def test_handle_dimminglight_set_brightness(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_set_brightness dispatches SendWriteConfigEvent"""
+        """Test handle_dimminglight_set_brightness dispatches SendWriteConfigEvent."""
         event = DimmingLightSetBrightnessEvent(
             serial_number="1234567890",
             output_number=1,
@@ -292,7 +292,7 @@ class TestHomeKitDimmingLightService:
         assert dispatched_event.value == 75
 
     def test_handle_dimminglight_get_brightness(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_get_brightness dispatches ReadDatapointEvent"""
+        """Test handle_dimminglight_get_brightness dispatches ReadDatapointEvent."""
         event = DimmingLightGetBrightnessEvent(
             serial_number="1234567890",
             output_number=1,
@@ -309,16 +309,16 @@ class TestHomeKitDimmingLightService:
 
 
 class TestHomeKitConbusService:
-    """Test cases for HomeKitConbusService"""
+    """Test cases for HomeKitConbusService."""
 
     def setup_method(self):
-        """Setup test fixtures"""
+        """Setup test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.telegram_protocol = Mock(spec=TelegramProtocol)
         self.service = HomeKitConbusService(self.event_bus, self.telegram_protocol)
 
     def test_init(self):
-        """Test service initialization"""
+        """Test service initialization."""
         event_bus = Mock(spec=EventBus)
         telegram_protocol = Mock(spec=TelegramProtocol)
         service = HomeKitConbusService(event_bus, telegram_protocol)
@@ -338,7 +338,7 @@ class TestHomeKitConbusService:
         )
 
     def test_handle_send_write_config_event(self, mock_module, mock_accessory):
-        """Test handle_send_write_config_event formats telegram correctly"""
+        """Test handle_send_write_config_event formats telegram correctly."""
         event = SendWriteConfigEvent(
             serial_number="1234567890",
             output_number=3,
@@ -352,7 +352,7 @@ class TestHomeKitConbusService:
         assert sent_data == b"S1234567890F04D1503:075"
 
     def test_handle_send_action_event_on(self, mock_module, mock_accessory):
-        """Test handle_send_action_event for turning on"""
+        """Test handle_send_action_event for turning on."""
         event = SendActionEvent(serial_number="1234567890", output_number=2, value=True)
 
         self.service.handle_send_action_event(event)
@@ -361,7 +361,7 @@ class TestHomeKitConbusService:
         assert sent_data == b"S1234567890F27D02AB"  # ON_RELEASE action
 
     def test_handle_send_action_event_off(self, mock_module, mock_accessory):
-        """Test handle_send_action_event for turning off"""
+        """Test handle_send_action_event for turning off."""
         event = SendActionEvent(
             serial_number="1234567890", output_number=5, value=False
         )
@@ -373,10 +373,10 @@ class TestHomeKitConbusService:
 
 
 class TestHomeKitService:
-    """Test cases for HomeKitService"""
+    """Test cases for HomeKitService."""
 
     def setup_method(self):
-        """Setup test fixtures"""
+        """Setup test fixtures."""
         self.cli_config = Mock(spec=ConbusClientConfig)
         self.cli_config.conbus = (
             Mock()
@@ -409,7 +409,7 @@ class TestHomeKitService:
         )
 
     def test_init(self):
-        """Test service initialization"""
+        """Test service initialization."""
         assert self.service.cli_config == self.cli_config.conbus
         assert self.service.event_bus == self.event_bus
         assert self.service.telegram_factory == self.telegram_factory
@@ -426,7 +426,7 @@ class TestHomeKitService:
         assert self.event_bus.on.call_count == 5
 
     def test_handle_connection_made(self, mock_module, mock_accessory):
-        """Test handle_connection_made sends initial discovery telegram"""
+        """Test handle_connection_made sends initial discovery telegram."""
         protocol = Mock(spec=TelegramProtocol)
         event = ConnectionMadeEvent(protocol=protocol)
 
@@ -435,21 +435,21 @@ class TestHomeKitService:
         protocol.sendFrame.assert_called_once_with(b"S0000000000F01D00")
 
     def test_handle_connection_failed(self, mock_module, mock_accessory):
-        """Test handle_connection_failed logs the reason"""
+        """Test handle_connection_failed logs the reason."""
         event = ConnectionFailedEvent(reason="Connection refused")
 
         # Should not raise
         self.service.handle_connection_failed(event)
 
     def test_handle_connection_lost(self, mock_module, mock_accessory):
-        """Test handle_connection_lost logs the event"""
+        """Test handle_connection_lost logs the event."""
         event = ConnectionLostEvent(reason="Connection closed")
 
         # Should not raise
         self.service.handle_connection_lost(event)
 
     def test_handle_telegram_received_discovery(self, mock_module, mock_accessory):
-        """Test handle_telegram_received dispatches ModuleDiscoveredEvent for discovery reply"""
+        """Test handle_telegram_received dispatches ModuleDiscoveredEvent for discovery reply."""
         protocol = Mock(spec=TelegramProtocol)
         event = TelegramReceivedEvent(
             protocol=protocol,
@@ -470,7 +470,7 @@ class TestHomeKitService:
         assert dispatched.protocol == protocol
 
     def test_handle_module_discovered(self, mock_module, mock_accessory):
-        """Test handle_module_discovered sends module type query"""
+        """Test handle_module_discovered sends module type query."""
         protocol = Mock(spec=TelegramProtocol)
         event = ModuleDiscoveredEvent(
             telegram="R1234567890F01D00XX",
@@ -488,7 +488,7 @@ class TestHomeKitService:
         protocol.sendFrame.assert_called_once_with(b"S1234567890F02D0000XX")
 
     def test_start_module_factory(self):
-        """Test _start_module_factory creates async task"""
+        """Test _start_module_factory creates async task."""
         with patch("asyncio.create_task") as mock_create_task:
             mock_task = Mock()
             mock_create_task.return_value = mock_task
@@ -502,10 +502,10 @@ class TestHomeKitService:
 
 
 class TestHomekitHapServiceModuleRegistry:
-    """Test cases for HomekitHapService module registry and state change handling"""
+    """Test cases for HomekitHapService module registry and state change handling."""
 
     def setup_method(self):
-        """Setup test fixtures"""
+        """Setup test fixtures."""
         from unittest.mock import MagicMock, patch
 
         # Create mock event bus
@@ -531,33 +531,33 @@ class TestHomekitHapServiceModuleRegistry:
             )
 
     def test_module_registry_initialization(self):
-        """Test that module_registry is initialized as empty dict"""
+        """Test that module_registry is initialized as empty dict."""
         assert self.hap_service.module_registry == {}
         assert self.hap_service.accessory_registry == {}
 
     def test_module_state_changed_event_subscription(self):
-        """Test that HAP service subscribes to ModuleStateChangedEvent"""
+        """Test that HAP service subscribes to ModuleStateChangedEvent."""
         # Verify event handler is registered
         self.event_bus.on.assert_any_call(
             ModuleStateChangedEvent, self.hap_service.handle_module_state_changed
         )
 
     def test_output_state_received_event_subscription(self):
-        """Test that HAP service subscribes to OutputStateReceivedEvent"""
+        """Test that HAP service subscribes to OutputStateReceivedEvent."""
         # Verify event handler is registered
         self.event_bus.on.assert_any_call(
             OutputStateReceivedEvent, self.hap_service.handle_output_state_received
         )
 
     def test_light_level_received_event_subscription(self):
-        """Test that HAP service subscribes to LightLevelReceivedEvent"""
+        """Test that HAP service subscribes to LightLevelReceivedEvent."""
         # Verify event handler is registered
         self.event_bus.on.assert_any_call(
             LightLevelReceivedEvent, self.hap_service.handle_light_level_received
         )
 
     def test_handle_module_state_changed_no_accessories(self):
-        """Test handle_module_state_changed when no accessories are registered"""
+        """Test handle_module_state_changed when no accessories are registered."""
         event = ModuleStateChangedEvent(
             module_type_code=24, link_number=1, input_number=0, telegram_event_type="M"
         )
@@ -569,7 +569,7 @@ class TestHomekitHapServiceModuleRegistry:
         self.event_bus.dispatch.assert_not_called()
 
     def test_handle_module_state_changed_with_lightbulb(self):
-        """Test handle_module_state_changed dispatches ReadDatapointEvent for lightbulb"""
+        """Test handle_module_state_changed dispatches ReadDatapointEvent for lightbulb."""
         from xp.services.homekit.homekit_lightbulb import LightBulb
 
         # Create mock lightbulb accessory
@@ -605,7 +605,7 @@ class TestHomekitHapServiceModuleRegistry:
         assert dispatched_event.refresh_cache is True
 
     def test_handle_module_state_changed_with_dimminglight(self):
-        """Test handle_module_state_changed dispatches both OUTPUT_STATE and LIGHT_LEVEL for dimming light"""
+        """Test handle_module_state_changed dispatches both OUTPUT_STATE and LIGHT_LEVEL for dimming light."""
         from xp.services.homekit.homekit_dimminglight import DimmingLight
 
         # Create mock dimming light accessory
@@ -650,7 +650,7 @@ class TestHomekitHapServiceModuleRegistry:
         assert second_call.refresh_cache is True
 
     def test_handle_module_state_changed_with_multiple_accessories(self):
-        """Test handle_module_state_changed with multiple accessories on same module"""
+        """Test handle_module_state_changed with multiple accessories on same module."""
         from xp.services.homekit.homekit_lightbulb import LightBulb
         from xp.services.homekit.homekit_outlet import Outlet
 
@@ -696,7 +696,7 @@ class TestHomekitHapServiceModuleRegistry:
             assert dispatched_event.refresh_cache is True
 
     def test_module_registry_key_format(self):
-        """Test that module_registry uses (module_type_code, link_number) tuple as key"""
+        """Test that module_registry uses (module_type_code, link_number) tuple as key."""
         from xp.services.homekit.homekit_lightbulb import LightBulb
 
         # Create mock accessory

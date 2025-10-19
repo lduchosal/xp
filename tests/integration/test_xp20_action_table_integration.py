@@ -10,10 +10,10 @@ from xp.services.conbus.actiontable.msactiontable_service import (
 
 
 class TestXp20ActionTableIntegration:
-    """Integration tests for XP20 Action Table"""
+    """Integration tests for XP20 Action Table."""
 
     def test_serializer_service_integration(self):
-        """Test that serializer works with service"""
+        """Test that serializer works with service."""
         # Create a sample action table
         action_table = Xp20MsActionTable()
         action_table.input1.invert = True
@@ -51,7 +51,7 @@ class TestXp20ActionTableIntegration:
         assert result.input2.and_functions == action_table.input2.and_functions
 
     def test_service_xp20_support(self):
-        """Test that MsActionTableService recognizes XP20 module type"""
+        """Test that MsActionTableService recognizes XP20 module type."""
         # This test verifies the service is configured to handle xp20
         # without actually making network calls
         from unittest.mock import Mock
@@ -82,7 +82,7 @@ class TestXp20ActionTableIntegration:
         assert service.telegram_service is not None
 
     def test_complex_configuration_round_trip(self):
-        """Test complex configuration through full serialization cycle"""
+        """Test complex configuration through full serialization cycle."""
         # Create a complex action table
         action_table = Xp20MsActionTable()
 
@@ -125,7 +125,7 @@ class TestXp20ActionTableIntegration:
             ), f"input{i} and_functions mismatch"
 
     def test_boundary_conditions(self):
-        """Test boundary conditions and edge cases"""
+        """Test boundary conditions and edge cases."""
         # Test all flags off
         action_table_off = Xp20MsActionTable()
         serialized_off = Xp20MsActionTableSerializer.to_data(action_table_off)
@@ -164,7 +164,7 @@ class TestXp20ActionTableIntegration:
             assert all(f for f in channel.and_functions)
 
     def test_specification_compliance(self):
-        """Test compliance with the specification example"""
+        """Test compliance with the specification example."""
         spec_example = (
             "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
@@ -184,7 +184,7 @@ class TestXp20ActionTableIntegration:
         assert isinstance(final_result, Xp20MsActionTable)
 
     def test_data_layout_compliance(self):
-        """Test that data layout matches specification"""
+        """Test that data layout matches specification."""
         action_table = Xp20MsActionTable()
 
         # Set specific inputs to test bit positions
@@ -248,7 +248,7 @@ class TestXp20ActionTableIntegration:
         ]
 
     def test_error_handling_integration(self):
-        """Test error handling across the integration"""
+        """Test error handling across the integration."""
         # Test invalid data length
         with pytest.raises(ValueError):
             Xp20MsActionTableSerializer.from_data("INVALID")
@@ -261,7 +261,7 @@ class TestXp20ActionTableIntegration:
             Xp20MsActionTableSerializer.from_data("A" * 65)  # Too long
 
     def test_model_serializer_consistency(self):
-        """Test that model defaults work correctly with serializer"""
+        """Test that model defaults work correctly with serializer."""
         # Default model should serialize and deserialize consistently
         default_table = Xp20MsActionTable()
         serialized = Xp20MsActionTableSerializer.to_data(default_table)

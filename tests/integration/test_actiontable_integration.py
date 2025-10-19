@@ -18,11 +18,11 @@ from xp.services.conbus.actiontable.actiontable_service import (
 
 
 class TestActionTableIntegration:
-    """Integration tests for ActionTable components"""
+    """Integration tests for ActionTable components."""
 
     @pytest.fixture
     def sample_actiontable(self):
-        """Create sample ActionTable for testing"""
+        """Create sample ActionTable for testing."""
         entries = [
             ActionTableEntry(
                 module_type=ModuleTypeCode.CP20,
@@ -46,7 +46,7 @@ class TestActionTableIntegration:
         return ActionTable(entries=entries)
 
     def test_serializer_roundtrip(self, sample_actiontable):
-        """Test ActionTableSerializer encode/decode roundtrip"""
+        """Test ActionTableSerializer encode/decode roundtrip."""
         serializer = ActionTableSerializer()
 
         # Serialize to bytes
@@ -69,7 +69,7 @@ class TestActionTableIntegration:
         assert restored_entry.module_output == original_entry.module_output
 
     def test_serializer_encoded_string_roundtrip(self, sample_actiontable):
-        """Test ActionTableSerializer base64 string roundtrip"""
+        """Test ActionTableSerializer base64 string roundtrip."""
         serializer = ActionTableSerializer()
 
         # Encode to string
@@ -83,7 +83,7 @@ class TestActionTableIntegration:
         assert len(restored_table.entries) == len(sample_actiontable.entries)
 
     def test_serializer_format_output(self, sample_actiontable):
-        """Test ActionTableSerializer output formatting"""
+        """Test ActionTableSerializer output formatting."""
         serializer = ActionTableSerializer()
 
         # Test decoded output format
@@ -97,7 +97,7 @@ class TestActionTableIntegration:
         assert len(encoded) > 0
 
     def test_end_to_end_cli_download(self, sample_actiontable):
-        """Test end-to-end CLI download functionality"""
+        """Test end-to-end CLI download functionality."""
         # Setup mock service
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -137,7 +137,7 @@ class TestActionTableIntegration:
         assert mock_service.start.called
 
     def test_bcd_encoding_decoding(self):
-        """Test BCD encoding/decoding functionality"""
+        """Test BCD encoding/decoding functionality."""
         from xp.utils.serialization import de_bcd, to_bcd
 
         # Test BCD conversion
@@ -149,7 +149,7 @@ class TestActionTableIntegration:
                 assert decoded == value
 
     def test_bit_manipulation(self):
-        """Test bit manipulation functions"""
+        """Test bit manipulation functions."""
         from xp.utils.serialization import lower3, upper5
 
         # Test lower 3 bits extraction
@@ -162,7 +162,7 @@ class TestActionTableIntegration:
         assert upper5_result == 0b11110  # 30
 
     def test_actiontable_empty_entries(self):
-        """Test ActionTable with empty entries"""
+        """Test ActionTable with empty entries."""
         empty_table = ActionTable(entries=[])
         serializer = ActionTableSerializer()
 
@@ -176,7 +176,7 @@ class TestActionTableIntegration:
         assert len(restored.entries) == 0
 
     def test_actiontable_edge_cases(self):
-        """Test ActionTable with edge case values"""
+        """Test ActionTable with edge case values."""
         edge_entry = ActionTableEntry(
             module_type=ModuleTypeCode.CP20,
             link_number=99,  # Max BCD value

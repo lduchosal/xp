@@ -7,10 +7,10 @@ from xp.models.telegram.event_telegram import EventTelegram
 
 
 class TestEventTelegram:
-    """Test cases for EventTelegram model"""
+    """Test cases for EventTelegram model."""
 
     def test_button_press_telegram(self):
-        """Test parsing a button press telegram"""
+        """Test parsing a button press telegram."""
         telegram = EventTelegram(
             module_type=14,
             link_number=0,
@@ -31,7 +31,7 @@ class TestEventTelegram:
         assert telegram.input_type == InputType.PUSH_BUTTON
 
     def test_button_release_telegram(self):
-        """Test parsing a button release telegram"""
+        """Test parsing a button release telegram."""
         telegram = EventTelegram(
             module_type=14,
             link_number=1,
@@ -46,7 +46,7 @@ class TestEventTelegram:
         assert telegram.is_button_release is True
 
     def test_ir_remote_input_type(self):
-        """Test IR remote input type classification"""
+        """Test IR remote input type classification."""
         telegram = EventTelegram(
             module_type=14,
             link_number=0,
@@ -59,7 +59,7 @@ class TestEventTelegram:
         assert telegram.input_type == InputType.IR_REMOTE
 
     def test_proximity_sensor_input_type(self):
-        """Test proximity sensor input type classification"""
+        """Test proximity sensor input type classification."""
         telegram = EventTelegram(
             module_type=14,
             link_number=0,
@@ -72,7 +72,7 @@ class TestEventTelegram:
         assert telegram.input_type == InputType.PROXIMITY_SENSOR
 
     def test_invalid_output_number_raises_error(self):
-        """Test that invalid input numbers raise ValueError"""
+        """Test that invalid input numbers raise ValueError."""
         telegram = EventTelegram(
             module_type=14,
             link_number=0,
@@ -86,7 +86,7 @@ class TestEventTelegram:
             _ = telegram.input_type
 
     def test_to_dict(self):
-        """Test dictionary serialization"""
+        """Test dictionary serialization."""
         timestamp = datetime(2023, 1, 1, 12, 0, 0)
         result = EventTelegram(
             module_type=14,
@@ -120,7 +120,7 @@ class TestEventTelegram:
         assert result == expected
 
     def test_str_representation(self):
-        """Test human-readable string representation"""
+        """Test human-readable string representation."""
         telegram = EventTelegram(
             module_type=14,
             link_number=0,
@@ -135,7 +135,7 @@ class TestEventTelegram:
         assert str(telegram) == expected
 
     def test_timestamp_auto_generation(self):
-        """Test that timestamp is auto-generated if not provided"""
+        """Test that timestamp is auto-generated if not provided."""
         before = datetime.now()
         telegram = EventTelegram(
             module_type=14,

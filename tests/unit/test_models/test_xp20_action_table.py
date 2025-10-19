@@ -4,10 +4,10 @@ from xp.models.actiontable.msactiontable_xp20 import InputChannel, Xp20MsActionT
 
 
 class TestInputChannel:
-    """Test cases for InputChannel model"""
+    """Test cases for InputChannel model."""
 
     def test_default_values(self):
-        """Test that default values are correct"""
+        """Test that default values are correct."""
         channel = InputChannel()
 
         assert channel.invert is False
@@ -19,7 +19,7 @@ class TestInputChannel:
         assert channel.ta_function is False
 
     def test_custom_values(self):
-        """Test setting custom values"""
+        """Test setting custom values."""
         and_funcs = [True, False, True, False, True, False, True, False]
         channel = InputChannel(
             invert=True,
@@ -38,20 +38,20 @@ class TestInputChannel:
         assert channel.ta_function is True
 
     def test_and_functions_initialization(self):
-        """Test that and_functions is properly initialized with 8 booleans"""
+        """Test that and_functions is properly initialized with 8 booleans."""
         channel = InputChannel()
         assert isinstance(channel.and_functions, list)
         assert len(channel.and_functions) == 8
         assert all(isinstance(f, bool) for f in channel.and_functions)
 
     def test_and_functions_custom_list(self):
-        """Test setting custom and_functions list"""
+        """Test setting custom and_functions list."""
         custom_funcs = [True, True, False, False, True, True, False, False]
         channel = InputChannel(and_functions=custom_funcs)
         assert channel.and_functions == custom_funcs
 
     def test_boolean_types(self):
-        """Test that all fields are properly typed as booleans"""
+        """Test that all fields are properly typed as booleans."""
         channel = InputChannel(
             invert=True,
             short_long=False,
@@ -68,10 +68,10 @@ class TestInputChannel:
 
 
 class TestXp20MsActionTable:
-    """Test cases for Xp20MsActionTable model"""
+    """Test cases for Xp20MsActionTable model."""
 
     def test_default_values(self):
-        """Test that default values are correct"""
+        """Test that default values are correct."""
         table = Xp20MsActionTable()
 
         # Check all 8 input channels exist
@@ -87,7 +87,7 @@ class TestXp20MsActionTable:
             assert channel.ta_function is False
 
     def test_custom_input_channels(self):
-        """Test setting custom input channels"""
+        """Test setting custom input channels."""
         channel1 = InputChannel(invert=True, short_long=True)
         channel2 = InputChannel(group_on_off=True, sa_function=True)
 
@@ -99,7 +99,7 @@ class TestXp20MsActionTable:
         assert table.input2.sa_function is True
 
     def test_all_inputs_exist(self):
-        """Test that all 8 input channels are present"""
+        """Test that all 8 input channels are present."""
         table = Xp20MsActionTable()
 
         assert hasattr(table, "input1")
@@ -117,7 +117,7 @@ class TestXp20MsActionTable:
             assert isinstance(channel, InputChannel)
 
     def test_complex_configuration(self):
-        """Test a complex configuration with mixed settings"""
+        """Test a complex configuration with mixed settings."""
         table = Xp20MsActionTable()
 
         # Configure input1 with all flags true
@@ -174,7 +174,7 @@ class TestXp20MsActionTable:
         assert table.input8.sa_function is False
 
     def test_dataclass_equality(self):
-        """Test that dataclass equality works correctly"""
+        """Test that dataclass equality works correctly."""
         table1 = Xp20MsActionTable()
         table2 = Xp20MsActionTable()
 
@@ -190,7 +190,7 @@ class TestXp20MsActionTable:
         assert table1 == table2
 
     def test_input_channel_independence(self):
-        """Test that input channels are independent of each other"""
+        """Test that input channels are independent of each other."""
         table = Xp20MsActionTable()
 
         # Modify input1
@@ -212,7 +212,7 @@ class TestXp20MsActionTable:
         assert table.input3.short_long is False
 
     def test_and_functions_list_independence(self):
-        """Test that and_functions lists are independent between channels"""
+        """Test that and_functions lists are independent between channels."""
         table = Xp20MsActionTable()
 
         # Modify input1's and_functions

@@ -2,7 +2,7 @@
 
 Tests the complete flow from CLI input to output for system and reply telegrams,
 ensuring proper integration between all layers.
-"""
+."""
 
 import json
 

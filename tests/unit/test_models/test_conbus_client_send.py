@@ -9,21 +9,21 @@ from xp.models.conbus.conbus_client_config import ClientConfig
 
 
 class TestTelegramType:
-    """Test cases for TelegramType enum"""
+    """Test cases for TelegramType enum."""
 
 
 class TestConbusClientConfig:
-    """Test cases for ConbusClientConfig model"""
+    """Test cases for ConbusClientConfig model."""
 
     def test_default_config(self):
-        """Test default configuration values"""
+        """Test default configuration values."""
         config = ConbusClientConfig().conbus
         assert config.ip == "192.168.1.100"
         assert config.port == 10001
         assert config.timeout == 0.1
 
     def test_custom_config(self):
-        """Test custom configuration values"""
+        """Test custom configuration values."""
         config = ClientConfig(ip="10.0.0.1", port=8080, timeout=30)
         assert config.ip == "10.0.0.1"
         assert config.port == 8080
@@ -31,10 +31,10 @@ class TestConbusClientConfig:
 
 
 class TestConbusSendResponse:
-    """Test cases for ConbusSendResponse model"""
+    """Test cases for ConbusSendResponse model."""
 
     def test_successful_response(self):
-        """Test successful response creation"""
+        """Test successful response creation."""
         response = ConbusDatapointResponse(
             success=True,
             sent_telegram="<S0000000000F01D00FA>",
@@ -52,14 +52,14 @@ class TestConbusSendResponse:
         assert isinstance(response.timestamp, datetime)
 
     def test_custom_timestamp(self):
-        """Test response with custom timestamp"""
+        """Test response with custom timestamp."""
         custom_time = datetime(2023, 8, 27, 15, 45, 30)
         response = ConbusDatapointResponse(success=True, timestamp=custom_time)
 
         assert response.timestamp == custom_time
 
     def test_to_dict(self):
-        """Test conversion to dictionary"""
+        """Test conversion to dictionary."""
         timestamp = datetime(2023, 8, 27, 16, 20, 15, 789123)
         result = ConbusDatapointResponse(
             success=True,
@@ -75,10 +75,10 @@ class TestConbusSendResponse:
 
 
 class TestConbusConnectionStatus:
-    """Test cases for ConbusConnectionStatus model"""
+    """Test cases for ConbusConnectionStatus model."""
 
     def test_connected_status(self):
-        """Test connected status creation"""
+        """Test connected status creation."""
         last_activity = datetime(2023, 8, 27, 14, 30, 0)
         status = ConbusConnectionStatus(
             connected=True, ip="192.168.1.100", port=10001, last_activity=last_activity
@@ -91,7 +91,7 @@ class TestConbusConnectionStatus:
         assert status.error is None
 
     def test_disconnected_status(self):
-        """Test disconnected status creation"""
+        """Test disconnected status creation."""
         status = ConbusConnectionStatus(
             connected=False, ip="192.168.1.100", port=10001, error="Connection timeout"
         )
@@ -103,7 +103,7 @@ class TestConbusConnectionStatus:
         assert status.error == "Connection timeout"
 
     def test_to_dict(self):
-        """Test conversion to dictionary"""
+        """Test conversion to dictionary."""
         last_activity = datetime(2023, 8, 27, 18, 45, 20, 456789)
         result = ConbusConnectionStatus(
             connected=True,
@@ -124,10 +124,10 @@ class TestConbusConnectionStatus:
 
 
 class TestModelIntegration:
-    """Integration tests for model interactions"""
+    """Integration tests for model interactions."""
 
     def test_full_workflow_data_models(self):
-        """Test complete workflow with all data models"""
+        """Test complete workflow with all data models."""
         # Create config
         config = ConbusClientConfig().conbus
 
@@ -156,7 +156,7 @@ class TestModelIntegration:
         assert status.connected is True
 
     def test_error_scenario_workflow(self):
-        """Test error scenario workflow"""
+        """Test error scenario workflow."""
         # Create request
 
         # Create failed response

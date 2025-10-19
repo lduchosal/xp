@@ -14,23 +14,23 @@ class TestConbusBlinkService:
 
     @pytest.fixture
     def mock_cli_config(self):
-        """Create a test config"""
+        """Create a test config."""
         client_config = ClientConfig(ip="10.0.0.1", port=8080, timeout=15)
         return ConbusClientConfig(conbus=client_config)
 
     @pytest.fixture
     def mock_reactor(self):
-        """Create a mock reactor"""
+        """Create a mock reactor."""
         return Mock()
 
     @pytest.fixture
     def mock_telegram_service(self):
-        """Create a mock telegram service"""
+        """Create a mock telegram service."""
         return Mock()
 
     @pytest.fixture
     def service(self, mock_telegram_service, mock_cli_config, mock_reactor):
-        """Create service instance with test config"""
+        """Create service instance with test config."""
         return ConbusBlinkService(
             telegram_service=mock_telegram_service,
             cli_config=mock_cli_config,
@@ -38,7 +38,7 @@ class TestConbusBlinkService:
         )
 
     def test_service_initialization(self, service):
-        """Test service can be initialized with required dependencies"""
+        """Test service can be initialized with required dependencies."""
         assert service.serial_number == ""
         assert service.on_or_off == "none"
         assert service.finish_callback is None
@@ -47,12 +47,12 @@ class TestConbusBlinkService:
         assert service.service_response.operation == "none"
 
     def test_service_context_manager(self, service):
-        """Test service can be used as context manager"""
+        """Test service can be used as context manager."""
         with service as s:
             assert s is service
 
     def test_connection_established_blink_on(self, service):
-        """Test connection_established configures for 'on' operation"""
+        """Test connection_established configures for 'on' operation."""
         from unittest.mock import patch
 
         service.serial_number = "0012345008"
@@ -66,7 +66,7 @@ class TestConbusBlinkService:
         assert service.service_response.operation == "on"
 
     def test_connection_established_blink_off(self, service):
-        """Test connection_established configures for 'off' operation"""
+        """Test connection_established configures for 'off' operation."""
         from unittest.mock import patch
 
         service.serial_number = "0012345008"
@@ -80,7 +80,7 @@ class TestConbusBlinkService:
         assert service.service_response.operation == "off"
 
     def test_telegram_sent(self, service, mock_telegram_service):
-        """Test telegram_sent callback updates service response"""
+        """Test telegram_sent callback updates service response."""
         from xp.models.telegram.system_telegram import SystemTelegram
 
         telegram = "<S0012345008F05D00FN>"
@@ -98,7 +98,7 @@ class TestConbusBlinkService:
         mock_telegram_service.parse_system_telegram.assert_called_once_with(telegram)
 
     def test_telegram_received_ack(self, service, mock_telegram_service):
-        """Test telegram_received callback with ACK response"""
+        """Test telegram_received callback with ACK response."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.reply_telegram import ReplyTelegram
 
@@ -131,7 +131,7 @@ class TestConbusBlinkService:
         assert service.service_response.reply_telegram == mock_reply
 
     def test_telegram_received_nak(self, service, mock_telegram_service):
-        """Test telegram_received callback with NAK response"""
+        """Test telegram_received callback with NAK response."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.reply_telegram import ReplyTelegram
 
@@ -164,7 +164,7 @@ class TestConbusBlinkService:
         assert service.service_response.reply_telegram == mock_reply
 
     def test_telegram_received_wrong_serial(self, service, mock_telegram_service):
-        """Test telegram_received ignores telegrams from different serial"""
+        """Test telegram_received ignores telegrams from different serial."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 
         service.serial_number = "0012345008"
@@ -187,7 +187,7 @@ class TestConbusBlinkService:
         assert service.service_response.success is False
 
     def test_telegram_received_with_callback(self, service, mock_telegram_service):
-        """Test telegram_received calls finish callback"""
+        """Test telegram_received calls finish callback."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.reply_telegram import ReplyTelegram
 
@@ -220,7 +220,7 @@ class TestConbusBlinkService:
         finish_mock.assert_called_once_with(service.service_response)
 
     def test_failed(self, service):
-        """Test failed callback updates service response"""
+        """Test failed callback updates service response."""
         finish_mock = Mock()
         service.finish_callback = finish_mock
 
