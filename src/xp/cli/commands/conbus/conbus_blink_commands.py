@@ -11,6 +11,8 @@ from xp.cli.utils.decorators import (
     handle_service_errors,
 )
 from xp.cli.utils.serial_number_type import SERIAL
+from xp.models.conbus.conbus_blink import ConbusBlinkResponse
+from xp.services.conbus.conbus_blink_all_service import ConbusBlinkAllService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
 from xp.services.telegram.telegram_blink_service import BlinkError
 
@@ -29,12 +31,13 @@ def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
     \b
         xp conbus blink on 0012345008
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
 
+    def finish(service_response: ConbusBlinkResponse) -> None:
+        click.echo(json.dumps(service_response.to_dict(), indent=2))
+
+    service: ConbusBlinkService = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
     with service:
-
-        response = service.send_blink_telegram(serial_number, "on")
-        click.echo(json.dumps(response.to_dict(), indent=2))
+        service.send_blink_telegram(serial_number, "on", finish, 0.5)
 
 
 @conbus_blink.command("off")
@@ -51,12 +54,12 @@ def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
     \b
         xp conbus blink off 0012345008
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
+    def finish(service_response: ConbusBlinkResponse) -> None:
+        click.echo(json.dumps(service_response.to_dict(), indent=2))
 
+    service: ConbusBlinkService = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
     with service:
-
-        response = service.send_blink_telegram(serial_number, "off")
-        click.echo(json.dumps(response.to_dict(), indent=2))
+        service.send_blink_telegram(serial_number, "off", finish, 0.5)
 
 
 @conbus_blink.group("all", short_help="Control blink state for all devices")
@@ -80,14 +83,16 @@ def blink_all_off(ctx: Context) -> None:
     \b
         xp conbus blink all off
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
+    def finish(discovered_devices: ConbusBlinkResponse) -> None:
+        click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
 
+    def progress(message: str) -> None:
+        click.echo(message)
+        pass
+
+    service: ConbusBlinkAllService = ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)
     with service:
-        response = service.blink_all("off")
-        if response.success:
-            click.echo("All devices blink turned off")
-        else:
-            click.echo(f"Error: {response.error}")
+        service.send_blink_all_telegram("off", progress, finish, 0.5)
 
 
 @conbus_blink_all.command("on", short_help="Turn on blinking for all devices")
@@ -103,11 +108,16 @@ def blink_all_on(ctx: Context) -> None:
     \b
         xp conbus blink all on
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
 
+    def finish(discovered_devices: ConbusBlinkResponse) -> None:
+        click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
+
+    def progress(message: str) -> None:
+        click.echo(message)
+        pass
+
+    service: ConbusBlinkAllService = ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)
     with service:
-        response = service.blink_all("on")
-        if response.success:
-            click.echo("All devices blink turned on")
-        else:
-            click.echo(f"Error: {response.error}")
+        service.send_blink_all_telegram("on", progress, finish, 0.5)
+
+

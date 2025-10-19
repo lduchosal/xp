@@ -59,8 +59,8 @@ class ConbusDiscoverService(ConbusProtocol):
         self.discovered_device_result.received_telegrams.append(telegram_received.frame)
 
         if (
-            telegram_received.telegram_type == TelegramType.REPLY.value
-            and telegram_received.checksum_valid
+            telegram_received.checksum_valid
+            and telegram_received.telegram_type == TelegramType.REPLY.value
             and telegram_received.payload[11:16] == "F01D"
             and len(telegram_received.payload) == 15
         ):

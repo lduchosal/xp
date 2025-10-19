@@ -23,6 +23,7 @@ from xp.services.conbus.actiontable.msactiontable_xp33_serializer import (
 )
 from xp.services.conbus.conbus_autoreport_get_service import ConbusAutoreportGetService
 from xp.services.conbus.conbus_autoreport_set_service import ConbusAutoreportSetService
+from xp.services.conbus.conbus_blink_all_service import ConbusBlinkAllService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
 from xp.services.conbus.conbus_connection_pool import (
     ConbusConnectionPool,
@@ -194,11 +195,18 @@ class ServiceContainer:
         self.container.register(
             ConbusBlinkService,
             factory=lambda: ConbusBlinkService(
-                conbus_service=self.container.resolve(ConbusService),
-                telegram_discover_service=self.container.resolve(
-                    TelegramDiscoverService
-                ),
-                telegram_blink_service=self.container.resolve(TelegramBlinkService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusBlinkAllService,
+            factory=lambda: ConbusBlinkAllService(
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
                 telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,
