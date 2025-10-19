@@ -37,7 +37,7 @@ from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointService,
 )
 from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
-from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
+from xp.services.conbus.conbus_lightlevel_set_service import ConbusLightlevelSetService
 from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_raw_service import ConbusRawService
@@ -224,11 +224,10 @@ class ServiceContainer:
         )
 
         self.container.register(
-            ConbusLightlevelService,
-            factory=lambda: ConbusLightlevelService(
-                telegram_service=self.container.resolve(TelegramService),
-                conbus_service=self.container.resolve(ConbusService),
-                datapoint_service=self.container.resolve(ConbusDatapointService),
+            ConbusLightlevelSetService,
+            factory=lambda: ConbusLightlevelSetService(
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )

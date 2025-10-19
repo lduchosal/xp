@@ -38,7 +38,6 @@ from xp.cli.commands.conbus.conbus_datapoint_commands import (
 )
 from xp.cli.commands.conbus.conbus_discover_commands import send_discover_telegram
 from xp.cli.commands.conbus.conbus_lightlevel_commands import (
-    xp_lightlevel_get,
     xp_lightlevel_off,
     xp_lightlevel_on,
     xp_lightlevel_set,

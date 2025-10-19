@@ -12,7 +12,7 @@ from xp.services.conbus.conbus_blink_service import ConbusBlinkService
 from xp.services.conbus.conbus_connection_pool import ConbusConnectionPool
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
-from xp.services.conbus.conbus_lightlevel_service import ConbusLightlevelService
+from xp.services.conbus.conbus_lightlevel_set_service import ConbusLightlevelSetService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.conbus_service import ConbusService
@@ -123,8 +123,8 @@ class TestServiceContainer:
 
     def test_resolve_conbus_lightlevel_service(self):
         """Test resolving ConbusLightlevelService."""
-        service = ServiceContainer().get_container().resolve(ConbusLightlevelService)
-        assert isinstance(service, ConbusLightlevelService)
+        service = ServiceContainer().get_container().resolve(ConbusLightlevelSetService)
+        assert isinstance(service, ConbusLightlevelSetService)
 
     def test_resolve_actiontable_service(self):
         """Test resolving ActionTableService."""
@@ -191,7 +191,7 @@ class TestServiceContainer:
             ConbusDiscoverService,
             ConbusBlinkService,
             ConbusOutputService,
-            ConbusLightlevelService,
+            ConbusLightlevelSetService,
             ActionTableService,
             MsActionTableService,
             HomekitModuleService,
