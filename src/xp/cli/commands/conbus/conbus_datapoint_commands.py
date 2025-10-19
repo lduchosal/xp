@@ -11,7 +11,6 @@ from xp.cli.commands.conbus.conbus import conbus_datapoint
 from xp.cli.utils.datapoint_type_choice import DATAPOINT
 from xp.cli.utils.decorators import (
     connection_command,
-    handle_service_errors,
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.conbus.conbus_datapoint import ConbusDatapointResponse
@@ -21,7 +20,6 @@ from xp.services.conbus.conbus_datapoint_queryall_service import (
     ConbusDatapointQueryAllService,
 )
 from xp.services.conbus.conbus_datapoint_service import (
-    ConbusDatapointError,
     ConbusDatapointService,
 )
 
@@ -31,7 +29,6 @@ from xp.services.conbus.conbus_datapoint_service import (
 @click.argument("serial_number", type=SERIAL)
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusDatapointError)
 def query_datapoint(ctx: Context, serial_number: str, datapoint: DataPointType) -> None:
     """
     Query a specific datapoint from Conbus server.
@@ -67,7 +64,6 @@ conbus_datapoint.add_command(query_datapoint)
 @click.argument("serial_number", type=SERIAL)
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusDatapointError)
 def query_all_datapoints(ctx: Context, serial_number: str) -> None:
     """
     Query all datapoints from a specific module.
@@ -84,7 +80,7 @@ def query_all_datapoints(ctx: Context, serial_number: str) -> None:
     def on_finish(service_response: ConbusDatapointResponse) -> None:
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
-    def on_progress(reply_telegram:ReplyTelegram) -> None:
+    def on_progress(reply_telegram: ReplyTelegram) -> None:
         click.echo(json.dumps(reply_telegram.to_dict(), indent=2))
 
     with service:

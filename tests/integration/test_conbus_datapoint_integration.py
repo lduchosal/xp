@@ -11,7 +11,6 @@ from xp.services.conbus.conbus_datapoint_queryall_service import (
     ConbusDatapointQueryAllService,
 )
 from xp.services.conbus.conbus_datapoint_service import (
-    ConbusDatapointError,
     ConbusDatapointService,
 )
 
@@ -48,7 +47,9 @@ class TestConbusDatapointIntegration:
         )
 
         # Make the mock service call the callback immediately
-        def mock_query_all_datapoints(serial_number, finish_callback):
+        def mock_query_all_datapoints(
+            serial_number, finish_callback, progress_callback
+        ):
             finish_callback(mock_response)
 
         mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
@@ -90,10 +91,6 @@ class TestConbusDatapointIntegration:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        mock_service.query_all_datapoints.side_effect = ConbusDatapointError(
-            "Invalid serial number"
-        )
-
         # Setup mock container to resolve ConbusDatapointService
         mock_container = Mock()
         mock_container.resolve.return_value = mock_service
@@ -111,35 +108,6 @@ class TestConbusDatapointIntegration:
         assert result.exit_code != 0
         assert "Invalid serial number" in result.output or "Error" in result.output
 
-    def test_conbus_datapoint_connection_error(self):
-        """Test handling network connection failures"""
-
-        # Mock service that raises connection error
-        mock_service = Mock()
-        mock_service.__enter__ = Mock(return_value=mock_service)
-        mock_service.__exit__ = Mock(return_value=None)
-
-        mock_service.query_all_datapoints.side_effect = ConbusDatapointError(
-            "Connection failed"
-        )
-
-        # Setup mock container to resolve ConbusDatapointService
-        mock_container = Mock()
-        mock_container.resolve.return_value = mock_service
-        mock_service_container = Mock()
-        mock_service_container.get_container.return_value = mock_container
-
-        # Run CLI command
-        result = self.runner.invoke(
-            cli,
-            ["conbus", "datapoint", "all", self.valid_serial],
-            obj={"container": mock_service_container},
-        )
-
-        # Should handle the error gracefully
-        assert "Connection failed" in result.output or "Error" in result.output
-        assert result.exit_code != 0
-
     def test_conbus_datapoint_invalid_response(self):
         """Test handling invalid responses from the server"""
 
@@ -156,7 +124,9 @@ class TestConbusDatapointIntegration:
         )
 
         # Make the mock service call the callback immediately
-        def mock_query_all_datapoints(serial_number, finish_callback):
+        def mock_query_all_datapoints(
+            serial_number, finish_callback, progress_callback
+        ):
             finish_callback(mock_response)
 
         mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
@@ -195,7 +165,9 @@ class TestConbusDatapointIntegration:
         )
 
         # Make the mock service call the callback immediately
-        def mock_query_all_datapoints(serial_number, finish_callback):
+        def mock_query_all_datapoints(
+            serial_number, finish_callback, progress_callback
+        ):
             finish_callback(mock_response)
 
         mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints

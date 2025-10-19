@@ -7,12 +7,9 @@ import click
 from click import Context
 
 from xp.cli.commands.conbus.conbus import conbus
-from xp.cli.utils.decorators import connection_command, handle_service_errors
+from xp.cli.utils.decorators import connection_command
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models import ConbusResponse
-from xp.services.conbus.conbus_datapoint_service import (
-    ConbusDatapointError,
-)
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 
 
@@ -28,7 +25,6 @@ from xp.services.conbus.conbus_scan_service import ConbusScanService
 )
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusDatapointError)
 def scan_module(
     ctx: Context, serial_number: str, function_code: str, background: bool
 ) -> None:

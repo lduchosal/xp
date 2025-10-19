@@ -12,9 +12,6 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
-from xp.services.conbus.conbus_datapoint_service import (
-    ConbusDatapointError,
-)
 from xp.services.telegram.telegram_blink_service import BlinkError
 
 
@@ -22,7 +19,7 @@ from xp.services.telegram.telegram_blink_service import BlinkError
 @click.argument("serial_number", type=SERIAL)
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusDatapointError, BlinkError)
+@handle_service_errors(BlinkError)
 def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
     """
     Send blink command to start blinking module LED.
@@ -44,7 +41,7 @@ def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
 @click.argument("serial_number", type=SERIAL)
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusDatapointError, BlinkError)
+@handle_service_errors(BlinkError)
 def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
     """
     Send blink command to start blinking module LED.
@@ -73,7 +70,7 @@ def conbus_blink_all() -> None:
 @conbus_blink_all.command("off", short_help="Turn off blinking for all devices")
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusDatapointError, BlinkError)
+@handle_service_errors(BlinkError)
 def blink_all_off(ctx: Context) -> None:
     """
     Turn off blinking for all discovered devices.
@@ -96,7 +93,7 @@ def blink_all_off(ctx: Context) -> None:
 @conbus_blink_all.command("on", short_help="Turn on blinking for all devices")
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusDatapointError, BlinkError)
+@handle_service_errors(BlinkError)
 def blink_all_on(ctx: Context) -> None:
     """
     Turn on blinking for all discovered devices.

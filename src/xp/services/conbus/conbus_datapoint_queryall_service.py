@@ -125,7 +125,7 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         self,
         serial_number: str,
         finish_callback: Callable[[ConbusDatapointResponse], None],
-        progress_callback: Callable[[str], None],
+        progress_callback: Callable[[ReplyTelegram], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """
