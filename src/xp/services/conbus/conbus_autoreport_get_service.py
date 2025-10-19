@@ -29,7 +29,13 @@ class ConbusAutoreportGetService(ConbusDatapointService):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus autoreport get service"""
+        """Initialize the Conbus autoreport get service.
+
+        Args:
+            telegram_service: Telegram service for parsing.
+            cli_config: Conbus client configuration.
+            reactor: Twisted reactor instance.
+        """
         super().__init__(telegram_service, cli_config, reactor)
         self.service_callback: Optional[Callable[[ConbusAutoreportResponse], None]] = (
             None
@@ -41,7 +47,11 @@ class ConbusAutoreportGetService(ConbusDatapointService):
     def finish_service_callback(
         self, datapoint_response: ConbusDatapointResponse
     ) -> None:
+        """Handle finished service callback.
 
+        Args:
+            datapoint_response: Datapoint response from service.
+        """
         self.logger.debug("Parsing datapoint response")
         autoreport_status = ""
         if datapoint_response.success and datapoint_response.datapoint_telegram:

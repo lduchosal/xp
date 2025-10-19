@@ -14,7 +14,7 @@ class TelegramChecksumService:
     """Service class for checksum operations."""
 
     def __init__(self) -> None:
-        """Initialize the checksum service."""
+        """Initialize the checksum service"""
         pass
 
     @staticmethod
@@ -26,7 +26,7 @@ class TelegramChecksumService:
 
         Returns:
             Response object with checksum result
-        """
+        ."""
         try:
             checksum = calculate_checksum(data)
 
@@ -49,7 +49,7 @@ class TelegramChecksumService:
 
         Returns:
             Response object with checksum result
-        """
+        ."""
         try:
             # Convert string to bytes if needed
             if isinstance(data, str):
@@ -87,7 +87,7 @@ class TelegramChecksumService:
 
         Returns:
             Response object with validation result
-        """
+        ."""
         try:
             calculated_checksum = calculate_checksum(data)
             is_valid = calculated_checksum == expected_checksum

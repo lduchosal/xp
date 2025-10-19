@@ -14,7 +14,7 @@ from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 
 class HomeKitConbusService:
-    """homeKitConbusService"""
+    """homeKitConbusService."""
 
     event_bus: EventBus
 

@@ -1,3 +1,5 @@
+"""Integration tests for module command functionality."""
+
 import json
 
 from click.testing import CliRunner

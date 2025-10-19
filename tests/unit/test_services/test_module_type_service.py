@@ -1,3 +1,5 @@
+"""Unit tests for module type service."""
+
 import pytest
 
 from xp.models.telegram.module_type import ModuleType

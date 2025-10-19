@@ -1,3 +1,5 @@
+"""Module type models for the XP system."""
+
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
@@ -6,14 +8,21 @@ from xp.models.telegram.module_type_code import MODULE_TYPE_REGISTRY
 
 @dataclass
 class ModuleType:
-    """
-    Represents a module type in the XP system.
+    """Represents a module type in the XP system.
+
     Contains the module code, name, and description.
+
+    Attributes:
+        code: Numeric module type code.
+        name: Module name.
+        description: Module description.
+        module_category: Module category.
     """
 
     code: int
     name: str
     description: str
+    module_category: str = ""
 
     @classmethod
     def from_code(cls, code: int) -> Optional["ModuleType"]:

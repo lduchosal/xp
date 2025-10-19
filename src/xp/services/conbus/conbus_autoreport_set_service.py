@@ -31,7 +31,12 @@ class ConbusAutoreportSetService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus autoreport set service"""
+        """Initialize the Conbus autoreport set service.
+
+        Args:
+            cli_config: Conbus client configuration.
+            reactor: Twisted reactor instance.
+        """
         super().__init__(cli_config, reactor)
         self.serial_number: str = ""
         self.status: bool = False
@@ -47,6 +52,7 @@ class ConbusAutoreportSetService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
+        """Handle connection established event."""
         # Convert boolean to appropriate value
         status_value = "PP" if self.status else "AA"
         status_text = "on" if self.status else "off"
@@ -60,11 +66,20 @@ class ConbusAutoreportSetService(ConbusProtocol):
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        ."""
         self.logger.debug("Autoreport reply telegram sent %s", telegram_sent)
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
 
+        Args:
+            telegram_received: The telegram received event.
+        ."""
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
@@ -90,6 +105,11 @@ class ConbusAutoreportSetService(ConbusProtocol):
             self.finish_callback(self.service_response)
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+        Args:
+            message: Failure message.
+        ."""
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
         self.service_response.error = message
@@ -104,20 +124,13 @@ class ConbusAutoreportSetService(ConbusProtocol):
         finish_callback: Callable[[ConbusAutoreportResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Set the auto report status for a specific module.
+        """Set the auto report status for a specific module.
 
         Args:
-            serial_number: 10-digit module serial number
-            status: True for ON, False for OFF
-            finish_callback: callback function to call when the autoreport status is
-            timeout_seconds: timeout in seconds
-
-        Returns:
-            ConbusAutoreportResponse with operation result
-
-        Raises:
-            ConbusAutoreportError: If parameters are invalid
+            serial_number: 10-digit module serial number.
+            status: True for ON, False for OFF.
+            finish_callback: Callback function to call when operation completes.
+            timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting set_autoreport_status")
         if timeout_seconds:

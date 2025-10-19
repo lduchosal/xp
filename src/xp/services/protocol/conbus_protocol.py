@@ -99,7 +99,7 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
 
         Args:
             data: Raw telegram payload (without checksum/framing)
-        """
+        ."""
         # Calculate full frame (add checksum and brackets)
         checksum = calculate_checksum(data.decode())
         frame_data = data.decode() + checksum
@@ -146,7 +146,7 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self._stop_reactor()
 
     def timeout(self) -> bool:
-        """Timeout callback, return True to continue waiting for next timeout, False to stop"""
+        """Timeout callback, return True to continue waiting for next timeout, False to stop."""
         self.logger.info("Timeout after: %ss", self.timeout_seconds)
         self.failed(f"Timeout after: {self.timeout_seconds}s")
         return False
@@ -156,7 +156,7 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.failed(reason.getErrorMessage())
 
     def _reset_timeout(self) -> None:
-        """Reset the inactivity timeout"""
+        """Reset the inactivity timeout."""
         self._cancel_timeout()
         self.timeout_call = self.reactor.callLater(
             self.timeout_seconds, self._on_timeout
@@ -164,26 +164,26 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.logger.debug(f"Timeout set for {self.timeout_seconds} seconds")
 
     def _cancel_timeout(self) -> None:
-        """Cancel the inactivity timeout"""
+        """Cancel the inactivity timeout."""
         if self.timeout_call and self.timeout_call.active():
             self.timeout_call.cancel()
             self.logger.debug("Timeout cancelled")
 
     def _on_timeout(self) -> None:
-        """Called when inactivity timeout expires"""
+        """Called when inactivity timeout expires."""
         self.logger.debug(f"Conbus timeout after {self.timeout_seconds} seconds")
         continue_work = self.timeout()
         if not continue_work:
             self._stop_reactor()
 
     def _stop_reactor(self) -> None:
-        """Stop the reactor if it's running"""
+        """Stop the reactor if it's running."""
         if self.reactor.running:
             self.logger.info("Stopping reactor")
             self.reactor.stop()
 
     def start_reactor(self) -> None:
-        """Start the reactor if it's running"""
+        """Start the reactor if it's running."""
         # Connect to TCP server
         self.logger.info(
             f"Connecting to TCP server {self.cli_config.ip}:{self.cli_config.port}"
@@ -191,11 +191,11 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.reactor.connectTCP(self.cli_config.ip, self.cli_config.port, self)
 
         # Run the reactor (which now uses asyncio underneath)
-        self.logger.info("Starting reactor event loop...")
+        self.logger.info("Starting reactor event loop.")
         self.reactor.run()
 
     def __enter__(self) -> "ConbusProtocol":
-        """Context manager entry"""
+        """Context manager entry."""
         return self
 
     def __exit__(
@@ -204,11 +204,11 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         _exc_val: Optional[BaseException],
         _exc_tb: Optional[Any],
     ) -> None:
-        """Context manager exit - ensure connection is closed"""
-        self.logger.debug("Exiting the event loop...")
+        """Context manager exit - ensure connection is closed."""
+        self.logger.debug("Exiting the event loop.")
         self._stop_reactor()
 
-    """Override methods"""
+    """Override methods."""
 
     def telegram_sent(self, telegram_sent: str) -> None:
         pass

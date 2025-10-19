@@ -12,7 +12,7 @@ from xp.utils.checksum import calculate_checksum
 
 
 class XPOutputError(Exception):
-    """Raised when XP24 action operations fail"""
+    """Raised when XP24 action operations fail."""
 
     pass
 
@@ -32,7 +32,7 @@ class TelegramOutputService:
     XP_ACK_NAK_PATTERN = re.compile(r"^<R(\d{10})F(1[89])D([A-Z0-9]{2})>$")
 
     def __init__(self, telegram_service: TelegramService) -> None:
-        """Initialize the XP output service"""
+        """Initialize the XP output service."""
         self.telegram_service = telegram_service
 
     def validate_output_number(self, output_number: int) -> None:
@@ -44,7 +44,7 @@ class TelegramOutputService:
 
         Raises:
             XPOutputError: If output number is invalid
-        """
+        ."""
         if not isinstance(output_number, int):
             raise XPOutputError(
                 f"Output number must be integer, got {type(output_number)}"
@@ -66,7 +66,7 @@ class TelegramOutputService:
 
         Raises:
             XP24ActionError: If serial number is invalid
-        """
+        ."""
         if not isinstance(serial_number, str):
             raise XPOutputError(
                 f"Serial number must be string, got {type(serial_number)}"
@@ -126,7 +126,7 @@ class TelegramOutputService:
 
         Raises:
             XPOutputError: If serial number is invalid
-        """
+        ."""
         # Validate outputs
         self.validate_serial_number(serial_number)
         function_code = SystemFunction.READ_DATAPOINT.value
@@ -293,7 +293,7 @@ class TelegramOutputService:
 
         Returns:
             Formatted status summary string
-        """
+        ."""
         lines = ["XP24 Output Status:"]
         for output_num in sorted(status.keys()):
             state = "ON" if status[output_num] else "OFF"
@@ -311,7 +311,7 @@ class TelegramOutputService:
 
         Returns:
             Formatted string summary
-        """
+        ."""
         checksum_status = ""
         if telegram.checksum_validated is not None:
             status_indicator = "✓" if telegram.checksum_validated else "✗"

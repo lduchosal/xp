@@ -1,3 +1,5 @@
+"""Unit tests for Conbus link number models."""
+
 from datetime import datetime
 
 from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse

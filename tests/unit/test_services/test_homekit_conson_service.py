@@ -1,3 +1,5 @@
+"""Unit tests for HomeKit Conson service."""
+
 import pytest
 
 from xp.models.homekit.homekit_conson_config import (

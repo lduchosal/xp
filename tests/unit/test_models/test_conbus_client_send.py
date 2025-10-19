@@ -1,3 +1,5 @@
+"""Unit tests for Conbus client send models."""
+
 from datetime import datetime
 
 from xp.models import (

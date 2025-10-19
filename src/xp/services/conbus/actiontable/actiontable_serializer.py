@@ -29,7 +29,7 @@ class ActionTableSerializer:
 
         Returns:
             Decoded ActionTable
-        """
+        ."""
         entries = []
 
         # Process data in 5-byte chunks
@@ -92,7 +92,7 @@ class ActionTableSerializer:
 
         Returns:
             Raw byte data for telegram
-        """
+        ."""
         data = bytearray()
 
         for entry in action_table.entries:
@@ -123,7 +123,7 @@ class ActionTableSerializer:
 
         Returns:
             Base64-encoded string representation
-        """
+        ."""
         data = ActionTableSerializer.to_data(action_table)
         return nibbles(data)
 
@@ -136,7 +136,7 @@ class ActionTableSerializer:
 
         Returns:
             Decoded ActionTable
-        """
+        ."""
         data = de_nibbles(encoded_data)
         return ActionTableSerializer.from_data(data)
 
@@ -149,7 +149,7 @@ class ActionTableSerializer:
 
         Returns:
             Human-readable string representation
-        """
+        ."""
         lines = []
         for entry in action_table.entries:
             # Format: CP20 0 0 > 1 OFF;

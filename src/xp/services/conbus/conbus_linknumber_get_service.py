@@ -29,7 +29,7 @@ class ConbusLinknumberGetService(ConbusDatapointService):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus linknumber get service"""
+        """Initialize the Conbus linknumber get service."""
         super().__init__(telegram_service, cli_config, reactor)
         self.service_callback: Optional[Callable[[ConbusLinknumberResponse], None]] = (
             None

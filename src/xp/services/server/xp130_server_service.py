@@ -11,7 +11,7 @@ from xp.services.server.base_server_service import BaseServerService
 
 
 class XP130ServerError(Exception):
-    """Raised when XP130 server operations fail"""
+    """Raised when XP130 server operations fail."""
 
     pass
 
@@ -25,7 +25,7 @@ class XP130ServerService(BaseServerService):
     """
 
     def __init__(self, serial_number: str):
-        """Initialize XP130 server service"""
+        """Initialize XP130 server service."""
         super().__init__(serial_number)
         self.device_type = "XP130"
         self.module_type_code = 13  # XP130 module type from registry
@@ -37,7 +37,7 @@ class XP130ServerService(BaseServerService):
         self.gateway = "192.168.1.1"
 
     def get_device_info(self) -> Dict:
-        """Get XP130 device information"""
+        """Get XP130 device information."""
         return {
             "serial_number": self.serial_number,
             "device_type": self.device_type,

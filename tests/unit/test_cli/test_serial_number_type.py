@@ -1,3 +1,5 @@
+"""Unit tests for serial number parameter type."""
+
 import click
 import pytest
 from click.testing import CliRunner

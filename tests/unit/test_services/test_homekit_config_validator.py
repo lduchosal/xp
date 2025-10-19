@@ -1,3 +1,5 @@
+"""Unit tests for HomeKit configuration validator."""
+
 from xp.models.homekit.homekit_config import (
     BridgeConfig,
     HomekitAccessoryConfig,

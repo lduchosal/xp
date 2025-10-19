@@ -13,7 +13,7 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 
 class HomeKitOutletService:
-    """Outlet service for HomeKit"""
+    """Outlet service for HomeKit."""
 
     event_bus: EventBus
 

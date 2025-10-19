@@ -1,3 +1,5 @@
+"""Unit tests for protocol handling."""
+
 import asyncio
 from unittest.mock import AsyncMock, Mock
 

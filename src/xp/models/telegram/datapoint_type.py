@@ -1,9 +1,36 @@
+"""Datapoint type enumeration for system telegrams."""
+
 from enum import Enum
 from typing import Optional
 
 
 class DataPointType(str, Enum):
-    """Data point types for system telegrams"""
+    """Data point types for system telegrams.
+
+    Attributes:
+        MODULE_TYPE: Module type (XP24, XP33, etc).
+        HW_VERSION: Hardware version information.
+        SW_VERSION: Software version information.
+        SERIAL_NUMBER: Serial number.
+        LINK_NUMBER: Link number.
+        MODULE_NUMBER: Module number.
+        SYSTEM_TYPE: System type.
+        MODULE_TYPE_CODE: Module type code.
+        MODULE_TYPE_ID: Module type ID.
+        MODULE_STATE: Module state.
+        MODULE_ERROR_CODE: Status query data point.
+        MODULE_INPUT_STATE: Module input state.
+        MODULE_OUTPUT_STATE: Channel states (XP33).
+        MODULE_FW_CRC: Module firmware CRC.
+        MODULE_ACTION_TABLE_CRC: Module action table CRC.
+        MODULE_LIGHT_LEVEL: Module light level.
+        MODULE_OPERATING_HOURS: Module operating hours.
+        MODULE_ENERGY_LEVEL: Current data point.
+        TEMPERATURE: Temperature data point.
+        SW_TOP_VERSION: Software top version.
+        VOLTAGE: Voltage data point.
+        AUTO_REPORT_STATUS: Auto report status.
+    """
 
     MODULE_TYPE = "00"  # Module type (XP24, XP33, ..)
     HW_VERSION = "01"  # Hardware version information
@@ -41,7 +68,14 @@ class DataPointType(str, Enum):
 
     @classmethod
     def from_code(cls, code: str) -> Optional["DataPointType"]:
-        """Get DataPointType from code string"""
+        """Get DataPointType from code string.
+
+        Args:
+            code: Datapoint type code string.
+
+        Returns:
+            DataPointType instance if found, None otherwise.
+        """
         for dp_type in cls:
             if dp_type.value == code:
                 return dp_type

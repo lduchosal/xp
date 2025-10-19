@@ -33,7 +33,7 @@ class ConbusLinknumberSetService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus link number set service"""
+        """Initialize the Conbus link number set service."""
         super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
         self.serial_number: str = ""
@@ -49,8 +49,9 @@ class ConbusLinknumberSetService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
+        """Handle connection established event."""
         self.logger.debug(
-            f"Connection established, setting link number {self.link_number}..."
+            f"Connection established, setting link number {self.link_number}."
         )
 
         # Validate parameters before sending
@@ -75,6 +76,16 @@ class ConbusLinknumberSetService(ConbusProtocol):
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
+
+
+
+        Args:
+
+            telegram_received: The telegram received event.
+
+
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
 
         if not self.service_response.received_telegrams:
@@ -121,6 +132,16 @@ class ConbusLinknumberSetService(ConbusProtocol):
             self.finish_callback(self.service_response)
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+
+
+        Args:
+
+            message: Failure message.
+
+
+        """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
         self.service_response.timestamp = datetime.now()

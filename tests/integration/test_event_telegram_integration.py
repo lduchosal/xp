@@ -1,3 +1,5 @@
+"""Integration tests for event telegram command functionality."""
+
 import json
 
 from click.testing import CliRunner

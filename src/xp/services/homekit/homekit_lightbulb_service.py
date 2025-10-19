@@ -12,7 +12,7 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 
 class HomeKitLightbulbService:
-    """Lightbulb service for HomeKit"""
+    """Lightbulb service for HomeKit."""
 
     event_bus: EventBus
 

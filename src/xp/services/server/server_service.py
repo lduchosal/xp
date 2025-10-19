@@ -26,7 +26,7 @@ from xp.services.telegram.telegram_service import TelegramService
 
 
 class ServerError(Exception):
-    """Raised when Conbus server operations fail"""
+    """Raised when Conbus server operations fail."""
 
     pass
 
@@ -46,7 +46,7 @@ class ServerService:
         config_path: str = "server.yml",
         port: int = 10001,
     ):
-        """Initialize the Conbus server service"""
+        """Initialize the Conbus server service."""
         self.telegram_service = telegram_service
         self.discover_service = discover_service
         self.config_path = config_path
@@ -71,7 +71,7 @@ class ServerService:
         self._load_device_config()
 
     def _load_device_config(self) -> None:
-        """Load device configurations from server.yml"""
+        """Load device configurations from server.yml."""
         try:
             if Path(self.config_path).exists():
                 config = ConsonModuleListConfig.from_yaml(self.config_path)
@@ -90,7 +90,7 @@ class ServerService:
             self.device_services = {}
 
     def _create_device_services(self) -> None:
-        """Create device service instances based on device configuration"""
+        """Create device service instances based on device configuration."""
         self.device_services = {}
 
         for module in self.devices:
@@ -143,7 +143,7 @@ class ServerService:
                 )
 
     def start_server(self) -> None:
-        """Start the TCP server on port 10001"""
+        """Start the TCP server on port 10001."""
         if self.is_running:
             raise ServerError("Server is already running")
 
@@ -170,7 +170,7 @@ class ServerService:
             raise ServerError(f"Failed to start server: {e}")
 
     def stop_server(self) -> None:
-        """Stop the TCP server"""
+        """Stop the TCP server."""
         if not self.is_running:
             return
 
@@ -184,7 +184,7 @@ class ServerService:
                 self.logger.error(f"Error closing server socket: {e}")
 
     def _accept_connections(self) -> None:
-        """Accept and handle client connections"""
+        """Accept and handle client connections."""
         while self.is_running:
             try:
                 # Accept connection
@@ -208,7 +208,7 @@ class ServerService:
     def _handle_client(
         self, client_socket: socket.socket, client_address: tuple[str, int]
     ) -> None:
-        """Handle individual client connection"""
+        """Handle individual client connection."""
         try:
             # Set timeout for idle connections (30 seconds as per spec)
             client_socket.settimeout(300.0)
@@ -242,7 +242,7 @@ class ServerService:
                 self.logger.error(f"Error closing client socket: {e}")
 
     def _process_request(self, message: str) -> List[str]:
-        """Process incoming request and generate responses"""
+        """Process incoming request and generate responses."""
         responses: list[str] = []
 
         try:
@@ -290,7 +290,7 @@ class ServerService:
         return responses
 
     def get_server_status(self) -> dict:
-        """Get current server status"""
+        """Get current server status."""
         return {
             "running": self.is_running,
             "port": self.port,
@@ -299,7 +299,7 @@ class ServerService:
         }
 
     def reload_config(self) -> None:
-        """Reload device configuration from file"""
+        """Reload device configuration from file."""
         self._load_device_config()
         self.logger.info(
             f"Configuration reloaded: {len(self.devices)} devices, {len(self.device_services)} services"

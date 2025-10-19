@@ -51,7 +51,8 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
-        self.logger.debug("Connection established, querying datapoints...")
+        """Handle connection established event."""
+        self.logger.debug("Connection established, querying datapoints.")
         self.next_datapoint()
 
     def next_datapoint(self) -> bool:
@@ -92,7 +93,16 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
 
+
+
+        Args:
+
+            telegram_received: The telegram received event.
+
+
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
@@ -122,6 +132,16 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
             self.progress_callback(datapoint_telegram)
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+
+
+        Args:
+
+            message: Failure message.
+
+
+        """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
         self.service_response.timestamp = datetime.now()
@@ -148,7 +168,6 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         Returns:
             ConbusDatapointResponse with operation result and all datapoint values
         """
-
         self.logger.info("Starting query_all_datapoints")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds

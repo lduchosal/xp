@@ -1,3 +1,5 @@
+"""Unit tests for telegram service."""
+
 import pytest
 
 from xp.models import EventType, InputType

@@ -67,23 +67,23 @@ class HomeKitService:
         self.event_bus.on(ModuleDiscoveredEvent, self.handle_module_discovered)
 
     def start(self) -> None:
-        self.logger.info("Starting HomeKit service...")
+        self.logger.info("Starting HomeKit service.")
         self.logger.debug("start")
 
         # Run reactor in its own dedicated thread
-        self.logger.info("Starting reactor in dedicated thread...")
+        self.logger.info("Starting reactor in dedicated thread.")
         reactor_thread = threading.Thread(
             target=self._run_reactor_in_thread, daemon=True, name="ReactorThread"
         )
         reactor_thread.start()
 
         # Keep MainThread alive while reactor thread runs
-        self.logger.info("Reactor thread started, MainThread waiting...")
+        self.logger.info("Reactor thread started, MainThread waiting.")
         reactor_thread.join()
 
     def _run_reactor_in_thread(self) -> None:
-        """Run reactor in dedicated thread with its own event loop"""
-        self.logger.info("Reactor thread starting...")
+        """Run reactor in dedicated thread with its own event loop."""
+        self.logger.info("Reactor thread starting.")
 
         # The asyncio reactor already has an event loop set up
         # We just need to use it
@@ -101,17 +101,17 @@ class HomeKitService:
         self.reactor.callLater(0, self._start_module_factory)
 
         # Run the reactor (which now uses asyncio underneath)
-        self.logger.info("Starting reactor event loop...")
+        self.logger.info("Starting reactor event loop.")
         self.reactor.run()
 
     def _start_module_factory(self) -> None:
-        """Start module factory after reactor starts"""
-        self.logger.info("Starting module factory...")
+        """Start module factory after reactor starts."""
+        self.logger.info("Starting module factory.")
         self.logger.debug("callWhenRunning executed, scheduling async task")
 
         # Run HAP-python driver asynchronously in the reactor's event loop
         async def async_start() -> None:
-            self.logger.info("async_start executing...")
+            self.logger.info("async_start executing.")
             try:
                 await self.module_factory.async_start()
                 self.logger.info("Module factory started successfully")
@@ -130,23 +130,23 @@ class HomeKitService:
 
     # Event handlers
     def handle_connection_made(self, event: ConnectionMadeEvent) -> None:
-        """Handle connection established - send initial telegram"""
+        """Handle connection established - send initial telegram."""
         self.logger.debug("Connection established successfully")
         self.logger.debug("Sending initial discovery telegram: S0000000000F01D00")
         event.protocol.sendFrame(b"S0000000000F01D00")
 
     def handle_connection_failed(self, event: ConnectionFailedEvent) -> None:
-        """Handle connection failed"""
+        """Handle connection failed."""
         self.logger.error(f"Connection failed: {event.reason}")
 
     def handle_connection_lost(self, event: ConnectionLostEvent) -> None:
-        """Handle connection lost"""
+        """Handle connection lost."""
         self.logger.warning(
             f"Connection lost: {event.reason if hasattr(event, 'reason') else 'Unknown reason'}"
         )
 
     def handle_telegram_received(self, event: TelegramReceivedEvent) -> str:
-        """Handle received telegram events"""
+        """Handle received telegram events."""
         self.logger.debug(
             f"handle_telegram_received ENTERED with telegram: {event.telegram}"
         )
@@ -176,7 +176,7 @@ class HomeKitService:
         return event.frame
 
     def dispatch_light_level_event(self, event: TelegramReceivedEvent) -> None:
-        self.logger.debug("Light level Datapoint, parsing telegram...")
+        self.logger.debug("Light level Datapoint, parsing telegram.")
         reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
         self.logger.debug(
             f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
@@ -192,7 +192,7 @@ class HomeKitService:
         self.logger.debug("LightLevelReceivedEvent dispatched successfully")
 
     def dispatch_output_state_event(self, event: TelegramReceivedEvent) -> None:
-        self.logger.debug("Module Read Datapoint, parsing telegram...")
+        self.logger.debug("Module Read Datapoint, parsing telegram.")
         reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
         self.logger.debug(
             f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
@@ -210,7 +210,7 @@ class HomeKitService:
     def dispatch_event_telegram_received_event(
         self, event: TelegramReceivedEvent
     ) -> None:
-        self.logger.debug("Event telegram received, parsing...")
+        self.logger.debug("Event telegram received, parsing.")
 
         # Parse event telegram to extract module information
         event_telegram = self.telegram_service.parse_event_telegram(event.frame)

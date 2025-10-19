@@ -61,7 +61,7 @@ class Xp20MsActionTableSerializer:
 
         Raises:
             ValueError: If input length is not 64 characters
-        """
+        ."""
         if len(msactiontable_rawdata) != 64:
             raise ValueError(
                 f"XP20 action table data must be 64 characters long, got {len(msactiontable_rawdata)}"
@@ -100,7 +100,7 @@ class Xp20MsActionTableSerializer:
 
         Returns:
             Decoded input channel configuration
-        """
+        ."""
         # Extract bit flags from appropriate offsets
         short_long_flags = byte_to_bits(raw_bytes[SHORT_LONG_INDEX])
         group_on_off_flags = byte_to_bits(raw_bytes[GROUP_ON_OFF_INDEX])
@@ -169,7 +169,7 @@ class Xp20MsActionTableSerializer:
 
         Returns:
             Decoded XP20 action table
-        """
+        ."""
         # Extract data portion from telegram (skip header, take action table data)
         # Based on XP24 pattern: telegram[16:84] gives us the 68-char data portion
         # For XP20, we need 64 chars, so we take the first 64 chars after removing count

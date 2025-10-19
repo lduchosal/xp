@@ -13,13 +13,13 @@ from xp.utils.checksum import calculate_checksum
 
 
 class DiscoverError(Exception):
-    """Raised when discover operations fail"""
+    """Raised when discover operations fail."""
 
     pass
 
 
 class DeviceInfo:
-    """Information about a discovered device"""
+    """Information about a discovered device."""
 
     def __init__(
         self, serial_number: str, checksum_valid: bool = True, raw_telegram: str = ""
@@ -36,7 +36,7 @@ class DeviceInfo:
         return f"DeviceInfo(serial='{self.serial_number}', checksum_valid={self.checksum_valid})"
 
     def to_dict(self) -> dict:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization."""
         return {
             "serial_number": self.serial_number,
             "checksum_valid": self.checksum_valid,
@@ -54,7 +54,7 @@ class TelegramDiscoverService:
     """
 
     def __init__(self) -> None:
-        """Initialize the discover service"""
+        """Initialize the discover service."""
         pass
 
     @staticmethod
@@ -83,7 +83,7 @@ class TelegramDiscoverService:
 
         Returns:
             SystemTelegram object representing the discover command
-        """
+        ."""
         raw_telegram = self.generate_discover_telegram()
 
         # Extract checksum from the generated telegram
@@ -109,12 +109,12 @@ class TelegramDiscoverService:
 
         Returns:
             True if this is a discover response, False otherwise
-        """
+        ."""
         return reply_telegram.system_function == SystemFunction.DISCOVERY
 
     @staticmethod
     def _generate_discover_response(serial_number: str) -> str:
-        """Generate discover response telegram for a device"""
+        """Generate discover response telegram for a device."""
         # Format: <R{serial}F01D{checksum}>
         data_part = f"R{serial_number}F01D"
         checksum = calculate_checksum(data_part)
@@ -131,7 +131,7 @@ class TelegramDiscoverService:
 
         Returns:
             List of unique devices (first occurrence of each serial number)
-        """
+        ."""
         seen_serials: Set[str] = set()
         unique_devices = []
 
@@ -152,7 +152,7 @@ class TelegramDiscoverService:
 
         Returns:
             True if format matches discover response pattern
-        """
+        ."""
         # Discover response format: <R{10-digit-serial}F01D{2-char-checksum}>
         import re
 
@@ -171,7 +171,7 @@ class TelegramDiscoverService:
 
         Returns:
             Dictionary with discover statistics
-        """
+        ."""
         unique_devices = self.get_unique_devices(devices)
         valid_devices = [d for d in unique_devices if d.checksum_valid]
         invalid_devices = [d for d in unique_devices if not d.checksum_valid]
@@ -208,7 +208,7 @@ class TelegramDiscoverService:
 
         Returns:
             Formatted string summary
-        """
+        ."""
         if not devices:
             return "No devices discovered"
 
@@ -241,7 +241,7 @@ class TelegramDiscoverService:
 
     @staticmethod
     def is_discover_request(telegram: SystemTelegram) -> bool:
-        """Check if telegram is a discover request"""
+        """Check if telegram is a discover request."""
         return (
             telegram.system_function == SystemFunction.DISCOVERY
             and telegram.serial_number == "0000000000"

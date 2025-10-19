@@ -25,7 +25,7 @@ from xp.services.telegram.telegram_output_service import (
 
 
 class ConbusOutputError(Exception):
-    """Raised when Conbus output operations fail"""
+    """Raised when Conbus output operations fail."""
 
     pass
 
@@ -69,8 +69,9 @@ class ConbusOutputService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
+        """Handle connection established event."""
         self.logger.debug(
-            f"Connection established, sending action {self.action_type} to output {self.output_number}..."
+            f"Connection established, sending action {self.action_type} to output {self.output_number}."
         )
 
         # Validate parameters before sending
@@ -94,6 +95,16 @@ class ConbusOutputService(ConbusProtocol):
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
+
+
+
+        Args:
+
+            telegram_received: The telegram received event.
+
+
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
 
         if not self.service_response.received_telegrams:
@@ -136,6 +147,16 @@ class ConbusOutputService(ConbusProtocol):
             self.finish_callback(self.service_response)
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+
+
+        Args:
+
+            message: Failure message.
+
+
+        """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
         self.service_response.timestamp = datetime.now()

@@ -33,7 +33,7 @@ class ConbusBlinkService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus blink service"""
+        """Initialize the Conbus blink service."""
         super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
         self.serial_number: str = ""
@@ -50,7 +50,8 @@ class ConbusBlinkService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
-        self.logger.debug("Connection established, sending blink command...")
+        """Handle connection established event."""
+        self.logger.debug("Connection established, sending blink command.")
         # Blink is 05, Unblink is 06
         system_function = SystemFunction.UNBLINK
         if self.on_or_off.lower() == "on":
@@ -70,7 +71,16 @@ class ConbusBlinkService(ConbusProtocol):
         self.service_response.sent_telegram = system_telegram
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
 
+
+
+        Args:
+
+            telegram_received: The telegram received event.
+
+
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
@@ -101,6 +111,16 @@ class ConbusBlinkService(ConbusProtocol):
                 self.finish_callback(self.service_response)
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+
+
+        Args:
+
+            message: Failure message.
+
+
+        """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
         self.service_response.timestamp = datetime.now()
@@ -124,7 +144,6 @@ class ConbusBlinkService(ConbusProtocol):
             xp conbus blink 0012345008 on
             xp conbus blink 0012345008 off
         """
-
         self.logger.info("Starting send_blink_telegram")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds

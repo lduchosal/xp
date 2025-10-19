@@ -1,9 +1,34 @@
+"""Module type code enumeration for XP system modules."""
+
 from enum import Enum
 from typing import Dict
 
 
 class ModuleTypeCode(Enum):
-    """Enum representing all XP system module type codes"""
+    """Enum representing all XP system module type codes.
+
+    Attributes:
+        NOMOD: No module (code 0).
+        ALLMOD: Matches every module type (code 1).
+        CP20: CP switch link module (code 2).
+        CP70A: CP 38kHz IR link module (code 3).
+        CP70B: CP B&O IR link module (code 4).
+        CP70C: CP UHF link module (code 5).
+        CP70D: CP timer link module (code 6).
+        XP24: XP relay module (code 7).
+        XP31UNI: XP universal load light dimmer (code 8).
+        XP31BCU: XP ballast controller 0-10V (code 9).
+        XP31DD: XP ballast controller DSI/DALI (code 10).
+        XP33: XP 3-channel light dimmer (code 11).
+        CP485: CP RS485 interface module (code 12).
+        XP130: Ethernet/TCP/IP interface module (code 13).
+        XP2606: 5-way push button panel with sesam (code 14).
+        XP2606A: 5-way push button with IR receiver (code 15).
+        XP2606B: 5-way push button with B&O IR (code 16).
+        XP26X1: Reserved (code 17).
+        XP26X2: Reserved (code 18).
+        XP230: XP230 module (code 19).
+    """
 
     NOMOD = 0  # No module
     ALLMOD = 1  # Code matching every moduletype

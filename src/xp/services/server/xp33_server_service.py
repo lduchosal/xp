@@ -15,7 +15,7 @@ from xp.utils import calculate_checksum
 
 
 class XP33ServerError(Exception):
-    """Raised when XP33 server operations fail"""
+    """Raised when XP33 server operations fail."""
 
     pass
 
@@ -29,7 +29,7 @@ class XP33ServerService(BaseServerService):
     """
 
     def __init__(self, serial_number: str, variant: str = "XP33LR"):
-        """Initialize XP33 server service"""
+        """Initialize XP33 server service."""
         super().__init__(serial_number)
         self.variant = variant  # XP33 or XP33LR or XP33LED
         self.device_type = "XP33"
@@ -69,7 +69,7 @@ class XP33ServerService(BaseServerService):
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Handle XP24-specific data requests"""
+        """Handle XP24-specific data requests."""
         if (
             request.system_function != SystemFunction.READ_DATAPOINT
             or not request.datapoint_type
@@ -92,7 +92,7 @@ class XP33ServerService(BaseServerService):
         return telegram
 
     def set_channel_dimming(self, channel: int, level: int) -> bool:
-        """Set individual channel dimming level"""
+        """Set individual channel dimming level."""
         if 1 <= channel <= 3 and 0 <= level <= 100:
             self.channel_states[channel - 1] = level
             self.logger.info(f"XP33 channel {channel} set to {level}%")
@@ -100,7 +100,7 @@ class XP33ServerService(BaseServerService):
         return False
 
     def activate_scene(self, scene: int) -> bool:
-        """Activate a pre-programmed scene"""
+        """Activate a pre-programmed scene."""
         if scene in self.scenes:
             self.channel_states = self.scenes[scene].copy()
             self.logger.info(f"XP33 scene {scene} activated: {self.channel_states}")
@@ -108,7 +108,7 @@ class XP33ServerService(BaseServerService):
         return False
 
     def get_device_info(self) -> Dict:
-        """Get XP33 device information"""
+        """Get XP33 device information."""
         return {
             "serial_number": self.serial_number,
             "device_type": self.device_type,
@@ -123,7 +123,7 @@ class XP33ServerService(BaseServerService):
         }
 
     def get_technical_specs(self) -> Dict:
-        """Get technical specifications"""
+        """Get technical specifications."""
         if self.variant == "XP33LED":
             return {
                 "power_per_channel": "100VA",

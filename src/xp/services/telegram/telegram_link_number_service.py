@@ -15,7 +15,7 @@ from xp.utils.checksum import calculate_checksum
 
 
 class LinkNumberError(Exception):
-    """Raised when link number operations fail"""
+    """Raised when link number operations fail."""
 
     pass
 
@@ -29,7 +29,7 @@ class LinkNumberService:
     """
 
     def __init__(self) -> None:
-        """Initialize the link number service"""
+        """Initialize the link number service."""
         pass
 
     @staticmethod
@@ -91,7 +91,7 @@ class LinkNumberService:
 
         Raises:
             LinkNumberError: If serial number is invalid
-        """
+        ."""
         # Validate serial number
         if not serial_number or len(serial_number) != 10:
             raise LinkNumberError(
@@ -187,7 +187,7 @@ class LinkNumberService:
 
         Returns:
             Link number if successfully parsed, None otherwise
-        """
+        ."""
         if (
             reply_telegram.datapoint_type != DataPointType.LINK_NUMBER
             or not reply_telegram.data_value
@@ -212,7 +212,7 @@ class LinkNumberService:
 
         Returns:
             True if this is an ACK response (F18D), False otherwise
-        """
+        ."""
         return reply_telegram.system_function == SystemFunction.ACK
 
     @staticmethod
@@ -225,5 +225,5 @@ class LinkNumberService:
 
         Returns:
             True if this is a NAK response (F19D), False otherwise
-        """
+        ."""
         return reply_telegram.system_function == SystemFunction.NAK

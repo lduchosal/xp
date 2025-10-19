@@ -28,7 +28,7 @@ class ConbusRawService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus raw service"""
+        """Initialize the Conbus raw service."""
         super().__init__(cli_config, reactor)
         self.raw_input: str = ""
         self.progress_callback: Optional[Callable[[str], None]] = None
@@ -40,6 +40,7 @@ class ConbusRawService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
+        """Handle connection established event."""
         self.logger.debug(f"Connection established, sending {self.raw_input}")
         self.sendFrame(self.raw_input.encode())
 
@@ -51,6 +52,16 @@ class ConbusRawService(ConbusProtocol):
         pass
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
+
+
+
+        Args:
+
+            telegram_received: The telegram received event.
+
+
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
@@ -66,6 +77,16 @@ class ConbusRawService(ConbusProtocol):
         return False
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+
+
+        Args:
+
+            message: Failure message.
+
+
+        """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
         self.service_response.timestamp = datetime.now()
@@ -92,7 +113,6 @@ class ConbusRawService(ConbusProtocol):
         Returns:
             ConbusRawResponse with operation result and received telegrams
         """
-
         self.logger.info("Starting send_raw_telegram")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds

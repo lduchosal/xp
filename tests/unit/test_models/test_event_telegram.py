@@ -1,3 +1,5 @@
+"""Unit tests for event telegram models."""
+
 from datetime import datetime
 
 import pytest

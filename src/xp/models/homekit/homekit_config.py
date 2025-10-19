@@ -1,3 +1,5 @@
+"""HomeKit configuration models."""
+
 import logging
 from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path
@@ -18,6 +20,8 @@ class RoomConfig(BaseModel):
 
 
 class BridgeConfig(BaseModel):
+    """HomeKit bridge settings."""
+
     name: str = "Conson Bridge"
     rooms: List[RoomConfig] = []
 
@@ -33,6 +37,8 @@ class HomekitAccessoryConfig(BaseModel):
 
 
 class HomekitConfig(BaseModel):
+    """HomeKit bridge configuration."""
+
     homekit: NetworkConfig = Field(default_factory=NetworkConfig)
     conson: NetworkConfig = Field(default_factory=NetworkConfig)
     bridge: BridgeConfig = Field(default_factory=BridgeConfig)

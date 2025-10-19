@@ -15,7 +15,7 @@ from xp.utils.checksum import calculate_checksum
 
 
 class VersionParsingError(Exception):
-    """Raised when version parsing fails"""
+    """Raised when version parsing fails."""
 
     pass
 
@@ -24,7 +24,7 @@ class VersionService:
     """Service class for version-related operations."""
 
     def __init__(self) -> None:
-        """Initialize the version service."""
+        """Initialize the version service"""
         pass
 
     @staticmethod
@@ -36,7 +36,7 @@ class VersionService:
 
         Returns:
             Response object with parsed version information
-        """
+        ."""
         try:
             # Version format: {PRODUCT}_{VERSION}
             # Examples: XP230_V1.00.04, XP20_V0.01.05, XP33LR_V0.04.02, XP24_V0.34.03
@@ -97,7 +97,7 @@ class VersionService:
 
         Returns:
             Response object with generated telegram
-        """
+        ."""
         try:
             if len(serial_number) != 10 or not serial_number.isdigit():
                 return Response(
@@ -145,7 +145,7 @@ class VersionService:
 
         Returns:
             Response object with validation result
-        """
+        ."""
         try:
             is_version_request = (
                 telegram.system_function == SystemFunction.READ_DATAPOINT
@@ -197,7 +197,7 @@ class VersionService:
 
         Returns:
             Response object with version information
-        """
+        ."""
         try:
             # Check if this is a version reply
             if telegram.datapoint_type != DataPointType.SW_VERSION:
@@ -251,7 +251,7 @@ class VersionService:
 
         Returns:
             Formatted string summary
-        """
+        ."""
         try:
             if "version_info" in version_data:
                 version_info = version_data["version_info"]

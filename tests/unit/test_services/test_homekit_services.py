@@ -1,3 +1,5 @@
+"""Unit tests for HomeKit services."""
+
 from unittest.mock import Mock, patch
 
 import pytest

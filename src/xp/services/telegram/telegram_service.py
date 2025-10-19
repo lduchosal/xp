@@ -13,7 +13,7 @@ from xp.utils.checksum import calculate_checksum
 
 
 class TelegramParsingError(Exception):
-    """Raised when telegram parsing fails"""
+    """Raised when telegram parsing fails."""
 
     pass
 
@@ -38,7 +38,7 @@ class TelegramService:
     REPLY_TELEGRAM_PATTERN = re.compile(r"^<R(\d{10})F(\d{2})(.+?)([A-Z0-9]{2})>$")
 
     def __init__(self) -> None:
-        """Initialize the telegram service"""
+        """Initialize the telegram service."""
         pass
 
     def parse_event_telegram(self, raw_telegram: str) -> EventTelegram:
@@ -149,7 +149,7 @@ class TelegramService:
 
         Returns:
             Formatted string summary
-        """
+        ."""
         checksum_status = ""
         if telegram.checksum_validated is not None:
             status_indicator = "✓" if telegram.checksum_validated else "✗"
@@ -332,7 +332,7 @@ class TelegramService:
 
         Returns:
             Formatted string summary
-        """
+        ."""
         checksum_status = ""
         if telegram.checksum_validated is not None:
             status_indicator = "✓" if telegram.checksum_validated else "✗"
@@ -355,7 +355,7 @@ class TelegramService:
 
         Returns:
             Formatted string summary
-        """
+        ."""
         parsed_data = telegram.parse_datapoint_value
         data_display = (
             parsed_data.get("formatted", telegram.data_value)

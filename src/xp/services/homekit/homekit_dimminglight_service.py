@@ -14,7 +14,7 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 
 class HomeKitDimmingLightService:
-    """Dimming light service for HomeKit"""
+    """Dimming light service for HomeKit."""
 
     event_bus: EventBus
 

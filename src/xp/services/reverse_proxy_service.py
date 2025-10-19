@@ -16,7 +16,7 @@ from xp.models.response import Response
 
 
 class ReverseProxyError(Exception):
-    """Raised when Conbus reverse proxy operations fail"""
+    """Raised when Conbus reverse proxy operations fail."""
 
     pass
 
@@ -57,26 +57,29 @@ class ReverseProxyService:
     def target_ip(self) -> str:
         """Get target server IP.
 
+
         Returns:
             Target server IP address.
-        """
+        ."""
         return self.cli_config.conbus.ip
 
     @property
     def target_port(self) -> int:
         """Get target server port.
 
+
         Returns:
             Target server port number.
-        """
+        ."""
         return self.cli_config.conbus.port
 
     def start_proxy(self) -> Response:
         """Start the reverse proxy server.
 
+
         Returns:
             Response object with success status and proxy details.
-        """
+        ."""
         if self.is_running:
             return Response(
                 success=False, data=None, error="Reverse proxy is already running"
@@ -130,9 +133,10 @@ class ReverseProxyService:
     def stop_proxy(self) -> Response:
         """Stop the reverse proxy server.
 
+
         Returns:
             Response object with success status.
-        """
+        ."""
         if not self.is_running:
             return Response(
                 success=False, data=None, error="Reverse proxy is not running"
@@ -162,9 +166,10 @@ class ReverseProxyService:
     def get_status(self) -> Response:
         """Get current proxy status and active connections.
 
+
         Returns:
             Response object with proxy status and connection details.
-        """
+        ."""
         return Response(
             success=True,
             data={
@@ -359,7 +364,7 @@ class ReverseProxyService:
 
         Args:
             conn_id: Connection identifier.
-        """
+        ."""
         if conn_id not in self.active_connections:
             return
 
@@ -397,17 +402,19 @@ class ReverseProxyService:
     def timestamp() -> str:
         """Generate timestamp string for logging.
 
+
         Returns:
             Timestamp string in HH:MM:SS,mmm format.
-        """
+        ."""
         return datetime.now().strftime("%H:%M:%S,%f")[:-3]
 
     def run_blocking(self) -> None:
         """Run the proxy in blocking mode (for CLI usage).
 
+
         Raises:
             ReverseProxyError: If proxy fails to start.
-        """
+        ."""
         result = self.start_proxy()
         if not result.success:
             raise ReverseProxyError(result.error)

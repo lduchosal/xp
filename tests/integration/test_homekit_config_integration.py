@@ -1,3 +1,5 @@
+"""Integration tests for HomeKit configuration validation."""
+
 import tempfile
 from pathlib import Path
 from typing import List

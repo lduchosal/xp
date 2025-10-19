@@ -21,7 +21,7 @@ from xp.services.protocol import ConbusProtocol
 
 
 class ConbusLightlevelError(Exception):
-    """Raised when Conbus lightlevel operations fail"""
+    """Raised when Conbus lightlevel operations fail."""
 
     pass
 
@@ -39,7 +39,7 @@ class ConbusLightlevelSetService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ):
-        """Initialize the Conbus lightlevel service"""
+        """Initialize the Conbus lightlevel service."""
         super().__init__(cli_config, reactor)
         self.serial_number: str = ""
         self.output_number: int = 0
@@ -59,8 +59,9 @@ class ConbusLightlevelSetService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
+        """Handle connection established event."""
         self.logger.debug(
-            f"Connection established, setting light level for output {self.output_number} to {self.level}%..."
+            f"Connection established, setting light level for output {self.output_number} to {self.level}%."
         )
 
         # Format data as output_number:level (e.g., ""15" + "02:050")
@@ -78,6 +79,16 @@ class ConbusLightlevelSetService(ConbusProtocol):
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
+
+
+
+        Args:
+
+            telegram_received: The telegram received event.
+
+
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
@@ -108,6 +119,16 @@ class ConbusLightlevelSetService(ConbusProtocol):
             self.finish_callback(self.service_response)
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+
+
+        Args:
+
+            message: Failure message.
+
+
+        """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
         self.service_response.serial_number = self.serial_number
@@ -141,7 +162,6 @@ class ConbusLightlevelSetService(ConbusProtocol):
                 xp conbus lightlevel set 0012345008 2 50
                 xp conbus lightlevel set 0012345008 0 100
         """
-
         self.logger.info(
             f"Setting light level for {serial_number} output {output_number} to {level}%"
         )

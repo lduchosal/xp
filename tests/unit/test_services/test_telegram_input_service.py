@@ -1,3 +1,5 @@
+"""Unit tests for telegram input service."""
+
 import pytest
 
 from xp.models.telegram.output_telegram import OutputTelegram

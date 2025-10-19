@@ -11,7 +11,7 @@ from xp.utils.checksum import calculate_checksum
 
 
 class BlinkError(Exception):
-    """Raised when blink/unblink operations fail"""
+    """Raised when blink/unblink operations fail."""
 
     pass
 
@@ -26,7 +26,7 @@ class TelegramBlinkService:
     """
 
     def __init__(self) -> None:
-        """Initialize the blink service"""
+        """Initialize the blink service."""
         pass
 
     @staticmethod
@@ -79,7 +79,7 @@ class TelegramBlinkService:
 
         Raises:
             BlinkError: If parameters are invalid
-        """
+        ."""
         raw_telegram = self.generate_blink_telegram(serial_number, "on")
 
         # Extract checksum from the generated telegram
@@ -107,7 +107,7 @@ class TelegramBlinkService:
 
         Raises:
             BlinkError: If parameters are invalid
-        """
+        ."""
         raw_telegram = self.generate_blink_telegram(serial_number, "off")
 
         # Extract checksum from the generated telegram
@@ -133,7 +133,7 @@ class TelegramBlinkService:
 
         Returns:
             True if this is an ACK response (F18D), False otherwise
-        """
+        ."""
         return reply_telegram.system_function == SystemFunction.ACK
 
     @staticmethod
@@ -146,5 +146,5 @@ class TelegramBlinkService:
 
         Returns:
             True if this is a NAK response (F19D), False otherwise
-        """
+        ."""
         return reply_telegram.system_function == SystemFunction.NAK

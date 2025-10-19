@@ -45,7 +45,7 @@ class TelegramProtocol(protocol.Protocol):
             self.logger.error(f"Error scheduling async handler: {e}", exc_info=True)
 
     def _on_task_done(self, task: asyncio.Task) -> None:
-        """Callback when async task completes"""
+        """Callback when async task completes."""
         try:
             if task.exception():
                 self.logger.error(
@@ -57,7 +57,7 @@ class TelegramProtocol(protocol.Protocol):
             self.logger.error(f"Error in task done callback: {e}", exc_info=True)
 
     async def _async_connection_made(self) -> None:
-        """Async handler for connection made"""
+        """Async handler for connection made."""
         self.logger.debug("_async_connectionMade starting")
         self.logger.info("Dispatching ConnectionMadeEvent")
         try:
@@ -69,12 +69,12 @@ class TelegramProtocol(protocol.Protocol):
             )
 
     def dataReceived(self, data: bytes) -> None:
-        """Sync callback from Twisted - delegates to async implementation"""
+        """Sync callback from Twisted - delegates to async implementation."""
         task = asyncio.create_task(self._async_dataReceived(data))
         task.add_done_callback(self._on_task_done)
 
     async def _async_dataReceived(self, data: bytes) -> None:
-        """Async handler for received data"""
+        """Async handler for received data."""
         self.logger.debug("dataReceived")
         self.buffer += data
 
@@ -137,7 +137,7 @@ class TelegramProtocol(protocol.Protocol):
             )
 
     def sendFrame(self, data: bytes) -> None:
-        """Sync callback from Twisted - delegates to async implementation"""
+        """Sync callback from Twisted - delegates to async implementation."""
         task = asyncio.create_task(self._async_sendFrame(data))
         task.add_done_callback(self._on_task_done)
 
@@ -147,7 +147,7 @@ class TelegramProtocol(protocol.Protocol):
 
         Args:
             data: Raw telegram payload (without checksum/framing)
-        """
+        ."""
         # Calculate full frame (add checksum and brackets)
         checksum = calculate_checksum(data.decode())
         frame_data = data.decode() + checksum
@@ -165,7 +165,7 @@ class TelegramProtocol(protocol.Protocol):
 
         Args:
             frame: Complete telegram frame (with checksum and brackets)
-        """
+        ."""
         current_time = time.time()
 
         # Check if identical frame was recently sent

@@ -31,7 +31,7 @@ class ConbusScanService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus scan service"""
+        """Initialize the Conbus scan service."""
         super().__init__(cli_config, reactor)
         self.serial_number: str = ""
         self.function_code: str = ""
@@ -49,6 +49,7 @@ class ConbusScanService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
+        """Handle connection established event."""
         self.logger.debug("Connection established, starting scan")
         self.scan_next_datacode()
 
@@ -70,6 +71,16 @@ class ConbusScanService(ConbusProtocol):
         self.service_response.sent_telegrams.append(telegram_sent)
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
+
+
+
+        Args:
+
+            telegram_received: The telegram received event.
+
+
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
@@ -84,6 +95,16 @@ class ConbusScanService(ConbusProtocol):
         return continue_scan
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+
+
+        Args:
+
+            message: Failure message.
+
+
+        """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
         self.service_response.timestamp = datetime.now()
@@ -112,7 +133,6 @@ class ConbusScanService(ConbusProtocol):
         Returns:
             ConbusResponse with operation result and all datapoints found
         """
-
         self.logger.info("Starting scan_module")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds

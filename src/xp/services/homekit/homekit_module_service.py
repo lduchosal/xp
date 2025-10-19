@@ -19,7 +19,7 @@ class HomekitModuleService:
         self.conson_modules_config = conson_modules_config
 
     def get_module_by_serial(self, serial_number: str) -> Optional[ConsonModuleConfig]:
-        """Get a module by its serial number"""
+        """Get a module by its serial number."""
         module = next(
             (
                 module

@@ -1,3 +1,5 @@
+"""Unit tests for Conbus link number service."""
+
 # mypy: disable-error-code="arg-type,call-arg,func-returns-value,attr-defined"
 from datetime import datetime
 from unittest.mock import Mock

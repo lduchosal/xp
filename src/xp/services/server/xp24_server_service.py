@@ -13,7 +13,7 @@ from xp.services.server.base_server_service import BaseServerService
 
 
 class XP24ServerError(Exception):
-    """Raised when XP24 server operations fail"""
+    """Raised when XP24 server operations fail."""
 
     pass
 
@@ -27,7 +27,7 @@ class XP24ServerService(BaseServerService):
     """
 
     def __init__(self, serial_number: str):
-        """Initialize XP24 server service"""
+        """Initialize XP24 server service."""
         super().__init__(serial_number)
         self.device_type = "XP24"
         self.module_type_code = 7  # XP24 module type from registry
@@ -36,7 +36,7 @@ class XP24ServerService(BaseServerService):
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Handle XP24-specific data requests"""
+        """Handle XP24-specific data requests."""
         if (
             request.system_function != SystemFunction.READ_DATAPOINT
             or not request.datapoint_type
@@ -67,7 +67,7 @@ class XP24ServerService(BaseServerService):
         return self.generate_action_response(request)
 
     def get_device_info(self) -> Dict:
-        """Get XP24 device information"""
+        """Get XP24 device information."""
         return {
             "serial_number": self.serial_number,
             "device_type": self.device_type,
@@ -77,7 +77,7 @@ class XP24ServerService(BaseServerService):
         }
 
     def generate_action_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate action response telegram (simulated)"""
+        """Generate action response telegram (simulated)."""
         response = "F19D"  # NAK
         if (
             request.system_function == SystemFunction.ACTION

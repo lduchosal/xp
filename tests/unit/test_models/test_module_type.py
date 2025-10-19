@@ -1,3 +1,5 @@
+"""Unit tests for module type models."""
+
 from xp.models.telegram.module_type import (
     ModuleType,
     get_all_module_types,

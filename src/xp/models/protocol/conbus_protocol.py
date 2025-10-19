@@ -1,3 +1,5 @@
+"""Conbus protocol event models."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Union
@@ -15,7 +17,11 @@ if TYPE_CHECKING:
 
 
 class ConnectionMadeEvent(BaseEvent):
-    """Event dispatched when TCP connection is established"""
+    """Event dispatched when TCP connection is established.
+
+    Attributes:
+        protocol: Reference to the TelegramProtocol instance.
+    """
 
     protocol: TelegramProtocol = Field(
         description="Reference to the TelegramProtocol instance"
@@ -23,12 +29,25 @@ class ConnectionMadeEvent(BaseEvent):
 
 
 class ConnectionFailedEvent(BaseEvent):
-    """Event dispatched when TCP connection fails"""
+    """Event dispatched when TCP connection fails.
+
+    Attributes:
+        reason: Failure reason.
+    """
 
     reason: str = Field(description="Failure reason")
 
 
 class SendWriteConfigEvent(BaseEvent):
+    """Event for sending write config commands.
+
+    Attributes:
+        serial_number: Serial number.
+        output_number: Output number.
+        datapoint_type: Datapoint type.
+        value: Set brightness value.
+    """
+
     serial_number: str = Field(description="Serial number")
     output_number: int = Field(description="Output number")
     datapoint_type: DataPointType = Field(description="Datapoint type")
@@ -36,25 +55,58 @@ class SendWriteConfigEvent(BaseEvent):
 
 
 class SendActionEvent(BaseEvent):
+    """Event for sending action commands.
+
+    Attributes:
+        serial_number: Serial number of the light bulb set.
+        output_number: Output number of the light bulb set.
+        value: Set light bulb On or Off (True/False).
+    """
+
     serial_number: str = Field(description="Serial number of the light bulb set")
     output_number: int = Field(description="Output number of the light bulb set")
     value: bool = Field(description="Set light bulb On or Off (True/False)")
 
 
 class DatapointEvent(BaseEvent):
+    """Base event for datapoint operations.
+
+    Attributes:
+        serial_number: Serial number of the light bulb set.
+        datapoint_type: Datapoint type.
+    """
+
     serial_number: str = Field(description="Serial number of the light bulb set")
     datapoint_type: DataPointType = Field(description="Datapoint type")
 
 
 class OutputStateReceivedEvent(DatapointEvent):
+    """Event when output state is received.
+
+    Attributes:
+        data_value: Data value.
+    """
+
     data_value: str = Field(description="Data value")
 
 
 class LightLevelReceivedEvent(DatapointEvent):
+    """Event when light level is received.
+
+    Attributes:
+        data_value: Data value.
+    """
+
     data_value: str = Field(description="Data value")
 
 
 class ReadDatapointEvent(DatapointEvent):
+    """Event to read datapoint.
+
+    Attributes:
+        refresh_cache: If True, force cache invalidation and fresh protocol query.
+    """
+
     refresh_cache: bool = Field(
         default=False,
         description="If True, force cache invalidation and fresh protocol query",
@@ -68,7 +120,14 @@ class ReadDatapointFromProtocolEvent(DatapointEvent):
 
 
 class ModuleEvent(BaseEvent):
-    """Event dispatched when light bulb set is on"""
+    """Event dispatched when light bulb set is on.
+
+    Attributes:
+        serial_number: Serial number of the light bulb set.
+        output_number: Output number of the light bulb set.
+        module: ConsonModuleConfig of the light bulb set.
+        accessory: HomekitAccessoryConfig of the light bulb set.
+    """
 
     serial_number: str = Field(description="Serial number of the light bulb set")
     output_number: int = Field(description="Output number of the light bulb set")
@@ -81,18 +140,46 @@ class ModuleEvent(BaseEvent):
 
 
 class LightBulbSetOnEvent(ModuleEvent):
-    """Event dispatched when light bulb set is on"""
+    """Event dispatched when light bulb set is on.
+
+    Attributes:
+        value: On or Off the light bulb set.
+    """
+
+    """Event dispatched when light bulb set is on.
+
+    Attributes:
+        serial_number: Serial number of the light bulb set.
+        output_number: Output number of the light bulb set.
+        module: ConsonModuleConfig of the light bulb set.
+        accessory: HomekitAccessoryConfig of the light bulb set.
+    """
 
     value: bool = Field(description="On or Off the light bulb set")
 
 
 class LightBulbGetOnEvent(ModuleEvent, BaseEvent[bool]):
-    """Event dispatched when light bulb set is on"""
+    """Event dispatched when getting light bulb on state."""
+
+    """Event dispatched when light bulb set is on.
+
+    Attributes:
+        serial_number: Serial number of the light bulb set.
+        output_number: Output number of the light bulb set.
+        module: ConsonModuleConfig of the light bulb set.
+        accessory: HomekitAccessoryConfig of the light bulb set.
+    """
 
     pass
 
 
 class OutletSetOnEvent(ModuleEvent):
+    """Event dispatched when outlet set is on.
+
+    Attributes:
+        value: On or Off the light bulb set.
+    """
+
     """Event dispatched when outlet set is on"""
 
     value: bool = Field(description="On or Off the light bulb set")

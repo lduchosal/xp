@@ -198,7 +198,7 @@ class HomeKitCacheService:
         On refresh_cache=True: invalidate cache and force protocol query
         On cache hit: dispatch cached response event
         On cache miss: forward to protocol via ReadDatapointFromProtocolEvent
-        """
+        ."""
         self.logger.debug(
             f"Handling ReadDatapointEvent: "
             f"serial={event.serial_number}, "

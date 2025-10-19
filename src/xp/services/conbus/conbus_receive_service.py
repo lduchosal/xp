@@ -28,7 +28,7 @@ class ConbusReceiveService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus receive service"""
+        """Initialize the Conbus receive service."""
         super().__init__(cli_config, reactor)
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.finish_callback: Optional[Callable[[ConbusReceiveResponse], None]] = None
@@ -40,12 +40,23 @@ class ConbusReceiveService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
-        self.logger.debug("Connection established, waiting for telegrams...")
+        """Handle connection established event."""
+        self.logger.debug("Connection established, waiting for telegrams.")
 
     def telegram_sent(self, telegram_sent: str) -> None:
         pass
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
+
+
+
+        Args:
+
+            telegram_received: The telegram received event.
+
+
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if self.progress_callback:
             self.progress_callback(telegram_received.frame)
@@ -62,6 +73,16 @@ class ConbusReceiveService(ConbusProtocol):
         return False
 
     def failed(self, message: str) -> None:
+        """Handle failed connection event.
+
+
+
+        Args:
+
+            message: Failure message.
+
+
+        """
         self.logger.debug("Failed %s:", message)
         self.receive_response.success = False
         self.receive_response.error = message
@@ -74,7 +95,7 @@ class ConbusReceiveService(ConbusProtocol):
         finish_callback: Callable[[ConbusReceiveResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Run reactor in dedicated thread with its own event loop"""
+        """Run reactor in dedicated thread with its own event loop."""
         self.logger.info("Starting receive")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds

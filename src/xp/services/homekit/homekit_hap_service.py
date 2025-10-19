@@ -82,13 +82,13 @@ class HomekitHapService:
         self.driver: AccessoryDriver = driver
 
     async def async_start(self) -> None:
-        """Get current client configuration"""
-        self.logger.info("Loading accessories...")
+        """Get current client configuration."""
+        self.logger.info("Loading accessories.")
         self.build_bridge()
         self.logger.info("Accessories loaded successfully")
 
         # Start HAP-python in a separate thread to avoid event loop conflicts
-        self.logger.info("Starting HAP-python driver in separate thread...")
+        self.logger.info("Starting HAP-python driver in separate thread.")
         hap_thread = threading.Thread(
             target=self._run_driver_in_thread, daemon=True, name="HAP-Python"
         )
@@ -96,12 +96,12 @@ class HomekitHapService:
         self.logger.info("HAP-python driver thread started")
 
     def _run_driver_in_thread(self) -> None:
-        """Run the HAP-python driver in a separate thread with its own event loop"""
+        """Run the HAP-python driver in a separate thread with its own event loop."""
         try:
-            self.logger.info("HAP-python thread starting, creating new event loop...")
+            self.logger.info("HAP-python thread starting, creating new event loop.")
             # Create a new event loop for this thread
 
-            self.logger.info("Starting HAP-python driver...")
+            self.logger.info("Starting HAP-python driver.")
             self.driver.start()
             self.logger.info("HAP-python driver started successfully")
         except Exception as e:
@@ -246,7 +246,7 @@ class HomekitHapService:
         )
 
     def handle_module_state_changed(self, event: ModuleStateChangedEvent) -> None:
-        """Handle module state change by refreshing affected accessories"""
+        """Handle module state change by refreshing affected accessories."""
         self.logger.debug(
             f"Module state changed: module_type={event.module_type_code}, "
             f"link={event.link_number}, input={event.input_number}"

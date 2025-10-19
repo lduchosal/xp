@@ -11,7 +11,7 @@ from xp.services.server.base_server_service import BaseServerService
 
 
 class CP20ServerError(Exception):
-    """Raised when CP20 server operations fail"""
+    """Raised when CP20 server operations fail."""
 
     pass
 
@@ -25,7 +25,7 @@ class CP20ServerService(BaseServerService):
     """
 
     def __init__(self, serial_number: str):
-        """Initialize CP20 server service"""
+        """Initialize CP20 server service."""
         super().__init__(serial_number)
         self.device_type = "CP20"
         self.module_type_code = 2  # CP20 module type from registry
@@ -34,11 +34,11 @@ class CP20ServerService(BaseServerService):
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Handle CP20-specific data requests"""
+        """Handle CP20-specific data requests."""
         return None
 
     def get_device_info(self) -> Dict:
-        """Get CP20 device information"""
+        """Get CP20 device information."""
         return {
             "serial_number": self.serial_number,
             "device_type": self.device_type,

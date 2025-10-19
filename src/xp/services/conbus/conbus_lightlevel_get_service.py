@@ -30,7 +30,7 @@ class ConbusLightlevelGetService(ConbusDatapointService):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus lightlevel get service"""
+        """Initialize the Conbus lightlevel get service."""
         super().__init__(telegram_service, cli_config, reactor)
         self.output_number: int = 0
         self.service_callback: Optional[Callable[[ConbusLightlevelResponse], None]] = (
