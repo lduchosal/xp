@@ -75,7 +75,7 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
                 )
 
             self.logger.debug(
-                f"frameReceived payload: {payload.decode()}, checksum: {checksum}"
+                f"frameReceived payload: {payload.decode('latin-1')}, checksum: {checksum}"
             )
 
             # Reset timeout on activity
@@ -83,9 +83,9 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
 
             telegram_received = TelegramReceivedEvent(
                 protocol=self,
-                frame=frame.decode(),
-                telegram=telegram.decode(),
-                payload=payload.decode(),
+                frame=frame.decode('latin-1'),
+                telegram=telegram.decode('latin-1'),
+                payload=payload.decode('latin-1'),
                 telegram_type=telegram_type,
                 serial_number=serial_number,
                 checksum=checksum,

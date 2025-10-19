@@ -91,7 +91,7 @@ class ConbusScanService(ConbusProtocol):
         if self.finish_callback:
             self.finish_callback(self.service_response)
 
-    def scan_module_background(
+    def scan_module(
         self,
         serial_number: str,
         function_code: str,

@@ -157,7 +157,7 @@ isort = "isort src/ tests/"
 absolufy = {shell = "find src tests -name '*.py' -type f -exec absolufy-imports --application-directories=src:tests {} +"}
 update-readme = {shell = "xp help > /tmp/xp-help.txt && sed -i '' -e '/<!-- BEGIN CLI HELP -->/,/<!-- END CLI HELP -->/{//!d;}' -e '/<!-- BEGIN CLI HELP -->/r /tmp/xp-help.txt' README.md && rm /tmp/xp-help.txt"}
 check = {composite = ["clean", "lint", "format", "typecheck", "vulture", "refurb", "isort", "absolufy", "test-quick", "test-cov", "update-readme"] }
-bump-version = "pdm bump -v patch"
+bump-version = "pdm bump -v minor"
 env = "echo ${PATH}"
 install = "pdm install"
 install-dev = "pdm install -G dev"
