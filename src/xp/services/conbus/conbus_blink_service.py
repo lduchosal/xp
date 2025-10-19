@@ -1,7 +1,7 @@
-"""Conbus Client Send Service for TCP communication with Conbus servers.
+"""Conbus Blink Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
-various types of telegrams including discover, version, and sensor data requests.
+blink/unblink telegrams to control module LED indicators.
 """
 
 import logging
@@ -21,10 +21,10 @@ from xp.services.telegram.telegram_service import TelegramService
 
 class ConbusBlinkService(ConbusProtocol):
     """
-    Service for receiving telegrams from Conbus servers.
+    Service for blinking module LEDs on Conbus servers.
 
-    Uses composition with ConbusService to provide receive-only functionality
-    for collecting waiting event telegrams from the server.
+    Uses ConbusProtocol to provide blink/unblink functionality
+    for controlling module LED indicators.
     """
 
     def __init__(
@@ -33,7 +33,7 @@ class ConbusBlinkService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus blink service"""
         super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
         self.serial_number: str = ""
@@ -50,7 +50,7 @@ class ConbusBlinkService(ConbusProtocol):
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
-        self.logger.debug("Connection established, retrieving autoreport status...")
+        self.logger.debug("Connection established, sending blink command...")
         # Blink is 05, Unblink is 06
         system_function = SystemFunction.UNBLINK
         if self.on_or_off.lower() == "on":
@@ -125,7 +125,7 @@ class ConbusBlinkService(ConbusProtocol):
             xp conbus blink 0012345008 off
         """
 
-        self.logger.info("Starting get_autoreport_status")
+        self.logger.info("Starting send_blink_telegram")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
         self.finish_callback = finish_callback

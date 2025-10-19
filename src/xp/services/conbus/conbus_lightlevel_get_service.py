@@ -1,6 +1,6 @@
-"""Conbus Auto Report Service for getting and setting module auto report status.
+"""Conbus Lightlevel Get Service for getting module light levels.
 
-This service handles auto report status operations for modules through Conbus telegrams.
+This service handles light level query operations for modules through Conbus telegrams.
 """
 
 import logging
@@ -18,10 +18,10 @@ from xp.services.telegram.telegram_service import TelegramService
 
 class ConbusLightlevelGetService(ConbusDatapointService):
     """
-    Service for receiving telegrams from Conbus servers.
+    Service for getting light levels from Conbus modules.
 
-    Uses composition with ConbusService to provide receive-only functionality
-    for collecting waiting event telegrams from the server.
+    Uses ConbusProtocol to provide light level query functionality
+    for reading the current light level configuration from module outputs.
     """
 
     def __init__(
@@ -30,7 +30,7 @@ class ConbusLightlevelGetService(ConbusDatapointService):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus lightlevel get service"""
         super().__init__(telegram_service, cli_config, reactor)
         self.output_number: int = 0
         self.service_callback: Optional[Callable[[ConbusLightlevelResponse], None]] = (
@@ -80,16 +80,15 @@ class ConbusLightlevelGetService(ConbusDatapointService):
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """
-        Get the current auto report status for a specific module.
+        Get the current light level for a specific module output.
 
         Args:
-            :param  serial_number: 10-digit module serial number
-            :param  output_number: output module number
-            :param  finish_callback: callback function to call when the lightlevel status is
-            :param  timeout_seconds: timeout in seconds
-
+            serial_number: 10-digit module serial number
+            output_number: output module number
+            finish_callback: callback function to call when the light level is received
+            timeout_seconds: timeout in seconds
         """
-        self.logger.info("Starting get_lightlevel_status")
+        self.logger.info("Starting get_light_level")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
         self.serial_number = serial_number

@@ -1,6 +1,6 @@
 """Conbus Receive Service for receiving telegrams from Conbus servers.
 
-This service uses composition with ConbusService to provide receive-only functionality,
+This service uses ConbusProtocol to provide receive-only functionality,
 allowing clients to receive waiting event telegrams using empty telegram sends.
 """
 
@@ -19,7 +19,7 @@ class ConbusReceiveService(ConbusProtocol):
     """
     Service for receiving telegrams from Conbus servers.
 
-    Uses composition with ConbusService to provide receive-only functionality
+    Uses ConbusProtocol to provide receive-only functionality
     for collecting waiting event telegrams from the server.
     """
 
@@ -28,7 +28,7 @@ class ConbusReceiveService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus receive service"""
         super().__init__(cli_config, reactor)
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.finish_callback: Optional[Callable[[ConbusReceiveResponse], None]] = None
@@ -75,7 +75,7 @@ class ConbusReceiveService(ConbusProtocol):
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Run reactor in dedicated thread with its own event loop"""
-        self.logger.info("Starting discovery")
+        self.logger.info("Starting receive")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
         self.progress_callback = progress_callback

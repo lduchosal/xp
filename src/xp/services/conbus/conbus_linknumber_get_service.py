@@ -17,10 +17,10 @@ from xp.services.telegram.telegram_service import TelegramService
 
 class ConbusLinknumberGetService(ConbusDatapointService):
     """
-    Service for receiving telegrams from Conbus servers.
+    Service for getting link numbers from Conbus modules.
 
-    Uses composition with ConbusService to provide receive-only functionality
-    for collecting waiting event telegrams from the server.
+    Uses ConbusProtocol to provide link number query functionality
+    for reading the current link number configuration from modules.
     """
 
     def __init__(
@@ -29,7 +29,7 @@ class ConbusLinknumberGetService(ConbusDatapointService):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus linknumber get service"""
         super().__init__(telegram_service, cli_config, reactor)
         self.service_callback: Optional[Callable[[ConbusLinknumberResponse], None]] = (
             None
@@ -68,13 +68,12 @@ class ConbusLinknumberGetService(ConbusDatapointService):
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """
-        Get the current auto report status for a specific module.
+        Get the current link number for a specific module.
 
         Args:
-            :param  serial_number: 10-digit module serial number
-            :param  finish_callback: callback function to call when the linknumber status is
-            :param  timeout_seconds: timeout in seconds
-
+            serial_number: 10-digit module serial number
+            finish_callback: callback function to call when the link number is received
+            timeout_seconds: timeout in seconds
         """
         self.logger.info("Starting get_linknumber")
         if timeout_seconds:

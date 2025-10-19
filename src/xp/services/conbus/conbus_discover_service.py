@@ -1,7 +1,7 @@
-"""Conbus Client Send Service for TCP communication with Conbus servers.
+"""Conbus Discover Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
-various types of telegrams including discover, version, and sensor data requests.
+discover telegrams to find modules on the network.
 """
 
 import logging
@@ -18,10 +18,10 @@ from xp.services.protocol.conbus_protocol import ConbusProtocol
 
 class ConbusDiscoverService(ConbusProtocol):
     """
-    TCP client service for sending telegrams to Conbus servers.
+    Service for discovering modules on Conbus servers.
 
-    Manages TCP socket connections, handles telegram generation and transmission,
-    and processes server responses.
+    Uses ConbusProtocol to provide discovery functionality for finding
+    modules connected to the Conbus network.
     """
 
     def __init__(
@@ -29,7 +29,7 @@ class ConbusDiscoverService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus discover service"""
         super().__init__(cli_config, reactor)
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.finish_callback: Optional[Callable[[ConbusDiscoverResponse], None]] = None

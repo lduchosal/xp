@@ -17,10 +17,10 @@ from xp.services.telegram.telegram_service import TelegramService
 
 class ConbusAutoreportGetService(ConbusDatapointService):
     """
-    Service for receiving telegrams from Conbus servers.
+    Service for getting auto report status from Conbus modules.
 
-    Uses composition with ConbusService to provide receive-only functionality
-    for collecting waiting event telegrams from the server.
+    Uses ConbusProtocol to provide auto report status query functionality
+    for reading the current auto report configuration from modules.
     """
 
     def __init__(
@@ -29,7 +29,7 @@ class ConbusAutoreportGetService(ConbusDatapointService):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus autoreport get service"""
         super().__init__(telegram_service, cli_config, reactor)
         self.service_callback: Optional[Callable[[ConbusAutoreportResponse], None]] = (
             None
@@ -70,10 +70,9 @@ class ConbusAutoreportGetService(ConbusDatapointService):
         Get the current auto report status for a specific module.
 
         Args:
-            :param  serial_number: 10-digit module serial number
-            :param  finish_callback: callback function to call when the linknumber status is
-            :param  timeout_seconds: timeout in seconds
-
+            serial_number: 10-digit module serial number
+            finish_callback: callback function to call when the auto report status is received
+            timeout_seconds: timeout in seconds
         """
         self.logger.info("Starting get_autoreport_status")
         if timeout_seconds:

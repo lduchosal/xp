@@ -17,10 +17,10 @@ from xp.services.protocol import ConbusProtocol
 
 class ConbusRawService(ConbusProtocol):
     """
-    Service for querying datapoints from Conbus modules.
+    Service for sending raw telegram sequences to Conbus modules.
 
-    Uses ConbusProtocol to provide datapoint query functionality
-    for reading sensor data and module information.
+    Uses ConbusProtocol to provide raw telegram functionality
+    for sending arbitrary telegram strings without validation.
     """
 
     def __init__(
@@ -28,7 +28,7 @@ class ConbusRawService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus datapoint service"""
+        """Initialize the Conbus raw service"""
         super().__init__(cli_config, reactor)
         self.raw_input: str = ""
         self.progress_callback: Optional[Callable[[str], None]] = None
@@ -81,19 +81,19 @@ class ConbusRawService(ConbusProtocol):
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """
-        Query a specific datapoint from a module.
+        Send a raw telegram string to the Conbus server.
 
         Args:
-            serial_number: 10-digit module serial number
-            datapoint_type: Type of datapoint to query
-            finish_callback: callback function to call when the datapoint is received
+            raw_input: raw telegram string to send
+            progress_callback: callback to handle progress updates
+            finish_callback: callback function to call when the operation is complete
             timeout_seconds: timeout in seconds
 
         Returns:
-            ConbusDatapointResponse with operation result and datapoint value
+            ConbusRawResponse with operation result and received telegrams
         """
 
-        self.logger.info("Starting query_datapoint")
+        self.logger.info("Starting send_raw_telegram")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
         self.progress_callback = progress_callback

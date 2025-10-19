@@ -41,6 +41,7 @@ from xp.cli.commands.conbus.conbus_lightlevel_commands import (
     xp_lightlevel_off,
     xp_lightlevel_on,
     xp_lightlevel_set,
+    xp_lightlevel_get,
 )
 from xp.cli.commands.conbus.conbus_linknumber_commands import (
     get_linknumber_command,

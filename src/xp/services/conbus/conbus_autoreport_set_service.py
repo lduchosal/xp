@@ -20,10 +20,10 @@ from xp.services.protocol import ConbusProtocol
 
 class ConbusAutoreportSetService(ConbusProtocol):
     """
-    Service for receiving telegrams from Conbus servers.
+    Service for setting auto report status on Conbus modules.
 
-    Uses composition with ConbusService to provide receive-only functionality
-    for collecting waiting event telegrams from the server.
+    Uses ConbusProtocol to provide auto report configuration functionality
+    for enabling/disabling automatic reporting on modules.
     """
 
     def __init__(
@@ -31,7 +31,7 @@ class ConbusAutoreportSetService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus autoreport set service"""
         super().__init__(cli_config, reactor)
         self.serial_number: str = ""
         self.status: bool = False

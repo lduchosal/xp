@@ -1,7 +1,7 @@
-"""Conbus Client Send Service for TCP communication with Conbus servers.
+"""Conbus Blink All Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
-various types of telegrams including discover, version, and sensor data requests.
+blink/unblink telegrams to all discovered modules on the network.
 """
 
 import logging
@@ -21,10 +21,10 @@ from xp.services.telegram.telegram_service import TelegramService
 
 class ConbusBlinkAllService(ConbusProtocol):
     """
-    Service for receiving telegrams from Conbus servers.
+    Service for blinking all modules on Conbus servers.
 
-    Uses composition with ConbusService to provide receive-only functionality
-    for collecting waiting event telegrams from the server.
+    Uses ConbusProtocol to provide blink/unblink functionality
+    for all discovered modules on the network.
     """
 
     def __init__(
@@ -33,7 +33,7 @@ class ConbusBlinkAllService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus client send service"""
+        """Initialize the Conbus blink all service"""
         super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
         self.serial_number: str = ""
@@ -139,21 +139,19 @@ class ConbusBlinkAllService(ConbusProtocol):
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """
-        Get the current auto report status for a specific module.
+        Send blink command to all discovered modules.
 
         Args:
-            on_or_off: blink or unblink device
-            finish_callback: callback function to call when the autoreport status is
+            on_or_off: "on" to blink or "off" to unblink all devices
+            progress_callback: callback function to call with progress updates
+            finish_callback: callback function to call when the operation completes
             timeout_seconds: timeout in seconds
 
         Returns:
-            ConbusAutoreportResponse with operation result and auto report status
-
-        Raises:
-            ConbusAutoreportError: If the operation fails
+            ConbusBlinkResponse with operation result
         """
 
-        self.logger.info("Starting get_autoreport_status")
+        self.logger.info("Starting send_blink_all_telegram")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
         self.progress_callback = progress_callback

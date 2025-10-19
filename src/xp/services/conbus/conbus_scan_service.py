@@ -1,7 +1,7 @@
 """Conbus Scan Service for TCP communication with Conbus servers.
 
-This service implements a TCP client that scan a Conbus servers and sends
-various types of telegrams including discover, version, and sensor data requests.
+This service implements a TCP client that scans Conbus servers and sends
+telegrams to scan modules for all datapoints by function code.
 """
 
 import logging
@@ -20,10 +20,10 @@ from xp.services.protocol import ConbusProtocol
 
 class ConbusScanService(ConbusProtocol):
     """
-    Service for querying datapoints from Conbus modules.
+    Service for scanning modules for all datapoints by function code.
 
-    Uses ConbusProtocol to provide datapoint query functionality
-    for reading sensor data and module information.
+    Uses ConbusProtocol to provide scan functionality for discovering
+    all available datapoints on a module.
     """
 
     def __init__(
@@ -31,7 +31,7 @@ class ConbusScanService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus datapoint service"""
+        """Initialize the Conbus scan service"""
         super().__init__(cli_config, reactor)
         self.serial_number: str = ""
         self.function_code: str = ""
@@ -100,20 +100,20 @@ class ConbusScanService(ConbusProtocol):
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """
-        Query a specific datapoint from a module.
+        Scan a module for all datapoints by function code.
 
         Args:
             serial_number: 10-digit module serial number
             function_code: the function code to scan
             progress_callback: callback to handle progress
-            finish_callback: callback function to call when the datapoint is received
+            finish_callback: callback function to call when the scan is complete
             timeout_seconds: timeout in seconds
 
         Returns:
-            ConbusDatapointResponse with operation result and datapoint value
+            ConbusResponse with operation result and all datapoints found
         """
 
-        self.logger.info("Starting query_datapoint")
+        self.logger.info("Starting scan_module")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
 

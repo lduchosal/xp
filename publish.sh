@@ -34,9 +34,9 @@ done
 
 # Set total steps based on mode
 if [ "$QUALITY_ONLY" = true ]; then
-    STEPS=13
+    STEPS=14
 else
-    STEPS=20
+    STEPS=21
 fi
 STEP=0
 
@@ -106,6 +106,9 @@ run_command "pdm update" "Dependencies update"
 
 print_step "Type Checking (typecheck)"
 run_command "pdm run typecheck" "Type checking"
+
+print_step "Docstring Check (flake8)"
+run_command "pdm run flake8" "Docstring check"
 
 print_step "Code Quality Check (refurb)"
 run_command "pdm run refurb" "Code quality check"

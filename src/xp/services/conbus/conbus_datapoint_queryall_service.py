@@ -137,19 +137,19 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """
-        Query a specific datapoint from a module.
+        Query all datapoints from a module.
 
         Args:
             serial_number: 10-digit module serial number
-            finish_callback: callback function to call when all the datapoint are received
-            progress_callback: callback function to call when a datapoint is received
+            finish_callback: callback function to call when all datapoints are received
+            progress_callback: callback function to call when each datapoint is received
             timeout_seconds: timeout in seconds
 
         Returns:
-            ConbusDatapointResponse with operation result and datapoint value
+            ConbusDatapointResponse with operation result and all datapoint values
         """
 
-        self.logger.info("Starting query_datapoint")
+        self.logger.info("Starting query_all_datapoints")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
         self.finish_callback = finish_callback
