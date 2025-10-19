@@ -35,7 +35,9 @@ def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
     def finish(service_response: ConbusBlinkResponse) -> None:
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
-    service: ConbusBlinkService = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
+    service: ConbusBlinkService = (
+        ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
+    )
     with service:
         service.send_blink_telegram(serial_number, "on", finish, 0.5)
 
@@ -54,10 +56,13 @@ def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
     \b
         xp conbus blink off 0012345008
     """
+
     def finish(service_response: ConbusBlinkResponse) -> None:
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
-    service: ConbusBlinkService = ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
+    service: ConbusBlinkService = (
+        ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
+    )
     with service:
         service.send_blink_telegram(serial_number, "off", finish, 0.5)
 
@@ -83,6 +88,7 @@ def blink_all_off(ctx: Context) -> None:
     \b
         xp conbus blink all off
     """
+
     def finish(discovered_devices: ConbusBlinkResponse) -> None:
         click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
 
@@ -90,7 +96,9 @@ def blink_all_off(ctx: Context) -> None:
         click.echo(message)
         pass
 
-    service: ConbusBlinkAllService = ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)
+    service: ConbusBlinkAllService = (
+        ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)
+    )
     with service:
         service.send_blink_all_telegram("off", progress, finish, 0.5)
 
@@ -116,8 +124,8 @@ def blink_all_on(ctx: Context) -> None:
         click.echo(message)
         pass
 
-    service: ConbusBlinkAllService = ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)
+    service: ConbusBlinkAllService = (
+        ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)
+    )
     with service:
         service.send_blink_all_telegram("on", progress, finish, 0.5)
-
-

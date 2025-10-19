@@ -6,20 +6,16 @@ various types of telegrams including discover, version, and sensor data requests
 
 import logging
 from datetime import datetime
-from typing import Any, Optional, Callable
+from typing import Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
 
-from xp.models import ConbusResponse, ConbusClientConfig
+from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_blink import ConbusBlinkResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
-from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
-from xp.services import TelegramDiscoverService
-from xp.services.conbus.conbus_service import ConbusService
 from xp.services.protocol import ConbusProtocol
-from xp.services.telegram.telegram_blink_service import TelegramBlinkService
 from xp.services.telegram.telegram_service import TelegramService
 
 
@@ -116,9 +112,9 @@ class ConbusBlinkAllService(ConbusProtocol):
                 self.progress_callback(".")
             return
 
-        if (
-            reply_telegram
-            and reply_telegram.system_function in (SystemFunction.BLINK, SystemFunction.UNBLINK)
+        if reply_telegram and reply_telegram.system_function in (
+            SystemFunction.BLINK,
+            SystemFunction.UNBLINK,
         ):
             self.logger.debug("Received blink response")
             if self.progress_callback:
@@ -126,7 +122,6 @@ class ConbusBlinkAllService(ConbusProtocol):
             return
 
         self.logger.debug("Received unexpected response")
-        return
 
     def failed(self, message: str) -> None:
         self.logger.debug(f"Failed with message: {message}")
@@ -165,4 +160,3 @@ class ConbusBlinkAllService(ConbusProtocol):
         self.finish_callback = finish_callback
         self.on_or_off = on_or_off
         self.start_reactor()
-

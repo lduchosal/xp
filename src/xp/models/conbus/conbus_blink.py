@@ -31,10 +31,30 @@ class ConbusBlinkResponse:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        return {
+        result = {
             "success": self.success,
-            "sent_telegram": self.sent_telegram,
-            "received_telegrams": self.received_telegrams,
-            "error": self.error,
+            "serial_number": self.serial_number,
+            "operation": self.operation,
+            "system_function": (
+                self.system_function.name if self.system_function else None
+            ),
+            "sent_telegram": (
+                self.sent_telegram.to_dict()
+                if self.sent_telegram and hasattr(self.sent_telegram, "to_dict")
+                else str(self.sent_telegram) if self.sent_telegram else None
+            ),
+            "reply_telegram": (
+                self.reply_telegram.to_dict()
+                if self.reply_telegram and hasattr(self.reply_telegram, "to_dict")
+                else str(self.reply_telegram) if self.reply_telegram else None
+            ),
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
         }
+
+        # Only include these if they have values
+        if self.received_telegrams:
+            result["received_telegrams"] = self.received_telegrams
+        if self.error:
+            result["error"] = self.error
+
+        return result

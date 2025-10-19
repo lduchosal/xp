@@ -6,20 +6,16 @@ various types of telegrams including discover, version, and sensor data requests
 
 import logging
 from datetime import datetime
-from typing import Any, Optional, Callable
+from typing import Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
 
-from xp.models import ConbusResponse, ConbusClientConfig
+from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_blink import ConbusBlinkResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
-from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
-from xp.services import TelegramDiscoverService
-from xp.services.conbus.conbus_service import ConbusService
 from xp.services.protocol import ConbusProtocol
-from xp.services.telegram.telegram_blink_service import TelegramBlinkService
 from xp.services.telegram.telegram_service import TelegramService
 
 
@@ -42,9 +38,7 @@ class ConbusBlinkService(ConbusProtocol):
         self.telegram_service = telegram_service
         self.serial_number: str = ""
         self.on_or_off = "none"
-        self.finish_callback: Optional[Callable[[ConbusBlinkResponse], None]] = (
-            None
-        )
+        self.finish_callback: Optional[Callable[[ConbusBlinkResponse], None]] = None
         self.service_response: ConbusBlinkResponse = ConbusBlinkResponse(
             success=False,
             serial_number=self.serial_number,
@@ -93,9 +87,9 @@ class ConbusBlinkService(ConbusProtocol):
         reply_telegram = self.telegram_service.parse_reply_telegram(
             telegram_received.frame
         )
-        if (
-            reply_telegram is not None
-            and reply_telegram.system_function in (SystemFunction.ACK, SystemFunction.NAK)
+        if reply_telegram is not None and reply_telegram.system_function in (
+            SystemFunction.ACK,
+            SystemFunction.NAK,
         ):
             self.logger.debug("Received blink response")
             self.service_response.success = True
