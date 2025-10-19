@@ -255,6 +255,7 @@ xp conbus datapoint query
 xp conbus discover
 
 xp conbus lightlevel
+xp conbus lightlevel get
 xp conbus lightlevel off
 xp conbus lightlevel on
 xp conbus lightlevel set
