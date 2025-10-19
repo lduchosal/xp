@@ -15,7 +15,6 @@ from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
 from xp.services.conbus.conbus_lightlevel_set_service import ConbusLightlevelSetService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
-from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_hap_service import HomekitHapService
 from xp.services.homekit.homekit_module_service import HomekitModuleService
 from xp.services.reverse_proxy_service import ReverseProxyService
@@ -90,12 +89,6 @@ class TestServiceContainer:
         service = ServiceContainer().get_container().resolve(TelegramBlinkService)
         assert isinstance(service, TelegramBlinkService)
 
-    # Test resolving conbus services
-    def test_resolve_conbus_service(self):
-        """Test resolving ConbusService."""
-        service = ServiceContainer().get_container().resolve(ConbusService)
-        assert isinstance(service, ConbusService)
-
     def test_resolve_conbus_datapoint_service(self):
         """Test resolving ConbusDatapointService."""
         service = ServiceContainer().get_container().resolve(ConbusDatapointService)
@@ -169,14 +162,6 @@ class TestServiceContainer:
         service2 = container.resolve(TelegramService)
         assert service1 is service2
 
-    def test_conbus_service_is_singleton(self):
-        """Test that ConbusService is registered as singleton."""
-        container = ServiceContainer().get_container()
-
-        service1 = container.resolve(ConbusService)
-        service2 = container.resolve(ConbusService)
-        assert service1 is service2
-
     @pytest.mark.parametrize(
         "service_class",
         [
@@ -185,7 +170,6 @@ class TestServiceContainer:
             TelegramDiscoverService,
             TelegramBlinkService,
             ConbusConnectionPool,
-            ConbusService,
             ConbusDatapointService,
             ConbusScanService,
             ConbusDiscoverService,
@@ -209,7 +193,6 @@ class TestServiceContainer:
         "service_class",
         [
             TelegramService,
-            ConbusService,
             ConbusDatapointService,
             ActionTableService,
         ],

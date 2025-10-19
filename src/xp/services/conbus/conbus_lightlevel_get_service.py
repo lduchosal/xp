@@ -9,18 +9,14 @@ from typing import Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
 
-from xp.models import ConbusClientConfig
+from xp.models import ConbusClientConfig, ConbusDatapointResponse
 from xp.models.conbus.conbus_lightlevel import ConbusLightlevelResponse
-from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.models.telegram.reply_telegram import ReplyTelegram
-from xp.models.telegram.system_function import SystemFunction
-from xp.models.telegram.telegram_type import TelegramType
-from xp.services.protocol import ConbusProtocol
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class ConbusLightlevelGetService(ConbusProtocol):
+class ConbusLightlevelGetService(ConbusDatapointService):
     """
     Service for receiving telegrams from Conbus servers.
 
@@ -35,93 +31,46 @@ class ConbusLightlevelGetService(ConbusProtocol):
         reactor: PosixReactorBase,
     ) -> None:
         """Initialize the Conbus client send service"""
-        super().__init__(cli_config, reactor)
-        self.telegram_service = telegram_service
-        self.serial_number: str = ""
+        super().__init__(telegram_service, cli_config, reactor)
         self.output_number: int = 0
-        self.finish_callback: Optional[Callable[[ConbusLightlevelResponse], None]] = (
+        self.service_callback: Optional[Callable[[ConbusLightlevelResponse], None]] = (
             None
-        )
-        self.service_response: ConbusLightlevelResponse = ConbusLightlevelResponse(
-            success=False,
-            serial_number=self.serial_number,
-            output_number=self.output_number,
-            level=0,
-            timestamp=datetime.now(),
         )
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def connection_established(self) -> None:
-        self.logger.debug("Connection established, retrieving lightlevel status...")
-        self.send_telegram(
-            telegram_type=TelegramType.SYSTEM,
-            serial_number=self.serial_number,
-            system_function=SystemFunction.READ_DATAPOINT,
-            data_value=str(DataPointType.MODULE_LIGHT_LEVEL.value),
-        )
+    def finish_service_callback(
+        self, datapoint_response: ConbusDatapointResponse
+    ) -> None:
 
-    def telegram_sent(self, telegram_sent: str) -> None:
-        self.service_response.sent_telegram = telegram_sent
+        self.logger.debug("Parsing datapoint response")
 
-    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-
-        self.logger.debug(f"Telegram received: {telegram_received}")
-        if not self.service_response.received_telegrams:
-            self.service_response.received_telegrams = []
-        self.service_response.received_telegrams.append(telegram_received.frame)
-
-        if (
-            not telegram_received.checksum_valid
-            or telegram_received.telegram_type != TelegramType.REPLY
-            or telegram_received.serial_number != self.serial_number
-        ):
-            self.logger.debug("Not a reply")
-            return
-
-        reply_telegram = self.telegram_service.parse_reply_telegram(
-            telegram_received.frame
-        )
-
-        if (
-            not reply_telegram
-            or reply_telegram.system_function != SystemFunction.READ_DATAPOINT
-            or reply_telegram.datapoint_type != DataPointType.MODULE_LIGHT_LEVEL
-        ):
-            self.logger.debug("Not a lightlevel telegram")
-            return
-
-        self.logger.debug("Received lightlevel status telegram")
-        lightlevel = self.extract_lightlevel(reply_telegram)
-        self.succeed(lightlevel)
-
-    def extract_lightlevel(self, reply_telegram: ReplyTelegram) -> int:
         level = 0
-        for output_data in reply_telegram.data_value.split(","):
-            if ":" in output_data:
-                output_str, level_str = output_data.split(":")
-                if int(output_str) == self.output_number:
-                    level_str = level_str.replace("[%]", "")
-                    level = int(level_str)
-                    break
-        return level
+        if datapoint_response.success and datapoint_response.datapoint_telegram:
+            for output_data in datapoint_response.datapoint_telegram.data_value.split(
+                ","
+            ):
+                if ":" in output_data:
+                    output_str, level_str = output_data.split(":")
+                    if int(output_str) == self.output_number:
+                        level_str = level_str.replace("[%]", "")
+                        level = int(level_str)
+                        break
 
-    def succeed(self, lightlevel: int) -> None:
-        self.service_response.success = True
-        self.service_response.timestamp = datetime.now()
-        self.service_response.serial_number = self.serial_number
-        self.service_response.level = lightlevel
-        if self.finish_callback:
-            self.finish_callback(self.service_response)
+        service_response = ConbusLightlevelResponse(
+            success=datapoint_response.success,
+            serial_number=self.serial_number,
+            output_number=self.output_number,
+            level=level,
+            error=datapoint_response.error,
+            sent_telegram=datapoint_response.sent_telegram,
+            received_telegrams=datapoint_response.received_telegrams,
+            timestamp=datetime.now(),
+        )
 
-    def failed(self, message: str) -> None:
-        self.logger.debug(f"Failed with message: {message}")
-        self.service_response.success = False
-        self.service_response.timestamp = datetime.now()
-        self.service_response.error = message
-        if self.finish_callback:
-            self.finish_callback(self.service_response)
+        if self.service_callback:
+            self.service_callback(service_response)
 
     def get_light_level(
         self,
@@ -143,7 +92,10 @@ class ConbusLightlevelGetService(ConbusProtocol):
         self.logger.info("Starting get_lightlevel_status")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
-        self.finish_callback = finish_callback
         self.serial_number = serial_number
         self.output_number = output_number
+        self.datapoint_type = DataPointType.MODULE_LIGHT_LEVEL
+
+        self.finish_callback = self.finish_service_callback
+        self.service_callback = finish_callback
         self.start_reactor()

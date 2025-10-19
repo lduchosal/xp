@@ -32,24 +32,25 @@ class ConbusResponse:
     """Represents a response from Conbus send operation"""
 
     success: bool
-    request: ConbusRequest
-    sent_telegram: Optional[str] = None
-    received_telegrams: Optional[list[str]] = None
-    error: Optional[str] = None
-    timestamp: Optional[datetime] = None
+    sent_telegrams: list[str]
+    received_telegrams: list[str]
+    timestamp: datetime
+    error: str = ""
+    serial_number: str = ""
+    function_code: str = ""
 
     def __post_init__(self) -> None:
-        if self.timestamp is None:
-            self.timestamp = datetime.now()
-        if self.received_telegrams is None:
-            self.received_telegrams = []
+        self.timestamp = datetime.now()
+        self.sent_telegrams = []
+        self.received_telegrams = []
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         return {
             "success": self.success,
-            "request": self.request.to_dict(),
-            "sent_telegram": self.sent_telegram,
+            "serial_number": self.serial_number,
+            "function_code": self.function_code,
+            "sent_telegrams": self.sent_telegrams,
             "received_telegrams": self.received_telegrams,
             "error": self.error,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,

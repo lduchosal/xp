@@ -3,13 +3,14 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 
+
 @dataclass
 class ConbusLinknumberResponse:
     """Represents a response from Conbus link number operations (set/get)"""
 
     success: bool
-    result: str
     serial_number: str
+    result: str
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
     link_number: Optional[int] = None

@@ -5,124 +5,120 @@ various types of telegrams including discover, version, and sensor data requests
 """
 
 import logging
-import threading
-from typing import Any, Callable, List, Optional
+from datetime import datetime
+from typing import Callable, Optional
+
+from twisted.internet.posixbase import PosixReactorBase
 
 from xp.models import (
-    ConbusRequest,
     ConbusResponse,
+    ConbusClientConfig,
 )
-from xp.services.conbus.conbus_service import ConbusService
-from xp.services.telegram.telegram_service import TelegramService
+from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+from xp.services.protocol import ConbusProtocol
 
 
-class ConbusScanError(Exception):
-    """Raised when Conbus client send operations fail"""
-
-    pass
-
-
-class ConbusScanService:
+class ConbusScanService(ConbusProtocol):
     """
-    TCP client service for sending telegrams to Conbus servers.
+    Service for querying datapoints from Conbus modules.
 
-    Manages TCP socket connections, handles telegram generation and transmission,
-    and processes server responses.
+    Uses ConbusProtocol to provide datapoint query functionality
+    for reading sensor data and module information.
     """
 
     def __init__(
         self,
-        telegram_service: TelegramService,
-        conbus_service: ConbusService,
-    ):
-        """Initialize the Conbus client send service
-
-        Args:
-            telegram_service: TelegramService for dependency injection
-            conbus_service: ConbusService for dependency injection
-        """
-
-        # Service dependencies
-        self.telegram_service = telegram_service
-        self.conbus_service = conbus_service
-
+        cli_config: ConbusClientConfig,
+        reactor: PosixReactorBase,
+    ) -> None:
+        """Initialize the Conbus datapoint service"""
+        super().__init__(cli_config, reactor)
+        self.serial_number: str = ""
+        self.function_code: str = ""
+        self.datapoint_value: int = -1
+        self.progress_callback: Optional[Callable[[str], None]] = None
+        self.finish_callback: Optional[Callable[[ConbusResponse], None]] = None
+        self.service_response: ConbusResponse = ConbusResponse(
+            success=False,
+            serial_number=self.serial_number,
+            sent_telegrams=[],
+            received_telegrams=[],
+            timestamp=datetime.now(),
+        )
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def scan_module(
-        self,
-        serial_number: str,
-        function_code: str,
-        progress_callback: Optional[Callable[[ConbusResponse, int, int], Any]] = None,
-    ) -> List[ConbusResponse]:
-        """Scan all functions and datapoints for a module with live output"""
-        results = []
-        total_combinations = 100  # 65536 combinations
-        count = 0
+    def connection_established(self) -> None:
+        self.logger.debug("Connection established, starting scan")
+        self.scan_next_datacode()
 
-        for datapoint_hex in range(99):
-            data = f"{datapoint_hex:02d}"
-            count += 1
+    def scan_next_datacode(self) -> bool:
+        self.datapoint_value += 1
+        if self.datapoint_value >= 100:
+            if self.finish_callback:
+                self.finish_callback(self.service_response)
+            return False
 
-            try:
-                telegram_body = f"S{serial_number}F{function_code}D{data}"
-                response = self.conbus_service.send_telegram_body(telegram_body)
-                results.append(response)
+        self.logger.debug(f"Scanning next datacode: {self.datapoint_value:02d}")
+        data = f"{self.datapoint_value:02d}"
+        telegram_body = f"S{self.serial_number}F{self.function_code}D{data}"
+        self.sendFrame(telegram_body.encode())
+        return True
 
-                # Call progress callback with live results
-                if progress_callback:
-                    progress_callback(response, count, total_combinations)
+    def telegram_sent(self, telegram_sent: str) -> None:
+        self.service_response.success = True
+        self.service_response.sent_telegrams.append(telegram_sent)
 
-                # Small delay to prevent overwhelming the server
-                import time
+    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        self.logger.debug(f"Telegram received: {telegram_received}")
+        if not self.service_response.received_telegrams:
+            self.service_response.received_telegrams = []
+        self.service_response.received_telegrams.append(telegram_received.frame)
 
-                time.sleep(0.001)  # 1ms delay
+        if self.progress_callback:
+            self.progress_callback(telegram_received.frame)
 
-            except Exception as e:
-                # Create error response for failed scan attempt
-                error_response = ConbusResponse(
-                    success=False,
-                    request=ConbusRequest(
-                        serial_number=serial_number,
-                        function_code=function_code,
-                        data=data,
-                    ),
-                    error=f"Scan failed for F{function_code}D{data}: {e}",
-                )
-                results.append(error_response)
+    def timeout(self) -> bool:
+        self.logger.debug(f"Timeout: {self.timeout_seconds}s")
+        continue_scan = self.scan_next_datacode()
+        return continue_scan
 
-                # Call progress callback with error response
-                if progress_callback:
-                    progress_callback(error_response, count, total_combinations)
-
-        return results
+    def failed(self, message: str) -> None:
+        self.logger.debug(f"Failed with message: {message}")
+        self.service_response.success = False
+        self.service_response.timestamp = datetime.now()
+        self.service_response.error = message
+        if self.finish_callback:
+            self.finish_callback(self.service_response)
 
     def scan_module_background(
         self,
         serial_number: str,
         function_code: str,
-        progress_callback: Optional[Callable[[ConbusResponse, int, int], Any]] = None,
-    ) -> threading.Thread:
-        """Scan module in background with immediate output via callback"""
-        import threading
-
-        def background_scan() -> List[ConbusResponse]:
-            return self.scan_module(serial_number, function_code, progress_callback)
-
-        # Start background thread
-        scan_thread = threading.Thread(target=background_scan, daemon=True)
-        scan_thread.start()
-
-        return scan_thread
-
-    def __enter__(self) -> "ConbusScanService":
-        return self
-
-    def __exit__(
-        self,
-        _exc_type: Optional[type],
-        _exc_val: Optional[BaseException],
-        _exc_tb: Optional[Any],
+        progress_callback: Callable[[str], None],
+        finish_callback: Callable[[ConbusResponse], None],
+        timeout_seconds: Optional[float] = None,
     ) -> None:
-        # Cleanup logic if needed
-        pass
+        """
+        Query a specific datapoint from a module.
+
+        Args:
+            serial_number: 10-digit module serial number
+            function_code: the function code to scan
+            progress_callback: callback to handle progress
+            finish_callback: callback function to call when the datapoint is received
+            timeout_seconds: timeout in seconds
+
+        Returns:
+            ConbusDatapointResponse with operation result and datapoint value
+        """
+
+        self.logger.info("Starting query_datapoint")
+        if timeout_seconds:
+            self.timeout_seconds = timeout_seconds
+
+        self.serial_number = serial_number
+        self.function_code = function_code
+        self.progress_callback = progress_callback
+        self.finish_callback = finish_callback
+        self.start_reactor()

@@ -9,7 +9,11 @@ from xp.cli.utils.decorators import (
     connection_command,
 )
 from xp.cli.utils.serial_number_type import SERIAL
+from xp.models import ConbusDatapointResponse
+from xp.models.conbus.conbus_output import ConbusOutputResponse
 from xp.models.telegram.action_type import ActionType
+from xp.models.telegram.datapoint_type import DataPointType
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 
 
@@ -24,16 +28,20 @@ def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> 
     Examples:
 
     \b
-        xp conbus input on 0011223344 0  # Toggle input 0
+        xp conbus output on 0011223344 0  # Turn on output 0
     """
     service = ctx.obj.get("container").get_container().resolve(ConbusOutputService)
 
-    with service:
-
-        response = service.send_action(
-            serial_number, output_number, ActionType.ON_RELEASE
-        )
+    def on_finish(response: ConbusOutputResponse) -> None:
         click.echo(json.dumps(response.to_dict(), indent=2))
+
+    with service:
+        service.send_action(
+            serial_number=serial_number,
+            output_number=output_number,
+            action_type=ActionType.ON_RELEASE,
+            finish_callback=on_finish,
+        )
 
 
 @conbus_output.command("off")
@@ -47,16 +55,20 @@ def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) ->
     Examples:
 
     \b
-        xp conbus input off 0011223344 1    # Toggle input 1
+        xp conbus output off 0011223344 1    # Turn off output 1
     """
     service = ctx.obj.get("container").get_container().resolve(ConbusOutputService)
 
-    with service:
-
-        response = service.send_action(
-            serial_number, output_number, ActionType.OFF_PRESS
-        )
+    def on_finish(response: ConbusOutputResponse) -> None:
         click.echo(json.dumps(response.to_dict(), indent=2))
+
+    with service:
+        service.send_action(
+            serial_number=serial_number,
+            output_number=output_number,
+            action_type=ActionType.OFF_PRESS,
+            finish_callback=on_finish,
+        )
 
 
 @conbus_output.command("status")
@@ -71,12 +83,19 @@ def xp_output_status(ctx: click.Context, serial_number: str) -> None:
     \b
         xp conbus output status 0011223344    # Query output status
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusOutputService)
+    service: ConbusDatapointService = (
+        ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
+    )
+
+    def on_finish(response: ConbusDatapointResponse) -> None:
+        click.echo(json.dumps(response.to_dict(), indent=2))
 
     with service:
-
-        response = service.get_output_state(serial_number)
-        click.echo(json.dumps(response.to_dict(), indent=2))
+        service.query_datapoint(
+            serial_number=serial_number,
+            datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
+            finish_callback=on_finish,
+        )
 
 
 @conbus_output.command("state")
@@ -91,9 +110,16 @@ def xp_module_state(ctx: click.Context, serial_number: str) -> None:
     \b
         xp conbus output state 0011223344    # Query module state
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusOutputService)
+    service: ConbusDatapointService = (
+        ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
+    )
+
+    def on_finish(response: ConbusDatapointResponse) -> None:
+        click.echo(json.dumps(response.to_dict(), indent=2))
 
     with service:
-
-        response = service.get_module_state(serial_number)
-        click.echo(json.dumps(response.to_dict(), indent=2))
+        service.query_datapoint(
+            serial_number=serial_number,
+            datapoint_type=DataPointType.MODULE_STATE,
+            finish_callback=on_finish,
+        )

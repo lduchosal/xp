@@ -38,12 +38,12 @@ from xp.services.conbus.conbus_datapoint_service import (
 )
 from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
 from xp.services.conbus.conbus_lightlevel_set_service import ConbusLightlevelSetService
-from xp.services.conbus.conbus_linknumber_service import ConbusLinknumberService
+from xp.services.conbus.conbus_linknumber_get_service import ConbusLinknumberGetService
+from xp.services.conbus.conbus_linknumber_set_service import ConbusLinknumberSetService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_raw_service import ConbusRawService
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
-from xp.services.conbus.conbus_service import ConbusService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
@@ -106,14 +106,14 @@ class ServiceContainer:
     def _register_services(self) -> None:
         """Register all services in the container based on dependency graph."""
 
-        # ConbusClientConfig (needed by ConbusConnectionPool)
+        # ConbusClientConfig
         self.container.register(
             ConbusClientConfig,
             factory=lambda: ConbusClientConfig.from_yaml(self._config_path),
             scope=punq.Scope.singleton,
         )
 
-        # Core infrastructure layer - ConbusConnectionPool (singleton)
+        # Core infrastructure layer
         self.container.register(
             ConbusSocketConnectionManager,
             factory=lambda: ConbusSocketConnectionManager(
@@ -143,16 +143,6 @@ class ServiceContainer:
         self.container.register(TelegramBlinkService, scope=punq.Scope.singleton)
         self.container.register(LinkNumberService, scope=punq.Scope.singleton)
 
-        # ConbusService - depends on ConbusConnectionPool
-        self.container.register(
-            ConbusService,
-            factory=lambda: ConbusService(
-                client_config=self.container.resolve(ConbusClientConfig),
-                connection_pool=self.container.resolve(ConbusConnectionPool),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
         # Conbus services layer
         self.container.register(
             ConbusDatapointService,
@@ -177,8 +167,8 @@ class ServiceContainer:
         self.container.register(
             ConbusScanService,
             factory=lambda: ConbusScanService(
-                telegram_service=self.container.resolve(TelegramService),
-                conbus_service=self.container.resolve(ConbusService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )
@@ -215,10 +205,9 @@ class ServiceContainer:
         self.container.register(
             ConbusOutputService,
             factory=lambda: ConbusOutputService(
-                telegram_service=self.container.resolve(TelegramService),
                 telegram_output_service=self.container.resolve(TelegramOutputService),
-                datapoint_service=self.container.resolve(ConbusDatapointService),
-                conbus_service=self.container.resolve(ConbusService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )
@@ -300,12 +289,21 @@ class ServiceContainer:
         )
 
         self.container.register(
-            ConbusLinknumberService,
-            factory=lambda: ConbusLinknumberService(
-                conbus_service=self.container.resolve(ConbusService),
-                datapoint_service=self.container.resolve(ConbusDatapointService),
-                link_number_service=self.container.resolve(LinkNumberService),
+            ConbusLinknumberGetService,
+            factory=lambda: ConbusLinknumberGetService(
                 telegram_service=self.container.resolve(TelegramService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusLinknumberSetService,
+            factory=lambda: ConbusLinknumberSetService(
+                telegram_service=self.container.resolve(TelegramService),
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )

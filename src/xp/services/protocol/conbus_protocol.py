@@ -145,6 +145,7 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self._stop_reactor()
 
     def timeout(self) -> bool:
+        """Timeout callback, return True to continue waiting for next timeout, False to stop"""
         self.logger.info("Timeout after: %ss", self.timeout_seconds)
         self.failed(f"Timeout after: {self.timeout_seconds}s")
         return False
