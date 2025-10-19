@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 import pytest
 
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
+from xp.models.actiontable.msactiontable_xp24 import InputAction as Xp24InputAction
 from xp.models.actiontable.msactiontable_xp24 import (
-    InputAction as Xp24InputAction,
     Xp24MsActionTable,
 )
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable

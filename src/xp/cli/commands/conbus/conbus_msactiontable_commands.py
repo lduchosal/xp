@@ -9,12 +9,11 @@ from click import Context
 from xp.cli.commands.conbus.conbus import conbus_msactiontable
 from xp.cli.utils.decorators import (
     connection_command,
-    handle_service_errors,
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.cli.utils.xp_module_type import XP_MODULE_TYPE
+from xp.models.actiontable.actiontable import ActionTable
 from xp.services.conbus.actiontable.msactiontable_service import (
-    MsActionTableError,
     MsActionTableService,
 )
 
@@ -33,7 +32,7 @@ def conbus_download_msactiontable(
     def progress_callback(progress: str) -> None:
         click.echo(progress, nl=False)
 
-    def finish_callback(action_table) -> None:
+    def finish_callback(action_table: ActionTable) -> None:
         output = {
             "serial_number": serial_number,
             "xpmoduletype": xpmoduletype,

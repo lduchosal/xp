@@ -1,8 +1,7 @@
 """Service for downloading XP24 action tables via Conbus protocol."""
 
 import logging
-from contextlib import suppress
-from typing import Any, Optional, Union, Callable
+from typing import Callable, Optional, Union
 
 from twisted.internet.posixbase import PosixReactorBase
 
@@ -22,15 +21,15 @@ from xp.services.conbus.actiontable.msactiontable_xp24_serializer import (
 from xp.services.conbus.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
-from xp.services.conbus.conbus_service import ConbusError, ConbusService
 from xp.services.protocol import ConbusProtocol
-from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class MsActionTableError(Exception):
     """Raised when XP24 action table operations fail"""
 
     pass
+
 
 class MsActionTableService(ConbusProtocol):
     """
@@ -54,13 +53,21 @@ class MsActionTableService(ConbusProtocol):
         self.xp20ms_serializer = xp20ms_serializer
         self.xp24ms_serializer = xp24ms_serializer
         self.xp33ms_serializer = xp33ms_serializer
-        self.serializer: Union[Xp20MsActionTableSerializer, Xp24MsActionTableSerializer, Xp33MsActionTableSerializer] = xp20ms_serializer
+        self.serializer: Union[
+            Xp20MsActionTableSerializer,
+            Xp24MsActionTableSerializer,
+            Xp33MsActionTableSerializer,
+        ] = xp20ms_serializer
         self.telegram_service = telegram_service
         self.serial_number: str = ""
         self.xpmoduletype: str = ""
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.error_callback: Optional[Callable[[str], None]] = None
-        self.finish_callback: Optional[Callable[[Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]], None]] = None
+        self.finish_callback: Optional[
+            Callable[
+                [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]], None
+            ]
+        ] = None
         self.msactiontable_data: list[str] = []
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -127,7 +134,9 @@ class MsActionTableService(ConbusProtocol):
         xpmoduletype: str,
         progress_callback: Callable[[str], None],
         error_callback: Callable[[str], None],
-        finish_callback: Callable[[Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]], None],
+        finish_callback: Callable[
+            [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]], None
+        ],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Run reactor in dedicated thread with its own event loop"""
