@@ -114,7 +114,7 @@ class ReadDatapointEvent(DatapointEvent):
 
 
 class ReadDatapointFromProtocolEvent(DatapointEvent):
-    """Internal event for cache service to forward to protocol when cache misses"""
+    """Internal event for cache service to forward to protocol when cache misses."""
 
     pass
 
@@ -146,29 +146,11 @@ class LightBulbSetOnEvent(ModuleEvent):
         value: On or Off the light bulb set.
     """
 
-    """Event dispatched when light bulb set is on.
-
-    Attributes:
-        serial_number: Serial number of the light bulb set.
-        output_number: Output number of the light bulb set.
-        module: ConsonModuleConfig of the light bulb set.
-        accessory: HomekitAccessoryConfig of the light bulb set.
-    """
-
     value: bool = Field(description="On or Off the light bulb set")
 
 
 class LightBulbGetOnEvent(ModuleEvent, BaseEvent[bool]):
     """Event dispatched when getting light bulb on state."""
-
-    """Event dispatched when light bulb set is on.
-
-    Attributes:
-        serial_number: Serial number of the light bulb set.
-        output_number: Output number of the light bulb set.
-        module: ConsonModuleConfig of the light bulb set.
-        accessory: HomekitAccessoryConfig of the light bulb set.
-    """
 
     pass
 
@@ -180,61 +162,89 @@ class OutletSetOnEvent(ModuleEvent):
         value: On or Off the light bulb set.
     """
 
-    """Event dispatched when outlet set is on"""
-
     value: bool = Field(description="On or Off the light bulb set")
 
 
 class OutletGetOnEvent(ModuleEvent):
-    """Event dispatched when outlet set is on"""
+    """Event dispatched when getting outlet on state."""
 
     pass
 
 
 class OutletGetInUseEvent(ModuleEvent):
-    """Event dispatched when outlet set is on"""
+    """Event dispatched when getting outlet in-use state."""
 
     pass
 
 
 class OutletSetInUseEvent(ModuleEvent, BaseEvent[bool]):
-    """Event dispatched when outlet set is on"""
+    """Event dispatched when outlet set is on.
+
+    Attributes:
+        value: On or Off the light bulb set.
+    """
 
     value: bool = Field(description="On or Off the light bulb set")
 
 
 class DimmingLightSetOnEvent(ModuleEvent):
-    """Event dispatched when dimming light set is on"""
+    """Event dispatched when dimming light set is on.
+
+    Attributes:
+        value: On or Off the light bulb set.
+        brightness: Brightness of the light bulb set.
+    """
 
     value: bool = Field(description="On or Off the light bulb set")
     brightness: int = Field(description="Brightness of the light bulb set")
 
 
 class DimmingLightGetOnEvent(ModuleEvent):
-    """Event dispatched when dimming light set is on"""
+    """Event dispatched when getting dimming light on state."""
 
     pass
 
 
 class DimmingLightSetBrightnessEvent(ModuleEvent):
-    """Event dispatched when dimming light set is on"""
+    """Event dispatched when dimming light set is on.
+
+    Attributes:
+        brightness: Level of brightness of the dimming light.
+    """
 
     brightness: int = Field(description="Level of brightness of the dimming light")
 
 
 class DimmingLightGetBrightnessEvent(ModuleEvent):
-    """Event dispatched when dimming light set is on"""
+    """Event dispatched when getting dimming light brightness."""
 
     pass
 
 
 class ConnectionLostEvent(BaseEvent):
-    """Event dispatched when TCP connection is lost"""
+    """Event dispatched when TCP connection is lost.
+
+    Attributes:
+        reason: Disconnection reason.
+    """
 
     reason: str = Field(description="Disconnection reason")
 
 
 class TelegramEvent(BaseEvent):
+    """Event for telegram operations.
+
+    Attributes:
+        protocol: TelegramProtocol instance.
+        frame: Frame <S0123450001F02D12FK>.
+        telegram: Telegram S0123450001F02D12FK.
+        payload: Payload S0123450001F02D12.
+        telegram_type: Telegram type S.
+        serial_number: Serial number 0123450001 or empty.
+        checksum: Checksum FK.
+        checksum_valid: Checksum valid true or false.
+    """
+
     protocol: Union[TelegramProtocol, ConbusProtocol] = Field(
         description="TelegramProtocol instance"
     )
@@ -250,7 +260,14 @@ class TelegramEvent(BaseEvent):
 
 
 class ModuleStateChangedEvent(BaseEvent):
-    """Event dispatched when a module's state changes (from event telegram)"""
+    """Event dispatched when a module's state changes (from event telegram).
+
+    Attributes:
+        module_type_code: Module type code from event telegram.
+        link_number: Link number from event telegram.
+        input_number: Input number that triggered the event.
+        telegram_event_type: Event type (M=press, B=release).
+    """
 
     module_type_code: int = Field(description="Module type code from event telegram")
     link_number: int = Field(description="Link number from event telegram")
@@ -259,27 +276,32 @@ class ModuleStateChangedEvent(BaseEvent):
 
 
 class EventTelegramReceivedEvent(TelegramEvent):
-    """Event telegram received"""
+    """Event telegram received."""
 
     pass
 
 
 class ModuleDiscoveredEvent(TelegramEvent):
-    """Event dispatched when module is discovered"""
+    """Event dispatched when module is discovered."""
 
     pass
 
 
 class TelegramReceivedEvent(TelegramEvent):
-    """Event dispatched when a telegram frame is received"""
+    """Event dispatched when a telegram frame is received."""
 
     pass
 
 
 class InvalidTelegramReceivedEvent(BaseEvent):
-    """Event dispatched when an invalid telegram frame is received"""
+    """Event dispatched when an invalid telegram frame is received.
+
+    Attributes:
+        protocol: TelegramProtocol instance.
+        frame: Frame <S0123450001F02D12FK>.
+        error: Error with the received telegram.
+    """
 
     protocol: TelegramProtocol = Field(description="TelegramProtocol instance")
     frame: str = Field(description="Frame <S0123450001F02D12FK>")
     error: str = Field(description="Error with the received telegram")
-    pass

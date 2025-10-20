@@ -13,12 +13,11 @@ from xp.models.telegram.telegram_type import TelegramType
 
 @dataclass
 class EventTelegram(Telegram):
-    r"""Represents a parsed event telegram from the console bus.
+    r"""Represent a parsed event telegram from the console bus.
 
     Format: <[EO]{module_type}L{link_number}I{input_number}{event_type}{checksum}>
 
     Examples:
-        \b
         <E14L00I02MAK>
 
     Attributes:
@@ -27,6 +26,10 @@ class EventTelegram(Telegram):
         link_number: Link number.
         input_number: Input number.
         event_type: Type of event (press or release).
+        module_info: Module type information if found.
+        input_type: Input type based on input number.
+        is_button_press: True if this is a button press event.
+        is_button_release: True if this is a button release event.
     """
 
     event_telegram_type: str = "E"  # E or O

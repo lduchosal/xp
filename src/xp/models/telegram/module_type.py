@@ -17,6 +17,10 @@ class ModuleType:
         name: Module name.
         description: Module description.
         module_category: Module category.
+        is_reserved: True if module type is reserved.
+        is_push_button_panel: True if module is a push button panel.
+        is_ir_capable: True if module has IR capabilities.
+        category: Module category based on its type.
     """
 
     code: int
@@ -26,14 +30,13 @@ class ModuleType:
 
     @classmethod
     def from_code(cls, code: int) -> Optional["ModuleType"]:
-        """
-        Create ModuleType from a numeric code.
+        """Create ModuleType from a numeric code.
 
         Args:
-            code: The numeric module type code
+            code: The numeric module type code.
 
         Returns:
-            ModuleType instance or None if code is invalid
+            ModuleType instance or None if code is invalid.
         """
         module_info = MODULE_TYPE_REGISTRY.get(code)
         if module_info:
@@ -42,14 +45,13 @@ class ModuleType:
 
     @classmethod
     def from_name(cls, name: str) -> Optional["ModuleType"]:
-        """
-        Create ModuleType from a module name.
+        """Create ModuleType from a module name.
 
         Args:
-            name: The module name (case-insensitive)
+            name: The module name (case-insensitive).
 
         Returns:
-            ModuleType instance or None if name is invalid
+            ModuleType instance or None if name is invalid.
         """
         name_upper = name.upper()
         for code, info in MODULE_TYPE_REGISTRY.items():
@@ -59,12 +61,20 @@ class ModuleType:
 
     @property
     def is_reserved(self) -> bool:
-        """Check if this module type is reserved"""
+        """Check if this module type is reserved.
+
+        Returns:
+            True if module type is reserved, False otherwise.
+        """
         return self.name in ("XP26X1", "XP26X2")
 
     @property
     def is_push_button_panel(self) -> bool:
-        """Check if this module type is a push button panel"""
+        """Check if this module type is a push button panel.
+
+        Returns:
+            True if module is a push button panel, False otherwise.
+        """
         return self.name in (
             "XP2606",
             "XP2606A",
@@ -77,7 +87,11 @@ class ModuleType:
 
     @property
     def is_ir_capable(self) -> bool:
-        """Check if this module type has IR capabilities"""
+        """Check if this module type has IR capabilities.
+
+        Returns:
+            True if module has IR capabilities, False otherwise.
+        """
         return any(ir_type in self.name for ir_type in ("38kHz", "B&O")) or any(
             ir_code in self.name
             for ir_code in (
@@ -92,7 +106,11 @@ class ModuleType:
 
     @property
     def category(self) -> str:
-        """Get the module category based on its type"""
+        """Get the module category based on its type.
+
+        Returns:
+            Module category string.
+        """
         if self.code <= 1:
             return "System"
         elif 2 <= self.code <= 6:
@@ -104,7 +122,11 @@ class ModuleType:
         return "Unknown"
 
     def to_dict(self) -> Dict:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the module type.
+        """
         return {
             "code": self.code,
             "name": self.name,
@@ -116,12 +138,20 @@ class ModuleType:
         }
 
     def __str__(self) -> str:
-        """Human-readable string representation"""
+        """Return human-readable string representation.
+
+        Returns:
+            Formatted string representation.
+        """
         return f"{self.name} (Code {self.code}): {self.description}"
 
 
 def get_all_module_types() -> List[ModuleType]:
-    """Get all available module types"""
+    """Get all available module types.
+
+    Returns:
+        List of all ModuleType instances.
+    """
     return [
         module_type
         for module_type in [
@@ -132,7 +162,11 @@ def get_all_module_types() -> List[ModuleType]:
 
 
 def get_module_types_by_category() -> Dict[str, List[ModuleType]]:
-    """Get module types grouped by category"""
+    """Get module types grouped by category.
+
+    Returns:
+        Dictionary mapping category names to lists of ModuleType instances.
+    """
     categories: Dict[str, List[ModuleType]] = {}
     for module_type in get_all_module_types():
         category = module_type.category
@@ -143,5 +177,12 @@ def get_module_types_by_category() -> Dict[str, List[ModuleType]]:
 
 
 def is_valid_module_code(code: int) -> bool:
-    """Check if a module code is valid"""
+    """Check if a module code is valid.
+
+    Args:
+        code: Module code to validate.
+
+    Returns:
+        True if code is valid, False otherwise.
+    """
     return code in MODULE_TYPE_REGISTRY

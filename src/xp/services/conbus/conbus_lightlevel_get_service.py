@@ -30,7 +30,13 @@ class ConbusLightlevelGetService(ConbusDatapointService):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus lightlevel get service."""
+        """Initialize the Conbus lightlevel get service.
+
+        Args:
+            telegram_service: Service for parsing telegrams.
+            cli_config: Configuration for Conbus client connection.
+            reactor: Twisted reactor for event loop.
+        """
         super().__init__(telegram_service, cli_config, reactor)
         self.output_number: int = 0
         self.service_callback: Optional[Callable[[ConbusLightlevelResponse], None]] = (
@@ -43,7 +49,11 @@ class ConbusLightlevelGetService(ConbusDatapointService):
     def finish_service_callback(
         self, datapoint_response: ConbusDatapointResponse
     ) -> None:
+        """Process datapoint response and extract light level.
 
+        Args:
+            datapoint_response: The datapoint response from the module.
+        """
         self.logger.debug("Parsing datapoint response")
 
         level = 0
@@ -79,14 +89,13 @@ class ConbusLightlevelGetService(ConbusDatapointService):
         finish_callback: Callable[[ConbusLightlevelResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Get the current light level for a specific module output.
+        """Get the current light level for a specific module output.
 
         Args:
-            serial_number: 10-digit module serial number
-            output_number: output module number
-            finish_callback: callback function to call when the light level is received
-            timeout_seconds: timeout in seconds
+            serial_number: 10-digit module serial number.
+            output_number: Output module number.
+            finish_callback: Callback function to call when the light level is received.
+            timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting get_light_level")
         if timeout_seconds:

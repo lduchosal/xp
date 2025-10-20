@@ -15,7 +15,7 @@ class TestTelegramInputServiceAckNak:
     """Test cases for parse_ack_nak_telegram method in TelegramInputService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.service = TelegramOutputService(telegram_service=TelegramService())
 
     def test_parse_valid_ack_telegram(self):

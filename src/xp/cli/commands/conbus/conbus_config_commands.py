@@ -1,3 +1,5 @@
+"""Conbus configuration CLI commands."""
+
 import json
 
 import click
@@ -12,14 +14,13 @@ from xp.models import ConbusClientConfig
 @click.pass_context
 @handle_service_errors(Exception)
 def show_config(ctx: Context) -> None:
-    """Display current Conbus client configuration.
+    r"""Display current Conbus client configuration.
 
     Args:
         ctx: Click context object.
 
     Examples:
-
-    \b
+        \b
         xp conbus config
     """
     config = ctx.obj.get("container").get_container().resolve(ConbusClientConfig)

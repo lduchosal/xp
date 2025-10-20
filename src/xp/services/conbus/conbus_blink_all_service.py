@@ -33,7 +33,13 @@ class ConbusBlinkAllService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus blink all service."""
+        """Initialize the Conbus blink all service.
+
+        Args:
+            telegram_service: Service for parsing telegrams.
+            cli_config: Configuration for Conbus client connection.
+            reactor: Twisted reactor for event loop.
+        """
         super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
         self.serial_number: str = ""
@@ -63,6 +69,11 @@ class ConbusBlinkAllService(ConbusProtocol):
             self.progress_callback(".")
 
     def send_blink(self, serial_number: str) -> None:
+        """Send blink or unblink telegram to a discovered module.
+
+        Args:
+            serial_number: 10-digit module serial number.
+        """
         self.logger.debug("Device discovered, send blink.")
 
         # Blink is 05, Unblink is 06
@@ -83,19 +94,19 @@ class ConbusBlinkAllService(ConbusProtocol):
             self.progress_callback(".")
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         system_telegram = self.telegram_service.parse_system_telegram(telegram_sent)
         self.service_response.sent_telegram = system_telegram
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
@@ -136,13 +147,8 @@ class ConbusBlinkAllService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
@@ -158,17 +164,13 @@ class ConbusBlinkAllService(ConbusProtocol):
         finish_callback: Callable[[ConbusBlinkResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Send blink command to all discovered modules.
+        """Send blink command to all discovered modules.
 
         Args:
-            on_or_off: "on" to blink or "off" to unblink all devices
-            progress_callback: callback function to call with progress updates
-            finish_callback: callback function to call when the operation completes
-            timeout_seconds: timeout in seconds
-
-        Returns:
-            ConbusBlinkResponse with operation result
+            on_or_off: "on" to blink or "off" to unblink all devices.
+            progress_callback: Callback function to call with progress updates.
+            finish_callback: Callback function to call when the operation completes.
+            timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting send_blink_all_telegram")
         if timeout_seconds:

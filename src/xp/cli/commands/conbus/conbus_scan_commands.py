@@ -18,7 +18,7 @@ from xp.services.conbus.conbus_scan_service import ConbusScanService
 @click.pass_context
 @connection_command()
 def scan_module(ctx: Context, serial_number: str, function_code: str) -> None:
-    """Scan all datapoints of a function_code for a module.
+    r"""Scan all datapoints of a function_code for a module.
 
     Args:
         ctx: Click context object.
@@ -26,8 +26,7 @@ def scan_module(ctx: Context, serial_number: str, function_code: str) -> None:
         function_code: Function code.
 
     Examples:
-
-    \b
+        \b
         xp conbus scan 0012345011 02 # Scan all datapoints of function Read data points (02)
     """
     service: ConbusScanService = (
@@ -35,9 +34,19 @@ def scan_module(ctx: Context, serial_number: str, function_code: str) -> None:
     )
 
     def on_progress(progress: str) -> None:
+        """Handle progress updates during module scan.
+
+        Args:
+            progress: Progress message string.
+        """
         click.echo(progress)
 
     def on_finish(service_response: ConbusResponse) -> None:
+        """Handle successful completion of module scan.
+
+        Args:
+            service_response: Scan response object.
+        """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
     with service:

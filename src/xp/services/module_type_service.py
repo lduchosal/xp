@@ -1,3 +1,8 @@
+"""Module Type Service for XP module management.
+
+This module provides lookup, validation, and search functionality for XP system module types.
+"""
+
 from typing import Dict, List, Optional, Union
 
 from xp.models.telegram.module_type import (
@@ -37,7 +42,7 @@ class ModuleTypeService:
 
         Raises:
             ModuleTypeNotFoundError: If module type is not found
-        ."""
+        """
         if isinstance(identifier, int):
             module_type = ModuleType.from_code(identifier)
             if not module_type:
@@ -64,7 +69,7 @@ class ModuleTypeService:
 
         Returns:
             List of all ModuleType instances
-        ."""
+        """
         return get_all_module_types()
 
     @staticmethod
@@ -74,7 +79,7 @@ class ModuleTypeService:
 
         Returns:
             Dictionary with category names as keys and lists of ModuleType as values
-        ."""
+        """
         return get_module_types_by_category()
 
     @staticmethod
@@ -123,7 +128,7 @@ class ModuleTypeService:
 
         Returns:
             List of ModuleType instances in the category
-        ."""
+        """
         return get_module_types_by_category().get(category, [])
 
     @staticmethod
@@ -133,7 +138,7 @@ class ModuleTypeService:
 
         Returns:
             List of push button panel ModuleType instances
-        ."""
+        """
         return [
             module for module in get_all_module_types() if module.is_push_button_panel
         ]
@@ -145,7 +150,7 @@ class ModuleTypeService:
 
         Returns:
             List of IR-capable ModuleType instances
-        ."""
+        """
         return [module for module in get_all_module_types() if module.is_ir_capable]
 
     @staticmethod
@@ -158,7 +163,7 @@ class ModuleTypeService:
 
         Returns:
             True if valid, False otherwise
-        ."""
+        """
         return is_valid_module_code(code)
 
     def get_module_info_summary(self, identifier: Union[int, str]) -> str:
@@ -170,7 +175,7 @@ class ModuleTypeService:
 
         Returns:
             Formatted string with module information
-        ."""
+        """
         try:
             module_type = self.get_module_type(identifier)
             return self._format_module_summary(module_type)
@@ -186,7 +191,7 @@ class ModuleTypeService:
 
         Returns:
             Formatted string with all module information
-        ."""
+        """
         if group_by_category:
             return self._format_modules_by_category()
         return self._format_all_modules()
@@ -200,7 +205,7 @@ class ModuleTypeService:
 
         Returns:
             Formatted string with module information.
-        ."""
+        """
         summary = f"Module: {module_type.name} (Code {module_type.code})\n"
         summary += f"Description: {module_type.description}\n"
         summary += f"Category: {module_type.category}\n"
@@ -225,7 +230,7 @@ class ModuleTypeService:
 
         Returns:
             Formatted string with all modules.
-        ."""
+        """
         modules = get_all_module_types()
         lines = ["Code | Name       | Description", "-" * 60]
 
@@ -241,7 +246,7 @@ class ModuleTypeService:
 
         Returns:
             Formatted string with modules grouped by category.
-        ."""
+        """
         categories = get_module_types_by_category()
         lines = []
 

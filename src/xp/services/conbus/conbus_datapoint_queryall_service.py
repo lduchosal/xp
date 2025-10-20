@@ -1,3 +1,8 @@
+"""Conbus DataPoint Query All Service.
+
+This module provides service for querying all datapoint types from a module.
+"""
+
 import logging
 from datetime import datetime
 from typing import Callable, Optional
@@ -28,12 +33,12 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the query all service
+        """Initialize the query all service.
 
         Args:
-            telegram_service: TelegramService for dependency injection
-            cli_config: ConbusClientConfig for connection settings
-            reactor: PosixReactorBase for async operations
+            telegram_service: TelegramService for dependency injection.
+            cli_config: ConbusClientConfig for connection settings.
+            reactor: PosixReactorBase for async operations.
         """
         super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
@@ -56,7 +61,11 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         self.next_datapoint()
 
     def next_datapoint(self) -> bool:
+        """Query the next datapoint type.
 
+        Returns:
+            True if there are more datapoints to query, False otherwise.
+        """
         self.logger.debug("Querying next datapoint")
 
         if self.current_index >= len(self.datapoint_types):
@@ -76,6 +85,11 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         return True
 
     def timeout(self) -> bool:
+        """Handle timeout event by querying next datapoint.
+
+        Returns:
+            True to continue, False to stop the reactor.
+        """
         self.logger.debug("Timeout, querying next datapoint")
         query_next_datapoint = self.next_datapoint()
         if not query_next_datapoint:
@@ -90,18 +104,18 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         return True
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
@@ -134,13 +148,8 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
@@ -156,17 +165,13 @@ class ConbusDatapointQueryAllService(ConbusProtocol):
         progress_callback: Callable[[ReplyTelegram], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Query all datapoints from a module.
+        """Query all datapoints from a module.
 
         Args:
-            serial_number: 10-digit module serial number
-            finish_callback: callback function to call when all datapoints are received
-            progress_callback: callback function to call when each datapoint is received
-            timeout_seconds: timeout in seconds
-
-        Returns:
-            ConbusDatapointResponse with operation result and all datapoint values
+            serial_number: 10-digit module serial number.
+            finish_callback: Callback function to call when all datapoints are received.
+            progress_callback: Callback function to call when each datapoint is received.
+            timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting query_all_datapoints")
         if timeout_seconds:

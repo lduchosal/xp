@@ -31,9 +31,19 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
     service = ctx.obj.get("container").get_container().resolve(ActionTableService)
 
     def progress_callback(progress: str) -> None:
+        """Handle progress updates during action table download.
+
+        Args:
+            progress: Progress message string.
+        """
         click.echo(progress)
 
     def finish_callback(actiontable: ActionTable) -> None:
+        """Handle successful completion of action table download.
+
+        Args:
+            actiontable: Downloaded action table object.
+        """
         output = {
             "serial_number": serial_number,
             "actiontable": asdict(actiontable),
@@ -41,6 +51,11 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         click.echo(json.dumps(output, indent=2, default=str))
 
     def error_callback(error: str) -> None:
+        """Handle errors during action table download.
+
+        Args:
+            error: Error message string.
+        """
         click.echo(error)
 
     with service:

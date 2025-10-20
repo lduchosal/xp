@@ -24,19 +24,40 @@ class DeviceInfo:
     def __init__(
         self, serial_number: str, checksum_valid: bool = True, raw_telegram: str = ""
     ):
+        """Initialize device info.
+
+        Args:
+            serial_number: 10-digit module serial number.
+            checksum_valid: Whether the telegram checksum is valid.
+            raw_telegram: Raw telegram string.
+        """
         self.serial_number = serial_number
         self.checksum_valid = checksum_valid
         self.raw_telegram = raw_telegram
 
     def __str__(self) -> str:
+        """Return string representation of device.
+
+        Returns:
+            String with serial number and checksum status.
+        """
         status = "✓" if self.checksum_valid else "✗"
         return f"Device {self.serial_number} ({status})"
 
     def __repr__(self) -> str:
+        """Return repr representation of device.
+
+        Returns:
+            DeviceInfo constructor representation.
+        """
         return f"DeviceInfo(serial='{self.serial_number}', checksum_valid={self.checksum_valid})"
 
     def to_dict(self) -> dict:
-        """Convert to dictionary for JSON serialization."""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary with device information.
+        """
         return {
             "serial_number": self.serial_number,
             "checksum_valid": self.checksum_valid,
@@ -78,12 +99,11 @@ class TelegramDiscoverService:
         return telegram
 
     def create_discover_telegram_object(self) -> SystemTelegram:
-        """
-        Create a SystemTelegram object for discover broadcast.
+        """Create a SystemTelegram object for discover broadcast.
 
         Returns:
-            SystemTelegram object representing the discover command
-        ."""
+            SystemTelegram object representing the discover command.
+        """
         raw_telegram = self.generate_discover_telegram()
 
         # Extract checksum from the generated telegram
@@ -101,20 +121,26 @@ class TelegramDiscoverService:
 
     @staticmethod
     def is_discover_response(reply_telegram: ReplyTelegram) -> bool:
-        """
-        Check if a reply telegram is a discover response.
+        """Check if a reply telegram is a discover response.
 
         Args:
-            reply_telegram: Reply telegram to check
+            reply_telegram: Reply telegram to check.
 
         Returns:
-            True if this is a discover response, False otherwise
-        ."""
+            True if this is a discover response, False otherwise.
+        """
         return reply_telegram.system_function == SystemFunction.DISCOVERY
 
     @staticmethod
     def _generate_discover_response(serial_number: str) -> str:
-        """Generate discover response telegram for a device."""
+        """Generate discover response telegram for a device.
+
+        Args:
+            serial_number: 10-digit module serial number.
+
+        Returns:
+            Formatted discover response telegram.
+        """
         # Format: <R{serial}F01D{checksum}>
         data_part = f"R{serial_number}F01D"
         checksum = calculate_checksum(data_part)
@@ -123,15 +149,14 @@ class TelegramDiscoverService:
 
     @staticmethod
     def get_unique_devices(devices: List[DeviceInfo]) -> List[DeviceInfo]:
-        """
-        Filter out duplicate devices based on serial number.
+        """Filter out duplicate devices based on serial number.
 
         Args:
-            devices: List of discovered devices
+            devices: List of discovered devices.
 
         Returns:
-            List of unique devices (first occurrence of each serial number)
-        ."""
+            List of unique devices (first occurrence of each serial number).
+        """
         seen_serials: Set[str] = set()
         unique_devices = []
 
@@ -144,15 +169,14 @@ class TelegramDiscoverService:
 
     @staticmethod
     def validate_discover_response_format(raw_telegram: str) -> bool:
-        """
-        Validate if a raw telegram matches discover response format.
+        """Validate if a raw telegram matches discover response format.
 
         Args:
-            raw_telegram: Raw telegram string to validate
+            raw_telegram: Raw telegram string to validate.
 
         Returns:
-            True if format matches discover response pattern
-        ."""
+            True if format matches discover response pattern.
+        """
         # Discover response format: <R{10-digit-serial}F01D{2-char-checksum}>
         import re
 
@@ -163,15 +187,14 @@ class TelegramDiscoverService:
         return match is not None
 
     def generate_discover_summary(self, devices: List[DeviceInfo]) -> dict:
-        """
-        Generate a summary of a discover results.
+        """Generate a summary of a discover results.
 
         Args:
-            devices: List of discovered devices
+            devices: List of discovered devices.
 
         Returns:
-            Dictionary with discover statistics
-        ."""
+            Dictionary with discover statistics.
+        """
         unique_devices = self.get_unique_devices(devices)
         valid_devices = [d for d in unique_devices if d.checksum_valid]
         invalid_devices = [d for d in unique_devices if not d.checksum_valid]
@@ -200,15 +223,14 @@ class TelegramDiscoverService:
         }
 
     def format_discover_results(self, devices: List[DeviceInfo]) -> str:
-        """
-        Format discover results for human-readable output.
+        """Format discover results for human-readable output.
 
         Args:
-            devices: List of discovered devices
+            devices: List of discovered devices.
 
         Returns:
-            Formatted string summary
-        ."""
+            Formatted string summary.
+        """
         if not devices:
             return "No devices discovered"
 
@@ -241,7 +263,14 @@ class TelegramDiscoverService:
 
     @staticmethod
     def is_discover_request(telegram: SystemTelegram) -> bool:
-        """Check if telegram is a discover request."""
+        """Check if telegram is a discover request.
+
+        Args:
+            telegram: System telegram to check.
+
+        Returns:
+            True if this is a discover request, False otherwise.
+        """
         return (
             telegram.system_function == SystemFunction.DISCOVERY
             and telegram.serial_number == "0000000000"

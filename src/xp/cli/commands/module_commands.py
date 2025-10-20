@@ -26,15 +26,14 @@ def module() -> None:
 @click.pass_context
 @list_command(ModuleTypeNotFoundError)
 def module_info(ctx: Context, identifier: str) -> None:
-    """Get information about a module type by code or name.
+    r"""Get information about a module type by code or name.
 
     Args:
         ctx: Click context object.
         identifier: Module code or name.
 
     Examples:
-
-    \b
+        \b
         xp module info 14
         xp module info XP2606
     """
@@ -64,7 +63,7 @@ def module_info(ctx: Context, identifier: str) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
-    """List module types, optionally filtered by category.
+    r"""List module types, optionally filtered by category.
 
     Args:
         ctx: Click context object.
@@ -72,8 +71,7 @@ def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
         group_by_category: Group modules by category.
 
     Examples:
-
-    \b
+        \b
         xp module list
         xp module list --category "Interface Panels"
         xp module list --group-by-category
@@ -120,7 +118,7 @@ def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_search(ctx: Context, query: str, field: tuple) -> None:
-    """Search for module types by name or description.
+    r"""Search for module types by name or description.
 
     Args:
         ctx: Click context object.
@@ -128,8 +126,7 @@ def module_search(ctx: Context, query: str, field: tuple) -> None:
         field: Fields to search in.
 
     Examples:
-
-    \b
+        \b
         xp module search "push button"
         xp module search --field name "XP"
     """
@@ -156,14 +153,13 @@ def module_search(ctx: Context, query: str, field: tuple) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_categories(ctx: Context) -> None:
-    """List all available module categories.
+    r"""List all available module categories.
 
     Args:
         ctx: Click context object.
 
     Examples:
-
-    \b
+        \b
         xp module categories
     """
     service = ctx.obj.get("container").get_container().resolve(ModuleTypeService)

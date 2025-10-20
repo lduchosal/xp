@@ -1,1 +1,1 @@
-# Tests for encoding edge cases
+"""Tests for encoding edge cases."""

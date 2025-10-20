@@ -17,11 +17,10 @@ from xp.services.telegram.telegram_discover_service import (
 @telegram.command("discover")
 @handle_service_errors(DiscoverError)
 def generate_discover() -> None:
-    """Generate a discover telegram for device enumeration.
+    r"""Generate a discover telegram for device enumeration.
 
     Examples:
-
-    \b
+        \b
         xp telegram discover
     """
     service = TelegramDiscoverService()

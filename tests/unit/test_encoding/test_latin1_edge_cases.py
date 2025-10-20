@@ -16,6 +16,11 @@ class Latin1TestServer:
     """Test server that sends responses with Latin-1 extended characters."""
 
     def __init__(self, port=10003):
+        """Initialize the Latin1 test server.
+
+        Args:
+            port: Port number to listen on (default: 10003).
+        """
         self.port = port
         self.server_socket: Optional[socket.socket] = None
         self.is_running = False

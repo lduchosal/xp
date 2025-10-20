@@ -28,7 +28,12 @@ class ConbusRawService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus raw service."""
+        """Initialize the Conbus raw service.
+
+        Args:
+            cli_config: Configuration for Conbus client connection.
+            reactor: Twisted reactor for event loop.
+        """
         super().__init__(cli_config, reactor)
         self.raw_input: str = ""
         self.progress_callback: Optional[Callable[[str], None]] = None
@@ -45,22 +50,21 @@ class ConbusRawService(ConbusProtocol):
         self.sendFrame(self.raw_input.encode())
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         self.service_response.success = True
         self.service_response.sent_telegrams = telegram_sent
         self.service_response.timestamp = datetime.now()
         self.service_response.received_telegrams = []
-        pass
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
@@ -71,6 +75,11 @@ class ConbusRawService(ConbusProtocol):
             self.progress_callback(telegram_received.frame)
 
     def timeout(self) -> bool:
+        """Handle timeout event.
+
+        Returns:
+            False to indicate connection should be closed.
+        """
         self.logger.debug(f"Timeout: {self.timeout_seconds}s")
         if self.finish_callback:
             self.finish_callback(self.service_response)
@@ -79,13 +88,8 @@ class ConbusRawService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
@@ -101,17 +105,13 @@ class ConbusRawService(ConbusProtocol):
         finish_callback: Callable[[ConbusRawResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Send a raw telegram string to the Conbus server.
+        """Send a raw telegram string to the Conbus server.
 
         Args:
-            raw_input: raw telegram string to send
-            progress_callback: callback to handle progress updates
-            finish_callback: callback function to call when the operation is complete
-            timeout_seconds: timeout in seconds
-
-        Returns:
-            ConbusRawResponse with operation result and received telegrams
+            raw_input: Raw telegram string to send.
+            progress_callback: Callback to handle progress updates.
+            finish_callback: Callback function to call when the operation is complete.
+            timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting send_raw_telegram")
         if timeout_seconds:

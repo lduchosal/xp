@@ -8,6 +8,22 @@ from pydantic import BaseModel, IPvAnyAddress
 
 
 class ConsonModuleConfig(BaseModel):
+    """Configuration for a Conson module.
+
+    Attributes:
+        name: Name of the module.
+        serial_number: Serial number of the module.
+        module_type: Type of the module.
+        module_type_code: Numeric code for the module type.
+        link_number: Link number for the module.
+        enabled: Whether the module is enabled.
+        module_number: Optional module number.
+        conbus_ip: Optional Conbus IP address.
+        conbus_port: Optional Conbus port number.
+        sw_version: Optional software version.
+        hw_version: Optional hardware version.
+    """
+
     name: str
     serial_number: str
     module_type: str
@@ -22,10 +38,24 @@ class ConsonModuleConfig(BaseModel):
 
 
 class ConsonModuleListConfig(BaseModel):
+    """Configuration list for Conson modules.
+
+    Attributes:
+        root: List of Conson module configurations.
+    """
+
     root: List[ConsonModuleConfig] = []
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "ConsonModuleListConfig":
+        """Load configuration from YAML file.
+
+        Args:
+            file_path: Path to the YAML configuration file.
+
+        Returns:
+            ConsonModuleListConfig instance loaded from file or default config.
+        """
         import yaml
 
         if not Path(file_path).exists():

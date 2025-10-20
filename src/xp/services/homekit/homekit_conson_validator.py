@@ -1,3 +1,8 @@
+"""Conson Configuration Validator for HomeKit.
+
+This module validates conson.yml configuration files for HomeKit integration.
+"""
+
 from typing import List, Set
 
 from xp.models.homekit.homekit_conson_config import (
@@ -10,6 +15,11 @@ class ConsonConfigValidator:
     """Validates conson.yml configuration file for HomeKit integration."""
 
     def __init__(self, config: ConsonModuleListConfig):
+        """Initialize the Conson config validator.
+
+        Args:
+            config: Conson module list configuration to validate.
+        """
         self.config = config
 
     def validate_unique_names(self) -> List[str]:

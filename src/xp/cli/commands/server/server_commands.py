@@ -32,7 +32,7 @@ def server() -> None:
 @click.pass_context
 @handle_service_errors(ServerError)
 def start_server(ctx: Context, port: int, config: str) -> None:
-    """Start the Conbus emulator server.
+    r"""Start the Conbus emulator server.
 
     Args:
         ctx: Click context object.
@@ -40,10 +40,12 @@ def start_server(ctx: Context, port: int, config: str) -> None:
         config: Configuration file path.
 
     Examples:
-
-    \b
+        \b
         xp server start
         xp server start --port 1001 --config my_config.yml
+
+    Raises:
+        SystemExit: If server is already running.
     """
     global _server_instance
 
@@ -78,11 +80,10 @@ def start_server(ctx: Context, port: int, config: str) -> None:
 @server.command("stop")
 @handle_service_errors(ServerError)
 def stop_server() -> None:
-    """Stop the running Conbus emulator server.
+    r"""Stop the running Conbus emulator server.
 
     Examples:
-
-    \b
+        \b
         xp server stop
     """
     global _server_instance
@@ -105,12 +106,14 @@ def stop_server() -> None:
 @server.command("status")
 @handle_service_errors(Exception)
 def server_status() -> None:
-    """Get status of the Conbus emulator server.
+    r"""Get status of the Conbus emulator server.
 
     Examples:
-
-    \b
+        \b
         xp server status
+
+    Raises:
+        SystemExit: If status cannot be retrieved.
     """
     global _server_instance
     formatter = OutputFormatter(True)

@@ -23,19 +23,23 @@ from xp.services.telegram.telegram_blink_service import BlinkError
 @connection_command()
 @handle_service_errors(BlinkError)
 def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
-    """Send blink command to start blinking module LED.
+    r"""Send blink command to start blinking module LED.
 
     Args:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
 
     Examples:
-
-    \b
+        \b
         xp conbus blink on 0012345008
     """
 
     def finish(service_response: ConbusBlinkResponse) -> None:
+        """Handle successful completion of blink on command.
+
+        Args:
+            service_response: Blink response object.
+        """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
     service: ConbusBlinkService = (
@@ -51,19 +55,23 @@ def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
 @connection_command()
 @handle_service_errors(BlinkError)
 def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
-    """Send blink command to stop blinking module LED.
+    r"""Send blink command to stop blinking module LED.
 
     Args:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
 
     Examples:
-
-    \b
+        \b
         xp conbus blink off 0012345008
     """
 
     def finish(service_response: ConbusBlinkResponse) -> None:
+        """Handle successful completion of blink off command.
+
+        Args:
+            service_response: Blink response object.
+        """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
     service: ConbusBlinkService = (
@@ -84,23 +92,31 @@ def conbus_blink_all() -> None:
 @connection_command()
 @handle_service_errors(BlinkError)
 def blink_all_off(ctx: Context) -> None:
-    """Turn off blinking for all discovered devices.
+    r"""Turn off blinking for all discovered devices.
 
     Args:
         ctx: Click context object.
 
     Examples:
-
-    \b
+        \b
         xp conbus blink all off
     """
 
     def finish(discovered_devices: ConbusBlinkResponse) -> None:
+        """Handle successful completion of blink all off command.
+
+        Args:
+            discovered_devices: Blink response with all devices.
+        """
         click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
 
     def progress(message: str) -> None:
+        """Handle progress updates during blink all off operation.
+
+        Args:
+            message: Progress message string.
+        """
         click.echo(message)
-        pass
 
     service: ConbusBlinkAllService = (
         ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)
@@ -114,23 +130,31 @@ def blink_all_off(ctx: Context) -> None:
 @connection_command()
 @handle_service_errors(BlinkError)
 def blink_all_on(ctx: Context) -> None:
-    """Turn on blinking for all discovered devices.
+    r"""Turn on blinking for all discovered devices.
 
     Args:
         ctx: Click context object.
 
     Examples:
-
-    \b
+        \b
         xp conbus blink all on
     """
 
     def finish(discovered_devices: ConbusBlinkResponse) -> None:
+        """Handle successful completion of blink all on command.
+
+        Args:
+            discovered_devices: Blink response with all devices.
+        """
         click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
 
     def progress(message: str) -> None:
+        """Handle progress updates during blink all on operation.
+
+        Args:
+            message: Progress message string.
+        """
         click.echo(message)
-        pass
 
     service: ConbusBlinkAllService = (
         ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)

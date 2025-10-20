@@ -24,7 +24,7 @@ class TestTelegramProtocol:
     """Test cases for TelegramProtocol."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.event_bus.dispatch = AsyncMock()
         self.protocol = TelegramProtocol(self.event_bus)
@@ -255,7 +255,7 @@ class TestTelegramFactory:
     """Test cases for TelegramFactory."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.telegram_protocol = Mock(spec=TelegramProtocol)
         self.connector = Mock(spec=IConnector)

@@ -39,7 +39,15 @@ class TestConbusActionTableCommands:
         return ActionTable(entries=entries)
 
     def _create_mock_service(self, actiontable=None, error=None):
-        """Helper to create mock service with callback pattern."""
+        """Create mock service with callback pattern.
+
+        Args:
+            actiontable: Optional ActionTable to return on success.
+            error: Optional error message to trigger error callback.
+
+        Returns:
+            Mock service object configured with callbacks.
+        """
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
@@ -47,6 +55,14 @@ class TestConbusActionTableCommands:
         def mock_start(
             serial_number, progress_callback, finish_callback, error_callback
         ):
+            """Execute mock start operation.
+
+            Args:
+                serial_number: Serial number for the operation.
+                progress_callback: Callback for progress updates.
+                finish_callback: Callback for successful completion.
+                error_callback: Callback for error conditions.
+            """
             if error:
                 error_callback(error)
             else:

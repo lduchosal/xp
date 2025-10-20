@@ -36,6 +36,15 @@ class TestConbusLightlevelIntegration:
         def mock_set_lightlevel(
             serial_number, output_number, level, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                output_number: Output number.
+                level: Light level to set.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.set_lightlevel.side_effect = mock_set_lightlevel
@@ -75,6 +84,14 @@ class TestConbusLightlevelIntegration:
         def mock_turn_off(
             serial_number, output_number, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                output_number: Output number.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.turn_off.side_effect = mock_turn_off
@@ -114,6 +131,14 @@ class TestConbusLightlevelIntegration:
         def mock_turn_on(
             serial_number, output_number, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                output_number: Output number.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.turn_on.side_effect = mock_turn_on
@@ -154,6 +179,15 @@ class TestConbusLightlevelIntegration:
         def mock_set_lightlevel(
             serial_number, output_number, level, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                output_number: Output number.
+                level: Light level to set.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.set_lightlevel.side_effect = mock_set_lightlevel

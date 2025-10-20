@@ -33,7 +33,13 @@ class ConbusBlinkService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus blink service."""
+        """Initialize the Conbus blink service.
+
+        Args:
+            telegram_service: Service for parsing telegrams.
+            cli_config: Configuration for Conbus client connection.
+            reactor: Twisted reactor for event loop.
+        """
         super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
         self.serial_number: str = ""
@@ -67,19 +73,19 @@ class ConbusBlinkService(ConbusProtocol):
         self.service_response.operation = self.on_or_off
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         system_telegram = self.telegram_service.parse_system_telegram(telegram_sent)
         self.service_response.sent_telegram = system_telegram
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
@@ -113,13 +119,8 @@ class ConbusBlinkService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
@@ -135,12 +136,16 @@ class ConbusBlinkService(ConbusProtocol):
         finish_callback: Callable[[ConbusBlinkResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Send blink command to start blinking module LED.
+        r"""Send blink command to start blinking module LED.
+
+        Args:
+            serial_number: 10-digit module serial number.
+            on_or_off: "on" to blink or "off" to unblink.
+            finish_callback: Callback function to call when the reply is received.
+            timeout_seconds: Timeout in seconds.
 
         Examples:
-
-        \b
+            \b
             xp conbus blink 0012345008 on
             xp conbus blink 0012345008 off
         """

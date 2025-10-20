@@ -20,7 +20,7 @@ from xp.services.conbus.conbus_receive_service import (
 @connection_command()
 @click.pass_context
 def receive_telegrams(ctx: Context, timeout: float) -> None:
-    """Receive waiting event telegrams from Conbus server.
+    r"""Receive waiting event telegrams from Conbus server.
 
     Connects to the Conbus server and receives any waiting event telegrams
     without sending any data first. Useful for collecting pending notifications
@@ -31,18 +31,26 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
         timeout: Timeout in seconds for receiving telegrams (default: 2.0).
 
     Examples:
-
-    \b
+        \b
         xp conbus receive
         xp conbus receive 5.0
     """
 
     def finish(response_received: ConbusReceiveResponse) -> None:
+        """Handle successful completion of telegram receive operation.
+
+        Args:
+            response_received: Receive response object with telegrams.
+        """
         click.echo(json.dumps(response_received.to_dict(), indent=2))
 
     def progress(telegram_received: str) -> None:
+        """Handle progress updates during telegram receive operation.
+
+        Args:
+            telegram_received: Received telegram string.
+        """
         click.echo(telegram_received)
-        pass
 
     service = ctx.obj.get("container").get_container().resolve(ConbusReceiveService)
     with service:

@@ -58,7 +58,7 @@ def start_api_server(
     log_level: str,
     access_log: bool,
 ) -> None:
-    """Start the FastAPI server.
+    r"""Start the FastAPI server.
 
     This command starts the XP Protocol FastAPI server using uvicorn.
     The server provides REST API endpoints for Conbus operations.
@@ -73,24 +73,22 @@ def start_api_server(
         access_log: Enable/disable access log.
 
     Examples:
-
-    \b
+        \b
         # Start server on default host and port
         xp api start
 
-    \b
+        \b
         # Start server on specific host and port
         xp api start --host 0.0.0.0 --port 8080
 
-    \b
+        \b
         # Start development server with auto-reload
         xp api start --reload
 
-    \b
+        \b
         # Start production server with multiple workers
         xp api start --host 0.0.0.0 --workers 4 --no-access-log
     """
-
     # Validate workers and reload options
     if reload and workers > 1:
         click.echo(

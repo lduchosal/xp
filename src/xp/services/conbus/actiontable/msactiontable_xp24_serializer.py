@@ -63,7 +63,7 @@ class Xp24MsActionTableSerializer:
 
         Raises:
             ValueError: If data length is not 68 bytes.
-        ."""
+        """
         raw_length = len(msactiontable_rawdata)
         if raw_length != 68:
             raise ValueError(f"Msactiontable is not 68 bytes long ({raw_length})")
@@ -108,7 +108,7 @@ class Xp24MsActionTableSerializer:
 
         Returns:
             Decoded input action.
-        ."""
+        """
         function_id = raw_bytes[2 * pos]
         param_id = raw_bytes[2 * pos + 1]
 
@@ -127,7 +127,7 @@ class Xp24MsActionTableSerializer:
 
         Returns:
             Deserialized XP24 MS action table.
-        ."""
+        """
         # For backward compatibility, assume full telegrams and extract data
         data_parts = ms_telegrams[16:84]
 

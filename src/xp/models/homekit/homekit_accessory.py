@@ -21,8 +21,8 @@ class TemperatureSensor(Accessory):
         """Initialize temperature sensor accessory.
 
         Args:
-            *args: Positional arguments passed to parent Accessory.
-            **kwargs: Keyword arguments passed to parent Accessory.
+            args: Positional arguments passed to parent Accessory.
+            kwargs: Keyword arguments passed to parent Accessory.
         """
         super().__init__(*args, **kwargs)
 

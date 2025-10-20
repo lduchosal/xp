@@ -26,7 +26,6 @@ class TestXp24ActionTableIntegration:
 
     def test_xp24_download_action_table(self):
         """Test downloading action table from module."""
-
         # Create mock service
         mock_service = Mock(spec=MsActionTableService)
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -53,6 +52,15 @@ class TestXp24ActionTableIntegration:
             finish_callback,
             error_callback,
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                xpmoduletype: XP module type.
+                progress_callback: Callback for progress updates.
+                finish_callback: Callback when finished.
+                error_callback: Callback for errors.
+            """
             finish_callback(mock_action_table)
 
         mock_service.start.side_effect = mock_start
@@ -93,7 +101,6 @@ class TestXp24ActionTableIntegration:
 
     def test_xp24_download_action_table_invalid_serial(self):
         """Test downloading with invalid serial number."""
-
         # Create mock service with error
         mock_service = Mock(spec=MsActionTableService)
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -107,6 +114,15 @@ class TestXp24ActionTableIntegration:
             finish_callback,
             error_callback,
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                xpmoduletype: XP module type.
+                progress_callback: Callback for progress updates.
+                finish_callback: Callback when finished.
+                error_callback: Callback for errors.
+            """
             error_callback("Invalid serial number")
 
         mock_service.start.side_effect = mock_start
@@ -130,7 +146,6 @@ class TestXp24ActionTableIntegration:
 
     def test_xp24_download_action_table_connection_error(self):
         """Test downloading with network failure."""
-
         # Create mock service with error
         mock_service = Mock(spec=MsActionTableService)
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -144,6 +159,15 @@ class TestXp24ActionTableIntegration:
             finish_callback,
             error_callback,
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                xpmoduletype: XP module type.
+                progress_callback: Callback for progress updates.
+                finish_callback: Callback when finished.
+                error_callback: Callback for errors.
+            """
             error_callback("Conbus communication failed")
 
         mock_service.start.side_effect = mock_start

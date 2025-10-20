@@ -13,7 +13,7 @@ class TestModuleTypeService:
     """Test cases for ModuleTypeService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.service = ModuleTypeService()
 
     def test_get_module_type_by_code(self):

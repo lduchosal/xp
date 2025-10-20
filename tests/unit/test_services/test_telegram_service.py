@@ -15,7 +15,7 @@ class TestTelegramService:
     """Test cases for TelegramService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.service = TelegramService()
 
     def test_parse_valid_button_press_telegram(self):
@@ -187,7 +187,7 @@ class TestSystemTelegramParsing:
     """Test cases for system telegram parsing in TelegramService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.service = TelegramService()
 
     def test_parse_valid_system_telegram(self):
@@ -289,7 +289,7 @@ class TestReplyTelegramParsing:
     """Test cases for reply telegram parsing in TelegramService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.service = TelegramService()
 
     def test_parse_valid_reply_telegram(self):
@@ -388,7 +388,7 @@ class TestAutoDetectTelegramParsing:
     """Test cases for auto-detect telegram parsing in TelegramService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.service = TelegramService()
 
     def test_parse_telegram_event(self):

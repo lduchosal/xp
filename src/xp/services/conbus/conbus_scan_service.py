@@ -31,7 +31,12 @@ class ConbusScanService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus scan service."""
+        """Initialize the Conbus scan service.
+
+        Args:
+            cli_config: Conbus client configuration.
+            reactor: Twisted reactor instance.
+        """
         super().__init__(cli_config, reactor)
         self.serial_number: str = ""
         self.function_code: str = ""
@@ -54,6 +59,11 @@ class ConbusScanService(ConbusProtocol):
         self.scan_next_datacode()
 
     def scan_next_datacode(self) -> bool:
+        """Scan the next data code.
+
+        Returns:
+            True if scanning should continue, False if complete.
+        """
         self.datapoint_value += 1
         if self.datapoint_value >= 100:
             if self.finish_callback:
@@ -67,19 +77,19 @@ class ConbusScanService(ConbusProtocol):
         return True
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         self.service_response.success = True
         self.service_response.sent_telegrams.append(telegram_sent)
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
@@ -90,6 +100,11 @@ class ConbusScanService(ConbusProtocol):
             self.progress_callback(telegram_received.frame)
 
     def timeout(self) -> bool:
+        """Handle timeout event by scanning next data code.
+
+        Returns:
+            True to continue scanning, False to stop.
+        """
         self.logger.debug(f"Timeout: {self.timeout_seconds}s")
         continue_scan = self.scan_next_datacode()
         return continue_scan
@@ -97,13 +112,8 @@ class ConbusScanService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
@@ -120,18 +130,14 @@ class ConbusScanService(ConbusProtocol):
         finish_callback: Callable[[ConbusResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Scan a module for all datapoints by function code.
+        """Scan a module for all datapoints by function code.
 
         Args:
-            serial_number: 10-digit module serial number
-            function_code: the function code to scan
-            progress_callback: callback to handle progress
-            finish_callback: callback function to call when the scan is complete
-            timeout_seconds: timeout in seconds
-
-        Returns:
-            ConbusResponse with operation result and all datapoints found
+            serial_number: 10-digit module serial number.
+            function_code: The function code to scan.
+            progress_callback: Callback to handle progress.
+            finish_callback: Callback function to call when the scan is complete.
+            timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting scan_module")
         if timeout_seconds:

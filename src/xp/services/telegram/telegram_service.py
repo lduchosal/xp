@@ -1,3 +1,8 @@
+"""Telegram Service for parsing XP telegrams.
+
+This module provides telegram parsing functionality for event, system, and reply telegrams.
+"""
+
 import re
 from typing import Union
 
@@ -19,11 +24,15 @@ class TelegramParsingError(Exception):
 
 
 class TelegramService:
-    """
-    Service for parsing event telegrams from the console bus.
+    """Service for parsing event telegrams from the console bus.
 
     Handles parsing of telegrams in the format:
     <[EO]{module_type}L{link_number}I{output_number}{event_type}{checksum}>
+
+    Attributes:
+        EVENT_TELEGRAM_PATTERN: Regex pattern for event telegrams.
+        SYSTEM_TELEGRAM_PATTERN: Regex pattern for system telegrams.
+        REPLY_TELEGRAM_PATTERN: Regex pattern for reply telegrams.
     """
 
     # <O06L00I07MAG>
@@ -42,17 +51,16 @@ class TelegramService:
         pass
 
     def parse_event_telegram(self, raw_telegram: str) -> EventTelegram:
-        """
-        Parse a raw telegram string into an EventTelegram object.
+        """Parse a raw telegram string into an EventTelegram object.
 
         Args:
-            raw_telegram: The raw telegram string (e.g., "<E14L00I02MAK>")
+            raw_telegram: The raw telegram string (e.g., "<E14L00I02MAK>").
 
         Returns:
-            EventTelegram object with parsed data
+            EventTelegram object with parsed data.
 
         Raises:
-            TelegramParsingError: If the telegram format is invalid
+            TelegramParsingError: If the telegram format is invalid.
         """
         if not raw_telegram:
             raise TelegramParsingError("Empty telegram string")
@@ -114,14 +122,13 @@ class TelegramService:
     def validate_checksum(
         telegram: Union[EventTelegram, ReplyTelegram, SystemTelegram, OutputTelegram],
     ) -> bool:
-        """
-        Validate the checksum of a parsed telegram.
+        """Validate the checksum of a parsed telegram.
 
         Args:
-            telegram: The parsed telegram
+            telegram: The parsed telegram.
 
         Returns:
-            True if checksum is valid, False otherwise
+            True if checksum is valid, False otherwise.
         """
         if not telegram.checksum or len(telegram.checksum) != 2:
             return False
@@ -141,15 +148,14 @@ class TelegramService:
 
     @staticmethod
     def format_event_telegram_summary(telegram: EventTelegram) -> str:
-        """
-        Format a telegram for human-readable output.
+        """Format a telegram for human-readable output.
 
         Args:
-            telegram: The parsed telegram
+            telegram: The parsed telegram.
 
         Returns:
-            Formatted string summary
-        ."""
+            Formatted string summary.
+        """
         checksum_status = ""
         if telegram.checksum_validated is not None:
             status_indicator = "✓" if telegram.checksum_validated else "✗"
@@ -163,17 +169,16 @@ class TelegramService:
         )
 
     def parse_system_telegram(self, raw_telegram: str) -> SystemTelegram:
-        """
-        Parse a raw system telegram string into a SystemTelegram object.
+        """Parse a raw system telegram string into a SystemTelegram object.
 
         Args:
-            raw_telegram: The raw telegram string (e.g., "<S0020012521F02D18FN>")
+            raw_telegram: The raw telegram string (e.g., "<S0020012521F02D18FN>").
 
         Returns:
-            SystemTelegram object with parsed data
+            SystemTelegram object with parsed data.
 
         Raises:
-            TelegramParsingError: If the telegram format is invalid
+            TelegramParsingError: If the telegram format is invalid.
         """
         if not raw_telegram:
             raise TelegramParsingError("Empty telegram string")
@@ -222,17 +227,16 @@ class TelegramService:
             raise TelegramParsingError(f"Invalid values in system telegram: {e}")
 
     def parse_reply_telegram(self, raw_telegram: str) -> ReplyTelegram:
-        """
-        Parse a raw reply telegram string into a ReplyTelegram object.
+        """Parse a raw reply telegram string into a ReplyTelegram object.
 
         Args:
-            raw_telegram: The raw telegram string (e.g., "<R0020012521F02D18+26,0§CIL>")
+            raw_telegram: The raw telegram string (e.g., "<R0020012521F02D18+26,0§CIL>").
 
         Returns:
-            ReplyTelegram object with parsed data
+            ReplyTelegram object with parsed data.
 
         Raises:
-            TelegramParsingError: If the telegram format is invalid
+            TelegramParsingError: If the telegram format is invalid.
         """
         if not raw_telegram:
             raise TelegramParsingError("Empty telegram string")
@@ -290,18 +294,16 @@ class TelegramService:
     def parse_telegram(
         self, raw_telegram: str
     ) -> Union[EventTelegram, SystemTelegram, ReplyTelegram]:
-        """
-        Auto-detect and parse any type of telegram.
+        """Auto-detect and parse any type of telegram.
 
         Args:
-            raw_telegram: The raw telegram string
+            raw_telegram: The raw telegram string.
 
         Returns:
-            Appropriate telegram object based on type
+            Appropriate telegram object based on type.
 
         Raises:
-            TelegramParsingError: If the telegram format is invalid or unknown
-            :rtype: Union[EventTelegram, SystemTelegram, ReplyTelegram]
+            TelegramParsingError: If the telegram format is invalid or unknown.
         """
         if not raw_telegram:
             raise TelegramParsingError("Empty telegram string")
@@ -324,15 +326,14 @@ class TelegramService:
 
     @staticmethod
     def format_system_telegram_summary(telegram: SystemTelegram) -> str:
-        """
-        Format a system telegram for human-readable output.
+        """Format a system telegram for human-readable output.
 
         Args:
-            telegram: The parsed system telegram
+            telegram: The parsed system telegram.
 
         Returns:
-            Formatted string summary
-        ."""
+            Formatted string summary.
+        """
         checksum_status = ""
         if telegram.checksum_validated is not None:
             status_indicator = "✓" if telegram.checksum_validated else "✗"
@@ -347,15 +348,14 @@ class TelegramService:
 
     @staticmethod
     def format_reply_telegram_summary(telegram: ReplyTelegram) -> str:
-        """
-        Format a reply telegram for human-readable output.
+        """Format a reply telegram for human-readable output.
 
         Args:
-            telegram: The parsed reply telegram
+            telegram: The parsed reply telegram.
 
         Returns:
-            Formatted string summary
-        ."""
+            Formatted string summary.
+        """
         parsed_data = telegram.parse_datapoint_value
         data_display = (
             parsed_data.get("formatted", telegram.data_value)

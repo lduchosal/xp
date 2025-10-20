@@ -1,3 +1,8 @@
+"""Telegram Protocol for XP telegram communication.
+
+This module provides the protocol implementation for telegram-based communication.
+"""
+
 import asyncio
 import logging
 import time
@@ -147,7 +152,7 @@ class TelegramProtocol(protocol.Protocol):
 
         Args:
             data: Raw telegram payload (without checksum/framing)
-        ."""
+        """
         # Calculate full frame (add checksum and brackets)
         checksum = calculate_checksum(data.decode())
         frame_data = data.decode() + checksum
@@ -165,7 +170,7 @@ class TelegramProtocol(protocol.Protocol):
 
         Args:
             frame: Complete telegram frame (with checksum and brackets)
-        ."""
+        """
         current_time = time.time()
 
         # Check if identical frame was recently sent

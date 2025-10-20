@@ -41,7 +41,7 @@ def reverse_proxy() -> None:
 @handle_service_errors(ReverseProxyError)
 @click.pass_context
 def start_proxy(ctx: Context, port: int, config: str) -> None:
-    """Start the Conbus reverse proxy server.
+    r"""Start the Conbus reverse proxy server.
 
     The proxy listens on the specified port and forwards all telegrams
     to the target server configured in cli.yml. All traffic is monitored
@@ -53,10 +53,12 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
         config: Configuration file path.
 
     Examples:
-
-    \b
+        \b
         xp rp start
         xp rp start --port 10002 --config my_cli.yml
+
+    Raises:
+        SystemExit: If proxy is already running.
     """
     global global_proxy_instance
 
@@ -76,6 +78,12 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
 
         # Handle graceful shutdown on SIGINT
         def signal_handler(signum: int, frame: Optional[FrameType]) -> None:
+            """Handle shutdown signals for graceful proxy termination.
+
+            Args:
+                signum: Signal number received.
+                frame: Current stack frame (may be None).
+            """
             if global_proxy_instance and global_proxy_instance.is_running:
                 timestamp = global_proxy_instance.timestamp()
                 print(f"\n{timestamp} [SHUTDOWN] Received interrupt signal ({signum})")
@@ -106,12 +114,14 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
 @reverse_proxy.command("stop")
 @handle_service_errors(ReverseProxyError)
 def stop_proxy() -> None:
-    """Stop the running Conbus reverse proxy server.
+    r"""Stop the running Conbus reverse proxy server.
 
     Examples:
-
-    \b
+        \b
         xp rp stop
+
+    Raises:
+        SystemExit: If proxy is not running.
     """
     global global_proxy_instance
 
@@ -136,14 +146,13 @@ def stop_proxy() -> None:
 @reverse_proxy.command("status")
 @handle_service_errors(Exception)
 def proxy_status() -> None:
-    """Get status of the Conbus reverse proxy server.
+    r"""Get status of the Conbus reverse proxy server.
 
     Shows current running state, listen port, target server,
     and active connection details.
 
     Examples:
-
-    \b
+        \b
         xp rp status
     """
     global global_proxy_instance

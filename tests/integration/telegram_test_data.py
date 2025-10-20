@@ -137,7 +137,18 @@ def create_test_telegram(
     event_type=EventType.BUTTON_PRESS,
     checksum="AK",
 ):
-    """Create a test EventTelegram object with specified parameters."""
+    """Create a test EventTelegram object with specified parameters.
+
+    Args:
+        module_type: The module type code.
+        link_number: The link number.
+        output_number: The output number.
+        event_type: The event type.
+        checksum: The checksum string.
+
+    Returns:
+        EventTelegram: A test EventTelegram object.
+    """
     raw_telegram = f"<E{module_type}L{link_number:02d}I{output_number:02d}{event_type.value}{checksum}>"
 
     return EventTelegram(

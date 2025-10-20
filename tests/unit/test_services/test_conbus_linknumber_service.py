@@ -75,11 +75,17 @@ class TestConbusLinknumberSetService:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Capture the response for test verification.
+
+            Args:
+                response: The link number response to capture.
+            """
             nonlocal captured_result
             captured_result = response
 
         # Mock the start_reactor to simulate immediate success
         def mock_start_reactor():
+            """Start the reactor mock for testing."""
             # Directly call succeed instead of going through connection_established
             from xp.models.telegram.system_function import SystemFunction
 
@@ -104,11 +110,17 @@ class TestConbusLinknumberSetService:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Capture the response for test verification.
+
+            Args:
+                response: The link number response to capture.
+            """
             nonlocal captured_result
             captured_result = response
 
         # Mock the start_reactor to simulate NAK response
         def mock_start_reactor():
+            """Start the reactor mock for testing."""
             # Directly call failed instead of going through connection_established
             service.failed("Module responded with NAK")
 
@@ -130,11 +142,17 @@ class TestConbusLinknumberSetService:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Capture the response for test verification.
+
+            Args:
+                response: The link number response to capture.
+            """
             nonlocal captured_result
             captured_result = response
 
         # Mock start_reactor to simulate connection failure
         def mock_start_reactor():
+            """Start the reactor mock for testing."""
             service.failed("Connection timeout")
 
         service.start_reactor = mock_start_reactor
@@ -155,11 +173,17 @@ class TestConbusLinknumberSetService:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Capture the response for test verification.
+
+            Args:
+                response: The link number response to capture.
+            """
             nonlocal captured_result
             captured_result = response
 
         # Mock start_reactor to trigger connection_established which validates params
         def mock_start_reactor():
+            """Start the reactor mock for testing."""
             service.connection_established()
 
         service.start_reactor = mock_start_reactor
@@ -186,11 +210,17 @@ class TestConbusLinknumberSetService:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Capture the response for test verification.
+
+            Args:
+                response: The link number response to capture.
+            """
             nonlocal captured_result
             captured_result = response
 
         # Mock start_reactor to trigger connection_established which validates params
         def mock_start_reactor():
+            """Start the reactor mock for testing."""
             service.connection_established()
 
         service.start_reactor = mock_start_reactor
@@ -212,11 +242,17 @@ class TestConbusLinknumberSetService:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Capture the response for test verification.
+
+            Args:
+                response: The link number response to capture.
+            """
             nonlocal captured_result
             captured_result = response
 
         # Mock start_reactor to simulate successful datapoint query
         def mock_start_reactor():
+            """Start the reactor mock for testing."""
             # Simulate successful datapoint response
             from xp.models import ConbusDatapointResponse
 
@@ -251,11 +287,17 @@ class TestConbusLinknumberSetService:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Capture the response for test verification.
+
+            Args:
+                response: The link number response to capture.
+            """
             nonlocal captured_result
             captured_result = response
 
         # Mock start_reactor to simulate failed datapoint query
         def mock_start_reactor():
+            """Start the reactor mock for testing."""
             from xp.models import ConbusDatapointResponse
 
             datapoint_response = ConbusDatapointResponse(
@@ -288,11 +330,17 @@ class TestConbusLinknumberSetService:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Capture the response for test verification.
+
+            Args:
+                response: The link number response to capture.
+            """
             nonlocal captured_result
             captured_result = response
 
         # Mock start_reactor to simulate parse error
         def mock_start_reactor():
+            """Start the reactor mock for testing."""
             from xp.models import ConbusDatapointResponse
 
             # Mock with invalid data that will cause int() conversion to fail

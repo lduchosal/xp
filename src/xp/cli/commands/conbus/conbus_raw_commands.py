@@ -18,7 +18,7 @@ from xp.services.conbus.conbus_raw_service import ConbusRawService
 @click.pass_context
 @connection_command()
 def send_raw_telegrams(ctx: Context, raw_telegrams: str) -> None:
-    """Send raw telegram sequence to Conbus server.
+    r"""Send raw telegram sequence to Conbus server.
 
     Accepts a string containing one or more telegrams in format <...>.
     Multiple telegrams should be concatenated without separators.
@@ -28,8 +28,7 @@ def send_raw_telegrams(ctx: Context, raw_telegrams: str) -> None:
         raw_telegrams: Raw telegram string(s).
 
     Examples:
-
-    \b
+        \b
         xp conbus raw '<S2113010000F02D12>'
         xp conbus raw '<S2113010000F02D12><S2113010001F02D12><S2113010002F02D12>'
         xp conbus raw '<S0012345003F02D12FM><S0012345004F02D12FD><S0012345005F02D12FI><S0012345006F02D12FL><S0012345007F02D12FK><S0012345008F02D12FJ><S0012345009F02D12FF>'
@@ -39,10 +38,19 @@ def send_raw_telegrams(ctx: Context, raw_telegrams: str) -> None:
     )
 
     def on_progress(message: str) -> None:
+        """Handle progress updates during raw telegram sending.
+
+        Args:
+            message: Progress message string.
+        """
         click.echo(message)
-        pass
 
     def on_finish(service_response: ConbusRawResponse) -> None:
+        """Handle successful completion of raw telegram sending.
+
+        Args:
+            service_response: Raw response object.
+        """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
     with service:

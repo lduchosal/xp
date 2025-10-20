@@ -17,6 +17,11 @@ class MockServer:
     """Mock Conbus server for testing reverse proxy integration."""
 
     def __init__(self, port: int):
+        """Initialize mock server.
+
+        Args:
+            port: Port number to listen on.
+        """
         self.port = port
         self.socket: Optional[socket.socket] = None
         self.is_running = False
@@ -42,7 +47,11 @@ class MockServer:
             self.socket.close()
 
     def add_response(self, response: str) -> None:
-        """Add a response to send when receiving messages."""
+        """Add a response to send when receiving messages.
+
+        Args:
+            response: Response string to add.
+        """
         self.responses.append(response)
 
     def _accept_connections(self):

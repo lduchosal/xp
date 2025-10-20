@@ -39,7 +39,12 @@ class ConbusLightlevelSetService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ):
-        """Initialize the Conbus lightlevel service."""
+        """Initialize the Conbus lightlevel service.
+
+        Args:
+            cli_config: Configuration for Conbus client connection.
+            reactor: Twisted reactor for event loop.
+        """
         super().__init__(cli_config, reactor)
         self.serial_number: str = ""
         self.output_number: int = 0
@@ -76,18 +81,18 @@ class ConbusLightlevelSetService(ConbusProtocol):
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
@@ -108,6 +113,7 @@ class ConbusLightlevelSetService(ConbusProtocol):
             self.succeed()
 
     def succeed(self) -> None:
+        """Handle successful light level set operation."""
         self.logger.debug("Succeed")
         self.service_response.success = True
         self.service_response.serial_number = self.serial_number
@@ -121,13 +127,8 @@ class ConbusLightlevelSetService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
@@ -151,16 +152,15 @@ class ConbusLightlevelSetService(ConbusProtocol):
         """Set light level for a specific output on a module.
 
         Args:
-            serial_number: Module serial number
-            output_number: Output number (0-based, 0-8)
-            level: Light level percentage (0-100)
-            finish_callback: Callback function to call when operation completes
-            timeout_seconds: Optional timeout in seconds
+            serial_number: Module serial number.
+            output_number: Output number (0-based, 0-8).
+            level: Light level percentage (0-100).
+            finish_callback: Callback function to call when operation completes.
+            timeout_seconds: Optional timeout in seconds.
 
         Examples:
-            \b
-                xp conbus lightlevel set 0012345008 2 50
-                xp conbus lightlevel set 0012345008 0 100
+            xp conbus lightlevel set 0012345008 2 50
+            xp conbus lightlevel set 0012345008 0 100
         """
         self.logger.info(
             f"Setting light level for {serial_number} output {output_number} to {level}%"
@@ -196,10 +196,10 @@ class ConbusLightlevelSetService(ConbusProtocol):
         """Turn off light (set level to 0) for a specific output.
 
         Args:
-            serial_number: Module serial number
-            output_number: Output number (0-8)
-            finish_callback: Callback function to call when operation completes
-            timeout_seconds: Optional timeout in seconds
+            serial_number: Module serial number.
+            output_number: Output number (0-8).
+            finish_callback: Callback function to call when operation completes.
+            timeout_seconds: Optional timeout in seconds.
         """
         self.set_lightlevel(
             serial_number, output_number, 0, finish_callback, timeout_seconds
@@ -215,10 +215,10 @@ class ConbusLightlevelSetService(ConbusProtocol):
         """Turn on light (set level to 80%) for a specific output.
 
         Args:
-            serial_number: Module serial number
-            output_number: Output number (0-8)
-            finish_callback: Callback function to call when operation completes
-            timeout_seconds: Optional timeout in seconds
+            serial_number: Module serial number.
+            output_number: Output number (0-8).
+            finish_callback: Callback function to call when operation completes.
+            timeout_seconds: Optional timeout in seconds.
         """
         self.set_lightlevel(
             serial_number, output_number, 80, finish_callback, timeout_seconds

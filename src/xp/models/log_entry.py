@@ -23,6 +23,11 @@ class LogEntry:
         parsed_telegram: Parsed telegram object if successfully parsed.
         parse_error: Error message if parsing failed.
         line_number: Line number in the log file.
+        is_transmitted: True if this is a transmitted telegram.
+        is_received: True if this is a received telegram.
+        telegram_type: Telegram type (event, system, reply, unknown).
+        is_valid_parse: True if the telegram was successfully parsed.
+        checksum_validated: Checksum validation status if available.
     """
 
     timestamp: datetime

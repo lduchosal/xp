@@ -44,12 +44,12 @@ class ConbusOutputService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ):
-        """Initialize the Conbus output service
+        """Initialize the Conbus output service.
 
         Args:
-            telegram_output_service: TelegramOutputService for telegram generation/parsing
-            cli_config: Conbus client configuration
-            reactor: Twisted reactor for async operations
+            telegram_output_service: TelegramOutputService for telegram generation/parsing.
+            cli_config: Conbus client configuration.
+            reactor: Twisted reactor for async operations.
         """
         super().__init__(cli_config, reactor)
         self.telegram_output_service = telegram_output_service
@@ -92,18 +92,18 @@ class ConbusOutputService(ConbusProtocol):
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
 
@@ -136,6 +136,11 @@ class ConbusOutputService(ConbusProtocol):
             )
 
     def succeed(self, output_telegram: OutputTelegram) -> None:
+        """Handle successful output action.
+
+        Args:
+            output_telegram: The output telegram received as response.
+        """
         self.logger.debug("Successfully sent action to output")
         self.service_response.success = True
         self.service_response.timestamp = datetime.now()
@@ -149,13 +154,8 @@ class ConbusOutputService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
@@ -175,15 +175,14 @@ class ConbusOutputService(ConbusProtocol):
         finish_callback: Callable[[ConbusOutputResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Send an action telegram to a module output.
+        """Send an action telegram to a module output.
 
         Args:
-            serial_number: 10-digit module serial number
-            output_number: Output number (0-99)
-            action_type: Action to perform (ON_RELEASE, OFF_PRESS, etc.)
-            finish_callback: Callback function to call when operation completes
-            timeout_seconds: Optional timeout in seconds
+            serial_number: 10-digit module serial number.
+            output_number: Output number (0-99).
+            action_type: Action to perform (ON_RELEASE, OFF_PRESS, etc.).
+            finish_callback: Callback function to call when operation completes.
+            timeout_seconds: Optional timeout in seconds.
         """
         self.logger.info("Starting send_action")
         if timeout_seconds:

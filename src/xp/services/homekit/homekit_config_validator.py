@@ -1,3 +1,8 @@
+"""HomeKit Configuration Validator.
+
+This module validates HomeKit configuration files for correctness and consistency.
+"""
+
 from contextlib import suppress
 from typing import List, Set
 
@@ -9,10 +14,19 @@ class HomekitConfigValidator:
     """Validates homekit.yml configuration file for HomeKit integration."""
 
     def __init__(self, config: HomekitConfig):
+        """Initialize the HomeKit config validator.
+
+        Args:
+            config: HomeKit configuration to validate.
+        """
         self.config = config
 
     def validate_unique_accessory_names(self) -> List[str]:
-        """Validate that all accessory names are unique."""
+        """Validate that all accessory names are unique.
+
+        Returns:
+            List of validation error messages.
+        """
         names: Set[str] = set()
         errors = []
 
@@ -24,7 +38,11 @@ class HomekitConfigValidator:
         return errors
 
     def validate_service_types(self) -> List[str]:
-        """Validate that service types are valid."""
+        """Validate that service types are valid.
+
+        Returns:
+            List of validation error messages.
+        """
         valid_services = {"lightbulb", "outlet", "dimminglight"}
         errors = [
             f"Invalid service type '{accessory.service}' for accessory '{accessory.name}'. Valid types: {', '.join(valid_services)}"
@@ -35,7 +53,11 @@ class HomekitConfigValidator:
         return errors
 
     def validate_output_numbers(self) -> List[str]:
-        """Validate that output numbers are positive integers."""
+        """Validate that output numbers are positive integers.
+
+        Returns:
+            List of validation error messages.
+        """
         errors = [
             f"Invalid output number {accessory.output_number} for accessory '{accessory.name}'. Must be positive."
             for accessory in self.config.accessories

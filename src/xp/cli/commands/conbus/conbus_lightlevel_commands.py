@@ -27,7 +27,7 @@ from xp.services.conbus.conbus_lightlevel_set_service import (
 def xp_lightlevel_set(
     ctx: click.Context, serial_number: str, output_number: int, level: int
 ) -> None:
-    """Set light level for output_number on XP module serial_number.
+    r"""Set light level for output_number on XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -36,13 +36,17 @@ def xp_lightlevel_set(
         level: Light level (0-100).
 
     Examples:
-
-    \b
+        \b
         xp conbus lightlevel set 0123450001 2 50   # Set output 2 to 50%
         xp conbus lightlevel set 0011223344 0 100  # Set output 0 to 100%
     """
 
     def finish(response: "ConbusLightlevelResponse") -> None:
+        """Handle successful completion of light level set command.
+
+        Args:
+            response: Light level response object.
+        """
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     service = (
@@ -62,7 +66,7 @@ def xp_lightlevel_set(
 def xp_lightlevel_off(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    """Turn off light for output_number on XP module serial_number (set level to 0).
+    r"""Turn off light for output_number on XP module serial_number (set level to 0).
 
     Args:
         ctx: Click context object.
@@ -70,13 +74,17 @@ def xp_lightlevel_off(
         output_number: Output number (0-8).
 
     Examples:
-
-    \b
+        \b
         xp conbus lightlevel off 0123450001 2   # Turn off output 2
         xp conbus lightlevel off 0011223344 0   # Turn off output 0
     """
 
     def finish(response: "ConbusLightlevelResponse") -> None:
+        """Handle successful completion of light level off command.
+
+        Args:
+            response: Light level response object.
+        """
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     service = (
@@ -96,7 +104,7 @@ def xp_lightlevel_off(
 def xp_lightlevel_on(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    """Turn on light for output_number on XP module serial_number (set level to 80%).
+    r"""Turn on light for output_number on XP module serial_number (set level to 80%).
 
     Args:
         ctx: Click context object.
@@ -104,13 +112,17 @@ def xp_lightlevel_on(
         output_number: Output number (0-8).
 
     Examples:
-
-    \b
+        \b
         xp conbus lightlevel on 0123450001 2   # Turn on output 2 (80%)
         xp conbus lightlevel on 0011223344 0   # Turn on output 0 (80%)
     """
 
     def finish(response: "ConbusLightlevelResponse") -> None:
+        """Handle successful completion of light level on command.
+
+        Args:
+            response: Light level response object.
+        """
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     service = (
@@ -130,7 +142,7 @@ def xp_lightlevel_on(
 def xp_lightlevel_get(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    """Get current light level for output_number on XP module serial_number.
+    r"""Get current light level for output_number on XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -138,13 +150,17 @@ def xp_lightlevel_get(
         output_number: Output number (0-8).
 
     Examples:
-
-    \b
+        \b
         xp conbus lightlevel get 0123450001 2   # Get light level for output 2
         xp conbus lightlevel get 0011223344 0   # Get light level for output 0
     """
 
     def finish(response: "ConbusLightlevelResponse") -> None:
+        """Handle successful completion of light level get command.
+
+        Args:
+            response: Light level response object.
+        """
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     service = (

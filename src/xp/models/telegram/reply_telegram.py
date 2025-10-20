@@ -37,6 +37,7 @@ class ReplyTelegram(Telegram):
         data: Raw data payload.
         datapoint_type: Type of datapoint.
         data_value: Parsed data value.
+        parse_datapoint_value: Parsed value based on datapoint type.
     """
 
     serial_number: str = ""
@@ -73,7 +74,11 @@ class ReplyTelegram(Telegram):
         return {"raw_value": self.data_value, "parsed": False}
 
     def _parse_temperature_value(self) -> dict:
-        """Parse temperature value like '+26,0§C'"""
+        """Parse temperature value like '+26,0§C'.
+
+        Returns:
+            Dictionary containing parsed temperature value and metadata.
+        """
         try:
             # Remove unit indicator (§C)
             value_part = self.data_value.replace("§C", "")
@@ -96,7 +101,11 @@ class ReplyTelegram(Telegram):
             }
 
     def _parse_humidity_value(self) -> dict:
-        """Parse humidity value like '+65,5§H'"""
+        """Parse humidity value like '+65,5§H'.
+
+        Returns:
+            Dictionary containing parsed humidity value and metadata.
+        """
         try:
             # Remove unit indicator (§H)
             value_part = self.data_value.replace("§RH", "")
@@ -119,7 +128,11 @@ class ReplyTelegram(Telegram):
             }
 
     def _parse_voltage_value(self) -> dict:
-        """Parse voltage value like '+12,5§V'"""
+        """Parse voltage value like '+12,5§V'.
+
+        Returns:
+            Dictionary containing parsed voltage value and metadata.
+        """
         try:
             # Remove unit indicator (§V)
             value_part = self.data_value.replace("§V", "")
@@ -142,7 +155,11 @@ class ReplyTelegram(Telegram):
             }
 
     def _parse_current_value(self) -> dict:
-        """Parse current value like '+0,25§A'"""
+        """Parse current value like '+0,25§A'.
+
+        Returns:
+            Dictionary containing parsed current value and metadata.
+        """
         try:
             # Remove unit indicator (§A)
             value_part = self.data_value.replace("§A", "")
@@ -165,7 +182,11 @@ class ReplyTelegram(Telegram):
             }
 
     def _parse_module_type_value(self) -> dict:
-        """Parse status value"""
+        """Parse status value.
+
+        Returns:
+            Dictionary containing parsed module type value.
+        """
         # Status values are typically alphanumeric codes
         return {
             "module_type": self.data_value,
@@ -174,7 +195,11 @@ class ReplyTelegram(Telegram):
         }
 
     def _parse_sw_version_value(self) -> dict:
-        """Parse version value like 'XP230_V1.00.04'"""
+        """Parse version value like 'XP230_V1.00.04'.
+
+        Returns:
+            Dictionary containing parsed version information.
+        """
         try:
             # Version format: {PRODUCT}_{VERSION}
             # Examples: XP230_V1.00.04, XP20_V0.01.05, XP33LR_V0.04.02, XP24_V0.34.03

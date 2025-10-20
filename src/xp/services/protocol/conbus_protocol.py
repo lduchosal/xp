@@ -1,3 +1,8 @@
+"""Conbus Protocol for XP telegram communication.
+
+This module implements the Twisted protocol for Conbus communication.
+"""
+
 import logging
 from typing import Any, Optional
 
@@ -99,7 +104,7 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
 
         Args:
             data: Raw telegram payload (without checksum/framing)
-        ."""
+        """
         # Calculate full frame (add checksum and brackets)
         checksum = calculate_checksum(data.decode())
         frame_data = data.decode() + checksum

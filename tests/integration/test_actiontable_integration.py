@@ -107,6 +107,14 @@ class TestActionTableIntegration:
         def mock_start(
             serial_number, progress_callback, finish_callback, error_callback
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                progress_callback: Callback for progress updates.
+                finish_callback: Callback when finished.
+                error_callback: Callback for errors.
+            """
             finish_callback(sample_actiontable)
 
         mock_service.start.side_effect = mock_start

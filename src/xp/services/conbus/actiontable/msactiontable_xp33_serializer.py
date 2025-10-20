@@ -44,7 +44,7 @@ class Xp33MsActionTableSerializer:
 
         Returns:
             Serialized action table data string.
-        ."""
+        """
         # Create 32-byte array
         raw_bytes = bytearray(32)
 
@@ -116,7 +116,7 @@ class Xp33MsActionTableSerializer:
 
         Raises:
             ValueError: If data length is less than 68 characters.
-        ."""
+        """
         raw_length = len(msactiontable_rawdata)
         if raw_length < 68:  # Minimum: 4 char prefix + 64 chars data
             raise ValueError(
@@ -163,7 +163,7 @@ class Xp33MsActionTableSerializer:
 
         Returns:
             Decoded XP33 output configuration.
-        ."""
+        """
         # Read min/max levels from appropriate offsets
         min_level = Xp33MsActionTableSerializer._byte_to_percentage(
             raw_bytes[2 * output_index]
@@ -217,7 +217,7 @@ class Xp33MsActionTableSerializer:
 
         Returns:
             Decoded XP33 scene configuration.
-        ."""
+        """
         # Calculate scene offset: 6 + (4 * scene_index)
         offset = 6 + (4 * scene_index)
 
@@ -249,7 +249,7 @@ class Xp33MsActionTableSerializer:
 
         Returns:
             Deserialized XP33 MS action table.
-        ."""
+        """
         # For backward compatibility, assume full telegrams and extract data
         data_parts = ms_telegrams[16:152]  # Adjusted for XP33 length
 

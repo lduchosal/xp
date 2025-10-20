@@ -36,7 +36,7 @@ def decode_log_file(
     time_range: str,
     summary: bool,
 ) -> None:
-    """Decode and parse console bus log file.
+    r"""Decode and parse console bus log file.
 
     Args:
         ctx: Click context object.
@@ -47,9 +47,11 @@ def decode_log_file(
         summary: Show summary statistics only.
 
     Examples:
-
-    \b
+        \b
         xp file decode conbus.log
+
+    Raises:
+        SystemExit: If time range is invalid or log file cannot be parsed.
     """
     from xp.services.log_file_service import LogFileService
     from xp.utils.time_utils import TimeParsingError, parse_time_range
@@ -110,15 +112,14 @@ def decode_log_file(
 @click.pass_context
 @handle_service_errors(Exception)
 def analyze_log_file(ctx: Context, log_file_path: str) -> None:
-    """Analyze console bus log file for patterns and statistics.
+    r"""Analyze console bus log file for patterns and statistics.
 
     Args:
         ctx: Click context object.
         log_file_path: Path to the log file to analyze.
 
     Examples:
-
-    \b
+        \b
         xp file analyze conbus.log
     """
     from xp.services.log_file_service import LogFileService
@@ -143,15 +144,14 @@ def analyze_log_file(ctx: Context, log_file_path: str) -> None:
 @click.pass_context
 @handle_service_errors(Exception)
 def validate_log_file(ctx: Context, log_file_path: str) -> None:
-    """Validate console bus log file format and telegram checksums.
+    r"""Validate console bus log file format and telegram checksums.
 
     Args:
         ctx: Click context object.
         log_file_path: Path to the log file to validate.
 
     Examples:
-
-    \b
+        \b
         xp file validate conbus.log
     """
     from xp.services.log_file_service import LogFileService

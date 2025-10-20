@@ -38,7 +38,7 @@ class LogFileService:
 
         Args:
             telegram_service: Telegram service for parsing telegrams.
-        ."""
+        """
         self.telegram_service = telegram_service
 
     def parse_log_file(
@@ -160,7 +160,7 @@ class LogFileService:
 
         Returns:
             True if format is valid, False otherwise.
-        ."""
+        """
         try:
             entries = self.parse_log_file(file_path)
             # Check if at least some entries parsed successfully
@@ -177,7 +177,7 @@ class LogFileService:
 
         Returns:
             List of telegram strings.
-        ."""
+        """
         entries = self.parse_log_file(file_path)
         return [entry.raw_telegram for entry in entries]
 
@@ -190,7 +190,7 @@ class LogFileService:
 
         Returns:
             Dictionary containing statistics.
-        ."""
+        """
         if not entries:
             return {"total_entries": 0}
 

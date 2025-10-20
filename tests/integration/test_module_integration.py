@@ -11,11 +11,11 @@ class TestModuleIntegration:
     """Integration tests for module command functionality."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.runner = CliRunner()
 
     def test_module_info_command_by_code(self):
-        """Test module info command with code."""
+        """Test that module info command with code works."""
         result = self.runner.invoke(cli, ["module", "info", "14"])
 
         assert result.exit_code == 0

@@ -15,7 +15,7 @@ class TestTelegramProtocolDebounce:
     """Test cases for TelegramProtocol debouncing."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.protocol = TelegramProtocol(
             event_bus=self.event_bus,

@@ -33,7 +33,13 @@ class ConbusDatapointService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus datapoint service."""
+        """Initialize the Conbus datapoint service.
+
+        Args:
+            telegram_service: Service for parsing telegrams.
+            cli_config: Configuration for Conbus client connection.
+            reactor: Twisted reactor for event loop.
+        """
         super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
         self.serial_number: str = ""
@@ -64,18 +70,18 @@ class ConbusDatapointService(ConbusProtocol):
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
@@ -107,6 +113,11 @@ class ConbusDatapointService(ConbusProtocol):
         self.succeed(datapoint_telegram)
 
     def succeed(self, datapoint_telegram: ReplyTelegram) -> None:
+        """Handle successful datapoint query.
+
+        Args:
+            datapoint_telegram: The parsed datapoint telegram.
+        """
         self.logger.debug("Succeed querying datapoint")
         self.service_response.success = True
         self.service_response.timestamp = datetime.now()
@@ -120,13 +131,8 @@ class ConbusDatapointService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
@@ -143,17 +149,13 @@ class ConbusDatapointService(ConbusProtocol):
         finish_callback: Callable[[ConbusDatapointResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Query a specific datapoint from a module.
+        """Query a specific datapoint from a module.
 
         Args:
-            serial_number: 10-digit module serial number
-            datapoint_type: Type of datapoint to query
-            finish_callback: callback function to call when the datapoint is received
-            timeout_seconds: timeout in seconds
-
-        Returns:
-            ConbusDatapointResponse with operation result and datapoint value
+            serial_number: 10-digit module serial number.
+            datapoint_type: Type of datapoint to query.
+            finish_callback: Callback function to call when the datapoint is received.
+            timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting query_datapoint")
         if timeout_seconds:

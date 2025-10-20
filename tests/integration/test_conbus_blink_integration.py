@@ -35,6 +35,14 @@ class TestConbusBlinkIntegration:
         def mock_send_blink_telegram(
             serial_number, on_or_off, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                on_or_off: Blink on or off.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.send_blink_telegram.side_effect = mock_send_blink_telegram
@@ -73,6 +81,14 @@ class TestConbusBlinkIntegration:
         def mock_send_blink_telegram(
             serial_number, on_or_off, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                on_or_off: Blink on or off.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.send_blink_telegram.side_effect = mock_send_blink_telegram
@@ -112,6 +128,14 @@ class TestConbusBlinkIntegration:
         def mock_send_blink_telegram(
             serial_number, on_or_off, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                on_or_off: Blink on or off.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.send_blink_telegram.side_effect = mock_send_blink_telegram

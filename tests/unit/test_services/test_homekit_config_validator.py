@@ -19,10 +19,19 @@ from xp.services.homekit.homekit_conson_validator import ConsonConfigValidator
 
 
 class TestHomekitConfigValidator:
+    """Test cases for HomekitConfigValidator."""
 
     @staticmethod
     def create_test_homekit_config(accessories=None, rooms=None):
-        """Helper to create test HomeKit configuration."""
+        """Create test HomeKit configuration.
+
+        Args:
+            accessories: Optional list of accessory configurations.
+            rooms: Optional list of room configurations.
+
+        Returns:
+            HomekitConfig: A configured HomeKit config object for testing.
+        """
         if accessories is None:
             accessories = [
                 HomekitAccessoryConfig(
@@ -269,10 +278,15 @@ class TestHomekitConfigValidator:
 
 
 class TestCrossReferenceValidator:
+    """Test cases for CrossReferenceValidator."""
 
     @staticmethod
     def create_test_validators():
-        """Helper to create test validators with compatible configurations."""
+        """Create test validators with compatible configurations.
+
+        Returns:
+            tuple: A tuple of (HomeKit validator, Conson validator) for testing.
+        """
         # Create conson config
         conson_modules = [
             ConsonModuleConfig(

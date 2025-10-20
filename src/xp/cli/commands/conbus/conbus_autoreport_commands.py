@@ -22,15 +22,14 @@ from xp.services.conbus.conbus_autoreport_set_service import ConbusAutoreportSet
 @connection_command()
 @click.pass_context
 def get_autoreport_command(ctx: Context, serial_number: str) -> None:
-    """Get the current auto report status for a specific module.
+    r"""Get the current auto report status for a specific module.
 
     Args:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
 
     Examples:
-
-    \b
+        \b
         xp conbus autoreport get 0123450001
     """
     # Get service from container
@@ -39,6 +38,11 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
     )
 
     def on_finish(service_response: ConbusAutoreportResponse) -> None:
+        """Handle successful completion of auto report status retrieval.
+
+        Args:
+            service_response: Auto report response object.
+        """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
     with service:
@@ -54,7 +58,7 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
 @connection_command()
 @click.pass_context
 def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> None:
-    """Set the auto report status for a specific module.
+    r"""Set the auto report status for a specific module.
 
     Args:
         ctx: Click context object.
@@ -62,8 +66,7 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
         status: Auto report status - either 'on' or 'off'.
 
     Examples:
-
-    \b
+        \b
         xp conbus autoreport set 0123450001 on
         xp conbus autoreport set 0123450001 off
     """
@@ -74,6 +77,11 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
     status_bool = status.lower() == "on"
 
     def on_finish(service_response: ConbusAutoreportResponse) -> None:
+        """Handle successful completion of auto report status setting.
+
+        Args:
+            service_response: Auto report response object.
+        """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
 
     with service:

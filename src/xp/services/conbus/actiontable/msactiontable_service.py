@@ -96,7 +96,7 @@ class MsActionTableService(ConbusProtocol):
 
         Args:
             telegram_sent: The telegram that was sent.
-        ."""
+        """
         self.logger.debug(f"Telegram sent: {telegram_sent}")
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
@@ -104,7 +104,7 @@ class MsActionTableService(ConbusProtocol):
 
         Args:
             telegram_received: The telegram received event.
-        ."""
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if (
             not telegram_received.checksum_valid
@@ -148,7 +148,7 @@ class MsActionTableService(ConbusProtocol):
 
         Args:
             message: Failure message.
-        ."""
+        """
         self.logger.debug(f"Failed: {message}")
         if self.error_callback:
             self.error_callback(message)

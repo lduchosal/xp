@@ -27,7 +27,17 @@ class TestConbusAutoreportIntegration:
     def _create_mock_conbus_response(
         success=True, serial_number="0123450001", error=None, telegrams=None
     ):
-        """Helper to create a properly formed ConbusResponse."""
+        """Create a properly formed ConbusResponse.
+
+        Args:
+            success: Whether the response was successful.
+            serial_number: Serial number for the response.
+            error: Error message if any.
+            telegrams: List of telegrams received.
+
+        Returns:
+            Mock: A properly formed ConbusResponse mock.
+        """
         if telegrams is None:
             telegrams = [f"<R{serial_number}F18DFA>"] if success else []
 
@@ -40,7 +50,15 @@ class TestConbusAutoreportIntegration:
         return mock_response
 
     def _create_mock_conbus_service(self, success=True, ack_response=True):
-        """Helper to create a properly mocked ConbusService."""
+        """Create a properly mocked ConbusService.
+
+        Args:
+            success: Whether the service should succeed.
+            ack_response: Whether to return ACK or NAK.
+
+        Returns:
+            Mock: A properly mocked ConbusService instance.
+        """
         mock_conbus_instance = Mock()
         mock_conbus_instance.__enter__ = Mock(return_value=mock_conbus_instance)
         mock_conbus_instance.__exit__ = Mock(return_value=False)
@@ -63,7 +81,17 @@ class TestConbusAutoreportIntegration:
     def _create_mock_datapoint_response(
         success=True, serial_number="0123450001", auto_report_status="AA", error=None
     ):
-        """Helper to create a properly formed ConbusDatapointResponse."""
+        """Create a properly formed ConbusDatapointResponse.
+
+        Args:
+            success: Whether the response was successful.
+            serial_number: Serial number for the response.
+            auto_report_status: Auto report status value.
+            error: Error message if any.
+
+        Returns:
+            Mock: A properly formed ConbusDatapointResponse mock.
+        """
         mock_response = Mock()
         mock_response.success = success
         mock_response.sent_telegram = f"<S{serial_number}F02D21FG>"
@@ -83,7 +111,6 @@ class TestConbusAutoreportIntegration:
 
     def test_conbus_autoreport_get_valid_serial(self):
         """Test getting auto report status with valid serial number."""
-
         # Mock successful response
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -97,6 +124,12 @@ class TestConbusAutoreportIntegration:
 
         # Make the mock service call the callback immediately
         def mock_get_autoreport_status(serial_number, finish_callback):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                finish_callback: Callback when finished.
+            """
             finish_callback(mock_response)
 
         mock_service.get_autoreport_status.side_effect = mock_get_autoreport_status
@@ -123,7 +156,6 @@ class TestConbusAutoreportIntegration:
 
     def test_conbus_autoreport_set_on_valid_serial(self):
         """Test setting auto report status to ON with valid serial."""
-
         # Mock successful response
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -138,6 +170,13 @@ class TestConbusAutoreportIntegration:
 
         # Make the mock service call the callback immediately
         def mock_set_autoreport_status(serial_number, status, status_callback):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                status: Status to set.
+                status_callback: Callback for status.
+            """
             status_callback(mock_response)
 
         mock_service.set_autoreport_status.side_effect = mock_set_autoreport_status
@@ -164,7 +203,6 @@ class TestConbusAutoreportIntegration:
 
     def test_conbus_autoreport_set_off_valid_serial(self):
         """Test setting auto report status to OFF with valid serial."""
-
         # Mock successful response
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -179,6 +217,13 @@ class TestConbusAutoreportIntegration:
 
         # Make the mock service call the callback immediately
         def mock_set_autoreport_status(serial_number, status, status_callback):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                status: Status to set.
+                status_callback: Callback for status.
+            """
             status_callback(mock_response)
 
         mock_service.set_autoreport_status.side_effect = mock_set_autoreport_status
@@ -205,7 +250,6 @@ class TestConbusAutoreportIntegration:
 
     def test_conbus_autoreport_invalid_response(self):
         """Test handling invalid responses from the server."""
-
         # Mock service with failed response
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -219,6 +263,12 @@ class TestConbusAutoreportIntegration:
 
         # Make the mock service call the callback immediately
         def mock_get_autoreport_status(serial_number, finish_callback):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                finish_callback: Callback when finished.
+            """
             finish_callback(mock_response)
 
         mock_service.get_autoreport_status.side_effect = mock_get_autoreport_status

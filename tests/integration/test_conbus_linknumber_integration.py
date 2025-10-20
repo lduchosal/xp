@@ -13,7 +13,7 @@ from xp.services.conbus.conbus_linknumber_set_service import ConbusLinknumberSet
 
 
 class TestConbusLinknumberIntegration:
-    """Integration test cases for Conbus link number operations
+    """Integration test cases for Conbus link number operations.
 
     Note: Tests updated to use new async callback API with Twisted reactor.
     """
@@ -61,10 +61,16 @@ class TestConbusLinknumberIntegration:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result
             captured_result = response
 
         def mock_start_reactor():
+            """Test helper function."""
             from xp.models.telegram.system_function import SystemFunction
 
             service.succeed(SystemFunction.ACK)
@@ -82,10 +88,16 @@ class TestConbusLinknumberIntegration:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result
             captured_result = response
 
         def mock_start_reactor():
+            """Test helper function."""
             service.failed("Module responded with NAK")
 
         service.start_reactor = mock_start_reactor
@@ -100,10 +112,16 @@ class TestConbusLinknumberIntegration:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result
             captured_result = response
 
         def mock_start_reactor():
+            """Test helper function."""
             service.failed("Connection timeout")
 
         service.start_reactor = mock_start_reactor
@@ -119,10 +137,16 @@ class TestConbusLinknumberIntegration:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result
             captured_result = response
 
         def mock_start_reactor():
+            """Test helper function."""
             service.connection_established()
 
         service.start_reactor = mock_start_reactor
@@ -139,10 +163,16 @@ class TestConbusLinknumberIntegration:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result
             captured_result = response
 
         def mock_start_reactor():
+            """Test helper function."""
             service.connection_established()
 
         service.start_reactor = mock_start_reactor
@@ -160,10 +190,16 @@ class TestConbusLinknumberIntegration:
         captured_result_min = None
 
         def callback_min(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result_min
             captured_result_min = response
 
         def mock_start_reactor():
+            """Test helper function."""
             from xp.models.telegram.system_function import SystemFunction
 
             service.succeed(SystemFunction.ACK)
@@ -179,6 +215,11 @@ class TestConbusLinknumberIntegration:
         captured_result_max = None
 
         def callback_max(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result_max
             captured_result_max = response
 
@@ -199,10 +240,16 @@ class TestConbusLinknumberIntegration:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result
             captured_result = response
 
         def mock_start_reactor():
+            """Test helper function."""
             mock_datapoint_telegram = Mock()
             mock_datapoint_telegram.data_value = "25"
 
@@ -228,10 +275,16 @@ class TestConbusLinknumberIntegration:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result
             captured_result = response
 
         def mock_start_reactor():
+            """Test helper function."""
             datapoint_response = ConbusDatapointResponse(
                 success=False,
                 datapoint_telegram=None,
@@ -255,10 +308,16 @@ class TestConbusLinknumberIntegration:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result
             captured_result = response
 
         def mock_start_reactor():
+            """Test helper function."""
             mock_datapoint_telegram = Mock()
             mock_datapoint_telegram.data_value = "invalid"
 
@@ -305,10 +364,16 @@ class TestConbusLinknumberIntegration:
         captured_result = None
 
         def callback(response: ConbusLinknumberResponse) -> None:
+            """Test helper function.
+
+            Args:
+                response: The response from the service.
+            """
             nonlocal captured_result
             captured_result = response
 
         def mock_start_reactor():
+            """Test helper function."""
             # Simulate an exception during service execution
             datapoint_response = ConbusDatapointResponse(
                 success=False,

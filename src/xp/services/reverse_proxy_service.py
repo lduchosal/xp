@@ -60,7 +60,7 @@ class ReverseProxyService:
 
         Returns:
             Target server IP address.
-        ."""
+        """
         return self.cli_config.conbus.ip
 
     @property
@@ -70,7 +70,7 @@ class ReverseProxyService:
 
         Returns:
             Target server port number.
-        ."""
+        """
         return self.cli_config.conbus.port
 
     def start_proxy(self) -> Response:
@@ -79,7 +79,7 @@ class ReverseProxyService:
 
         Returns:
             Response object with success status and proxy details.
-        ."""
+        """
         if self.is_running:
             return Response(
                 success=False, data=None, error="Reverse proxy is already running"
@@ -136,7 +136,7 @@ class ReverseProxyService:
 
         Returns:
             Response object with success status.
-        ."""
+        """
         if not self.is_running:
             return Response(
                 success=False, data=None, error="Reverse proxy is not running"
@@ -169,7 +169,7 @@ class ReverseProxyService:
 
         Returns:
             Response object with proxy status and connection details.
-        ."""
+        """
         return Response(
             success=True,
             data={
@@ -364,7 +364,7 @@ class ReverseProxyService:
 
         Args:
             conn_id: Connection identifier.
-        ."""
+        """
         if conn_id not in self.active_connections:
             return
 
@@ -405,7 +405,7 @@ class ReverseProxyService:
 
         Returns:
             Timestamp string in HH:MM:SS,mmm format.
-        ."""
+        """
         return datetime.now().strftime("%H:%M:%S,%f")[:-3]
 
     def run_blocking(self) -> None:
@@ -414,7 +414,7 @@ class ReverseProxyService:
 
         Raises:
             ReverseProxyError: If proxy fails to start.
-        ."""
+        """
         result = self.start_proxy()
         if not result.success:
             raise ReverseProxyError(result.error)

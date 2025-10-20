@@ -10,12 +10,15 @@ class TestGetFirstResponse:
         """Test function returns first non-None response."""
 
         def func1():
+            """Test helper function."""
             pass
 
         def func2():
+            """Test helper function."""
             pass
 
         def func3():
+            """Test helper function."""
             pass
 
         responses = [(func1, None), (func2, True), (func3, False)]
@@ -26,9 +29,11 @@ class TestGetFirstResponse:
         """Test function returns default when all responses are None."""
 
         def func1():
+            """Test helper function."""
             pass
 
         def func2():
+            """Test helper function."""
             pass
 
         responses = [(func1, None), (func2, None)]
@@ -39,6 +44,7 @@ class TestGetFirstResponse:
         """Test function returns None by default when all responses are None."""
 
         def func1():
+            """Test helper function."""
             pass
 
         responses = [(func1, None)]
@@ -49,9 +55,11 @@ class TestGetFirstResponse:
         """Test function returns first non-None even if it's False."""
 
         def func1():
+            """Test helper function."""
             pass
 
         def func2():
+            """Test helper function."""
             pass
 
         responses = [(func1, False), (func2, True)]
@@ -62,9 +70,11 @@ class TestGetFirstResponse:
         """Test function returns first non-None even if it's 0."""
 
         def func1():
+            """Test helper function."""
             pass
 
         def func2():
+            """Test helper function."""
             pass
 
         responses = [(func1, 0), (func2, 100)]
@@ -83,12 +93,15 @@ class TestGetFirstResponse:
         """Test function with complex return values."""
 
         def func1():
+            """Test helper function."""
             pass
 
         def func2():
+            """Test helper function."""
             pass
 
         def func3():
+            """Test helper function."""
             pass
 
         responses = [(func1, None), (func2, {"key": "value"}), (func3, [1, 2, 3])]
@@ -99,9 +112,11 @@ class TestGetFirstResponse:
         """Test function with string responses."""
 
         def func1():
+            """Test helper function."""
             pass
 
         def func2():
+            """Test helper function."""
             pass
 
         responses = [(func1, None), (func2, "response_string")]
@@ -112,9 +127,11 @@ class TestGetFirstResponse:
         """Test empty string is considered a valid (non-None) response."""
 
         def func1():
+            """Test helper function."""
             pass
 
         def func2():
+            """Test helper function."""
             pass
 
         responses = [(func1, ""), (func2, "non-empty")]

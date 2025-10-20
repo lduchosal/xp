@@ -281,6 +281,12 @@ class TestLogFileService:
 
         # Create a simple object with only module_type
         class EventTelegramMock:
+            """Mock event telegram for testing.
+
+            Attributes:
+                module_type: The module type identifier.
+            """
+
             module_type = 14
 
         event_entry.parsed_telegram = EventTelegramMock()
@@ -296,6 +302,12 @@ class TestLogFileService:
 
         # Create a simple object with only serial_number
         class SystemTelegramMock:
+            """Mock system telegram for testing.
+
+            Attributes:
+                serial_number: The device serial number.
+            """
+
             serial_number = "0012345008"
 
         system_entry.parsed_telegram = SystemTelegramMock()

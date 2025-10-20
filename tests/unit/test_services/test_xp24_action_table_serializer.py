@@ -42,7 +42,6 @@ class TestXp24MsActionTableSerializer:
 
     def test_from_telegrams_basic(self, sample_telegrams: list[str]) -> None:
         """Test basic telegram parsing."""
-
         assert sample_telegrams
         action_table = Xp24MsActionTableSerializer.from_telegrams(sample_telegrams[0])
 

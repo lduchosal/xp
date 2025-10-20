@@ -27,7 +27,24 @@ class ModuleTypeCode(Enum):
         XP2606B: 5-way push button with B&O IR (code 16).
         XP26X1: Reserved (code 17).
         XP26X2: Reserved (code 18).
-        XP230: XP230 module (code 19).
+        XP2506: 5-way push button panel with sesam Conson design (code 19).
+        XP2506A: 5-way push button panel with sesam and 38kHz IR Conson design (code 20).
+        XP2506B: 5-way push button panel with sesam and B&O IR Conson design (code 21).
+        XPX1_8: 8-way push button panel interface (code 22).
+        XP134: Junctionbox interlink (code 23).
+        XP24P: XP24P module (code 24).
+        XP28A: XP28A module (code 25).
+        XP28B: XP28B module (code 26).
+        CONTOOL: CONTOOL module (code 27).
+        XP28: XP28 module (code 28).
+        XP31LR: XP 1-channel lightdimmer (code 29).
+        XP33LR: XP 33 3-channel lightdimmer (code 30).
+        XP31CR: XP 31 1-channel dimmer (code 31).
+        XP31BC: XP 31 1-channel dimmer (code 32).
+        XP20: XP switch link module (code 33).
+        XP230: Ethernet/TCPIP interface module (code 34).
+        XP33LED: XP 3-channel LED dimmer (code 35).
+        XP31LED: XP 1-channel LED dimmer (code 36).
     """
 
     NOMOD = 0  # No module

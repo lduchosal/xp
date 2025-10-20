@@ -14,7 +14,7 @@ class TelegramChecksumService:
     """Service class for checksum operations."""
 
     def __init__(self) -> None:
-        """Initialize the checksum service"""
+        """Initialize the checksum service."""
         pass
 
     @staticmethod
@@ -22,11 +22,11 @@ class TelegramChecksumService:
         """Calculate simple XOR checksum for string data.
 
         Args:
-            data: String data to calculate checksum for
+            data: String data to calculate checksum for.
 
         Returns:
-            Response object with checksum result
-        ."""
+            Response object with checksum result.
+        """
         try:
             checksum = calculate_checksum(data)
 
@@ -45,11 +45,11 @@ class TelegramChecksumService:
         """Calculate CRC32 checksum for data.
 
         Args:
-            data: String or bytes data to calculate checksum for
+            data: String or bytes data to calculate checksum for.
 
         Returns:
-            Response object with checksum result
-        ."""
+            Response object with checksum result.
+        """
         try:
             # Convert string to bytes if needed
             if isinstance(data, str):
@@ -82,12 +82,12 @@ class TelegramChecksumService:
         """Validate data against expected simple checksum.
 
         Args:
-            data: Original data
-            expected_checksum: Expected checksum value
+            data: Original data.
+            expected_checksum: Expected checksum value.
 
         Returns:
-            Response object with validation result
-        ."""
+            Response object with validation result.
+        """
         try:
             calculated_checksum = calculate_checksum(data)
             is_valid = calculated_checksum == expected_checksum
@@ -114,11 +114,11 @@ class TelegramChecksumService:
         """Validate data against expected CRC32 checksum.
 
         Args:
-            data: Original data (string or bytes)
-            expected_checksum: Expected CRC32 checksum value
+            data: Original data (string or bytes).
+            expected_checksum: Expected CRC32 checksum value.
 
         Returns:
-            Response object with validation result
+            Response object with validation result.
         """
         try:
             # Convert string to bytes if needed

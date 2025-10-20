@@ -22,7 +22,7 @@ from xp.services.conbus.conbus_linknumber_set_service import ConbusLinknumberSet
 def set_linknumber_command(
     ctx: click.Context, serial_number: str, link_number: int
 ) -> None:
-    """Set the link number for a specific module.
+    r"""Set the link number for a specific module.
 
     Args:
         ctx: Click context object.
@@ -30,8 +30,7 @@ def set_linknumber_command(
         link_number: Link number to set (0-99).
 
     Examples:
-
-    \b
+        \b
         xp conbus linknumber set 0123450001 25
     """
     service = (
@@ -39,6 +38,11 @@ def set_linknumber_command(
     )
 
     def on_finish(response: ConbusLinknumberResponse) -> None:
+        """Handle successful completion of link number set command.
+
+        Args:
+            response: Link number response object.
+        """
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     with service:
@@ -54,15 +58,14 @@ def set_linknumber_command(
 @click.pass_context
 @connection_command()
 def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
-    """Get the current link number for a specific module.
+    r"""Get the current link number for a specific module.
 
     Args:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
 
     Examples:
-
-    \b
+        \b
         xp conbus linknumber get 0123450001
     """
     service = (
@@ -70,6 +73,11 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
     )
 
     def on_finish(response: ConbusLinknumberResponse) -> None:
+        """Handle successful completion of link number get command.
+
+        Args:
+            response: Link number response object.
+        """
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     with service:

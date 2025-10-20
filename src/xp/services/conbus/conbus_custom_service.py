@@ -33,7 +33,13 @@ class ConbusCustomService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus custom service."""
+        """Initialize the Conbus custom service.
+
+        Args:
+            telegram_service: Service for parsing telegrams.
+            cli_config: Configuration for Conbus client connection.
+            reactor: Twisted reactor for event loop.
+        """
         super().__init__(cli_config, reactor)
         self.telegram_service = telegram_service
         self.serial_number: str = ""
@@ -67,18 +73,18 @@ class ConbusCustomService(ConbusProtocol):
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Handle telegram sent event.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
@@ -113,13 +119,8 @@ class ConbusCustomService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
@@ -136,18 +137,14 @@ class ConbusCustomService(ConbusProtocol):
         finish_callback: Callable[[ConbusCustomResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Send a custom telegram to a module.
+        """Send a custom telegram to a module.
 
         Args:
-            serial_number: 10-digit module serial number
-            function_code: Function code (e.g., "02", "17")
-            data: Data code (e.g., "E2", "AA")
-            finish_callback: callback function to call when the reply is received
-            timeout_seconds: timeout in seconds
-
-        Returns:
-            ConbusCustomResponse with operation result
+            serial_number: 10-digit module serial number.
+            function_code: Function code (e.g., "02", "17").
+            data: Data code (e.g., "E2", "AA").
+            finish_callback: Callback function to call when the reply is received.
+            timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting send_custom_telegram")
         if timeout_seconds:

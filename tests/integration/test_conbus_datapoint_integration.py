@@ -26,7 +26,6 @@ class TestConbusDatapointIntegration:
 
     def test_conbus_datapoint_all_valid_serial(self):
         """Test querying all datapoints with valid serial number."""
-
         # Mock successful response
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -50,6 +49,13 @@ class TestConbusDatapointIntegration:
         def mock_query_all_datapoints(
             serial_number, finish_callback, progress_callback
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                finish_callback: Callback when finished.
+                progress_callback: Callback for progress updates.
+            """
             finish_callback(mock_response)
 
         mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
@@ -85,7 +91,6 @@ class TestConbusDatapointIntegration:
 
     def test_conbus_datapoint_all_invalid_serial(self):
         """Test querying all datapoints with invalid serial number."""
-
         # Mock service that raises error
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -110,7 +115,6 @@ class TestConbusDatapointIntegration:
 
     def test_conbus_datapoint_invalid_response(self):
         """Test handling invalid responses from the server."""
-
         # Mock service with failed response
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -127,6 +131,13 @@ class TestConbusDatapointIntegration:
         def mock_query_all_datapoints(
             serial_number, finish_callback, progress_callback
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                finish_callback: Callback when finished.
+                progress_callback: Callback for progress updates.
+            """
             finish_callback(mock_response)
 
         mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
@@ -151,7 +162,6 @@ class TestConbusDatapointIntegration:
 
     def test_conbus_datapoint_empty_datapoints(self):
         """Test handling when no datapoints are returned."""
-
         # Mock service with successful but empty response
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -168,6 +178,13 @@ class TestConbusDatapointIntegration:
         def mock_query_all_datapoints(
             serial_number, finish_callback, progress_callback
         ):
+            """Test helper function.
+
+            Args:
+                serial_number: Serial number of the module.
+                finish_callback: Callback when finished.
+                progress_callback: Callback for progress updates.
+            """
             finish_callback(mock_response)
 
         mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints

@@ -18,7 +18,7 @@ class TestHomeKitCacheService:
     """Test cases for HomeKitCacheService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.service = HomeKitCacheService(self.event_bus, enable_persistence=False)
 

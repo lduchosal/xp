@@ -48,6 +48,7 @@ from xp.services.protocol.telegram_protocol import TelegramProtocol
 # Test fixtures
 @pytest.fixture
 def mock_module():
+    """Create mock ConsonModuleConfig for testing."""
     return ConsonModuleConfig(
         name="Test Module",
         serial_number="1234567890",
@@ -59,6 +60,7 @@ def mock_module():
 
 @pytest.fixture
 def mock_accessory():
+    """Create mock HomekitAccessoryConfig for testing."""
     return HomekitAccessoryConfig(
         name="Test Accessory",
         id="test_id",
@@ -73,7 +75,7 @@ class TestHomeKitLightbulbService:
     """Test cases for HomeKitLightbulbService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.service = HomeKitLightbulbService(self.event_bus)
 
@@ -137,7 +139,7 @@ class TestHomeKitOutletService:
     """Test cases for HomeKitOutletService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.service = HomeKitOutletService(self.event_bus)
 
@@ -210,7 +212,7 @@ class TestHomeKitDimmingLightService:
     """Test cases for HomeKitDimmingLightService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.service = HomeKitDimmingLightService(self.event_bus)
 
@@ -314,7 +316,7 @@ class TestHomeKitConbusService:
     """Test cases for HomeKitConbusService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.event_bus = Mock(spec=EventBus)
         self.telegram_protocol = Mock(spec=TelegramProtocol)
         self.service = HomeKitConbusService(self.event_bus, self.telegram_protocol)
@@ -378,7 +380,7 @@ class TestHomeKitService:
     """Test cases for HomeKitService."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.cli_config = Mock(spec=ConbusClientConfig)
         self.cli_config.conbus = (
             Mock()
@@ -507,7 +509,7 @@ class TestHomekitHapServiceModuleRegistry:
     """Test cases for HomekitHapService module registry and state change handling."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         from unittest.mock import MagicMock, patch
 
         # Create mock event bus

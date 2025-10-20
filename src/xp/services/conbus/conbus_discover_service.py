@@ -29,7 +29,12 @@ class ConbusDiscoverService(ConbusProtocol):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus discover service."""
+        """Initialize the Conbus discover service.
+
+        Args:
+            cli_config: Conbus client configuration.
+            reactor: Twisted reactor instance.
+        """
         super().__init__(cli_config, reactor)
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.finish_callback: Optional[Callable[[ConbusDiscoverResponse], None]] = None
@@ -51,13 +56,8 @@ class ConbusDiscoverService(ConbusProtocol):
     def telegram_sent(self, telegram_sent: str) -> None:
         """Handle telegram sent event.
 
-
-
         Args:
-
             telegram_sent: The telegram that was sent.
-
-
         """
         self.logger.debug(f"Telegram sent: {telegram_sent}")
         self.discovered_device_result.sent_telegram = telegram_sent
@@ -65,13 +65,8 @@ class ConbusDiscoverService(ConbusProtocol):
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-
-
         Args:
-
             telegram_received: The telegram received event.
-
-
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.discovered_device_result.received_telegrams:
@@ -89,6 +84,11 @@ class ConbusDiscoverService(ConbusProtocol):
             self.logger.debug("Not a discover response")
 
     def discovered_device(self, serial_number: str) -> None:
+        """Handle discovered device event.
+
+        Args:
+            serial_number: Serial number of the discovered device.
+        """
         self.logger.info("discovered_device: %s", serial_number)
         if not self.discovered_device_result.discovered_devices:
             self.discovered_device_result.discovered_devices = []
@@ -97,6 +97,11 @@ class ConbusDiscoverService(ConbusProtocol):
             self.progress_callback(serial_number)
 
     def timeout(self) -> bool:
+        """Handle timeout event to stop discovery.
+
+        Returns:
+            False to stop the reactor.
+        """
         self.logger.info("Discovery stopped after: %ss", self.timeout_seconds)
         self.discovered_device_result.success = True
         if self.finish_callback:
@@ -106,13 +111,8 @@ class ConbusDiscoverService(ConbusProtocol):
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
-
-
         Args:
-
             message: Failure message.
-
-
         """
         self.logger.debug(f"Failed: {message}")
         self.discovered_device_result.success = False
@@ -126,7 +126,13 @@ class ConbusDiscoverService(ConbusProtocol):
         finish_callback: Callable[[ConbusDiscoverResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Run reactor in dedicated thread with its own event loop."""
+        """Run reactor in dedicated thread with its own event loop.
+
+        Args:
+            progress_callback: Callback for each discovered device.
+            finish_callback: Callback when discovery completes.
+            timeout_seconds: Optional timeout in seconds.
+        """
         self.logger.info("Starting discovery")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds

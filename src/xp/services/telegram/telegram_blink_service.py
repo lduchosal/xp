@@ -31,19 +31,17 @@ class TelegramBlinkService:
 
     @staticmethod
     def generate_blink_telegram(serial_number: str, on_or_off: str) -> str:
-        """
-        Generate a telegram to start blinking a module's LED.
+        """Generate a telegram to start blinking a module's LED.
 
         Args:
-            serial_number: The 10-digit module serial number
+            serial_number: The 10-digit module serial number.
+            on_or_off: The action to perform ('on' for blink, 'off' for unblink).
 
         Returns:
-            Formatted telegram string (e.g., "<S0012345008F05D00FN>")
+            Formatted telegram string (e.g., "<S0012345008F05D00FN>").
 
         Raises:
-            BlinkError: If parameters are invalid
-            :param serial_number:
-            :param on_or_off:
+            BlinkError: If parameters are invalid.
         """
         # Validate serial number
         if not serial_number or len(serial_number) != 10:
@@ -68,18 +66,14 @@ class TelegramBlinkService:
         return telegram
 
     def create_blink_telegram_object(self, serial_number: str) -> SystemTelegram:
-        """
-        Create a SystemTelegram object for blinking LED.
+        """Create a SystemTelegram object for blinking LED.
 
         Args:
-            serial_number: The 10-digit module serial number
+            serial_number: The 10-digit module serial number.
 
         Returns:
-            SystemTelegram object representing the blink command
-
-        Raises:
-            BlinkError: If parameters are invalid
-        ."""
+            SystemTelegram object representing the blink command.
+        """
         raw_telegram = self.generate_blink_telegram(serial_number, "on")
 
         # Extract checksum from the generated telegram
@@ -96,18 +90,14 @@ class TelegramBlinkService:
         return telegram
 
     def create_unblink_telegram_object(self, serial_number: str) -> SystemTelegram:
-        """
-        Create a SystemTelegram object for unblink LED.
+        """Create a SystemTelegram object for unblink LED.
 
         Args:
-            serial_number: The 10-digit module serial number
+            serial_number: The 10-digit module serial number.
 
         Returns:
-            SystemTelegram object representing the unblink command
-
-        Raises:
-            BlinkError: If parameters are invalid
-        ."""
+            SystemTelegram object representing the unblink command.
+        """
         raw_telegram = self.generate_blink_telegram(serial_number, "off")
 
         # Extract checksum from the generated telegram
@@ -125,26 +115,24 @@ class TelegramBlinkService:
 
     @staticmethod
     def is_ack_response(reply_telegram: ReplyTelegram) -> bool:
-        """
-        Check if a reply telegram is an ACK response.
+        """Check if a reply telegram is an ACK response.
 
         Args:
-            reply_telegram: Reply telegram to check
+            reply_telegram: Reply telegram to check.
 
         Returns:
-            True if this is an ACK response (F18D), False otherwise
-        ."""
+            True if this is an ACK response (F18D), False otherwise.
+        """
         return reply_telegram.system_function == SystemFunction.ACK
 
     @staticmethod
     def is_nak_response(reply_telegram: ReplyTelegram) -> bool:
-        """
-        Check if a reply telegram is a NAK response.
+        """Check if a reply telegram is a NAK response.
 
         Args:
-            reply_telegram: Reply telegram to check
+            reply_telegram: Reply telegram to check.
 
         Returns:
-            True if this is a NAK response (F19D), False otherwise
-        ."""
+            True if this is a NAK response (F19D), False otherwise.
+        """
         return reply_telegram.system_function == SystemFunction.NAK

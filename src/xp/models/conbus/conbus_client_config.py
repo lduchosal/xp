@@ -40,7 +40,6 @@ class ConbusClientConfig(BaseModel):
         Returns:
             ConbusClientConfig instance loaded from file or default config.
         """
-
         logger = logging.getLogger(__name__)
         try:
             with Path(file_path).open("r") as file:

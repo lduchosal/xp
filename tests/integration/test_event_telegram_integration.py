@@ -11,11 +11,11 @@ class TestEventTelegramIntegration:
     """Integration tests for telegram command functionality."""
 
     def setup_method(self):
-        """Setup test fixtures."""
+        """Set up test fixtures."""
         self.runner = CliRunner()
 
     def test_parse_event_telegram_command_success(self):
-        """Test successful telegram parsing via CLI."""
+        """Test that successful telegram parsing via CLI works."""
         result = self.runner.invoke(cli, ["telegram", "parse", "<E14L00I02MAK>"])
 
         assert result.exit_code == 0

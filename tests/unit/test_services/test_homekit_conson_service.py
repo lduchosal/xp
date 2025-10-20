@@ -10,6 +10,7 @@ from xp.services.homekit.homekit_conson_validator import ConsonConfigValidator
 
 
 class TestConsonConfigValidator:
+    """Test cases for ConsonConfigValidator."""
 
     def test_validate_unique_names_success(self):
         """Test validation passes when all module names are unique."""

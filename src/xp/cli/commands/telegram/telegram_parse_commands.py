@@ -17,14 +17,13 @@ from xp.services.telegram.telegram_service import TelegramParsingError, Telegram
 @click.argument("telegram_string")
 @handle_service_errors(TelegramParsingError)
 def parse_any_telegram(telegram_string: str) -> None:
-    """Auto-detect and parse any type of telegram (event, system, reply, or discover).
+    r"""Auto-detect and parse any type of telegram (event, system, reply, or discover).
 
     Args:
         telegram_string: Telegram string to parse.
 
     Examples:
-
-    \b
+        \b
         xp telegram parse "<E14L00I02MAK>"
         xp telegram parse "<S0020012521F02D18FN>"
         xp telegram parse "<R0020012521F02D18+26,0§CIL>"
@@ -48,14 +47,13 @@ def parse_any_telegram(telegram_string: str) -> None:
 @click.argument("telegram_string")
 @handle_service_errors(TelegramParsingError)
 def validate_telegram(telegram_string: str) -> None:
-    """Validate the format of an event telegram.
+    r"""Validate the format of an event telegram.
 
     Args:
         telegram_string: Telegram string to validate.
 
     Examples:
-
-    \b
+        \b
         xp telegram validate "<E14L00I02MAK>"
     """
     service = TelegramService()

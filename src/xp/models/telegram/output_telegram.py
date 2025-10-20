@@ -17,11 +17,18 @@ from xp.models.telegram.telegram import Telegram
 
 @dataclass
 class OutputTelegram(Telegram):
-    """
-    Represents a parsed XP output telegram from the console bus.
+    """Represent a parsed XP output telegram from the console bus.
 
     Format: <S{serial_number}F27D{input:02d}{action}{checksum}>
     Examples: <S0012345008F27D00AAFN>
+
+    Attributes:
+        serial_number: Serial number of the device.
+        output_number: Output number (0-3 for XP24, 0-2 for XP33, 0 for XP31).
+        action_type: Type of action to perform.
+        system_function: System function code.
+        action_description: Human-readable action description.
+        input_description: Human-readable input description.
     """
 
     serial_number: str = ""
@@ -32,12 +39,17 @@ class OutputTelegram(Telegram):
     system_function: SystemFunction = SystemFunction.ACTION
 
     def __post_init__(self) -> None:
+        """Initialize timestamp if not provided."""
         if self.timestamp is None:
             self.timestamp = datetime.now()
 
     @property
     def action_description(self) -> str:
-        """Get human-readable action description"""
+        """Get human-readable action description.
+
+        Returns:
+            Human-readable description of the action.
+        """
         descriptions = {
             ActionType.OFF_PRESS: "Press (Make)",
             ActionType.ON_RELEASE: "Release (Break)",
@@ -50,11 +62,19 @@ class OutputTelegram(Telegram):
 
     @property
     def input_description(self) -> str:
-        """Get human-readable input description"""
+        """Get human-readable input description.
+
+        Returns:
+            Description of the input/output number.
+        """
         return f"Input {self.output_number}"
 
     def to_dict(self) -> dict:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization.
+
+        Returns:
+            Dictionary representation of the output telegram.
+        """
         return {
             "serial_number": self.serial_number,
             "system_function": self.system_function,
@@ -71,7 +91,11 @@ class OutputTelegram(Telegram):
         }
 
     def __str__(self) -> str:
-        """Human-readable string representation"""
+        """Return human-readable string representation.
+
+        Returns:
+            Formatted string representation.
+        """
         return (
             f"XP Output: {self.action_description} "
             f"on {self.input_description} "

@@ -16,14 +16,13 @@ from xp.services.telegram.telegram_blink_service import BlinkError, TelegramBlin
 @click.argument("serial_number", type=SERIAL)
 @handle_service_errors(BlinkError)
 def blink_on(serial_number: str) -> None:
-    """Generate a telegram to start blinking module LED.
+    r"""Generate a telegram to start blinking module LED.
 
     Args:
         serial_number: 10-digit module serial number.
 
     Examples:
-
-    \b
+        \b
         xp blink on 0012345008
         xp blink on 0012345008
     """
@@ -51,14 +50,13 @@ def blink_on(serial_number: str) -> None:
 @click.argument("serial_number", type=SERIAL)
 @handle_service_errors(BlinkError)
 def blink_off(serial_number: str) -> None:
-    """Generate a telegram to stop blinking module LED.
+    r"""Generate a telegram to stop blinking module LED.
 
     Args:
         serial_number: 10-digit module serial number.
 
     Examples:
-
-    \b
+        \b
         xp blink off 0012345011
     """
     service = TelegramBlinkService()

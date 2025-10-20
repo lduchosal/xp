@@ -19,7 +19,7 @@ class TestAddTreeCommand:
 
         @cli.command()
         def subcommand():
-            """A subcommand."""
+            """Provide a test subcommand."""
             pass
 
         tree_cmd = add_tree_command(cli, "tree")
@@ -57,7 +57,7 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Main CLI."""
+            """Provide main CLI."""
             pass
 
         @cli.group()
@@ -139,7 +139,7 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Main CLI."""
+            """Provide main CLI."""
             pass
 
         @cli.group()
@@ -171,7 +171,7 @@ class TestAddTreeCommand:
 
         @click.group()
         def cli():
-            """Main CLI."""
+            """Provide main CLI."""
             pass
 
         @cli.group()

@@ -22,17 +22,19 @@ from xp.services.telegram.telegram_checksum_service import TelegramChecksumServi
 )
 @handle_service_errors(Exception)
 def calculate_checksum(data: str, algorithm: str) -> None:
-    """Calculate checksum for given data string.
+    r"""Calculate checksum for given data string.
 
     Args:
         data: Data string to calculate checksum for.
         algorithm: Checksum algorithm to use.
 
     Examples:
-
-    \b
+        \b
         xp checksum calculate "E14L00I02M"
         xp checksum calculate "E14L00I02M" --algorithm crc32
+
+    Raises:
+        SystemExit: If checksum calculation fails.
     """
     service = TelegramChecksumService()
     formatter = OutputFormatter(True)
@@ -68,7 +70,7 @@ def calculate_checksum(data: str, algorithm: str) -> None:
 )
 @handle_service_errors(Exception)
 def validate_checksum(data: str, expected_checksum: str, algorithm: str) -> None:
-    """Validate data against expected checksum.
+    r"""Validate data against expected checksum.
 
     Args:
         data: Data string to validate.
@@ -76,10 +78,12 @@ def validate_checksum(data: str, expected_checksum: str, algorithm: str) -> None
         algorithm: Checksum algorithm to use.
 
     Examples:
-
-    \b
+        \b
         xp checksum validate "E14L00I02M" "AK"
         xp checksum validate "E14L00I02M" "ABCDABCD" --algorithm crc32
+
+    Raises:
+        SystemExit: If checksum validation fails.
     """
     service = TelegramChecksumService()
     formatter = OutputFormatter(True)

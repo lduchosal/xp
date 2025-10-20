@@ -37,6 +37,14 @@ class TestConbusRawIntegration:
         def mock_send_raw_telegram(
             raw_input, progress_callback, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                raw_input: Raw telegram input.
+                progress_callback: Callback for progress updates.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
@@ -78,6 +86,14 @@ class TestConbusRawIntegration:
         def mock_send_raw_telegram(
             raw_input, progress_callback, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                raw_input: Raw telegram input.
+                progress_callback: Callback for progress updates.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             # Simulate progress callbacks for each received telegram
             if mock_response.received_telegrams:
                 for telegram in mock_response.received_telegrams:
@@ -115,6 +131,14 @@ class TestConbusRawIntegration:
         def mock_send_raw_telegram(
             raw_input, progress_callback, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                raw_input: Raw telegram input.
+                progress_callback: Callback for progress updates.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
@@ -151,6 +175,14 @@ class TestConbusRawIntegration:
         def mock_send_raw_telegram(
             raw_input, progress_callback, finish_callback, timeout_seconds=None
         ):
+            """Test helper function.
+
+            Args:
+                raw_input: Raw telegram input.
+                progress_callback: Callback for progress updates.
+                finish_callback: Callback when finished.
+                timeout_seconds: Timeout in seconds.
+            """
             finish_callback(mock_response)
 
         mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram

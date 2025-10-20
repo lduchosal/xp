@@ -70,7 +70,7 @@ class ConbusAutoreportSetService(ConbusProtocol):
 
         Args:
             telegram_sent: The telegram that was sent.
-        ."""
+        """
         self.logger.debug("Autoreport reply telegram sent %s", telegram_sent)
         self.service_response.sent_telegram = telegram_sent
 
@@ -79,7 +79,7 @@ class ConbusAutoreportSetService(ConbusProtocol):
 
         Args:
             telegram_received: The telegram received event.
-        ."""
+        """
         self.logger.debug(f"Telegram received: {telegram_received}")
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
@@ -109,7 +109,7 @@ class ConbusAutoreportSetService(ConbusProtocol):
 
         Args:
             message: Failure message.
-        ."""
+        """
         self.logger.debug(f"Failed with message: {message}")
         self.service_response.success = False
         self.service_response.error = message

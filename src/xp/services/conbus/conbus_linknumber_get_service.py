@@ -29,7 +29,13 @@ class ConbusLinknumberGetService(ConbusDatapointService):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize the Conbus linknumber get service."""
+        """Initialize the Conbus linknumber get service.
+
+        Args:
+            telegram_service: Service for parsing telegrams.
+            cli_config: Configuration for Conbus client connection.
+            reactor: Twisted reactor for event loop.
+        """
         super().__init__(telegram_service, cli_config, reactor)
         self.service_callback: Optional[Callable[[ConbusLinknumberResponse], None]] = (
             None
@@ -41,7 +47,11 @@ class ConbusLinknumberGetService(ConbusDatapointService):
     def finish_service_callback(
         self, datapoint_response: ConbusDatapointResponse
     ) -> None:
+        """Process datapoint response and extract link number.
 
+        Args:
+            datapoint_response: The datapoint response from the module.
+        """
         self.logger.debug("Parsing datapoint response")
         link_number_value = 0
         if datapoint_response.success and datapoint_response.datapoint_telegram:
@@ -67,13 +77,12 @@ class ConbusLinknumberGetService(ConbusDatapointService):
         finish_callback: Callable[[ConbusLinknumberResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """
-        Get the current link number for a specific module.
+        """Get the current link number for a specific module.
 
         Args:
-            serial_number: 10-digit module serial number
-            finish_callback: callback function to call when the link number is received
-            timeout_seconds: timeout in seconds
+            serial_number: 10-digit module serial number.
+            finish_callback: Callback function to call when the link number is received.
+            timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting get_linknumber")
         if timeout_seconds:
