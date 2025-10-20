@@ -20,17 +20,30 @@ from xp.utils import calculate_checksum
 
 
 class TelegramProtocol(protocol.Protocol):
-    """
-    Twisted protocol for XP telegram communication with built-in debouncing.
+    """Twisted protocol for XP telegram communication with built-in debouncing.
 
     Automatically deduplicates identical telegram frames sent within a
     configurable time window (default 50ms).
+
+    Attributes:
+        buffer: Buffer for incoming telegram data.
+        event_bus: Event bus for dispatching protocol events.
+        debounce_ms: Debounce time window in milliseconds.
+        logger: Logger instance for this protocol.
+        send_queue: Dictionary tracking frame send timestamps.
+        timer_handle: Handle for cleanup timer.
     """
 
     buffer: bytes
     event_bus: EventBus
 
     def __init__(self, event_bus: EventBus, debounce_ms: int = 50) -> None:
+        """Initialize TelegramProtocol.
+
+        Args:
+            event_bus: Event bus for dispatching protocol events.
+            debounce_ms: Debounce time window in milliseconds.
+        """
         self.buffer = b""
         self.event_bus = event_bus
         self.debounce_ms = debounce_ms
@@ -41,6 +54,7 @@ class TelegramProtocol(protocol.Protocol):
         self.timer_handle: Optional[asyncio.TimerHandle] = None
 
     def connectionMade(self) -> None:
+        """Handle connection established event."""
         self.logger.debug("connectionMade")
         try:
             self.logger.debug("Scheduling async connection handler")
@@ -50,7 +64,11 @@ class TelegramProtocol(protocol.Protocol):
             self.logger.error(f"Error scheduling async handler: {e}", exc_info=True)
 
     def _on_task_done(self, task: asyncio.Task) -> None:
-        """Callback when async task completes."""
+        """Handle async task completion.
+
+        Args:
+            task: Completed async task.
+        """
         try:
             if task.exception():
                 self.logger.error(
@@ -74,7 +92,11 @@ class TelegramProtocol(protocol.Protocol):
             )
 
     def dataReceived(self, data: bytes) -> None:
-        """Sync callback from Twisted - delegates to async implementation."""
+        """Handle received data from Twisted.
+
+        Args:
+            data: Raw bytes received from connection.
+        """
         task = asyncio.create_task(self._async_dataReceived(data))
         task.add_done_callback(self._on_task_done)
 
@@ -142,7 +164,11 @@ class TelegramProtocol(protocol.Protocol):
             )
 
     def sendFrame(self, data: bytes) -> None:
-        """Sync callback from Twisted - delegates to async implementation."""
+        """Send telegram frame.
+
+        Args:
+            data: Raw telegram payload (without checksum/framing).
+        """
         task = asyncio.create_task(self._async_sendFrame(data))
         task.add_done_callback(self._on_task_done)
 

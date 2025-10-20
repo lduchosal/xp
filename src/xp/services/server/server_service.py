@@ -46,7 +46,14 @@ class ServerService:
         config_path: str = "server.yml",
         port: int = 10001,
     ):
-        """Initialize the Conbus server service."""
+        """Initialize the Conbus server service.
+
+        Args:
+            telegram_service: Service for parsing system telegrams.
+            discover_service: Service for handling discover requests.
+            config_path: Path to the server configuration file.
+            port: TCP port to listen on.
+        """
         self.telegram_service = telegram_service
         self.discover_service = discover_service
         self.config_path = config_path
@@ -143,7 +150,11 @@ class ServerService:
                 )
 
     def start_server(self) -> None:
-        """Start the TCP server on port 10001."""
+        """Start the TCP server on port 10001.
+
+        Raises:
+            ServerError: If server is already running or fails to start.
+        """
         if self.is_running:
             raise ServerError("Server is already running")
 
@@ -290,7 +301,11 @@ class ServerService:
         return responses
 
     def get_server_status(self) -> dict:
-        """Get current server status."""
+        """Get current server status.
+
+        Returns:
+            Dictionary containing server status information.
+        """
         return {
             "running": self.is_running,
             "port": self.port,

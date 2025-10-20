@@ -22,6 +22,7 @@ class ModuleTypeNotFoundError(Exception):
 class ModuleTypeService:
     """
     Service for managing module type operations.
+
     Provides lookup, validation, and search functionality for XP system module types.
     """
 
@@ -227,7 +228,6 @@ class ModuleTypeService:
     def _format_all_modules() -> str:
         """Format all modules in a simple list.
 
-
         Returns:
             Formatted string with all modules.
         """
@@ -242,7 +242,6 @@ class ModuleTypeService:
     @staticmethod
     def _format_modules_by_category() -> str:
         """Format modules grouped by category.
-
 
         Returns:
             Formatted string with modules grouped by category.

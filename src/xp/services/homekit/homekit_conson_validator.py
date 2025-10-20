@@ -23,7 +23,11 @@ class ConsonConfigValidator:
         self.config = config
 
     def validate_unique_names(self) -> List[str]:
-        """Validate that all module names are unique."""
+        """Validate that all module names are unique.
+
+        Returns:
+            List of validation error messages.
+        """
         names: Set[str] = set()
         errors = []
 
@@ -35,7 +39,11 @@ class ConsonConfigValidator:
         return errors
 
     def validate_unique_serial_numbers(self) -> List[str]:
-        """Validate that all serial numbers are unique."""
+        """Validate that all serial numbers are unique.
+
+        Returns:
+            List of validation error messages.
+        """
         serials: Set[str] = set()
         errors = []
 
@@ -47,7 +55,11 @@ class ConsonConfigValidator:
         return errors
 
     def validate_module_type_codes(self) -> List[str]:
-        """Validate module type code ranges."""
+        """Validate module type code ranges.
+
+        Returns:
+            List of validation error messages.
+        """
         errors = [
             f"Invalid module_type_code {module.module_type_code} for module {module.name}. Must be between 1 and 255."
             for module in self.config.root
@@ -57,7 +69,11 @@ class ConsonConfigValidator:
         return errors
 
     def validate_network_config(self) -> List[str]:
-        """Validate IP/port configuration."""
+        """Validate IP/port configuration.
+
+        Returns:
+            List of validation error messages.
+        """
         errors = [
             f"Invalid conbus_port {module.conbus_port} for module {module.name}. Must be between 1 and 65535."
             for module in self.config.root
@@ -67,7 +83,11 @@ class ConsonConfigValidator:
         return errors
 
     def validate_all(self) -> List[str]:
-        """Run all validations and return combined errors."""
+        """Run all validations and return combined errors.
+
+        Returns:
+            List of all validation error messages.
+        """
         all_errors = []
         all_errors.extend(self.validate_unique_names())
         all_errors.extend(self.validate_unique_serial_numbers())
@@ -76,12 +96,26 @@ class ConsonConfigValidator:
         return all_errors
 
     def get_module_by_serial(self, serial_number: str) -> ConsonModuleConfig:
-        """Get module configuration by serial number."""
+        """Get module configuration by serial number.
+
+        Args:
+            serial_number: Serial number of the module to find.
+
+        Returns:
+            Module configuration for the specified serial number.
+
+        Raises:
+            ValueError: If module with serial number is not found.
+        """
         for module in self.config.root:
             if module.serial_number == serial_number:
                 return module
         raise ValueError(f"Module with serial number {serial_number} not found")
 
     def get_all_serial_numbers(self) -> Set[str]:
-        """Get all serial numbers from the configuration."""
+        """Get all serial numbers from the configuration.
+
+        Returns:
+            Set of all serial numbers in the configuration.
+        """
         return {module.serial_number for module in self.config.root}

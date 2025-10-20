@@ -228,7 +228,7 @@ class TestModuleIntegration:
         result = self.runner.invoke(cli, ["module", "--help"])
 
         assert result.exit_code == 0
-        assert "Module type operations" in result.output
+        assert "module type operations" in result.output
         assert "info" in result.output
         assert "list" in result.output
         assert "search" in result.output

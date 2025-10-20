@@ -86,8 +86,6 @@ def stop_server() -> None:
         \b
         xp server stop
     """
-    global _server_instance
-
     try:
         if _server_instance is None or not _server_instance.is_running:
             ServerErrorHandler.handle_server_not_running_error()
@@ -115,7 +113,6 @@ def server_status() -> None:
     Raises:
         SystemExit: If status cannot be retrieved.
     """
-    global _server_instance
     formatter = OutputFormatter(True)
 
     try:

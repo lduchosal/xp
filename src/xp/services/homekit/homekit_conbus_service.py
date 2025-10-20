@@ -80,6 +80,11 @@ class HomeKitConbusService:
         self.telegram_protocol.sendFrame(telegram.encode())
 
     def handle_send_action_event(self, event: SendActionEvent) -> None:
+        """Handle send action event.
+
+        Args:
+            event: Send action event with action data.
+        """
         self.logger.debug(f"send_action_event {event}")
 
         action_value = (

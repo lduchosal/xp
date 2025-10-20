@@ -31,7 +31,7 @@ def send_raw_telegrams(ctx: Context, raw_telegrams: str) -> None:
         \b
         xp conbus raw '<S2113010000F02D12>'
         xp conbus raw '<S2113010000F02D12><S2113010001F02D12><S2113010002F02D12>'
-        xp conbus raw '<S0012345003F02D12FM><S0012345004F02D12FD><S0012345005F02D12FI><S0012345006F02D12FL><S0012345007F02D12FK><S0012345008F02D12FJ><S0012345009F02D12FF>'
+        xp conbus raw '<S0012345003F02D12FM>...<S0012345009F02D12FF>'
     """
     service: ConbusRawService = (
         ctx.obj.get("container").get_container().resolve(ConbusRawService)

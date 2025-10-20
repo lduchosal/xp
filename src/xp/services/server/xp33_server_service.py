@@ -29,7 +29,12 @@ class XP33ServerService(BaseServerService):
     """
 
     def __init__(self, serial_number: str, variant: str = "XP33LR"):
-        """Initialize XP33 server service."""
+        """Initialize XP33 server service.
+
+        Args:
+            serial_number: The device serial number.
+            variant: Device variant (XP33, XP33LR, or XP33LED).
+        """
         super().__init__(serial_number)
         self.variant = variant  # XP33 or XP33LR or XP33LED
         self.device_type = "XP33"
@@ -82,7 +87,12 @@ class XP33ServerService(BaseServerService):
             DataPointType.MODULE_STATE: "OFF",
             DataPointType.MODULE_OPERATING_HOURS: "00:000[H],01:000[H],02:000[H]",
         }
-        data_part = f"R{self.serial_number}F02{datapoint_type.value}{self.module_type_code}{datapoint_values.get(datapoint_type)}"
+        data_part = (
+            f"R{self.serial_number}"
+            f"F02{datapoint_type.value}"
+            f"{self.module_type_code}"
+            f"{datapoint_values.get(datapoint_type)}"
+        )
         checksum = calculate_checksum(data_part)
         telegram = f"<{data_part}{checksum}>"
 
@@ -92,7 +102,15 @@ class XP33ServerService(BaseServerService):
         return telegram
 
     def set_channel_dimming(self, channel: int, level: int) -> bool:
-        """Set individual channel dimming level."""
+        """Set individual channel dimming level.
+
+        Args:
+            channel: Channel number (1-3).
+            level: Dimming level (0-100 percent).
+
+        Returns:
+            True if channel was set successfully, False otherwise.
+        """
         if 1 <= channel <= 3 and 0 <= level <= 100:
             self.channel_states[channel - 1] = level
             self.logger.info(f"XP33 channel {channel} set to {level}%")
@@ -100,7 +118,14 @@ class XP33ServerService(BaseServerService):
         return False
 
     def activate_scene(self, scene: int) -> bool:
-        """Activate a pre-programmed scene."""
+        """Activate a pre-programmed scene.
+
+        Args:
+            scene: Scene number (1-4).
+
+        Returns:
+            True if scene was activated successfully, False otherwise.
+        """
         if scene in self.scenes:
             self.channel_states = self.scenes[scene].copy()
             self.logger.info(f"XP33 scene {scene} activated: {self.channel_states}")
@@ -108,7 +133,11 @@ class XP33ServerService(BaseServerService):
         return False
 
     def get_device_info(self) -> Dict:
-        """Get XP33 device information."""
+        """Get XP33 device information.
+
+        Returns:
+            Dictionary containing device information.
+        """
         return {
             "serial_number": self.serial_number,
             "device_type": self.device_type,
@@ -123,7 +152,11 @@ class XP33ServerService(BaseServerService):
         }
 
     def get_technical_specs(self) -> Dict:
-        """Get technical specifications."""
+        """Get technical specifications.
+
+        Returns:
+            Dictionary containing technical specifications.
+        """
         if self.variant == "XP33LED":
             return {
                 "power_per_channel": "100VA",

@@ -23,7 +23,11 @@ class BaseServerService(ABC):
     """
 
     def __init__(self, serial_number: str):
-        """Initialize base server service."""
+        """Initialize base server service.
+
+        Args:
+            serial_number: The device serial number.
+        """
         self.serial_number = serial_number
         self.logger = logging.getLogger(__name__)
 
@@ -40,7 +44,14 @@ class BaseServerService(ABC):
     def generate_datapoint_type_response(
         self, datapoint_type: DataPointType
     ) -> Optional[str]:
-        """Generate datapoint_type response telegram."""
+        """Generate datapoint_type response telegram.
+
+        Args:
+            datapoint_type: The type of datapoint to query.
+
+        Returns:
+            The response telegram string, or None if generation fails.
+        """
         datapoint_values = {
             DataPointType.TEMPERATURE: self.temperature,
             DataPointType.MODULE_TYPE_CODE: f"{self.module_type_code:02X}",
@@ -62,23 +73,46 @@ class BaseServerService(ABC):
         return telegram
 
     def _check_request_for_device(self, request: SystemTelegram) -> bool:
-        """Check if request is for this device (including broadcast)."""
+        """Check if request is for this device (including broadcast).
+
+        Args:
+            request: The system telegram request to check.
+
+        Returns:
+            True if request is for this device or broadcast, False otherwise.
+        """
         return request.serial_number in (self.serial_number, "0000000000")
 
     @staticmethod
     def _build_response_telegram(data_part: str) -> str:
-        """Build a complete response telegram with checksum."""
+        """Build a complete response telegram with checksum.
+
+        Args:
+            data_part: The data part of the telegram without checksum.
+
+        Returns:
+            The complete telegram with checksum enclosed in angle brackets.
+        """
         checksum = calculate_checksum(data_part)
         return f"<{data_part}{checksum}>"
 
     def _log_response(self, response_type: str, telegram: str) -> None:
-        """Log response generation."""
+        """Log response generation.
+
+        Args:
+            response_type: The type of response being generated.
+            telegram: The telegram string being logged.
+        """
         self.logger.debug(
             f"Generated {self.device_type} {response_type} response: {telegram}"
         )
 
     def generate_discover_response(self) -> str:
-        """Generate discover response telegram."""
+        """Generate discover response telegram.
+
+        Returns:
+            The discover response telegram string.
+        """
         data_part = f"R{self.serial_number}F01D"
         telegram = self._build_response_telegram(data_part)
         self._log_response("discover", telegram)
@@ -87,7 +121,15 @@ class BaseServerService(ABC):
     def set_link_number(
         self, request: SystemTelegram, new_link_number: int
     ) -> Optional[str]:
-        """Set link number and generate ACK response."""
+        """Set link number and generate ACK response.
+
+        Args:
+            request: The system telegram request.
+            new_link_number: The new link number to set.
+
+        Returns:
+            The ACK response telegram string, or None if request is invalid.
+        """
         if (
             request.system_function == SystemFunction.WRITE_CONFIG
             and request.datapoint_type == DataPointType.LINK_NUMBER
@@ -105,7 +147,14 @@ class BaseServerService(ABC):
         return None
 
     def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
-        """Template method for processing system telegrams."""
+        """Template method for processing system telegrams.
+
+        Args:
+            request: The system telegram request to process.
+
+        Returns:
+            The response telegram string, or None if request cannot be handled.
+        """
         # Check if request is for this device
         if not self._check_request_for_device(request):
             return None
@@ -127,7 +176,14 @@ class BaseServerService(ABC):
         return None
 
     def _handle_return_data_request(self, request: SystemTelegram) -> Optional[str]:
-        """Handle RETURN_DATA requests - can be overridden by subclasses."""
+        """Handle RETURN_DATA requests - can be overridden by subclasses.
+
+        Args:
+            request: The system telegram request.
+
+        Returns:
+            The response telegram string, or None if request cannot be handled.
+        """
         self.logger.debug(
             f"_handle_return_data_request {self.device_type} request: {request}"
         )
@@ -140,27 +196,59 @@ class BaseServerService(ABC):
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Override in subclasses for device-specific data requests."""
+        """Override in subclasses for device-specific data requests.
+
+        Args:
+            request: The system telegram request.
+
+        Returns:
+            The response telegram string, or None if request cannot be handled.
+        """
         return None
 
     def _handle_write_config_request(self, request: SystemTelegram) -> Optional[str]:
-        """Handle WRITE_CONFIG requests."""
+        """Handle WRITE_CONFIG requests.
+
+        Args:
+            request: The system telegram request.
+
+        Returns:
+            The response telegram string, or None if request cannot be handled.
+        """
         if request.datapoint_type == DataPointType.LINK_NUMBER:
             return self.set_link_number(request, 1)  # Default implementation
 
         return self._handle_device_specific_config_request()
 
     def _handle_action_request(self, request: SystemTelegram) -> Optional[str]:
-        """Handle ACTION requests."""
+        """Handle ACTION requests.
+
+        Args:
+            request: The system telegram request.
+
+        Returns:
+            The response telegram string, or None if request cannot be handled.
+        """
         return self._handle_device_specific_action_request(request)
 
     def _handle_device_specific_action_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Override in subclasses for device-specific data requests."""
+        """Override in subclasses for device-specific data requests.
+
+        Args:
+            request: The system telegram request.
+
+        Returns:
+            The response telegram string, or None if request cannot be handled.
+        """
         return None
 
     @staticmethod
     def _handle_device_specific_config_request() -> Optional[str]:
-        """Override in subclasses for device-specific config requests."""
+        """Override in subclasses for device-specific config requests.
+
+        Returns:
+            The response telegram string, or None if request cannot be handled.
+        """
         return None

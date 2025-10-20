@@ -28,6 +28,17 @@ class ReverseProxyService:
     Accepts client connections on port 10001 and forwards all telegrams
     to the target server configured in cli.yml. Monitors and prints all
     bidirectional traffic with timestamps.
+
+    Attributes:
+        logger: Logger instance for the service.
+        listen_port: Port to listen on for client connections.
+        server_socket: Main server socket for accepting connections.
+        is_running: Flag indicating if proxy is running.
+        active_connections: Dictionary of active connection information.
+        connection_counter: Counter for connection IDs.
+        cli_config: Conbus client configuration.
+        target_ip: Target server IP address.
+        target_port: Target server port number.
     """
 
     def __init__(
@@ -57,7 +68,6 @@ class ReverseProxyService:
     def target_ip(self) -> str:
         """Get target server IP.
 
-
         Returns:
             Target server IP address.
         """
@@ -67,7 +77,6 @@ class ReverseProxyService:
     def target_port(self) -> int:
         """Get target server port.
 
-
         Returns:
             Target server port number.
         """
@@ -75,7 +84,6 @@ class ReverseProxyService:
 
     def start_proxy(self) -> Response:
         """Start the reverse proxy server.
-
 
         Returns:
             Response object with success status and proxy details.
@@ -133,7 +141,6 @@ class ReverseProxyService:
     def stop_proxy(self) -> Response:
         """Stop the reverse proxy server.
 
-
         Returns:
             Response object with success status.
         """
@@ -165,7 +172,6 @@ class ReverseProxyService:
 
     def get_status(self) -> Response:
         """Get current proxy status and active connections.
-
 
         Returns:
             Response object with proxy status and connection details.
@@ -392,7 +398,10 @@ class ReverseProxyService:
             f"Client {client_address} disconnected [{conn_id}] - {bytes_relayed} bytes relayed"
         )
         print(
-            f"{self.timestamp()} [DISCONNECTION] Client {client_address} disconnected [{conn_id}] - {bytes_relayed} bytes relayed"
+            f"{self.timestamp()} [DISCONNECTION] "
+            f"Client {client_address} "
+            f"disconnected [{conn_id}] - "
+            f"{bytes_relayed} bytes relayed"
         )
 
         # Remove from active connections
@@ -402,7 +411,6 @@ class ReverseProxyService:
     def timestamp() -> str:
         """Generate timestamp string for logging.
 
-
         Returns:
             Timestamp string in HH:MM:SS,mmm format.
         """
@@ -410,7 +418,6 @@ class ReverseProxyService:
 
     def run_blocking(self) -> None:
         """Run the proxy in blocking mode (for CLI usage).
-
 
         Raises:
             ReverseProxyError: If proxy fails to start.

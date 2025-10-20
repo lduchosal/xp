@@ -1,3 +1,8 @@
+"""HomeKit Outlet Service.
+
+This module provides service implementation for outlet accessories.
+"""
+
 import logging
 
 from bubus import EventBus
@@ -13,11 +18,21 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 
 class HomeKitOutletService:
-    """Outlet service for HomeKit."""
+    """Outlet service for HomeKit.
+
+    Attributes:
+        event_bus: Event bus for inter-service communication.
+        logger: Logger instance.
+    """
 
     event_bus: EventBus
 
     def __init__(self, event_bus: EventBus):
+        """Initialize the outlet service.
+
+        Args:
+            event_bus: Event bus instance.
+        """
         self.event_bus = event_bus
         self.logger = logging.getLogger(__name__)
 
@@ -27,6 +42,14 @@ class HomeKitOutletService:
         self.event_bus.on(OutletGetInUseEvent, self.handle_outlet_get_in_use)
 
     def handle_outlet_get_on(self, event: OutletGetOnEvent) -> bool:
+        """Handle outlet get on event.
+
+        Args:
+            event: Outlet get on event.
+
+        Returns:
+            True if request was dispatched successfully.
+        """
         self.logger.debug(
             f"Getting outlet state for serial {event.serial_number}, output {event.output_number}"
         )
@@ -42,8 +65,19 @@ class HomeKitOutletService:
         return True
 
     def handle_outlet_set_on(self, event: OutletSetOnEvent) -> bool:
+        """Handle outlet set on event.
+
+        Args:
+            event: Outlet set on event.
+
+        Returns:
+            True if command was sent successfully.
+        """
         self.logger.info(
-            f"Setting outlet for serial {event.serial_number}, output {event.output_number} to {'ON' if event.value else 'OFF'}"
+            f"Setting outlet "
+            f"for serial {event.serial_number}, "
+            f"output {event.output_number} "
+            f"to {'ON' if event.value else 'OFF'}"
         )
         self.logger.debug(f"outlet_set_on {event}")
 
@@ -61,6 +95,14 @@ class HomeKitOutletService:
         return True
 
     def handle_outlet_get_in_use(self, event: OutletGetInUseEvent) -> bool:
+        """Handle outlet get in-use event.
+
+        Args:
+            event: Outlet get in-use event.
+
+        Returns:
+            True if request was dispatched successfully.
+        """
         self.logger.info(
             f"Getting outlet in-use status for serial {event.serial_number}"
         )

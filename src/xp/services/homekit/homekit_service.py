@@ -1,3 +1,8 @@
+"""HomeKit Service for Apple HomeKit integration.
+
+This module provides the main service for HomeKit integration.
+"""
+
 # Install asyncio reactor before importing reactor
 
 import asyncio
@@ -29,6 +34,23 @@ from xp.services.protocol.protocol_factory import TelegramFactory
 
 
 class HomeKitService:
+    """Main HomeKit service for Apple HomeKit integration.
+
+    Attributes:
+        cli_config: Conbus client configuration.
+        reactor: Twisted reactor instance.
+        telegram_factory: Telegram factory for protocol.
+        protocol: Telegram protocol instance.
+        event_bus: Event bus for inter-service communication.
+        lightbulb_service: Lightbulb service instance.
+        dimminglight_service: Dimming light service instance.
+        outlet_service: Outlet service instance.
+        cache_service: Cache service instance.
+        conbus_service: Conbus service instance.
+        module_factory: HAP service instance.
+        telegram_service: Telegram service instance.
+        logger: Logger instance.
+    """
 
     def __init__(
         self,
@@ -44,7 +66,21 @@ class HomeKitService:
         module_factory: HomekitHapService,
         telegram_service: TelegramService,
     ):
+        """Initialize the HomeKit service.
 
+        Args:
+            cli_config: Conbus client configuration.
+            event_bus: Event bus instance.
+            telegram_factory: Telegram factory instance.
+            reactor: Twisted reactor instance.
+            lightbulb_service: Lightbulb service instance.
+            outlet_service: Outlet service instance.
+            dimminglight_service: Dimming light service instance.
+            cache_service: Cache service instance.
+            conbus_service: Conbus service instance.
+            module_factory: HAP service instance.
+            telegram_service: Telegram service instance.
+        """
         self.cli_config = cli_config.conbus
         self.reactor = reactor
         self.telegram_factory = telegram_factory
@@ -67,6 +103,7 @@ class HomeKitService:
         self.event_bus.on(ModuleDiscoveredEvent, self.handle_module_discovered)
 
     def start(self) -> None:
+        """Start the HomeKit service."""
         self.logger.info("Starting HomeKit service.")
         self.logger.debug("start")
 
@@ -105,12 +142,16 @@ class HomeKitService:
         self.reactor.run()
 
     def _start_module_factory(self) -> None:
-        """Start module factory after reactor starts."""
+        """Start module factory after reactor starts.
+
+        Creates and schedules an async task to start the HAP service.
+        """
         self.logger.info("Starting module factory.")
         self.logger.debug("callWhenRunning executed, scheduling async task")
 
         # Run HAP-python driver asynchronously in the reactor's event loop
         async def async_start() -> None:
+            """Start the HAP service asynchronously."""
             self.logger.info("async_start executing.")
             try:
                 await self.module_factory.async_start()
@@ -130,23 +171,42 @@ class HomeKitService:
 
     # Event handlers
     def handle_connection_made(self, event: ConnectionMadeEvent) -> None:
-        """Handle connection established - send initial telegram."""
+        """Handle connection established - send initial telegram.
+
+        Args:
+            event: Connection made event.
+        """
         self.logger.debug("Connection established successfully")
         self.logger.debug("Sending initial discovery telegram: S0000000000F01D00")
         event.protocol.sendFrame(b"S0000000000F01D00")
 
     def handle_connection_failed(self, event: ConnectionFailedEvent) -> None:
-        """Handle connection failed."""
+        """Handle connection failed.
+
+        Args:
+            event: Connection failed event.
+        """
         self.logger.error(f"Connection failed: {event.reason}")
 
     def handle_connection_lost(self, event: ConnectionLostEvent) -> None:
-        """Handle connection lost."""
+        """Handle connection lost.
+
+        Args:
+            event: Connection lost event.
+        """
         self.logger.warning(
             f"Connection lost: {event.reason if hasattr(event, 'reason') else 'Unknown reason'}"
         )
 
     def handle_telegram_received(self, event: TelegramReceivedEvent) -> str:
-        """Handle received telegram events."""
+        """Handle received telegram events.
+
+        Args:
+            event: Telegram received event.
+
+        Returns:
+            Frame data from the event.
+        """
         self.logger.debug(
             f"handle_telegram_received ENTERED with telegram: {event.telegram}"
         )
@@ -176,10 +236,18 @@ class HomeKitService:
         return event.frame
 
     def dispatch_light_level_event(self, event: TelegramReceivedEvent) -> None:
+        """Dispatch light level received event.
+
+        Args:
+            event: Telegram received event.
+        """
         self.logger.debug("Light level Datapoint, parsing telegram.")
         reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
         self.logger.debug(
-            f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
+            f"Parsed telegram: "
+            f"serial={reply_telegram.serial_number}, "
+            f"type={reply_telegram.datapoint_type}, "
+            f"value={reply_telegram.data_value}"
         )
         self.logger.debug("About to dispatch LightLevelReceivedEvent")
         self.event_bus.dispatch(
@@ -192,10 +260,18 @@ class HomeKitService:
         self.logger.debug("LightLevelReceivedEvent dispatched successfully")
 
     def dispatch_output_state_event(self, event: TelegramReceivedEvent) -> None:
+        """Dispatch output state received event.
+
+        Args:
+            event: Telegram received event.
+        """
         self.logger.debug("Module Read Datapoint, parsing telegram.")
         reply_telegram = self.telegram_service.parse_reply_telegram(event.frame)
         self.logger.debug(
-            f"Parsed telegram: serial={reply_telegram.serial_number}, type={reply_telegram.datapoint_type}, value={reply_telegram.data_value}"
+            f"Parsed telegram: "
+            f"serial={reply_telegram.serial_number}, "
+            f"type={reply_telegram.datapoint_type}, "
+            f"value={reply_telegram.data_value}"
         )
         self.logger.debug("About to dispatch OutputStateReceivedEvent")
         self.event_bus.dispatch(
@@ -210,6 +286,11 @@ class HomeKitService:
     def dispatch_event_telegram_received_event(
         self, event: TelegramReceivedEvent
     ) -> None:
+        """Dispatch event telegram received event.
+
+        Args:
+            event: Telegram received event.
+        """
         self.logger.debug("Event telegram received, parsing.")
 
         # Parse event telegram to extract module information
@@ -238,6 +319,11 @@ class HomeKitService:
         self.logger.debug("ModuleStateChangedEvent dispatched successfully")
 
     def dispatch_module_discovered_event(self, event: TelegramReceivedEvent) -> None:
+        """Dispatch module discovered event.
+
+        Args:
+            event: Telegram received event.
+        """
         self.logger.debug("Module discovered, dispatching ModuleDiscoveredEvent")
         self.event_bus.dispatch(
             ModuleDiscoveredEvent(
@@ -253,6 +339,14 @@ class HomeKitService:
         self.logger.debug("ModuleDiscoveredEvent dispatched successfully")
 
     def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> str:
+        """Handle module discovered event.
+
+        Args:
+            event: Module discovered event.
+
+        Returns:
+            Serial number of the discovered module.
+        """
         self.logger.debug("Handling module discovered event")
 
         # Replace R with S and F01D with F02D00

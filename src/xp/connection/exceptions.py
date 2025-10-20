@@ -1,5 +1,5 @@
-"""
-Connection-related exceptions for XP CLI tool.
+"""Connection-related exceptions for XP CLI tool.
+
 Following the architecture requirement for structured error handling.
 """
 

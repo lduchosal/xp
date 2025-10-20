@@ -22,8 +22,15 @@ from xp.utils import calculate_checksum
 
 
 class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
-    """
-    Twisted protocol for XP telegram communication.
+    """Twisted protocol for XP telegram communication.
+
+    Attributes:
+        buffer: Buffer for incoming telegram data.
+        logger: Logger instance for this protocol.
+        cli_config: Conbus configuration settings.
+        reactor: Twisted reactor instance.
+        timeout_seconds: Timeout duration in seconds.
+        timeout_call: Delayed call handle for timeout management.
     """
 
     buffer: bytes
@@ -33,6 +40,12 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
+        """Initialize ConbusProtocol.
+
+        Args:
+            cli_config: Configuration for Conbus client connection.
+            reactor: Twisted reactor for event handling.
+        """
         self.buffer = b""
         self.logger = logging.getLogger(__name__)
         self.cli_config = cli_config.conbus
@@ -41,12 +54,24 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.timeout_call: Optional[DelayedCall] = None
 
     def connectionMade(self) -> None:
+        """Handle connection established event.
+
+        Called when TCP connection is successfully established.
+        Starts inactivity timeout monitoring.
+        """
         self.logger.debug("connectionMade")
         self.connection_established()
         # Start inactivity timeout
         self._reset_timeout()
 
     def dataReceived(self, data: bytes) -> None:
+        """Handle received data from TCP connection.
+
+        Parses incoming telegram frames and dispatches events.
+
+        Args:
+            data: Raw bytes received from connection.
+        """
         self.logger.debug("dataReceived")
         self.buffer += data
 
@@ -99,11 +124,13 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
             self.telegram_received(telegram_received)
 
     def sendFrame(self, data: bytes) -> None:
-        """
-        Send telegram frame
+        """Send telegram frame.
 
         Args:
-            data: Raw telegram payload (without checksum/framing)
+            data: Raw telegram payload (without checksum/framing).
+
+        Raises:
+            IOError: If transport is not open.
         """
         # Calculate full frame (add checksum and brackets)
         checksum = calculate_checksum(data.decode())
@@ -126,6 +153,14 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         system_function: SystemFunction,
         data_value: str,
     ) -> None:
+        """Send telegram with specified parameters.
+
+        Args:
+            telegram_type: Type of telegram to send.
+            serial_number: Device serial number.
+            system_function: System function code.
+            data_value: Data value to send.
+        """
         payload = (
             f"{telegram_type.value}"
             f"{serial_number}"
@@ -135,28 +170,57 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.sendFrame(payload.encode())
 
     def buildProtocol(self, addr: IAddress) -> protocol.Protocol:
+        """Build protocol instance for connection.
+
+        Args:
+            addr: Address of the connection.
+
+        Returns:
+            Protocol instance for this connection.
+        """
         self.logger.debug(f"buildProtocol: {addr}")
         return self
 
     def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
+        """Handle client connection failure.
+
+        Args:
+            connector: Connection connector instance.
+            reason: Failure reason details.
+        """
         self.logger.debug(f"clientConnectionFailed: {reason}")
         self.connection_failed(reason)
         self._cancel_timeout()
         self._stop_reactor()
 
     def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
+        """Handle client connection lost event.
+
+        Args:
+            connector: Connection connector instance.
+            reason: Reason for connection loss.
+        """
         self.logger.debug(f"clientConnectionLost: {reason}")
         self.connection_lost(reason)
         self._cancel_timeout()
         self._stop_reactor()
 
     def timeout(self) -> bool:
-        """Timeout callback, return True to continue waiting for next timeout, False to stop."""
+        """Handle timeout event.
+
+        Returns:
+            True to continue waiting for next timeout, False to stop.
+        """
         self.logger.info("Timeout after: %ss", self.timeout_seconds)
         self.failed(f"Timeout after: {self.timeout_seconds}s")
         return False
 
     def connection_failed(self, reason: Failure) -> None:
+        """Handle connection failure.
+
+        Args:
+            reason: Failure reason details.
+        """
         self.logger.debug(f"Client connection failed: {reason}")
         self.failed(reason.getErrorMessage())
 
@@ -175,7 +239,7 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
             self.logger.debug("Timeout cancelled")
 
     def _on_timeout(self) -> None:
-        """Called when inactivity timeout expires."""
+        """Handle inactivity timeout expiration."""
         self.logger.debug(f"Conbus timeout after {self.timeout_seconds} seconds")
         continue_work = self.timeout()
         if not continue_work:
@@ -200,7 +264,11 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.reactor.run()
 
     def __enter__(self) -> "ConbusProtocol":
-        """Context manager entry."""
+        """Enter context manager.
+
+        Returns:
+            Self for context management.
+        """
         return self
 
     def __exit__(
@@ -216,16 +284,37 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
     """Override methods."""
 
     def telegram_sent(self, telegram_sent: str) -> None:
+        """Override callback when telegram has been sent.
+
+        Args:
+            telegram_sent: The telegram that was sent.
+        """
         pass
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Override callback when telegram is received.
+
+        Args:
+            telegram_received: Event containing received telegram details.
+        """
         pass
 
     def connection_established(self) -> None:
+        """Override callback when connection established."""
         pass
 
     def connection_lost(self, reason: Failure) -> None:
+        """Override callback when connection is lost.
+
+        Args:
+            reason: Reason for connection loss.
+        """
         pass
 
     def failed(self, message: str) -> None:
+        """Override callback when connection failed.
+
+        Args:
+            message: Error message describing the failure.
+        """
         pass

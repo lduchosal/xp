@@ -13,7 +13,7 @@ class TestConbusBlinkCommands:
         result = CliRunner().invoke(conbus, ["blink", "--help"])
 
         assert result.exit_code == 0
-        assert "Send blink command to start blinking module LED" in result.output
+        assert "sending blink telegrams" in result.output
         assert "Usage:" in result.output
         assert "conbus blink [OPTIONS] COMMAND" in result.output
 

@@ -1,3 +1,8 @@
+"""HomeKit Dimming Light Accessory.
+
+This module provides a dimming light accessory for HomeKit integration.
+"""
+
 import logging
 
 from bubus import EventBus
@@ -16,7 +21,20 @@ from xp.models.protocol.conbus_protocol import (
 
 
 class DimmingLight(Accessory):
-    """Fake lightbulb, logs what the client sets."""
+    """HomeKit dimming light accessory.
+
+    Attributes:
+        category: HomeKit category (CATEGORY_LIGHTBULB).
+        event_bus: Event bus for inter-service communication.
+        logger: Logger instance.
+        identifier: Unique identifier for the accessory.
+        accessory: Accessory configuration.
+        module: Module configuration.
+        is_on: Current on/off state.
+        brightness: Current brightness level (0-100).
+        char_on: On characteristic.
+        char_brightness: Brightness characteristic.
+    """
 
     category = CATEGORY_LIGHTBULB
     event_bus: EventBus
@@ -28,6 +46,14 @@ class DimmingLight(Accessory):
         accessory: HomekitAccessoryConfig,
         event_bus: EventBus,
     ):
+        """Initialize the dimming light accessory.
+
+        Args:
+            driver: HAP accessory driver.
+            module: Module configuration.
+            accessory: Accessory configuration.
+            event_bus: Event bus for inter-service communication.
+        """
         super().__init__(driver, accessory.description)
 
         self.logger = logging.getLogger(__name__)
@@ -76,6 +102,11 @@ class DimmingLight(Accessory):
         )
 
     def set_on(self, value: bool) -> None:
+        """Set the on/off state of the dimming light.
+
+        Args:
+            value: True to turn on, False to turn off.
+        """
         # Emit set event
         self.logger.debug(f"set_on {value}")
 
@@ -93,6 +124,11 @@ class DimmingLight(Accessory):
             )
 
     def get_on(self) -> bool:
+        """Get the on/off state of the dimming light.
+
+        Returns:
+            True if on, False if off.
+        """
         # Emit event and get response
         self.logger.debug("get_on")
 
@@ -108,6 +144,11 @@ class DimmingLight(Accessory):
         return self.is_on
 
     def set_brightness(self, value: int) -> None:
+        """Set the brightness level of the dimming light.
+
+        Args:
+            value: Brightness level (0-100).
+        """
         self.logger.debug(f"set_brightness {value}")
         self.brightness = value
 
@@ -122,6 +163,11 @@ class DimmingLight(Accessory):
         )
 
     def get_brightness(self) -> int:
+        """Get the brightness level of the dimming light.
+
+        Returns:
+            Current brightness level (0-100).
+        """
         self.logger.debug("get_brightness")
 
         # Dispatch event from HAP thread (thread-safe)

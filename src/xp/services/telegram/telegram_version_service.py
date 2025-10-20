@@ -205,8 +205,8 @@ class VersionService:
                     success=False,
                     data=None,
                     error=f"Not a version reply telegram. "
-                          f"Data point: "
-                          f"{telegram.datapoint_type.name if telegram.datapoint_type else 'Unknown'}",
+                    f"Data point: "
+                    f"{telegram.datapoint_type.name if telegram.datapoint_type else 'Unknown'}",
                 )
 
             # Parse the version using the telegram's built-in parser

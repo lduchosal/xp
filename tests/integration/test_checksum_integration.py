@@ -157,7 +157,7 @@ class TestChecksumIntegration:
         assert result.exit_code == 0
         output = result.output
 
-        assert "Checksum calculation and validation operations" in output
+        assert "Perform checksum calculation and validation operations" in output
         assert "calculate" in output
         assert "validate" in output
 

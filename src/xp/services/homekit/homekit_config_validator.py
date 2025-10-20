@@ -45,7 +45,12 @@ class HomekitConfigValidator:
         """
         valid_services = {"lightbulb", "outlet", "dimminglight"}
         errors = [
-            f"Invalid service type '{accessory.service}' for accessory '{accessory.name}'. Valid types: {', '.join(valid_services)}"
+            (
+                f"Invalid "
+                f"service type '{accessory.service}' "
+                f"for accessory '{accessory.name}'. "
+                f"Valid types: {', '.join(valid_services)}"
+            )
             for accessory in self.config.accessories
             if accessory.service not in valid_services
         ]
@@ -67,7 +72,11 @@ class HomekitConfigValidator:
         return errors
 
     def validate_unique_room_names(self) -> List[str]:
-        """Validate that all room names are unique."""
+        """Validate that all room names are unique.
+
+        Returns:
+            List of validation error messages.
+        """
         names: Set[str] = set()
         errors = []
 
@@ -79,7 +88,11 @@ class HomekitConfigValidator:
         return errors
 
     def validate_room_accessory_references(self) -> List[str]:
-        """Validate that all room accessories exist in accessories section."""
+        """Validate that all room accessories exist in accessories section.
+
+        Returns:
+            List of validation error messages.
+        """
         accessory_names = {acc.name for acc in self.config.accessories}
         errors = []
 
@@ -93,7 +106,11 @@ class HomekitConfigValidator:
         return errors
 
     def validate_no_orphaned_accessories(self) -> List[str]:
-        """Validate that all accessories are assigned to at least one room."""
+        """Validate that all accessories are assigned to at least one room.
+
+        Returns:
+            List of validation error messages.
+        """
         assigned_accessories: Set[str] = set()
         for room in self.config.bridge.rooms:
             assigned_accessories.update(room.accessories)
@@ -107,7 +124,11 @@ class HomekitConfigValidator:
         return errors
 
     def validate_no_duplicate_accessory_assignments(self) -> List[str]:
-        """Validate that accessories are not assigned to multiple rooms."""
+        """Validate that accessories are not assigned to multiple rooms.
+
+        Returns:
+            List of validation error messages.
+        """
         assigned_accessories: Set[str] = set()
         errors = []
 
@@ -122,7 +143,11 @@ class HomekitConfigValidator:
         return errors
 
     def validate_all(self) -> List[str]:
-        """Run all validations and return combined errors."""
+        """Run all validations and return combined errors.
+
+        Returns:
+            List of all validation error messages.
+        """
         all_errors = []
         all_errors.extend(self.validate_unique_accessory_names())
         all_errors.extend(self.validate_service_types())
@@ -142,11 +167,21 @@ class CrossReferenceValidator:
         conson_validator: ConsonConfigValidator,
         homekit_validator: HomekitConfigValidator,
     ):
+        """Initialize the cross-reference validator.
+
+        Args:
+            conson_validator: Conson configuration validator.
+            homekit_validator: HomeKit configuration validator.
+        """
         self.conson_validator = conson_validator
         self.homekit_validator = homekit_validator
 
     def validate_serial_number_references(self) -> List[str]:
-        """Validate that all accessory serial numbers exist in conson configuration."""
+        """Validate that all accessory serial numbers exist in conson configuration.
+
+        Returns:
+            List of validation error messages.
+        """
         conson_serials = self.conson_validator.get_all_serial_numbers()
         errors = [
             f"Accessory '{accessory.name}' references unknown serial number {accessory.serial_number}"
@@ -157,7 +192,11 @@ class CrossReferenceValidator:
         return errors
 
     def validate_output_capabilities(self) -> List[str]:
-        """Validate that output numbers are within module capabilities."""
+        """Validate that output numbers are within module capabilities.
+
+        Returns:
+            List of validation error messages.
+        """
         errors = []
 
         for accessory in self.homekit_validator.config.accessories:
@@ -184,13 +223,20 @@ class CrossReferenceValidator:
 
                 if accessory.output_number > max_outputs:
                     errors.append(
-                        f"Accessory '{accessory.name}' output {accessory.output_number} exceeds module '{module.name}' ({module.module_type}) limit of {max_outputs}"
+                        f"Accessory '{accessory.name}' "
+                        f"output {accessory.output_number} "
+                        f"exceeds module '{module.name}' ({module.module_type}) "
+                        f"limit of {max_outputs}"
                     )
 
         return errors
 
     def validate_all(self) -> List[str]:
-        """Run all cross-reference validations and return combined errors."""
+        """Run all cross-reference validations and return combined errors.
+
+        Returns:
+            List of all cross-reference validation error messages.
+        """
         all_errors = []
         all_errors.extend(self.validate_serial_number_references())
         all_errors.extend(self.validate_output_capabilities())
@@ -201,6 +247,12 @@ class ConfigValidationService:
     """Main service for validating HomeKit configuration coherence."""
 
     def __init__(self, conson_config_path: str, homekit_config_path: str):
+        """Initialize the config validation service.
+
+        Args:
+            conson_config_path: Path to conson.yml configuration file.
+            homekit_config_path: Path to homekit.yml configuration file.
+        """
         from xp.models.homekit.homekit_config import HomekitConfig
         from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 
@@ -214,7 +266,11 @@ class ConfigValidationService:
         )
 
     def validate_all(self) -> dict:
-        """Run all validations and return organized results."""
+        """Run all validations and return organized results.
+
+        Returns:
+            Dictionary containing validation results and error counts.
+        """
         conson_errors = self.conson_validator.validate_all()
         homekit_errors = self.homekit_validator.validate_all()
         cross_errors = self.cross_validator.validate_all()
@@ -231,7 +287,11 @@ class ConfigValidationService:
         }
 
     def print_config_summary(self) -> str:
-        """Generate a summary of the configuration."""
+        """Generate a summary of the configuration.
+
+        Returns:
+            String containing configuration summary.
+        """
         summary = [
             f"Conson Modules: {len(self.conson_config.root)}",
             f"HomeKit Accessories: {len(self.homekit_config.accessories)}",

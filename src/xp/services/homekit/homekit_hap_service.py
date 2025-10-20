@@ -1,3 +1,8 @@
+"""HomeKit HAP Service for Apple HomeKit integration.
+
+This module provides the main HAP (HomeKit Accessory Protocol) service.
+"""
+
 import logging
 import signal
 import threading
@@ -30,11 +35,20 @@ from xp.services.homekit.homekit_outlet import Outlet
 
 
 class HomekitHapService:
-    """
-    HomeKit services.
+    """HomeKit HAP service.
 
-    Manages TCP socket connections, handles telegram generation and transmission,
-    and processes server responses.
+    Manages HAP accessory protocol, handles bridge and accessory setup,
+    and processes HomeKit events for device state synchronization.
+
+    Attributes:
+        event_bus: Event bus for inter-service communication.
+        last_activity: Timestamp of last service activity.
+        logger: Logger instance.
+        config: HomeKit configuration.
+        accessory_registry: Registry of accessories by identifier.
+        module_registry: Registry of accessories by module key.
+        modules: Module service for module lookup.
+        driver: HAP accessory driver.
     """
 
     event_bus: EventBus
@@ -45,12 +59,12 @@ class HomekitHapService:
         module_service: HomekitModuleService,
         event_bus: EventBus,
     ):
-        """Initialize the Conbus client send service
+        """Initialize the HomeKit HAP service.
 
         Args:
-            homekit_config: Conson configuration file
-            module_service: HomekitModuleService for dependency injection
-            event_bus: EventBus for dependency injection
+            homekit_config: HomeKit configuration.
+            module_service: Module service for dependency injection.
+            event_bus: Event bus for dependency injection.
         """
         self.last_activity: Optional[datetime] = None
 
@@ -82,7 +96,7 @@ class HomekitHapService:
         self.driver: AccessoryDriver = driver
 
     async def async_start(self) -> None:
-        """Get current client configuration."""
+        """Start the HAP service asynchronously."""
         self.logger.info("Loading accessories.")
         self.build_bridge()
         self.logger.info("Accessories loaded successfully")
@@ -108,7 +122,14 @@ class HomekitHapService:
             self.logger.error(f"HAP-python driver error: {e}", exc_info=True)
 
     def handle_output_state_received(self, event: OutputStateReceivedEvent) -> str:
+        """Handle output state received event.
 
+        Args:
+            event: Output state received event.
+
+        Returns:
+            Data value from the event.
+        """
         self.logger.debug(f"Received OutputStateReceivedEvent {event}")
         output_number = 0
         for output in event.data_value[::-1]:
@@ -131,7 +152,14 @@ class HomekitHapService:
         return event.data_value
 
     def handle_light_level_received(self, event: LightLevelReceivedEvent) -> str:
+        """Handle light level received event.
 
+        Args:
+            event: Light level received event.
+
+        Returns:
+            Data value from the event.
+        """
         # Parse response format like "00:050,01:025,02:100"
         self.logger.debug("Received LightLevelReceivedEvent", extra={"event": event})
         output_number = 0
@@ -165,6 +193,7 @@ class HomekitHapService:
         return event.data_value
 
     def build_bridge(self) -> None:
+        """Build the HomeKit bridge with all configured accessories."""
         bridge_config = self.config.bridge
         bridge = Bridge(self.driver, bridge_config.name)
         bridge.set_info_service(
@@ -177,7 +206,12 @@ class HomekitHapService:
         self.driver.add_accessory(accessory=bridge)
 
     def add_room(self, bridge: Bridge, room: RoomConfig) -> None:
-        """Call this method to get a Bridge instead of a standalone accessory."""
+        """Add a room with its accessories to the bridge.
+
+        Args:
+            bridge: HAP bridge instance.
+            room: Room configuration.
+        """
         temperature = TemperatureSensor(self.driver, room.name)
         bridge.add_accessory(temperature)
 
@@ -205,7 +239,14 @@ class HomekitHapService:
     def get_accessory(
         self, homekit_accessory: HomekitAccessoryConfig
     ) -> Union[LightBulb, Outlet, DimmingLight, None]:
-        """Call this method to get a standalone Accessory."""
+        """Get an accessory instance from configuration.
+
+        Args:
+            homekit_accessory: HomeKit accessory configuration.
+
+        Returns:
+            Accessory instance or None if not found or invalid service type.
+        """
         module_config = self.modules.get_module_by_serial(
             homekit_accessory.serial_number
         )
@@ -241,12 +282,24 @@ class HomekitHapService:
         return None
 
     def get_accessory_by_name(self, name: str) -> Optional[HomekitAccessoryConfig]:
+        """Get an accessory configuration by name.
+
+        Args:
+            name: Name of the accessory to find.
+
+        Returns:
+            Accessory configuration if found, None otherwise.
+        """
         return next(
             (module for module in self.config.accessories if module.name == name), None
         )
 
     def handle_module_state_changed(self, event: ModuleStateChangedEvent) -> None:
-        """Handle module state change by refreshing affected accessories."""
+        """Handle module state change by refreshing affected accessories.
+
+        Args:
+            event: Module state changed event.
+        """
         self.logger.debug(
             f"Module state changed: module_type={event.module_type_code}, "
             f"link={event.link_number}, input={event.input_number}"

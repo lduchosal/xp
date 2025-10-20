@@ -26,6 +26,10 @@ class LogFileService:
 
     Handles parsing of log files containing timestamped telegram transmissions
     and receptions with automatic telegram parsing and validation.
+
+    Attributes:
+        telegram_service: Telegram service for parsing telegrams.
+        LOG_LINE_PATTERN: Regex pattern for log line format.
     """
 
     # Regex pattern for log line format: HH:MM:SS,mmm [TX/RX] <telegram>

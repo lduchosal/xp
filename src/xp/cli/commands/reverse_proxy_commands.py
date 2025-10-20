@@ -123,8 +123,6 @@ def stop_proxy() -> None:
     Raises:
         SystemExit: If proxy is not running.
     """
-    global global_proxy_instance
-
     try:
         if global_proxy_instance is None or not global_proxy_instance.is_running:
             error_response = {
@@ -155,7 +153,6 @@ def proxy_status() -> None:
         \b
         xp rp status
     """
-    global global_proxy_instance
     OutputFormatter(True)
 
     try:

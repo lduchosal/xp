@@ -22,7 +22,12 @@ CACHE_FILE = CACHE_DIR / "homekit_cache.json"
 
 
 class CacheEntry(TypedDict):
-    """Cache entry type definition."""
+    """Cache entry type definition.
+
+    Attributes:
+        event: The cached event (OutputStateReceivedEvent or LightLevelReceivedEvent).
+        timestamp: When the event was cached.
+    """
 
     event: Union[OutputStateReceivedEvent, LightLevelReceivedEvent]
     timestamp: datetime
@@ -39,6 +44,12 @@ class HomeKitCacheService:
     """
 
     def __init__(self, event_bus: EventBus, enable_persistence: bool = True):
+        """Initialize the HomeKit cache service.
+
+        Args:
+            event_bus: Event bus for inter-service communication.
+            enable_persistence: Whether to persist cache to disk.
+        """
         self.logger = logging.getLogger(__name__)
         self.event_bus = event_bus
         self.cache: dict[tuple[str, DataPointType], CacheEntry] = {}
@@ -192,12 +203,14 @@ class HomeKitCacheService:
         return None
 
     def handle_read_datapoint_event(self, event: ReadDatapointEvent) -> None:
-        """
-        Handle ReadDatapointEvent by checking cache or refresh flag.
+        """Handle ReadDatapointEvent by checking cache or refresh flag.
 
         On refresh_cache=True: invalidate cache and force protocol query
         On cache hit: dispatch cached response event
         On cache miss: forward to protocol via ReadDatapointFromProtocolEvent
+
+        Args:
+            event: Read datapoint event with serial number, datapoint type, and refresh flag.
         """
         self.logger.debug(
             f"Handling ReadDatapointEvent: "
@@ -250,7 +263,11 @@ class HomeKitCacheService:
     def handle_output_state_received_event(
         self, event: OutputStateReceivedEvent
     ) -> None:
-        """Cache OutputStateReceivedEvent for future queries."""
+        """Cache OutputStateReceivedEvent for future queries.
+
+        Args:
+            event: Output state received event to cache.
+        """
         self.logger.debug(
             f"Caching OutputStateReceivedEvent: "
             f"serial={event.serial_number}, "
@@ -260,7 +277,11 @@ class HomeKitCacheService:
         self._cache_event(event)
 
     def handle_light_level_received_event(self, event: LightLevelReceivedEvent) -> None:
-        """Cache LightLevelReceivedEvent for future queries."""
+        """Cache LightLevelReceivedEvent for future queries.
+
+        Args:
+            event: Light level received event to cache.
+        """
         self.logger.debug(
             f"Caching LightLevelReceivedEvent: "
             f"serial={event.serial_number}, "
@@ -276,7 +297,11 @@ class HomeKitCacheService:
         self._save_cache()
 
     def get_cache_stats(self) -> dict[str, int]:
-        """Get cache statistics."""
+        """Get cache statistics.
+
+        Returns:
+            Dictionary with cache statistics including total_entries.
+        """
         return {
             "total_entries": len(self.cache),
         }

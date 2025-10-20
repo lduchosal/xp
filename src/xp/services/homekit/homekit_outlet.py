@@ -1,3 +1,8 @@
+"""HomeKit Outlet Accessory.
+
+This module provides an outlet accessory for HomeKit integration.
+"""
+
 import logging
 
 from bubus import EventBus
@@ -16,7 +21,20 @@ from xp.models.protocol.conbus_protocol import (
 
 
 class Outlet(Accessory):
-    """Fake lightbulb, logs what the client sets."""
+    """HomeKit outlet accessory.
+
+    Attributes:
+        category: HomeKit category (CATEGORY_OUTLET).
+        event_bus: Event bus for inter-service communication.
+        logger: Logger instance.
+        identifier: Unique identifier for the accessory.
+        accessory: Accessory configuration.
+        module: Module configuration.
+        is_on: Current on/off state.
+        is_in_use: Current in-use state.
+        char_on: On characteristic.
+        char_outlet_in_use: Outlet in-use characteristic.
+    """
 
     category = CATEGORY_OUTLET
     event_bus: EventBus
@@ -28,6 +46,14 @@ class Outlet(Accessory):
         accessory: HomekitAccessoryConfig,
         event_bus: EventBus,
     ):
+        """Initialize the outlet accessory.
+
+        Args:
+            driver: HAP accessory driver.
+            module: Module configuration.
+            accessory: Accessory configuration.
+            event_bus: Event bus for inter-service communication.
+        """
         super().__init__(driver=driver, display_name=accessory.description)
 
         self.logger = logging.getLogger(__name__)
@@ -62,6 +88,11 @@ class Outlet(Accessory):
         )
 
     def set_outlet_in_use(self, value: bool) -> None:
+        """Set the in-use state of the outlet.
+
+        Args:
+            value: True if in use, False otherwise.
+        """
         self.logger.debug(f"set_outlet_in_use {value}")
 
         self.is_in_use = value
@@ -77,6 +108,11 @@ class Outlet(Accessory):
         self.logger.debug(f"set_outlet_in_use {value} end")
 
     def get_outlet_in_use(self) -> bool:
+        """Get the in-use state of the outlet.
+
+        Returns:
+            True if in use, False otherwise.
+        """
         # Emit event and get response
         self.logger.debug("get_outlet_in_use")
 
@@ -92,6 +128,11 @@ class Outlet(Accessory):
         return self.is_in_use
 
     def set_on(self, value: bool) -> None:
+        """Set the on/off state of the outlet.
+
+        Args:
+            value: True to turn on, False to turn off.
+        """
         # Emit set event
         self.logger.debug(f"set_on {value}")
 
@@ -108,6 +149,11 @@ class Outlet(Accessory):
             )
 
     def get_on(self) -> bool:
+        """Get the on/off state of the outlet.
+
+        Returns:
+            True if on, False if off.
+        """
         # Emit event and get response
         self.logger.debug("get_on")
 

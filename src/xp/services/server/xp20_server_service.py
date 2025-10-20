@@ -24,14 +24,22 @@ class XP20ServerService(BaseServerService):
     """
 
     def __init__(self, serial_number: str):
-        """Initialize XP20 server service."""
+        """Initialize XP20 server service.
+
+        Args:
+            serial_number: The device serial number.
+        """
         super().__init__(serial_number)
         self.device_type = "XP20"
         self.module_type_code = 33  # XP20 module type from registry
         self.firmware_version = "XP20_V0.01.05"
 
     def get_device_info(self) -> Dict:
-        """Get XP20 device information."""
+        """Get XP20 device information.
+
+        Returns:
+            Dictionary containing device information.
+        """
         return {
             "serial_number": self.serial_number,
             "device_type": self.device_type,

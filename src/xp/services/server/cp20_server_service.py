@@ -25,7 +25,11 @@ class CP20ServerService(BaseServerService):
     """
 
     def __init__(self, serial_number: str):
-        """Initialize CP20 server service."""
+        """Initialize CP20 server service.
+
+        Args:
+            serial_number: The device serial number.
+        """
         super().__init__(serial_number)
         self.device_type = "CP20"
         self.module_type_code = 2  # CP20 module type from registry
@@ -38,7 +42,11 @@ class CP20ServerService(BaseServerService):
         return None
 
     def get_device_info(self) -> Dict:
-        """Get CP20 device information."""
+        """Get CP20 device information.
+
+        Returns:
+            Dictionary containing device information.
+        """
         return {
             "serial_number": self.serial_number,
             "device_type": self.device_type,

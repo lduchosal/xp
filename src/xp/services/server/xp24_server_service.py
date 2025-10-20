@@ -27,7 +27,11 @@ class XP24ServerService(BaseServerService):
     """
 
     def __init__(self, serial_number: str):
-        """Initialize XP24 server service."""
+        """Initialize XP24 server service.
+
+        Args:
+            serial_number: The device serial number.
+        """
         super().__init__(serial_number)
         self.device_type = "XP24"
         self.module_type_code = 7  # XP24 module type from registry
@@ -49,7 +53,12 @@ class XP24ServerService(BaseServerService):
             DataPointType.MODULE_STATE: "OFF",
             DataPointType.MODULE_OPERATING_HOURS: "00:000[H],01:000[H],02:000[H],03:000[H]",
         }
-        data_part = f"R{self.serial_number}F02{datapoint_type.value}{self.module_type_code}{datapoint_values.get(datapoint_type)}"
+        data_part = (
+            f"R{self.serial_number}"
+            f"F02{datapoint_type.value}"
+            f"{self.module_type_code}"
+            f"{datapoint_values.get(datapoint_type)}"
+        )
         telegram = self._build_response_telegram(data_part)
 
         self.logger.debug(
@@ -60,14 +69,25 @@ class XP24ServerService(BaseServerService):
     def _handle_device_specific_action_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
+        """Handle XP24-specific action requests.
 
+        Args:
+            request: The system telegram request.
+
+        Returns:
+            The response telegram string, or None if request cannot be handled.
+        """
         if request.system_function != SystemFunction.ACTION:
             return None
 
         return self.generate_action_response(request)
 
     def get_device_info(self) -> Dict:
-        """Get XP24 device information."""
+        """Get XP24 device information.
+
+        Returns:
+            Dictionary containing device information.
+        """
         return {
             "serial_number": self.serial_number,
             "device_type": self.device_type,
@@ -77,7 +97,14 @@ class XP24ServerService(BaseServerService):
         }
 
     def generate_action_response(self, request: SystemTelegram) -> Optional[str]:
-        """Generate action response telegram (simulated)."""
+        """Generate action response telegram (simulated).
+
+        Args:
+            request: The system telegram request.
+
+        Returns:
+            The ACK or NAK response telegram string.
+        """
         response = "F19D"  # NAK
         if (
             request.system_function == SystemFunction.ACTION

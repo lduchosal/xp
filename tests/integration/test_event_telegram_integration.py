@@ -112,7 +112,7 @@ class TestEventTelegramIntegration:
         result = self.runner.invoke(cli, ["telegram", "--help"])
 
         assert result.exit_code == 0
-        assert "Event telegram operations" in result.output
+        assert "event telegram operations" in result.output
         assert "parse" in result.output
         assert "validate" in result.output
 
