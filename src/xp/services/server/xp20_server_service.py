@@ -6,6 +6,7 @@ including response generation and device configuration handling.
 
 from typing import Dict
 
+from xp.models import ModuleTypeCode
 from xp.services.server.base_server_service import BaseServerService
 
 
@@ -31,7 +32,7 @@ class XP20ServerService(BaseServerService):
         """
         super().__init__(serial_number)
         self.device_type = "XP20"
-        self.module_type_code = 33  # XP20 module type from registry
+        self.module_type_code = ModuleTypeCode.XP20  # XP20 module type from registry
         self.firmware_version = "XP20_V0.01.05"
 
     def get_device_info(self) -> Dict:

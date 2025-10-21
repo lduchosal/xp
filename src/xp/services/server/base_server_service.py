@@ -8,6 +8,7 @@ import logging
 from abc import ABC
 from typing import Optional
 
+from xp.models import ModuleTypeCode
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
@@ -33,7 +34,7 @@ class BaseServerService(ABC):
 
         # Must be set by subclasses
         self.device_type: str = ""
-        self.module_type_code: int = 0
+        self.module_type_code: ModuleTypeCode = ModuleTypeCode.NOMOD
         self.hardware_version: str = ""
         self.software_version: str = ""
         self.device_status: str = "OK"
@@ -54,7 +55,7 @@ class BaseServerService(ABC):
         """
         datapoint_values = {
             DataPointType.TEMPERATURE: self.temperature,
-            DataPointType.MODULE_TYPE_CODE: f"{self.module_type_code:02X}",
+            DataPointType.MODULE_TYPE_CODE: f"{self.module_type_code.value:02X}",
             DataPointType.SW_VERSION: self.software_version,
             DataPointType.MODULE_STATE: self.device_status,
             DataPointType.MODULE_TYPE: self.device_type,
@@ -187,11 +188,15 @@ class BaseServerService(ABC):
         self.logger.debug(
             f"_handle_return_data_request {self.device_type} request: {request}"
         )
+        module_specific = self._handle_device_specific_data_request(request)
+        if module_specific:
+            return module_specific
+
         if request.datapoint_type:
             return self.generate_datapoint_type_response(request.datapoint_type)
 
         # Allow device-specific handlers
-        return self._handle_device_specific_data_request(request)
+        return None
 
     def _handle_device_specific_data_request(
         self, request: SystemTelegram

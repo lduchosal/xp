@@ -6,6 +6,7 @@ including response generation and device configuration handling.
 
 from typing import Dict, Optional
 
+from xp.models import ModuleTypeCode
 from xp.models.telegram.system_telegram import SystemTelegram
 from xp.services.server.base_server_service import BaseServerService
 
@@ -32,7 +33,7 @@ class CP20ServerService(BaseServerService):
         """
         super().__init__(serial_number)
         self.device_type = "CP20"
-        self.module_type_code = 2  # CP20 module type from registry
+        self.module_type_code = ModuleTypeCode.CP20  # CP20 module type from registry
         self.firmware_version = "CP20_V0.01.05"
 
     def _handle_device_specific_data_request(

@@ -124,7 +124,7 @@ class TelegramProtocol(protocol.Protocol):
             payload = telegram[:-2]  # S0123450001F02D12
             checksum = telegram[-2:].decode()  # FK
             serial_number = (
-                telegram[1:11] if telegram_type in "S" else b""
+                telegram[1:11] if telegram_type in ("S", "R") else b""
             )  # 0123450001
             calculated_checksum = calculate_checksum(payload.decode(encoding="latin-1"))
 
@@ -151,9 +151,9 @@ class TelegramProtocol(protocol.Protocol):
             await self.event_bus.dispatch(
                 TelegramReceivedEvent(
                     protocol=self,
-                    frame=frame.decode(),
-                    telegram=telegram.decode(),
-                    payload=payload.decode(),
+                    frame=frame.decode("latin-1"),
+                    telegram=telegram.decode("latin-1"),
+                    payload=payload.decode("latin-1"),
                     telegram_type=telegram_type,
                     serial_number=serial_number,
                     checksum=checksum,

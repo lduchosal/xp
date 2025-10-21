@@ -128,7 +128,7 @@ class ConbusScanService(ConbusProtocol):
         function_code: str,
         progress_callback: Callable[[str], None],
         finish_callback: Callable[[ConbusResponse], None],
-        timeout_seconds: Optional[float] = None,
+        timeout_seconds: float = 0.25,
     ) -> None:
         """Scan a module for all datapoints by function code.
 

@@ -7,6 +7,7 @@ including response generation and device configuration handling for
 
 from typing import Dict, Optional
 
+from xp.models import ModuleTypeCode
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
@@ -38,24 +39,24 @@ class XP33ServerService(BaseServerService):
         super().__init__(serial_number)
         self.variant = variant  # XP33 or XP33LR or XP33LED
         self.device_type = "XP33"
-        self.module_type_code = 11  # XP33 module type
+        self.module_type_code = ModuleTypeCode.XP33  # XP33 module type
 
         # XP33 device characteristics (anonymized for interoperability testing)
         if variant == "XP33LED":
             self.firmware_version = "XP33LED_V0.00.00"
             self.ean_code = "1234567890123"  # Test EAN - not a real product code
             self.max_power = 300  # 3 x 100VA
-            self.module_type_code = 31  # XP33LR module type
+            self.module_type_code = ModuleTypeCode.XP33LED  # XP33LR module type
         elif variant == "XP33LR":  # XP33LR
             self.firmware_version = "XP33LR_V0.00.00"
             self.ean_code = "1234567890124"  # Test EAN - not a real product code
             self.max_power = 640  # Total 640VA
-            self.module_type_code = 30  # XP33LR module type
+            self.module_type_code = ModuleTypeCode.XP33LR  # XP33LR module type
         else:  # XP33
             self.firmware_version = "XP33_V0.04.02"
             self.ean_code = "1234567890125"  # Test EAN - not a real product code
             self.max_power = 100  # Total 640VA
-            self.module_type_code = 11  # XP33 module type
+            self.module_type_code = ModuleTypeCode.XP33  # XP33 module type
 
         self.device_status = "00"  # Normal status
         self.link_number = 4  # 4 links configured

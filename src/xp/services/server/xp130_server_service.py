@@ -7,6 +7,7 @@ XP130 is an Ethernet/TCPIP interface module.
 
 from typing import Dict
 
+from xp.models import ModuleTypeCode
 from xp.services.server.base_server_service import BaseServerService
 
 
@@ -32,7 +33,7 @@ class XP130ServerService(BaseServerService):
         """
         super().__init__(serial_number)
         self.device_type = "XP130"
-        self.module_type_code = 13  # XP130 module type from registry
+        self.module_type_code = ModuleTypeCode.XP130  # XP130 module type from registry
         self.firmware_version = "XP130_V1.02.15"
 
         # XP130-specific network configuration

@@ -22,10 +22,10 @@ class SystemTelegram(Telegram):
     Examples: <S0020012521F02D18FN>
 
     Attributes:
-        serial_number: Serial number of the device.
-        system_function: System function code.
-        data: Data payload.
-        datapoint_type: Type of datapoint.
+        serial_number: Serial number of the device (0020012521)
+        system_function: System function code (02).
+        data: Data payload (18)
+        datapoint_type: Type of datapoint (18).
     """
 
     serial_number: str = ""

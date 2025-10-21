@@ -2,6 +2,7 @@
 
 from unittest.mock import Mock
 
+from xp.models import ModuleTypeCode
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.services.server.base_server_service import BaseServerService
@@ -18,7 +19,7 @@ class ConcreteServerService(BaseServerService):
         """
         super().__init__(serial_number)
         self.device_type = "TEST"
-        self.module_type_code = 0x33
+        self.module_type_code = ModuleTypeCode.XP20
         self.hardware_version = "1.0"
         self.software_version = "2.0"
 
