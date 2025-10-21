@@ -10,13 +10,13 @@ from xp.cli.utils.decorators import (
     connection_command,
 )
 from xp.cli.utils.serial_number_type import SERIAL
+from xp.models import ConbusDatapointResponse
 from xp.models.conbus.conbus_autoreport import ConbusAutoreportResponse
 from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.services.conbus.conbus_autoreport_get_service import (
-    ConbusAutoreportGetService,
-)
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.write_config_service import WriteConfigService
+from xp.services.telegram.telegram_datapoint_service import TelegramDatapointService
 
 
 @conbus_autoreport.command("get", short_help="Get auto report status for a module")
@@ -35,21 +35,28 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
         xp conbus autoreport get 0123450001
     """
     # Get service from container
-    service: ConbusAutoreportGetService = (
-        ctx.obj.get("container").get_container().resolve(ConbusAutoreportGetService)
+    service: ConbusDatapointService = (
+        ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
+    )
+    telegram_service: TelegramDatapointService = (
+        ctx.obj.get("container").get_container().resolve(TelegramDatapointService)
     )
 
-    def on_finish(service_response: ConbusAutoreportResponse) -> None:
+    def on_finish(service_response: ConbusDatapointResponse) -> None:
         """Handle successful completion of auto report status retrieval.
 
         Args:
             service_response: Auto report response object.
         """
-        click.echo(json.dumps(service_response.to_dict(), indent=2))
+        auto_report_status = telegram_service.get_autoreport_status(service_response.data_value)
+        result = service_response.to_dict()
+        result["auto_report_status"] = auto_report_status
+        click.echo(json.dumps(result, indent=2))
 
     with service:
-        service.get_autoreport_status(
+        service.query_datapoint(
             serial_number=serial_number,
+            datapoint_type=DataPointType.AUTO_REPORT_STATUS,
             finish_callback=on_finish,
         )
 
@@ -73,7 +80,7 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
         xp conbus autoreport set 0123450001 off
     """
 
-    def finish(response: "ConbusWriteConfigResponse") -> None:
+    def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
         Args:
@@ -92,6 +99,6 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
             serial_number=serial_number,
             datapoint_type=DataPointType.AUTO_REPORT_STATUS,
             data_value=data_value,
-            finish_callback=finish,
+            finish_callback=on_finish,
             timeout_seconds=0.5,
         )

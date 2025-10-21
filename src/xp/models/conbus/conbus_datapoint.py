@@ -33,6 +33,7 @@ class ConbusDatapointResponse:
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list] = None
     datapoint_telegram: Optional[ReplyTelegram] = None
+    data_value: str = ""
     datapoints: Optional[List[Dict[str, str]]] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
@@ -55,6 +56,7 @@ class ConbusDatapointResponse:
         result: Dict[str, Any] = {
             "success": self.success,
             "serial_number": self.serial_number,
+            "data_value": self.data_value,
             "error": self.error,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
         }

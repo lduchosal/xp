@@ -9,13 +9,13 @@ from xp.cli.utils.decorators import (
     connection_command,
 )
 from xp.cli.utils.serial_number_type import SERIAL
+from xp.models import ConbusDatapointResponse
 from xp.models.conbus.conbus_lightlevel import ConbusLightlevelResponse
 from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.services.conbus.conbus_lightlevel_set_service import (
-    ConbusLightlevelSetService,
-)
+from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.write_config_service import WriteConfigService
+from xp.services.telegram.telegram_datapoint_service import TelegramDatapointService
 
 
 @conbus_lightlevel.command("set")
@@ -178,17 +178,29 @@ def xp_lightlevel_get(
         xp conbus lightlevel get 0011223344 0   # Get light level for output 0
     """
 
-    def finish(response: "ConbusLightlevelResponse") -> None:
+    # Get service from container
+    service: ConbusDatapointService = (
+        ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
+    )
+    telegram_service: TelegramDatapointService = (
+        ctx.obj.get("container").get_container().resolve(TelegramDatapointService)
+    )
+
+    def finish(service_response: "ConbusDatapointResponse") -> None:
         """Handle successful completion of light level get command.
 
         Args:
-            response: Light level response object.
+            service_response: Light level response object.
         """
-        click.echo(json.dumps(response.to_dict(), indent=2))
-
-    service: ConbusLightlevelSetService = (
-        ctx.obj.get("container").get_container().resolve(ConbusLightlevelSetService)
-    )
+        lightlevel_level = telegram_service.get_lightlevel_level(service_response.data_value, output_number)
+        result = service_response.to_dict()
+        result["lightlevel_level"] = lightlevel_level
+        click.echo(json.dumps(result, indent=2))
 
     with service:
-        service.get_lightlevel(serial_number, output_number, finish, 0.5)
+        service.query_datapoint(
+            serial_number=serial_number,
+            datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
+            finish_callback=finish,
+            timeout_seconds=0.5
+        )

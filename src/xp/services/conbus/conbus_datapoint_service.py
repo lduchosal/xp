@@ -127,6 +127,7 @@ class ConbusDatapointService(ConbusProtocol):
         self.service_response.system_function = SystemFunction.READ_DATAPOINT
         self.service_response.datapoint_type = self.datapoint_type
         self.service_response.datapoint_telegram = datapoint_telegram
+        self.service_response.data_value = datapoint_telegram.data_value
         if self.datapoint_finished_callback:
             self.datapoint_finished_callback(self.service_response)
 

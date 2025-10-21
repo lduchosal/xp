@@ -60,7 +60,7 @@ def start_server(ctx: Context, port: int, config: str) -> None:
             raise SystemExit(1)
 
         # Get dependencies from container
-        _server_instance: ServerService = (
+        _server_instance = (
             ctx.obj.get("container").get_container().resolve(ServerService)
         )
 
