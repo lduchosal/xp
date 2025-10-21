@@ -28,7 +28,9 @@ def homekit_start(ctx: Context) -> None:
     click.echo("Starting XP Protocol HomeKit server...")
 
     try:
-        service = ctx.obj.get("container").get_container().resolve(HomeKitService)
+        service: HomeKitService = (
+            ctx.obj.get("container").get_container().resolve(HomeKitService)
+        )
         service.start()  # Blocking call - reactor.run() never returns
 
     except KeyboardInterrupt:

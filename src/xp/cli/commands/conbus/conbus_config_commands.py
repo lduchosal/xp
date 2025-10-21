@@ -23,5 +23,7 @@ def show_config(ctx: Context) -> None:
         \b
         xp conbus config
     """
-    config = ctx.obj.get("container").get_container().resolve(ConbusClientConfig)
+    config: ConbusClientConfig = (
+        ctx.obj.get("container").get_container().resolve(ConbusClientConfig)
+    )
     click.echo(json.dumps(config.conbus.model_dump(mode="json"), indent=2))

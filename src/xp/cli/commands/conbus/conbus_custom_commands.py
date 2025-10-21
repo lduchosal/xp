@@ -36,7 +36,9 @@ def send_custom_telegram(
         xp conbus custom 0012345011 02 E2
         xp conbus custom 0012345011 17 AA
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusCustomService)
+    service: ConbusCustomService = (
+        ctx.obj.get("container").get_container().resolve(ConbusCustomService)
+    )
 
     def on_finish(service_response: "ConbusCustomResponse") -> None:
         """Handle successful completion of custom telegram.

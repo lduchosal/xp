@@ -52,6 +52,8 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
         """
         click.echo(telegram_received)
 
-    service = ctx.obj.get("container").get_container().resolve(ConbusReceiveService)
+    service: ConbusReceiveService = (
+        ctx.obj.get("container").get_container().resolve(ConbusReceiveService)
+    )
     with service:
         service.start(progress, finish, timeout)

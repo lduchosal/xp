@@ -34,7 +34,9 @@ def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> 
         \b
         xp conbus output on 0011223344 0  # Turn on output 0
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusOutputService)
+    service: ConbusOutputService = (
+        ctx.obj.get("container").get_container().resolve(ConbusOutputService)
+    )
 
     def on_finish(response: ConbusOutputResponse) -> None:
         """Handle successful completion of output on command.
@@ -70,7 +72,9 @@ def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) ->
         \b
         xp conbus output off 0011223344 1    # Turn off output 1
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusOutputService)
+    service: ConbusOutputService = (
+        ctx.obj.get("container").get_container().resolve(ConbusOutputService)
+    )
 
     def on_finish(response: ConbusOutputResponse) -> None:
         """Handle successful completion of output off command.

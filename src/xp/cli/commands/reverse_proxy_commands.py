@@ -73,7 +73,9 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
             raise SystemExit(1)
 
         # Load configuration and create proxy instance
-        service = ctx.obj.get("container").get_container().resolve(ReverseProxyService)
+        service: ReverseProxyService = (
+            ctx.obj.get("container").get_container().resolve(ReverseProxyService)
+        )
         global_proxy_instance = service
 
         # Handle graceful shutdown on SIGINT

@@ -56,7 +56,9 @@ def decode_log_file(
     from xp.services.log_file_service import LogFileService
     from xp.utils.time_utils import TimeParsingError, parse_time_range
 
-    service = ctx.obj.get("container").get_container().resolve(LogFileService)
+    service: LogFileService = (
+        ctx.obj.get("container").get_container().resolve(LogFileService)
+    )
     StatisticsFormatter(True)
 
     try:
@@ -124,7 +126,9 @@ def analyze_log_file(ctx: Context, log_file_path: str) -> None:
     """
     from xp.services.log_file_service import LogFileService
 
-    service = ctx.obj.get("container").get_container().resolve(LogFileService)
+    service: LogFileService = (
+        ctx.obj.get("container").get_container().resolve(LogFileService)
+    )
     StatisticsFormatter(True)
 
     try:
@@ -156,7 +160,9 @@ def validate_log_file(ctx: Context, log_file_path: str) -> None:
     """
     from xp.services.log_file_service import LogFileService
 
-    service = ctx.obj.get("container").get_container().resolve(LogFileService)
+    service: LogFileService = (
+        ctx.obj.get("container").get_container().resolve(LogFileService)
+    )
     OutputFormatter(True)
 
     try:

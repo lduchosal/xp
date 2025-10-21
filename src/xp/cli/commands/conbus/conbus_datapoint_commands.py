@@ -45,7 +45,9 @@ def query_datapoint(ctx: Context, serial_number: str, datapoint: DataPointType) 
         xp conbus datapoint query current 0012345011
         xp conbus datapoint query humidity 0012345011
     """
-    service = ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
+    service: ConbusDatapointService = (
+        ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
+    )
 
     def on_finish(service_response: ConbusDatapointResponse) -> None:
         """Handle successful completion of datapoint query.
@@ -83,7 +85,7 @@ def query_all_datapoints(ctx: Context, serial_number: str) -> None:
         \b
         xp conbus datapoint all 0123450001
     """
-    service = (
+    service: ConbusDatapointQueryAllService = (
         ctx.obj.get("container").get_container().resolve(ConbusDatapointQueryAllService)
     )
 

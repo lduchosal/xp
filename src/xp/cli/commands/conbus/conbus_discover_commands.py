@@ -45,6 +45,8 @@ def send_discover_telegram(ctx: click.Context) -> None:
         # click.echo(f"Discovered : {serial_number}")
         pass
 
-    service = ctx.obj.get("container").get_container().resolve(ConbusDiscoverService)
+    service: ConbusDiscoverService = (
+        ctx.obj.get("container").get_container().resolve(ConbusDiscoverService)
+    )
     with service:
         service.start(progress, finish, 0.5)

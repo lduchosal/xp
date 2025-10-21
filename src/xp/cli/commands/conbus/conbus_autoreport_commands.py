@@ -11,10 +11,12 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.conbus.conbus_autoreport import ConbusAutoreportResponse
+from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
+from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_autoreport_get_service import (
     ConbusAutoreportGetService,
 )
-from xp.services.conbus.conbus_autoreport_set_service import ConbusAutoreportSetService
+from xp.services.conbus.write_config_service import WriteConfigService
 
 
 @conbus_autoreport.command("get", short_help="Get auto report status for a module")
@@ -70,21 +72,26 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
         xp conbus autoreport set 0123450001 on
         xp conbus autoreport set 0123450001 off
     """
-    # Get service from container
-    service = (
-        ctx.obj.get("container").get_container().resolve(ConbusAutoreportSetService)
-    )
-    status_bool = status.lower() == "on"
 
-    def on_finish(service_response: ConbusAutoreportResponse) -> None:
-        """Handle successful completion of auto report status setting.
+    def finish(response: "ConbusWriteConfigResponse") -> None:
+        """Handle successful completion of light level on command.
 
         Args:
-            service_response: Auto report response object.
+            response: Light level response object.
         """
-        click.echo(json.dumps(service_response.to_dict(), indent=2))
+        click.echo(json.dumps(response.to_dict(), indent=2))
+
+    service: WriteConfigService = (
+        ctx.obj.get("container").get_container().resolve(WriteConfigService)
+    )
+    status_value = True if status == "on" else False
+    data_value = "PP" if status_value else "AA"
 
     with service:
-        service.set_autoreport_status(
-            serial_number=serial_number, status=status_bool, status_callback=on_finish
+        service.write_config(
+            serial_number=serial_number,
+            datapoint_type=DataPointType.AUTO_REPORT_STATUS,
+            data_value=data_value,
+            finish_callback=finish,
+            timeout_seconds=0.5,
         )

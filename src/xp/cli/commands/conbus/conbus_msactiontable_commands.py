@@ -33,7 +33,9 @@ def conbus_download_msactiontable(
         serial_number: 10-digit module serial number.
         xpmoduletype: XP module type.
     """
-    service = ctx.obj.get("container").get_container().resolve(MsActionTableService)
+    service: MsActionTableService = (
+        ctx.obj.get("container").get_container().resolve(MsActionTableService)
+    )
 
     def progress_callback(progress: str) -> None:
         """Handle progress updates during MS action table download.

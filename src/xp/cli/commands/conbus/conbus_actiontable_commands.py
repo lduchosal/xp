@@ -28,7 +28,9 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
     """
-    service = ctx.obj.get("container").get_container().resolve(ActionTableService)
+    service: ActionTableService = (
+        ctx.obj.get("container").get_container().resolve(ActionTableService)
+    )
 
     def progress_callback(progress: str) -> None:
         """Handle progress updates during action table download.

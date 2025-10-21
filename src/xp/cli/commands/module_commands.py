@@ -37,7 +37,9 @@ def module_info(ctx: Context, identifier: str) -> None:
         xp module info 14
         xp module info XP2606
     """
-    service = ctx.obj.get("container").get_container().resolve(ModuleTypeService)
+    service: ModuleTypeService = (
+        ctx.obj.get("container").get_container().resolve(ModuleTypeService)
+    )
     OutputFormatter(True)
 
     try:
@@ -76,7 +78,9 @@ def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
         xp module list --category "Interface Panels"
         xp module list --group-by-category
     """
-    service = ctx.obj.get("container").get_container().resolve(ModuleTypeService)
+    service: ModuleTypeService = (
+        ctx.obj.get("container").get_container().resolve(ModuleTypeService)
+    )
     ListFormatter(True)
 
     try:
@@ -130,7 +134,9 @@ def module_search(ctx: Context, query: str, field: tuple) -> None:
         xp module search "push button"
         xp module search --field name "XP"
     """
-    service = ctx.obj.get("container").get_container().resolve(ModuleTypeService)
+    service: ModuleTypeService = (
+        ctx.obj.get("container").get_container().resolve(ModuleTypeService)
+    )
     ListFormatter(True)
 
     try:
@@ -162,7 +168,9 @@ def module_categories(ctx: Context) -> None:
         \b
         xp module categories
     """
-    service = ctx.obj.get("container").get_container().resolve(ModuleTypeService)
+    service: ModuleTypeService = (
+        ctx.obj.get("container").get_container().resolve(ModuleTypeService)
+    )
     OutputFormatter(True)
 
     try:

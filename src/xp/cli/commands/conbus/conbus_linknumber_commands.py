@@ -10,8 +10,10 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse
+from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
+from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_linknumber_get_service import ConbusLinknumberGetService
-from xp.services.conbus.conbus_linknumber_set_service import ConbusLinknumberSetService
+from xp.services.conbus.write_config_service import WriteConfigService
 
 
 @conbus_linknumber.command("set", short_help="Set link number for a module")
@@ -33,23 +35,27 @@ def set_linknumber_command(
         \b
         xp conbus linknumber set 0123450001 25
     """
-    service = (
-        ctx.obj.get("container").get_container().resolve(ConbusLinknumberSetService)
-    )
 
-    def on_finish(response: ConbusLinknumberResponse) -> None:
-        """Handle successful completion of link number set command.
+    def finish(response: "ConbusWriteConfigResponse") -> None:
+        """Handle successful completion of light level on command.
 
         Args:
-            response: Link number response object.
+            response: Light level response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
 
+    service: WriteConfigService = (
+        ctx.obj.get("container").get_container().resolve(WriteConfigService)
+    )
+
+    data_value = f"{link_number: 02d}"
     with service:
-        service.set_linknumber(
+        service.write_config(
             serial_number=serial_number,
-            link_number=link_number,
-            finish_callback=on_finish,
+            datapoint_type=DataPointType.LINK_NUMBER,
+            data_value=data_value,
+            finish_callback=finish,
+            timeout_seconds=0.5,
         )
 
 
