@@ -221,10 +221,6 @@ src/xp/
 
 xp
 
-xp api
-xp api start
-
-
 xp conbus
 
 xp conbus actiontable

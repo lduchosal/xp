@@ -21,7 +21,6 @@ class TelegramDatapointService:
         status_value = True if data_value == "PP" else False
         return status_value
 
-
     def get_autoreport_status_data_value(self, status_value: bool) -> str:
         """Get the autoreport status data_value.
 
@@ -31,7 +30,7 @@ class TelegramDatapointService:
         Returns:
             data_value: The raw autoreport status data value (PP or AA).
         """
-        data_value = "PP" if status_value  else "AA"
+        data_value = "PP" if status_value else "AA"
         return data_value
 
     def get_lightlevel(self, data_value: str, output_number: int) -> int:

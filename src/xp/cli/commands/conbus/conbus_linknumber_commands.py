@@ -88,9 +88,7 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
         Args:
             service_response: Link number response object.
         """
-        linknumber_value = telegram_service.get_linknumber(
-            service_response.data_value
-        )
+        linknumber_value = telegram_service.get_linknumber(service_response.data_value)
         result = service_response.to_dict()
         result["linknumber_value"] = linknumber_value
         click.echo(json.dumps(result, indent=2))
