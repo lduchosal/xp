@@ -134,6 +134,11 @@ class WriteConfigService(ConbusProtocol):
         )
 
     def failed(self, message: str) -> None:
+        """Handle telegram failed event.
+
+        Args:
+            message: The error message.
+        """
         self.logger.debug("Failed to send telegram")
         self.finished(succeed_or_failed=False, message=message)
 

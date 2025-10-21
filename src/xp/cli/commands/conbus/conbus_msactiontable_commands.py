@@ -2,6 +2,7 @@
 
 import json
 from dataclasses import asdict
+from typing import Union
 
 import click
 from click import Context
@@ -12,7 +13,9 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.cli.utils.xp_module_type import XP_MODULE_TYPE
-from xp.models.actiontable.actiontable import ActionTable
+from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
+from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
+from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 from xp.services.conbus.actiontable.msactiontable_service import (
     MsActionTableService,
 )
@@ -45,7 +48,9 @@ def conbus_download_msactiontable(
         """
         click.echo(progress, nl=False)
 
-    def finish_callback(action_table: ActionTable) -> None:
+    def finish_callback(
+        action_table: Union[Xp20MsActionTable | Xp24MsActionTable | Xp33MsActionTable],
+    ) -> None:
         """Handle successful completion of MS action table download.
 
         Args:
