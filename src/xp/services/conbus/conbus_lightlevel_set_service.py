@@ -6,147 +6,38 @@ querying current light levels.
 """
 
 import logging
-from datetime import datetime
 from typing import Callable, Optional
 
-from twisted.internet.posixbase import PosixReactorBase
-
-from xp.models import ConbusClientConfig
-from xp.models.conbus.conbus_lightlevel import ConbusLightlevelResponse
-from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.models.telegram.system_function import SystemFunction
-from xp.models.telegram.telegram_type import TelegramType
-from xp.services.protocol import ConbusProtocol
+from xp.services.conbus.write_config_service import WriteConfigService
 
 
-class ConbusLightlevelError(Exception):
-    """Raised when Conbus lightlevel operations fail."""
-
-    pass
-
-
-class ConbusLightlevelSetService(ConbusProtocol):
+class ConbusLightlevelSetService:
     """
-    Service for controlling light levels on Conbus modules.
+    Service for setting light level status on Conbus modules.
 
-    Manages lightlevel operations including setting specific levels,
-    turning lights on/off, and querying current states.
+    Uses ConbusProtocol to provide light level configuration functionality
+    for enabling/disabling automatic reporting on modules.
     """
 
-    def __init__(
-        self,
-        cli_config: ConbusClientConfig,
-        reactor: PosixReactorBase,
-    ):
-        """Initialize the Conbus lightlevel service.
+    def __init__(self, write_config_service: WriteConfigService) -> None:
+        """Initialize the Conbus lightlevel set service.
 
         Args:
-            cli_config: Configuration for Conbus client connection.
-            reactor: Twisted reactor for event loop.
+            write_config_service: Write Config service.
         """
-        super().__init__(cli_config, reactor)
-        self.serial_number: str = ""
-        self.output_number: int = 0
-        self.level: int = 0
-        self.finish_callback: Optional[Callable[[ConbusLightlevelResponse], None]] = (
-            None
-        )
-        self.service_response: ConbusLightlevelResponse = ConbusLightlevelResponse(
-            success=False,
-            serial_number=self.serial_number,
-            output_number=self.output_number,
-            level=None,
-            timestamp=datetime.now(),
-        )
+        self.write_config_service: WriteConfigService = write_config_service
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
-
-    def connection_established(self) -> None:
-        """Handle connection established event."""
-        self.logger.debug(
-            f"Connection established, setting light level for output {self.output_number} to {self.level}%."
-        )
-
-        # Format data as output_number:level (e.g., ""15" + "02:050")
-        data_value = f"{DataPointType.MODULE_LIGHT_LEVEL.value}{self.output_number:02d}:{self.level:03d}"
-
-        # Send telegram using WRITE_CONFIG function with MODULE_LIGHT_LEVEL datapoint
-        self.send_telegram(
-            telegram_type=TelegramType.SYSTEM,
-            serial_number=self.serial_number,
-            system_function=SystemFunction.WRITE_CONFIG,  # "04"
-            data_value=data_value,
-        )
-
-    def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
-
-        Args:
-            telegram_sent: The telegram that was sent.
-        """
-        self.service_response.sent_telegram = telegram_sent
-
-    def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
-
-        Args:
-            telegram_received: The telegram received event.
-        """
-        self.logger.debug(f"Telegram received: {telegram_received}")
-        if not self.service_response.received_telegrams:
-            self.service_response.received_telegrams = []
-        self.service_response.received_telegrams.append(telegram_received.frame)
-
-        if (
-            not telegram_received.checksum_valid
-            or telegram_received.telegram_type != TelegramType.REPLY
-            or telegram_received.serial_number != self.serial_number
-        ):
-            self.logger.debug("Not a reply for our serial number")
-            return
-
-        # Any valid reply means success (ACK or NAK)
-        if telegram_received.telegram_type == TelegramType.REPLY:
-            self.logger.debug("Received lightlevel response")
-            self.succeed()
-
-    def succeed(self) -> None:
-        """Handle successful light level set operation."""
-        self.logger.debug("Succeed")
-        self.service_response.success = True
-        self.service_response.serial_number = self.serial_number
-        self.service_response.output_number = self.output_number
-        self.service_response.level = self.level
-        self.service_response.timestamp = datetime.now()
-
-        if self.finish_callback:
-            self.finish_callback(self.service_response)
-
-    def failed(self, message: str) -> None:
-        """Handle failed connection event.
-
-        Args:
-            message: Failure message.
-        """
-        self.logger.debug(f"Failed with message: {message}")
-        self.service_response.success = False
-        self.service_response.serial_number = self.serial_number
-        self.service_response.output_number = self.output_number
-        self.service_response.level = self.level
-        self.service_response.timestamp = datetime.now()
-        self.service_response.error = message
-
-        if self.finish_callback:
-            self.finish_callback(self.service_response)
 
     def set_lightlevel(
         self,
         serial_number: str,
         output_number: int,
         level: int,
-        finish_callback: Callable[[ConbusLightlevelResponse], None],
+        finish_callback: Callable[[ConbusWriteConfigResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Set light level for a specific output on a module.
@@ -165,32 +56,22 @@ class ConbusLightlevelSetService(ConbusProtocol):
         self.logger.info(
             f"Setting light level for {serial_number} output {output_number} to {level}%"
         )
-        if timeout_seconds:
-            self.timeout_seconds = timeout_seconds
-        self.finish_callback = finish_callback
-        self.serial_number = serial_number
-        self.output_number = output_number
-        self.level = level
+        # Format data as output_number:level (e.g., "02:050")
+        data_value = f"{output_number:02d}:{level:03d}"
 
-        # Validate output_number range (0-8)
-        if not 0 <= self.output_number <= 8:
-            self.failed(
-                f"Output number must be between 0 and 8, got {self.output_number}"
-            )
-            return
-
-        # Validate level range
-        if not 0 <= self.level <= 100:
-            self.failed(f"Light level must be between 0 and 100, got {self.level}")
-            return
-
-        self.start_reactor()
+        self.write_config_service.write_config(
+            serial_number=serial_number,
+            datapoint_type=DataPointType.LINK_NUMBER,
+            data_value=data_value,
+            finish_callback=finish_callback,
+            timeout_seconds=timeout_seconds,
+        )
 
     def turn_off(
         self,
         serial_number: str,
         output_number: int,
-        finish_callback: Callable[[ConbusLightlevelResponse], None],
+        finish_callback: Callable[[ConbusWriteConfigResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Turn off light (set level to 0) for a specific output.
@@ -209,7 +90,7 @@ class ConbusLightlevelSetService(ConbusProtocol):
         self,
         serial_number: str,
         output_number: int,
-        finish_callback: Callable[[ConbusLightlevelResponse], None],
+        finish_callback: Callable[[ConbusWriteConfigResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Turn on light (set level to 80%) for a specific output.

@@ -37,14 +37,14 @@ class ConbusAutoreportGetService(ConbusDatapointService):
             reactor: Twisted reactor instance.
         """
         super().__init__(telegram_service, cli_config, reactor)
-        self.service_callback: Optional[Callable[[ConbusAutoreportResponse], None]] = (
+        self.finish_callback: Optional[Callable[[ConbusAutoreportResponse], None]] = (
             None
         )
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def finish_service_callback(
+    def datapoint_finished_callback(
         self, datapoint_response: ConbusDatapointResponse
     ) -> None:
         """Handle finished service callback.
@@ -67,8 +67,8 @@ class ConbusAutoreportGetService(ConbusDatapointService):
             timestamp=datapoint_response.timestamp,
         )
 
-        if self.service_callback:
-            self.service_callback(service_response)
+        if self.finish_callback:
+            self.finish_callback(service_response)
 
     def get_autoreport_status(
         self,
@@ -89,6 +89,6 @@ class ConbusAutoreportGetService(ConbusDatapointService):
             self.timeout_seconds = timeout_seconds
         self.serial_number = serial_number
         self.datapoint_type = DataPointType.AUTO_REPORT_STATUS
-        self.finish_callback = self.finish_service_callback
-        self.service_callback = finish_callback
+        self.datapoint_finished_callback = self.datapoint_finished_callback
+        self.finish_callback = finish_callback
         self.start_reactor()

@@ -260,7 +260,7 @@ class TestConbusLinknumberIntegration:
                 received_telegrams=["<R0123450001F03D041AFH>"],
                 timestamp=datetime.now(),
             )
-            get_service.finish_service_callback(datapoint_response)
+            get_service.datapoint_finished_callback(datapoint_response)
 
         get_service.start_reactor = mock_start_reactor
         get_service.get_linknumber("0123450001", callback)
@@ -293,7 +293,7 @@ class TestConbusLinknumberIntegration:
                 error="Connection timeout",
                 timestamp=datetime.now(),
             )
-            get_service.finish_service_callback(datapoint_response)
+            get_service.datapoint_finished_callback(datapoint_response)
 
         get_service.start_reactor = mock_start_reactor
         get_service.get_linknumber("0123450001", callback)
@@ -330,13 +330,13 @@ class TestConbusLinknumberIntegration:
             )
 
             try:
-                get_service.finish_service_callback(datapoint_response)
+                get_service.datapoint_finished_callback(datapoint_response)
             except ValueError:
                 from xp.models.conbus.conbus_linknumber import (
                     ConbusLinknumberResponse,
                 )
 
-                get_service.service_callback(
+                get_service.finish_callback(
                     ConbusLinknumberResponse(
                         success=False,
                         result="PARSE_ERROR",
@@ -383,7 +383,7 @@ class TestConbusLinknumberIntegration:
                 error="Unexpected error: Service unavailable",
                 timestamp=datetime.now(),
             )
-            get_service.finish_service_callback(datapoint_response)
+            get_service.datapoint_finished_callback(datapoint_response)
 
         get_service.start_reactor = mock_start_reactor
         get_service.get_linknumber("0123450001", callback)

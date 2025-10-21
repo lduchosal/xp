@@ -37,14 +37,14 @@ class ConbusLinknumberGetService(ConbusDatapointService):
             reactor: Twisted reactor for event loop.
         """
         super().__init__(telegram_service, cli_config, reactor)
-        self.service_callback: Optional[Callable[[ConbusLinknumberResponse], None]] = (
+        self.finish_callback: Optional[Callable[[ConbusLinknumberResponse], None]] = (
             None
         )
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def finish_service_callback(
+    def datapoint_finished_callback(
         self, datapoint_response: ConbusDatapointResponse
     ) -> None:
         """Process datapoint response and extract link number.
@@ -68,8 +68,8 @@ class ConbusLinknumberGetService(ConbusDatapointService):
             timestamp=datapoint_response.timestamp,
         )
 
-        if self.service_callback:
-            self.service_callback(linknumber_response)
+        if self.finish_callback:
+            self.finish_callback(linknumber_response)
 
     def get_linknumber(
         self,
@@ -89,6 +89,6 @@ class ConbusLinknumberGetService(ConbusDatapointService):
             self.timeout_seconds = timeout_seconds
         self.serial_number = serial_number
         self.datapoint_type = DataPointType.LINK_NUMBER
-        self.finish_callback = self.finish_service_callback
-        self.service_callback = finish_callback
+        self.datapoint_finished_callback = self.datapoint_finished_callback
+        self.finish_callback = finish_callback
         self.start_reactor()

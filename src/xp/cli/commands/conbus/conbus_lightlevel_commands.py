@@ -12,7 +12,6 @@ from xp.cli.utils.decorators import (
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.conbus.conbus_lightlevel import ConbusLightlevelResponse
 from xp.services.conbus.conbus_lightlevel_set_service import (
-    ConbusLightlevelError,
     ConbusLightlevelSetService,
 )
 
@@ -23,7 +22,6 @@ from xp.services.conbus.conbus_lightlevel_set_service import (
 @click.argument("level", type=click.IntRange(0, 100))
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusLightlevelError)
 def xp_lightlevel_set(
     ctx: click.Context, serial_number: str, output_number: int, level: int
 ) -> None:
@@ -62,7 +60,6 @@ def xp_lightlevel_set(
 @click.argument("output_number", type=click.IntRange(0, 8))
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusLightlevelError)
 def xp_lightlevel_off(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
@@ -100,7 +97,6 @@ def xp_lightlevel_off(
 @click.argument("output_number", type=click.IntRange(0, 8))
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusLightlevelError)
 def xp_lightlevel_on(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
@@ -138,7 +134,6 @@ def xp_lightlevel_on(
 @click.argument("output_number", type=click.IntRange(0, 8))
 @click.pass_context
 @connection_command()
-@handle_service_errors(ConbusLightlevelError)
 def xp_lightlevel_get(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:

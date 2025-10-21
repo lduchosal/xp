@@ -40,6 +40,7 @@ from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_raw_service import ConbusRawService
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
+from xp.services.conbus.write_config_service import WriteConfigService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
 from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
@@ -191,10 +192,19 @@ class ServiceContainer:
         )
 
         self.container.register(
-            ConbusLightlevelSetService,
-            factory=lambda: ConbusLightlevelSetService(
+            WriteConfigService,
+            factory=lambda: WriteConfigService(
+                telegram_service=self.container.resolve(TelegramService),
                 cli_config=self.container.resolve(ConbusClientConfig),
                 reactor=self.container.resolve(PosixReactorBase),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusLightlevelSetService,
+            factory=lambda: ConbusLightlevelSetService(
+                write_config_service=self.container.resolve(WriteConfigService),
             ),
             scope=punq.Scope.singleton,
         )
@@ -250,8 +260,7 @@ class ServiceContainer:
         self.container.register(
             ConbusAutoreportSetService,
             factory=lambda: ConbusAutoreportSetService(
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
+                write_config_service=self.container.resolve(WriteConfigService),
             ),
             scope=punq.Scope.singleton,
         )
@@ -279,9 +288,7 @@ class ServiceContainer:
         self.container.register(
             ConbusLinknumberSetService,
             factory=lambda: ConbusLinknumberSetService(
-                telegram_service=self.container.resolve(TelegramService),
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
+                write_config_service=self.container.resolve(WriteConfigService),
             ),
             scope=punq.Scope.singleton,
         )

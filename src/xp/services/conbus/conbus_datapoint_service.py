@@ -44,7 +44,9 @@ class ConbusDatapointService(ConbusProtocol):
         self.telegram_service = telegram_service
         self.serial_number: str = ""
         self.datapoint_type: Optional[DataPointType] = None
-        self.finish_callback: Optional[Callable[[ConbusDatapointResponse], None]] = None
+        self.datapoint_finished_callback: Optional[
+            Callable[[ConbusDatapointResponse], None]
+        ] = None
         self.service_response: ConbusDatapointResponse = ConbusDatapointResponse(
             success=False,
             serial_number=self.serial_number,
@@ -125,8 +127,8 @@ class ConbusDatapointService(ConbusProtocol):
         self.service_response.system_function = SystemFunction.READ_DATAPOINT
         self.service_response.datapoint_type = self.datapoint_type
         self.service_response.datapoint_telegram = datapoint_telegram
-        if self.finish_callback:
-            self.finish_callback(self.service_response)
+        if self.datapoint_finished_callback:
+            self.datapoint_finished_callback(self.service_response)
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -139,8 +141,8 @@ class ConbusDatapointService(ConbusProtocol):
         self.service_response.timestamp = datetime.now()
         self.service_response.serial_number = self.serial_number
         self.service_response.error = message
-        if self.finish_callback:
-            self.finish_callback(self.service_response)
+        if self.datapoint_finished_callback:
+            self.datapoint_finished_callback(self.service_response)
 
     def query_datapoint(
         self,
@@ -160,7 +162,7 @@ class ConbusDatapointService(ConbusProtocol):
         self.logger.info("Starting query_datapoint")
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
-        self.finish_callback = finish_callback
+        self.datapoint_finished_callback = finish_callback
         self.serial_number = serial_number
         self.datapoint_type = datapoint_type
         self.start_reactor()

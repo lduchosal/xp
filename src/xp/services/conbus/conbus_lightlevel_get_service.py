@@ -39,14 +39,14 @@ class ConbusLightlevelGetService(ConbusDatapointService):
         """
         super().__init__(telegram_service, cli_config, reactor)
         self.output_number: int = 0
-        self.service_callback: Optional[Callable[[ConbusLightlevelResponse], None]] = (
+        self.finish_callback: Optional[Callable[[ConbusLightlevelResponse], None]] = (
             None
         )
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def finish_service_callback(
+    def datapoint_finished_callback(
         self, datapoint_response: ConbusDatapointResponse
     ) -> None:
         """Process datapoint response and extract light level.
@@ -79,8 +79,8 @@ class ConbusLightlevelGetService(ConbusDatapointService):
             timestamp=datetime.now(),
         )
 
-        if self.service_callback:
-            self.service_callback(service_response)
+        if self.finish_callback:
+            self.finish_callback(service_response)
 
     def get_light_level(
         self,
@@ -104,6 +104,6 @@ class ConbusLightlevelGetService(ConbusDatapointService):
         self.output_number = output_number
         self.datapoint_type = DataPointType.MODULE_LIGHT_LEVEL
 
-        self.finish_callback = self.finish_service_callback
-        self.service_callback = finish_callback
+        self.datapoint_finished_callback = self.datapoint_finished_callback
+        self.finish_callback = finish_callback
         self.start_reactor()
