@@ -40,7 +40,9 @@ async def blink_on(
     Returns:
         API response with blink result or error.
     """
-    service = request.app.state.container.get_container().resolve(ConbusBlinkService)
+    service: ConbusBlinkService = request.app.state.container.get_container().resolve(
+        ConbusBlinkService
+    )
 
     # SendInput telegram and receive responses
     with service:
@@ -91,7 +93,9 @@ async def blink_off(
     Returns:
         API response with blink result or error.
     """
-    service = request.app.state.container.get_container().resolve(ConbusBlinkService)
+    service: ConbusBlinkService = request.app.state.container.get_container().resolve(
+        ConbusBlinkService
+    )
 
     # SendInput telegram and receive responses
     with service:

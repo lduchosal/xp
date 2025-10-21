@@ -6,5 +6,5 @@ from xp.utils.dependencies import ServiceContainer
 if __name__ == "__main__":
 
     container = ServiceContainer()
-    homekit_service = container.get_container().resolve(HomeKitService)
+    homekit_service: HomeKitService = container.get_container().resolve(HomeKitService)
     homekit_service.start()

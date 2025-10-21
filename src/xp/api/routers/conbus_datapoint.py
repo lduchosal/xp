@@ -42,7 +42,7 @@ async def datapoint_devices(
     Returns:
         API response with datapoint value or error.
     """
-    service = request.app.state.container.get_container().resolve(
+    service: ConbusDatapointService = request.app.state.container.get_container().resolve(
         ConbusDatapointService
     )
     # SendDatapoint telegram and receive responses

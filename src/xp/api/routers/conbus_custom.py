@@ -43,7 +43,9 @@ async def custom_function(
     Returns:
         API response with custom function result or error.
     """
-    service = request.app.state.container.get_container().resolve(ConbusCustomService)
+    service: ConbusCustomService = request.app.state.container.get_container().resolve(
+        ConbusCustomService
+    )
     # SendDatapoint telegram and receive responses
     with service:
         response = service.send_custom_telegram(serial_number, function_code, data)

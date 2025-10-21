@@ -35,7 +35,7 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
         xp conbus autoreport get 0123450001
     """
     # Get service from container
-    service = (
+    service: ConbusAutoreportGetService = (
         ctx.obj.get("container").get_container().resolve(ConbusAutoreportGetService)
     )
 

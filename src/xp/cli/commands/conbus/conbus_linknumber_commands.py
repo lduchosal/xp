@@ -74,7 +74,7 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
         \b
         xp conbus linknumber get 0123450001
     """
-    service = (
+    service: ConbusLinknumberGetService = (
         ctx.obj.get("container").get_container().resolve(ConbusLinknumberGetService)
     )
 

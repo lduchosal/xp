@@ -45,7 +45,9 @@ async def input_action(
     Returns:
         API response with operation result or error.
     """
-    service = request.app.state.container.get_container().resolve(ConbusOutputService)
+    service: ConbusOutputService = request.app.state.container.get_container().resolve(
+        ConbusOutputService
+    )
 
     # SendInput telegram and receive responses
     with service:
@@ -96,7 +98,9 @@ async def output_status(
     Returns:
         API response with output status or error.
     """
-    service = request.app.state.container.get_container().resolve(ConbusOutputService)
+    service: ConbusOutputService = request.app.state.container.get_container().resolve(
+        ConbusOutputService
+    )
 
     # SendInput telegram and receive responses
     with service:
@@ -144,7 +148,9 @@ async def output_state(
     Returns:
         API response with module state or error.
     """
-    service = request.app.state.container.get_container().resolve(ConbusOutputService)
+    service: ConbusOutputService = request.app.state.container.get_container().resolve(
+        ConbusOutputService
+    )
 
     # SendInput telegram and receive responses
     with service:
