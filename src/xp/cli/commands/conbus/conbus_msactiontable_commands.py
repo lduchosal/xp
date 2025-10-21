@@ -48,7 +48,7 @@ def conbus_download_msactiontable(
         """
         click.echo(progress, nl=False)
 
-    def finish_callback(
+    def on_finish(
         action_table: Union[Xp20MsActionTable | Xp24MsActionTable | Xp33MsActionTable],
     ) -> None:
         """Handle successful completion of MS action table download.
@@ -80,6 +80,6 @@ def conbus_download_msactiontable(
             serial_number=serial_number,
             xpmoduletype=xpmoduletype,
             progress_callback=progress_callback,
-            finish_callback=finish_callback,
+            finish_callback=on_finish,
             error_callback=error_callback,
         )

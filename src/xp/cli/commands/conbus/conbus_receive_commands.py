@@ -36,7 +36,7 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
         xp conbus receive 5.0
     """
 
-    def finish(response_received: ConbusReceiveResponse) -> None:
+    def on_finish(response_received: ConbusReceiveResponse) -> None:
         """Handle successful completion of telegram receive operation.
 
         Args:
@@ -56,4 +56,4 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
         ctx.obj.get("container").get_container().resolve(ConbusReceiveService)
     )
     with service:
-        service.start(progress, finish, timeout)
+        service.start(progress, on_finish, timeout)

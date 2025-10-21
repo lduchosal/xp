@@ -28,7 +28,7 @@ def send_discover_telegram(ctx: click.Context) -> None:
         xp conbus discover
     """
 
-    def finish(discovered_devices: ConbusDiscoverResponse) -> None:
+    def on_finish(discovered_devices: ConbusDiscoverResponse) -> None:
         """Handle successful completion of device discovery.
 
         Args:
@@ -49,4 +49,4 @@ def send_discover_telegram(ctx: click.Context) -> None:
         ctx.obj.get("container").get_container().resolve(ConbusDiscoverService)
     )
     with service:
-        service.start(progress, finish, 0.5)
+        service.start(progress, on_finish, 0.5)

@@ -40,7 +40,7 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         """
         click.echo(progress)
 
-    def finish_callback(actiontable: ActionTable) -> None:
+    def on_finish(actiontable: ActionTable) -> None:
         """Handle successful completion of action table download.
 
         Args:
@@ -64,6 +64,6 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         service.start(
             serial_number=serial_number,
             progress_callback=progress_callback,
-            finish_callback=finish_callback,
+            finish_callback=on_finish,
             error_callback=error_callback,
         )

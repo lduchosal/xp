@@ -11,7 +11,6 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models import ConbusDatapointResponse
-from xp.models.conbus.conbus_autoreport import ConbusAutoreportResponse
 from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
@@ -48,7 +47,9 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
         Args:
             service_response: Auto report response object.
         """
-        auto_report_status = telegram_service.get_autoreport_status(service_response.data_value)
+        auto_report_status = telegram_service.get_autoreport_status(
+            service_response.data_value
+        )
         result = service_response.to_dict()
         result["auto_report_status"] = auto_report_status
         click.echo(json.dumps(result, indent=2))
@@ -91,8 +92,11 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )
+    telegram_service: TelegramDatapointService = (
+        ctx.obj.get("container").get_container().resolve(TelegramDatapointService)
+    )
     status_value = True if status == "on" else False
-    data_value = "PP" if status_value else "AA"
+    data_value = telegram_service.get_autoreport_status_data_value(status_value)
 
     with service:
         service.write_config(

@@ -10,11 +10,8 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models import ConbusDatapointResponse
-from xp.models.conbus.conbus_linknumber import ConbusLinknumberResponse
 from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.services.conbus.conbus_linknumber_get_service import ConbusLinknumberGetService
-
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.write_config_service import WriteConfigService
 from xp.services.telegram.telegram_datapoint_service import TelegramDatapointService
@@ -40,7 +37,7 @@ def set_linknumber_command(
         xp conbus linknumber set 0123450001 25
     """
 
-    def finish(response: "ConbusWriteConfigResponse") -> None:
+    def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
         Args:
@@ -58,7 +55,7 @@ def set_linknumber_command(
             serial_number=serial_number,
             datapoint_type=DataPointType.LINK_NUMBER,
             data_value=data_value,
-            finish_callback=finish,
+            finish_callback=on_finish,
             timeout_seconds=0.5,
         )
 
@@ -85,23 +82,23 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
         ctx.obj.get("container").get_container().resolve(TelegramDatapointService)
     )
 
-
     def on_finish(service_response: ConbusDatapointResponse) -> None:
         """Handle successful completion of link number get command.
 
         Args:
-            response: Link number response object.
+            service_response: Link number response object.
         """
-        linknumber_value = telegram_service.get_linknumber_value(service_response.data_value)
+        linknumber_value = telegram_service.get_linknumber(
+            service_response.data_value
+        )
         result = service_response.to_dict()
         result["linknumber_value"] = linknumber_value
         click.echo(json.dumps(result, indent=2))
-
 
     with service:
         service.query_datapoint(
             serial_number=serial_number,
             datapoint_type=DataPointType.LINK_NUMBER,
             finish_callback=on_finish,
-            timeout_seconds=0.5
+            timeout_seconds=0.5,
         )

@@ -1,7 +1,6 @@
 """Command modules for XP CLI."""
 
 # Main command groups
-from xp.cli.commands.api_start_commands import start_api_server
 
 # Import conbus command groups (but not 'conbus' itself to avoid module shadowing in Python 3.10)
 from xp.cli.commands.conbus.conbus import (
@@ -100,7 +99,6 @@ __all__ = [
     "linknumber",
     "blink",
     "checksum",
-    "start_api_server",
     "homekit",
     "homekit_start",
     # Individual command functions

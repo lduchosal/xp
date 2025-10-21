@@ -21,6 +21,7 @@ class ConbusDatapointResponse:
         sent_telegram: Telegram sent to device.
         received_telegrams: List of telegrams received.
         datapoint_telegram: Parsed datapoint telegram.
+        data_value: Value of the datapoint telegram.
         datapoints: List of datapoint values.
         error: Error message if operation failed.
         timestamp: Timestamp of the response.

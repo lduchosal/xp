@@ -21,8 +21,6 @@ from xp.services.conbus.actiontable.msactiontable_xp24_serializer import (
 from xp.services.conbus.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
-from xp.services.conbus.conbus_autoreport_get_service import ConbusAutoreportGetService
-from xp.services.conbus.conbus_autoreport_set_service import ConbusAutoreportSetService
 from xp.services.conbus.conbus_blink_all_service import ConbusBlinkAllService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
 from xp.services.conbus.conbus_custom_service import ConbusCustomService
@@ -33,9 +31,6 @@ from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointService,
 )
 from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
-from xp.services.conbus.conbus_lightlevel_set_service import ConbusLightlevelSetService
-from xp.services.conbus.conbus_linknumber_get_service import ConbusLinknumberGetService
-from xp.services.conbus.conbus_linknumber_set_service import ConbusLinknumberSetService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_raw_service import ConbusRawService
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
@@ -202,14 +197,6 @@ class ServiceContainer:
         )
 
         self.container.register(
-            ConbusLightlevelSetService,
-            factory=lambda: ConbusLightlevelSetService(
-                write_config_service=self.container.resolve(WriteConfigService),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
             ActionTableSerializer,
             factory=lambda: ActionTableSerializer,
             scope=punq.Scope.singleton,
@@ -253,42 +240,6 @@ class ServiceContainer:
                 xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
                 xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
                 telegram_service=self.container.resolve(TelegramService),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            ConbusAutoreportSetService,
-            factory=lambda: ConbusAutoreportSetService(
-                write_config_service=self.container.resolve(WriteConfigService),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            ConbusAutoreportGetService,
-            factory=lambda: ConbusAutoreportGetService(
-                telegram_service=self.container.resolve(TelegramService),
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            ConbusLinknumberGetService,
-            factory=lambda: ConbusLinknumberGetService(
-                telegram_service=self.container.resolve(TelegramService),
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            ConbusLinknumberSetService,
-            factory=lambda: ConbusLinknumberSetService(
-                write_config_service=self.container.resolve(WriteConfigService),
             ),
             scope=punq.Scope.singleton,
         )

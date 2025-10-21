@@ -10,7 +10,6 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models import ConbusDatapointResponse
-from xp.models.conbus.conbus_lightlevel import ConbusLightlevelResponse
 from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
@@ -41,7 +40,7 @@ def xp_lightlevel_set(
         xp conbus lightlevel set 0011223344 0 100  # Set output 0 to 100%
     """
 
-    def finish(response: "ConbusWriteConfigResponse") -> None:
+    def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
         Args:
@@ -60,7 +59,7 @@ def xp_lightlevel_set(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
             data_value=data_value,
-            finish_callback=finish,
+            finish_callback=on_finish,
             timeout_seconds=0.5,
         )
 
@@ -86,7 +85,7 @@ def xp_lightlevel_off(
         xp conbus lightlevel off 0011223344 0   # Turn off output 0
     """
 
-    def finish(response: "ConbusWriteConfigResponse") -> None:
+    def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
         Args:
@@ -106,7 +105,7 @@ def xp_lightlevel_off(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
             data_value=data_value,
-            finish_callback=finish,
+            finish_callback=on_finish,
             timeout_seconds=0.5,
         )
 
@@ -132,7 +131,7 @@ def xp_lightlevel_on(
         xp conbus lightlevel on 0011223344 0   # Turn on output 0 (80%)
     """
 
-    def finish(response: "ConbusWriteConfigResponse") -> None:
+    def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
         Args:
@@ -152,7 +151,7 @@ def xp_lightlevel_on(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
             data_value=data_value,
-            finish_callback=finish,
+            finish_callback=on_finish,
             timeout_seconds=0.5,
         )
 
@@ -177,7 +176,6 @@ def xp_lightlevel_get(
         xp conbus lightlevel get 0123450001 2   # Get light level for output 2
         xp conbus lightlevel get 0011223344 0   # Get light level for output 0
     """
-
     # Get service from container
     service: ConbusDatapointService = (
         ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
@@ -186,14 +184,17 @@ def xp_lightlevel_get(
         ctx.obj.get("container").get_container().resolve(TelegramDatapointService)
     )
 
-    def finish(service_response: "ConbusDatapointResponse") -> None:
+    def on_finish(service_response: "ConbusDatapointResponse") -> None:
         """Handle successful completion of light level get command.
 
         Args:
             service_response: Light level response object.
         """
-        lightlevel_level = telegram_service.get_lightlevel_level(service_response.data_value, output_number)
+        lightlevel_level = telegram_service.get_lightlevel(
+            service_response.data_value, output_number
+        )
         result = service_response.to_dict()
+        result["output_number"] = output_number
         result["lightlevel_level"] = lightlevel_level
         click.echo(json.dumps(result, indent=2))
 
@@ -201,6 +202,6 @@ def xp_lightlevel_get(
         service.query_datapoint(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
-            finish_callback=finish,
-            timeout_seconds=0.5
+            finish_callback=on_finish,
+            timeout_seconds=0.5,
         )
