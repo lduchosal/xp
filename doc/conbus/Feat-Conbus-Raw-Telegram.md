@@ -37,7 +37,7 @@ Key methods:
 **Implementation checklist:**
 - [ ] Create `ConbusRawService` class in `src/xp/services/conbus_raw_service.py`
 - [ ] Define `ConbusRawResponse` model in `src/xp/models/conbus_raw.py`
-- [ ] Reuse `ConbusService` to send raw telegrams
+- [ ] Reuse `ConbusProtocol` to send raw telegrams
 
 ## Tests
 

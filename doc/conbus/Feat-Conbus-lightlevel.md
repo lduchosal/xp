@@ -55,7 +55,7 @@ Key methods:
 **Implementation checklist:**
 - [ ] Create `ConbusLightlevelService` class in `src/xp/services/conbus_lightlevel_service.py`
 - [ ] Define `ConbusLightlevelResponse` model in `src/xp/models/conbus_lightlevel.py`
-- [ ] Use `ConbusService` to send lightlevel control telegrams
+- [ ] Use `ConbusProtocol` to send lightlevel control telegrams
 - [ ] Create or reuse `TelegramLightlevelService` to build appropriate telegram formats
 - [ ] Validate light level range (0-100)
 - [ ] Handle telegram responses

@@ -2,11 +2,11 @@
 
 ## Overview
 
-This specification introduces a connection pooling mechanism for the XP project using the `generic-connection-pool` Python library. The `ConsonConnectionPool` will replace direct socket management in `ConbusService` to provide reliable, reusable TCP connections with automatic lifecycle management.
+This specification introduces a connection pooling mechanism for the XP project using the `generic-connection-pool` Python library. The `ConsonConnectionPool` will replace direct socket management in `ConbusProtocol` to provide reliable, reusable TCP connections with automatic lifecycle management.
 
 ## Background
 
-Currently, the `ConbusService` (src/xp/services/conbus_service.py:31) manages socket connections directly with basic connect/disconnect operations. This approach has limitations:
+Currently, the `ConbusProtocol` (src/xp/services/protocol/conbus_protocol.py) manages socket connections directly with basic connect/disconnect operations. This approach has limitations:
 
 - No connection reuse between requests
 - Manual connection state management
@@ -70,11 +70,11 @@ class ConbusSocketConnectionManager:
             return False
 ```
 
-### 4. Integration with ConbusService
+### 4. Integration with ConbusProtocol
 
-Modify `ConbusService` to use singleton `ConbusConnectionPool`:
+Modify `ConbusProtocol` to use singleton `ConbusConnectionPool`:
 
-- Replace direct socket management (src/xp/services/conbus_service.py:43,90)
+- Replace direct socket management
 - Initialize singleton connection pool in constructor
 - Use context manager pattern for automatic connection management
 - Remove manual connect/disconnect methods
@@ -236,7 +236,7 @@ class ConbusConnectionPool:
 **Usage with Context Manager Pattern**
 
 ```python
-# In ConbusService methods
+# In ConbusProtocol methods
 def send_raw_telegram(self, telegram: Optional[str] = None) -> ConbusResponse:
     """Send telegram using connection pool with automatic acquire/release"""
     request = ConbusRequest(telegram=telegram)
@@ -290,7 +290,7 @@ class ConnectionPoolContext:
         if self.connection:
             self.pool.release_connection(self.connection)
 
-# Usage in ConbusService
+# Usage in ConbusProtocol
 def get_connection(self) -> ConnectionPoolContext:
     """Get connection with automatic management"""
     return ConnectionPoolContext(self._connection_pool)
@@ -323,7 +323,7 @@ def send_raw_telegram(self, telegram: Optional[str] = None) -> ConbusResponse:
 ```
 
 ### Phase 2: Service Integration
-1. Modify `ConbusService` constructor to initialize singleton pool
+1. Modify `ConbusProtocol` constructor to initialize singleton pool
 2. Replace direct socket management with context manager pattern
 3. Update connection status methods
 4. Implement automatic acquire/release using `with` statements
@@ -344,7 +344,7 @@ def send_raw_telegram(self, telegram: Optional[str] = None) -> ConbusResponse:
 ## Migration Strategy
 
 The implementation will be backward compatible:
-- Existing `ConbusService` interface remains unchanged
+- Existing `ConbusProtocol` interface remains unchanged
 - Singleton connection pool is automatically initialized
 - No changes required to existing service usage
 - Zero configuration needed for basic functionality

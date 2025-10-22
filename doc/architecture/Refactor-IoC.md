@@ -38,9 +38,9 @@ For each service in the list dev/service_refactor_agentX.txt
 def __init__(
         self,
         config_path: str = "cli.yml",
-        conbus_service: Optional[ConbusService] = None,
+        conbus_protocol: Optional[ConbusProtocol] = None,
 ):
-    self.telegram_protocol = conbus_service or ConbusService(config_path)
+    self.telegram_protocol = conbus_protocol or ConbusProtocol(config_path)
 ```
 
 **After:**
@@ -48,10 +48,10 @@ def __init__(
 ```python
 def __init__(
         self,
-        conbus_service: ConbusService,
+        conbus_protocol: ConbusProtocol,
         datapoint_service: ConbusDatapointService,
 ):
-    self.telegram_protocol = conbus_service
+    self.telegram_protocol = conbus_protocol
     self.datapoint_service = datapoint_service
 ```
 

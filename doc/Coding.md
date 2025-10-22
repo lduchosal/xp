@@ -23,7 +23,7 @@
 - [ ] No redundant comments (code should be self-documenting)
 
 ## Naming Conventions
-- [ ] Classes: `PascalCase` (e.g., `ConbusService`, `EventTelegram`)
+- [ ] Classes: `PascalCase` (e.g., `ConbusProtocol`, `EventTelegram`)
 - [ ] Functions/methods: `snake_case` (e.g., `send_telegram`, `get_config`)
 - [ ] Constants: `UPPER_SNAKE_CASE` (e.g., `MAX_TIMEOUT`)
 - [ ] Private methods: `_leading_underscore` (e.g., `_parse_telegrams`)
@@ -61,7 +61,7 @@
 
 ## Testing
 - [ ] Test file naming: `test_*.py` or `*_test.py`
-- [ ] Test class naming: `Test*` (e.g., `TestConbusService`)
+- [ ] Test class naming: `Test*` (e.g., `TestConbusProtocol`)
 - [ ] Test function naming: `test_*` (e.g., `test_send_telegram`)
 - [ ] Mock external dependencies (socket, files, etc.)
 - [ ] Use fixtures for common setup

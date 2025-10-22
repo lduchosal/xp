@@ -50,7 +50,7 @@ Key methods:
 - [ ] Define or reuse `ConbusLinknumberResponse` model in `src/xp/models/conbus_linknumber.py`
 - [ ] Reuse `ConbusLinknumberService` to send link number assignment telegrams
 - [ ] Reuse `LinkNumberService` (from `telegram_link_number_service`) to create appropriate telegram formats
-- [ ] Use `ConbusService` `send_raw_telegram` for telegram transmission
+- [ ] Use `ConbusProtocol` `send_raw_telegram` for telegram transmission
 - [ ] Link number validation handled by Click IntRange (0-99)
 - [ ] Serial number validation handled by SERIAL type
 - [ ] Prefer composition to inheritance

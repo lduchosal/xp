@@ -51,7 +51,7 @@ Key methods:
 **Implementation checklist:**
 - [ ] Create or reuse `ConbusDatapointService` class in `src/xp/services/conbus_datapoint_service.py`
 - [ ] Define or reuse `ConbusDatapointResponse` model in `src/xp/models/conbus_datapoint.py`
-- [ ] Use `ConbusService` to send datapoint query telegrams
+- [ ] Use `ConbusProtocol` to send datapoint query telegrams
 - [ ] Use `TelegramDatapointService` to create appropriate telegram formats for datapoint queries
 - [ ] Parse and validate telegram responses containing datapoint information
 - [ ] Prefer composition to inheritance

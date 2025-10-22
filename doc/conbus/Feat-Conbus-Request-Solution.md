@@ -6,14 +6,14 @@ The HomeKit integration makes multiple synchronous TCP requests to Conbus module
 
 1. **Synchronous blocking calls**: Every HomeKit get/set operation blocks until TCP response
 2. **No caching**: Each status check (`get_on()`) triggers fresh TCP request to module
-3. **Connection overhead**: New TCP socket per request in `ConbusService:79-119`
-4. **Network latency**: 2-second receive timeout on every request (`ConbusService:178`)
+3. **Connection overhead**: TCP connection management in `ConbusProtocol`
+4. **Network latency**: 2-second receive timeout on every request
 5. **Sequential processing**: Multiple accessories = multiple sequential TCP calls
 
 ### Code Impact Points
 - `homekit_module_service.py:102` - `get_output_state()` for every `get_on()`
 - `homekit_lightbulb.py:58` - Direct dispatcher call triggers TCP request
-- `conbus_service.py:208-279` - TCP socket creation/teardown per request
+- `conbus_protocol.py` - TCP socket management for protocol communication
 
 ## Solution Architecture
 

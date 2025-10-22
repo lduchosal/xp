@@ -91,7 +91,7 @@ container = ServiceContainer(
     homekit_config_path="homekit.yml",
     conson_config_path="conson.yml"
 )
-service = container.container.resolve(ConbusService)
+service = container.container.resolve(ConbusProtocol)
 ```
 
 ### 2. EventBus (bubus)

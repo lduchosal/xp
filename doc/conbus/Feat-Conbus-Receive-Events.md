@@ -36,7 +36,7 @@ Key methods:
 **Implementation checklist:**
 - [ ] Create `ConbusReceiveService` class in `src/xp/services/conbus_receive_service.py`
 - [ ] Define `ConbusReceiveResponse` model in `src/xp/models/conbus_receive.py`
-- [ ] Reuse `ConbusService` send_receive_telegram() with empty str to receive telegrams
+- [ ] Reuse `ConbusProtocol` send_receive_telegram() with empty str to receive telegrams
 
 ## Tests
 

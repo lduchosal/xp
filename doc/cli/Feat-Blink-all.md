@@ -41,7 +41,7 @@ Key methods:
 - [ ] Define or reuse `ConbusBlinkResponse` model in `src/xp/models/conbus_blink.py`
 - [ ] Reuse `ConbusBlinkService` to send blink control telegrams
 - [ ] Reuse `ConbusDiscoverService` to list discovered_devices
-- [ ] Iterate through discovered_devices and prepare multiple telegrams and send them all at once using `ConbusService` `send_raw_telegram`  
+- [ ] Iterate through discovered_devices and prepare multiple telegrams and send them all at once using `ConbusProtocol` `send_raw_telegram`  
 - [ ] Reuse `TelegramBlinkService` to create appropriate telegram formats for blink all on/off commands
 - [ ] prefer composition to inheritance
 

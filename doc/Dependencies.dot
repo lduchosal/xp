@@ -20,7 +20,7 @@ digraph ServiceDependencies {
         style=filled;
         fillcolor=lightyellow;
 
-        ConbusService [fillcolor=yellow];
+        ConbusProtocol [fillcolor=yellow];
         ConbusDatapointService;
         ConbusOutputService;
         ConbusScanService;
@@ -100,40 +100,40 @@ digraph ServiceDependencies {
     ModuleTypeService [fillcolor=plum];
 
     // Core dependencies
-    ConbusService -> ConbusConnectionPool;
+    ConbusProtocol -> ConbusConnectionPool;
 
     // ConbusDatapointService dependencies
-    ConbusDatapointService -> ConbusService;
+    ConbusDatapointService -> ConbusProtocol;
     ConbusDatapointService -> TelegramService;
 
     // ConbusOutputService dependencies
-    ConbusOutputService -> ConbusService;
+    ConbusOutputService -> ConbusProtocol;
     ConbusOutputService -> ConbusDatapointService;
     ConbusOutputService -> TelegramService;
     ConbusOutputService -> TelegramOutputService;
 
     // ConbusScanService dependencies
-    ConbusScanService -> ConbusService;
+    ConbusScanService -> ConbusProtocol;
     ConbusScanService -> TelegramService;
 
     // ConbusDiscoverService dependencies
-    ConbusDiscoverService -> ConbusService;
+    ConbusDiscoverService -> ConbusProtocol;
     ConbusDiscoverService -> TelegramService;
     ConbusDiscoverService -> TelegramDiscoverService;
 
     // ConbusBlinkService dependencies
-    ConbusBlinkService -> ConbusService;
+    ConbusBlinkService -> ConbusProtocol;
     ConbusBlinkService -> ConbusDiscoverService;
     ConbusBlinkService -> TelegramService;
     ConbusBlinkService -> TelegramBlinkService;
 
     // ConbusLightlevelService dependencies
-    ConbusLightlevelService -> ConbusService;
+    ConbusLightlevelService -> ConbusProtocol;
     ConbusLightlevelService -> ConbusDatapointService;
     ConbusLightlevelService -> TelegramService;
 
     // ActionTableService dependencies
-    ActionTableService -> ConbusService;
+    ActionTableService -> ConbusProtocol;
     ActionTableService -> TelegramService;
 
     // Telegram service dependencies

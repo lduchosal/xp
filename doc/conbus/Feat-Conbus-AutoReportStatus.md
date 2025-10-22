@@ -97,7 +97,7 @@ Key methods:
 **Implementation checklist:**
 - [ ] Create `ConbusAutoreportService` class in `src/xp/services/conbus_autoreport_service.py`
 - [ ] Define `ConbusAutoreportResponse` model in `src/xp/models/conbus_autoreport.py`
-- [ ] Use `ConbusService` to send autoreport query/set telegrams
+- [ ] Use `ConbusProtocol` to send autoreport query/set telegrams
 - [ ] Use `TelegramService` to parse reply telegrams containing autoreport information
 - [ ] Use `SystemFunction.READ_DATAPOINT` for get operations
 - [ ] Use `SystemFunction.WRITE_DATAPOINT` for set operations
