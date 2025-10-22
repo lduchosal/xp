@@ -12,7 +12,7 @@ class DiscoveredDevice(TypedDict):
         serial_number: Serial number of the device.
         module_type: Module type name (e.g., "XP24", "XP230"), None if not yet retrieved.
         module_type_code: Module type code (e.g., "13", "10"), None if not yet retrieved.
-        module_type_name: Module type name converted from module_type_code (e.g., "XP24", "XP230"), None if not yet retrieved.
+        module_type_name: Module type name converted from module_type_code, None if not yet retrieved.
     """
 
     serial_number: str

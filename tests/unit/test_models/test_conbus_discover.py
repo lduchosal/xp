@@ -27,8 +27,18 @@ class TestConbusDiscoverResponse:
             sent_telegram="<DISCOVER>",
             received_telegrams=["<REPLY1>", "<REPLY2>"],
             discovered_devices=[
-                {"serial_number": "device1", "module_type": "XP24"},
-                {"serial_number": "device2", "module_type": "XP24P"},
+                {
+                    "serial_number": "device1",
+                    "module_type": "XP",
+                    "module_type_code": 7,
+                    "module_type_name": "XP24",
+                },
+                {
+                    "serial_number": "device2",
+                    "module_type": "XP",
+                    "module_type_code": 10,
+                    "module_type_name": "XP24P",
+                },
             ],
             error=None,
             timestamp=timestamp,
@@ -37,8 +47,18 @@ class TestConbusDiscoverResponse:
         assert result["sent_telegram"] == "<DISCOVER>"
         assert result["received_telegrams"] == ["<REPLY1>", "<REPLY2>"]
         assert result["discovered_devices"] == [
-            {"serial_number": "device1", "module_type": "XP24"},
-            {"serial_number": "device2", "module_type": "XP24P"},
+            {
+                "serial_number": "device1",
+                "module_type": "XP",
+                "module_type_code": 7,
+                "module_type_name": "XP24",
+            },
+            {
+                "serial_number": "device2",
+                "module_type": "XP",
+                "module_type_code": 10,
+                "module_type_name": "XP24P",
+            },
         ]
         assert result["error"] is None
         assert "2025-01-01T12:00:00" in result["timestamp"]

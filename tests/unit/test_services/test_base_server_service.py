@@ -33,7 +33,7 @@ class TestBaseServerServiceInit:
 
         assert service.serial_number == "12345"
         assert service.device_type == "TEST"
-        assert service.module_type_code == 0x33
+        assert service.module_type_code == ModuleTypeCode.XP20
         assert service.device_status == "OK"
         assert service.link_number == 1
         assert service.temperature == "+23,5§C"
@@ -73,7 +73,7 @@ class TestBaseServerServiceDatapointResponse:
 
         assert response is not None
         assert "R12345F02" in response
-        assert "33" in response
+        assert "33" in response  # ModuleTypeCode.XP20.value == 33
 
     def test_generate_datapoint_type_response_sw_version(self):
         """Test generating software version datapoint response."""

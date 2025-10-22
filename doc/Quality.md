@@ -1,10 +1,13 @@
 # Quality Management
 
 ## Quick Checks (Development)
+- `pdm run typecheck` - Mypy type checking
+- `pdm run flake8` - Flake8 code quality, and doc checker
+- `pdm run interrogate` - doc checker
+- `pdm run refurb` - Refurbishing code
 - `pdm test-quick` - Fast test validation
 - `pdm lint` - Ruff linting
 - `pdm format` - Black formatting
-- `pdm typecheck` - Mypy type checking
 
 ## Full Quality Check
 ```bash

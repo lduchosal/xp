@@ -25,7 +25,7 @@ class TestXP33ServerService:
         service = XP33ServerService("12345", "XP33")
 
         assert service.variant == "XP33"
-        assert service.module_type_code == 11
+        assert service.module_type_code.value == 11
         assert "XP33_V" in service.firmware_version
 
     def test_init_xp33lr_variant(self):
@@ -33,7 +33,7 @@ class TestXP33ServerService:
         service = XP33ServerService("12345", "XP33LR")
 
         assert service.variant == "XP33LR"
-        assert service.module_type_code == 30
+        assert service.module_type_code.value == 30
         assert "XP33LR_V" in service.firmware_version
 
     def test_init_xp33led_variant(self):
@@ -41,7 +41,7 @@ class TestXP33ServerService:
         service = XP33ServerService("12345", "XP33LED")
 
         assert service.variant == "XP33LED"
-        assert service.module_type_code == 31
+        assert service.module_type_code.value == 35
         assert "XP33LED_V" in service.firmware_version
 
     def test_generate_discover_response(self):
@@ -61,7 +61,7 @@ class TestXP20ServerService:
 
         assert service.serial_number == "11111"
         assert service.device_type == "XP20"
-        assert service.module_type_code == 33
+        assert service.module_type_code.value == 33
 
     def test_generate_discover_response(self):
         """Test discover response generation."""
@@ -80,7 +80,7 @@ class TestXP130ServerService:
 
         assert service.serial_number == "22222"
         assert service.device_type == "XP130"
-        assert service.module_type_code == 13
+        assert service.module_type_code.value == 13
 
     def test_generate_discover_response(self):
         """Test discover response generation."""
@@ -99,7 +99,7 @@ class TestXP230ServerService:
 
         assert service.serial_number == "33333"
         assert service.device_type == "XP230"
-        assert service.module_type_code == 34
+        assert service.module_type_code.value == 34
 
     def test_generate_discover_response(self):
         """Test discover response generation."""
@@ -118,7 +118,7 @@ class TestCP20ServerService:
 
         assert service.serial_number == "44444"
         assert service.device_type == "CP20"
-        assert service.module_type_code == 2
+        assert service.module_type_code.value == 2
 
     def test_generate_discover_response(self):
         """Test discover response generation."""

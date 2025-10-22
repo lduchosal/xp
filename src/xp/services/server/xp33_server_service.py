@@ -77,17 +77,15 @@ class XP33ServerService(BaseServerService):
     ) -> Optional[str]:
         """Handle XP33-specific action requests."""
         telegrams = self._handle_action_channel_dimming(request.data)
-        self.logger.debug(
-            f"Generated {self.device_type} action responses: {telegrams}"
-        )
+        self.logger.debug(f"Generated {self.device_type} action responses: {telegrams}")
         return telegrams
 
     def _handle_action_channel_dimming(self, data_value: str) -> str:
         """Handle XP33-specific channel dimming action.
 
         Args:
-            data_value: Action data in format: channel_number:dimming_level.
-                       Example: "00:050" means channel 0, 50% dimming.
+            data_value: Action data in format channel_number:dimming_level.
+                       E.g., "00:050" means channel 0, 50% dimming.
 
         Returns:
             Response telegram(s) - ACK/NAK, optionally with event telegram.
@@ -110,12 +108,16 @@ class XP33ServerService(BaseServerService):
 
         previous_level = self.channel_states[channel_number]
         self.channel_states[channel_number] = dimming_level
-        state_changed = (previous_level == 0 and dimming_level > 0) or (previous_level > 0 and dimming_level == 0)
+        state_changed = (previous_level == 0 and dimming_level > 0) or (
+            previous_level > 0 and dimming_level == 0
+        )
 
         telegrams = self._build_ack_nak_response_telegram(True)
         if state_changed and self.autoreport_status:
             # Report dimming change event
-            telegrams += self._build_dimming_event_telegram(dimming_level, channel_number)
+            telegrams += self._build_dimming_event_telegram(
+                dimming_level, channel_number
+            )
 
         return telegrams
 
@@ -128,14 +130,15 @@ class XP33ServerService(BaseServerService):
         Returns:
             The complete telegram with checksum enclosed in angle brackets.
         """
-        data_value = SystemFunction.ACK.value if ack_or_nak else SystemFunction.NAK.value
-        data_part = (
-            f"R{self.serial_number}"
-            f"F{data_value:02}D"
+        data_value = (
+            SystemFunction.ACK.value if ack_or_nak else SystemFunction.NAK.value
         )
+        data_part = f"R{self.serial_number}" f"F{data_value:02}D"
         return self._build_response_telegram(data_part)
 
-    def _build_dimming_event_telegram(self, dimming_level: int, channel_number: int) -> str:
+    def _build_dimming_event_telegram(
+        self, dimming_level: int, channel_number: int
+    ) -> str:
         """Build a complete dimming event telegram with checksum.
 
         Args:
@@ -192,11 +195,12 @@ class XP33ServerService(BaseServerService):
         Returns:
             String representation of the output state for 3 channels.
         """
-        return (f"xxxxx"
-                f"{1 if self.channel_states[0] > 0 else 0}"
-                f"{1 if self.channel_states[1] > 0 else 0}"
-                f"{1 if self.channel_states[2] > 0 else 0}"
-                )
+        return (
+            f"xxxxx"
+            f"{1 if self.channel_states[0] > 0 else 0}"
+            f"{1 if self.channel_states[1] > 0 else 0}"
+            f"{1 if self.channel_states[2] > 0 else 0}"
+        )
 
     def _handle_read_module_state(self) -> str:
         """Handle XP33-specific module state.
@@ -222,7 +226,9 @@ class XP33ServerService(BaseServerService):
         Returns:
             Light levels for all channels in format "00:000[%],01:000[%],02:000[%]".
         """
-        levels = [f"{i:02d}:{level:03d}[%]" for i, level in enumerate(self.channel_states)]
+        levels = [
+            f"{i:02d}:{level:03d}[%]" for i, level in enumerate(self.channel_states)
+        ]
         return ",".join(levels)
 
     def set_channel_dimming(self, channel: int, level: int) -> bool:

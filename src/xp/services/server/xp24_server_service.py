@@ -18,7 +18,14 @@ class XP24ServerError(Exception):
 
     pass
 
+
 class XP24Output:
+    """Represents an XP24 output state.
+
+    Attributes:
+        state: Current state of the output (True=on, False=off).
+    """
+
     state: bool = False
 
 
@@ -60,20 +67,24 @@ class XP24ServerService(BaseServerService):
         """Handle XP24-specific module output state."""
         output_number = int(data_value[:2])
         output_state = data_value[2:]
-        if output_number not in range(0,4):
+        if output_number not in range(0, 4):
             return self._build_ack_nak_response_telegram(False)
 
         if output_state not in ("AA", "AB"):
             return self._build_ack_nak_response_telegram(False)
 
-        output = (self.output_0, self.output_1, self.output_2, self.output_3)[output_number]
+        output = (self.output_0, self.output_1, self.output_2, self.output_3)[
+            output_number
+        ]
         previous_state = output.state
         output.state = True if output_state == "AB" else False
         state_changed = previous_state != output.state
 
         telegrams = self._build_ack_nak_response_telegram(True)
         if state_changed and self.autoreport_status:
-            telegrams += self._build_make_break_response_telegram(output.state, output_number)
+            telegrams += self._build_make_break_response_telegram(
+                output.state, output_number
+            )
 
         return telegrams
 
@@ -86,15 +97,15 @@ class XP24ServerService(BaseServerService):
         Returns:
             The complete telegram with checksum enclosed in angle brackets.
         """
-        data_value = SystemFunction.ACK.value if ack_or_nak else SystemFunction.NAK.value
-        data_part = (
-            f"R{self.serial_number}"
-            f"F{data_value:02}D"
+        data_value = (
+            SystemFunction.ACK.value if ack_or_nak else SystemFunction.NAK.value
         )
+        data_part = f"R{self.serial_number}" f"F{data_value:02}D"
         return self._build_response_telegram(data_part)
 
-
-    def _build_make_break_response_telegram(self, make_or_break: bool, output_number: int) -> str:
+    def _build_make_break_response_telegram(
+        self, make_or_break: bool, output_number: int
+    ) -> str:
         """Build a complete ACK or NAK response telegram with checksum.
 
         Args:
@@ -112,7 +123,6 @@ class XP24ServerService(BaseServerService):
             f"{data_value}"
         )
         return self._build_response_telegram(data_part)
-
 
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
@@ -158,12 +168,13 @@ class XP24ServerService(BaseServerService):
 
     def _handle_read_module_output_state(self) -> str:
         """Handle XP24-specific module output state."""
-        return (f"xxxx"
-                f"{1 if self.output_0.state else 0}"
-                f"{1 if self.output_1.state else 0}"
-                f"{1 if self.output_2.state else 0}"
-                f"{1 if self.output_3.state else 0}"
-                )
+        return (
+            f"xxxx"
+            f"{1 if self.output_0.state else 0}"
+            f"{1 if self.output_1.state else 0}"
+            f"{1 if self.output_2.state else 0}"
+            f"{1 if self.output_3.state else 0}"
+        )
 
     def get_device_info(self) -> Dict:
         """Get XP24 device information.
@@ -180,4 +191,3 @@ class XP24ServerService(BaseServerService):
             "link_number": self.link_number,
             "autoreport_status": self.autoreport_status,
         }
-

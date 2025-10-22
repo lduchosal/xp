@@ -295,18 +295,20 @@ class ServerService:
 
         while True:
             # Find the start of a telegram
-            start_idx = message.find('<', start)
+            start_idx = message.find("<", start)
             if start_idx == -1:
                 break
 
             # Find the end of the telegram
-            end_idx = message.find('>', start_idx)
+            end_idx = message.find(">", start_idx)
             if end_idx == -1:
-                self.logger.warning(f"Incomplete telegram found starting at position {start_idx}")
+                self.logger.warning(
+                    f"Incomplete telegram found starting at position {start_idx}"
+                )
                 break
 
             # Extract telegram including angle brackets
-            telegram = message[start_idx:end_idx + 1]
+            telegram = message[start_idx : end_idx + 1]
             telegrams.append(telegram)
 
             # Move to the next position

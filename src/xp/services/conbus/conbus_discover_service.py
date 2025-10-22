@@ -195,19 +195,14 @@ class ConbusDiscoverService(ConbusProtocol):
                     )
                     break
 
-
-    def handle_module_type_response(
-        self, serial_number: str, module_type: str
-    ) -> None:
+    def handle_module_type_response(self, serial_number: str, module_type: str) -> None:
         """Handle module type response and update discovered device.
 
         Args:
             serial_number: Serial number of the device.
             module_type: Module type code from telegram (e.g., "XP33", "XP24").
         """
-        self.logger.info(
-            f"Received module type {module_type} for {serial_number}"
-        )
+        self.logger.info(f"Received module type {module_type} for {serial_number}")
 
         # Find and update the device in discovered_devices
         if self.discovered_device_result.discovered_devices:
