@@ -5,14 +5,13 @@ including response generation and device configuration handling for
 3-channel light dimmer modules.
 """
 
-from typing import Dict, Optional
+from typing import Dict, Optional, Callable
 
 from xp.models import ModuleTypeCode
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
 from xp.services.server.base_server_service import BaseServerService
-from xp.utils import calculate_checksum
 
 
 class XP33ServerError(Exception):
@@ -60,6 +59,7 @@ class XP33ServerService(BaseServerService):
 
         self.device_status = "00"  # Normal status
         self.link_number = 4  # 4 links configured
+        self.autoreport_status = True
 
         # Channel states (3 channels, 0-100% dimming)
         self.channel_states = [0, 0, 0]  # All channels at 0%
@@ -72,35 +72,158 @@ class XP33ServerService(BaseServerService):
             4: [0, 0, 0],  # Scene 4: Off
         }
 
+    def _handle_device_specific_action_request(
+        self, request: SystemTelegram
+    ) -> Optional[str]:
+        """Handle XP33-specific action requests."""
+        telegrams = self._handle_action_channel_dimming(request.data)
+        self.logger.debug(
+            f"Generated {self.device_type} action responses: {telegrams}"
+        )
+        return telegrams
+
+    def _handle_action_channel_dimming(self, data_value: str) -> str:
+        """Handle XP33-specific channel dimming action.
+
+        Args:
+            data_value: Action data in format: channel_number:dimming_level.
+                       Example: "00:050" means channel 0, 50% dimming.
+
+        Returns:
+            Response telegram(s) - ACK/NAK, optionally with event telegram.
+        """
+        if ":" not in data_value or len(data_value) < 6:
+            return self._build_ack_nak_response_telegram(False)
+
+        try:
+            parts = data_value.split(":")
+            channel_number = int(parts[0])
+            dimming_level = int(parts[1])
+        except (ValueError, IndexError):
+            return self._build_ack_nak_response_telegram(False)
+
+        if channel_number not in range(len(self.channel_states)):
+            return self._build_ack_nak_response_telegram(False)
+
+        if dimming_level not in range(0, 101):
+            return self._build_ack_nak_response_telegram(False)
+
+        previous_level = self.channel_states[channel_number]
+        self.channel_states[channel_number] = dimming_level
+        state_changed = (previous_level == 0 and dimming_level > 0) or (previous_level > 0 and dimming_level == 0)
+
+        telegrams = self._build_ack_nak_response_telegram(True)
+        if state_changed and self.autoreport_status:
+            # Report dimming change event
+            telegrams += self._build_dimming_event_telegram(dimming_level, channel_number)
+
+        return telegrams
+
+    def _build_ack_nak_response_telegram(self, ack_or_nak: bool) -> str:
+        """Build a complete ACK or NAK response telegram with checksum.
+
+        Args:
+            ack_or_nak: true: ACK telegram response, false: NAK telegram response.
+
+        Returns:
+            The complete telegram with checksum enclosed in angle brackets.
+        """
+        data_value = SystemFunction.ACK.value if ack_or_nak else SystemFunction.NAK.value
+        data_part = (
+            f"R{self.serial_number}"
+            f"F{data_value:02}D"
+        )
+        return self._build_response_telegram(data_part)
+
+    def _build_dimming_event_telegram(self, dimming_level: int, channel_number: int) -> str:
+        """Build a complete dimming event telegram with checksum.
+
+        Args:
+            dimming_level: Dimming level 0-100%.
+            channel_number: Channel concerned (0-2).
+
+        Returns:
+            The complete event telegram with checksum enclosed in angle brackets.
+        """
+        data_value = "M" if dimming_level > 0 else "B"
+        data_part = (
+            f"E{self.module_type_code.value:02}"
+            f"L{self.link_number:02}"
+            f"I{channel_number:02}"
+            f"{data_value}"
+        )
+        return self._build_response_telegram(data_part)
+
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Handle XP24-specific data requests."""
-        if (
-            request.system_function != SystemFunction.READ_DATAPOINT
-            or not request.datapoint_type
-        ):
+        """Handle XP33-specific data requests."""
+        if not request.datapoint_type:
             return None
 
         datapoint_type = request.datapoint_type
-        datapoint_values = {
-            DataPointType.MODULE_OUTPUT_STATE: "xxxxx001",
-            DataPointType.MODULE_STATE: "OFF",
-            DataPointType.MODULE_OPERATING_HOURS: "00:000[H],01:000[H],02:000[H]",
+        datapoint_values: Dict[DataPointType, Callable[[], str]] = {
+            DataPointType.MODULE_OUTPUT_STATE: self._handle_read_module_output_state,
+            DataPointType.MODULE_STATE: self._handle_read_module_state,
+            DataPointType.MODULE_OPERATING_HOURS: self._handle_read_module_operating_hours,
+            DataPointType.MODULE_LIGHT_LEVEL: self._handle_read_light_level,
         }
+        handler = datapoint_values.get(datapoint_type)
+        if not handler:
+            return None
+
+        data_value = handler()
         data_part = (
             f"R{self.serial_number}"
-            f"F02{datapoint_type.value}"
-            f"{self.module_type_code}"
-            f"{datapoint_values.get(datapoint_type)}"
+            f"F02D{datapoint_type.value}"
+            f"{self.module_type_code.value:02}"
+            f"{data_value}"
         )
-        checksum = calculate_checksum(data_part)
-        telegram = f"<{data_part}{checksum}>"
+        telegram = self._build_response_telegram(data_part)
 
         self.logger.debug(
             f"Generated {self.device_type} module type response: {telegram}"
         )
         return telegram
+
+    def _handle_read_module_output_state(self) -> str:
+        """Handle XP33-specific module output state.
+
+        Returns:
+            String representation of the output state for 3 channels.
+        """
+        return (f"xxxxx"
+                f"{1 if self.channel_states[0] > 0 else 0}"
+                f"{1 if self.channel_states[1] > 0 else 0}"
+                f"{1 if self.channel_states[2] > 0 else 0}"
+                )
+
+    def _handle_read_module_state(self) -> str:
+        """Handle XP33-specific module state.
+
+        Returns:
+            'ON' if any channel is active, 'OFF' otherwise.
+        """
+        if any(level > 0 for level in self.channel_states):
+            return "ON"
+        return "OFF"
+
+    def _handle_read_module_operating_hours(self) -> str:
+        """Handle XP33-specific module operating hours.
+
+        Returns:
+            Operating hours for all 3 channels.
+        """
+        return "00:000[H],01:000[H],02:000[H]"
+
+    def _handle_read_light_level(self) -> str:
+        """Handle XP33-specific light level reading.
+
+        Returns:
+            Light levels for all channels in format "00:000[%],01:000[%],02:000[%]".
+        """
+        levels = [f"{i:02d}:{level:03d}[%]" for i, level in enumerate(self.channel_states)]
+        return ",".join(levels)
 
     def set_channel_dimming(self, channel: int, level: int) -> bool:
         """Set individual channel dimming level.
@@ -148,6 +271,7 @@ class XP33ServerService(BaseServerService):
             "max_power": self.max_power,
             "status": self.device_status,
             "link_number": self.link_number,
+            "autoreport_status": self.autoreport_status,
             "channel_states": self.channel_states.copy(),
             "available_scenes": list(self.scenes.keys()),
         }
