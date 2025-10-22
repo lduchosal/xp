@@ -253,15 +253,84 @@ class ServerService:
                 self.logger.error(f"Error closing client socket: {e}")
 
     def _process_request(self, message: str) -> List[str]:
-        """Process incoming request and generate responses."""
+        """Process incoming request and generate responses.
+
+        Args:
+            message: Message potentially containing multiple telegrams in format <TELEGRAM><TELEGRAM2>...
+
+        Returns:
+            List of responses for all processed telegrams.
+        """
+        responses: list[str] = []
+
+        try:
+            # Split message into individual telegrams (enclosed in angle brackets)
+            telegrams = self._split_telegrams(message)
+
+            if not telegrams:
+                self.logger.warning(f"No valid telegrams found in message: {message}")
+                return responses
+
+            # Process each telegram
+            for telegram in telegrams:
+                telegram_responses = self._process_single_telegram(telegram)
+                responses.extend(telegram_responses)
+
+        except Exception as e:
+            self.logger.error(f"Error processing request: {e}")
+
+        return responses
+
+    def _split_telegrams(self, message: str) -> List[str]:
+        """Split message into individual telegrams.
+
+        Args:
+            message: Raw message containing one or more telegrams in format <TELEGRAM><TELEGRAM2>...
+
+        Returns:
+            List of individual telegram strings including angle brackets.
+        """
+        telegrams = []
+        start = 0
+
+        while True:
+            # Find the start of a telegram
+            start_idx = message.find('<', start)
+            if start_idx == -1:
+                break
+
+            # Find the end of the telegram
+            end_idx = message.find('>', start_idx)
+            if end_idx == -1:
+                self.logger.warning(f"Incomplete telegram found starting at position {start_idx}")
+                break
+
+            # Extract telegram including angle brackets
+            telegram = message[start_idx:end_idx + 1]
+            telegrams.append(telegram)
+
+            # Move to the next position
+            start = end_idx + 1
+
+        return telegrams
+
+    def _process_single_telegram(self, telegram: str) -> List[str]:
+        """Process a single telegram and generate responses.
+
+        Args:
+            telegram: A single telegram string.
+
+        Returns:
+            List of response strings for this telegram.
+        """
         responses: list[str] = []
 
         try:
             # Parse the telegram
-            parsed_telegram = self.telegram_service.parse_system_telegram(message)
+            parsed_telegram = self.telegram_service.parse_system_telegram(telegram)
 
             if not parsed_telegram:
-                self.logger.warning(f"Failed to parse telegram: {message}")
+                self.logger.warning(f"Failed to parse telegram: {telegram}")
                 return responses
 
             # Handle discover requests
@@ -296,7 +365,7 @@ class ServerService:
                         )
 
         except Exception as e:
-            self.logger.error(f"Error processing request: {e}")
+            self.logger.error(f"Error processing telegram: {e}")
 
         return responses
 
