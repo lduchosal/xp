@@ -13,6 +13,7 @@ from xp.models import ConbusClientConfig, ConbusDiscoverResponse
 from xp.models.conbus.conbus_discover import DiscoveredDevice
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.module_type_code import MODULE_TYPE_REGISTRY
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol.conbus_protocol import ConbusProtocol
@@ -91,9 +92,20 @@ class ConbusDiscoverService(ConbusProtocol):
             and telegram_received.payload[11:17] == "F02D07"
             and len(telegram_received.payload) >= 19
         ):
+            self.handle_module_type_code_response(
+                telegram_received.serial_number, telegram_received.payload[17:19]
+            )
+        # Check for module type response (F02D00)
+        elif (
+            telegram_received.checksum_valid
+            and telegram_received.telegram_type == TelegramType.REPLY.value
+            and telegram_received.payload[11:17] == "F02D00"
+            and len(telegram_received.payload) >= 19
+        ):
             self.handle_module_type_response(
                 telegram_received.serial_number, telegram_received.payload[17:19]
             )
+
         else:
             self.logger.debug("Not a discover or module type response")
 
@@ -111,11 +123,20 @@ class ConbusDiscoverService(ConbusProtocol):
         device: DiscoveredDevice = {
             "serial_number": serial_number,
             "module_type": None,
+            "module_type_code": None,
+            "module_type_name": None,
         }
         self.discovered_device_result.discovered_devices.append(device)
 
         # Send READ_DATAPOINT telegram to query module type
         self.logger.debug(f"Sending module type query for {serial_number}")
+        self.send_telegram(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number=serial_number,
+            system_function=SystemFunction.READ_DATAPOINT,
+            data_value=DataPointType.MODULE_TYPE.value,
+        )
+
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=serial_number,
@@ -126,6 +147,55 @@ class ConbusDiscoverService(ConbusProtocol):
         if self.progress_callback:
             self.progress_callback(serial_number)
 
+    def handle_module_type_code_response(
+        self, serial_number: str, module_type_code: str
+    ) -> None:
+        """Handle module type code response and update discovered device.
+
+        Args:
+            serial_number: Serial number of the device.
+            module_type_code: Module type code from telegram (e.g., "07", "24").
+        """
+        self.logger.info(
+            f"Received module type code {module_type_code} for {serial_number}"
+        )
+
+        # Convert module type code to name
+        code = 0
+        try:
+            # The telegram format uses decimal values represented as strings
+            code = int(module_type_code)
+            module_info = MODULE_TYPE_REGISTRY.get(code)
+
+            if module_info:
+                module_type_name = module_info["name"]
+                self.logger.debug(
+                    f"Module type code {module_type_code} ({code}) = {module_type_name}"
+                )
+            else:
+                module_type_name = f"UNKNOWN_{module_type_code}"
+                self.logger.warning(
+                    f"Unknown module type code {module_type_code} ({code})"
+                )
+
+        except ValueError:
+            self.logger.error(
+                f"Invalid module type code format: {module_type_code} for {serial_number}"
+            )
+            module_type_name = f"INVALID_{module_type_code}"
+
+        # Find and update the device in discovered_devices
+        if self.discovered_device_result.discovered_devices:
+            for device in self.discovered_device_result.discovered_devices:
+                if device["serial_number"] == serial_number:
+                    device["module_type_code"] = code
+                    device["module_type_name"] = module_type_name
+                    self.logger.debug(
+                        f"Updated device {serial_number} with module_type {module_type_name}"
+                    )
+                    break
+
+
     def handle_module_type_response(
         self, serial_number: str, module_type: str
     ) -> None:
@@ -133,9 +203,11 @@ class ConbusDiscoverService(ConbusProtocol):
 
         Args:
             serial_number: Serial number of the device.
-            module_type: Module type code (hex string).
+            module_type: Module type code from telegram (e.g., "XP33", "XP24").
         """
-        self.logger.info(f"Received module type {module_type} for {serial_number}")
+        self.logger.info(
+            f"Received module type {module_type} for {serial_number}"
+        )
 
         # Find and update the device in discovered_devices
         if self.discovered_device_result.discovered_devices:
