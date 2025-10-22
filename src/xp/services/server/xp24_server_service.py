@@ -7,10 +7,12 @@ including response generation and device configuration handling.
 from typing import Dict, Optional, Callable
 
 from xp.models import ModuleTypeCode
+from xp.models.telegram.action_type import ActionType
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
 from xp.services.server.base_server_service import BaseServerService
+from xp.utils import calculate_checksum
 
 
 class XP24ServerError(Exception):
@@ -50,35 +52,69 @@ class XP24ServerService(BaseServerService):
         self, request: SystemTelegram
     ) -> Optional[str]:
         """Handle XP24-specific data requests."""
+        telegrams = self._handle_action_module_output_state(request.data)
+        self.logger.debug(
+            f"Generated {self.device_type} module type responses: {telegrams}"
+        )
+        return telegrams
 
+    def _handle_action_module_output_state(self, data_value: str) -> str:
+        """Handle XP24-specific module output state."""
+        output_number = int(data_value[:2])
+        output_state = data_value[2:]
+        if output_number not in range(0,4):
+            return self._build_ack_nak_response_telegram(False)
 
-        ack_or_nak = self._handle_action_module_output_state(request.data)
+        if output_state not in ("AA", "AB"):
+            return self._build_ack_nak_response_telegram(False)
+
+        output = (self.output_0, self.output_1, self.output_2, self.output_3)[output_number]
+        previous_state = output.state
+        output.state = True if output_state == "AB" else False
+        state_changed = previous_state != output.state
+
+        telegrams = self._build_ack_nak_response_telegram(True)
+        if state_changed and self.autoreport_status:
+            telegrams += self._build_make_break_response_telegram(output.state, output_number)
+
+        return telegrams
+
+    def _build_ack_nak_response_telegram(self, ack_or_nak: bool) -> str:
+        """Build a complete ACK or NAK response telegram with checksum.
+
+        Args:
+            ack_or_nak: true: ACK telegram response, false: NAK telegram response.
+
+        Returns:
+            The complete telegram with checksum enclosed in angle brackets.
+        """
         data_value = SystemFunction.ACK.value if ack_or_nak else SystemFunction.NAK.value
         data_part = (
             f"R{self.serial_number}"
             f"F{data_value:02}D"
         )
-        telegram = self._build_response_telegram(data_part)
+        return self._build_response_telegram(data_part)
 
-        self.logger.debug(
-            f"Generated {self.device_type} module type response: {telegram}"
+
+    def _build_make_break_response_telegram(self, make_or_break: bool, output_number: int) -> str:
+        """Build a complete ACK or NAK response telegram with checksum.
+
+        Args:
+            make_or_break: true: MAKE event response, false: BREAK event response.
+            output_number: output concerned
+
+        Returns:
+            The complete event telegram with checksum enclosed in angle brackets.
+        """
+        data_value = "M" if make_or_break else "B"
+        data_part = (
+            f"E{self.module_type_code.value:02}"
+            f"L{self.link_number:02}"
+            f"I{output_number:02}"
+            f"{data_value}"
         )
-        return telegram
+        return self._build_response_telegram(data_part)
 
-    def _handle_action_module_output_state(self, data_value: str) -> bool:
-        """Handle XP24-specific module output state."""
-        output_number = int(data_value[:2])
-        output_state = data_value[2:]
-        if output_number not in range(0,4):
-            return False
-
-        if output_state not in ("AA", "AB"):
-            return False
-
-        output = (self.output_0, self.output_1, self.output_2, self.output_3)[output_number]
-        previous_state = output.state
-        output.state = True if output_state == "AB" else False
-        return previous_state != output.state
 
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
@@ -140,8 +176,10 @@ class XP24ServerService(BaseServerService):
         return {
             "serial_number": self.serial_number,
             "device_type": self.device_type,
+            "module_type_code": self.module_type_code.value,
             "firmware_version": self.firmware_version,
             "status": self.device_status,
             "link_number": self.link_number,
+            "autoreport_status": self.autoreport_status,
         }
 
