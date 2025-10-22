@@ -5,7 +5,7 @@ including response generation and device configuration handling for
 3-channel light dimmer modules.
 """
 
-from typing import Dict, Optional, Callable
+from typing import Dict, Optional
 
 from xp.models import ModuleTypeCode
 from xp.models.telegram.datapoint_type import DataPointType
@@ -165,13 +165,12 @@ class XP33ServerService(BaseServerService):
             return None
 
         datapoint_type = request.datapoint_type
-        datapoint_values: Dict[DataPointType, Callable[[], str]] = {
+        handler = {
             DataPointType.MODULE_OUTPUT_STATE: self._handle_read_module_output_state,
             DataPointType.MODULE_STATE: self._handle_read_module_state,
             DataPointType.MODULE_OPERATING_HOURS: self._handle_read_module_operating_hours,
             DataPointType.MODULE_LIGHT_LEVEL: self._handle_read_light_level,
-        }
-        handler = datapoint_values.get(datapoint_type)
+        }.get(datapoint_type)
         if not handler:
             return None
 

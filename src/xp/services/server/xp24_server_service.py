@@ -4,7 +4,7 @@ This service provides XP24-specific device emulation functionality,
 including response generation and device configuration handling.
 """
 
-from typing import Dict, Optional, Callable
+from typing import Dict, Optional
 
 from xp.models import ModuleTypeCode
 from xp.models.telegram.datapoint_type import DataPointType
@@ -132,12 +132,11 @@ class XP24ServerService(BaseServerService):
             return None
 
         datapoint_type = request.datapoint_type
-        datapoint_values: Dict[DataPointType, Callable[[], str]] = {
+        handler = {
             DataPointType.MODULE_OUTPUT_STATE: self._handle_read_module_output_state,
             DataPointType.MODULE_STATE: self._handle_read_module_state,
             DataPointType.MODULE_OPERATING_HOURS: self._handle_read_module_operating_hours,
-        }
-        handler = datapoint_values.get(datapoint_type)
+        }.get(datapoint_type)
         if not handler:
             return None
 
