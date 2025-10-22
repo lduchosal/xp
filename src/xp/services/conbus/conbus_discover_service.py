@@ -10,7 +10,9 @@ from typing import Callable, Optional
 from twisted.internet.posixbase import PosixReactorBase
 
 from xp.models import ConbusClientConfig, ConbusDiscoverResponse
+from xp.models.conbus.conbus_discover import DiscoveredDevice
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol.conbus_protocol import ConbusProtocol
@@ -73,6 +75,7 @@ class ConbusDiscoverService(ConbusProtocol):
             self.discovered_device_result.received_telegrams = []
         self.discovered_device_result.received_telegrams.append(telegram_received.frame)
 
+        # Check for discovery response
         if (
             telegram_received.checksum_valid
             and telegram_received.telegram_type == TelegramType.REPLY.value
@@ -80,8 +83,19 @@ class ConbusDiscoverService(ConbusProtocol):
             and len(telegram_received.payload) == 15
         ):
             self.discovered_device(telegram_received.serial_number)
+
+        # Check for module type response (F02D07)
+        elif (
+            telegram_received.checksum_valid
+            and telegram_received.telegram_type == TelegramType.REPLY.value
+            and telegram_received.payload[11:17] == "F02D07"
+            and len(telegram_received.payload) >= 19
+        ):
+            self.handle_module_type_response(
+                telegram_received.serial_number, telegram_received.payload[17:19]
+            )
         else:
-            self.logger.debug("Not a discover response")
+            self.logger.debug("Not a discover or module type response")
 
     def discovered_device(self, serial_number: str) -> None:
         """Handle discovered device event.
@@ -92,9 +106,46 @@ class ConbusDiscoverService(ConbusProtocol):
         self.logger.info("discovered_device: %s", serial_number)
         if not self.discovered_device_result.discovered_devices:
             self.discovered_device_result.discovered_devices = []
-        self.discovered_device_result.discovered_devices.append(serial_number)
+
+        # Add device with module_type as None initially
+        device: DiscoveredDevice = {
+            "serial_number": serial_number,
+            "module_type": None,
+        }
+        self.discovered_device_result.discovered_devices.append(device)
+
+        # Send READ_DATAPOINT telegram to query module type
+        self.logger.debug(f"Sending module type query for {serial_number}")
+        self.send_telegram(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number=serial_number,
+            system_function=SystemFunction.READ_DATAPOINT,
+            data_value=DataPointType.MODULE_TYPE_CODE.value,
+        )
+
         if self.progress_callback:
             self.progress_callback(serial_number)
+
+    def handle_module_type_response(
+        self, serial_number: str, module_type: str
+    ) -> None:
+        """Handle module type response and update discovered device.
+
+        Args:
+            serial_number: Serial number of the device.
+            module_type: Module type code (hex string).
+        """
+        self.logger.info(f"Received module type {module_type} for {serial_number}")
+
+        # Find and update the device in discovered_devices
+        if self.discovered_device_result.discovered_devices:
+            for device in self.discovered_device_result.discovered_devices:
+                if device["serial_number"] == serial_number:
+                    device["module_type"] = module_type
+                    self.logger.debug(
+                        f"Updated device {serial_number} with module_type {module_type}"
+                    )
+                    break
 
     def timeout(self) -> bool:
         """Handle timeout event to stop discovery.

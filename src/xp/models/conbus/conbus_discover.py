@@ -2,7 +2,19 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, TypedDict
+
+
+class DiscoveredDevice(TypedDict):
+    """Discovered device information.
+
+    Attributes:
+        serial_number: Serial number of the device.
+        module_type: Module type code (hex string), None if not yet retrieved.
+    """
+
+    serial_number: str
+    module_type: Optional[str]
 
 
 @dataclass
@@ -13,7 +25,7 @@ class ConbusDiscoverResponse:
         success: Whether the operation was successful.
         sent_telegram: Telegram sent to discover devices.
         received_telegrams: List of telegrams received.
-        discovered_devices: List of discovered device serial numbers.
+        discovered_devices: List of discovered devices with their module types.
         error: Error message if operation failed.
         timestamp: Timestamp of the response.
     """
@@ -21,7 +33,7 @@ class ConbusDiscoverResponse:
     success: bool
     sent_telegram: Optional[str] = None
     received_telegrams: Optional[list[str]] = None
-    discovered_devices: Optional[list[str]] = None
+    discovered_devices: Optional[list[DiscoveredDevice]] = None
     error: Optional[str] = None
     timestamp: Optional[datetime] = None
 

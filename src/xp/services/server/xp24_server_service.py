@@ -7,12 +7,10 @@ including response generation and device configuration handling.
 from typing import Dict, Optional, Callable
 
 from xp.models import ModuleTypeCode
-from xp.models.telegram.action_type import ActionType
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
 from xp.services.server.base_server_service import BaseServerService
-from xp.utils import calculate_checksum
 
 
 class XP24ServerError(Exception):

@@ -26,14 +26,20 @@ class TestConbusDiscoverResponse:
             success=True,
             sent_telegram="<DISCOVER>",
             received_telegrams=["<REPLY1>", "<REPLY2>"],
-            discovered_devices=["device1", "device2"],
+            discovered_devices=[
+                {"serial_number": "device1", "module_type": "07"},
+                {"serial_number": "device2", "module_type": "24"},
+            ],
             error=None,
             timestamp=timestamp,
         ).to_dict()
         assert result["success"] is True
         assert result["sent_telegram"] == "<DISCOVER>"
         assert result["received_telegrams"] == ["<REPLY1>", "<REPLY2>"]
-        assert result["discovered_devices"] == ["device1", "device2"]
+        assert result["discovered_devices"] == [
+            {"serial_number": "device1", "module_type": "07"},
+            {"serial_number": "device2", "module_type": "24"},
+        ]
         assert result["error"] is None
         assert "2025-01-01T12:00:00" in result["timestamp"]
 
