@@ -205,10 +205,8 @@ class TestXP33StormModeSimulator:
         """Test D99 query triggers storm mode."""
         service = XP33ServerService("0012345003")
 
-        # Set up prerequisites: cached response and client socket
+        # Set up prerequisites: cached response
         service.last_response = "<R0012345003F02D1503000[%],01:050[%],02:100[%]FX>\n"
-        mock_socket = Mock()
-        service.set_client_socket(mock_socket)
 
         # Create D99 trigger request using Mock
         request = Mock()
@@ -286,7 +284,6 @@ class TestXP33StormModeSimulator:
         """Test storm mode trigger without cached response."""
         service = XP33ServerService("0012345003")
         service.last_response = None  # No cached response
-        service.client_socket = Mock()
 
         # Trigger storm mode
         request = Mock()
@@ -302,10 +299,6 @@ class TestXP33StormModeSimulator:
     def test_full_storm_sequence(self):
         """Test complete storm mode sequence: trigger -> storm -> recovery -> normal."""
         service = XP33ServerService("0012345003")
-
-        # Set up mock socket
-        mock_socket = Mock()
-        service.set_client_socket(mock_socket)
 
         # Step 1: Query normal datapoint to cache a response
         request_light = Mock()

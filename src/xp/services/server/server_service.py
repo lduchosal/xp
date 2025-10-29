@@ -8,7 +8,7 @@ import logging
 import socket
 import threading
 from pathlib import Path
-from typing import Dict, List, Optional, Union, Callable
+from typing import Dict, List, Optional, Union
 
 from xp.models.homekit.homekit_conson_config import (
     ConsonModuleConfig,
@@ -72,9 +72,11 @@ class ServerService:
         ] = {}  # serial -> device service instance
 
         # Collect device buffer to broadcast to client
-        self.collector_thread: Optional[threading.Thread] = None  # Background thread for storm
+        self.collector_thread: Optional[threading.Thread] = (
+            None  # Background thread for storm
+        )
         self.collector_stop_event = threading.Event()  # Event to stop thread
-        self.collector_buffer: list[str] = [] # All collected buffers
+        self.collector_buffer: list[str] = []  # All collected buffers
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -250,7 +252,9 @@ class ServerService:
                 try:
                     data = client_socket.recv(1024)
                 except socket.timeout:
-                    self.logger.debug(f"Timeout receiving data {client_address} ({timeout})")
+                    self.logger.debug(
+                        f"Timeout receiving data {client_address} ({timeout})"
+                    )
                 finally:
                     timeout -= 1
 
@@ -423,7 +427,6 @@ class ServerService:
             f"Configuration reloaded: {len(self.devices)} devices, {len(self.device_services)} services"
         )
 
-
     def _start_device_collector_thread(self) -> None:
         """Start device buffer collector thread."""
         if self.collector_thread and self.collector_thread.is_alive():
@@ -432,13 +435,10 @@ class ServerService:
 
         # Start background thread to send storm telegrams
         self.collector_thread = threading.Thread(
-            target=self._device_collector_thread,
-            daemon=True,
-            name=f"DeviceCollector"
+            target=self._device_collector_thread, daemon=True, name="DeviceCollector"
         )
         self.collector_thread.start()
-        self.logger.info(f"Collector thread started")
-
+        self.logger.info("Collector thread started")
 
     def _stop_device_collector_thread(self) -> None:
         """Stop device buffer collector thread."""
@@ -459,7 +459,9 @@ class ServerService:
         self.logger.info("Collector thread starting")
 
         while True:
-            self.logger.debug(f"Collector thread collecting ({len(self.collector_buffer)})")
+            self.logger.debug(
+                f"Collector thread collecting ({len(self.collector_buffer)})"
+            )
             collected = 0
             for device_service in self.device_services.values():
                 telegram_buffer = device_service.collect_telegram_buffer()
@@ -469,5 +471,3 @@ class ServerService:
             # Wait a bit before checking again
             self.logger.debug(f"Collector thread collected ({collected})")
             self.collector_stop_event.wait(timeout=1)
-
-

@@ -263,14 +263,24 @@ class BaseServerService(ABC):
         return None
 
     def add_telegram_buffer(self, telegram: str) -> None:
-        """Add telegram to the buffer."""
+        """Add telegram to the buffer.
+
+        Args:
+            telegram: The telegram string to add to the buffer.
+        """
         self.logger.debug(f"Add telegram to the buffer: {telegram}")
         with self.telegram_buffer_lock:
             self.telegram_buffer.append(telegram)
 
     def collect_telegram_buffer(self) -> list[str]:
-        """Collecting telegrams from the buffer."""
-        self.logger.debug(f"Collecting {self.serial_number} telegrams from buffer: {len(self.telegram_buffer)}")
+        """Collecting telegrams from the buffer.
+
+        Returns:
+            List of telegram strings from the buffer. The buffer is cleared after collection.
+        """
+        self.logger.debug(
+            f"Collecting {self.serial_number} telegrams from buffer: {len(self.telegram_buffer)}"
+        )
         with self.telegram_buffer_lock:
             result = self.telegram_buffer.copy()
             self.logger.debug(f"Resetting {self.serial_number} buffer")

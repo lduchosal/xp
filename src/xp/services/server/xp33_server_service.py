@@ -77,7 +77,9 @@ class XP33ServerService(BaseServerService):
         # Storm mode state (XP33 Storm Simulator)
         self.storm_mode = False  # Track if device is in storm mode
         self.last_response: Optional[str] = None  # Cache last response for storm replay
-        self.storm_thread: Optional[threading.Thread] = None  # Background thread for storm
+        self.storm_thread: Optional[threading.Thread] = (
+            None  # Background thread for storm
+        )
         self.storm_stop_event = threading.Event()  # Event to stop storm thread
         self.client_sockets: set[socket.socket] = set()  # All active client sockets
         self.client_sockets_lock = threading.Lock()  # Lock for socket set
@@ -297,11 +299,13 @@ class XP33ServerService(BaseServerService):
         self.storm_thread = threading.Thread(
             target=self._storm_sender_thread,
             daemon=True,
-            name=f"Storm-{self.serial_number}"
+            name=f"Storm-{self.serial_number}",
         )
         self.storm_thread.start()
 
-        self.logger.info(f"Storm triggered via D99 query for device {self.serial_number}")
+        self.logger.info(
+            f"Storm triggered via D99 query for device {self.serial_number}"
+        )
         return None  # No response when entering storm mode
 
     def _exit_storm_mode(self) -> str:
@@ -360,7 +364,10 @@ class XP33ServerService(BaseServerService):
         delay_between_packets = 1.0 / packets_per_second  # 0.5 seconds
 
         try:
-            while self.storm_packets_sent < max_packets and not self.storm_stop_event.is_set():
+            while (
+                self.storm_packets_sent < max_packets
+                and not self.storm_stop_event.is_set()
+            ):
                 # Wait for a valid socket (client may have disconnected and reconnected)
                 self.add_telegram_buffer(cached_response)
                 self.storm_packets_sent += 1
