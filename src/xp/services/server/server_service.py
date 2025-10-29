@@ -8,7 +8,7 @@ import logging
 import socket
 import threading
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Callable
 
 from xp.models.homekit.homekit_conson_config import (
     ConsonModuleConfig,
@@ -70,6 +70,11 @@ class ServerService:
                 XP130ServerService,
             ],
         ] = {}  # serial -> device service instance
+
+        # Collect device buffer to broadcast to client
+        self.collector_thread: Optional[threading.Thread] = None  # Background thread for storm
+        self.collector_stop_event = threading.Event()  # Event to stop thread
+        self.collector_buffer: list[str] = [] # All collected buffers
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -167,6 +172,8 @@ class ServerService:
             self.server_socket.bind(("0.0.0.0", self.port))
             self.server_socket.listen(1)  # Accept single connection as per spec
 
+            self._start_device_collector_thread()
+
             self.is_running = True
             self.logger.info(f"Conbus emulator server started on port {self.port}")
             self.logger.info(
@@ -221,17 +228,42 @@ class ServerService:
     ) -> None:
         """Handle individual client connection."""
         try:
+
+            idle_timeout = 300
+            rcv_timeout = 10
+
             # Set timeout for idle connections (30 seconds as per spec)
-            client_socket.settimeout(300.0)
+            client_socket.settimeout(rcv_timeout)
+            timeout = idle_timeout / rcv_timeout
 
             while True:
+
+                # send waiting buffer
+                for i in range(len(self.collector_buffer)):
+                    buffer = self.collector_buffer.pop()
+                    client_socket.send(buffer.encode("latin-1"))
+                    self.logger.debug(f"Sent buffer to {client_address}")
+
                 # Receive data from client
-                data = client_socket.recv(1024)
+                self.logger.debug(f"Receiving data {client_address}")
+                data = None
+                try:
+                    data = client_socket.recv(1024)
+                except socket.timeout:
+                    self.logger.debug(f"Timeout receiving data {client_address} ({timeout})")
+                finally:
+                    timeout -= 1
+
                 if not data:
-                    break
+                    if timeout <= 0:
+                        break
+                    continue
+
+                # reset timeout on receiving data
+                timeout = idle_timeout / rcv_timeout
 
                 message = data.decode("latin-1").strip()
-                self.logger.info(f"Received from {client_address}: {message}")
+                self.logger.debug(f"Received from {client_address}: {message}")
 
                 # Process request (discover or data request)
                 responses = self._process_request(message)
@@ -239,10 +271,10 @@ class ServerService:
                 # Send responses
                 for response in responses:
                     client_socket.send(response.encode("latin-1"))
-                    self.logger.info(f"Sent to {client_address}: {response[:-1]}")
+                    self.logger.debug(f"Sent to {client_address}: {response[:-1]}")
 
         except socket.timeout:
-            self.logger.info(f"Client {client_address} timed out")
+            self.logger.debug(f"Client {client_address} timed out")
         except Exception as e:
             self.logger.error(f"Error handling client {client_address}: {e}")
         finally:
@@ -390,3 +422,52 @@ class ServerService:
         self.logger.info(
             f"Configuration reloaded: {len(self.devices)} devices, {len(self.device_services)} services"
         )
+
+
+    def _start_device_collector_thread(self) -> None:
+        """Start device buffer collector thread."""
+        if self.collector_thread and self.collector_thread.is_alive():
+            self.logger.debug("Collector thread already running")
+            return
+
+        # Start background thread to send storm telegrams
+        self.collector_thread = threading.Thread(
+            target=self._device_collector_thread,
+            daemon=True,
+            name=f"DeviceCollector"
+        )
+        self.collector_thread.start()
+        self.logger.info(f"Collector thread started")
+
+
+    def _stop_device_collector_thread(self) -> None:
+        """Stop device buffer collector thread."""
+        if not self.collector_thread or not self.collector_thread.is_alive():
+            self.logger.debug("Collector thread not running")
+            return
+
+        self.logger.info(f"Stopping collector thread: {self.collector_thread.name}")
+
+        # Wait for thread to finish (with timeout)
+        if self.collector_thread and self.collector_thread.is_alive():
+            self.collector_thread.join(timeout=1.0)
+
+            self.logger.info("Collector stopped.")
+
+    def _device_collector_thread(self) -> None:
+        """Device buffer collector thread."""
+        self.logger.info("Collector thread starting")
+
+        while True:
+            self.logger.debug(f"Collector thread collecting ({len(self.collector_buffer)})")
+            collected = 0
+            for device_service in self.device_services.values():
+                telegram_buffer = device_service.collect_telegram_buffer()
+                self.collector_buffer.extend(telegram_buffer)
+                collected += len(telegram_buffer)
+
+            # Wait a bit before checking again
+            self.logger.debug(f"Collector thread collected ({collected})")
+            self.collector_stop_event.wait(timeout=1)
+
+

@@ -289,7 +289,8 @@ class TestServerServiceRequestProcessing:
         service.telegram_service = Mock()
         service.telegram_service.parse_system_telegram.return_value = None
 
-        responses = service._process_request("<INVALID>")
+        mock_socket = Mock()
+        responses = service._process_request("<INVALID>", mock_socket)
 
         assert responses == []
 
@@ -313,7 +314,8 @@ class TestServerServiceRequestProcessing:
             return_value="<DISCOVER_RESPONSE>"
         )
 
-        responses = service._process_request("<S0000000000F01D>")
+        mock_socket = Mock()
+        responses = service._process_request("<S0000000000F01D>", mock_socket)
 
         assert len(responses) == 1
         assert "<DISCOVER_RESPONSE>" in responses[0]
@@ -338,7 +340,8 @@ class TestServerServiceRequestProcessing:
             return_value="<RESPONSE>"
         )
 
-        responses = service._process_request("<S0000012345F02D>")
+        mock_socket = Mock()
+        responses = service._process_request("<S0000012345F02D>", mock_socket)
 
         assert len(responses) == 1
         assert "<RESPONSE>" in responses[0]
@@ -367,7 +370,8 @@ class TestServerServiceRequestProcessing:
             return_value="<RESPONSE2>"
         )
 
-        responses = service._process_request("<S0000000000F02D>")
+        mock_socket = Mock()
+        responses = service._process_request("<S0000000000F02D>", mock_socket)
 
         assert len(responses) == 2
 
@@ -395,7 +399,8 @@ class TestServerServiceRequestProcessing:
             return_value=None  # This device returns None
         )
 
-        responses = service._process_request("<S0000000000F02D>")
+        mock_socket = Mock()
+        responses = service._process_request("<S0000000000F02D>", mock_socket)
 
         assert len(responses) == 1  # Only one response
         assert "<RESPONSE1>" in responses[0]
@@ -413,7 +418,8 @@ class TestServerServiceRequestProcessing:
         )
         service.discover_service.is_discover_request = Mock(return_value=False)
 
-        responses = service._process_request("<S0000099999F02D>")
+        mock_socket = Mock()
+        responses = service._process_request("<S0000099999F02D>", mock_socket)
 
         assert responses == []
 
@@ -430,7 +436,8 @@ class TestServerServiceRequestProcessing:
         )
         service.telegram_service = mock_telegram_service
 
-        responses = service._process_request("<INVALID>")
+        mock_socket = Mock()
+        responses = service._process_request("<INVALID>", mock_socket)
 
         assert responses == []
 

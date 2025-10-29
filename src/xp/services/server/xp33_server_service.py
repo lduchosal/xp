@@ -5,6 +5,8 @@ including response generation and device configuration handling for
 3-channel light dimmer modules.
 """
 
+import socket
+import threading
 from typing import Dict, Optional
 
 from xp.models import ModuleTypeCode
@@ -71,6 +73,15 @@ class XP33ServerService(BaseServerService):
             3: [25, 25, 25],  # Scene 3: Low level
             4: [0, 0, 0],  # Scene 4: Off
         }
+
+        # Storm mode state (XP33 Storm Simulator)
+        self.storm_mode = False  # Track if device is in storm mode
+        self.last_response: Optional[str] = None  # Cache last response for storm replay
+        self.storm_thread: Optional[threading.Thread] = None  # Background thread for storm
+        self.storm_stop_event = threading.Event()  # Event to stop storm thread
+        self.client_sockets: set[socket.socket] = set()  # All active client sockets
+        self.client_sockets_lock = threading.Lock()  # Lock for socket set
+        self.storm_packets_sent = 0  # Counter for packets sent during storm
 
     def _handle_device_specific_action_request(
         self, request: SystemTelegram
@@ -160,11 +171,32 @@ class XP33ServerService(BaseServerService):
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Handle XP33-specific data requests."""
+        """Handle XP33-specific data requests with storm mode support."""
         if not request.datapoint_type:
+            # Check for D99 storm trigger (not in DataPointType enum)
+            if request.data and request.data.startswith("99"):
+                return self._trigger_storm_mode()
             return None
 
         datapoint_type = request.datapoint_type
+
+        # Storm mode handling
+        if datapoint_type == DataPointType.MODULE_ERROR_CODE:
+            if self.storm_mode:
+                # MODULE_ERROR_CODE query stops storm
+                return self._exit_storm_mode()
+            else:
+                # Normal operation - return error code 00
+                return self._build_error_code_response("00")
+
+        # If in storm mode and not MODULE_ERROR_CODE query, ignore (background thread is sending)
+        if self.storm_mode:
+            self.logger.debug(
+                f"Ignoring query during storm mode for device {self.serial_number}"
+            )
+            return None  # Background thread is sending storm telegrams
+
+        # Normal data request handling
         handler = {
             DataPointType.MODULE_OUTPUT_STATE: self._handle_read_module_output_state,
             DataPointType.MODULE_STATE: self._handle_read_module_state,
@@ -182,6 +214,9 @@ class XP33ServerService(BaseServerService):
             f"{data_value}"
         )
         telegram = self._build_response_telegram(data_part)
+
+        # Cache response for potential storm replay
+        self.last_response = telegram
 
         self.logger.debug(
             f"Generated {self.device_type} module type response: {telegram}"
@@ -229,6 +264,152 @@ class XP33ServerService(BaseServerService):
             f"{i:02d}:{level:03d}[%]" for i, level in enumerate(self.channel_states)
         ]
         return ",".join(levels)
+
+    def _trigger_storm_mode(self) -> Optional[str]:
+        """Trigger storm mode via D99 query.
+
+        Starts a background thread that sends 2 packets per second.
+        If storm is already active, this is a no-op.
+
+        Returns:
+            None (no response - storm mode activated).
+        """
+        # If storm already active, just log and continue
+        if self.storm_mode and self.storm_thread and self.storm_thread.is_alive():
+            self.logger.debug(
+                f"Storm already active for device {self.serial_number}, "
+                f"sent {self.storm_packets_sent}/200 packets"
+            )
+            return None
+
+        if not self.last_response:
+            self.logger.warning(
+                f"Cannot trigger storm for device {self.serial_number}: "
+                f"no cached response"
+            )
+            return None
+
+        self.storm_mode = True
+        self.storm_packets_sent = 0
+        self.storm_stop_event.clear()
+
+        # Start background thread to send storm telegrams
+        self.storm_thread = threading.Thread(
+            target=self._storm_sender_thread,
+            daemon=True,
+            name=f"Storm-{self.serial_number}"
+        )
+        self.storm_thread.start()
+
+        self.logger.info(f"Storm triggered via D99 query for device {self.serial_number}")
+        return None  # No response when entering storm mode
+
+    def _exit_storm_mode(self) -> str:
+        """Exit storm mode and return error code FE.
+
+        Stops the background storm thread and returns error code.
+
+        Returns:
+            MODULE_ERROR_CODE response with error code FE (buffer overflow).
+        """
+        self.logger.info(
+            f"MODULE_ERROR_CODE query received, stopping storm for device {self.serial_number}"
+        )
+
+        # Signal the storm thread to stop
+        self.storm_stop_event.set()
+        self.storm_mode = False
+
+        # Wait for thread to finish (with timeout)
+        if self.storm_thread and self.storm_thread.is_alive():
+            self.storm_thread.join(timeout=1.0)
+
+        self.logger.info(
+            f"Storm stopped after {self.storm_packets_sent} packets for device {self.serial_number}"
+        )
+        self.logger.info(
+            f"Storm stopped, returning to normal operation for device {self.serial_number}"
+        )
+        return self._build_error_code_response("FE")
+
+    def _storm_sender_thread(self) -> None:
+        """Background thread that sends storm telegrams continuously.
+
+        Sends 2 packets per second (500ms delay) until:
+        - 200 packets have been sent, or
+        - Storm mode is stopped via stop event
+
+        The storm persists across socket disconnections. If the client disconnects
+        and reconnects, the storm will continue on the new connection.
+        """
+        if not self.last_response:
+            self.logger.error(
+                f"Storm thread started but missing cached response for {self.serial_number}"
+            )
+            self.storm_mode = False
+            return
+
+        self.logger.info(
+            f"Storm thread started, sending 200 duplicate telegrams at 2 packets/sec for device {self.serial_number}"
+        )
+
+        # Type narrowing for mypy
+        cached_response: str = self.last_response
+        max_packets = 200
+        packets_per_second = 2
+        delay_between_packets = 1.0 / packets_per_second  # 0.5 seconds
+
+        try:
+            while self.storm_packets_sent < max_packets and not self.storm_stop_event.is_set():
+                # Wait for a valid socket (client may have disconnected and reconnected)
+                self.add_telegram_buffer(cached_response)
+                self.storm_packets_sent += 1
+                self.logger.debug(
+                    f"Storm packet {self.storm_packets_sent}/{max_packets} sent for {self.serial_number}"
+                )
+
+                # Wait before sending next packet (0.5 seconds for 2 packets/sec)
+                if self.storm_packets_sent < max_packets:
+                    self.storm_stop_event.wait(timeout=delay_between_packets)
+
+                # Log completion status
+            if self.storm_packets_sent >= max_packets:
+                self.logger.info(
+                    f"Storm completed: sent all {self.storm_packets_sent} packets for {self.serial_number}"
+                )
+            elif self.storm_stop_event.is_set():
+                self.logger.info(
+                    f"Storm stopped by error code query: sent {self.storm_packets_sent} packets for {self.serial_number}"
+                )
+
+            # Clean up storm mode
+            self.storm_mode = False
+
+        except Exception as e:
+            self.logger.error(
+                f"Unexpected error in storm thread for {self.serial_number}: {e}"
+            )
+            self.storm_mode = False
+
+    def _build_error_code_response(self, error_code: str) -> str:
+        """Build MODULE_ERROR_CODE response telegram.
+
+        Args:
+            error_code: Error code (00 = normal, FE = buffer overflow).
+
+        Returns:
+            The complete MODULE_ERROR_CODE response telegram.
+        """
+        data_part = (
+            f"R{self.serial_number}"
+            f"F02D{DataPointType.MODULE_ERROR_CODE.value}"
+            f"{error_code}"
+        )
+        telegram = self._build_response_telegram(data_part)
+        self.logger.debug(
+            f"Generated {self.device_type} error code response: {telegram}"
+        )
+        return telegram
 
     def set_channel_dimming(self, channel: int, level: int) -> bool:
         """Set individual channel dimming level.

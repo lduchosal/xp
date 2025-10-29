@@ -5,6 +5,7 @@ containing common functionality like module type response generation.
 """
 
 import logging
+import threading
 from abc import ABC
 from typing import Optional
 
@@ -41,6 +42,9 @@ class BaseServerService(ABC):
         self.link_number: int = 1
         self.temperature: str = "+23,5§C"
         self.voltage: str = "+12,5§V"
+
+        self.telegram_buffer: list[str] = []
+        self.telegram_buffer_lock = threading.Lock()  # Lock for socket set
 
     def generate_datapoint_type_response(
         self, datapoint_type: DataPointType
@@ -257,3 +261,18 @@ class BaseServerService(ABC):
             The response telegram string, or None if request cannot be handled.
         """
         return None
+
+    def add_telegram_buffer(self, telegram: str) -> None:
+        """Add telegram to the buffer."""
+        self.logger.debug(f"Add telegram to the buffer: {telegram}")
+        with self.telegram_buffer_lock:
+            self.telegram_buffer.append(telegram)
+
+    def collect_telegram_buffer(self) -> list[str]:
+        """Collecting telegrams from the buffer."""
+        self.logger.debug(f"Collecting {self.serial_number} telegrams from buffer: {len(self.telegram_buffer)}")
+        with self.telegram_buffer_lock:
+            result = self.telegram_buffer.copy()
+            self.logger.debug(f"Resetting {self.serial_number} buffer")
+            self.telegram_buffer.clear()
+            return result
