@@ -10,7 +10,7 @@ from xp.models.actiontable.actiontable import ActionTable
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
-from xp.services.conbus.actiontable.actiontable_serializer import ActionTableSerializer
+from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.protocol import ConbusProtocol
 from xp.services.telegram.telegram_service import TelegramService
 

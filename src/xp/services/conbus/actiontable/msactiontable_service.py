@@ -12,13 +12,13 @@ from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
-from xp.services.conbus.actiontable.msactiontable_xp20_serializer import (
+from xp.services.actiontable.msactiontable_xp20_serializer import (
     Xp20MsActionTableSerializer,
 )
-from xp.services.conbus.actiontable.msactiontable_xp24_serializer import (
+from xp.services.actiontable.msactiontable_xp24_serializer import (
     Xp24MsActionTableSerializer,
 )
-from xp.services.conbus.actiontable.msactiontable_xp33_serializer import (
+from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
 from xp.services.protocol import ConbusProtocol

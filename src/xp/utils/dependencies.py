@@ -9,16 +9,16 @@ from twisted.internet.posixbase import PosixReactorBase
 from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
-from xp.services.conbus.actiontable.actiontable_serializer import ActionTableSerializer
+from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.conbus.actiontable.actiontable_service import ActionTableService
 from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
-from xp.services.conbus.actiontable.msactiontable_xp20_serializer import (
+from xp.services.actiontable.msactiontable_xp20_serializer import (
     Xp20MsActionTableSerializer,
 )
-from xp.services.conbus.actiontable.msactiontable_xp24_serializer import (
+from xp.services.actiontable.msactiontable_xp24_serializer import (
     Xp24MsActionTableSerializer,
 )
-from xp.services.conbus.actiontable.msactiontable_xp33_serializer import (
+from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
 from xp.services.conbus.conbus_blink_all_service import ConbusBlinkAllService
