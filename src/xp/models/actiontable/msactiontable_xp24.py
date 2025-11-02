@@ -23,7 +23,7 @@ class InputAction:
 class Xp24MsActionTable:
     """XP24 Action Table for managing input actions and settings.
 
-    Each input has an action type (TOGGLE, TURNON, LEVELSET, etc.)
+    Each input has an action type (TOGGLE, ON, LEVELSET, etc.)
     with an optional parameter string.
 
     Attributes:

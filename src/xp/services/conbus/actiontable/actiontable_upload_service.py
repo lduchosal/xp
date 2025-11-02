@@ -107,11 +107,10 @@ class ActionTableUploadService(ConbusProtocol):
                 chunk = self.upload_data_chunks[self.current_chunk_index]
                 self.logger.debug(f"Sending chunk {self.current_chunk_index + 1}")
 
-                # Calculate prefix: 0xAA, 0xAB, 0xAC, 0xAD, ...
-                # High nibble = 0xA (ACTIONTABLE data indicator)
-                # Low nibble = 0xA + chunk_index (sequential counter)
-                prefix_value = 0xA0 | (0xA + self.current_chunk_index)
-                prefix_hex = f"{prefix_value:02X}"
+                # Calculate prefix: AA, AB, AC, AD, AE, AF, AG, AH, AI, AJ, AK, AL, AM, AN, AO
+                # First character: 'A' (fixed)
+                # Second character: 'A' + chunk_index (sequential counter A-O for 15 chunks)
+                prefix_hex = f"A{ord('A') + self.current_chunk_index:c}"
 
                 self.send_telegram(
                     telegram_type=TelegramType.SYSTEM,
@@ -186,7 +185,7 @@ class ActionTableUploadService(ConbusProtocol):
 
         # Parse action table strings to ActionTable object
         try:
-            module_action_table = module.action_table if module.action_table else []
+            module_action_table = module.action_table or []
             action_table = self.serializer.parse_action_table(module_action_table)
         except ValueError as e:
             self.logger.error(f"Invalid action table format: {e}")

@@ -19,7 +19,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=0,
                     module_output=1,
-                    command=InputActionType.TURNOFF,
+                    command=InputActionType.OFF,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 )
@@ -30,7 +30,7 @@ class TestActionTableSerializerFormatDecoded:
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert result[0] == "CP20 0 0 > 1 TURNOFF;"
+        assert result[0] == "CP20 0 0 > 1 OFF;"
 
     def test_format_decoded_output_with_parameter(self):
         """Test formatting with non-zero parameter."""
@@ -41,7 +41,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=2,
                     module_output=1,
-                    command=InputActionType.TURNON,
+                    command=InputActionType.ON,
                     parameter=TimeParam.T1SEC,  # value = 2
                     inverted=False,
                 )
@@ -51,7 +51,7 @@ class TestActionTableSerializerFormatDecoded:
         result = ActionTableSerializer.format_decoded_output(action_table)
 
         assert len(result) == 1
-        assert result[0] == "CP20 0 2 > 1 TURNON 2;"
+        assert result[0] == "CP20 0 2 > 1 ON 2;"
 
     def test_format_decoded_output_parameter_zero(self):
         """Test that parameter=0 is omitted from output."""
@@ -62,7 +62,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=0,
                     module_output=1,
-                    command=InputActionType.TURNON,
+                    command=InputActionType.ON,
                     parameter=TimeParam.NONE,  # value = 0
                     inverted=False,
                 )
@@ -72,7 +72,7 @@ class TestActionTableSerializerFormatDecoded:
         result = ActionTableSerializer.format_decoded_output(action_table)
 
         assert len(result) == 1
-        assert result[0] == "CP20 0 0 > 1 TURNON;"
+        assert result[0] == "CP20 0 0 > 1 ON;"
         assert " 0;" not in result[0]
 
     def test_format_decoded_output_inverted(self):
@@ -84,7 +84,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=1,
                     module_output=1,
-                    command=InputActionType.TURNON,
+                    command=InputActionType.ON,
                     parameter=TimeParam.NONE,
                     inverted=True,
                 )
@@ -94,7 +94,7 @@ class TestActionTableSerializerFormatDecoded:
         result = ActionTableSerializer.format_decoded_output(action_table)
 
         assert len(result) == 1
-        assert result[0] == "CP20 0 1 > 1 ~TURNON;"
+        assert result[0] == "CP20 0 1 > 1 ~ON;"
 
     def test_format_decoded_output_inverted_with_parameter(self):
         """Test inverted command with parameter."""
@@ -105,7 +105,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=1,
                     module_input=2,
                     module_output=3,
-                    command=InputActionType.TURNON,
+                    command=InputActionType.ON,
                     parameter=TimeParam.T5SEC,  # value = 4
                     inverted=True,
                 )
@@ -115,7 +115,7 @@ class TestActionTableSerializerFormatDecoded:
         result = ActionTableSerializer.format_decoded_output(action_table)
 
         assert len(result) == 1
-        assert result[0] == "CP20 1 2 > 3 ~TURNON 4;"
+        assert result[0] == "CP20 1 2 > 3 ~ON 4;"
 
     def test_format_decoded_output_empty(self):
         """Test formatting empty action table."""
@@ -135,7 +135,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=0,
                     module_output=1,
-                    command=InputActionType.TURNOFF,
+                    command=InputActionType.OFF,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 ),
@@ -144,7 +144,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=0,
                     module_output=2,
-                    command=InputActionType.TURNOFF,
+                    command=InputActionType.OFF,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 ),
@@ -153,7 +153,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=1,
                     module_output=1,
-                    command=InputActionType.TURNON,
+                    command=InputActionType.ON,
                     parameter=TimeParam.NONE,
                     inverted=True,
                 ),
@@ -162,7 +162,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=1,
                     module_output=2,
-                    command=InputActionType.TURNON,
+                    command=InputActionType.ON,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 ),
@@ -172,10 +172,10 @@ class TestActionTableSerializerFormatDecoded:
         result = ActionTableSerializer.format_decoded_output(action_table)
 
         assert len(result) == 4
-        assert result[0] == "CP20 0 0 > 1 TURNOFF;"
-        assert result[1] == "CP20 0 0 > 2 TURNOFF;"
-        assert result[2] == "CP20 0 1 > 1 ~TURNON;"
-        assert result[3] == "CP20 0 1 > 2 TURNON;"
+        assert result[0] == "CP20 0 0 > 1 OFF;"
+        assert result[1] == "CP20 0 0 > 2 OFF;"
+        assert result[2] == "CP20 0 1 > 1 ~ON;"
+        assert result[3] == "CP20 0 1 > 2 ON;"
 
     def test_format_decoded_output_semicolon(self):
         """Test that all entries end with semicolon."""
@@ -186,7 +186,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=0,
                     module_output=1,
-                    command=InputActionType.TURNOFF,
+                    command=InputActionType.OFF,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 ),
@@ -195,7 +195,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=1,
                     module_output=2,
-                    command=InputActionType.TURNON,
+                    command=InputActionType.ON,
                     parameter=TimeParam.T1SEC,
                     inverted=True,
                 ),
@@ -215,7 +215,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=0,
                     module_output=1,
-                    command=InputActionType.TURNOFF,
+                    command=InputActionType.OFF,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 )
@@ -235,7 +235,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=0,
                     module_output=1,
-                    command=InputActionType.TURNOFF,
+                    command=InputActionType.OFF,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 ),
@@ -244,7 +244,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=0,
                     module_output=2,
-                    command=InputActionType.TURNOFF,
+                    command=InputActionType.OFF,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 ),
@@ -253,7 +253,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=1,
                     module_output=1,
-                    command=InputActionType.TURNON,
+                    command=InputActionType.ON,
                     parameter=TimeParam.NONE,
                     inverted=True,
                 ),
@@ -262,7 +262,7 @@ class TestActionTableSerializerFormatDecoded:
                     link_number=0,
                     module_input=1,
                     module_output=2,
-                    command=InputActionType.TURNON,
+                    command=InputActionType.ON,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 ),
@@ -272,10 +272,10 @@ class TestActionTableSerializerFormatDecoded:
         result = ActionTableSerializer.format_decoded_output(action_table)
 
         expected = [
-            "CP20 0 0 > 1 TURNOFF;",
-            "CP20 0 0 > 2 TURNOFF;",
-            "CP20 0 1 > 1 ~TURNON;",
-            "CP20 0 1 > 2 TURNON;",
+            "CP20 0 0 > 1 OFF;",
+            "CP20 0 0 > 2 OFF;",
+            "CP20 0 1 > 1 ~ON;",
+            "CP20 0 1 > 2 ON;",
         ]
         assert result == expected
 
@@ -292,7 +292,7 @@ class TestActionTableSerializerPadding:
                     link_number=0,
                     module_input=0,
                     module_output=1,
-                    command=InputActionType.TURNOFF,
+                    command=InputActionType.OFF,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 )
@@ -312,7 +312,7 @@ class TestActionTableSerializerPadding:
                 link_number=0,
                 module_input=i // 4,
                 module_output=(i % 4) + 1,
-                command=InputActionType.TURNOFF if i < 4 else InputActionType.TURNON,
+                command=InputActionType.OFF if i < 4 else InputActionType.ON,
                 parameter=TimeParam.NONE,
                 inverted=False,
             )
@@ -338,7 +338,7 @@ class TestActionTableSerializerPadding:
                     link_number=0,
                     module_input=0,
                     module_output=1,
-                    command=InputActionType.TURNOFF,
+                    command=InputActionType.OFF,
                     parameter=TimeParam.NONE,
                     inverted=False,
                 )
@@ -359,7 +359,7 @@ class TestActionTableSerializerPadding:
                 link_number=0,
                 module_input=0,
                 module_output=1,
-                command=InputActionType.TURNOFF,
+                command=InputActionType.OFF,
                 parameter=TimeParam.NONE,
                 inverted=False,
             )
@@ -381,7 +381,7 @@ class TestActionTableSerializerPadding:
                     link_number=1,  # 0x01
                     module_input=2,  # 0x02
                     module_output=3,  # bits 0-2
-                    command=InputActionType.TURNON,  # 0x01, bits 3-7
+                    command=InputActionType.ON,  # 0x01, bits 3-7
                     parameter=TimeParam.T5SEC,  # 0x04
                     inverted=False,
                 )

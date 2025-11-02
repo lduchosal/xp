@@ -27,7 +27,7 @@ class ActionTableEntry:
     link_number: int = 0
     module_input: int = 0
     module_output: int = 1
-    command: InputActionType = InputActionType.TURNOFF
+    command: InputActionType = InputActionType.OFF
     parameter: TimeParam = TimeParam.NONE
     inverted: bool = False
 

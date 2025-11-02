@@ -20,10 +20,12 @@ from xp.services.actiontable.msactiontable_xp24_serializer import (
 from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
+from xp.services.conbus.actiontable.actiontable_download_service import (
+    ActionTableService,
+)
 from xp.services.conbus.actiontable.actiontable_list_service import (
     ActionTableListService,
 )
-from xp.services.conbus.actiontable.actiontable_download_service import ActionTableService
 from xp.services.conbus.actiontable.actiontable_show_service import (
     ActionTableShowService,
 )
@@ -238,13 +240,13 @@ class ServiceContainer:
 
         self.container.register(
             ActionTableListService,
-            factory=lambda: ActionTableListService(),
+            factory=ActionTableListService,
             scope=punq.Scope.singleton,
         )
 
         self.container.register(
             ActionTableShowService,
-            factory=lambda: ActionTableShowService(),
+            factory=ActionTableShowService,
             scope=punq.Scope.singleton,
         )
 

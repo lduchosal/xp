@@ -10,9 +10,9 @@ class TestInputAction:
 
     def test_create_input_action_with_param(self):
         """Test creating InputAction with parameter."""
-        action = InputAction(InputActionType.TURNON, TimeParam.T5SEC)
+        action = InputAction(InputActionType.ON, TimeParam.T5SEC)
 
-        assert action.type == InputActionType.TURNON
+        assert action.type == InputActionType.ON
         assert action.param == TimeParam.T5SEC
 
     def test_create_input_action_without_param(self):
@@ -26,7 +26,7 @@ class TestInputAction:
         """Test InputAction equality comparison."""
         action1 = InputAction(InputActionType.TOGGLE, TimeParam.NONE)
         action2 = InputAction(InputActionType.TOGGLE, TimeParam.NONE)
-        action3 = InputAction(InputActionType.TURNON, TimeParam.T5SEC)
+        action3 = InputAction(InputActionType.ON, TimeParam.T5SEC)
 
         assert action1 == action2
         assert action1 != action3
@@ -68,7 +68,7 @@ class TestXp24ActionTable:
         action_table1 = Xp24MsActionTable()
         action_table2 = Xp24MsActionTable()
         action_table3 = Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TURNON, TimeParam.T5SEC),
+            input1_action=InputAction(InputActionType.ON, TimeParam.T5SEC),
             mutex12=True,
         )
 
@@ -95,8 +95,8 @@ class TestXp24ActionTable:
         # Test a selection of action types
         test_actions = [
             InputActionType.VOID,
-            InputActionType.TURNON,
-            InputActionType.TURNOFF,
+            InputActionType.ON,
+            InputActionType.OFF,
             InputActionType.TOGGLE,
             InputActionType.LEVELSET,
             InputActionType.SCENESET,
@@ -115,7 +115,7 @@ class TestXp24ActionTable:
         assert action1.param == TimeParam.T60MIN
 
         # Test with zero string
-        action2 = InputAction(InputActionType.TURNON, TimeParam.NONE)
+        action2 = InputAction(InputActionType.ON, TimeParam.NONE)
         assert action2.param == TimeParam.NONE
 
         # Test with None

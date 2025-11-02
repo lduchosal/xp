@@ -8,7 +8,9 @@ from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.conbus.actiontable.actiontable_download_service import ActionTableService
+from xp.services.conbus.actiontable.actiontable_download_service import (
+    ActionTableService,
+)
 
 
 class TestActionTableService:
@@ -56,7 +58,7 @@ class TestActionTableService:
                 module_input=0,
                 module_output=1,
                 inverted=False,
-                command=InputActionType.TURNOFF,
+                command=InputActionType.OFF,
                 parameter=TimeParam.NONE,
             ),
             ActionTableEntry(
@@ -65,7 +67,7 @@ class TestActionTableService:
                 module_input=1,
                 module_output=1,
                 inverted=True,
-                command=InputActionType.TURNON,
+                command=InputActionType.ON,
                 parameter=TimeParam.NONE,
             ),
         ]
@@ -169,8 +171,8 @@ class TestActionTableService:
         # Mock serializer to return sample actiontable
         service.serializer.from_encoded_string.return_value = sample_actiontable
         service.serializer.format_decoded_output.return_value = [
-            "CP20 0 0 > 1 TURNOFF;",
-            "CP20 0 1 > 1 ~TURNON;",
+            "CP20 0 0 > 1 OFF;",
+            "CP20 0 1 > 1 ~ON;",
         ]
 
         # Create mock telegram received event
@@ -199,7 +201,7 @@ class TestActionTableService:
 
         # Should call finish callback with actiontable, dict, and short format
         expected_dict = asdict(sample_actiontable)
-        expected_short = ["CP20 0 0 > 1 TURNOFF;", "CP20 0 1 > 1 ~TURNON;"]
+        expected_short = ["CP20 0 0 > 1 OFF;", "CP20 0 1 > 1 ~ON;"]
         mock_finish.assert_called_once_with(
             sample_actiontable, expected_dict, expected_short
         )

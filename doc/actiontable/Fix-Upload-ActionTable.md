@@ -34,7 +34,7 @@ def to_data(action_table: ActionTable) -> bytes:
 If the action table has 8 entries, only 8×5 = 40 bytes are serialized.
 
 **Expected Behavior:**
-ActionTables must always contain exactly 96 entries. If fewer entries are configured, the remaining slots must be filled with default entries: `NOMOD 0 0 > 0 TURNOFF` (encoded as `00 00 00 00 00`).
+ActionTables must always contain exactly 96 entries. If fewer entries are configured, the remaining slots must be filled with default entries: `NOMOD 0 0 > 0 OFF` (encoded as `00 00 00 00 00`).
 
 **Impact:**
 - Module expects exactly 96 entries (480 bytes) of action table data
@@ -110,7 +110,7 @@ def to_data(action_table: ActionTable) -> bytes:
 - `module_type`: `NOMOD` (0x00)
 - `link_number`: 0 (0x00)
 - `module_input`: 0 (0x00)
-- `module_output`: 0, `command`: `TURNOFF` (0) → (0x00)
+- `module_output`: 0, `command`: `OFF` (0) → (0x00)
 - `parameter`: 0 (0x00)
 
 ### Fix 2: Correct Chunk Prefix

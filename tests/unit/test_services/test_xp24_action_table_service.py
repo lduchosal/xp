@@ -76,7 +76,7 @@ class TestMsActionTableService:
         """Create sample XP24 MsActionTable for testing."""
         return Xp24MsActionTable(
             input1_action=Xp24InputAction(InputActionType.TOGGLE, TimeParam.NONE),
-            input2_action=Xp24InputAction(InputActionType.TURNON, TimeParam.T5SEC),
+            input2_action=Xp24InputAction(InputActionType.ON, TimeParam.T5SEC),
             input3_action=Xp24InputAction(InputActionType.LEVELSET, TimeParam.T5MIN),
             input4_action=Xp24InputAction(InputActionType.SCENESET, TimeParam.T2MIN),
             mutex12=True,

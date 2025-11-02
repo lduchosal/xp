@@ -26,14 +26,8 @@ class ActionTableListService:
         """
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        """Context manager exit.
-
-        Args:
-            exc_type: Exception type if raised.
-            exc_val: Exception value if raised.
-            exc_tb: Exception traceback if raised.
-        """
+    def __exit__(self, _exc_type: Any, _exc_val: Any, _exc_tb: Any) -> None:
+        """Context manager exit."""
         pass
 
     def start(
@@ -72,14 +66,13 @@ class ActionTableListService:
             return
 
         # Filter modules that have action_table configured
-        modules_with_actiontable = []
-        for module in config.root:
-            modules_with_actiontable.append(
-                {
-                    "serial_number": module.serial_number,
-                    "module_type": module.module_type,
-                }
-            )
+        modules_with_actiontable = [
+            {
+                "serial_number": module.serial_number,
+                "module_type": module.module_type,
+            }
+            for module in config.root
+        ]
 
         # Prepare result
         result = {"modules": modules_with_actiontable}

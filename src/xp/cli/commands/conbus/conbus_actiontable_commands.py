@@ -1,6 +1,7 @@
 """ActionTable CLI commands."""
 
 import json
+from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
@@ -14,13 +15,15 @@ from xp.cli.utils.decorators import (
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.actiontable.actiontable import ActionTable
 from xp.models.homekit.homekit_conson_config import (
-    ConsonModuleListConfig,
     ConsonModuleConfig,
+    ConsonModuleListConfig,
+)
+from xp.services.conbus.actiontable.actiontable_download_service import (
+    ActionTableService,
 )
 from xp.services.conbus.actiontable.actiontable_list_service import (
     ActionTableListService,
 )
-from xp.services.conbus.actiontable.actiontable_download_service import ActionTableService
 from xp.services.conbus.actiontable.actiontable_show_service import (
     ActionTableShowService,
 )
@@ -104,10 +107,6 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
     Args:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
-
-    Raises:
-        ActionTableError: If conson.yml not found, module not found,
-            no action_table configured, or invalid action table format.
     """
     service: ActionTableUploadService = (
         ctx.obj.get("container").get_container().resolve(ActionTableUploadService)
@@ -147,13 +146,11 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
         # Load config to get entry count for success message
         config_path = Path.cwd() / "conson.yml"
         if config_path.exists():
-            try:
+            with suppress(Exception):
                 config = ConsonModuleListConfig.from_yaml(str(config_path))
                 module = config.find_module(serial_number)
                 if module and module.action_table:
                     entries_count = len(module.action_table)
-            except Exception:
-                pass  # Entry count is just for display, don't fail if we can't get it
 
         service.start(
             serial_number=serial_number,
@@ -168,8 +165,8 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
 def conbus_list_actiontable(ctx: Context) -> None:
     """List all modules with action table configurations from conson.yml.
 
-    Raises:
-        ActionTableError: If conson.yml not found or cannot be read.
+    Args:
+        ctx: Click context object.
     """
     service: ActionTableListService = (
         ctx.obj.get("container").get_container().resolve(ActionTableListService)
@@ -207,10 +204,6 @@ def conbus_show_actiontable(ctx: Context, serial_number: str) -> None:
     Args:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
-
-    Raises:
-        ActionTableError: If conson.yml not found, module not found,
-            or no action_table configured.
     """
     service: ActionTableShowService = (
         ctx.obj.get("container").get_container().resolve(ActionTableShowService)

@@ -19,7 +19,7 @@ class TestXp24MsActionTableSerializer:
         """Create sample action table for testing."""
         return Xp24MsActionTable(
             input1_action=InputAction(InputActionType.TOGGLE, TimeParam.NONE),
-            input2_action=InputAction(InputActionType.TURNON, TimeParam.T5SEC),
+            input2_action=InputAction(InputActionType.ON, TimeParam.T5SEC),
             input3_action=InputAction(InputActionType.LEVELSET, TimeParam.T5SEC),
             input4_action=InputAction(InputActionType.SCENESET, TimeParam.T5SEC),
             mutex12=True,
@@ -85,7 +85,7 @@ class TestXp24MsActionTableSerializer:
         )
 
         msactiontable = Xp24MsActionTableSerializer.from_data(valid_telegram)
-        assert msactiontable.input1_action.type == InputActionType.TURNON
+        assert msactiontable.input1_action.type == InputActionType.ON
         assert msactiontable.input2_action.type == InputActionType.TOGGLE
         assert msactiontable.input3_action.type == InputActionType.TOGGLE
         assert msactiontable.input4_action.type == InputActionType.TOGGLE

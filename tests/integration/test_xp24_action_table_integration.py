@@ -34,7 +34,7 @@ class TestXp24ActionTableIntegration:
         # Create mock action table
         mock_action_table = Xp24MsActionTable(
             input1_action=InputAction(InputActionType.TOGGLE, TimeParam.NONE),
-            input2_action=InputAction(InputActionType.TURNON, TimeParam.T5SEC),
+            input2_action=InputAction(InputActionType.ON, TimeParam.T5SEC),
             input3_action=InputAction(InputActionType.LEVELSET, TimeParam.T2MIN),
             input4_action=InputAction(InputActionType.SCENESET, TimeParam.T2MIN),
             mutex12=False,
@@ -94,7 +94,7 @@ class TestXp24ActionTableIntegration:
         action_table = output["action_table"]
         assert action_table["input1_action"]["type"] == str(InputActionType.TOGGLE)
         assert action_table["input1_action"]["param"] == TimeParam.NONE.value
-        assert action_table["input2_action"]["type"] == str(InputActionType.TURNON)
+        assert action_table["input2_action"]["type"] == str(InputActionType.ON)
         assert action_table["input2_action"]["param"] == TimeParam.T5SEC.value
         assert action_table["mutex34"] is True
         assert action_table["curtain34"] is True

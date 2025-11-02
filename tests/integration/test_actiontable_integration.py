@@ -29,7 +29,7 @@ class TestActionTableIntegration:
                 module_input=0,
                 module_output=1,
                 inverted=False,
-                command=InputActionType.TURNOFF,
+                command=InputActionType.OFF,
                 parameter=TimeParam.NONE,
             ),
             ActionTableEntry(
@@ -38,7 +38,7 @@ class TestActionTableIntegration:
                 module_input=1,
                 module_output=2,
                 inverted=True,
-                command=InputActionType.TURNON,
+                command=InputActionType.ON,
                 parameter=TimeParam.NONE,
             ),
         ]
@@ -87,7 +87,7 @@ class TestActionTableIntegration:
 
         # Test decoded output format
         decoded = serializer.format_decoded_output(sample_actiontable)
-        expected_lines = ["CP20 0 0 > 1 TURNOFF;", "CP20 0 1 > 2 ~TURNON;"]
+        expected_lines = ["CP20 0 0 > 1 OFF;", "CP20 0 1 > 2 ~ON;"]
         assert decoded == expected_lines
 
         # Test encoded output format
@@ -195,7 +195,7 @@ class TestActionTableIntegration:
             module_input=99,  # Max BCD value
             module_output=7,  # Max 3-bit value
             inverted=False,
-            command=InputActionType.TURNOFF,
+            command=InputActionType.OFF,
             parameter=TimeParam.NONE,
         )
         edge_table = ActionTable(entries=[edge_entry])

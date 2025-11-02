@@ -36,7 +36,7 @@ class TestConbusActionTableCommands:
                 module_input=0,
                 module_output=1,
                 inverted=False,
-                command=InputActionType.TURNOFF,
+                command=InputActionType.OFF,
                 parameter=TimeParam.NONE,
             )
         ]
@@ -207,7 +207,7 @@ class TestConbusActionTableCommands:
             module_input=2,
             module_output=3,
             inverted=True,
-            command=InputActionType.TURNON,
+            command=InputActionType.ON,
             parameter=TimeParam.T2SEC,
         )
         actiontable = ActionTable(entries=[entry])
@@ -287,7 +287,7 @@ class TestConbusActionTableCommands:
         assert result.exit_code == 0
 
         # Verify short format is present with semicolons
-        assert "CP20 0 0 > 1 TURNOFF;" in result.output
+        assert "CP20 0 0 > 1 OFF;" in result.output
 
     def test_download_actiontable_backward_compatible(self, runner, sample_actiontable):
         """Test that JSON actiontable field is still present for backward compatibility."""
@@ -324,7 +324,7 @@ class TestConbusActionTableCommands:
             module_input=2,
             module_output=1,
             inverted=False,
-            command=InputActionType.TURNON,
+            command=InputActionType.ON,
             parameter=TimeParam.T1SEC,  # value = 2
         )
         actiontable = ActionTable(entries=[entry])
@@ -349,7 +349,7 @@ class TestConbusActionTableCommands:
         assert result.exit_code == 0
 
         # Verify parameter is included in output
-        assert "CP20 0 2 > 1 TURNON 2;" in result.output
+        assert "CP20 0 2 > 1 ON 2;" in result.output
 
     def test_download_actiontable_short_inverted(self, runner):
         """Test actiontable_short displays inverted commands with ~ prefix."""
@@ -360,7 +360,7 @@ class TestConbusActionTableCommands:
             module_input=1,
             module_output=1,
             inverted=True,
-            command=InputActionType.TURNON,
+            command=InputActionType.ON,
             parameter=TimeParam.NONE,
         )
         actiontable = ActionTable(entries=[entry])
@@ -385,8 +385,8 @@ class TestConbusActionTableCommands:
         assert result.exit_code == 0
 
         # Verify inverted prefix is present
-        assert "~TURNON" in result.output
-        assert "CP20 0 1 > 1 ~TURNON;" in result.output
+        assert "~ON" in result.output
+        assert "CP20 0 1 > 1 ~ON;" in result.output
 
     def test_conbus_list_actiontable_success(self, runner):
         """Test successful actiontable list command."""
@@ -396,7 +396,12 @@ class TestConbusActionTableCommands:
         mock_service.__exit__ = Mock(return_value=None)
 
         def mock_start(finish_callback, error_callback):
-            """Execute mock start operation."""
+            """Execute mock start operation.
+
+            Args:
+                finish_callback: Callback for successful completion.
+                error_callback: Callback for error handling.
+            """
             module_list = {
                 "modules": [
                     {"serial_number": "0020044991", "module_type": "XP24"},
@@ -436,7 +441,12 @@ class TestConbusActionTableCommands:
         mock_service.__exit__ = Mock(return_value=None)
 
         def mock_start(finish_callback, error_callback):
-            """Execute mock start operation."""
+            """Execute mock start operation.
+
+            Args:
+                finish_callback: Callback for successful completion.
+                error_callback: Callback for error handling.
+            """
             module_list = {"modules": [], "total": 0}
             finish_callback(module_list)
 
@@ -468,7 +478,12 @@ class TestConbusActionTableCommands:
         mock_service.__exit__ = Mock(return_value=None)
 
         def mock_start(finish_callback, error_callback):
-            """Execute mock start operation."""
+            """Execute mock start operation.
+
+            Args:
+                finish_callback: Callback for successful completion.
+                error_callback: Callback for error handling.
+            """
             error_callback("Error: conson.yml not found in current directory")
 
         mock_service.start.side_effect = mock_start
@@ -497,7 +512,13 @@ class TestConbusActionTableCommands:
         mock_service.__exit__ = Mock(return_value=None)
 
         def mock_start(serial_number, finish_callback, error_callback):
-            """Execute mock start operation."""
+            """Execute mock start operation.
+
+            Args:
+                serial_number: Module serial number.
+                finish_callback: Callback for successful completion.
+                error_callback: Callback for error handling.
+            """
             module = {
                 "serial_number": "0020044991",
                 "name": "A4",
@@ -546,7 +567,13 @@ class TestConbusActionTableCommands:
         mock_service.__exit__ = Mock(return_value=None)
 
         def mock_start(serial_number, finish_callback, error_callback):
-            """Execute mock start operation."""
+            """Execute mock start operation.
+
+            Args:
+                serial_number: Module serial number.
+                finish_callback: Callback for successful completion.
+                error_callback: Callback for error handling.
+            """
             error_callback(f"Error: Module {serial_number} not found in conson.yml")
 
         mock_service.start.side_effect = mock_start
@@ -575,7 +602,13 @@ class TestConbusActionTableCommands:
         mock_service.__exit__ = Mock(return_value=None)
 
         def mock_start(serial_number, finish_callback, error_callback):
-            """Execute mock start operation."""
+            """Execute mock start operation.
+
+            Args:
+                serial_number: Module serial number.
+                finish_callback: Callback for successful completion.
+                error_callback: Callback for error handling.
+            """
             error_callback(
                 f"Error: No action_table configured for module {serial_number}"
             )

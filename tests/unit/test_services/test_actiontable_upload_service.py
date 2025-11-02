@@ -69,7 +69,7 @@ class TestActionTableUploadService:
                 module_input=0,
                 module_output=1,
                 inverted=False,
-                command=InputActionType.TURNOFF,
+                command=InputActionType.OFF,
                 parameter=TimeParam.NONE,
             ),
             ActionTableEntry(
@@ -78,7 +78,7 @@ class TestActionTableUploadService:
                 module_input=1,
                 module_output=1,
                 inverted=True,
-                command=InputActionType.TURNON,
+                command=InputActionType.ON,
                 parameter=TimeParam.NONE,
             ),
         ]
@@ -285,8 +285,9 @@ class TestActionTableUploadChunkPrefix:
 
         expected_prefixes = ["AA", "AB", "AC", "AD", "AE", "AF"]
 
-        with patch.object(service, "send_telegram") as mock_send, patch.object(
-            service, "_stop_reactor"
+        with (
+            patch.object(service, "send_telegram") as mock_send,
+            patch.object(service, "_stop_reactor"),
         ):
             for i, expected_prefix in enumerate(expected_prefixes):
                 service.current_chunk_index = i
@@ -335,8 +336,9 @@ class TestActionTableUploadChunkPrefix:
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK
 
-        with patch.object(service, "send_telegram") as mock_send, patch.object(
-            service, "_stop_reactor"
+        with (
+            patch.object(service, "send_telegram") as mock_send,
+            patch.object(service, "_stop_reactor"),
         ):
             service._handle_upload_response(mock_reply)
 
@@ -350,3 +352,240 @@ class TestActionTableUploadChunkPrefix:
 
             # Should call success callback
             service.success_callback.assert_called_once()
+
+
+class TestActionTableUploadFullSequence:
+    """Test complete 96-entry ActionTable upload telegram sequence."""
+
+    @pytest.fixture
+    def mock_cli_config(self):
+        """Create mock CLI config."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_reactor(self):
+        """Create mock reactor."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_serializer(self):
+        """Create mock ActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_telegram_service(self):
+        """Create mock TelegramService."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_conson_config(self):
+        """Create mock Conson config."""
+        return Mock()
+
+    @pytest.fixture
+    def service(
+        self,
+        mock_cli_config,
+        mock_reactor,
+        mock_serializer,
+        mock_telegram_service,
+        mock_conson_config,
+    ):
+        """Create service instance for testing."""
+        return ActionTableUploadService(
+            cli_config=mock_cli_config,
+            reactor=mock_reactor,
+            actiontable_serializer=mock_serializer,
+            telegram_service=mock_telegram_service,
+            conson_config=mock_conson_config,
+        )
+
+    @pytest.fixture
+    def nomod_96_actiontable(self):
+        """Create 96-entry NOMOD ActionTable for testing."""
+        entries = [
+            ActionTableEntry(
+                module_type=ModuleTypeCode.NOMOD,
+                link_number=0,
+                module_input=0,
+                module_output=0,
+                inverted=False,
+                command=InputActionType.VOID,
+                parameter=TimeParam.NONE,
+            )
+            for _ in range(96)
+        ]
+        return ActionTable(entries=entries)
+
+    def test_upload_generates_correct_telegram_sequence(
+        self, service, mock_serializer, mock_conson_config, nomod_96_actiontable
+    ):
+        """Test that full 96-entry ActionTable upload generates correct telegram sequence.
+
+        Verifies:
+        - Exactly 16 telegrams sent (1 UPLOAD_ACTIONTABLE + 15 ACTIONTABLE)
+        - Telegram prefixes follow sequence: AA, AB, AC, AD, AE, AF, AG, AH, AI, AJ, AK, AL, AM, AN, AO
+        - Each ACTIONTABLE telegram data_value starts with correct prefix
+        - Each chunk is 66 chars (2-char prefix + 64-char data)
+        - EOF telegram is sent after all chunks
+        """
+        from xp.models.telegram.system_function import SystemFunction
+        from xp.models.telegram.telegram_type import TelegramType
+
+        # Setup: Mock module with action table
+        mock_module = Mock()
+        mock_module.action_table = ["NOMOD 0 0 > 0 VOID;"] * 96
+        mock_conson_config.find_module.return_value = mock_module
+
+        # Setup: Mock serializer - 96 entries * 10 chars = 960 chars (15 chunks of 64)
+        mock_serializer.parse_action_table.return_value = nomod_96_actiontable
+        # Create 960 'A' characters (96 entries × 5 bytes × 2 hex chars)
+        mock_serializer.to_encoded_string.return_value = "A" * 960
+
+        # Setup: Capture all send_telegram calls
+        sent_telegrams = []
+
+        def capture_telegram(**kwargs):
+            """Capture telegram send calls for verification.
+
+            Args:
+                kwargs: Telegram parameters to capture.
+            """
+            sent_telegrams.append(kwargs)
+
+        # Setup callbacks
+        service.progress_callback = Mock()
+        service.error_callback = Mock()
+        service.success_callback = Mock()
+
+        with (
+            patch.object(service, "send_telegram", side_effect=capture_telegram),
+            patch.object(service, "start_reactor") as mock_start_reactor,
+            patch.object(service, "_stop_reactor"),
+        ):
+            # Start upload
+            service.start(
+                serial_number="0020044974",
+                progress_callback=Mock(),
+                error_callback=Mock(),
+                success_callback=Mock(),
+            )
+
+            # Verify start_reactor was called
+            mock_start_reactor.assert_called_once()
+
+            # Simulate connection established
+            service.connection_established()
+
+            # Simulate ACK responses for each chunk + final ACK to trigger EOF
+            mock_ack = Mock()
+            mock_ack.system_function = SystemFunction.ACK
+
+            for _ in range(16):  # 15 chunks + 1 final ACK to trigger EOF
+                service._handle_upload_response(mock_ack)
+
+        # Verify: Exactly 17 telegrams sent (1 UPLOAD_ACTIONTABLE + 15 ACTIONTABLE + 1 EOF)
+        assert (
+            len(sent_telegrams) == 17
+        ), f"Expected 17 telegrams, got {len(sent_telegrams)}"
+
+        # Verify: First telegram is UPLOAD_ACTIONTABLE
+        assert sent_telegrams[0]["system_function"] == SystemFunction.UPLOAD_ACTIONTABLE
+        assert sent_telegrams[0]["serial_number"] == "0020044974"
+        assert sent_telegrams[0]["telegram_type"] == TelegramType.SYSTEM
+        assert sent_telegrams[0]["data_value"] == "00"
+
+        # Verify: Next 15 telegrams are ACTIONTABLE with correct prefixes
+        expected_prefixes = [
+            "AA",
+            "AB",
+            "AC",
+            "AD",
+            "AE",
+            "AF",
+            "AG",
+            "AH",
+            "AI",
+            "AJ",
+            "AK",
+            "AL",
+            "AM",
+            "AN",
+            "AO",
+        ]
+
+        for i, expected_prefix in enumerate(expected_prefixes):
+            telegram = sent_telegrams[i + 1]
+            assert telegram["system_function"] == SystemFunction.ACTIONTABLE
+            assert telegram["serial_number"] == "0020044974"
+            assert telegram["telegram_type"] == TelegramType.SYSTEM
+            assert telegram["data_value"].startswith(expected_prefix), (
+                f"Telegram {i+1} should start with {expected_prefix}, "
+                f"got {telegram['data_value'][:2]}"
+            )
+            # Each telegram should be 66 chars: 2-char prefix + 64-char chunk
+            assert len(telegram["data_value"]) == 66, (
+                f"Telegram {i+1} data_value should be 66 chars, "
+                f"got {len(telegram['data_value'])}"
+            )
+
+        # Verify: Last telegram is EOF
+        assert sent_telegrams[-1]["system_function"] == SystemFunction.EOF
+        assert sent_telegrams[-1]["serial_number"] == "0020044974"
+        assert sent_telegrams[-1]["telegram_type"] == TelegramType.SYSTEM
+        assert sent_telegrams[-1]["data_value"] == "00"
+
+        # Verify: Data integrity - concatenate all chunks (excluding prefixes)
+        all_chunks = "".join(
+            sent_telegrams[i]["data_value"][2:] for i in range(1, 16)  # Skip prefix
+        )
+        assert (
+            all_chunks == "A" * 960
+        ), "Concatenated chunks should match serialized data"
+
+        # Verify: Success callback was called
+        service.success_callback.assert_called_once()
+
+    def test_upload_with_module_not_found(self, service, mock_conson_config):
+        """Test upload fails when module is not found."""
+        mock_conson_config.find_module.return_value = None
+
+        error_callback = Mock()
+        with patch.object(service, "_stop_reactor"):
+            service.start(
+                serial_number="9999999999",
+                progress_callback=Mock(),
+                error_callback=error_callback,
+                success_callback=Mock(),
+            )
+
+        # Verify error callback was called with appropriate message
+        error_callback.assert_called_once()
+        assert "not found" in error_callback.call_args[0][0].lower()
+
+    def test_upload_with_invalid_action_table(
+        self, service, mock_serializer, mock_conson_config
+    ):
+        """Test upload fails when action table is invalid."""
+        # Setup: Mock module with action table
+        mock_module = Mock()
+        mock_module.action_table = ["INVALID ACTION TABLE FORMAT"]
+        mock_conson_config.find_module.return_value = mock_module
+
+        # Setup: Serializer raises ValueError for invalid format
+        mock_serializer.parse_action_table.side_effect = ValueError(
+            "Invalid action table format"
+        )
+
+        error_callback = Mock()
+        with patch.object(service, "_stop_reactor"):
+            service.start(
+                serial_number="0020044974",
+                progress_callback=Mock(),
+                error_callback=error_callback,
+                success_callback=Mock(),
+            )
+
+        # Verify error callback was called
+        error_callback.assert_called_once()
+        assert "invalid" in error_callback.call_args[0][0].lower()

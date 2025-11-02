@@ -5,8 +5,8 @@ Listed below are the possible output actions in an action table.
  | Action name    | Code | Description                                                                                                                                                                      |
  |----------------|-----:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
  | VOID           |    0 | No (empty) actions                                                                                                                                                               |
- | TURNON         |    1 | Turn output on. Can be given a time parameter to limit the on period                                                                                                             | 
- | TURNOFF        |    2 | Turn output off. Can be given a time parameter to limit the off period                                                                                                           | 
+ | ON         |    1 | Turn output on. Can be given a time parameter to limit the on period                                                                                                             | 
+ | OFF        |    2 | Turn output off. Can be given a time parameter to limit the off period                                                                                                           | 
  | TOGGLE         |    3 | Toggle function (and regulate for dimmers)                                                                                                                                       |
  | BLOCK          |    4 | Block further actions on output. The block is active between the make and break event                                                                                            |
  | AUXRELAY       |    5 | Turns on the output between a make and a break event                                                                                                                             |

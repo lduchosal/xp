@@ -24,7 +24,7 @@ CP20 0 1 > 2 ON;
   "link_number": 0,
   "module_input": 0,
   "module_output": 1,
-  "command": "InputActionType.TURNOFF",
+  "command": "InputActionType.OFF",
   "parameter": 0,
   "inverted": false
 }
@@ -62,7 +62,7 @@ xp conbus actiontable download <serial_number>
       "link_number": 0,
       "module_input": 0,
       "module_output": 1,
-      "command": "InputActionType.TURNOFF",
+      "command": "InputActionType.OFF",
       "parameter": 0,
       "inverted": false
     }
@@ -224,7 +224,7 @@ XP24 1 3 > 2 TOGGLE;       # TOGGLE on XP24 module
 ```
 
 **Enum Serialization:**
-- JSON format uses full enum representation: `"ModuleTypeCode.CP20"`, `"InputActionType.TURNOFF"`
+- JSON format uses full enum representation: `"ModuleTypeCode.CP20"`, `"InputActionType.OFF"`
 - Textual format uses simplified names: `"CP20"`, `"OFF"`
 - Conversion: Strip enum class prefix when formatting to textual, use enum `.name` attribute
 

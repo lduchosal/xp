@@ -70,7 +70,7 @@ class ActionTableSerializer:
             try:
                 command = InputActionType(command_raw)
             except ValueError:
-                command = InputActionType.TURNOFF  # Default fallback
+                command = InputActionType.OFF  # Default fallback
 
             try:
                 parameter = TimeParam(parameter_raw)
@@ -123,7 +123,7 @@ class ActionTableSerializer:
         # Pad to 96 entries with default NOMOD entries (00 00 00 00 00)
         current_entries = len(action_table.entries)
         if current_entries < ActionTableSerializer.MAX_ENTRIES:
-            # Default entry: NOMOD 0 0 > 0 TURNOFF (all zeros)
+            # Default entry: NOMOD 0 0 > 0 OFF (all zeros)
             padding_bytes = [0x00, 0x00, 0x00, 0x00, 0x00]
             for _ in range(ActionTableSerializer.MAX_ENTRIES - current_entries):
                 data.extend(padding_bytes)
