@@ -20,7 +20,13 @@ from xp.utils.serialization import (
 
 
 class ActionTableSerializer:
-    """Handles serialization/deserialization of ActionTable to/from telegrams."""
+    """Handles serialization/deserialization of ActionTable to/from telegrams.
+
+    Attributes:
+        MAX_ENTRIES: Maximum number of entries in an ActionTable (96).
+    """
+
+    MAX_ENTRIES = 96  # ActionTable must always contain exactly 96 entries
 
     @staticmethod
     def from_data(data: bytes) -> ActionTable:
@@ -59,7 +65,7 @@ class ActionTableSerializer:
             try:
                 module_type = ModuleTypeCode(module_type_raw)
             except ValueError:
-                module_type = ModuleTypeCode.CP20  # Default fallback
+                module_type = ModuleTypeCode.NOMOD  # Default fallback
 
             try:
                 command = InputActionType(command_raw)
@@ -93,7 +99,7 @@ class ActionTableSerializer:
             action_table: ActionTable to serialize
 
         Returns:
-            Raw byte data for telegram
+            Raw byte data for telegram (always 480 bytes for 96 entries)
         """
         data = bytearray()
 
@@ -113,6 +119,14 @@ class ActionTableSerializer:
             data.extend(
                 [type_byte, link_byte, input_byte, output_command_byte, parameter_byte]
             )
+
+        # Pad to 96 entries with default NOMOD entries (00 00 00 00 00)
+        current_entries = len(action_table.entries)
+        if current_entries < ActionTableSerializer.MAX_ENTRIES:
+            # Default entry: NOMOD 0 0 > 0 TURNOFF (all zeros)
+            padding_bytes = [0x00, 0x00, 0x00, 0x00, 0x00]
+            for _ in range(ActionTableSerializer.MAX_ENTRIES - current_entries):
+                data.extend(padding_bytes)
 
         return bytes(data)
 

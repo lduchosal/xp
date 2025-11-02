@@ -20,7 +20,7 @@ from xp.models.homekit.homekit_conson_config import (
 from xp.services.conbus.actiontable.actiontable_list_service import (
     ActionTableListService,
 )
-from xp.services.conbus.actiontable.actiontable_service import ActionTableService
+from xp.services.conbus.actiontable.actiontable_download_service import ActionTableService
 from xp.services.conbus.actiontable.actiontable_show_service import (
     ActionTableShowService,
 )

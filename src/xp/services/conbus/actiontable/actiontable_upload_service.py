@@ -106,11 +106,18 @@ class ActionTableUploadService(ConbusProtocol):
             if self.current_chunk_index < len(self.upload_data_chunks):
                 chunk = self.upload_data_chunks[self.current_chunk_index]
                 self.logger.debug(f"Sending chunk {self.current_chunk_index + 1}")
+
+                # Calculate prefix: 0xAA, 0xAB, 0xAC, 0xAD, ...
+                # High nibble = 0xA (ACTIONTABLE data indicator)
+                # Low nibble = 0xA + chunk_index (sequential counter)
+                prefix_value = 0xA0 | (0xA + self.current_chunk_index)
+                prefix_hex = f"{prefix_value:02X}"
+
                 self.send_telegram(
                     telegram_type=TelegramType.SYSTEM,
                     serial_number=self.serial_number,
                     system_function=SystemFunction.ACTIONTABLE,
-                    data_value=f"00{chunk}",
+                    data_value=f"{prefix_hex}{chunk}",
                 )
                 self.current_chunk_index += 1
                 if self.progress_callback:
@@ -174,8 +181,7 @@ class ActionTableUploadService(ConbusProtocol):
         # Find module
         module = self.conson_config.find_module(serial_number)
         if not module:
-            if self.error_callback is not None:
-                self.error_callback(f"Module {serial_number} not found in conson.yml")
+            self.failed(f"Module {serial_number} not found in conson.yml")
             return
 
         # Parse action table strings to ActionTable object
@@ -184,8 +190,7 @@ class ActionTableUploadService(ConbusProtocol):
             action_table = self.serializer.parse_action_table(module_action_table)
         except ValueError as e:
             self.logger.error(f"Invalid action table format: {e}")
-            if self.error_callback is not None:
-                self.error_callback(f"Invalid action table format: {e}")
+            self.failed(f"Invalid action table format: {e}")
             return
 
         # Encode action table to hex string
