@@ -265,6 +265,11 @@ xp conbus linknumber get
 xp conbus linknumber set
 
 
+xp conbus modulenumber
+xp conbus modulenumber get
+xp conbus modulenumber set
+
+
 xp conbus msactiontable
 xp conbus msactiontable download
 

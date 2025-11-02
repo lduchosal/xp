@@ -88,7 +88,9 @@ def get_modulenumber_command(ctx: click.Context, serial_number: str) -> None:
         Args:
             service_response: Module number response object.
         """
-        modulenumber_value = telegram_service.get_modulenumber(service_response.data_value)
+        modulenumber_value = telegram_service.get_modulenumber(
+            service_response.data_value
+        )
         result = service_response.to_dict()
         result["modulenumber_value"] = modulenumber_value
         click.echo(json.dumps(result, indent=2))
