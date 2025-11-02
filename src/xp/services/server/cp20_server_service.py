@@ -27,15 +27,17 @@ class CP20ServerService(BaseServerService):
     """
 
     def __init__(
-            self,
-            serial_number: str,
-            _variant: str,
-            _msactiontable_serializer: Optional[MsActionTableSerializer] = None,
+        self,
+        serial_number: str,
+        _variant: str = "",
+        _msactiontable_serializer: Optional[MsActionTableSerializer] = None,
     ):
         """Initialize CP20 server service.
 
         Args:
             serial_number: The device serial number.
+            _variant: Reserved parameter for consistency (unused).
+            _msactiontable_serializer: Generic MsActionTable serializer (unused).
         """
         super().__init__(serial_number)
         self.device_type = "CP20"

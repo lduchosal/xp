@@ -142,7 +142,7 @@ class ServerService:
                     )
                 if module_type == "XP24":
                     self.device_services[serial_number] = XP24ServerService(
-                        serial_number,  "XP24", self.xp24ms_serializer
+                        serial_number, "XP24", self.xp24ms_serializer
                     )
                 elif module_type == "XP33":
                     self.device_services[serial_number] = XP33ServerService(

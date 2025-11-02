@@ -46,6 +46,9 @@ class BaseServerService(ABC):
         self.telegram_buffer: list[str] = []
         self.telegram_buffer_lock = threading.Lock()  # Lock for socket set
 
+        # MsActionTable download state (None, "ack_sent", "data_sent")
+        self.msactiontable_download_state: Optional[str] = None
+
     def generate_datapoint_type_response(
         self, datapoint_type: DataPointType
     ) -> Optional[str]:
@@ -151,6 +154,83 @@ class BaseServerService(ABC):
 
         return None
 
+    def _get_msactiontable_serializer(self) -> Optional[Any]:
+        """Get the MsActionTable serializer for this device.
+
+        Subclasses should override this to return their specific serializer.
+
+        Returns:
+            The serializer instance, or None if not supported.
+        """
+        return None
+
+    def _get_msactiontable(self) -> Optional[Any]:
+        """Get the MsActionTable for this device.
+
+        Subclasses should override this to return their msactiontable instance.
+
+        Returns:
+            The msactiontable instance, or None if not supported.
+        """
+        return None
+
+    def _handle_download_msactiontable_request(
+        self, request: SystemTelegram
+    ) -> Optional[str]:
+        """Handle F13D - DOWNLOAD_MSACTIONTABLE request.
+
+        Args:
+            request: The system telegram request to process.
+
+        Returns:
+            ACK telegram if request is valid, NAK otherwise.
+        """
+        if (
+            request.system_function == SystemFunction.DOWNLOAD_MSACTIONTABLE
+            and self.msactiontable_download_state is None
+        ):
+            self.msactiontable_download_state = "ack_sent"
+            # Send ACK and queue data telegram
+            return self._build_response_telegram(f"R{self.serial_number}F18D")  # ACK
+
+        return self._build_response_telegram(f"R{self.serial_number}F19D")  # NAK
+
+    def _handle_download_msactiontable_ack_request(
+        self, _request: SystemTelegram
+    ) -> Optional[str]:
+        """Handle MsActionTable download ACK protocol.
+
+        Args:
+            _request: The system telegram request (unused, kept for signature consistency).
+
+        Returns:
+            Data telegram, EOF telegram, or NAK if state is invalid.
+        """
+        serializer = self._get_msactiontable_serializer()
+        msactiontable = self._get_msactiontable()
+
+        # Only handle if serializer and msactiontable are available
+        if not serializer or msactiontable is None:
+            return None
+
+        # Handle F18D - CONTINUE (after ACK or data)
+        if self.msactiontable_download_state == "ack_sent":
+            # Send MsActionTable data
+            encoded_data = serializer.to_data(msactiontable)
+            data_telegram = self._build_response_telegram(
+                f"R{self.serial_number}F17D{encoded_data}"
+            )
+            self.msactiontable_download_state = "data_sent"
+            return data_telegram
+
+        elif self.msactiontable_download_state == "data_sent":
+            # Send EOF
+            eof_telegram = self._build_response_telegram(f"R{self.serial_number}F16D")
+            self.msactiontable_download_state = None
+            return eof_telegram
+
+        return self._build_response_telegram(f"R{self.serial_number}F19D")  # NAK
+
     def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
         """Template method for processing system telegrams.
 
@@ -176,6 +256,15 @@ class BaseServerService(ABC):
 
         elif request.system_function == SystemFunction.ACTION:
             return self._handle_action_request(request)
+
+        elif request.system_function == SystemFunction.DOWNLOAD_MSACTIONTABLE:
+            return self._handle_download_msactiontable_request(request)
+
+        elif (
+            request.system_function == SystemFunction.ACK
+            and self.msactiontable_download_state
+        ):
+            return self._handle_download_msactiontable_ack_request(request)
 
         self.logger.warning(f"Unhandled {self.device_type} request: {request}")
         return None

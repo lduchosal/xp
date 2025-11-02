@@ -46,13 +46,14 @@ class XP24ServerService(BaseServerService):
     def __init__(
         self,
         serial_number: str,
-        _variant: str,
+        _variant: str = "",
         msactiontable_serializer: Optional[Xp24MsActionTableSerializer] = None,
     ):
         """Initialize XP24 server service.
 
         Args:
             serial_number: The device serial number.
+            _variant: Reserved parameter for consistency (unused).
             msactiontable_serializer: MsActionTable serializer (injected via DI).
         """
         super().__init__(serial_number)
@@ -70,9 +71,6 @@ class XP24ServerService(BaseServerService):
             msactiontable_serializer or Xp24MsActionTableSerializer()
         )
         self.msactiontable = self._get_default_msactiontable()
-        self.msactiontable_download_state: Optional[str] = (
-            None  # Track: "ack_sent", "data_sent", None
-        )
 
     def _handle_device_specific_action_request(
         self, request: SystemTelegram
@@ -196,6 +194,22 @@ class XP24ServerService(BaseServerService):
             f"{1 if self.output_3.state else 0}"
         )
 
+    def _get_msactiontable_serializer(self) -> Optional[Xp24MsActionTableSerializer]:
+        """Get the MsActionTable serializer for XP24.
+
+        Returns:
+            The XP24 MsActionTable serializer instance.
+        """
+        return self.msactiontable_serializer
+
+    def _get_msactiontable(self) -> Optional[Xp24MsActionTable]:
+        """Get the MsActionTable for XP24.
+
+        Returns:
+            The XP24 MsActionTable instance.
+        """
+        return self.msactiontable
+
     def _get_default_msactiontable(self) -> Xp24MsActionTable:
         """Generate default MsActionTable configuration.
 
@@ -213,54 +227,6 @@ class XP24ServerService(BaseServerService):
             curtain34=False,
             mutual_deadtime=12,  # MS300
         )
-
-    def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
-        """Process system telegrams including MsActionTable download.
-
-        Args:
-            request: The system telegram request to process.
-
-        Returns:
-            The response telegram string, or None if request cannot be handled.
-        """
-        # Check if request is for this device
-        if not self._check_request_for_device(request):
-            return None
-
-        # Handle F13D - DOWNLOAD_MSACTIONTABLE request
-        if request.system_function == SystemFunction.DOWNLOAD_MSACTIONTABLE:
-            self.msactiontable_download_state = "ack_sent"
-            # Send ACK and queue data telegram
-            ack_telegram = self._build_response_telegram(f"R{self.serial_number}F18D")
-            self.add_telegram_buffer(ack_telegram)
-            return None  # ACK sent via buffer
-
-        # Handle F18D - CONTINUE (after ACK or data)
-        if (
-            request.system_function == SystemFunction.ACK
-            and self.msactiontable_download_state
-        ):
-            if self.msactiontable_download_state == "ack_sent":
-                # Send MsActionTable data
-                encoded_data = self.msactiontable_serializer.to_data(self.msactiontable)
-                data_telegram = self._build_response_telegram(
-                    f"R{self.serial_number}F17D{encoded_data}"
-                )
-                self.add_telegram_buffer(data_telegram)
-                self.msactiontable_download_state = "data_sent"
-                return None
-
-            elif self.msactiontable_download_state == "data_sent":
-                # Send EOF
-                eof_telegram = self._build_response_telegram(
-                    f"R{self.serial_number}F16D"
-                )
-                self.add_telegram_buffer(eof_telegram)
-                self.msactiontable_download_state = None
-                return None
-
-        # Delegate to base class for other requests
-        return super().process_system_telegram(request)
 
     def get_device_info(self) -> Dict:
         """Get XP24 device information.
