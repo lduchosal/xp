@@ -1,5 +1,6 @@
 """Integration tests for ActionTable functionality."""
 
+from dataclasses import asdict
 from unittest.mock import Mock
 
 import pytest
@@ -12,9 +13,7 @@ from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.conbus.actiontable.actiontable_service import (
-    ActionTableSerializer,
-)
+from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 
 
 class TestActionTableIntegration:
@@ -115,7 +114,12 @@ class TestActionTableIntegration:
                 finish_callback: Callback when finished.
                 error_callback: Callback for errors.
             """
-            finish_callback(sample_actiontable)
+            # Generate dict and short format like the service does
+            actiontable_dict = asdict(sample_actiontable)
+            actiontable_short = ActionTableSerializer.format_decoded_output(
+                sample_actiontable
+            )
+            finish_callback(sample_actiontable, actiontable_dict, actiontable_short)
 
         mock_service.start.side_effect = mock_start
 

@@ -22,6 +22,8 @@ class ConsonModuleConfig(BaseModel):
         conbus_port: Optional Conbus port number.
         sw_version: Optional software version.
         hw_version: Optional hardware version.
+        action_table: Optional action table configuration.
+        auto_report_status: Optional auto report status.
     """
 
     name: str
@@ -35,6 +37,8 @@ class ConsonModuleConfig(BaseModel):
     conbus_port: Optional[int] = None
     sw_version: Optional[str] = None
     hw_version: Optional[str] = None
+    action_table: Optional[List[str]] = None
+    auto_report_status: Optional[str] = None
 
 
 class ConsonModuleListConfig(BaseModel):
@@ -66,3 +70,17 @@ class ConsonModuleListConfig(BaseModel):
         with Path(file_path).open("r") as file:
             data = yaml.safe_load(file)
         return cls(root=data)
+
+    def find_module(self, serial_number: str) -> Optional[ConsonModuleConfig]:
+        """Find a module by serial number.
+
+        Args:
+            serial_number: Module serial number to search for.
+
+        Returns:
+            ConsonModuleConfig if found, None otherwise.
+        """
+        for module in self.root:
+            if module.serial_number == serial_number:
+                return module
+        return None

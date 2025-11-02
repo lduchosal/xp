@@ -1,5 +1,6 @@
 """Unit tests for conbus actiontable CLI commands."""
 
+from dataclasses import asdict
 from unittest.mock import Mock
 
 import pytest
@@ -12,6 +13,7 @@ from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
+from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 
 
 class TestConbusActionTableCommands:
@@ -67,7 +69,12 @@ class TestConbusActionTableCommands:
                 error_callback(error)
             else:
                 if actiontable:
-                    finish_callback(actiontable)
+                    # Generate dict and short format like the service does
+                    actiontable_dict = asdict(actiontable)
+                    actiontable_short = ActionTableSerializer.format_decoded_output(
+                        actiontable
+                    )
+                    finish_callback(actiontable, actiontable_dict, actiontable_short)
 
         mock_service.start.side_effect = mock_start
         return mock_service

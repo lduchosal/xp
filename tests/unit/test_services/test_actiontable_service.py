@@ -154,6 +154,8 @@ class TestActionTableService:
 
     def test_telegram_received_eof(self, service, sample_actiontable):
         """Test receiving EOF telegram deserializes and calls finish_callback."""
+        from dataclasses import asdict
+
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -166,6 +168,10 @@ class TestActionTableService:
 
         # Mock serializer to return sample actiontable
         service.serializer.from_encoded_string.return_value = sample_actiontable
+        service.serializer.format_decoded_output.return_value = [
+            "CP20 0 0 > 1 TURNOFF;",
+            "CP20 0 1 > 1 ~TURNON;",
+        ]
 
         # Create mock telegram received event
         telegram_event = TelegramReceivedEvent(
@@ -191,8 +197,12 @@ class TestActionTableService:
             "AAAAACAAAABAAAAC"
         )
 
-        # Should call finish callback with actiontable
-        mock_finish.assert_called_once_with(sample_actiontable)
+        # Should call finish callback with actiontable, dict, and short format
+        expected_dict = asdict(sample_actiontable)
+        expected_short = ["CP20 0 0 > 1 TURNOFF;", "CP20 0 1 > 1 ~TURNON;"]
+        mock_finish.assert_called_once_with(
+            sample_actiontable, expected_dict, expected_short
+        )
 
     def test_telegram_received_invalid_checksum(self, service):
         """Test telegram with invalid checksum is ignored."""
