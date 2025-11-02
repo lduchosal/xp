@@ -7,7 +7,7 @@ containing common functionality like module type response generation.
 import logging
 import threading
 from abc import ABC
-from typing import Optional
+from typing import Any, Optional
 
 from xp.models import ModuleTypeCode
 from xp.models.telegram.datapoint_type import DataPointType

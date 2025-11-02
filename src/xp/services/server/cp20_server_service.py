@@ -8,6 +8,7 @@ from typing import Dict, Optional
 
 from xp.models import ModuleTypeCode
 from xp.models.telegram.system_telegram import SystemTelegram
+from xp.services.actiontable.msactiontable_serializer import MsActionTableSerializer
 from xp.services.server.base_server_service import BaseServerService
 
 
@@ -25,7 +26,12 @@ class CP20ServerService(BaseServerService):
     and implements CP20 telegram format.
     """
 
-    def __init__(self, serial_number: str):
+    def __init__(
+            self,
+            serial_number: str,
+            _variant: str,
+            _msactiontable_serializer: Optional[MsActionTableSerializer] = None,
+    ):
         """Initialize CP20 server service.
 
         Args:

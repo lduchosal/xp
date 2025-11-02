@@ -10,9 +10,13 @@ import threading
 from typing import Dict, Optional
 
 from xp.models import ModuleTypeCode
+from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
+from xp.services.actiontable.msactiontable_xp33_serializer import (
+    Xp33MsActionTableSerializer,
+)
 from xp.services.server.base_server_service import BaseServerService
 
 
@@ -30,12 +34,18 @@ class XP33ServerService(BaseServerService):
     and implements XP33 telegram format for 3-channel dimmer modules.
     """
 
-    def __init__(self, serial_number: str, variant: str = "XP33LR"):
+    def __init__(
+        self,
+        serial_number: str,
+        variant: str = "XP33LR",
+        msactiontable_serializer: Optional[Xp33MsActionTableSerializer] = None,
+    ):
         """Initialize XP33 server service.
 
         Args:
             serial_number: The device serial number.
             variant: Device variant (XP33, XP33LR, or XP33LED).
+            msactiontable_serializer: MsActionTable serializer (injected via DI).
         """
         super().__init__(serial_number)
         self.variant = variant  # XP33 or XP33LR or XP33LED
@@ -84,6 +94,15 @@ class XP33ServerService(BaseServerService):
         self.client_sockets: set[socket.socket] = set()  # All active client sockets
         self.client_sockets_lock = threading.Lock()  # Lock for socket set
         self.storm_packets_sent = 0  # Counter for packets sent during storm
+
+        # MsActionTable support
+        self.msactiontable_serializer = (
+            msactiontable_serializer or Xp33MsActionTableSerializer()
+        )
+        self.msactiontable = self._get_default_msactiontable()
+        self.msactiontable_download_state: Optional[str] = (
+            None  # Track: "ack_sent", "data_sent", None
+        )
 
     def _handle_device_specific_action_request(
         self, request: SystemTelegram
@@ -448,6 +467,63 @@ class XP33ServerService(BaseServerService):
             self.logger.info(f"XP33 scene {scene} activated: {self.channel_states}")
             return True
         return False
+
+    def _get_default_msactiontable(self) -> Xp33MsActionTable:
+        """Generate default MsActionTable configuration.
+
+        Returns:
+            Default XP33 MsActionTable with all outputs at 0-100% range, no scenes configured.
+        """
+        # All outputs at 0-100% range, no scenes configured
+        return Xp33MsActionTable()
+
+    def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
+        """Process system telegrams including MsActionTable download.
+
+        Args:
+            request: The system telegram request to process.
+
+        Returns:
+            The response telegram string, or None if request cannot be handled.
+        """
+        # Check if request is for this device
+        if not self._check_request_for_device(request):
+            return None
+
+        # Handle F13D - DOWNLOAD_MSACTIONTABLE request
+        if request.system_function == SystemFunction.DOWNLOAD_MSACTIONTABLE:
+            self.msactiontable_download_state = "ack_sent"
+            # Send ACK and queue data telegram
+            ack_telegram = self._build_response_telegram(f"R{self.serial_number}F18D")
+            self.add_telegram_buffer(ack_telegram)
+            return None  # ACK sent via buffer
+
+        # Handle F18D - CONTINUE (after ACK or data)
+        if (
+            request.system_function == SystemFunction.ACK
+            and self.msactiontable_download_state
+        ):
+            if self.msactiontable_download_state == "ack_sent":
+                # Send MsActionTable data
+                encoded_data = self.msactiontable_serializer.to_data(self.msactiontable)
+                data_telegram = self._build_response_telegram(
+                    f"R{self.serial_number}F17D{encoded_data}"
+                )
+                self.add_telegram_buffer(data_telegram)
+                self.msactiontable_download_state = "data_sent"
+                return None
+
+            elif self.msactiontable_download_state == "data_sent":
+                # Send EOF
+                eof_telegram = self._build_response_telegram(
+                    f"R{self.serial_number}F16D"
+                )
+                self.add_telegram_buffer(eof_telegram)
+                self.msactiontable_download_state = None
+                return None
+
+        # Delegate to base class for other requests
+        return super().process_system_telegram(request)
 
     def get_device_info(self) -> Dict:
         """Get XP33 device information.

@@ -5,9 +5,10 @@ including response generation and device configuration handling.
 XP130 is an Ethernet/TCPIP interface module.
 """
 
-from typing import Dict
+from typing import Dict, Optional
 
 from xp.models import ModuleTypeCode
+from xp.services.actiontable.msactiontable_serializer import MsActionTableSerializer
 from xp.services.server.base_server_service import BaseServerService
 
 
@@ -25,7 +26,12 @@ class XP130ServerService(BaseServerService):
     and implements XP130 telegram format for Ethernet/TCPIP interface module.
     """
 
-    def __init__(self, serial_number: str):
+    def __init__(
+            self,
+            serial_number: str,
+            _variant: str,
+            _msactiontable_serializer: Optional[MsActionTableSerializer] = None,
+    ):
         """Initialize XP130 server service.
 
         Args:

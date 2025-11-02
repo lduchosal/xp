@@ -10,8 +10,6 @@ from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
-from xp.services.conbus.actiontable.actiontable_service import ActionTableService
-from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
 from xp.services.actiontable.msactiontable_xp20_serializer import (
     Xp20MsActionTableSerializer,
 )
@@ -21,6 +19,8 @@ from xp.services.actiontable.msactiontable_xp24_serializer import (
 from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
+from xp.services.conbus.actiontable.actiontable_service import ActionTableService
+from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
 from xp.services.conbus.conbus_blink_all_service import ConbusBlinkAllService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
 from xp.services.conbus.conbus_custom_service import ConbusCustomService
@@ -330,6 +330,9 @@ class ServiceContainer:
             factory=lambda: ServerService(
                 telegram_service=self.container.resolve(TelegramService),
                 discover_service=self.container.resolve(TelegramDiscoverService),
+                xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
+                xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
+                xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
                 config_path="server.yml",
                 port=self._server_port,
             ),

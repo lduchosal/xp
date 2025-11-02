@@ -14,6 +14,16 @@ from xp.models.homekit.homekit_conson_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
 )
+from xp.services.actiontable.msactiontable_serializer import MsActionTableSerializer
+from xp.services.actiontable.msactiontable_xp20_serializer import (
+    Xp20MsActionTableSerializer,
+)
+from xp.services.actiontable.msactiontable_xp24_serializer import (
+    Xp24MsActionTableSerializer,
+)
+from xp.services.actiontable.msactiontable_xp33_serializer import (
+    Xp33MsActionTableSerializer,
+)
 from xp.services.server.base_server_service import BaseServerService
 from xp.services.server.cp20_server_service import CP20ServerService
 from xp.services.server.xp20_server_service import XP20ServerService
@@ -43,6 +53,10 @@ class ServerService:
         self,
         telegram_service: TelegramService,
         discover_service: TelegramDiscoverService,
+        xp20ms_serializer: Optional[Xp20MsActionTableSerializer] = None,
+        xp24ms_serializer: Optional[Xp24MsActionTableSerializer] = None,
+        xp33ms_serializer: Optional[Xp33MsActionTableSerializer] = None,
+        ms_serializer: Optional[MsActionTableSerializer] = None,
         config_path: str = "server.yml",
         port: int = 10001,
     ):
@@ -51,11 +65,19 @@ class ServerService:
         Args:
             telegram_service: Service for parsing system telegrams.
             discover_service: Service for handling discover requests.
+            xp20ms_serializer: XP20 MsActionTable serializer (injected via DI).
+            xp24ms_serializer: XP24 MsActionTable serializer (injected via DI).
+            xp33ms_serializer: XP33 MsActionTable serializer (injected via DI).
+            ms_serializer: Generic MsActionTable serializer (injected via DI).
             config_path: Path to the server configuration file.
             port: TCP port to listen on.
         """
         self.telegram_service = telegram_service
         self.discover_service = discover_service
+        self.xp20ms_serializer = xp20ms_serializer
+        self.xp24ms_serializer = xp24ms_serializer
+        self.xp33ms_serializer = xp33ms_serializer
+        self.ms_serializer = ms_serializer
         self.config_path = config_path
         self.port = port
         self.server_socket: Optional[socket.socket] = None
@@ -116,35 +138,35 @@ class ServerService:
                 # Serial number is already a string from config
                 if module_type == "CP20":
                     self.device_services[serial_number] = CP20ServerService(
-                        serial_number
+                        serial_number, "CP20", self.ms_serializer
                     )
                 if module_type == "XP24":
                     self.device_services[serial_number] = XP24ServerService(
-                        serial_number
+                        serial_number,  "XP24", self.xp24ms_serializer
                     )
                 elif module_type == "XP33":
                     self.device_services[serial_number] = XP33ServerService(
-                        serial_number, "XP33"
+                        serial_number, "XP33", self.xp33ms_serializer
                     )
                 elif module_type == "XP33LR":
                     self.device_services[serial_number] = XP33ServerService(
-                        serial_number, "XP33LR"
+                        serial_number, "XP33LR", self.xp33ms_serializer
                     )
                 elif module_type == "XP33LED":
                     self.device_services[serial_number] = XP33ServerService(
-                        serial_number, "XP33LED"
+                        serial_number, "XP33LED", self.xp33ms_serializer
                     )
                 elif module_type == "XP20":
                     self.device_services[serial_number] = XP20ServerService(
-                        serial_number
+                        serial_number, "XP20", self.xp20ms_serializer
                     )
                 elif module_type == "XP130":
                     self.device_services[serial_number] = XP130ServerService(
-                        serial_number
+                        serial_number, "XP130", self.ms_serializer
                     )
                 elif module_type == "XP230":
                     self.device_services[serial_number] = XP230ServerService(
-                        serial_number
+                        serial_number, "XP230", self.ms_serializer
                     )
                 else:
                     self.logger.warning(

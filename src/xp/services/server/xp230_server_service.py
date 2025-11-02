@@ -4,9 +4,10 @@ This service provides XP230-specific device emulation functionality,
 including response generation and device configuration handling.
 """
 
-from typing import Dict
+from typing import Dict, Optional
 
 from xp.models import ModuleTypeCode
+from xp.services.actiontable.msactiontable_serializer import MsActionTableSerializer
 from xp.services.server.base_server_service import BaseServerService
 
 
@@ -24,7 +25,12 @@ class XP230ServerService(BaseServerService):
     and implements XP230 telegram format.
     """
 
-    def __init__(self, serial_number: str):
+    def __init__(
+            self,
+            serial_number: str,
+            _variant: str,
+            _msactiontable_serializer: Optional[MsActionTableSerializer] = None,
+    ):
         """Initialize XP230 server service.
 
         Args:
