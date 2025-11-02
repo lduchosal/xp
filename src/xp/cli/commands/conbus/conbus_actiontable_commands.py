@@ -1,6 +1,7 @@
 """ActionTable CLI commands."""
 
 import json
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +14,7 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.actiontable.actiontable import ActionTable
-from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
+from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig, ConsonModuleConfig
 from xp.services.conbus.actiontable.actiontable_list_service import (
     ActionTableListService,
 )
@@ -213,13 +214,13 @@ def conbus_show_actiontable(ctx: Context, serial_number: str) -> None:
         ctx.obj.get("container").get_container().resolve(ActionTableShowService)
     )
 
-    def on_finish(module: dict) -> None:
+    def on_finish(module: ConsonModuleConfig) -> None:
         """Handle successful completion of action table show.
 
         Args:
             module: Dictionary containing module configuration.
         """
-        click.echo(json.dumps(module, indent=2, default=str))
+        click.echo(json.dumps(module.model_dump(), indent=2, default=str))
 
     def error_callback(error: str) -> None:
         """Handle errors during action table show.

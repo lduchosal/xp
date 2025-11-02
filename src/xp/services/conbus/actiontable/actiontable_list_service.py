@@ -74,18 +74,16 @@ class ActionTableListService:
         # Filter modules that have action_table configured
         modules_with_actiontable = []
         for module in config.root:
-            if module.action_table:
-                modules_with_actiontable.append(
-                    {
-                        "serial_number": module.serial_number,
-                        "module_type": module.module_type,
-                    }
-                )
+            modules_with_actiontable.append(
+                {
+                    "serial_number": module.serial_number,
+                    "module_type": module.module_type,
+                }
+            )
 
         # Prepare result
         result = {
-            "modules": modules_with_actiontable,
-            "total": len(modules_with_actiontable),
+            "modules": modules_with_actiontable
         }
 
         # Invoke callback

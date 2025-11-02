@@ -4,6 +4,8 @@ import logging
 from pathlib import Path
 from typing import Any, Callable, Optional
 
+from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
+
 
 class ActionTableShowService:
     """Service for showing action table configuration for a specific module.
@@ -15,7 +17,7 @@ class ActionTableShowService:
     def __init__(self) -> None:
         """Initialize the action table show service."""
         self.logger = logging.getLogger(__name__)
-        self.finish_callback: Optional[Callable[[dict[str, Any]], None]] = None
+        self.finish_callback: Optional[Callable[[ConsonModuleConfig], None]] = None
         self.error_callback: Optional[Callable[[str], None]] = None
 
     def __enter__(self) -> "ActionTableShowService":
@@ -39,7 +41,7 @@ class ActionTableShowService:
     def start(
         self,
         serial_number: str,
-        finish_callback: Callable[[dict[str, Any]], None],
+        finish_callback: Callable[[ConsonModuleConfig], None],
         error_callback: Callable[[str], None],
         config_path: Optional[Path] = None,
     ) -> None:
@@ -79,28 +81,9 @@ class ActionTableShowService:
             self._handle_error(f"Error: Module {serial_number} not found in conson.yml")
             return
 
-        # Check if module has action_table
-        if not module.action_table:
-            self._handle_error(
-                f"Error: No action_table configured for module {serial_number}"
-            )
-            return
-
-        # Prepare result
-        result = {
-            "serial_number": module.serial_number,
-            "name": module.name,
-            "module_type": module.module_type,
-            "module_type_code": module.module_type_code,
-            "link_number": module.link_number,
-            "module_number": module.module_number or 0,
-            "auto_report_status": module.auto_report_status or "",
-            "action_table": module.action_table,
-        }
-
         # Invoke callback
         if self.finish_callback is not None:
-            self.finish_callback(result)
+            self.finish_callback(module)
 
     def _handle_error(self, message: str) -> None:
         """Handle error and invoke error callback.
