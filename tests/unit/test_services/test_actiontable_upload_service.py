@@ -196,7 +196,7 @@ class TestActionTableUploadChunkPrefix:
                 telegram_type=TelegramType.SYSTEM,
                 serial_number="0123450001",
                 system_function=SystemFunction.ACTIONTABLE,
-                data_value="AACHUNK1DATA",  # AA prefix
+                data_value="AAAACHUNK1DATA",  # AA prefix
             )
 
     def test_second_chunk_has_ab_prefix(self, service):
@@ -220,7 +220,7 @@ class TestActionTableUploadChunkPrefix:
                 telegram_type=TelegramType.SYSTEM,
                 serial_number="0123450001",
                 system_function=SystemFunction.ACTIONTABLE,
-                data_value="ABCHUNK2DATA",  # AB prefix
+                data_value="AAABCHUNK2DATA",  # AB prefix
             )
 
     def test_third_chunk_has_ac_prefix(self, service):
@@ -244,7 +244,7 @@ class TestActionTableUploadChunkPrefix:
                 telegram_type=TelegramType.SYSTEM,
                 serial_number="0123450001",
                 system_function=SystemFunction.ACTIONTABLE,
-                data_value="ACCHUNK3",  # AC prefix
+                data_value="AAACCHUNK3",  # AC prefix
             )
 
     def test_fourth_chunk_has_ad_prefix(self, service):
@@ -268,7 +268,7 @@ class TestActionTableUploadChunkPrefix:
                 telegram_type=TelegramType.SYSTEM,
                 serial_number="0123450001",
                 system_function=SystemFunction.ACTIONTABLE,
-                data_value="ADC4",  # AD prefix
+                data_value="AAADC4",  # AD prefix
             )
 
     def test_chunk_prefix_sequence_increments(self, service):
@@ -283,7 +283,7 @@ class TestActionTableUploadChunkPrefix:
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK
 
-        expected_prefixes = ["AA", "AB", "AC", "AD", "AE", "AF"]
+        expected_prefixes = ["AAAA", "AAAB", "AAAC", "AAAD", "AAAE", "AAAF"]
 
         with (
             patch.object(service, "send_telegram") as mock_send,
@@ -497,21 +497,21 @@ class TestActionTableUploadFullSequence:
 
         # Verify: Next 15 telegrams are ACTIONTABLE with correct prefixes
         expected_prefixes = [
-            "AA",
-            "AB",
-            "AC",
-            "AD",
-            "AE",
-            "AF",
-            "AG",
-            "AH",
-            "AI",
-            "AJ",
-            "AK",
-            "AL",
-            "AM",
-            "AN",
-            "AO",
+            "AAAA",
+            "AAAB",
+            "AAAC",
+            "AAAD",
+            "AAAE",
+            "AAAF",
+            "AAAG",
+            "AAAH",
+            "AAAI",
+            "AAAJ",
+            "AAAK",
+            "AAAL",
+            "AAAM",
+            "AAAN",
+            "AAAO",
         ]
 
         for i, expected_prefix in enumerate(expected_prefixes):
@@ -524,8 +524,8 @@ class TestActionTableUploadFullSequence:
                 f"got {telegram['data_value'][:2]}"
             )
             # Each telegram should be 66 chars: 2-char prefix + 64-char chunk
-            assert len(telegram["data_value"]) == 66, (
-                f"Telegram {i+1} data_value should be 66 chars, "
+            assert len(telegram["data_value"]) == 68, (
+                f"Telegram {i+1} data_value should be 68 chars, "
                 f"got {len(telegram['data_value'])}"
             )
 
@@ -537,7 +537,7 @@ class TestActionTableUploadFullSequence:
 
         # Verify: Data integrity - concatenate all chunks (excluding prefixes)
         all_chunks = "".join(
-            sent_telegrams[i]["data_value"][2:] for i in range(1, 16)  # Skip prefix
+            sent_telegrams[i]["data_value"][4:] for i in range(1, 16)  # Skip prefix
         )
         assert (
             all_chunks == "A" * 960

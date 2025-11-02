@@ -110,7 +110,7 @@ class ActionTableUploadService(ConbusProtocol):
                 # Calculate prefix: AA, AB, AC, AD, AE, AF, AG, AH, AI, AJ, AK, AL, AM, AN, AO
                 # First character: 'A' (fixed)
                 # Second character: 'A' + chunk_index (sequential counter A-O for 15 chunks)
-                prefix_hex = f"A{ord('A') + self.current_chunk_index:c}"
+                prefix_hex = f"AAA{ord('A') + self.current_chunk_index:c}"
 
                 self.send_telegram(
                     telegram_type=TelegramType.SYSTEM,
