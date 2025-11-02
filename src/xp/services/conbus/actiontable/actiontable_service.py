@@ -51,7 +51,9 @@ class ActionTableService(ConbusProtocol):
 
     def connection_established(self) -> None:
         """Handle connection established event."""
-        self.logger.debug("Connection established, sending download actiontable telegram")
+        self.logger.debug(
+            "Connection established, sending download actiontable telegram"
+        )
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
@@ -82,7 +84,9 @@ class ActionTableService(ConbusProtocol):
             self.logger.debug("Not a reply response")
             return
 
-        reply_telegram = self.telegram_service.parse_reply_telegram(telegram_received.frame)
+        reply_telegram = self.telegram_service.parse_reply_telegram(
+            telegram_received.frame
+        )
         if reply_telegram.system_function not in (
             SystemFunction.ACTIONTABLE,
             SystemFunction.EOF,

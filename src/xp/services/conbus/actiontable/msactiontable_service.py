@@ -84,7 +84,9 @@ class MsActionTableService(ConbusProtocol):
 
     def connection_established(self) -> None:
         """Handle connection established event."""
-        self.logger.debug("Connection established, sending download msactiontable telegram")
+        self.logger.debug(
+            "Connection established, sending download msactiontable telegram"
+        )
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,

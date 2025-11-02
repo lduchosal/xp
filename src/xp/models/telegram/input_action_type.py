@@ -1,4 +1,5 @@
 """Input action types for XP24 module based on Feature-Action-Table.md."""
+
 from enum import Enum
 
 
