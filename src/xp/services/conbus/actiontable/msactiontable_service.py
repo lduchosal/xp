@@ -74,7 +74,7 @@ class MsActionTableService(ConbusProtocol):
         self.error_callback: Optional[Callable[[str], None]] = None
         self.finish_callback: Optional[
             Callable[
-                [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]], None
+                [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None]], None
             ]
         ] = None
         self.msactiontable_data: list[str] = []
@@ -114,16 +114,28 @@ class MsActionTableService(ConbusProtocol):
             self.logger.debug("Not a reply response")
             return
 
-        reply_telegram = self.telegram_service.parse_reply_telegram(telegram_received)
+        reply_telegram = self.telegram_service.parse_reply_telegram(telegram_received.frame)
         if reply_telegram.system_function not in (
             SystemFunction.MSACTIONTABLE,
+            SystemFunction.ACK,
+            SystemFunction.NAK,
             SystemFunction.EOF,
         ):
             self.logger.debug("Not a msactiontable response")
             return
 
-        if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
-            self.logger.debug("Saving msactiontable response")
+        if reply_telegram.system_function == SystemFunction.ACK:
+            self.logger.debug("Received ACK")
+            return
+
+        if reply_telegram.system_function == SystemFunction.NAK:
+            self.logger.debug("Received NAK")
+            if self.finish_callback:
+                self.finish_callback(None)
+            return
+
+        if reply_telegram.system_function == SystemFunction.MSACTIONTABLE:
+            self.logger.debug("Received MSACTIONTABLE")
             self.msactiontable_data.append(reply_telegram.data_value)
             if self.progress_callback:
                 self.progress_callback(".")
@@ -137,11 +149,16 @@ class MsActionTableService(ConbusProtocol):
             return
 
         if reply_telegram.system_function == SystemFunction.EOF:
+            self.logger.debug("Received EOF")
             all_data = "".join(self.msactiontable_data)
             # Deserialize from received data
             msactiontable = self.serializer.from_data(all_data)
             if self.finish_callback:
                 self.finish_callback(msactiontable)
+            return
+
+        self.logger.debug(f"Invalid msactiontable response")
+
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -160,7 +177,7 @@ class MsActionTableService(ConbusProtocol):
         progress_callback: Callable[[str], None],
         error_callback: Callable[[str], None],
         finish_callback: Callable[
-            [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]], None
+            [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None]], None
         ],
         timeout_seconds: Optional[float] = None,
     ) -> None:

@@ -230,13 +230,11 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.timeout_call = self.reactor.callLater(
             self.timeout_seconds, self._on_timeout
         )
-        self.logger.debug(f"Timeout set for {self.timeout_seconds} seconds")
 
     def _cancel_timeout(self) -> None:
         """Cancel the inactivity timeout."""
         if self.timeout_call and self.timeout_call.active():
             self.timeout_call.cancel()
-            self.logger.debug("Timeout cancelled")
 
     def _on_timeout(self) -> None:
         """Handle inactivity timeout expiration."""

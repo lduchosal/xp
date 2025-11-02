@@ -66,7 +66,7 @@ class Xp24MsActionTableSerializer:
         """
         raw_length = len(msactiontable_rawdata)
         if raw_length != 68:
-            raise ValueError(f"Msactiontable is not 68 bytes long ({raw_length})")
+            raise ValueError(f"Msactiontable is not 68 bytes long ({raw_length}): {msactiontable_rawdata}")
 
         # Remove action table count AAAA, AAAB .
         data = msactiontable_rawdata[4:]

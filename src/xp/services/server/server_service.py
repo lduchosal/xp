@@ -209,14 +209,12 @@ class ServerService:
                     self.logger.debug(f"Sent buffer to {client_address}")
 
                 # Receive data from client
-                self.logger.debug(f"Receiving data {client_address}")
                 data = None
                 try:
                     data = client_socket.recv(1024)
+                    self.logger.debug(f"Receiving data {client_address}")
                 except socket.timeout:
-                    self.logger.debug(
-                        f"Timeout receiving data {client_address} ({timeout})"
-                    )
+                    pass
                 finally:
                     timeout -= 1
 
@@ -421,9 +419,6 @@ class ServerService:
         self.logger.info("Collector thread starting")
 
         while True:
-            self.logger.debug(
-                f"Collector thread collecting ({len(self.collector_buffer)})"
-            )
             collected = 0
             for device_service in self.device_services.values():
                 telegram_buffer = device_service.collect_telegram_buffer()
@@ -431,5 +426,4 @@ class ServerService:
                 collected += len(telegram_buffer)
 
             # Wait a bit before checking again
-            self.logger.debug(f"Collector thread collected ({collected})")
             self.collector_stop_event.wait(timeout=1)

@@ -78,6 +78,19 @@ class TestXp24MsActionTableSerializer:
         assert not msactiontable.mutex12
         assert not msactiontable.mutex34
 
+
+    def test_from_telegrams_from_data(self):
+        """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
+        # This telegram contains non-hex characters that cause from_hex() to fail
+        # Based on the debug log: '<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>'
+        valid_msactiontable = (
+            "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        )
+
+        msactiontable = Xp24MsActionTableSerializer.from_data(valid_msactiontable)
+        msactiontable_data = Xp24MsActionTableSerializer.to_data(msactiontable)
+        assert valid_msactiontable == msactiontable_data
+
     def test_from_telegrams_invalid_hex_data2(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
         # This telegram contains non-hex characters that cause from_hex() to fail

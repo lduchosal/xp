@@ -2,7 +2,7 @@
 
 This module provides telegram parsing functionality for event, system, and reply telegrams.
 """
-
+import logging
 import re
 from typing import Union
 
@@ -48,7 +48,8 @@ class TelegramService:
 
     def __init__(self) -> None:
         """Initialize the telegram service."""
-        pass
+        # Set up logging
+        self.logger = logging.getLogger(__name__)
 
     def parse_event_telegram(self, raw_telegram: str) -> EventTelegram:
         """Parse a raw telegram string into an EventTelegram object.
@@ -242,6 +243,7 @@ class TelegramService:
             raise TelegramParsingError("Empty telegram string")
 
         # Validate and parse using regex
+        self.logger.debug(f"Parsing reply telegram {raw_telegram}")
         match = self.REPLY_TELEGRAM_PATTERN.match(raw_telegram.strip())
         if not match:
             raise TelegramParsingError(f"Invalid reply telegram format: {raw_telegram}")

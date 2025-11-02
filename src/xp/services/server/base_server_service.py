@@ -185,15 +185,25 @@ class BaseServerService(ABC):
         Returns:
             ACK telegram if request is valid, NAK otherwise.
         """
-        if (
-            request.system_function == SystemFunction.DOWNLOAD_MSACTIONTABLE
-            and self.msactiontable_download_state is None
-        ):
-            self.msactiontable_download_state = "ack_sent"
-            # Send ACK and queue data telegram
-            return self._build_response_telegram(f"R{self.serial_number}F18D")  # ACK
+        serializer = self._get_msactiontable_serializer()
+        msactiontable = self._get_msactiontable()
 
-        return self._build_response_telegram(f"R{self.serial_number}F19D")  # NAK
+        # Only handle if serializer and msactiontable are available
+        if not serializer or msactiontable is None:
+            return None
+
+        # Send ACK and queue data telegram
+        ack_data = self._build_response_telegram(f"R{self.serial_number}F18D")  # ACK
+
+        # Send MsActionTable data
+        encoded_data = serializer.to_data(msactiontable)
+        data_telegram = self._build_response_telegram(
+            f"R{self.serial_number}F17D{encoded_data}"
+        )
+        self.msactiontable_download_state = "data_sent"
+
+        # Return ACK and TABLE
+        return ack_data + data_telegram
 
     def _handle_download_msactiontable_ack_request(
         self, _request: SystemTelegram
@@ -206,24 +216,7 @@ class BaseServerService(ABC):
         Returns:
             Data telegram, EOF telegram, or NAK if state is invalid.
         """
-        serializer = self._get_msactiontable_serializer()
-        msactiontable = self._get_msactiontable()
-
-        # Only handle if serializer and msactiontable are available
-        if not serializer or msactiontable is None:
-            return None
-
-        # Handle F18D - CONTINUE (after ACK or data)
-        if self.msactiontable_download_state == "ack_sent":
-            # Send MsActionTable data
-            encoded_data = serializer.to_data(msactiontable)
-            data_telegram = self._build_response_telegram(
-                f"R{self.serial_number}F17D{encoded_data}"
-            )
-            self.msactiontable_download_state = "data_sent"
-            return data_telegram
-
-        elif self.msactiontable_download_state == "data_sent":
+        if self.msactiontable_download_state == "data_sent":
             # Send EOF
             eof_telegram = self._build_response_telegram(f"R{self.serial_number}F16D")
             self.msactiontable_download_state = None
@@ -367,11 +360,7 @@ class BaseServerService(ABC):
         Returns:
             List of telegram strings from the buffer. The buffer is cleared after collection.
         """
-        self.logger.debug(
-            f"Collecting {self.serial_number} telegrams from buffer: {len(self.telegram_buffer)}"
-        )
         with self.telegram_buffer_lock:
             result = self.telegram_buffer.copy()
-            self.logger.debug(f"Resetting {self.serial_number} buffer")
             self.telegram_buffer.clear()
             return result
