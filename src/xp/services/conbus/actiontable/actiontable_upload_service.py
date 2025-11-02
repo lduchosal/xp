@@ -196,8 +196,8 @@ class ActionTableUploadService(ConbusProtocol):
         # Encode action table to hex string
         encoded_data = self.serializer.to_encoded_string(action_table)
 
-        # Chunk the data (max ~200 chars per chunk for safety)
-        chunk_size = 200
+        # Chunk the data into 64 byte chunks
+        chunk_size = 64
         self.upload_data_chunks = [
             encoded_data[i : i + chunk_size]
             for i in range(0, len(encoded_data), chunk_size)
