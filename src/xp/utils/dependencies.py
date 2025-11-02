@@ -10,6 +10,7 @@ from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
+from xp.services.actiontable.msactiontable_serializer import MsActionTableSerializer
 from xp.services.actiontable.msactiontable_xp20_serializer import (
     Xp20MsActionTableSerializer,
 )
@@ -49,6 +50,7 @@ from xp.services.module_type_service import ModuleTypeService
 from xp.services.protocol.protocol_factory import TelegramFactory
 from xp.services.protocol.telegram_protocol import TelegramProtocol
 from xp.services.reverse_proxy_service import ReverseProxyService
+from xp.services.server.device_service_factory import DeviceServiceFactory
 from xp.services.server.server_service import ServerService
 from xp.services.telegram.telegram_blink_service import TelegramBlinkService
 from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
@@ -324,15 +326,25 @@ class ServiceContainer:
         # Module type services layer
         self.container.register(ModuleTypeService, scope=punq.Scope.singleton)
 
+        # Device service factory
+        self.container.register(
+            DeviceServiceFactory,
+            factory=lambda: DeviceServiceFactory(
+                xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
+                xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
+                xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
+                ms_serializer=self.container.resolve(MsActionTableSerializer),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
         # Server services layer
         self.container.register(
             ServerService,
             factory=lambda: ServerService(
                 telegram_service=self.container.resolve(TelegramService),
                 discover_service=self.container.resolve(TelegramDiscoverService),
-                xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
-                xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
-                xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
+                device_factory=self.container.resolve(DeviceServiceFactory),
                 config_path="server.yml",
                 port=self._server_port,
             ),
