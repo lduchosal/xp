@@ -218,7 +218,8 @@ class TestXp20MsActionTableSerializer:
         action_table.input8.ta_function = True
 
         serialized = Xp20MsActionTableSerializer.to_data(action_table)
-        raw_bytes = de_nibbles(serialized)
+        # Skip the 4-character "AAAA" prefix when de-nibbling
+        raw_bytes = de_nibbles(serialized[4:])
 
         # Check bit positions
         assert raw_bytes[SHORT_LONG_INDEX] & 1 != 0  # input1 bit 0
@@ -316,7 +317,6 @@ class TestXp20MsActionTableSerializer:
             assert original.and_functions == result.and_functions
             assert original.sa_function == result.sa_function
             assert original.ta_function == result.ta_function
-
 
     def test_serialize_back_and_forth(self):
         """Test that default values work correctly."""

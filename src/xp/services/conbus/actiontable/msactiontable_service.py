@@ -74,7 +74,8 @@ class MsActionTableService(ConbusProtocol):
         self.error_callback: Optional[Callable[[str], None]] = None
         self.finish_callback: Optional[
             Callable[
-                [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None]], None
+                [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None]],
+                None,
             ]
         ] = None
         self.msactiontable_data: list[str] = []
@@ -114,7 +115,9 @@ class MsActionTableService(ConbusProtocol):
             self.logger.debug("Not a reply response")
             return
 
-        reply_telegram = self.telegram_service.parse_reply_telegram(telegram_received.frame)
+        reply_telegram = self.telegram_service.parse_reply_telegram(
+            telegram_received.frame
+        )
         if reply_telegram.system_function not in (
             SystemFunction.MSACTIONTABLE,
             SystemFunction.ACK,
@@ -158,7 +161,6 @@ class MsActionTableService(ConbusProtocol):
 
         self.logger.debug("Invalid msactiontable response")
 
-
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
@@ -170,8 +172,10 @@ class MsActionTableService(ConbusProtocol):
             self.error_callback(message)
         self._stop_reactor()
 
-
-    def succeed(self, msactiontable: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]) -> None:
+    def succeed(
+        self,
+        msactiontable: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable],
+    ) -> None:
         """Handle succeed connection event.
 
         Args:
@@ -223,4 +227,3 @@ class MsActionTableService(ConbusProtocol):
         self.error_callback = error_callback
         self.finish_callback = finish_callback
         self.start_reactor()
-

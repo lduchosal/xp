@@ -170,14 +170,15 @@ class TestMsActionTableService:
         # Mock the reply telegram parsing
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.MSACTIONTABLE
-        mock_reply.data_value = "XXAAAAACAAAABAAAAC"
+        mock_reply.data = "XX"
+        mock_reply.data_value = "AAAAACAAAABAAAAC"
         service.telegram_service.parse_reply_telegram.return_value = mock_reply
 
         with patch.object(service, "send_telegram") as mock_send:
             service.telegram_received(telegram_event)
 
-            # Should append full data_value
-            assert service.msactiontable_data == ["XXAAAAACAAAABAAAAC"]
+            # Should append both data and data_value
+            assert service.msactiontable_data == ["XX", "AAAAACAAAABAAAAC"]
 
             # Should call progress callback
             mock_progress.assert_called_once_with(".")

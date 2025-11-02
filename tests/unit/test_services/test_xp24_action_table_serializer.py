@@ -64,7 +64,6 @@ class TestXp24MsActionTableSerializer:
         assert not msactiontable.mutex12
         assert not msactiontable.mutex34
 
-
     def test_from_telegrams_from_data(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
         # This telegram contains non-hex characters that cause from_hex() to fail

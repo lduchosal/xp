@@ -418,7 +418,7 @@ class TestXp33MsActionTableSerializer:
 
     def test_serialize_back_and_forth(self):
         """Test that default values work correctly."""
-        telegram ="<R0020045056F17DAAAAAAGEAAGEAAGEAABECIDMAADMFACIAABEBEBEAAGEGEGEAHAAAAAAAAAAAAAAAAAAFI>"
+        telegram = "<R0020045056F17DAAAAAAGEAAGEAAGEAABECIDMAADMFACIAABEBEBEAAGEGEGEAHAAAAAAAAAAAAAAAAAAFI>"
         # Create action table with default values
 
         # Test serialization with defaults

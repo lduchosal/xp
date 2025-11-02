@@ -2,6 +2,7 @@
 
 This module provides telegram parsing functionality for event, system, and reply telegrams.
 """
+
 import logging
 import re
 from typing import Union

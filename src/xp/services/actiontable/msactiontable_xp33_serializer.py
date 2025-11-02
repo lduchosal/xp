@@ -6,7 +6,7 @@ from xp.models.actiontable.msactiontable_xp33 import (
     Xp33Scene,
 )
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.utils.serialization import bits_to_byte, byte_to_bits, de_nibbles, nibble, nibbles
+from xp.utils.serialization import bits_to_byte, byte_to_bits, de_nibbles, nibbles
 
 
 class Xp33MsActionTableSerializer:

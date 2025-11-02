@@ -327,18 +327,10 @@ class ServiceContainer:
         self.container.register(ModuleTypeService, scope=punq.Scope.singleton)
 
         # MsActionTable serializers
-        self.container.register(
-            MsActionTableSerializer, scope=punq.Scope.singleton
-        )
-        self.container.register(
-            Xp20MsActionTableSerializer, scope=punq.Scope.singleton
-        )
-        self.container.register(
-            Xp24MsActionTableSerializer, scope=punq.Scope.singleton
-        )
-        self.container.register(
-            Xp33MsActionTableSerializer, scope=punq.Scope.singleton
-        )
+        self.container.register(MsActionTableSerializer, scope=punq.Scope.singleton)
+        self.container.register(Xp20MsActionTableSerializer, scope=punq.Scope.singleton)
+        self.container.register(Xp24MsActionTableSerializer, scope=punq.Scope.singleton)
+        self.container.register(Xp33MsActionTableSerializer, scope=punq.Scope.singleton)
 
         # Device service factory
         self.container.register(

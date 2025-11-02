@@ -49,7 +49,9 @@ def conbus_download_msactiontable(
         click.echo(progress, nl=False)
 
     def on_finish(
-        action_table: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None],
+        action_table: Union[
+            Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None
+        ],
     ) -> None:
         """Handle successful completion of MS action table download.
 
