@@ -13,6 +13,7 @@ from xp.cli.commands.conbus.conbus_actiontable_commands import (
 )
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
+from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
@@ -519,21 +520,21 @@ class TestConbusActionTableCommands:
                 finish_callback: Callback for successful completion.
                 error_callback: Callback for error handling.
             """
-            module = {
-                "serial_number": "0020044991",
-                "name": "A4",
-                "module_type": "XP24",
-                "module_type_code": 7,
-                "link_number": 2,
-                "module_number": 2,
-                "auto_report_status": "PP",
-                "action_table": [
+            module = ConsonModuleConfig(
+                serial_number="0020044991",
+                name="A4",
+                module_type="XP24",
+                module_type_code=7,
+                link_number=2,
+                module_number=2,
+                auto_report_status="PP",
+                action_table=[
                     "CP20 0 0 > 1 OFF",
                     "CP20 0 0 > 2 OFF",
                     "CP20 0 1 > 1 ~ON",
                     "CP20 0 1 > 2 ON",
                 ],
-            }
+            )
             finish_callback(module)
 
         mock_service.start.side_effect = mock_start

@@ -178,14 +178,15 @@ class TestActionTableIntegration:
         empty_table = ActionTable(entries=[])
         serializer = ActionTableSerializer()
 
-        # Should handle empty table gracefully
+        # Empty table should be padded to 96 entries (480 bytes) during serialization
         data = serializer.to_data(empty_table)
         assert isinstance(data, bytes)
-        assert len(data) == 0
+        assert len(data) == 480  # 96 entries × 5 bytes
+        assert data == b"\x00" * 480  # All padding (NOMOD entries)
 
-        # Restore empty table
+        # Restore table - padding (NOMOD entries) is stripped during deserialization
         restored = serializer.from_data(data)
-        assert len(restored.entries) == 0
+        assert len(restored.entries) == 0  # Padding removed
 
     def test_actiontable_edge_cases(self):
         """Test ActionTable with edge case values."""
