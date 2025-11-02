@@ -1,9 +1,8 @@
 """Input action types for XP24 module based on Feature-Action-Table.md."""
+from enum import Enum
 
-from enum import IntEnum
 
-
-class InputActionType(IntEnum):
+class InputActionType(Enum):
     """Input action types for XP24 module (based on Feature-Action-Table.md).
 
     Attributes:
