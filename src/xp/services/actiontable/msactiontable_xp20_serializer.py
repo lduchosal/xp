@@ -159,23 +159,3 @@ class Xp20MsActionTableSerializer:
                 and_functions_byte |= 1 << bit_index
 
         raw_bytes[AND_FUNCTIONS_INDEX + input_index] = and_functions_byte
-
-    @staticmethod
-    def from_telegrams(ms_telegrams: str) -> Xp20MsActionTable:
-        """Legacy method for backward compatibility. Use from_data() instead.
-
-        Args:
-            ms_telegrams: Full telegram string
-
-        Returns:
-            Decoded XP20 action table
-        """
-        # Extract data portion from telegram (skip header, take action table data)
-        # Based on XP24 pattern: telegram[16:84] gives us the 68-char data portion
-        # For XP20, we need 64 chars, so we take the first 64 chars after removing count
-        data_parts = ms_telegrams[16:84]
-
-        # Remove action table count (first 4 chars: AAAA, AAAB, etc.)
-        hex_data = data_parts[4:68]  # Take 64 chars after count
-
-        return Xp20MsActionTableSerializer.from_data(hex_data)

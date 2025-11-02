@@ -33,16 +33,8 @@ class TestXp20ActionTableIntegration:
         # Serialize it
         serialized = Xp20MsActionTableSerializer.to_data(action_table)
 
-        # Create mock telegram data
-        mock_telegram = (
-            "0123456789ABCDEF"  # 16 chars header
-            "AAAA"
-            + serialized  # 4 chars count + 64 chars data
-            + "PADDING"  # Additional padding
-        )
-
-        # Test legacy from_telegrams method
-        result = Xp20MsActionTableSerializer.from_telegrams(mock_telegram)
+        # Deserialize from data
+        result = Xp20MsActionTableSerializer.from_data(serialized)
 
         # Verify the round-trip worked
         assert result.input1.invert == action_table.input1.invert

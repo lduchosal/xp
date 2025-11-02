@@ -204,19 +204,6 @@ class TestXp20MsActionTableSerializer:
             assert channel.sa_function is True
             assert channel.ta_function is True
 
-    def test_from_telegrams_compatibility(self):
-        """Test legacy from_telegrams method."""
-        # Create a mock full telegram string
-        mock_telegram = (
-            "0123456789ABCDEF"  # 16 chars header
-            "AAAA"  # 4 chars count
-            "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"  # 64 chars data
-            "PADDING"  # Additional chars
-        )
-
-        result = Xp20MsActionTableSerializer.from_telegrams(mock_telegram)
-        assert isinstance(result, Xp20MsActionTable)
-
     def test_encoding_bit_positions(self):
         """Test that bit positions are correctly encoded."""
         action_table = Xp20MsActionTable()
@@ -265,3 +252,31 @@ class TestXp20MsActionTableSerializer:
             assert original_channel.and_functions == decoded_channel.and_functions
             assert original_channel.sa_function == decoded_channel.sa_function
             assert original_channel.ta_function == decoded_channel.ta_function
+
+    def test_from_telegrams_from_data(self):
+        """Test round-trip serialization with default/empty action table data."""
+        # 64 characters - all A's represent a completely empty/default action table
+        valid_msactiontable = (
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        )
+
+        # Deserialize from data
+        msactiontable = Xp20MsActionTableSerializer.from_data(valid_msactiontable)
+
+        # Verify it's a valid Xp20MsActionTable with default values
+        assert isinstance(msactiontable, Xp20MsActionTable)
+        for i in range(1, 9):
+            channel = getattr(msactiontable, f"input{i}")
+            assert channel.invert is False
+            assert channel.short_long is False
+            assert channel.group_on_off is False
+            assert channel.and_functions == [False] * 8
+            assert channel.sa_function is False
+            assert channel.ta_function is False
+
+        # Re-serialize back to data
+        msactiontable_data = Xp20MsActionTableSerializer.to_data(msactiontable)
+
+        # Verify round-trip preserves the original data
+        assert valid_msactiontable == msactiontable_data
+
