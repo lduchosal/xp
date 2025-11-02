@@ -33,15 +33,36 @@ class SystemFunction(str, Enum):
     WRITE_CONFIG = "04"  # Write configuration
     BLINK = "05"  # Blink LED function
     UNBLINK = "06"  # Unblink LED function
+
+    UPLOAD_FIRMWARE_START = "07"  # Start Upload firmware
+    UPLOAD_FIRMWARE_STOP = "08"  # Stop Upload firmware
+    UPLOAD_FIRMWARE = "09"  # Upload firmware
+
+    UPLOAD_ACTIONTABLE = "10"  # Upload ActionTable
+    DOWNLOAD_ACTIONTABLE = "11"  # Download ActionTable
+    UPLOAD_MSACTIONTABLE = (
+        "12"  # Upload specific action table (MsActionTable) to the module
+    )
     DOWNLOAD_MSACTIONTABLE = (
         "13"  # Download the module specific action table (MsActionTable)
     )
-    DOWNLOAD_ACTIONTABLE = "11D"  # Download ActionTable
+
+    TELEGRAM_WRITE_START = "14"  # Start writing telegram
+    TELEGRAM_READ_START = "15"  # Start reading telegram
     EOF = "16"  # End of msactiontable response
-    MSACTIONTABLE = "17"  # module specific action table (MsActionTable) response
-    ACTIONTABLE = "17"  # module specific action table (MsActionTable) response
+    TELEGRAM = "17"  # module specific Telegram response
+    MSACTIONTABLE = "17"  # module specific ms action table (Telegram) response
+    ACTIONTABLE = "17"  # module specific action table (Telegram) response
     ACK = "18"  # Acknowledge response
     NAK = "19"  # Not acknowledge response
+
+    UPLOAD_TOP_FIRMWARE_START = "20"  # Start Upload firmware (TOP)
+    UPLOAD_TOP_FIRMWARE_STOP = "21"  # Stop Upload firmware (TOP)
+    UPLOAD_TOP_FIRMWARE = "22"  # Upload firmware (TOP)
+
+    ROTATE_ENABLE = "23"  # Enable rotate
+    ROTATE_DISABLE = "24"  # diable rotate
+
     UNKNOWN_26 = "26"  # Used after discover, but don't know what it is
     ACTION = "27"  # Action function
 
