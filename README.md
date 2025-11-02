@@ -225,6 +225,9 @@ xp conbus
 
 xp conbus actiontable
 xp conbus actiontable download
+xp conbus actiontable list
+xp conbus actiontable show
+xp conbus actiontable upload
 
 
 xp conbus autoreport
