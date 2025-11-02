@@ -56,6 +56,7 @@ def conbus_linknumber() -> None:
     """Set or get the link number for specific modules."""
     pass
 
+
 @click.group(
     "modulenumber",
     cls=HelpColorsGroup,
