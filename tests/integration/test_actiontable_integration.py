@@ -89,7 +89,7 @@ class TestActionTableIntegration:
         # Test decoded output format
         decoded = serializer.format_decoded_output(sample_actiontable)
         expected_lines = ["CP20 0 0 > 1 TURNOFF;", "CP20 0 1 > 2 ~TURNON;"]
-        assert decoded == "\n".join(expected_lines)
+        assert decoded == expected_lines
 
         # Test encoded output format
         encoded = serializer.to_encoded_string(sample_actiontable)

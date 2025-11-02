@@ -227,3 +227,154 @@ class TestConbusActionTableCommands:
         assert "0000012345" in result.output
         assert "actiontable" in result.output
         assert "entries" in result.output
+
+    def test_download_actiontable_includes_short_format(
+        self, runner, sample_actiontable
+    ):
+        """Test that actiontable download includes actiontable_short field."""
+        # Setup mock service
+        mock_service = self._create_mock_service(actiontable=sample_actiontable)
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify success
+        assert result.exit_code == 0
+
+        # Verify actiontable_short field exists
+        assert "actiontable_short" in result.output
+
+    def test_download_actiontable_short_format_correct(
+        self, runner, sample_actiontable
+    ):
+        """Test that actiontable_short field contains correctly formatted entries."""
+        # Setup mock service
+        mock_service = self._create_mock_service(actiontable=sample_actiontable)
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify success
+        assert result.exit_code == 0
+
+        # Verify short format is present with semicolons
+        assert "CP20 0 0 > 1 TURNOFF;" in result.output
+
+    def test_download_actiontable_backward_compatible(self, runner, sample_actiontable):
+        """Test that JSON actiontable field is still present for backward compatibility."""
+        # Setup mock service
+        mock_service = self._create_mock_service(actiontable=sample_actiontable)
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify success
+        assert result.exit_code == 0
+
+        # Verify both formats are present
+        assert "actiontable_short" in result.output
+        assert "actiontable" in result.output
+        assert "entries" in result.output
+
+    def test_download_actiontable_short_with_parameter(self, runner):
+        """Test actiontable_short displays parameter when non-zero."""
+        # Create actiontable with parameter
+        entry = ActionTableEntry(
+            module_type=ModuleTypeCode.CP20,
+            link_number=0,
+            module_input=2,
+            module_output=1,
+            inverted=False,
+            command=InputActionType.TURNON,
+            parameter=TimeParam.T1SEC,  # value = 2
+        )
+        actiontable = ActionTable(entries=[entry])
+
+        # Setup mock service
+        mock_service = self._create_mock_service(actiontable=actiontable)
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify success
+        assert result.exit_code == 0
+
+        # Verify parameter is included in output
+        assert "CP20 0 2 > 1 TURNON 2;" in result.output
+
+    def test_download_actiontable_short_inverted(self, runner):
+        """Test actiontable_short displays inverted commands with ~ prefix."""
+        # Create actiontable with inverted command
+        entry = ActionTableEntry(
+            module_type=ModuleTypeCode.CP20,
+            link_number=0,
+            module_input=1,
+            module_output=1,
+            inverted=True,
+            command=InputActionType.TURNON,
+            parameter=TimeParam.NONE,
+        )
+        actiontable = ActionTable(entries=[entry])
+
+        # Setup mock service
+        mock_service = self._create_mock_service(actiontable=actiontable)
+
+        # Setup mock container to resolve ActionTableService
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_download_actiontable,
+            ["012345"],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify success
+        assert result.exit_code == 0
+
+        # Verify inverted prefix is present
+        assert "~TURNON" in result.output
+        assert "CP20 0 1 > 1 ~TURNON;" in result.output

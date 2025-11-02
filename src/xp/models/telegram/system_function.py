@@ -15,13 +15,26 @@ class SystemFunction(str, Enum):
         WRITE_CONFIG: Write configuration.
         BLINK: Blink LED function.
         UNBLINK: Unblink LED function.
-        DOWNLOAD_MSACTIONTABLE: Download module specific action table.
+        UPLOAD_FIRMWARE_START: Start upload firmware.
+        UPLOAD_FIRMWARE_STOP: Stop upload firmware.
+        UPLOAD_FIRMWARE: Upload firmware.
+        UPLOAD_ACTIONTABLE: Upload ActionTable to module.
         DOWNLOAD_ACTIONTABLE: Download ActionTable.
+        UPLOAD_MSACTIONTABLE: Upload module specific action table to module.
+        DOWNLOAD_MSACTIONTABLE: Download module specific action table.
+        TELEGRAM_WRITE_START: Start writing telegram.
+        TELEGRAM_READ_START: Start reading telegram.
         EOF: End of msactiontable response.
+        TELEGRAM: Module specific telegram response.
         MSACTIONTABLE: Module specific action table response.
         ACTIONTABLE: Module specific action table response.
         ACK: Acknowledge response.
         NAK: Not acknowledge response.
+        UPLOAD_TOP_FIRMWARE_START: Start upload firmware (TOP).
+        UPLOAD_TOP_FIRMWARE_STOP: Stop upload firmware (TOP).
+        UPLOAD_TOP_FIRMWARE: Upload firmware (TOP).
+        ROTATE_ENABLE: Enable rotate.
+        ROTATE_DISABLE: Disable rotate.
         UNKNOWN_26: Used after discover, unknown purpose.
         ACTION: Action function.
     """
@@ -40,12 +53,8 @@ class SystemFunction(str, Enum):
 
     UPLOAD_ACTIONTABLE = "10"  # F10D Upload ActionTable
     DOWNLOAD_ACTIONTABLE = "11"  # F11D Download ActionTable
-    UPLOAD_MSACTIONTABLE = (
-        "12"  # F12D Upload MsActionTable to module
-    )
-    DOWNLOAD_MSACTIONTABLE = (
-        "13"  # F13D Download MsActionTable
-    )
+    UPLOAD_MSACTIONTABLE = "12"  # F12D Upload MsActionTable to module
+    DOWNLOAD_MSACTIONTABLE = "13"  # F13D Download MsActionTable
 
     TELEGRAM_WRITE_START = "14"  # F14D Start writing telegram
     TELEGRAM_READ_START = "15"  # F15D Start reading telegram

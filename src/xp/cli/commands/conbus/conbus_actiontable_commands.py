@@ -2,6 +2,7 @@
 
 import json
 from dataclasses import asdict
+from typing import Dict, Any
 
 import click
 from click import Context
@@ -12,6 +13,7 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.actiontable.actiontable import ActionTable
+from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.conbus.actiontable.actiontable_service import (
     ActionTableService,
 )
@@ -40,7 +42,7 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         """
         click.echo(progress)
 
-    def on_finish(actiontable: ActionTable) -> None:
+    def on_finish(actiontable: ActionTable, actiontable_dict: Dict[str, Any], actiontable_short: list[str]) -> None:
         """Handle successful completion of action table download.
 
         Args:
@@ -48,7 +50,8 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         """
         output = {
             "serial_number": serial_number,
-            "actiontable": asdict(actiontable),
+            "actiontable_short": actiontable_short,
+            "actiontable": actiontable_dict,
         }
         click.echo(json.dumps(output, indent=2, default=str))
 

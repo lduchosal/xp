@@ -141,29 +141,38 @@ class ActionTableSerializer:
         return ActionTableSerializer.from_data(data)
 
     @staticmethod
-    def format_decoded_output(action_table: ActionTable) -> str:
+    def format_decoded_output(action_table: ActionTable) -> list[str]:
         """Format ActionTable as human-readable decoded output.
 
         Args:
             action_table: ActionTable to format
 
         Returns:
-            Human-readable string representation
+            List of human-readable string representations
         """
         lines = []
         for entry in action_table.entries:
-            # Format: CP20 0 0 > 1 OFF;
+            # Format: CP20 0 0 > 1 OFF [param];
             module_type = entry.module_type.name
             link = entry.link_number
             input_num = entry.module_input
             output = entry.module_output
             command = entry.command.name
 
-            # Add prefix for special commands
+            # Add prefix for inverted commands
             if entry.inverted:
                 command = f"~{command}"
 
-            line = f"{module_type} {link} {input_num} > {output} {command};"
+            # Build base line
+            line = f"{module_type} {link} {input_num} > {output} {command}"
+
+            # Add parameter if present and non-zero
+            if entry.parameter is not None and entry.parameter.value != 0:
+                line += f" {entry.parameter.value}"
+
+            # Add semicolon terminator
+            line += ";"
+
             lines.append(line)
 
-        return "\n".join(lines)
+        return lines

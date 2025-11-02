@@ -1,7 +1,8 @@
 """Service for downloading ActionTable via Conbus protocol."""
 
 import logging
-from typing import Callable, Optional
+from dataclasses import asdict
+from typing import Callable, Optional, Dict, Any
 
 from twisted.internet.posixbase import PosixReactorBase
 
@@ -44,7 +45,8 @@ class ActionTableService(ConbusProtocol):
         self.serial_number: str = ""
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.error_callback: Optional[Callable[[str], None]] = None
-        self.finish_callback: Optional[Callable[[ActionTable], None]] = None
+        self.finish_callback: Optional[Callable[[ActionTable, Dict[str, Any], list[str]], None]] = None
+
         self.actiontable_data: list[str] = []
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -113,8 +115,10 @@ class ActionTableService(ConbusProtocol):
             all_data = "".join(self.actiontable_data)
             # Deserialize from received data
             actiontable = self.serializer.from_encoded_string(all_data)
+            actiontable_dict = asdict(actiontable)
+            actiontable_short = self.serializer.format_decoded_output(actiontable)
             if self.finish_callback:
-                self.finish_callback(actiontable)
+                self.finish_callback(actiontable, actiontable_dict, actiontable_short)
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -131,7 +135,7 @@ class ActionTableService(ConbusProtocol):
         serial_number: str,
         progress_callback: Callable[[str], None],
         error_callback: Callable[[str], None],
-        finish_callback: Callable[[ActionTable], None],
+        finish_callback: Callable[[ActionTable, Dict[str, Any], list[str]], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Run reactor in dedicated thread with its own event loop.
