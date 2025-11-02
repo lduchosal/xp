@@ -1,8 +1,7 @@
-"""Service for downloading ActionTable via Conbus protocol."""
+"""Service for uploading ActionTable via Conbus protocol."""
 
 import logging
-from dataclasses import asdict
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
 
@@ -16,11 +15,11 @@ from xp.services.protocol import ConbusProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class ActionTableService(ConbusProtocol):
-    """TCP client service for downloading action tables from Conbus modules.
+class ActionTableUploadService(ConbusProtocol):
+    """TCP client service for uploading action tables to Conbus modules.
 
     Manages TCP socket connections, handles telegram generation and transmission,
-    and processes server responses for action table downloads.
+    and processes server responses for action table uploads.
     """
 
     def __init__(
@@ -30,7 +29,7 @@ class ActionTableService(ConbusProtocol):
         actiontable_serializer: ActionTableSerializer,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the action table download service.
+        """Initialize the action table upload service.
 
         Args:
             cli_config: Conbus client configuration.
@@ -44,23 +43,22 @@ class ActionTableService(ConbusProtocol):
         self.serial_number: str = ""
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.error_callback: Optional[Callable[[str], None]] = None
-        self.finish_callback: Optional[
-            Callable[[ActionTable, Dict[str, Any], list[str]], None]
-        ] = None
+        self.success_callback: Optional[Callable[[], None]] = None
 
-        self.actiontable_data: list[str] = []
+        # Upload state
+        self.upload_data_chunks: list[str] = []
+        self.current_chunk_index: int = 0
+
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
     def connection_established(self) -> None:
         """Handle connection established event."""
-        self.logger.debug(
-            "Connection established, sending download actiontable telegram"
-        )
+        self.logger.debug("Connection established, sending upload actiontable telegram")
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
-            system_function=SystemFunction.DOWNLOAD_ACTIONTABLE,
+            system_function=SystemFunction.UPLOAD_ACTIONTABLE,
             data_value="00",
         )
 
@@ -90,36 +88,47 @@ class ActionTableService(ConbusProtocol):
         reply_telegram = self.telegram_service.parse_reply_telegram(
             telegram_received.frame
         )
-        if reply_telegram.system_function not in (
-            SystemFunction.ACTIONTABLE,
-            SystemFunction.EOF,
-        ):
-            self.logger.debug("Not a actiontable response")
-            return
 
-        if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
-            self.logger.debug("Saving actiontable response")
-            data_part = reply_telegram.data_value[2:]
-            self.actiontable_data.append(data_part)
-            if self.progress_callback:
-                self.progress_callback(".")
+        self._handle_upload_response(reply_telegram)
 
-            self.send_telegram(
-                telegram_type=TelegramType.SYSTEM,
-                serial_number=self.serial_number,
-                system_function=SystemFunction.ACK,
-                data_value="00",
-            )
-            return
+    def _handle_upload_response(self, reply_telegram: Any) -> None:
+        """Handle telegram responses during upload.
 
-        if reply_telegram.system_function == SystemFunction.EOF:
-            all_data = "".join(self.actiontable_data)
-            # Deserialize from received data
-            actiontable = self.serializer.from_encoded_string(all_data)
-            actiontable_dict = asdict(actiontable)
-            actiontable_short = self.serializer.format_decoded_output(actiontable)
-            if self.finish_callback:
-                self.finish_callback(actiontable, actiontable_dict, actiontable_short)
+        Args:
+            reply_telegram: Parsed reply telegram.
+        """
+        if reply_telegram.system_function == SystemFunction.ACK:
+            self.logger.debug("Received ACK for upload")
+            # Send next chunk or EOF
+            if self.current_chunk_index < len(self.upload_data_chunks):
+                chunk = self.upload_data_chunks[self.current_chunk_index]
+                self.logger.debug(f"Sending chunk {self.current_chunk_index + 1}")
+                self.send_telegram(
+                    telegram_type=TelegramType.SYSTEM,
+                    serial_number=self.serial_number,
+                    system_function=SystemFunction.ACTIONTABLE,
+                    data_value=f"00{chunk}",
+                )
+                self.current_chunk_index += 1
+                if self.progress_callback:
+                    self.progress_callback(".")
+            else:
+                # All chunks sent, send EOF
+                self.logger.debug("All chunks sent, sending EOF")
+                self.send_telegram(
+                    telegram_type=TelegramType.SYSTEM,
+                    serial_number=self.serial_number,
+                    system_function=SystemFunction.EOF,
+                    data_value="00",
+                )
+                if self.success_callback:
+                    self.success_callback()
+                self._stop_reactor()
+        elif reply_telegram.system_function == SystemFunction.NAK:
+            self.logger.debug("Received NAK during upload")
+            self.failed("Upload failed: NAK received")
+        else:
+            self.logger.debug(f"Unexpected response during upload: {reply_telegram}")
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -130,29 +139,49 @@ class ActionTableService(ConbusProtocol):
         self.logger.debug(f"Failed: {message}")
         if self.error_callback:
             self.error_callback(message)
+        self._stop_reactor()
 
     def start(
         self,
         serial_number: str,
+        action_table: ActionTable,
         progress_callback: Callable[[str], None],
         error_callback: Callable[[str], None],
-        finish_callback: Callable[[ActionTable, Dict[str, Any], list[str]], None],
+        success_callback: Callable[[], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Run reactor in dedicated thread with its own event loop.
+        """Upload action table to module.
 
         Args:
             serial_number: Module serial number.
+            action_table: ActionTable to upload.
             progress_callback: Callback for progress updates.
             error_callback: Callback for errors.
-            finish_callback: Callback when download completes.
+            success_callback: Callback when upload completes successfully.
             timeout_seconds: Optional timeout in seconds.
         """
-        self.logger.info("Starting actiontable")
+        self.logger.info("Starting actiontable upload")
         self.serial_number = serial_number
         if timeout_seconds:
             self.timeout_seconds = timeout_seconds
         self.progress_callback = progress_callback
         self.error_callback = error_callback
-        self.finish_callback = finish_callback
+        self.success_callback = success_callback
+
+        # Encode action table to hex string
+        encoded_data = self.serializer.to_encoded_string(action_table)
+
+        # Chunk the data (max ~200 chars per chunk for safety)
+        chunk_size = 200
+        self.upload_data_chunks = [
+            encoded_data[i : i + chunk_size]
+            for i in range(0, len(encoded_data), chunk_size)
+        ]
+        self.current_chunk_index = 0
+
+        self.logger.debug(
+            f"Upload data encoded: {len(encoded_data)} chars, "
+            f"{len(self.upload_data_chunks)} chunks"
+        )
+
         self.start_reactor()

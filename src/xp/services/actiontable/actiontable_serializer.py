@@ -1,5 +1,7 @@
 """Serializer for ActionTable telegram encoding/decoding."""
 
+import re
+
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
@@ -176,3 +178,82 @@ class ActionTableSerializer:
             lines.append(line)
 
         return lines
+
+    @staticmethod
+    def parse_action_string(action_str: str) -> ActionTableEntry:
+        """Parse action table entry from string format.
+
+        Args:
+            action_str: String in format "CP20 0 0 > 1 OFF" or "CP20 0 1 > 1 ~ON"
+
+        Returns:
+            Parsed ActionTableEntry
+
+        Raises:
+            ValueError: If string format is invalid
+        """
+        # Remove trailing semicolon if present
+        action_str = action_str.strip().rstrip(";")
+
+        # Pattern: <Type> <Link> <Input> > <Output> <Command> [Parameter]
+        pattern = r"^(\w+)\s+(\d+)\s+(\d+)\s+>\s+(\d+)\s+(~?)(\w+)(?:\s+(\d+))?$"
+        match = re.match(pattern, action_str)
+
+        if not match:
+            raise ValueError(f"Invalid action table format: {action_str}")
+
+        (
+            module_type_str,
+            link_str,
+            input_str,
+            output_str,
+            inverted_str,
+            command_str,
+            parameter_str,
+        ) = match.groups()
+
+        # Parse module type
+        try:
+            module_type = ModuleTypeCode[module_type_str]
+        except KeyError:
+            raise ValueError(f"Invalid module type: {module_type_str}")
+
+        # Parse command
+        try:
+            command = InputActionType[command_str]
+        except KeyError:
+            raise ValueError(f"Invalid command: {command_str}")
+
+        # Parse parameter (default to NONE)
+        parameter = TimeParam.NONE
+        if parameter_str:
+            try:
+                parameter = TimeParam(int(parameter_str))
+            except ValueError:
+                raise ValueError(f"Invalid parameter: {parameter_str}")
+
+        return ActionTableEntry(
+            module_type=module_type,
+            link_number=int(link_str),
+            module_input=int(input_str),
+            module_output=int(output_str),
+            command=command,
+            parameter=parameter,
+            inverted=bool(inverted_str),
+        )
+
+    @staticmethod
+    def parse_action_table(action_strings: list[str]) -> ActionTable:
+        """Parse action table from list of string entries.
+
+        Args:
+            action_strings: List of action strings from conson.yml
+
+        Returns:
+            Parsed ActionTable
+        """
+        entries = [
+            ActionTableSerializer.parse_action_string(action_str)
+            for action_str in action_strings
+        ]
+        return ActionTable(entries=entries)

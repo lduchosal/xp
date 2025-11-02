@@ -21,6 +21,9 @@ from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
 from xp.services.conbus.actiontable.actiontable_service import ActionTableService
+from xp.services.conbus.actiontable.actiontable_upload_service import (
+    ActionTableUploadService,
+)
 from xp.services.conbus.actiontable.msactiontable_service import MsActionTableService
 from xp.services.conbus.conbus_blink_all_service import ConbusBlinkAllService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
@@ -207,6 +210,17 @@ class ServiceContainer:
         self.container.register(
             ActionTableService,
             factory=lambda: ActionTableService(
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
+                actiontable_serializer=self.container.resolve(ActionTableSerializer),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ActionTableUploadService,
+            factory=lambda: ActionTableUploadService(
                 cli_config=self.container.resolve(ConbusClientConfig),
                 reactor=self.container.resolve(PosixReactorBase),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
