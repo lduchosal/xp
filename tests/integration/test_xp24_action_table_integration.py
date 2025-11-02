@@ -92,9 +92,9 @@ class TestXp24ActionTableIntegration:
 
         # Verify action table structure
         action_table = output["action_table"]
-        assert action_table["input1_action"]["type"] == InputActionType.TOGGLE
+        assert action_table["input1_action"]["type"] == str(InputActionType.TOGGLE)
         assert action_table["input1_action"]["param"] == TimeParam.NONE.value
-        assert action_table["input2_action"]["type"] == InputActionType.TURNON
+        assert action_table["input2_action"]["type"] == str(InputActionType.TURNON)
         assert action_table["input2_action"]["param"] == TimeParam.T5SEC.value
         assert action_table["mutex34"] is True
         assert action_table["curtain34"] is True
