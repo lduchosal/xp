@@ -1,8 +1,7 @@
 """ActionTable CLI commands."""
 
 import json
-from dataclasses import asdict
-from typing import Dict, Any
+from typing import Any
 
 import click
 from click import Context
@@ -13,7 +12,6 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.actiontable.actiontable import ActionTable
-from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.conbus.actiontable.actiontable_service import (
     ActionTableService,
 )
@@ -42,11 +40,17 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         """
         click.echo(progress)
 
-    def on_finish(actiontable: ActionTable, actiontable_dict: Dict[str, Any], actiontable_short: list[str]) -> None:
+    def on_finish(
+        _actiontable: ActionTable,
+        actiontable_dict: dict[str, Any],
+        actiontable_short: list[str],
+    ) -> None:
         """Handle successful completion of action table download.
 
         Args:
-            actiontable: Downloaded action table object.
+            _actiontable: Downloaded action table object.
+            actiontable_dict: Dictionary representation of action table.
+            actiontable_short: List of textual format strings.
         """
         output = {
             "serial_number": serial_number,

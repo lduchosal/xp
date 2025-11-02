@@ -2,7 +2,7 @@
 
 import logging
 from dataclasses import asdict
-from typing import Callable, Optional, Dict, Any
+from typing import Any, Callable, Dict, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
 
@@ -45,7 +45,9 @@ class ActionTableService(ConbusProtocol):
         self.serial_number: str = ""
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.error_callback: Optional[Callable[[str], None]] = None
-        self.finish_callback: Optional[Callable[[ActionTable, Dict[str, Any], list[str]], None]] = None
+        self.finish_callback: Optional[
+            Callable[[ActionTable, Dict[str, Any], list[str]], None]
+        ] = None
 
         self.actiontable_data: list[str] = []
         # Set up logging
