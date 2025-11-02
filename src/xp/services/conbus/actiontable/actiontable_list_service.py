@@ -82,9 +82,7 @@ class ActionTableListService:
             )
 
         # Prepare result
-        result = {
-            "modules": modules_with_actiontable
-        }
+        result = {"modules": modules_with_actiontable}
 
         # Invoke callback
         if self.finish_callback is not None:

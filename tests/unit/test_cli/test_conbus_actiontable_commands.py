@@ -576,7 +576,9 @@ class TestConbusActionTableCommands:
 
         def mock_start(serial_number, finish_callback, error_callback):
             """Execute mock start operation."""
-            error_callback(f"Error: No action_table configured for module {serial_number}")
+            error_callback(
+                f"Error: No action_table configured for module {serial_number}"
+            )
 
         mock_service.start.side_effect = mock_start
 
@@ -594,7 +596,9 @@ class TestConbusActionTableCommands:
         )
 
         # Verify error handling
-        assert "Error: No action_table configured for module 0020044974" in result.output
+        assert (
+            "Error: No action_table configured for module 0020044974" in result.output
+        )
 
     def test_conbus_show_actiontable_invalid_serial(self, runner):
         """Test actiontable show command with invalid serial number."""

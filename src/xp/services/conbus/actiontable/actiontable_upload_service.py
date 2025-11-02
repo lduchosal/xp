@@ -1,13 +1,11 @@
 """Service for uploading ActionTable via Conbus protocol."""
 
 import logging
-from pathlib import Path
 from typing import Any, Callable, Optional
 
 from twisted.internet.posixbase import PosixReactorBase
 
 from xp.models import ConbusClientConfig
-from xp.models.actiontable.actiontable import ActionTable
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
@@ -30,6 +28,7 @@ class ActionTableUploadService(ConbusProtocol):
         reactor: PosixReactorBase,
         actiontable_serializer: ActionTableSerializer,
         telegram_service: TelegramService,
+        conson_config: ConsonModuleListConfig,
     ) -> None:
         """Initialize the action table upload service.
 
@@ -38,10 +37,12 @@ class ActionTableUploadService(ConbusProtocol):
             reactor: Twisted reactor instance.
             actiontable_serializer: Action table serializer.
             telegram_service: Telegram service for parsing.
+            conson_config: Conson module list configuration.
         """
         super().__init__(cli_config, reactor)
         self.serializer = actiontable_serializer
         self.telegram_service = telegram_service
+        self.conson_config = conson_config
         self.serial_number: str = ""
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.error_callback: Optional[Callable[[str], None]] = None
@@ -150,11 +151,10 @@ class ActionTableUploadService(ConbusProtocol):
         error_callback: Callable[[str], None],
         success_callback: Callable[[], None],
         timeout_seconds: Optional[float] = None,
-        config_path: Optional[Path] = None,
     ) -> None:
         """Upload action table to module.
 
-        Loads action table configuration from conson.yml and uploads it to the module.
+        Uploads the action table configuration to the specified module.
 
         Args:
             serial_number: Module serial number.
@@ -162,7 +162,6 @@ class ActionTableUploadService(ConbusProtocol):
             error_callback: Callback for errors.
             success_callback: Callback when upload completes successfully.
             timeout_seconds: Optional timeout in seconds.
-            config_path: Optional path to conson.yml. Defaults to current directory.
         """
         self.logger.info("Starting actiontable upload")
         self.serial_number = serial_number
@@ -172,41 +171,17 @@ class ActionTableUploadService(ConbusProtocol):
         self.error_callback = error_callback
         self.success_callback = success_callback
 
-        # Load conson.yml configuration
-        if config_path is None:
-            config_path = Path.cwd() / "conson.yml"
-
-        if not config_path.exists():
-            if self.error_callback is not None:
-                self.error_callback("conson.yml not found in current directory")
-            return
-
-        try:
-            config = ConsonModuleListConfig.from_yaml(str(config_path))
-        except Exception as e:
-            self.logger.error(f"Failed to load conson.yml: {e}")
-            if self.error_callback is not None:
-                self.error_callback(f"Failed to load conson.yml: {e}")
-            return
-
         # Find module
-        module = config.find_module(serial_number)
+        module = self.conson_config.find_module(serial_number)
         if not module:
             if self.error_callback is not None:
                 self.error_callback(f"Module {serial_number} not found in conson.yml")
             return
 
-        # Check if module has action_table
-        if not module.action_table:
-            if self.error_callback is not None:
-                self.error_callback(
-                    f"No action_table configured for module {serial_number}"
-                )
-            return
-
         # Parse action table strings to ActionTable object
         try:
-            action_table = self.serializer.parse_action_table(module.action_table)
+            module_action_table = module.action_table if module.action_table else []
+            action_table = self.serializer.parse_action_table(module_action_table)
         except ValueError as e:
             self.logger.error(f"Invalid action table format: {e}")
             if self.error_callback is not None:

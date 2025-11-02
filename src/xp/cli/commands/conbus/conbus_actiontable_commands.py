@@ -1,7 +1,6 @@
 """ActionTable CLI commands."""
 
 import json
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -14,7 +13,10 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.actiontable.actiontable import ActionTable
-from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig, ConsonModuleConfig
+from xp.models.homekit.homekit_conson_config import (
+    ConsonModuleListConfig,
+    ConsonModuleConfig,
+)
 from xp.services.conbus.actiontable.actiontable_list_service import (
     ActionTableListService,
 )

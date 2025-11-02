@@ -231,6 +231,7 @@ class ServiceContainer:
                 reactor=self.container.resolve(PosixReactorBase),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
                 telegram_service=self.container.resolve(TelegramService),
+                conson_config=self.container.resolve(ConsonModuleListConfig),
             ),
             scope=punq.Scope.singleton,
         )
