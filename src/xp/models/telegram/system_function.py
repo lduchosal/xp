@@ -26,45 +26,45 @@ class SystemFunction(str, Enum):
         ACTION: Action function.
     """
 
-    NONE = "00"  # Undefined
-    DISCOVERY = "01"  # Discover function
-    READ_DATAPOINT = "02"  # Read datapoint
-    READ_CONFIG = "03"  # Read configuration
-    WRITE_CONFIG = "04"  # Write configuration
-    BLINK = "05"  # Blink LED function
-    UNBLINK = "06"  # Unblink LED function
+    NONE = "00"  # F00D Undefined
+    DISCOVERY = "01"  # F01D Discover function
+    READ_DATAPOINT = "02"  # F02D Read datapoint
+    READ_CONFIG = "03"  # F03D Read configuration
+    WRITE_CONFIG = "04"  # F04D Write configuration
+    BLINK = "05"  # F05D Blink LED function
+    UNBLINK = "06"  # F06D Unblink LED function
 
-    UPLOAD_FIRMWARE_START = "07"  # Start Upload firmware
-    UPLOAD_FIRMWARE_STOP = "08"  # Stop Upload firmware
-    UPLOAD_FIRMWARE = "09"  # Upload firmware
+    UPLOAD_FIRMWARE_START = "07"  # F07D Start Upload firmware
+    UPLOAD_FIRMWARE_STOP = "08"  # F08D Stop Upload firmware
+    UPLOAD_FIRMWARE = "09"  # F09D Upload firmware
 
-    UPLOAD_ACTIONTABLE = "10"  # Upload ActionTable
-    DOWNLOAD_ACTIONTABLE = "11"  # Download ActionTable
+    UPLOAD_ACTIONTABLE = "10"  # F10D Upload ActionTable
+    DOWNLOAD_ACTIONTABLE = "11"  # F11D Download ActionTable
     UPLOAD_MSACTIONTABLE = (
-        "12"  # Upload specific action table (MsActionTable) to the module
+        "12"  # F12D Upload MsActionTable to module
     )
     DOWNLOAD_MSACTIONTABLE = (
-        "13"  # Download the module specific action table (MsActionTable)
+        "13"  # F13D Download MsActionTable
     )
 
-    TELEGRAM_WRITE_START = "14"  # Start writing telegram
-    TELEGRAM_READ_START = "15"  # Start reading telegram
-    EOF = "16"  # End of msactiontable response
-    TELEGRAM = "17"  # module specific Telegram response
-    MSACTIONTABLE = "17"  # module specific ms action table (Telegram) response
-    ACTIONTABLE = "17"  # module specific action table (Telegram) response
-    ACK = "18"  # Acknowledge response
-    NAK = "19"  # Not acknowledge response
+    TELEGRAM_WRITE_START = "14"  # F14D Start writing telegram
+    TELEGRAM_READ_START = "15"  # F15D Start reading telegram
+    EOF = "16"  # F16D End of msactiontable response
+    TELEGRAM = "17"  # F17D module specific Telegram response
+    MSACTIONTABLE = "17"  # F17D module specific ms action table (Telegram) response
+    ACTIONTABLE = "17"  # F17D module specific action table (Telegram) response
+    ACK = "18"  # F18D Acknowledge / continue response
+    NAK = "19"  # F19D Not acknowledge response
 
-    UPLOAD_TOP_FIRMWARE_START = "20"  # Start Upload firmware (TOP)
-    UPLOAD_TOP_FIRMWARE_STOP = "21"  # Stop Upload firmware (TOP)
-    UPLOAD_TOP_FIRMWARE = "22"  # Upload firmware (TOP)
+    UPLOAD_TOP_FIRMWARE_START = "20"  # F20D Start Upload firmware (TOP)
+    UPLOAD_TOP_FIRMWARE_STOP = "21"  # F21D Stop Upload firmware (TOP)
+    UPLOAD_TOP_FIRMWARE = "22"  # F22D Upload firmware (TOP)
 
-    ROTATE_ENABLE = "23"  # Enable rotate
-    ROTATE_DISABLE = "24"  # diable rotate
+    ROTATE_ENABLE = "23"  # F23D Enable rotate
+    ROTATE_DISABLE = "24"  # F24D Disable rotate
 
-    UNKNOWN_26 = "26"  # Used after discover, but don't know what it is
-    ACTION = "27"  # Action function
+    UNKNOWN_26 = "26"  # F26D Used after discover, but don't know what it is
+    ACTION = "27"  # F27D Action function
 
     def get_description(self) -> str:
         """Get the description of the SystemFunction.
