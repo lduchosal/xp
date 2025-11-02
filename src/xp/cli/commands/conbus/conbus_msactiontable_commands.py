@@ -49,13 +49,17 @@ def conbus_download_msactiontable(
         click.echo(progress, nl=False)
 
     def on_finish(
-        action_table: Union[Xp20MsActionTable | Xp24MsActionTable | Xp33MsActionTable],
+        action_table: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None],
     ) -> None:
         """Handle successful completion of MS action table download.
 
         Args:
-            action_table: Downloaded MS action table object.
+            action_table: Downloaded MS action table object or None if failed.
         """
+        if action_table is None:
+            click.echo("Error: Failed to download MS action table")
+            raise click.Abort()
+
         output = {
             "serial_number": serial_number,
             "xpmoduletype": xpmoduletype,

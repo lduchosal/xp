@@ -212,7 +212,6 @@ class ServerService:
                 data = None
                 try:
                     data = client_socket.recv(1024)
-                    self.logger.debug(f"Receiving data {client_address}")
                 except socket.timeout:
                     pass
                 finally:

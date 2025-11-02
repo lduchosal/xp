@@ -3,7 +3,7 @@
 from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.utils.serialization import de_nibbles
+from xp.utils.serialization import de_nibbles, nibbles
 
 
 class Xp24MsActionTableSerializer:
@@ -17,11 +17,12 @@ class Xp24MsActionTableSerializer:
             action_table: XP24 MS action table to serialize.
 
         Returns:
-            Serialized action table data string.
+            Serialized action table data string (68 characters).
         """
-        data_parts: list[str] = []
+        # Build byte array for the action table (32 bytes total)
+        raw_bytes = bytearray()
 
-        # Encode all 4 input actions
+        # Encode all 4 input actions (2 bytes each = 8 bytes total)
         input_actions = [
             action_table.input1_action,
             action_table.input2_action,
@@ -30,26 +31,24 @@ class Xp24MsActionTableSerializer:
         ]
 
         for action in input_actions:
-            # Use enum value directly as function ID
-            function_id = action.type.value
-            # Convert parameter to int (None becomes 0)
-            param_id = action.param.value
-            data_parts.append(f"{function_id:02X}{param_id:02X}")
+            raw_bytes.append(action.type.value)
+            raw_bytes.append(action.param.value)
 
-        # Add settings as hex values
-        data_parts.extend(
-            [
-                "AB" if action_table.mutex12 else "AA",
-                "AB" if action_table.mutex34 else "AA",
-                f"{action_table.mutual_deadtime:02X}",
-                "AB" if action_table.curtain12 else "AA",
-                "AB" if action_table.curtain34 else "AA",
-                "A" * 38,  # padding
-            ]
-        )
+        # Add settings (5 bytes)
+        raw_bytes.append(0x01 if action_table.mutex12 else 0x00)
+        raw_bytes.append(0x01 if action_table.mutex34 else 0x00)
+        raw_bytes.append(action_table.mutual_deadtime)
+        raw_bytes.append(0x01 if action_table.curtain12 else 0x00)
+        raw_bytes.append(0x01 if action_table.curtain34 else 0x00)
 
-        data = "AAAA".join(data_parts)
-        return data
+        # Add padding to reach 32 bytes (19 more bytes needed)
+        raw_bytes.extend([0x00] * 19)
+
+        # Encode to A-P nibbles (32 bytes -> 64 chars)
+        encoded_data = nibbles(bytes(raw_bytes))
+
+        # Prepend action table count "AAAA" (4 chars) -> total 68 chars
+        return "AAAA" + encoded_data
 
     @staticmethod
     def from_data(msactiontable_rawdata: str) -> Xp24MsActionTable:

@@ -130,12 +130,12 @@ class MsActionTableService(ConbusProtocol):
 
         if reply_telegram.system_function == SystemFunction.NAK:
             self.logger.debug("Received NAK")
-            if self.finish_callback:
-                self.finish_callback(None)
+            self.failed("Received NAK")
             return
 
         if reply_telegram.system_function == SystemFunction.MSACTIONTABLE:
             self.logger.debug("Received MSACTIONTABLE")
+            self.msactiontable_data.append(reply_telegram.data)
             self.msactiontable_data.append(reply_telegram.data_value)
             if self.progress_callback:
                 self.progress_callback(".")
@@ -153,11 +153,10 @@ class MsActionTableService(ConbusProtocol):
             all_data = "".join(self.msactiontable_data)
             # Deserialize from received data
             msactiontable = self.serializer.from_data(all_data)
-            if self.finish_callback:
-                self.finish_callback(msactiontable)
+            self.succeed(msactiontable)
             return
 
-        self.logger.debug(f"Invalid msactiontable response")
+        self.logger.debug("Invalid msactiontable response")
 
 
     def failed(self, message: str) -> None:
@@ -169,6 +168,18 @@ class MsActionTableService(ConbusProtocol):
         self.logger.debug(f"Failed: {message}")
         if self.error_callback:
             self.error_callback(message)
+        self._stop_reactor()
+
+
+    def succeed(self, msactiontable: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable]) -> None:
+        """Handle succeed connection event.
+
+        Args:
+            msactiontable: result.
+        """
+        if self.finish_callback:
+            self.finish_callback(msactiontable)
+        self._stop_reactor()
 
     def start(
         self,
@@ -212,3 +223,4 @@ class MsActionTableService(ConbusProtocol):
         self.error_callback = error_callback
         self.finish_callback = finish_callback
         self.start_reactor()
+
