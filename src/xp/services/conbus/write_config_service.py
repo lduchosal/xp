@@ -165,6 +165,7 @@ class WriteConfigService(ConbusProtocol):
         self.write_config_response.data_value = self.data_value
         if self.write_config_finished_callback:
             self.write_config_finished_callback(self.write_config_response)
+        self._stop_reactor()
 
     def write_config(
         self,

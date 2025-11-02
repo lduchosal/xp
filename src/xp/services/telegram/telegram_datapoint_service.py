@@ -68,3 +68,16 @@ class TelegramDatapointService:
         """
         link_number_value = int(data_value)
         return link_number_value
+
+
+    def get_modulenumber(self, data_value: str) -> int:
+        """Parse and return the module number value.
+
+        Args:
+            data_value: The raw module number data value as a string.
+
+        Returns:
+            The module number as an integer.
+        """
+        module_number_value = int(data_value)
+        return module_number_value

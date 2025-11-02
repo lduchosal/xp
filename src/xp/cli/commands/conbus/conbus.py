@@ -56,6 +56,17 @@ def conbus_linknumber() -> None:
     """Set or get the link number for specific modules."""
     pass
 
+@click.group(
+    "modulenumber",
+    cls=HelpColorsGroup,
+    help_headers_color="yellow",
+    help_options_color="green",
+    short_help="Module number operations",
+)
+def conbus_modulenumber() -> None:
+    """Set or get the module number for specific modules."""
+    pass
+
 
 @click.group(
     "autoreport",
@@ -109,6 +120,7 @@ conbus.add_command(conbus_blink)
 conbus.add_command(conbus_output)
 conbus.add_command(conbus_datapoint)
 conbus.add_command(conbus_linknumber)
+conbus.add_command(conbus_modulenumber)
 conbus.add_command(conbus_autoreport)
 conbus.add_command(conbus_lightlevel)
 conbus.add_command(conbus_msactiontable)

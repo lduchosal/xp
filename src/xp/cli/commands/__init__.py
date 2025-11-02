@@ -10,6 +10,7 @@ from xp.cli.commands.conbus.conbus import (
     conbus_datapoint,
     conbus_lightlevel,
     conbus_linknumber,
+    conbus_modulenumber,
     conbus_msactiontable,
     conbus_output,
 )
@@ -45,6 +46,10 @@ from xp.cli.commands.conbus.conbus_lightlevel_commands import (
 from xp.cli.commands.conbus.conbus_linknumber_commands import (
     get_linknumber_command,
     set_linknumber_command,
+)
+from xp.cli.commands.conbus.conbus_modulenumber_commands import (
+    get_modulenumber_command,
+    set_modulenumber_command,
 )
 from xp.cli.commands.conbus.conbus_msactiontable_commands import (
     conbus_download_msactiontable,
@@ -87,6 +92,7 @@ __all__ = [
     "conbus_output",
     "conbus_datapoint",
     "conbus_linknumber",
+    "conbus_modulenumber",
     "conbus_autoreport",
     "conbus_lightlevel",
     "conbus_msactiontable",
@@ -123,6 +129,8 @@ __all__ = [
     "receive_telegrams",
     "set_linknumber_command",
     "get_linknumber_command",
+    "set_modulenumber_command",
+    "get_modulenumber_command",
     "get_autoreport_command",
     "set_autoreport_command",
     "xp_lightlevel_set",

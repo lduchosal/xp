@@ -1,10 +1,10 @@
-"""Conbus link number CLI commands."""
+"""Conbus module number CLI commands."""
 
 import json
 
 import click
 
-from xp.cli.commands.conbus.conbus import conbus_linknumber
+from xp.cli.commands.conbus.conbus import conbus_modulenumber
 from xp.cli.utils.decorators import (
     connection_command,
 )
@@ -17,24 +17,24 @@ from xp.services.conbus.write_config_service import WriteConfigService
 from xp.services.telegram.telegram_datapoint_service import TelegramDatapointService
 
 
-@conbus_linknumber.command("set", short_help="Set link number for a module")
+@conbus_modulenumber.command("set", short_help="Set module number for a module")
 @click.argument("serial_number", type=SERIAL)
-@click.argument("link_number", type=click.IntRange(0, 99))
+@click.argument("module_number", type=click.IntRange(0, 99))
 @click.pass_context
 @connection_command()
-def set_linknumber_command(
-    ctx: click.Context, serial_number: str, link_number: int
+def set_modulenumber_command(
+    ctx: click.Context, serial_number: str, module_number: int
 ) -> None:
-    r"""Set the link number for a specific module.
+    r"""Set the module number for a specific module.
 
     Args:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
-        link_number: Link number to set (0-99).
+        module_number: Module number to set (0-99).
 
     Examples:
         \b
-        xp conbus linknumber set 0123450001 25
+        xp conbus modulenumber set 0123450001 25
     """
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
@@ -49,23 +49,23 @@ def set_linknumber_command(
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )
 
-    data_value = f"{link_number:02d}"
+    data_value = f"{module_number:02d}"
     with service:
         service.write_config(
             serial_number=serial_number,
-            datapoint_type=DataPointType.LINK_NUMBER,
+            datapoint_type=DataPointType.MODULE_NUMBER,
             data_value=data_value,
             finish_callback=on_finish,
             timeout_seconds=0.5,
         )
 
 
-@conbus_linknumber.command("get", short_help="Get link number for a module")
+@conbus_modulenumber.command("get", short_help="Get module number for a module")
 @click.argument("serial_number", type=SERIAL)
 @click.pass_context
 @connection_command()
-def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
-    r"""Get the current link number for a specific module.
+def get_modulenumber_command(ctx: click.Context, serial_number: str) -> None:
+    r"""Get the current module number for a specific module.
 
     Args:
         ctx: Click context object.
@@ -73,7 +73,7 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
 
     Examples:
         \b
-        xp conbus linknumber get 0123450001
+        xp conbus modulenumber get 0123450001
     """
     service: ConbusDatapointService = (
         ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
@@ -83,20 +83,20 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
     )
 
     def on_finish(service_response: ConbusDatapointResponse) -> None:
-        """Handle successful completion of link number get command.
+        """Handle successful completion of module number get command.
 
         Args:
-            service_response: Link number response object.
+            service_response: Module number response object.
         """
-        linknumber_value = telegram_service.get_linknumber(service_response.data_value)
+        modulenumber_value = telegram_service.get_modulenumber(service_response.data_value)
         result = service_response.to_dict()
-        result["linknumber_value"] = linknumber_value
+        result["modulenumber_value"] = modulenumber_value
         click.echo(json.dumps(result, indent=2))
 
     with service:
         service.query_datapoint(
             serial_number=serial_number,
-            datapoint_type=DataPointType.LINK_NUMBER,
+            datapoint_type=DataPointType.MODULE_NUMBER,
             finish_callback=on_finish,
             timeout_seconds=0.5,
         )
