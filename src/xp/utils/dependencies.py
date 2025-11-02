@@ -64,6 +64,7 @@ from xp.services.reverse_proxy_service import ReverseProxyService
 from xp.services.server.device_service_factory import DeviceServiceFactory
 from xp.services.server.server_service import ServerService
 from xp.services.telegram.telegram_blink_service import TelegramBlinkService
+from xp.services.telegram.telegram_datapoint_service import TelegramDatapointService
 from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
 from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
@@ -128,6 +129,7 @@ class ServiceContainer:
         )
         self.container.register(TelegramDiscoverService, scope=punq.Scope.singleton)
         self.container.register(TelegramBlinkService, scope=punq.Scope.singleton)
+        self.container.register(TelegramDatapointService, scope=punq.Scope.singleton)
         self.container.register(LinkNumberService, scope=punq.Scope.singleton)
 
         # Conbus services layer
