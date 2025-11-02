@@ -8,6 +8,8 @@ from click.testing import CliRunner
 
 from xp.cli.commands.conbus.conbus_actiontable_commands import (
     conbus_download_actiontable,
+    conbus_list_actiontable,
+    conbus_show_actiontable,
 )
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
@@ -385,3 +387,219 @@ class TestConbusActionTableCommands:
         # Verify inverted prefix is present
         assert "~TURNON" in result.output
         assert "CP20 0 1 > 1 ~TURNON;" in result.output
+
+    def test_conbus_list_actiontable_success(self, runner):
+        """Test successful actiontable list command."""
+        # Setup mock service
+        mock_service = Mock()
+        mock_service.__enter__ = Mock(return_value=mock_service)
+        mock_service.__exit__ = Mock(return_value=None)
+
+        def mock_start(finish_callback, error_callback):
+            """Execute mock start operation."""
+            module_list = {
+                "modules": [
+                    {"serial_number": "0020044991", "module_type": "XP24"},
+                    {"serial_number": "0020044974", "module_type": "CP20"},
+                ],
+                "total": 2,
+            }
+            finish_callback(module_list)
+
+        mock_service.start.side_effect = mock_start
+
+        # Setup mock container
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_list_actiontable,
+            [],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify success
+        assert result.exit_code == 0
+        assert "0020044991" in result.output
+        assert "XP24" in result.output
+        assert "total" in result.output
+        assert "2" in result.output
+
+    def test_conbus_list_actiontable_no_modules(self, runner):
+        """Test actiontable list command when no modules have action tables."""
+        # Setup mock service
+        mock_service = Mock()
+        mock_service.__enter__ = Mock(return_value=mock_service)
+        mock_service.__exit__ = Mock(return_value=None)
+
+        def mock_start(finish_callback, error_callback):
+            """Execute mock start operation."""
+            module_list = {"modules": [], "total": 0}
+            finish_callback(module_list)
+
+        mock_service.start.side_effect = mock_start
+
+        # Setup mock container
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_list_actiontable,
+            [],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify success
+        assert result.exit_code == 0
+        assert "total" in result.output
+        assert "0" in result.output
+
+    def test_conbus_list_actiontable_error(self, runner):
+        """Test actiontable list command error handling."""
+        # Setup mock service
+        mock_service = Mock()
+        mock_service.__enter__ = Mock(return_value=mock_service)
+        mock_service.__exit__ = Mock(return_value=None)
+
+        def mock_start(finish_callback, error_callback):
+            """Execute mock start operation."""
+            error_callback("Error: conson.yml not found in current directory")
+
+        mock_service.start.side_effect = mock_start
+
+        # Setup mock container
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_list_actiontable,
+            [],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify error handling
+        assert "Error: conson.yml not found" in result.output
+
+    def test_conbus_show_actiontable_success(self, runner):
+        """Test successful actiontable show command."""
+        # Setup mock service
+        mock_service = Mock()
+        mock_service.__enter__ = Mock(return_value=mock_service)
+        mock_service.__exit__ = Mock(return_value=None)
+
+        def mock_start(serial_number, finish_callback, error_callback):
+            """Execute mock start operation."""
+            module = {
+                "serial_number": "0020044991",
+                "name": "A4",
+                "module_type": "XP24",
+                "module_type_code": 7,
+                "link_number": 2,
+                "module_number": 2,
+                "auto_report_status": "PP",
+                "action_table": [
+                    "CP20 0 0 > 1 OFF",
+                    "CP20 0 0 > 2 OFF",
+                    "CP20 0 1 > 1 ~ON",
+                    "CP20 0 1 > 2 ON",
+                ],
+            }
+            finish_callback(module)
+
+        mock_service.start.side_effect = mock_start
+
+        # Setup mock container
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_show_actiontable,
+            ["0020044991"],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify success
+        assert result.exit_code == 0
+        assert "0020044991" in result.output
+        assert "A4" in result.output
+        assert "XP24" in result.output
+        assert "action_table" in result.output
+        assert "CP20 0 0 > 1 OFF" in result.output
+
+    def test_conbus_show_actiontable_module_not_found(self, runner):
+        """Test actiontable show command when module not found."""
+        # Setup mock service
+        mock_service = Mock()
+        mock_service.__enter__ = Mock(return_value=mock_service)
+        mock_service.__exit__ = Mock(return_value=None)
+
+        def mock_start(serial_number, finish_callback, error_callback):
+            """Execute mock start operation."""
+            error_callback(f"Error: Module {serial_number} not found in conson.yml")
+
+        mock_service.start.side_effect = mock_start
+
+        # Setup mock container
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_show_actiontable,
+            ["0020099999"],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify error handling
+        assert "Error: Module 0020099999 not found" in result.output
+
+    def test_conbus_show_actiontable_no_action_table(self, runner):
+        """Test actiontable show command when module has no action table."""
+        # Setup mock service
+        mock_service = Mock()
+        mock_service.__enter__ = Mock(return_value=mock_service)
+        mock_service.__exit__ = Mock(return_value=None)
+
+        def mock_start(serial_number, finish_callback, error_callback):
+            """Execute mock start operation."""
+            error_callback(f"Error: No action_table configured for module {serial_number}")
+
+        mock_service.start.side_effect = mock_start
+
+        # Setup mock container
+        mock_container = Mock()
+        mock_container.resolve.return_value = mock_service
+        mock_service_container = Mock()
+        mock_service_container.get_container.return_value = mock_container
+
+        # Execute command
+        result = runner.invoke(
+            conbus_show_actiontable,
+            ["0020044974"],
+            obj={"container": mock_service_container},
+        )
+
+        # Verify error handling
+        assert "Error: No action_table configured for module 0020044974" in result.output
+
+    def test_conbus_show_actiontable_invalid_serial(self, runner):
+        """Test actiontable show command with invalid serial number."""
+        # Execute command with invalid serial
+        result = runner.invoke(conbus_show_actiontable, ["invalid"])
+
+        # Should fail due to serial number validation
+        assert result.exit_code != 0

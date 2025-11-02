@@ -8,7 +8,9 @@ class InputActionType(Enum):
 
     Attributes:
         VOID: No action.
+        ON: Turn on action.
         TURNON: Turn on action.
+        OFF: Turn off action.
         TURNOFF: Turn off action.
         TOGGLE: Toggle action.
         BLOCK: Block action.
@@ -39,7 +41,9 @@ class InputActionType(Enum):
     """
 
     VOID = 0
+    ON = 1
     TURNON = 1
+    OFF = 2
     TURNOFF = 2
     TOGGLE = 3
     BLOCK = 4

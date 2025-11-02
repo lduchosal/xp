@@ -14,8 +14,13 @@ from xp.cli.utils.decorators import (
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.actiontable.actiontable import ActionTable
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
-from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
+from xp.services.conbus.actiontable.actiontable_list_service import (
+    ActionTableListService,
+)
 from xp.services.conbus.actiontable.actiontable_service import ActionTableService
+from xp.services.conbus.actiontable.actiontable_show_service import (
+    ActionTableShowService,
+)
 from xp.services.conbus.actiontable.actiontable_upload_service import (
     ActionTableUploadService,
 )
@@ -101,35 +106,14 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
         ActionTableError: If conson.yml not found, module not found,
             no action_table configured, or invalid action table format.
     """
-    # Load conson.yml configuration
-    config_path = Path.cwd() / "conson.yml"
-    if not config_path.exists():
-        raise ActionTableError("conson.yml not found in current directory")
-
-    config = ConsonModuleListConfig.from_yaml(str(config_path))
-    module = config.find_module(serial_number)  # noqa: FURB184
-
-    if not module:
-        raise ActionTableError(f"Module {serial_number} not found in conson.yml")
-
-    if not module.action_table:
-        raise ActionTableError(f"No action_table configured for module {serial_number}")
-
-    # Store action_table for later use
-    action_table_strings = module.action_table
-
-    # Parse action table strings to ActionTable object
-    serializer = ActionTableSerializer()
-    try:
-        action_table = serializer.parse_action_table(action_table_strings)
-    except ValueError as e:
-        raise ActionTableError(f"Invalid action table format: {e}")
-
     service: ActionTableUploadService = (
         ctx.obj.get("container").get_container().resolve(ActionTableUploadService)
     )
 
     click.echo(f"Uploading action table to {serial_number}...")
+
+    # Track number of entries for success message
+    entries_count = 0
 
     def progress_callback(progress: str) -> None:
         """Handle progress updates during action table upload.
@@ -142,7 +126,8 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
     def success_callback() -> None:
         """Handle successful completion of action table upload."""
         click.echo("\nAction table uploaded successfully")
-        click.echo(f"{len(action_table_strings)} entries written")
+        if entries_count > 0:
+            click.echo(f"{entries_count} entries written")
 
     def error_callback(error: str) -> None:
         """Handle errors during action table upload.
@@ -156,10 +141,97 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
         raise ActionTableError(f"Upload failed: {error}")
 
     with service:
+        # Load config to get entry count for success message
+        config_path = Path.cwd() / "conson.yml"
+        if config_path.exists():
+            try:
+                config = ConsonModuleListConfig.from_yaml(str(config_path))
+                module = config.find_module(serial_number)
+                if module and module.action_table:
+                    entries_count = len(module.action_table)
+            except Exception:
+                pass  # Entry count is just for display, don't fail if we can't get it
+
         service.start(
             serial_number=serial_number,
-            action_table=action_table,
             progress_callback=progress_callback,
             success_callback=success_callback,
+            error_callback=error_callback,
+        )
+
+
+@conbus_actiontable.command("list", short_help="List modules with ActionTable")
+@click.pass_context
+def conbus_list_actiontable(ctx: Context) -> None:
+    """List all modules with action table configurations from conson.yml.
+
+    Raises:
+        ActionTableError: If conson.yml not found or cannot be read.
+    """
+    service: ActionTableListService = (
+        ctx.obj.get("container").get_container().resolve(ActionTableListService)
+    )
+
+    def on_finish(module_list: dict) -> None:
+        """Handle successful completion of action table list.
+
+        Args:
+            module_list: Dictionary containing modules and total count.
+        """
+        click.echo(json.dumps(module_list, indent=2, default=str))
+
+    def error_callback(error: str) -> None:
+        """Handle errors during action table list.
+
+        Args:
+            error: Error message string.
+        """
+        click.echo(error)
+
+    with service:
+        service.start(
+            finish_callback=on_finish,
+            error_callback=error_callback,
+        )
+
+
+@conbus_actiontable.command("show", short_help="Show ActionTable configuration")
+@click.argument("serial_number", type=SERIAL)
+@click.pass_context
+def conbus_show_actiontable(ctx: Context, serial_number: str) -> None:
+    """Show action table configuration for a specific module from conson.yml.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+
+    Raises:
+        ActionTableError: If conson.yml not found, module not found,
+            or no action_table configured.
+    """
+    service: ActionTableShowService = (
+        ctx.obj.get("container").get_container().resolve(ActionTableShowService)
+    )
+
+    def on_finish(module: dict) -> None:
+        """Handle successful completion of action table show.
+
+        Args:
+            module: Dictionary containing module configuration.
+        """
+        click.echo(json.dumps(module, indent=2, default=str))
+
+    def error_callback(error: str) -> None:
+        """Handle errors during action table show.
+
+        Args:
+            error: Error message string.
+        """
+        click.echo(error)
+
+    with service:
+        service.start(
+            serial_number=serial_number,
+            finish_callback=on_finish,
             error_callback=error_callback,
         )

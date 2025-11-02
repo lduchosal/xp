@@ -20,7 +20,13 @@ from xp.services.actiontable.msactiontable_xp24_serializer import (
 from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
+from xp.services.conbus.actiontable.actiontable_list_service import (
+    ActionTableListService,
+)
 from xp.services.conbus.actiontable.actiontable_service import ActionTableService
+from xp.services.conbus.actiontable.actiontable_show_service import (
+    ActionTableShowService,
+)
 from xp.services.conbus.actiontable.actiontable_upload_service import (
     ActionTableUploadService,
 )
@@ -226,6 +232,18 @@ class ServiceContainer:
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
                 telegram_service=self.container.resolve(TelegramService),
             ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ActionTableListService,
+            factory=lambda: ActionTableListService(),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ActionTableShowService,
+            factory=lambda: ActionTableShowService(),
             scope=punq.Scope.singleton,
         )
 

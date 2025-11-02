@@ -1,0 +1,112 @@
+"""Service for showing action table configuration for a specific module."""
+
+import logging
+from pathlib import Path
+from typing import Any, Callable, Optional
+
+
+class ActionTableShowService:
+    """Service for showing action table configuration for a specific module.
+
+    Reads conson.yml and returns the action table configuration for the specified
+    module serial number.
+    """
+
+    def __init__(self) -> None:
+        """Initialize the action table show service."""
+        self.logger = logging.getLogger(__name__)
+        self.finish_callback: Optional[Callable[[dict[str, Any]], None]] = None
+        self.error_callback: Optional[Callable[[str], None]] = None
+
+    def __enter__(self) -> "ActionTableShowService":
+        """Context manager entry.
+
+        Returns:
+            Self for context manager use.
+        """
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Context manager exit.
+
+        Args:
+            exc_type: Exception type if raised.
+            exc_val: Exception value if raised.
+            exc_tb: Exception traceback if raised.
+        """
+        pass
+
+    def start(
+        self,
+        serial_number: str,
+        finish_callback: Callable[[dict[str, Any]], None],
+        error_callback: Callable[[str], None],
+        config_path: Optional[Path] = None,
+    ) -> None:
+        """Show action table configuration for a specific module.
+
+        Args:
+            serial_number: Module serial number.
+            finish_callback: Callback to invoke with the module configuration.
+            error_callback: Callback to invoke on error.
+            config_path: Optional path to conson.yml. Defaults to current directory.
+        """
+        self.finish_callback = finish_callback
+        self.error_callback = error_callback
+
+        # Default to current directory if not specified
+        if config_path is None:
+            config_path = Path.cwd() / "conson.yml"
+
+        # Check if config file exists
+        if not config_path.exists():
+            self._handle_error("Error: conson.yml not found in current directory")
+            return
+
+        # Load configuration
+        try:
+            from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
+
+            config = ConsonModuleListConfig.from_yaml(str(config_path))
+        except Exception as e:
+            self.logger.error(f"Failed to load conson.yml: {e}")
+            self._handle_error(f"Error: Failed to load conson.yml: {e}")
+            return
+
+        # Find module
+        module = config.find_module(serial_number)
+        if not module:
+            self._handle_error(f"Error: Module {serial_number} not found in conson.yml")
+            return
+
+        # Check if module has action_table
+        if not module.action_table:
+            self._handle_error(
+                f"Error: No action_table configured for module {serial_number}"
+            )
+            return
+
+        # Prepare result
+        result = {
+            "serial_number": module.serial_number,
+            "name": module.name,
+            "module_type": module.module_type,
+            "module_type_code": module.module_type_code,
+            "link_number": module.link_number,
+            "module_number": module.module_number or 0,
+            "auto_report_status": module.auto_report_status or "",
+            "action_table": module.action_table,
+        }
+
+        # Invoke callback
+        if self.finish_callback is not None:
+            self.finish_callback(result)
+
+    def _handle_error(self, message: str) -> None:
+        """Handle error and invoke error callback.
+
+        Args:
+            message: Error message.
+        """
+        if self.error_callback is not None:
+            self.error_callback(message)
