@@ -382,20 +382,6 @@ class TestXp33MsActionTableSerializer:
             output = Xp33MsActionTableSerializer._decode_output(raw_bytes, 0)
             assert not output.leading_edge
 
-    def test_from_telegrams_legacy_method(self):
-        """Test legacy from_telegrams method for backward compatibility."""
-        # Create a mock telegram that would work with the legacy method
-        # Adjust the offset to account for XP33 telegram structure
-        mock_telegram = "0123456789ABCDEF" + "AAAA" + "A" * 64 + "A" * 68
-
-        # This should work without raising an exception
-        try:
-            action_table = Xp33MsActionTableSerializer.from_telegrams(mock_telegram)
-            assert isinstance(action_table, Xp33MsActionTable)
-        except (ValueError, IndexError):
-            # Expected for mock data, just verify the method exists and is callable
-            assert callable(Xp33MsActionTableSerializer.from_telegrams)
-
     def test_de_nibble_integration(self):
         """Test integration with de_nibble utility."""
         # Test with simple nibble data
@@ -429,3 +415,15 @@ class TestXp33MsActionTableSerializer:
         assert deserialized.scene1.output2_level == 0
         assert deserialized.scene1.output3_level == 0
         assert deserialized.scene1.time == TimeParam.NONE
+
+    def test_serialize_back_and_forth(self):
+        """Test that default values work correctly."""
+        telegram ="<R0020045056F17DAAAAAAGEAAGEAAGEAABECIDMAADMFACIAABEBEBEAAGEGEGEAHAAAAAAAAAAAAAAAAAAFI>"
+        # Create action table with default values
+
+        # Test serialization with defaults
+        serialized_table = telegram[16:84]
+        deserialized = Xp33MsActionTableSerializer.from_data(serialized_table)
+        serialized = Xp33MsActionTableSerializer.to_data(deserialized)
+
+        assert serialized_table == serialized

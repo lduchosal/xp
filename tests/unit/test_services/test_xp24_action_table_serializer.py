@@ -40,20 +40,6 @@ class TestXp24MsActionTableSerializer:
             "<R0020044964F17DAAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFD>",
         ]
 
-    def test_from_telegrams_basic(self, sample_telegrams: list[str]) -> None:
-        """Test basic telegram parsing."""
-        assert sample_telegrams
-        action_table = Xp24MsActionTableSerializer.from_telegrams(sample_telegrams[0])
-
-        # Verify it's a valid Xp24ActionTable
-        assert isinstance(action_table, Xp24MsActionTable)
-
-        # Check that we have 4 input actions
-        assert action_table.input1_action is not None
-        assert action_table.input2_action is not None
-        assert action_table.input3_action is not None
-        assert action_table.input4_action is not None
-
     def test_from_telegrams_invalid_hex_data(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal characters."""
         # This telegram contains non-hex characters that cause from_hex() to fail

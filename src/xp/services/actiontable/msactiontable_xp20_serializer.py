@@ -46,8 +46,9 @@ class Xp20MsActionTableSerializer:
                 input_channel, input_index, raw_bytes
             )
 
+        encoded_data = nibbles(raw_bytes)
         # Convert raw bytes to hex string with A-P encoding
-        return nibbles(raw_bytes)
+        return "AAAA" + encoded_data
 
     @staticmethod
     def from_data(msactiontable_rawdata: str) -> Xp20MsActionTable:
@@ -62,13 +63,20 @@ class Xp20MsActionTableSerializer:
         Raises:
             ValueError: If input length is not 64 characters
         """
-        if len(msactiontable_rawdata) != 64:
+        raw_length = len(msactiontable_rawdata)
+        if raw_length < 68:  # Minimum: 4 char prefix + 64 chars data
             raise ValueError(
-                f"XP20 action table data must be 64 characters long, got {len(msactiontable_rawdata)}"
+                f"XP20 action table data must be 68 characters long, got {len(msactiontable_rawdata)}"
             )
 
-        # Convert hex string to bytes using de_nibble (A-P encoding)
-        raw_bytes = de_nibbles(msactiontable_rawdata)
+        # Remove action table count prefix (first 4 characters: AAAA, AAAB, etc.)
+        data = msactiontable_rawdata[4:]
+
+        # Take first 64 chars (32 bytes) as per pseudocode
+        hex_data = data[:64]
+
+        # Convert hex string to bytes using deNibble (A-P encoding)
+        raw_bytes = de_nibbles(hex_data)
 
         # Decode input channels
         input_channels = []

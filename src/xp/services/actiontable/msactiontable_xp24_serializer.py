@@ -116,18 +116,3 @@ class Xp24MsActionTableSerializer:
         param_type = TimeParam(param_id)
 
         return InputAction(action_type, param_type)
-
-    @staticmethod
-    def from_telegrams(ms_telegrams: str) -> Xp24MsActionTable:
-        """Legacy method for backward compatibility. Use from_data() instead.
-
-        Args:
-            ms_telegrams: Telegram data string.
-
-        Returns:
-            Deserialized XP24 MS action table.
-        """
-        # For backward compatibility, assume full telegrams and extract data
-        data_parts = ms_telegrams[16:84]
-
-        return Xp24MsActionTableSerializer.from_data(data_parts)

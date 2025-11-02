@@ -54,15 +54,15 @@ class TestXp20MsActionTableSerializer:
 
     @pytest.fixture
     def sample_telegram_data(self):
-        """Sample telegram data based on specification example (64 chars)."""
-        return "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        """Sample telegram data based on specification example (68 chars)."""
+        return "AAAAAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
     def test_to_data_serialization(self, sample_action_table):
         """Test serialization to telegram format."""
         result = Xp20MsActionTableSerializer.to_data(sample_action_table)
 
         # Should return 64-character hex string
-        assert len(result) == 64
+        assert len(result) == 68
         assert all(c in "ABCDEFGHIJKLMNOP" for c in result)
 
     def test_from_data_deserialization(self, sample_telegram_data):
@@ -117,7 +117,7 @@ class TestXp20MsActionTableSerializer:
 
     def test_invalid_data_length(self):
         """Test that invalid data length raises ValueError."""
-        with pytest.raises(ValueError, match="must be 64 characters long"):
+        with pytest.raises(ValueError, match="must be 68 characters long"):
             Xp20MsActionTableSerializer.from_data("INVALID")
 
     def test_byte_to_bits_conversion(self):
@@ -230,7 +230,7 @@ class TestXp20MsActionTableSerializer:
     def test_specification_example(self):
         """Test with the example telegram from specification."""
         example_data = (
-            "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "AAAAAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         # This should decode without errors
@@ -257,7 +257,7 @@ class TestXp20MsActionTableSerializer:
         """Test round-trip serialization with default/empty action table data."""
         # 64 characters - all A's represent a completely empty/default action table
         valid_msactiontable = (
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         # Deserialize from data
@@ -280,3 +280,51 @@ class TestXp20MsActionTableSerializer:
         # Verify round-trip preserves the original data
         assert valid_msactiontable == msactiontable_data
 
+    def test_real_xp20_telegram(self):
+        """Test deserialization of a real XP20 msactiontable telegram."""
+        # Real telegram from XP20 device
+        telegram = "<R0020041824F17DAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFP>"
+
+        # Extract data portion (skip header at 0-15, skip count at 16-19, take 64 chars at 20-83)
+        data = telegram[16:84]
+        assert len(data) == 68
+
+        # Deserialize the action table
+        action_table = Xp20MsActionTableSerializer.from_data(data)
+
+        # Verify it's a valid Xp20MsActionTable
+        assert isinstance(action_table, Xp20MsActionTable)
+
+        # Verify all 8 input channels are present
+        for i in range(1, 9):
+            channel = getattr(action_table, f"input{i}")
+            assert channel is not None
+            assert isinstance(channel, InputChannel)
+
+        # Test round-trip: serialize and deserialize should preserve data
+        serialized = Xp20MsActionTableSerializer.to_data(action_table)
+        deserialized = Xp20MsActionTableSerializer.from_data(serialized)
+
+        # Verify round-trip preserves all values
+        for i in range(1, 9):
+            original = getattr(action_table, f"input{i}")
+            result = getattr(deserialized, f"input{i}")
+
+            assert original.invert == result.invert
+            assert original.short_long == result.short_long
+            assert original.group_on_off == result.group_on_off
+            assert original.and_functions == result.and_functions
+            assert original.sa_function == result.sa_function
+            assert original.ta_function == result.ta_function
+
+
+    def test_serialize_back_and_forth(self):
+        """Test that default values work correctly."""
+        telegram = "<R0020037487F17DAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFL>"
+
+        # Test serialization with defaults
+        serialized_table = telegram[16:84]
+        deserialized = Xp20MsActionTableSerializer.from_data(serialized_table)
+        serialized = Xp20MsActionTableSerializer.to_data(deserialized)
+
+        assert serialized_table == serialized

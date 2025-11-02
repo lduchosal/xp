@@ -6,7 +6,7 @@ from xp.models.actiontable.msactiontable_xp33 import (
     Xp33Scene,
 )
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.utils.serialization import bits_to_byte, byte_to_bits, de_nibbles, nibble
+from xp.utils.serialization import bits_to_byte, byte_to_bits, de_nibbles, nibble, nibbles
 
 
 class Xp33MsActionTableSerializer:
@@ -96,13 +96,11 @@ class Xp33MsActionTableSerializer:
         raw_bytes[24] = bits_to_byte(leading_edge_bits)
 
         # Bytes 25-31 are padding (already 0)
-
         # Convert to hex string using nibble encoding
-        hex_data = "AAAA"
-        for byte_val in raw_bytes:
-            hex_data += nibble(byte_val)
+        encoded_data = nibbles(raw_bytes)
 
-        return hex_data
+        # Convert raw bytes to hex string with A-P encoding
+        return "AAAA" + encoded_data
 
     @staticmethod
     def from_data(msactiontable_rawdata: str) -> Xp33MsActionTable:
@@ -239,18 +237,3 @@ class Xp33MsActionTableSerializer:
             output3_level=output3_level,
             time=time_param,
         )
-
-    @staticmethod
-    def from_telegrams(ms_telegrams: str) -> Xp33MsActionTable:
-        """Legacy method for backward compatibility. Use from_data() instead.
-
-        Args:
-            ms_telegrams: Telegram data string.
-
-        Returns:
-            Deserialized XP33 MS action table.
-        """
-        # For backward compatibility, assume full telegrams and extract data
-        data_parts = ms_telegrams[16:152]  # Adjusted for XP33 length
-
-        return Xp33MsActionTableSerializer.from_data(data_parts)
