@@ -138,8 +138,9 @@ class MsActionTableService(ConbusProtocol):
 
         if reply_telegram.system_function == SystemFunction.MSACTIONTABLE:
             self.logger.debug("Received MSACTIONTABLE")
-            self.msactiontable_data.append(reply_telegram.data)
-            self.msactiontable_data.append(reply_telegram.data_value)
+            self.msactiontable_data.extend(
+                (reply_telegram.data, reply_telegram.data_value)
+            )
             if self.progress_callback:
                 self.progress_callback(".")
 

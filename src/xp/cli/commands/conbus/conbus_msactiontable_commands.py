@@ -57,6 +57,9 @@ def conbus_download_msactiontable(
 
         Args:
             action_table: Downloaded MS action table object or None if failed.
+
+        Raises:
+            Abort: If action table download failed.
         """
         if action_table is None:
             click.echo("Error: Failed to download MS action table")
