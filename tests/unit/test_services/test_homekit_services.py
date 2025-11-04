@@ -68,6 +68,8 @@ def mock_accessory():
         output_number=2,
         description="Test Description",
         service="lightbulb",
+        on_action="E00L01I01",
+        off_action="E00L01I05",
     )
 
 
@@ -357,23 +359,33 @@ class TestHomeKitConbusService:
 
     def test_handle_send_action_event_on(self, mock_module, mock_accessory):
         """Test handle_send_action_event for turning on."""
-        event = SendActionEvent(serial_number="1234567890", output_number=2, value=True)
-
-        self.service.handle_send_action_event(event)
-
-        sent_data = self.telegram_protocol.sendFrame.call_args[0][0]
-        assert sent_data == b"S1234567890F27D02AB"  # ON_RELEASE action
-
-    def test_handle_send_action_event_off(self, mock_module, mock_accessory):
-        """Test handle_send_action_event for turning off."""
         event = SendActionEvent(
-            serial_number="1234567890", output_number=5, value=False
+            serial_number="1234567890",
+            output_number=2,
+            value=True,
+            on_action="E00L04I02",
+            off_action="E00L04I06",
         )
 
         self.service.handle_send_action_event(event)
 
         sent_data = self.telegram_protocol.sendFrame.call_args[0][0]
-        assert sent_data == b"S1234567890F27D05AA"  # OFF_PRESS action
+        assert sent_data == b"E00L04I02B"  # ON action code
+
+    def test_handle_send_action_event_off(self, mock_module, mock_accessory):
+        """Test handle_send_action_event for turning off."""
+        event = SendActionEvent(
+            serial_number="1234567890",
+            output_number=5,
+            value=False,
+            on_action="E00L05I05",
+            off_action="E00L05I09",
+        )
+
+        self.service.handle_send_action_event(event)
+
+        sent_data = self.telegram_protocol.sendFrame.call_args[0][0]
+        assert sent_data == b"E00L05I09B"  # OFF action code
 
 
 class TestHomeKitService:

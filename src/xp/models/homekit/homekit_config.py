@@ -55,6 +55,8 @@ class HomekitAccessoryConfig(BaseModel):
         output_number: Output number for the accessory.
         description: Description of the accessory.
         service: Service type for the accessory.
+        on_action: on code for the accessory.
+        off_action: off code for the accessory.
         hap_accessory: Optional HAP accessory identifier.
     """
 
@@ -64,6 +66,8 @@ class HomekitAccessoryConfig(BaseModel):
     output_number: int
     description: str
     service: str
+    on_action: str
+    off_action: str
     hap_accessory: Optional[int] = None
 
 

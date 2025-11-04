@@ -85,6 +85,8 @@ class HomeKitOutletService:
             serial_number=event.serial_number,
             output_number=event.output_number,
             value=event.value,
+            on_action=event.accessory.on_action,
+            off_action=event.accessory.off_action,
         )
 
         self.logger.debug(f"Dispatching SendActionEvent for {event.serial_number}")

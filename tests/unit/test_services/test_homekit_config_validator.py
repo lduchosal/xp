@@ -41,6 +41,8 @@ class TestHomekitConfigValidator:
                     output_number=1,
                     description="Light 1",
                     service="lightbulb",
+                    on_action="E00L01I01",
+                    off_action="E00L01I05",
                 ),
                 HomekitAccessoryConfig(
                     name="light2",
@@ -49,6 +51,8 @@ class TestHomekitConfigValidator:
                     output_number=2,
                     description="Light 2",
                     service="lightbulb",
+                    on_action="E00L01I02",
+                    off_action="E00L01I06",
                 ),
             ]
 
@@ -82,6 +86,8 @@ class TestHomekitConfigValidator:
                 output_number=1,
                 description="Light 1",
                 service="lightbulb",
+                on_action="E00L01I01",
+                off_action="E00L01I05",
             ),
             HomekitAccessoryConfig(
                 name="light1",
@@ -90,6 +96,8 @@ class TestHomekitConfigValidator:
                 output_number=2,
                 description="Light 2",
                 service="lightbulb",
+                on_action="E00L01I02",
+                off_action="E00L01I06",
             ),
         ]
         config = self.create_test_homekit_config(accessories=accessories)
@@ -113,6 +121,8 @@ class TestHomekitConfigValidator:
                 output_number=1,
                 description="Light 1",
                 service="invalid_service",
+                on_action="E00L01I01",
+                off_action="E00L01I05",
             )
         ]
         config = self.create_test_homekit_config(accessories=accessories)
@@ -136,6 +146,8 @@ class TestHomekitConfigValidator:
                 output_number=0,
                 description="Light 1",
                 service="lightbulb",
+                on_action="E00L01I01",
+                off_action="E00L01I05",
             ),
             HomekitAccessoryConfig(
                 name="light2",
@@ -144,6 +156,8 @@ class TestHomekitConfigValidator:
                 output_number=-1,
                 description="Light 2",
                 service="lightbulb",
+                on_action="E00L01I02",
+                off_action="E00L01I06",
             ),
         ]
         config = self.create_test_homekit_config(accessories=accessories)
@@ -207,6 +221,8 @@ class TestHomekitConfigValidator:
                 output_number=1,
                 description="Light 1",
                 service="lightbulb",
+                on_action="E00L01I01",
+                off_action="E00L01I05",
             ),
             HomekitAccessoryConfig(
                 name="orphaned_light",
@@ -215,6 +231,8 @@ class TestHomekitConfigValidator:
                 output_number=2,
                 description="Orphaned",
                 service="lightbulb",
+                on_action="E00L01I02",
+                off_action="E00L01I06",
             ),
         ]
         rooms = [RoomConfig(name="Living Room", accessories=["light1"])]
@@ -233,6 +251,8 @@ class TestHomekitConfigValidator:
                 output_number=1,
                 description="Light 1",
                 service="lightbulb",
+                on_action="E00L01I01",
+                off_action="E00L01I05",
             ),
             HomekitAccessoryConfig(
                 name="light2",
@@ -241,6 +261,8 @@ class TestHomekitConfigValidator:
                 output_number=2,
                 description="Light 2",
                 service="lightbulb",
+                on_action="E00L01I02",
+                off_action="E00L01I06",
             ),
         ]
         rooms = [
@@ -263,6 +285,8 @@ class TestHomekitConfigValidator:
                 output_number=1,
                 description="Light 1",
                 service="lightbulb",
+                on_action="E00L01I01",
+                off_action="E00L01I05",
             )
         ]
         rooms = [
@@ -316,6 +340,8 @@ class TestCrossReferenceValidator:
                 output_number=1,
                 description="Light 1",
                 service="lightbulb",
+                on_action="E00L01I01",
+                off_action="E00L01I05",
             ),
             HomekitAccessoryConfig(
                 name="light2",
@@ -324,6 +350,8 @@ class TestCrossReferenceValidator:
                 output_number=1,
                 description="Light 2",
                 service="lightbulb",
+                on_action="E00L02I01",
+                off_action="E00L02I05",
             ),
         ]
         rooms = [RoomConfig(name="Living Room", accessories=["light1", "light2"])]
@@ -361,6 +389,8 @@ class TestCrossReferenceValidator:
             output_number=1,
             description="Invalid",
             service="lightbulb",
+            on_action="E00L03I01",
+            off_action="E00L03I05",
         )
         homekit_validator.config.accessories.append(invalid_accessory)
 
@@ -394,6 +424,8 @@ class TestCrossReferenceValidator:
             output_number=20,
             description="High Output",
             service="lightbulb",
+            on_action="E00L02I09",
+            off_action="E00L02I13",
         )
         homekit_validator.config.accessories.append(high_output_accessory)
 
@@ -425,6 +457,8 @@ class TestCrossReferenceValidator:
                 output_number=1,
                 description="Invalid Serial",
                 service="lightbulb",
+                on_action="E00L03I01",
+                off_action="E00L03I05",
             ),
             HomekitAccessoryConfig(
                 name="invalid_output",
@@ -433,6 +467,8 @@ class TestCrossReferenceValidator:
                 output_number=20,
                 description="Invalid Output",
                 service="lightbulb",
+                on_action="E00L02I09",
+                off_action="E00L02I13",
             ),
         ]
         homekit_validator.config.accessories.extend(invalid_accessories)

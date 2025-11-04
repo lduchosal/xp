@@ -102,6 +102,8 @@ class TestHomekitConfigIntegration:
                     "output_number": 1,
                     "description": "Main Living Room Light",
                     "service": "lightbulb",
+                    "on_action": "E00L01I01",
+                    "off_action": "E00L01I05",
                 },
                 {
                     "name": "side_lamp",
@@ -110,6 +112,8 @@ class TestHomekitConfigIntegration:
                     "output_number": 2,
                     "description": "Side Lamp",
                     "service": "lightbulb",
+                    "on_action": "E00L01I02",
+                    "off_action": "E00L01I06",
                 },
                 {
                     "name": "kitchen_light",
@@ -118,6 +122,8 @@ class TestHomekitConfigIntegration:
                     "output_number": 1,
                     "description": "Kitchen Light",
                     "service": "lightbulb",
+                    "on_action": "E00L02I01",
+                    "off_action": "E00L02I05",
                 },
             ],
         }
@@ -194,6 +200,8 @@ class TestHomekitConfigIntegration:
                     "output_number": 0,  # Invalid output
                     "description": "Main Light",
                     "service": "invalid_service",  # Invalid service
+                    "on_action": "E00L01I01",
+                    "off_action": "E00L01I05",
                 },
                 {
                     "name": "main_light",  # Duplicate accessory name
@@ -202,6 +210,8 @@ class TestHomekitConfigIntegration:
                     "output_number": 50,  # Output exceeds module capability
                     "description": "Duplicate Light",
                     "service": "lightbulb",
+                    "on_action": "E00L01I02",
+                    "off_action": "E00L01I06",
                 },
                 {
                     "name": "orphaned_light",  # Not assigned to any room
@@ -210,6 +220,8 @@ class TestHomekitConfigIntegration:
                     "output_number": 3,
                     "description": "Orphaned Light",
                     "service": "lightbulb",
+                    "on_action": "E00L01I03",
+                    "off_action": "E00L01I07",
                 },
             ],
         }

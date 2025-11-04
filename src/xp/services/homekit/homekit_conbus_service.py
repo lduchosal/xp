@@ -12,7 +12,6 @@ from xp.models.protocol.conbus_protocol import (
     SendActionEvent,
     SendWriteConfigEvent,
 )
-from xp.models.telegram.action_type import ActionType
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.services.protocol.telegram_protocol import TelegramProtocol
@@ -87,11 +86,8 @@ class HomeKitConbusService:
         """
         self.logger.debug(f"send_action_event {event}")
 
-        action_value = (
-            ActionType.ON_RELEASE.value if event.value else ActionType.OFF_PRESS.value
-        )
-        input_action = f"{event.output_number:02d}{action_value}"
-        telegram = (
-            f"S{event.serial_number}F{SystemFunction.ACTION.value}D{input_action}"
-        )
-        self.telegram_protocol.sendFrame(telegram.encode())
+        telegram = event.on_action if event.value else event.off_action
+        telegram_make = f"{telegram}M"
+        telegram_break = f"{telegram}B"
+        self.telegram_protocol.sendFrame(telegram_make.encode())
+        self.telegram_protocol.sendFrame(telegram_break.encode())

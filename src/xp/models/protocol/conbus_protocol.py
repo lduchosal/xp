@@ -61,11 +61,15 @@ class SendActionEvent(BaseEvent):
         serial_number: Serial number of the light bulb set.
         output_number: Output number of the light bulb set.
         value: Set light bulb On or Off (True/False).
+        on_action: On action E00L00I00.
+        off_action: On action E00L00I04.
     """
 
     serial_number: str = Field(description="Serial number of the light bulb set")
     output_number: int = Field(description="Output number of the light bulb set")
     value: bool = Field(description="Set light bulb On or Off (True/False)")
+    on_action: str = Field(description="on action")
+    off_action: str = Field(description="off action")
 
 
 class DatapointEvent(BaseEvent):
