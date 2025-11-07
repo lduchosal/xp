@@ -56,7 +56,7 @@ def cli(ctx: click.Context) -> None:
 
     # xp
     logging.getLogger("xp").setLevel(logging.DEBUG)
-    logging.getLogger("xp.services.homekit").setLevel(logging.WARNING)
+    logging.getLogger("xp.services.homekit").setLevel(logging.DEBUG)
 
     # pyhap
     logging.getLogger("pyhap").setLevel(logging.WARNING)

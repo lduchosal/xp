@@ -134,19 +134,18 @@ class Outlet(Accessory):
             value: True to turn on, False to turn off.
         """
         # Emit set event
-        self.logger.debug(f"set_on {value}")
+        self.logger.debug(f"set_on {value} {self.is_on}")
 
-        if value != self.is_on:
-            self.is_on = value
-            self.event_bus.dispatch(
-                OutletSetOnEvent(
-                    serial_number=self.accessory.serial_number,
-                    output_number=self.accessory.output_number,
-                    module=self.module,
-                    accessory=self.accessory,
-                    value=value,
-                )
+        self.is_on = value
+        self.event_bus.dispatch(
+            OutletSetOnEvent(
+                serial_number=self.accessory.serial_number,
+                output_number=self.accessory.output_number,
+                module=self.module,
+                accessory=self.accessory,
+                value=value,
             )
+        )
 
     def get_on(self) -> bool:
         """Get the on/off state of the outlet.
