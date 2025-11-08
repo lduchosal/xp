@@ -145,13 +145,13 @@ def conbus_list_actiontable() -> None:
     Raises:
         ActionTableError: If conson.yml not found or cannot be read.
     """
-    
+
     service: ActionTableListService = (
         ctx.obj.get("container").get_container().resolve(ActionTableListService)
     )
 
     def on_finish(
-        list,
+            list,
     ) -> None:
         """Handle successful completion of action table list.
         """
@@ -166,11 +166,10 @@ def conbus_list_actiontable() -> None:
         click.echo(error)
 
     with service:
-        service.start(
+        service.attach(
             finish_callback=on_finish,
             error_callback=error_callback,
         )
-    
 
 
 @conbus_actiontable.command("show", short_help="Show ActionTable configuration")
@@ -185,13 +184,13 @@ def conbus_show_actiontable(serial_number: str) -> None:
         ActionTableError: If conson.yml not found, module not found,
             or no action_table configured.
     """
-    
+
     service: ActionTableShowService = (
         ctx.obj.get("container").get_container().resolve(ActionTableShowService)
     )
 
     def on_finish(
-        module,
+            module,
     ) -> None:
         """Handle successful completion of action table show.
         """
@@ -206,12 +205,12 @@ def conbus_show_actiontable(serial_number: str) -> None:
         click.echo(error)
 
     with service:
-        service.start(
+        service.attach(
             serial_number=serial_number,
             finish_callback=on_finish,
             error_callback=error_callback,
         )
-    
+
 ```
 
 ### Testing Layer
