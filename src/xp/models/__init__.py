@@ -5,6 +5,7 @@ from xp.models.conbus.conbus_client_config import ConbusClientConfig
 from xp.models.conbus.conbus_connection_status import ConbusConnectionStatus
 from xp.models.conbus.conbus_datapoint import ConbusDatapointResponse
 from xp.models.conbus.conbus_discover import ConbusDiscoverResponse
+from xp.models.conbus.conbus_event_raw import ConbusEventRawResponse
 from xp.models.log_entry import LogEntry
 from xp.models.telegram.event_telegram import EventTelegram
 from xp.models.telegram.event_type import EventType
@@ -30,5 +31,6 @@ __all__ = [
     "ConbusResponse",
     "ConbusDatapointResponse",
     "ConbusDiscoverResponse",
+    "ConbusEventRawResponse",
     "ConbusConnectionStatus",
 ]

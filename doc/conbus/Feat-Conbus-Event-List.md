@@ -4,14 +4,14 @@ conbus cli send event telegrams.
 
 The list action, reads conson.yml with existing DI injected ConsonModuleListConfig.
 Parse action table from module list, and generate a list of configured event on the bus.
-The list regroups th
 
 ## cli usage
 ```
 xp conbus event list
 ```
 
-conson.yml
+### ConsonModuleListConfig
+given conson.yml, read the action table, convert to event telegram and regroup common actions
 ```
 - name: A3
   action_table:
@@ -31,7 +31,18 @@ conson.yml
     - XP20 10 8 > 2 ON
 ```
 
-Outputs
+### Conversion
+
+Action table is formatted:
+```
+XP20 10 0 > 0 OFF
+
+{module_type} {link_number} {input_number} > {make_or_break:~}{output_number} {action}
+```
+
+Converted to 
+
+### Outputs
 ```
 {
     "events": [

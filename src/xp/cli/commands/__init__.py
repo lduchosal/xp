@@ -37,6 +37,7 @@ from xp.cli.commands.conbus.conbus_datapoint_commands import (
     query_datapoint,
 )
 from xp.cli.commands.conbus.conbus_discover_commands import send_discover_telegram
+from xp.cli.commands.conbus.conbus_event_commands import conbus_event, send_event_raw
 from xp.cli.commands.conbus.conbus_lightlevel_commands import (
     xp_lightlevel_get,
     xp_lightlevel_off,
@@ -97,6 +98,7 @@ __all__ = [
     "conbus_lightlevel",
     "conbus_msactiontable",
     "conbus_actiontable",
+    "conbus_event",
     "file",
     "module",
     "reverse_proxy",
@@ -118,6 +120,7 @@ __all__ = [
     "show_config",
     "send_custom_telegram",
     "send_discover_telegram",
+    "send_event_raw",
     "xp_output_on",
     "xp_output_off",
     "xp_output_status",
