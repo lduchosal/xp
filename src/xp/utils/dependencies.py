@@ -58,6 +58,7 @@ from xp.services.homekit.homekit_outlet_service import HomeKitOutletService
 from xp.services.homekit.homekit_service import HomeKitService
 from xp.services.log_file_service import LogFileService
 from xp.services.module_type_service import ModuleTypeService
+from xp.services.protocol import ConbusEventProtocol
 from xp.services.protocol.protocol_factory import TelegramFactory
 from xp.services.protocol.telegram_protocol import TelegramProtocol
 from xp.services.reverse_proxy_service import ReverseProxyService
@@ -163,10 +164,18 @@ class ServiceContainer:
         )
 
         self.container.register(
-            ConbusDiscoverService,
-            factory=lambda: ConbusDiscoverService(
+            ConbusEventProtocol,
+            factory=lambda: ConbusEventProtocol(
                 cli_config=self.container.resolve(ConbusClientConfig),
                 reactor=self.container.resolve(PosixReactorBase),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusDiscoverService,
+            factory=lambda: ConbusDiscoverService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol)
             ),
             scope=punq.Scope.singleton,
         )

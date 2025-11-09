@@ -17,6 +17,7 @@ dependencies = [
     "punq>=0.7.0",
     "twisted>=25.5.0",
     "bubus>=1.5.6",
+    "psygnal>=0.15.0"
 ]
 requires-python = ">=3.11"
 readme = "README.md"

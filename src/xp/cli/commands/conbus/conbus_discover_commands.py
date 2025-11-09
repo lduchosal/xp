@@ -9,6 +9,7 @@ from xp.cli.utils.decorators import (
     connection_command,
 )
 from xp.models import ConbusDiscoverResponse
+from xp.models.conbus.conbus_discover import DiscoveredDevice
 from xp.services.conbus.conbus_discover_service import (
     ConbusDiscoverService,
 )
@@ -36,6 +37,14 @@ def send_discover_telegram(ctx: click.Context) -> None:
         """
         click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
 
+    def on_device_discovered(discovered_device: DiscoveredDevice) -> None:
+        """Handle discovery of sa single module.
+
+        Args:
+            discovered_device: Discover device.
+        """
+        click.echo(json.dumps(discovered_device, indent=2))
+
     def progress(_serial_number: str) -> None:
         """Handle progress updates during device discovery.
 
@@ -48,5 +57,5 @@ def send_discover_telegram(ctx: click.Context) -> None:
     service: ConbusDiscoverService = (
         ctx.obj.get("container").get_container().resolve(ConbusDiscoverService)
     )
-    with service:
-        service.start(progress, on_finish, 0.5)
+    service.run(progress, on_device_discovered, on_finish, 5)
+    service.start_reactor()

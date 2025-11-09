@@ -130,6 +130,7 @@ class ConbusDatapointService(ConbusProtocol):
         self.service_response.data_value = datapoint_telegram.data_value
         if self.datapoint_finished_callback:
             self.datapoint_finished_callback(self.service_response)
+        self._stop_reactor()
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
