@@ -7,7 +7,7 @@ import logging
 from queue import SimpleQueue
 from random import randint
 from threading import Lock
-from typing import Any, Optional, Callable
+from typing import Any, Callable, Optional
 
 from psygnal import Signal
 from twisted.internet import protocol
@@ -223,8 +223,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         Args:
             delay: Delay in seconds before calling.
             callable_action: The callable to execute.
-            *args: Positional arguments to pass to callable.
-            **kw: Keyword arguments to pass to callable.
+            args: Positional arguments to pass to callable.
+            kw: Keyword arguments to pass to callable.
 
         Returns:
             DelayedCall object that can be cancelled.

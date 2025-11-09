@@ -1,6 +1,6 @@
-# Conbus events
+# Conbus event list
 
-conbus cli send event telegrams.
+conbus cli list event telegrams.
 
 The list action, reads conson.yml with existing DI injected ConsonModuleListConfig.
 Parse action table from module list, and generate a list of configured event on the bus.
