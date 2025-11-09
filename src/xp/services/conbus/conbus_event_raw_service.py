@@ -63,9 +63,7 @@ class ConbusEventRawService:
         payload = f"E{self.module_type_code:02d}L{self.link_number:02d}I{self.input_number:02d}M"
         self.logger.debug(f"Sending MAKE event: {payload}")
         self.conbus_protocol.telegram_queue.put_nowait(payload.encode())
-        self.conbus_protocol._reactor.callLater(
-            0.0, self.conbus_protocol.start_queue_manager
-        )
+        self.conbus_protocol.call_later(0.0, self.conbus_protocol.start_queue_manager)
 
         # Schedule BREAK event after delay
         delay_seconds = self.time_ms / 1000.0

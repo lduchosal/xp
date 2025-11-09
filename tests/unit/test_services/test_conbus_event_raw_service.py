@@ -28,7 +28,9 @@ class TestConbusEventRawService:
         protocol.on_failed.connect = Mock()
         protocol._reactor = Mock()
         protocol.telegram_queue = Mock()
+        protocol.call_later = Mock()
         protocol.timeout_seconds = 5
+        protocol.stop_reactor = Mock()
         return protocol
 
     @pytest.fixture
@@ -61,7 +63,7 @@ class TestConbusEventRawService:
         assert call_args == b"E02L10I05M"
 
         # Verify BREAK event was scheduled
-        mock_protocol._reactor.callLater.assert_called()
+        mock_protocol.call_later.assert_called()
 
     def test_telegram_sent(self, service):
         """Test telegram_sent callback updates service response."""

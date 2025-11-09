@@ -218,8 +218,18 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         *args: object,
         **kw: object,
     ) -> DelayedCall:
-        """Start reactor."""
-        return self._reactor.callLater(delay, callable_action, args, kw)
+        """Schedule a callable to be called later.
+
+        Args:
+            delay: Delay in seconds before calling.
+            callable_action: The callable to execute.
+            *args: Positional arguments to pass to callable.
+            **kw: Keyword arguments to pass to callable.
+
+        Returns:
+            DelayedCall object that can be cancelled.
+        """
+        return self._reactor.callLater(delay, callable_action, *args, **kw)
 
     def buildProtocol(self, addr: IAddress) -> protocol.Protocol:
         """Build protocol instance for connection.
