@@ -24,6 +24,7 @@ XP is a CLI/API toolkit for CONSON XP Protocol operations with HomeKit integrati
 - **API**: FastAPI routers, uses same service layer
 - **Rule**: NO business logic, only input validation and output formatting
 - **Entry**: `cli/main.py` initializes ServiceContainer, registers command groups
+- **Validation**: Click types handle all parameter validation (ranges, enums, custom types)
 
 ### Layer 2: Services
 **Location**: `src/xp/services/`
@@ -84,15 +85,22 @@ tests/
 ## Key Components
 
 ### 1. ServiceContainer (`src/xp/utils/dependencies.py`)
-Central DI container managing all service lifecycle and dependencies:
+Central DI container (punq) managing all service lifecycle and dependencies:
 ```python
+# Initialize container (CLI does this automatically)
 container = ServiceContainer(
     config_path="cli.yml",
     homekit_config_path="homekit.yml",
     conson_config_path="conson.yml"
 )
-service = container.container.resolve(ConbusProtocol)
+
+# Resolve service (automatic dependency injection)
+service = container.container.resolve(ConbusEventRawService)
 ```
+
+**Registration**: All services registered in `_register_services()` with factory lambdas
+**Scope**: Singleton by default (shared across requests)
+**Pattern**: Constructor injection - dependencies resolved automatically
 
 ### 2. EventBus (bubus)
 Event-driven communication between protocol and services:
@@ -129,9 +137,24 @@ Reply:  <R0020012521F02D18+26,0§CIL> # Device response
 
 ### Adding a New Command
 1. Create command in `src/xp/cli/commands/`
-2. Register in `cli/main.py`
-3. Resolve service from context: `ctx.obj["container"].container.resolve(ServiceClass)`
-4. No business logic in command - delegate to service
+2. Use Click types for validation:
+   - **Range**: `@click.argument("port", type=click.IntRange(0, 99))`
+   - **Enum**: Custom type like `MODULE_TYPE` (see `cli/utils/module_type_choice.py`)
+   - **Pattern**: Validation errors thrown before function execution
+3. Register in `cli/main.py` or parent command group
+4. Resolve service from context: `ctx.obj["container"].container.resolve(ServiceClass)`
+5. No business logic in command - delegate to service
+
+**Example**:
+```python
+@click.command()
+@click.argument("module_type", type=MODULE_TYPE)  # Custom enum validator
+@click.argument("link", type=click.IntRange(0, 99))  # Range validator
+@click.pass_context
+def my_command(ctx: click.Context, module_type: int, link: int) -> None:
+    service = ctx.obj["container"].container.resolve(MyService)
+    service.run(module_type, link)
+```
 
 ### Adding a New Event
 1. Extend `BaseEvent` in `models/protocol/conbus_protocol.py`
