@@ -174,16 +174,16 @@ class TestConbusEventListService:
 
     def test_empty_config(self, empty_config):
         """Test with empty configuration (no modules)."""
-        service = ConbusEventListService(conson_config=empty_config)
-        response = service.list_events()
+        response = ConbusEventListService(conson_config=empty_config).list_events()
 
         assert response.events == {}
         assert response.timestamp is not None
 
     def test_single_module(self, single_module_config):
         """Test with single module and one action."""
-        service = ConbusEventListService(conson_config=single_module_config)
-        response = service.list_events()
+        response = ConbusEventListService(
+            conson_config=single_module_config
+        ).list_events()
 
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
@@ -191,10 +191,9 @@ class TestConbusEventListService:
 
     def test_multiple_modules_same_event(self, multiple_modules_same_event_config):
         """Test multiple modules sharing same event."""
-        service = ConbusEventListService(
+        response = ConbusEventListService(
             conson_config=multiple_modules_same_event_config
-        )
-        response = service.list_events()
+        ).list_events()
 
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
@@ -206,8 +205,9 @@ class TestConbusEventListService:
 
     def test_duplicate_actions_deduplication(self, duplicate_actions_config):
         """Test that duplicate actions in same module are deduplicated."""
-        service = ConbusEventListService(conson_config=duplicate_actions_config)
-        response = service.list_events()
+        response = ConbusEventListService(
+            conson_config=duplicate_actions_config
+        ).list_events()
 
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
@@ -219,8 +219,9 @@ class TestConbusEventListService:
 
     def test_invalid_action_format(self, invalid_action_config, caplog):
         """Test that invalid actions are skipped with warning."""
-        service = ConbusEventListService(conson_config=invalid_action_config)
-        response = service.list_events()
+        response = ConbusEventListService(
+            conson_config=invalid_action_config
+        ).list_events()
 
         # Should have 2 valid events
         assert len(response.events) == 2
@@ -233,8 +234,9 @@ class TestConbusEventListService:
 
     def test_empty_action_table(self, empty_action_table_config):
         """Test that modules with empty action table are silently skipped."""
-        service = ConbusEventListService(conson_config=empty_action_table_config)
-        response = service.list_events()
+        response = ConbusEventListService(
+            conson_config=empty_action_table_config
+        ).list_events()
 
         # Only A2 should be in result (A1 has empty action_table)
         assert len(response.events) == 1
@@ -243,8 +245,7 @@ class TestConbusEventListService:
 
     def test_sorting_by_module_count(self, sorting_config):
         """Test that events are sorted by module count (descending)."""
-        service = ConbusEventListService(conson_config=sorting_config)
-        response = service.list_events()
+        response = ConbusEventListService(conson_config=sorting_config).list_events()
 
         # Get events in order
         event_keys = list(response.events.keys())
@@ -259,10 +260,11 @@ class TestConbusEventListService:
 
     def test_to_dict_serialization(self, single_module_config):
         """Test that response can be serialized to dict."""
-        service = ConbusEventListService(conson_config=single_module_config)
-        response = service.list_events()
-
-        result_dict = response.to_dict()
+        result_dict = (
+            ConbusEventListService(conson_config=single_module_config)
+            .list_events()
+            .to_dict()
+        )
 
         assert "events" in result_dict
         assert "timestamp" in result_dict
