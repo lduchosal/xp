@@ -8,6 +8,7 @@ from xp.cli.commands.conbus.conbus import conbus
 from xp.cli.utils.decorators import connection_command
 from xp.cli.utils.module_type_choice import MODULE_TYPE
 from xp.models import ConbusEventRawResponse
+from xp.services.conbus.conbus_event_list_service import ConbusEventListService
 from xp.services.conbus.conbus_event_raw_service import ConbusEventRawService
 
 
@@ -15,6 +16,28 @@ from xp.services.conbus.conbus_event_raw_service import ConbusEventRawService
 def conbus_event() -> None:
     """Send event telegrams to Conbus modules."""
     pass
+
+
+@conbus_event.command("list")
+@click.pass_context
+def list_events(ctx: click.Context) -> None:
+    """List configured event telegrams from module action tables.
+
+    Reads conson.yml configuration, parses action tables, and groups
+    modules by their event keys to show which modules are assigned to
+    each event (button configuration).
+
+    Output is sorted by module count (most frequently used events first).
+
+    Examples:
+        \b
+        xp conbus event list
+    """
+    service: ConbusEventListService = (
+        ctx.obj.get("container").get_container().resolve(ConbusEventListService)
+    )
+    response = service.list_events()
+    click.echo(json.dumps(response.to_dict(), indent=2))
 
 
 @conbus_event.command("raw")

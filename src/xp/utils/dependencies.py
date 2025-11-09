@@ -43,6 +43,7 @@ from xp.services.conbus.conbus_datapoint_service import (
     ConbusDatapointService,
 )
 from xp.services.conbus.conbus_discover_service import ConbusDiscoverService
+from xp.services.conbus.conbus_event_list_service import ConbusEventListService
 from xp.services.conbus.conbus_event_raw_service import ConbusEventRawService
 from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_raw_service import ConbusRawService
@@ -185,6 +186,14 @@ class ServiceContainer:
             ConbusEventRawService,
             factory=lambda: ConbusEventRawService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol)
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConbusEventListService,
+            factory=lambda: ConbusEventListService(
+                conson_config=self.container.resolve(ConsonModuleListConfig)
             ),
             scope=punq.Scope.singleton,
         )
