@@ -1,6 +1,5 @@
 """Unit tests for ConbusEventListService."""
 
-
 import pytest
 
 from xp.models.homekit.homekit_conson_config import (
@@ -188,7 +187,7 @@ class TestConbusEventListService:
 
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
-        assert response.events["XP20 10 00"] ==  ['0012345001:0']
+        assert response.events["XP20 10 00"] == ["0012345001:0"]
 
     def test_multiple_modules_same_event(self, multiple_modules_same_event_config):
         """Test multiple modules sharing same event."""
@@ -199,7 +198,11 @@ class TestConbusEventListService:
 
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
-        assert sorted(response.events["XP20 10 00"]) == ["0012345001:0", "0012345002:1", "0012345003:2"]
+        assert sorted(response.events["XP20 10 00"]) == [
+            "0012345001:0",
+            "0012345002:1",
+            "0012345003:2",
+        ]
 
     def test_duplicate_actions_deduplication(self, duplicate_actions_config):
         """Test that duplicate actions in same module are deduplicated."""
@@ -208,7 +211,11 @@ class TestConbusEventListService:
 
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
-        assert response.events["XP20 10 00"] == ['0012345001:0', '0012345001:1', '0012345001:2']  # Only once, not three times
+        assert response.events["XP20 10 00"] == [
+            "0012345001:0",
+            "0012345001:1",
+            "0012345001:2",
+        ]  # Only once, not three times
 
     def test_invalid_action_format(self, invalid_action_config, caplog):
         """Test that invalid actions are skipped with warning."""

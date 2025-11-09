@@ -21,13 +21,16 @@ def conbus_event() -> None:
 @conbus_event.command("list")
 @click.pass_context
 def list_events(ctx: click.Context) -> None:
-    """List configured event telegrams from module action tables.
+    r"""List configured event telegrams from module action tables.
 
     Reads conson.yml configuration, parses action tables, and groups
     modules by their event keys to show which modules are assigned to
     each event (button configuration).
 
     Output is sorted by module count (most frequently used events first).
+
+    Args:
+        ctx: Click context object.
 
     Examples:
         \b
@@ -36,8 +39,7 @@ def list_events(ctx: click.Context) -> None:
     service: ConbusEventListService = (
         ctx.obj.get("container").get_container().resolve(ConbusEventListService)
     )
-    response = service.list_events()
-    click.echo(json.dumps(response.to_dict(), indent=2))
+    click.echo(json.dumps(service.list_events().to_dict(), indent=2))
 
 
 @conbus_event.command("raw")

@@ -67,7 +67,9 @@ class ConbusEventListService:
                     event_key = f"{module_type_name} {link:02d} {input_num:02d}"
 
                     # Add this module to the event (set automatically deduplicates)
-                    event_modules[event_key].add(f"{module.serial_number}:{entry.module_output}")
+                    event_modules[event_key].add(
+                        f"{module.serial_number}:{entry.module_output}"
+                    )
 
                 except ValueError as e:
                     # Invalid action format - log warning and skip
