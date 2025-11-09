@@ -253,6 +253,10 @@ xp conbus datapoint query
 
 xp conbus discover
 
+xp conbus event
+xp conbus event raw
+
+
 xp conbus lightlevel
 xp conbus lightlevel get
 xp conbus lightlevel off
