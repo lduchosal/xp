@@ -58,8 +58,7 @@ class ConbusDiscoverService:
             telegram_type=TelegramType.SYSTEM,
             serial_number="0000000000",
             system_function=SystemFunction.DISCOVERY,
-            data_value="00",
-            immediate=True
+            data_value="00"
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
@@ -302,7 +301,6 @@ class ConbusDiscoverService:
 
         Args:
             progress_callback: Callback for each discovered device.
-            serial_discover_callback: Callback for each discovered serial.
             device_discover_callback: Callback for each discovered device.
             finish_callback: Callback when discovery completes.
             timeout_seconds: Optional timeout in seconds.

@@ -4,8 +4,9 @@ This module implements the Twisted protocol for Conbus communication.
 """
 
 import logging
-import random
-import threading
+from random import randint
+from threading import Lock
+from queue import SimpleQueue
 from typing import Any, Optional
 from psygnal import Signal
 
@@ -31,12 +32,15 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         buffer: Buffer for incoming telegram data.
         logger: Logger instance for this protocol.
         cli_config: Conbus configuration settings.
-        reactor: Twisted reactor instance.
         timeout_seconds: Timeout duration in seconds.
         timeout_call: Delayed call handle for timeout management.
     """
 
     buffer: bytes
+
+    telegram_queue: SimpleQueue[bytes] = SimpleQueue() # FIFO
+    queue_manager_running: bool = False
+    queue_manager_lock: Lock = Lock()
 
     on_connection_made: Signal = Signal()
     on_connection_lost: Signal = Signal()
@@ -52,8 +56,6 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
     on_start_reactor: Signal = Signal()
     on_stop_reactor: Signal = Signal()
 
-    reactor_thread: threading.Thread
-
     def __init__(
         self,
         cli_config: ConbusClientConfig,
@@ -68,7 +70,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.buffer = b""
         self.logger = logging.getLogger(__name__)
         self.cli_config = cli_config.conbus
-        self.reactor = reactor
+        self._reactor = reactor
         self.timeout_seconds = self.cli_config.timeout
         self.timeout_call: Optional[DelayedCall] = None
 
@@ -174,8 +176,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         telegram_type: TelegramType,
         serial_number: str,
         system_function: SystemFunction,
-        data_value: str,
-        immediate: bool = False,
+        data_value: str
     ) -> None:
         """Send telegram with specified parameters.
 
@@ -184,7 +185,6 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             serial_number: Device serial number.
             system_function: System function code.
             data_value: Data value to send.
-            immediate: Do not wait before sending telegram.
         """
         payload = (
             f"{telegram_type.value}"
@@ -192,12 +192,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             f"F{system_function.value}"
             f"D{data_value}"
         )
-        later = 0.0
-        if not immediate:
-            later = random.Random().randint(100, 500) / 100
-
-        self.reactor.callLater(later, self.sendFrame, payload.encode())
-
+        self.telegram_queue.put_nowait(payload.encode())
+        self._reactor.callLater(0.0, self.start_queue_manager)
 
     def buildProtocol(self, addr: IAddress) -> protocol.Protocol:
         """Build protocol instance for connection.
@@ -256,7 +252,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
     def _reset_timeout(self) -> None:
         """Reset the inactivity timeout."""
         self._cancel_timeout()
-        self.timeout_call = self.reactor.callLater(
+        self.timeout_call = self._reactor.callLater(
             self.timeout_seconds, self._on_timeout
         )
 
@@ -272,10 +268,9 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
 
     def stop_reactor(self) -> None:
         """Stop the reactor if it's running."""
-        if self.reactor.running:
+        if self._reactor.running:
             self.logger.info("Stopping reactor")
-            self.reactor.stop()
-
+            self._reactor.stop()
 
     def start_reactor(self) -> None:
         """Start the reactor if it's running."""
@@ -283,11 +278,35 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.logger.info(
             f"Connecting to TCP server {self.cli_config.ip}:{self.cli_config.port}"
         )
-        self.reactor.connectTCP(self.cli_config.ip, self.cli_config.port, self)
+        self._reactor.connectTCP(self.cli_config.ip, self.cli_config.port, self)
 
         # Run the reactor (which now uses asyncio underneath)
         self.logger.info("Starting reactor event loop.")
-        self.reactor.run()
+        self._reactor.run()
+
+    def start_queue_manager(self) -> None:
+        """Start the queue manager if it's not running."""
+        with self.queue_manager_lock:
+            if self.queue_manager_running:
+                return
+            self.logger.debug("Queue manager: starting")
+            self.queue_manager_running = True
+            self.process_telegram_queue()
+
+    def process_telegram_queue(self) -> None:
+        """Start the queue manager if it's not running."""
+        self.logger.debug(f"Queue manager: processing (remaining: {self.telegram_queue.qsize()})")
+        if self.telegram_queue.empty():
+            with self.queue_manager_lock:
+                self.logger.debug("Queue manager: stopping")
+                self.queue_manager_running = False
+                return
+
+        self.logger.debug("Queue manager: event loop")
+        telegram = self.telegram_queue.get_nowait()
+        self.sendFrame(telegram)
+        later = randint(10, 80) / 100
+        self._reactor.callLater(later, self.process_telegram_queue)
 
     def __enter__(self) -> "ConbusEventProtocol":
         """Enter context manager.
@@ -296,7 +315,6 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             Self for context management.
         """
         self.logger.debug("Entering the event loop.")
-        self.reactor_thread.start()
         return self
 
     def __exit__(
