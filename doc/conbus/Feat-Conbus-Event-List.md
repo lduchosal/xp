@@ -11,11 +11,6 @@ The list regroups th
 xp conbus event list
 ```
 
-
-```
-xp conbus event list 
-```
-
 conson.yml
 ```
 - name: A3
@@ -38,6 +33,11 @@ conson.yml
 
 Outputs
 ```
-    1. XP20 10 0 (A3, A4)
-    2. XP20 10 8 (A3, A4)
+{
+    "events": [
+        "E33L10I00": ["A3", "A4"],
+        "E33L10I08": ["A3", "A4"],
+        ...
+    ]
+}
 ```

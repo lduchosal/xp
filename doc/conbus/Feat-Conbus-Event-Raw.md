@@ -18,6 +18,8 @@ Send raw event telegrams via CLI to simulate button presses on Conbus modules.
 <E{module_type_code:02d}L{link_number:02d}I{input_number:02d}M{checksum}>
 <E{module_type_code:02d}L{link_number:02d}I{input_number:02d}B{checksum}>
 ```
+**Note**: Checksums are calculated automatically by `ConbusEventProtocol.sendFrame()` - do not calculate manually.
+
 ---
 
 **Examples**:
@@ -32,7 +34,7 @@ Send raw event telegrams via CLI to simulate button presses on Conbus modules.
 ---
 
 **Finish output**:
-The process finish by timing out.
+The process finishes normally by timing out after 5 seconds (after sending MAKE and BREAK events).
 ```
 { 
   "received_telegrams": [
@@ -56,16 +58,16 @@ The process finish by timing out.
 - [ ] Constructor: Accept `ConbusEventProtocol` via DI
 - [ ] Connect protocol signals to handlers:
   - [ ] `on_connection_made` → send first event telegram (MAKE) and schedule second event (BREAK) after delay
-  - [ ] `on_telegram_received` → display on cli received telegrams 
-  - [ ] `on_timeout` → handle clean finish
+  - [ ] `on_telegram_received` → display ALL received telegrams (no filtering, no decoding) via `progress_callback`
+  - [ ] `on_timeout` → handle clean finish (timeout after 5 seconds is the normal/expected completion)
   - [ ] `on_failed` → handle connection failure
 - [ ] Logger: `self.logger = logging.getLogger(__name__)`
 - [ ] Result tracking: Create response model (success, sent_telegrams, received_telegrams, error)
-- [ ] Callbacks: Support `finish_callback` for async completion
-- [ ] Callbacks: Support `progress_callback` for async progress when event telegram are received
-- [ ] Public method: `run(module_type, link_number, input_number, time_ms, finish_callback, timeout_seconds)`
+- [ ] Callbacks: Support `finish_callback` for async completion (includes all received_telegrams)
+- [ ] Callbacks: Support `progress_callback` for async progress when event telegrams are received
+- [ ] Public method: `run(module_type, link_number, input_number, time_ms, finish_callback, timeout_seconds=5)`
 - [ ] Reactor control: Call `start_reactor()` to begin, `stop_reactor()` when done/failed
-- [ ] Event telegram format: Use `TelegramType.EVENT`, construct payload manually (not via `send_telegram`)
+- [ ] Event telegram format: Use `TelegramType.EVENT` when calling `send_telegram()`, construct payload string: `E{code:02d}L{link:02d}I{input:02d}{M|B}`
 
 ### 2. CLI Command: `xp conbus event raw`
 **Reference**: doc/architecture.md → Layer 1: CLI/API
@@ -83,11 +85,11 @@ The process finish by timing out.
 ### 3. Protocol Integration
 **Reference**: `ConbusEventProtocol` (src/xp/services/protocol/conbus_event_protocol.py)
 
-- [ ] Send event telegrams directly via `sendFrame()` (not `send_telegram()` - that's for System telegrams)
+- [ ] **Always use `send_telegram()`** - Never call `sendFrame()` directly; use queueing mechanism
 - [ ] Payload format: `E{module_code:02d}L{link:02d}I{input:02d}{M|B}`
-- [ ] Checksum: Calculate via `calculate_checksum()` (from utils)
+- [ ] Checksum: Handled automatically by `ConbusEventProtocol.sendFrame()` - do not calculate manually
 - [ ] Timing: Use `reactor.callLater(time_ms/1000, callback)` for BREAK event delay
-- [ ] Queue: Always sdd telegrams to `telegram_queue` 
+- [ ] Telegram type: Use `TelegramType.EVENT` when calling `send_telegram()` 
 
 ### 4. Type Safety
 **Reference**: doc/coding.md → Type Safety
@@ -136,10 +138,12 @@ The process finish by timing out.
 ## Key Differences vs Discovery Service
 
 - **Event vs System**: Send `TelegramType.EVENT` (not `SYSTEM`)
-- **Queue send**: Use `send_telegram()` helper to always use queue
-- **No response parsing**: Events don't expect replies (display as progress callback)
-- **Timed sequence**: MAKE → wait → BREAK (not query → parse → query loop)
-- **Simpler result**: Only track sent telegrams and receive events, no device discovery logic
+- **Queue send**: Always use `send_telegram()` with queueing (never call `sendFrame()` directly)
+- **Display all telegrams**: Echo ALL received telegrams without filtering or decoding (via progress callback)
+- **Timed sequence**: MAKE → wait → BREAK → timeout after 5s (not query → parse → query loop)
+- **Timeout is normal**: Timeout (5 seconds) is the expected/clean way to finish, not an error condition
+- **Simpler result**: Only track sent/received telegrams, no device discovery or parsing logic
+- **Checksum automatic**: Protocol handles checksums automatically via `sendFrame()` internally
 
 ---
 
