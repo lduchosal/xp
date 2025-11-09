@@ -254,6 +254,7 @@ xp conbus datapoint query
 xp conbus discover
 
 xp conbus event
+xp conbus event list
 xp conbus event raw
 
 
