@@ -383,6 +383,25 @@ class TestReplyTelegramParsing:
         assert "Timestamp:" in summary
         assert "Checksum: IL" in summary
 
+    def test_parse_actiontable_reply_telegram(self):
+        """Test parsing an actiontable reply telegram (F17).
+
+        This tests a real actiontable telegram received from a module.
+        The F17 function code indicates ACTIONTABLE data response.
+        """
+        raw = "<R0020042796F17DAAAADDBAAABAAADDBAAABBAADDBAAABCAADDBAAIAIAADDBAAIAJAA>"
+        result = self.service.parse_reply_telegram(raw)
+
+        assert isinstance(result, ReplyTelegram)
+        assert result.serial_number == "0020042796"
+        assert result.system_function == SystemFunction.ACTIONTABLE
+        assert result.data == "AA"
+        assert result.data_value == "AADDBAAABAAADDBAAABBAADDBAAABCAADDBAAIAIAADDBAAIAJ"
+        assert result.checksum == "AA"
+        assert not result.checksum_validated
+        assert result.raw_telegram == raw
+        assert result.timestamp is not None
+
 
 class TestAutoDetectTelegramParsing:
     """Test cases for auto-detect telegram parsing in TelegramService."""

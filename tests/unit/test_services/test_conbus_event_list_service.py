@@ -188,7 +188,7 @@ class TestConbusEventListService:
 
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
-        assert response.events["XP20 10 00"] == ["A1"]
+        assert response.events["XP20 10 00"] ==  ['0012345001:0']
 
     def test_multiple_modules_same_event(self, multiple_modules_same_event_config):
         """Test multiple modules sharing same event."""
@@ -199,7 +199,7 @@ class TestConbusEventListService:
 
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
-        assert sorted(response.events["XP20 10 00"]) == ["A1", "A2", "A3"]
+        assert sorted(response.events["XP20 10 00"]) == ["0012345001:0", "0012345002:1", "0012345003:2"]
 
     def test_duplicate_actions_deduplication(self, duplicate_actions_config):
         """Test that duplicate actions in same module are deduplicated."""
@@ -208,7 +208,7 @@ class TestConbusEventListService:
 
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
-        assert response.events["XP20 10 00"] == ["A1"]  # Only once, not three times
+        assert response.events["XP20 10 00"] == ['0012345001:0', '0012345001:1', '0012345001:2']  # Only once, not three times
 
     def test_invalid_action_format(self, invalid_action_config, caplog):
         """Test that invalid actions are skipped with warning."""
@@ -232,7 +232,7 @@ class TestConbusEventListService:
         # Only A2 should be in result (A1 has empty action_table)
         assert len(response.events) == 1
         assert "XP20 10 00" in response.events
-        assert response.events["XP20 10 00"] == ["A2"]
+        assert response.events["XP20 10 00"] == ["0012345002:0"]
 
     def test_sorting_by_module_count(self, sorting_config):
         """Test that events are sorted by module count (descending)."""
