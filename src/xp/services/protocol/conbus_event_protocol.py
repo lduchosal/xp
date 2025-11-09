@@ -7,7 +7,7 @@ import logging
 from queue import SimpleQueue
 from random import randint
 from threading import Lock
-from typing import Any, Optional
+from typing import Any, Optional, Callable
 
 from psygnal import Signal
 from twisted.internet import protocol
@@ -209,7 +209,17 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             f"D{data_value}"
         )
         self.telegram_queue.put_nowait(payload.encode())
-        self._reactor.callLater(0.0, self.start_queue_manager)
+        self.call_later(0.0, self.start_queue_manager)
+
+    def call_later(
+        self,
+        delay: float,
+        callable_action: Callable[..., Any],
+        *args: object,
+        **kw: object,
+    ) -> DelayedCall:
+        """Start reactor."""
+        return self._reactor.callLater(delay, callable_action, args, kw)
 
     def buildProtocol(self, addr: IAddress) -> protocol.Protocol:
         """Build protocol instance for connection.
@@ -264,9 +274,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
     def _reset_timeout(self) -> None:
         """Reset the inactivity timeout."""
         self._cancel_timeout()
-        self.timeout_call = self._reactor.callLater(
-            self.timeout_seconds, self._on_timeout
-        )
+        self.timeout_call = self.call_later(self.timeout_seconds, self._on_timeout)
 
     def _cancel_timeout(self) -> None:
         """Cancel the inactivity timeout."""
@@ -320,7 +328,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         telegram = self.telegram_queue.get_nowait()
         self.sendFrame(telegram)
         later = randint(10, 80) / 100
-        self._reactor.callLater(later, self.process_telegram_queue)
+        self.call_later(later, self.process_telegram_queue)
 
     def __enter__(self) -> "ConbusEventProtocol":
         """Enter context manager.

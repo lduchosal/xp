@@ -69,7 +69,7 @@ class ConbusEventRawService:
 
         # Schedule BREAK event after delay
         delay_seconds = self.time_ms / 1000.0
-        self.break_event_call = self.conbus_protocol._reactor.callLater(
+        self.break_event_call = self.conbus_protocol.call_later(
             delay_seconds, self._send_break_event
         )
 
@@ -78,9 +78,7 @@ class ConbusEventRawService:
         payload = f"E{self.module_type_code:02d}L{self.link_number:02d}I{self.input_number:02d}B"
         self.logger.debug(f"Sending BREAK event: {payload}")
         self.conbus_protocol.telegram_queue.put_nowait(payload.encode())
-        self.conbus_protocol._reactor.callLater(
-            0.0, self.conbus_protocol.start_queue_manager
-        )
+        self.conbus_protocol.call_later(0.0, self.conbus_protocol.start_queue_manager)
 
     def telegram_sent(self, telegram_sent: str) -> None:
         """Handle telegram sent event.
