@@ -20,16 +20,17 @@ Update {specification_file.md} :
 
 ## Review specification
 
-Review {specification_file.md} ask questions, if things are unclear, I will clarify issues, wou will update document based on my answers 
+Review {specification_file.md} ask questions, if things are unclear, I will clarify issues, you will update document based on my answers 
 
 ## Review specification as
 
 review {specification_file.md} as :
-- an architect expert 
+- software architect expert 
 - senior software developer
-- a tester
+- expert in UX user experience
+- a qualified tester
 - a user
-- 
+
 Give feedback and propose improvements, be concise, no bloat
 
 
