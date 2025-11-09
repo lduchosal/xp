@@ -23,20 +23,23 @@ class ConbusDiscoverService:
 
     Uses ConbusProtocol to provide discovery functionality for finding
     modules connected to the Conbus network.
+
+    Attributes:
+        conbus_protocol: Protocol instance for Conbus communication.
     """
+
     conbus_protocol: ConbusEventProtocol
 
-    def __init__(
-        self,
-        conbus_protocol: ConbusEventProtocol
-    ) -> None:
+    def __init__(self, conbus_protocol: ConbusEventProtocol) -> None:
         """Initialize the Conbus discover service.
 
         Args:
             conbus_protocol: ConbusProtocol.
         """
         self.progress_callback: Optional[Callable[[str], None]] = None
-        self.device_discover_callback: Optional[Callable[[DiscoveredDevice], None]] = None
+        self.device_discover_callback: Optional[Callable[[DiscoveredDevice], None]] = (
+            None
+        )
         self.finish_callback: Optional[Callable[[ConbusDiscoverResponse], None]] = None
 
         self.conbus_protocol: ConbusEventProtocol = conbus_protocol
@@ -58,7 +61,7 @@ class ConbusDiscoverService:
             telegram_type=TelegramType.SYSTEM,
             serial_number="0000000000",
             system_function=SystemFunction.DISCOVERY,
-            data_value="00"
+            data_value="00",
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
@@ -184,7 +187,6 @@ class ConbusDiscoverService:
             )
             module_type_name = f"INVALID_{module_type_code}"
 
-
         # Find and update the device in discovered_devices
         if self.discovered_device_result.discovered_devices:
             for device in self.discovered_device_result.discovered_devices:
@@ -202,10 +204,12 @@ class ConbusDiscoverService:
 
         if self.discovered_device_result.discovered_devices:
             for device in self.discovered_device_result.discovered_devices:
-                if not (device["serial_number"]
+                if not (
+                    device["serial_number"]
                     and device["module_type"]
                     and device["module_type_code"]
-                    and device["module_type_name"]):
+                    and device["module_type_name"]
+                ):
                     return
 
         self.succeed()
@@ -240,11 +244,7 @@ class ConbusDiscoverService:
         )
 
     def timeout(self) -> None:
-        """Handle timeout event to stop discovery.
-
-        Returns:
-            False to stop the reactor.
-        """
+        """Handle timeout event to stop discovery."""
         timeout = self.conbus_protocol.timeout_seconds
         self.logger.info("Discovery stopped after: %ss", timeout)
         self.discovered_device_result.success = False
@@ -268,11 +268,9 @@ class ConbusDiscoverService:
 
         self.stop_reactor()
 
-
     def succeed(self) -> None:
-        """Handle discovered device success event.
-        """
-        self.logger.debug(f"Succeed")
+        """Handle discovered device success event."""
+        self.logger.debug("Succeed")
         self.discovered_device_result.success = True
         self.discovered_device_result.error = None
         if self.finish_callback:
@@ -295,7 +293,7 @@ class ConbusDiscoverService:
         progress_callback: Callable[[str], None],
         device_discover_callback: Callable[[DiscoveredDevice], None],
         finish_callback: Callable[[ConbusDiscoverResponse], None],
-        timeout_seconds: Optional[float] = None
+        timeout_seconds: Optional[float] = None,
     ) -> None:
         """Run reactor in dedicated thread with its own event loop.
 

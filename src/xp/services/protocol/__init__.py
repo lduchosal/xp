@@ -7,9 +7,9 @@ from xp.models.protocol.conbus_protocol import (
     ModuleDiscoveredEvent,
     TelegramReceivedEvent,
 )
+from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.protocol.conbus_protocol import ConbusProtocol
 from xp.services.protocol.telegram_protocol import TelegramProtocol
-from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 
 __all__ = ["TelegramProtocol", "ConbusProtocol", "ConbusEventProtocol"]
 

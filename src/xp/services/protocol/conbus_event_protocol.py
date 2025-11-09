@@ -4,12 +4,12 @@ This module implements the Twisted protocol for Conbus communication.
 """
 
 import logging
+from queue import SimpleQueue
 from random import randint
 from threading import Lock
-from queue import SimpleQueue
 from typing import Any, Optional
-from psygnal import Signal
 
+from psygnal import Signal
 from twisted.internet import protocol
 from twisted.internet.base import DelayedCall
 from twisted.internet.interfaces import IAddress, IConnector
@@ -34,11 +34,27 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         cli_config: Conbus configuration settings.
         timeout_seconds: Timeout duration in seconds.
         timeout_call: Delayed call handle for timeout management.
+        telegram_queue: FIFO queue for outgoing telegrams.
+        queue_manager_running: Flag indicating if queue manager is active.
+        queue_manager_lock: Lock for thread-safe queue manager access.
+        on_connection_made: Signal emitted when connection is established.
+        on_connection_lost: Signal emitted when connection is lost.
+        on_connection_failed: Signal emitted when connection fails.
+        on_client_connection_failed: Signal emitted when client connection fails.
+        on_client_connection_lost: Signal emitted when client connection is lost.
+        on_send_frame: Signal emitted when a frame is sent.
+        on_telegram_sent: Signal emitted when a telegram is sent.
+        on_data_received: Signal emitted when data is received.
+        on_telegram_received: Signal emitted when a telegram is received.
+        on_timeout: Signal emitted when timeout occurs.
+        on_failed: Signal emitted when operation fails.
+        on_start_reactor: Signal emitted when reactor starts.
+        on_stop_reactor: Signal emitted when reactor stops.
     """
 
     buffer: bytes
 
-    telegram_queue: SimpleQueue[bytes] = SimpleQueue() # FIFO
+    telegram_queue: SimpleQueue[bytes] = SimpleQueue()  # FIFO
     queue_manager_running: bool = False
     queue_manager_lock: Lock = Lock()
 
@@ -176,7 +192,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         telegram_type: TelegramType,
         serial_number: str,
         system_function: SystemFunction,
-        data_value: str
+        data_value: str,
     ) -> None:
         """Send telegram with specified parameters.
 
@@ -231,11 +247,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self._cancel_timeout()
 
     def timeout(self) -> None:
-        """Handle timeout event.
-
-        Returns:
-            True to continue waiting for next timeout, False to stop.
-        """
+        """Handle timeout event."""
         self.logger.info("Timeout after: %ss", self.timeout_seconds)
         self.on_timeout.emit()
 
@@ -295,7 +307,9 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
 
     def process_telegram_queue(self) -> None:
         """Start the queue manager if it's not running."""
-        self.logger.debug(f"Queue manager: processing (remaining: {self.telegram_queue.qsize()})")
+        self.logger.debug(
+            f"Queue manager: processing (remaining: {self.telegram_queue.qsize()})"
+        )
         if self.telegram_queue.empty():
             with self.queue_manager_lock:
                 self.logger.debug("Queue manager: stopping")
@@ -326,4 +340,3 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         """Context manager exit - ensure connection is closed."""
         self.logger.debug("Exiting the event loop.")
         self.stop_reactor()
-

@@ -12,8 +12,8 @@ from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.models.telegram.datapoint_type import DataPointType
 
 if TYPE_CHECKING:
-    from xp.services.protocol.conbus_protocol import ConbusProtocol
     from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
+    from xp.services.protocol.conbus_protocol import ConbusProtocol
     from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 
