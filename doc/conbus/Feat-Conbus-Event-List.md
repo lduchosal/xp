@@ -2,17 +2,16 @@
 
 conbus cli send event telegrams.
 
-## cli usage
-```
-xp conbus event list
-xp conbus event send
-xp conbus event raw
-```
-### list
-
 The list action, reads conson.yml with existing DI injected ConsonModuleListConfig.
 Parse action table from module list, and generate a list of configured event on the bus.
 The list regroups th
+
+## cli usage
+```
+xp conbus event list
+```
+
+
 ```
 xp conbus event list 
 ```
