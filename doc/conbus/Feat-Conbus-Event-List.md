@@ -129,13 +129,16 @@ Example conson.yml:
   - Single module with one action
   - Multiple modules sharing same event
   - Duplicate actions in same module (deduplication)
-  - Invalid action format (skipped with warning)
+  - Invalid action format (ValueError from ActionTableSerializer)
   - Empty action_table (silently skipped)
   - Sorting by module count
+- [ ] Reuse: ActionTableSerializer parsing tests already cover edge cases
+  - Malformed actions, invalid module types, out of range values
+  - See: `tests/unit/test_services/test_actiontable_serializer.py`
 - [ ] Coverage: Minimum 75%
 - [ ] Run: `pdm test-quick` before commit
 
-### 8. Quality Checks
+### 9. Quality Checks
 **Reference**: doc/quality.md
 
 - [ ] `pdm lint` - Ruff linting
