@@ -9,7 +9,7 @@ To start the TUI, use the following command
 
 ```shell
 
-xp term start
+xp term protocol
 ```
 
 ## TUI Window
@@ -33,69 +33,131 @@ xp term start
 │ [RX] <E02L01I00MAK>                                          │  
 │                                                              │  
 ╰──────────────────────────────────────────────────────────────╯   
- ^q Quit  f1 Help
+  f1 Help  d Discover                                  ^q Quit   
+```
+### Colors and style
+
+The TUI uses a dark theme with green accent colors for optimal readability in terminal environments:
+
+- **Background**: Dark gray/black background for the main application
+- **Border**: Light gray borders for panels and containers
+- **Title**: Gray text for panel headers (e.g., "Protocol")
+- **TX Messages**: Green color for `[TX]` direction markers
+- **RX Messages**: Green color for `[RX]` direction markers
+- **Message Content**: Light gray/white text for protocol message data (enclosed in angle brackets)
+
+Example output:
+```
+[TX] <S0020240110F02D01ED>  # Green [TX], light gray message content
+[RX] <E02L01I00MAK>         # Green [RX], light gray message content
 ```
 
-### Protocol
+The green color scheme provides:
+- Clear visual distinction between direction markers and message data
+- Good contrast against the dark background
+- Reduced eye strain during extended monitoring sessions
 
-The main pane has the protocol communication
+Reference screenshot: Colors-And-Styles.png
 
-## Implementation
+## Implementation Checklist
 
-### Architecture
+**References**: [Quality.md](../Quality.md) | [Coding.md](../Coding.md) | [Architecture.md](../Architecture.md)
 
-```
-src/xp/
-├── cli/
-│   └── commands/
-│       └── term/
-│           ├── __init__.py
-│           └── term_commands.py        # xp term start
-├── services/
-│   └── tui/
-│       ├── __init__.py
-│       ├── tui_service.py              # Main TUI orchestrator
-│       └── tui_state.py                # Shared state management
-└── tui/
-    ├── __init__.py
-    ├── app.py                          # Textual app entry point
-    ├── widgets/
-    │   ├── __init__.py
-    │   └── protocol_log.py             # Main pane: protocol log
-    └── screens/
-        ├── __init__.py
-        └── main_screen.py              # Main layout screen
-```
+### File Structure
+Create these files following the architecture pattern:
+- [ ] `src/xp/cli/commands/term/term_commands.py` - CLI command for `xp term protocol`
+- [ ] `src/xp/tui/app.py` - Textual App entry point
+- [ ] `src/xp/tui/widgets/protocol_log.py` - Main protocol display widget
+- [ ] `src/xp/tui/screens/main_screen.py` - Screen layout manager
+- [ ] `tests/unit/test_tui/test_protocol_log.py` - Widget unit tests
 
-### Dependencies
+### 1. Dependencies
+- [ ] Add `textual>=1.0.0` to pyproject.toml dependencies
+- [ ] Run `pdm install` to update lock file
 
-Add to pyproject.toml:
-- textual>=1.0.0
+### 2. CLI Command
+- [ ] Create `term_commands.py` with Click command `protocol`
+- [ ] Resolve ServiceContainer from context: `ctx.obj["container"]`
+- [ ] Initialize Textual app with container reference
+- [ ] Call `app.run()` to start TUI
+- [ ] NO business logic in command (delegate to app)
 
-### Design Principles
+### 3. Textual App
+- [ ] Create `ProtocolMonitorApp(App)` class in `tui/app.py`
+- [ ] Store ServiceContainer reference in app instance
+- [ ] Compose main screen in `compose()` method
+- [ ] Bind keyboard shortcuts: `^q` for quit, `f1` for help, `d` for discover
+- [ ] Set CSS styling for dark theme with green accents
 
-1. **Separation of concerns**: Widgets are independent, reusable components
-2. **Reactive state**: Use Textual reactive attributes for state updates
-3. **Service layer**: Business logic stays in services, TUI only for display
-4. **Type safety**: Full type hints, pass mypy strict mode
-5. **No bloat**: Minimal dependencies, focus on core functionality
+### 4. Protocol Widget
+Create `ProtocolLogWidget(Widget)` in `tui/widgets/protocol_log.py`:
 
-### Data Flow
+**Reactor Integration (CRITICAL)**:
+- [ ] Resolve `ConbusReceiveService` from container in `on_mount()`
+- [ ] Connect psygnal signals: `on_telegram_received`, `on_telegram_sent`, `on_timeout`, `on_failed`
+- [ ] Call `reactor.connectTCP()` with protocol config (DO NOT call `start_reactor()`)
+- [ ] Textual's event loop handles both Twisted and Textual events automatically
+- [ ] Store messages in reactive list attribute for auto-refresh
 
-```
-CLI Command → TUI Service → Textual App → Widgets
-                ↓              ↓           ↓
-           Conbus Service → State → Reactive Display
-```
+**Signal Handlers**:
+- [ ] `on_telegram_received()`: Append `[RX] {frame}` to message list
+- [ ] `on_telegram_sent()`: Append `[TX] {frame}` to message list
+- [ ] `on_timeout()`: Log timeout (continuous monitoring, no action needed)
+- [ ] `on_failed()`: Display error message in widget
 
-### Key Features
+**Rendering**:
+- [ ] Use Textual reactive attributes for message list
+- [ ] Apply green color to `[TX]` and `[RX]` markers
+- [ ] Light gray/white for telegram frames
+- [ ] Auto-scroll to newest messages
 
-1. **Protocol monitoring**: Live RX/TX message stream
+**Cleanup**:
+- [ ] Disconnect all signals in `on_unmount()`
+- [ ] Close transport with `transport.loseConnection()`
 
-### Quality Standards
+### 5. Styling
+Apply color scheme matching Colors-And-Styles.png:
+- [ ] Dark gray/black background
+- [ ] Light gray borders
+- [ ] Green text for `[TX]` and `[RX]` markers
+- [ ] Light gray text for telegram content
+- [ ] Footer with key bindings: `f1 Help`, `d Discover`, `^q Quit`
 
-- Type hints: 100% coverage
-- Docstrings: flake8-docstrings compliant (D,DCO)
-- Tests: Unit tests for widgets and services
-- Format: black, isort, ruff
-- Linting: flake8, mypy strict mode
+### 6. Testing
+- [ ] Mock `reactor` in tests to avoid event loop conflicts
+- [ ] Test widget signal handlers with mock events
+- [ ] Test keyboard bindings and app lifecycle
+- [ ] Verify 75% minimum coverage: `pdm test-cov`
+- [ ] Run `pdm test-quick` before commit
+
+### 7. Quality Checks
+Run all checks before committing:
+- [ ] `pdm format` - Black formatting (88 char line length)
+- [ ] `pdm lint` - Ruff linting
+- [ ] `pdm typecheck` - Mypy strict mode (100% type hints)
+- [ ] `pdm absolufy` - Convert to absolute imports
+- [ ] `pdm refurb` - Code modernization
+- [ ] `pdm check` - Full quality suite
+
+### 8. Documentation
+- [ ] Module-level docstrings for all files
+- [ ] Class docstrings explaining purpose
+- [ ] Method docstrings with Args, Returns, Raises
+- [ ] Pass `pdm run flake8 --select=D,DCO` (docstring checker)
+
+### Critical Integration Notes
+
+**Event Loop**: Textual and Twisted share asyncio loop via `asyncioreactor`
+- Textual's `app.run()` controls the loop
+- `reactor.connectTCP()` schedules connection without blocking
+- DO NOT call `start_reactor()` or `reactor.run()` in TUI code
+
+**Service Reuse**: ConbusReceiveService works without modification
+- Skip `start_reactor()` method only
+- All signals, callbacks, and timeout logic works as-is
+- No changes needed to existing service code
+
+**Data Flow**: `CLI → App → Widget → Signals → Protocol → TCP`
+- Widget connects to protocol signals on mount
+- Signals fire when telegrams arrive
+- Reactive attributes trigger automatic UI updates
