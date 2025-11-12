@@ -57,3 +57,4 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
     )
     with service:
         service.start(progress, on_finish, timeout)
+        service.start_reactor()

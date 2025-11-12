@@ -1,51 +1,54 @@
 """Conbus Receive Service for receiving telegrams from Conbus servers.
 
-This service uses ConbusProtocol to provide receive-only functionality,
+This service uses ConbusEventProtocol to provide receive-only functionality,
 allowing clients to receive waiting event telegrams using empty telegram sends.
 """
 
 import logging
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
-from twisted.internet.posixbase import PosixReactorBase
-
-from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_receive import ConbusReceiveResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
-from xp.services.protocol import ConbusProtocol
+from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 
 
-class ConbusReceiveService(ConbusProtocol):
+class ConbusReceiveService:
     """
     Service for receiving telegrams from Conbus servers.
 
-    Uses ConbusProtocol to provide receive-only functionality
+    Uses ConbusEventProtocol to provide receive-only functionality
     for collecting waiting event telegrams from the server.
+
+    Attributes:
+        conbus_protocol: Protocol instance for Conbus communication.
     """
 
-    def __init__(
-        self,
-        cli_config: ConbusClientConfig,
-        reactor: PosixReactorBase,
-    ) -> None:
+    conbus_protocol: ConbusEventProtocol
+
+    def __init__(self, conbus_protocol: ConbusEventProtocol) -> None:
         """Initialize the Conbus receive service.
 
         Args:
-            cli_config: Conbus client configuration.
-            reactor: Twisted reactor instance.
+            conbus_protocol: ConbusEventProtocol instance.
         """
-        super().__init__(cli_config, reactor)
         self.progress_callback: Optional[Callable[[str], None]] = None
         self.finish_callback: Optional[Callable[[ConbusReceiveResponse], None]] = None
         self.receive_response: ConbusReceiveResponse = ConbusReceiveResponse(
             success=True
         )
 
+        self.conbus_protocol: ConbusEventProtocol = conbus_protocol
+        self.conbus_protocol.on_connection_made.connect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.connect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.connect(self.telegram_received)
+        self.conbus_protocol.on_timeout.connect(self.timeout)
+        self.conbus_protocol.on_failed.connect(self.failed)
+
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def connection_established(self) -> None:
-        """Handle connection established event."""
+    def connection_made(self) -> None:
+        """Handle connection made event."""
         self.logger.debug("Connection established, waiting for telegrams.")
 
     def telegram_sent(self, telegram_sent: str) -> None:
@@ -70,17 +73,13 @@ class ConbusReceiveService(ConbusProtocol):
             self.receive_response.received_telegrams = []
         self.receive_response.received_telegrams.append(telegram_received.frame)
 
-    def timeout(self) -> bool:
-        """Handle timeout event to stop receiving.
-
-        Returns:
-            False to stop the reactor.
-        """
-        self.logger.info("Receive stopped after: %ss", self.timeout_seconds)
+    def timeout(self) -> None:
+        """Handle timeout event to stop receiving."""
+        timeout = self.conbus_protocol.timeout_seconds
+        self.logger.info("Receive stopped after: %ss", timeout)
         self.receive_response.success = True
         if self.finish_callback:
             self.finish_callback(self.receive_response)
-        return False
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -100,7 +99,7 @@ class ConbusReceiveService(ConbusProtocol):
         finish_callback: Callable[[ConbusReceiveResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Run reactor in dedicated thread with its own event loop.
+        """Setup callbacks and timeout for receiving telegrams.
 
         Args:
             progress_callback: Callback for each received telegram.
@@ -109,7 +108,30 @@ class ConbusReceiveService(ConbusProtocol):
         """
         self.logger.info("Starting receive")
         if timeout_seconds:
-            self.timeout_seconds = timeout_seconds
+            self.conbus_protocol.timeout_seconds = timeout_seconds
         self.progress_callback = progress_callback
         self.finish_callback = finish_callback
-        self.start_reactor()
+
+    def start_reactor(self) -> None:
+        """Start the reactor."""
+        self.conbus_protocol.start_reactor()
+
+    def __enter__(self) -> "ConbusReceiveService":
+        """Enter context manager.
+
+        Returns:
+            Self for context manager protocol.
+        """
+        # Reset state for singleton reuse
+        self.receive_response = ConbusReceiveResponse(success=True)
+        return self
+
+    def __exit__(
+        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+    ) -> None:
+        """Exit context manager and disconnect signals."""
+        self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+        self.conbus_protocol.on_timeout.disconnect(self.timeout)
+        self.conbus_protocol.on_failed.disconnect(self.failed)
