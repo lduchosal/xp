@@ -99,20 +99,30 @@ Create these files following the architecture pattern:
 ### 4. Protocol Widget
 Create `ProtocolLogWidget(Widget)` in `tui/widgets/protocol_log.py`:
 
+**Connection State Management (CRITICAL)**:
+- [ ] Define connection state enum: `DISCONNECTED`, `CONNECTING`, `CONNECTED`, `FAILED`
+- [ ] Store current state in reactive attribute: `connection_state = reactive("DISCONNECTED")`
+- [ ] Store protocol reference to prevent duplicate connections: `self.protocol = None`
+- [ ] Display connection state in widget header or status line
+
 **Reactor Integration (CRITICAL)**:
 - [ ] Accept ServiceContainer in constructor
 - [ ] Resolve `ConbusReceiveService` from container in `on_mount()`
 - [ ] Use `self.set_timer()` to delay connection (e.g., 0.5s) - let UI render first
-- [ ] Connect psygnal signals: `on_telegram_received`, `on_telegram_sent`, `on_timeout`, `on_failed`
-- [ ] In timer callback: Call `reactor.connectTCP()` with protocol config from `ConbusClientConfig`
+- [ ] In timer callback: **Check `self.protocol is None` before connecting** (race condition guard)
+- [ ] Set state to `CONNECTING` before connection attempt
+- [ ] Connect psygnal signals: `on_telegram_received`, `on_telegram_sent`, `on_timeout`, `on_failed`, `on_connection_made`
+- [ ] Call `reactor.connectTCP()` with protocol config from `ConbusClientConfig`
+- [ ] Store protocol reference: `self.protocol = service.conbus_protocol`
 - [ ] DO NOT call `start_reactor()` - Textual's event loop handles both Twisted and Textual events
 - [ ] Store messages in reactive list attribute (no limit - keep it simple)
 
 **Signal Handlers**:
+- [ ] `on_connection_made()`: Set state to `CONNECTED`, display "Connected" status
 - [ ] `on_telegram_received()`: Append `[RX] {frame}` to message list
 - [ ] `on_telegram_sent()`: Append `[TX] {frame}` to message list
 - [ ] `on_timeout()`: Log timeout (continuous monitoring, no action needed)
-- [ ] `on_failed()`: Call `self.app.exit()` to quit app (no reconnection logic)
+- [ ] `on_failed(error)`: Set state to `FAILED`, display error message, call `self.app.exit()` after brief delay
 
 **Discover Functionality**:
 - [ ] Create `send_discover()` method called by app's `action_discover()`
@@ -120,14 +130,22 @@ Create `ProtocolLogWidget(Widget)` in `tui/widgets/protocol_log.py`:
 - [ ] Display sent telegram in message list as `[TX]`
 
 **Rendering**:
+- [ ] Display connection status based on reactive `connection_state` attribute:
+  - `DISCONNECTED`: Show nothing (initial state)
+  - `CONNECTING`: Show "Connecting..." in yellow
+  - `CONNECTED`: Show "Connected" in green (or hide after 2s)
+  - `FAILED`: Show error message in red
 - [ ] Use Textual reactive attributes for message list
 - [ ] Apply green color to `[TX]` and `[RX]` markers using Rich markup
 - [ ] Light gray/white for telegram frames
 - [ ] No scroll handling - keep it simple (Textual handles basic scrolling)
 
 **Cleanup**:
+- [ ] Check `if self.protocol is not None` before cleanup
 - [ ] Disconnect all signals in `on_unmount()`
-- [ ] Close transport with `transport.loseConnection()` if connected
+- [ ] Close transport with `self.protocol.transport.loseConnection()` if connected
+- [ ] Set `self.protocol = None` after cleanup
+- [ ] Set connection state to `DISCONNECTED`
 
 ### 5. Styling (protocol.tcss)
 Create `src/xp/tui/protocol.tcss` with color scheme matching Colors-And-Styles.png:
@@ -139,6 +157,9 @@ Create `src/xp/tui/protocol.tcss` with color scheme matching Colors-And-Styles.p
 
 ### 6. Testing
 - [ ] Mock `reactor` in tests to avoid event loop conflicts
+- [ ] Test connection state transitions: DISCONNECTED → CONNECTING → CONNECTED
+- [ ] Test connection state on failure: CONNECTING → FAILED
+- [ ] Test race condition guard: multiple timer callbacks don't create duplicate connections
 - [ ] Test widget signal handlers with mock events
 - [ ] Test keyboard bindings and app lifecycle
 - [ ] Verify 75% minimum coverage: `pdm test-cov`
@@ -176,9 +197,16 @@ Run all checks before committing:
 
 **Service Reuse**: ConbusReceiveService works without modification
 - Skip `start_reactor()` method only
-- Use existing psygnal signals: `on_telegram_received`, `on_telegram_sent`, `on_timeout`, `on_failed`
+- Use existing psygnal signals: `on_telegram_received`, `on_telegram_sent`, `on_timeout`, `on_failed`, `on_connection_made`
 - All timeout logic works as-is
 - No changes needed to existing service code
+
+**ServiceContainer Scope** (CRITICAL):
+- ConbusReceiveService is registered as **singleton** in ServiceContainer
+- Multiple `resolve()` calls return the **same instance**
+- Only call `resolve()` **once** in widget `on_mount()`
+- Store protocol reference (`self.protocol`) to prevent duplicate connections
+- Guard connection with `if self.protocol is None` check
 
 **Configuration**: Always use cli.yml configuration
 - Resolve `ConbusClientConfig` for connection parameters
@@ -192,6 +220,7 @@ Run all checks before committing:
 
 **Data Flow**: `CLI → App → Widget → Signals → Protocol → TCP`
 - Widget connects to protocol signals on mount (delayed)
+- Connection states: DISCONNECTED → CONNECTING → CONNECTED (or FAILED)
 - Signals fire when telegrams arrive
-- Reactive attributes trigger automatic UI updates
-- On error: exit app immediately (no recovery)
+- Reactive attributes (`connection_state`, `messages`) trigger automatic UI updates
+- On error: display error, set state to FAILED, exit app after brief delay (no recovery)
