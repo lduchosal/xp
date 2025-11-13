@@ -56,5 +56,5 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
         ctx.obj.get("container").get_container().resolve(ConbusReceiveService)
     )
     with service:
-        service.start(progress, on_finish, timeout)
+        service.init(progress, on_finish, timeout)
         service.start_reactor()

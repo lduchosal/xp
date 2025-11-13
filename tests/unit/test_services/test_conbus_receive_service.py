@@ -194,7 +194,7 @@ class TestConbusReceiveService:
         finish_mock = Mock()
         progress_mock = Mock()
 
-        service.start(
+        service.init(
             progress_callback=progress_mock,
             finish_callback=finish_mock,
             timeout_seconds=10,
@@ -210,7 +210,7 @@ class TestConbusReceiveService:
         progress_mock = Mock()
         original_timeout = mock_protocol.timeout_seconds
 
-        service.start(
+        service.init(
             progress_callback=progress_mock,
             finish_callback=finish_mock,
             timeout_seconds=None,
@@ -261,7 +261,7 @@ class TestConbusReceiveService:
 
         # First use
         with service:
-            service.start(progress_mock, finish_mock, 5.0)
+            service.init(progress_mock, finish_mock, 5.0)
             # Simulate receiving a telegram
             service.receive_response.received_telegrams = ["<T123456789012D0AK>"]
 

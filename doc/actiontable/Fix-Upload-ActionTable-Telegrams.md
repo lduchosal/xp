@@ -52,12 +52,13 @@ def test_upload_generates_correct_telegram_sequence(self):
 
     # Setup: Capture all send_telegram calls
     sent_telegrams = []
+
     def capture_telegram(**kwargs):
         sent_telegrams.append(kwargs)
 
     with patch.object(service, 'send_telegram', side_effect=capture_telegram):
         # Start upload and simulate ACK responses
-        service.start(serial_number="0020044974", ...)
+        service.init(serial_number="0020044974", ...)
 
         # Simulate connection established
         service.connection_established()
@@ -75,7 +76,7 @@ def test_upload_generates_correct_telegram_sequence(self):
 
     # Verify: Next 15 telegrams are ACTIONTABLE with correct prefixes
     expected_prefixes = ['AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH',
-                        'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO']
+                         'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO']
 
     for i, expected_prefix in enumerate(expected_prefixes):
         telegram = sent_telegrams[i + 1]

@@ -323,6 +323,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.logger.info("Starting reactor event loop.")
         self._reactor.run()
 
+
     def start_queue_manager(self) -> None:
         """Start the queue manager if it's not running."""
         with self.queue_manager_lock:
@@ -348,6 +349,23 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.sendFrame(telegram)
         later = randint(10, 80) / 100
         self.call_later(later, self.process_telegram_queue)
+
+    def set_event_loop(self, event_loop) -> None:
+        """Change the event loop.
+
+        Args:
+            event_loop: the event loop instance.
+        """
+        reactor = self._reactor
+        if hasattr(reactor, "_asyncioEventloop"):
+            reactor._asyncioEventloop = event_loop
+
+        # Set reactor to running state
+        if not reactor.running:
+            reactor.running = True
+            if hasattr(reactor, "startRunning"):
+                reactor.startRunning()
+            self.logger.info("Set reactor to running state")
 
     def __enter__(self) -> "ConbusEventProtocol":
         """Enter context manager.

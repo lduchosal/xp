@@ -29,7 +29,7 @@ class ProtocolMonitorApp(App[None]):
         ("q", "quit", "Quit"),
         ("c", "connect", "Connect"),
         ("d", "disconnect", "Disconnect"),
-        ("D", "discover", "Discover"),
+        ("1", "discover", "Discover"),
     ]
 
     def __init__(self, container: Any) -> None:

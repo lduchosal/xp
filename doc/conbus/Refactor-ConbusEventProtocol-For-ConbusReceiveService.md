@@ -132,7 +132,7 @@ Update src/xp/cli/commands/conbus/conbus_receive_commands.py:55-60:
 - [ ] Updated pattern:
   ```python
   with service:
-      service.start(progress, on_finish, timeout)
+      service.init(progress, on_finish, timeout)
       service.start_reactor()  # ADD THIS LINE
   ```
 - [ ] Verify context manager usage still works

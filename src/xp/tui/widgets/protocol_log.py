@@ -112,30 +112,19 @@ class ProtocolLogWidget(Widget):
             def finish_callback(response: Any) -> None:
                 pass
 
-            self.service.start(
+            # Get the currently running asyncio event loop (Textual's loop)
+            event_loop = asyncio.get_running_loop()
+            self.logger.info(f"Current running loop: {event_loop}")
+            self.logger.info(f"Loop is running: {event_loop.is_running()}")
+
+            self.service.init(
                 progress_callback=progress_callback,
                 finish_callback=finish_callback,
                 timeout_seconds=None,  # Continuous monitoring
+                event_loop=event_loop
             )
 
-            # Get the currently running asyncio event loop (Textual's loop)
-            loop = asyncio.get_running_loop()
-            reactor = self.protocol._reactor
-
-            self.logger.info(f"Current running loop: {loop}")
-            self.logger.info(f"Loop is running: {loop.is_running()}")
-
-            # Force reactor to use THIS specific running loop
-            if hasattr(reactor, "_asyncioEventloop"):
-                reactor._asyncioEventloop = loop
-
-            # Set reactor to running state
-            if not reactor.running:
-                reactor.running = True
-                if hasattr(reactor, "startRunning"):
-                    reactor.startRunning()
-                self.logger.info("Set reactor to running state")
-
+            reactor = self.service.conbus_protocol._reactor
             # Schedule the connection on the running asyncio loop
             # This ensures connectTCP is called in the context of the running loop
             def do_connect() -> None:
@@ -147,7 +136,7 @@ class ProtocolLogWidget(Widget):
                         self.protocol
                     )
 
-            loop.call_soon(do_connect)
+            event_loop.call_soon(do_connect)
             self.logger.info("Scheduled connectTCP on running loop")
 
             if self.log_widget:
