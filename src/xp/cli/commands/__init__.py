@@ -86,6 +86,8 @@ from xp.cli.commands.telegram.telegram_parse_commands import (
     validate_telegram,
 )
 from xp.cli.commands.telegram.telegram_version_commands import generate_version_request
+from xp.cli.commands.term.term import term
+from xp.cli.commands.term.term_commands import protocol_monitor
 
 __all__ = [
     # Main command groups (conbus excluded to avoid module shadowing)
@@ -109,7 +111,9 @@ __all__ = [
     "checksum",
     "homekit",
     "homekit_start",
+    "term",
     # Individual command functions
+    "protocol_monitor",
     "conbus_download_msactiontable",
     "conbus_download_actiontable",
     "send_blink_on_telegram",

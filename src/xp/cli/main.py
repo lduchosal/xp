@@ -16,6 +16,7 @@ from xp.cli.commands.server.server_commands import server
 
 # Import command groups from modular structure
 from xp.cli.commands.telegram.telegram_parse_commands import telegram
+from xp.cli.commands.term.term import term
 from xp.cli.utils.click_tree import add_tree_command
 from xp.utils.dependencies import ServiceContainer
 
@@ -79,6 +80,7 @@ cli.add_command(module)
 cli.add_command(file)
 cli.add_command(server)
 cli.add_command(reverse_proxy)
+cli.add_command(term)
 
 # Add the tree command
 add_tree_command(cli)

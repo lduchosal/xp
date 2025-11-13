@@ -1,0 +1,50 @@
+/* Protocol Monitor TUI Styling */
+
+/* App-level styling */
+Screen {
+    background: $background;
+}
+
+/* Protocol Log Widget */
+ProtocolLogWidget {
+    border: solid $primary;
+    height: 1fr;
+    background: $surface;
+}
+
+ProtocolLogWidget > .connection-status {
+    color: $text;
+    text-align: center;
+    padding: 1;
+}
+
+ProtocolLogWidget > .connection-status.connecting {
+    color: $warning;
+}
+
+ProtocolLogWidget > .connection-status.connected {
+    color: $success;
+}
+
+ProtocolLogWidget > .connection-status.failed {
+    color: $error;
+}
+
+/* Message display styling */
+.message-tx {
+    color: $success;
+}
+
+.message-rx {
+    color: $success;
+}
+
+.message-frame {
+    color: $text-muted;
+}
+
+/* Footer styling */
+Footer {
+    background: $panel;
+    color: $text;
+}
