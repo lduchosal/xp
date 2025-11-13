@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+from typing import Optional
 
 import yaml
 from pydantic import BaseModel, Field
@@ -21,14 +22,28 @@ class ClientConfig(BaseModel):
     timeout: float = 0.1
 
 
+class LoggingConfig(BaseModel):
+    """Logging configuration.
+
+    Attributes:
+        path: log folder.
+        level: DEBUG, WARNING, INFO, ERROR, CRITICAL.
+    """
+
+    path: str = "log"
+    level: str = "DEBUG"
+
+
 class ConbusClientConfig(BaseModel):
     """Configuration for Conbus client connection.
 
     Attributes:
         conbus: Client configuration settings.
+        log_path: Optional path for log file output.
     """
 
     conbus: ClientConfig = Field(default_factory=ClientConfig)
+    log: LoggingConfig = Field(default_factory=LoggingConfig)
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "ConbusClientConfig":

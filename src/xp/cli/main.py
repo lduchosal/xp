@@ -1,9 +1,11 @@
 """XP CLI tool entry point with modular command structure."""
 
 import logging
+from pathlib import Path
 
 import click
 from click_help_colors import HelpColorsGroup
+from docutils.nodes import container
 
 from xp.cli.commands import homekit
 from xp.cli.commands.conbus.conbus import conbus
@@ -18,7 +20,9 @@ from xp.cli.commands.server.server_commands import server
 from xp.cli.commands.telegram.telegram_parse_commands import telegram
 from xp.cli.commands.term.term import term
 from xp.cli.utils.click_tree import add_tree_command
+from xp.models import ConbusClientConfig
 from xp.utils.dependencies import ServiceContainer
+from xp.utils.logging import LoggerService
 
 
 @click.group(
@@ -32,44 +36,16 @@ def cli(ctx: click.Context) -> None:
     Args:
         ctx: Click context object for passing state between commands.
     """
-    # Configure logging with thread information
-    log_format = "%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s"
-    date_format = "%H:%M:%S"
 
-    # Force format on root logger and all handlers
-    formatter = logging.Formatter(log_format, datefmt=date_format)
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)
-
-    # Update all existing handlers or create new one
-    if root_logger.handlers:
-        for handler in root_logger.handlers:
-            handler.setFormatter(formatter)
-    else:
-        handler = logging.StreamHandler()
-        handler.setFormatter(formatter)
-        root_logger.addHandler(handler)
-
-    # Suppress pyhap.hap_protocol logs
-
-    # bubus
-    logging.getLogger("bubus").setLevel(logging.WARNING)
-
-    # xp
-    logging.getLogger("xp").setLevel(logging.DEBUG)
-    logging.getLogger("xp.services.homekit").setLevel(logging.DEBUG)
-
-    # pyhap
-    logging.getLogger("pyhap").setLevel(logging.WARNING)
-    logging.getLogger("pyhap.hap_handler").setLevel(logging.WARNING)
-    logging.getLogger("pyhap.hap_protocol").setLevel(logging.WARNING)
-    # logging.getLogger('pyhap.accessory_driver').setLevel(logging.WARNING)
+    container = ServiceContainer()
+    logger_config = container.get_container().resolve(LoggerService)
+    logger_config.setup()
 
     # Initialize the service container and store it in the context
     ctx.ensure_object(dict)
     # Only create a new container if one wasn't provided (e.g., for testing)
     if "container" not in ctx.obj:
-        ctx.obj["container"] = ServiceContainer()
+        ctx.obj["container"] = container
 
 
 # Register all command groups

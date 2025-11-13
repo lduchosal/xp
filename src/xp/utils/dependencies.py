@@ -72,6 +72,7 @@ from xp.services.telegram.telegram_discover_service import TelegramDiscoverServi
 from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
+from xp.utils.logging import LoggerService
 
 asyncioreactor.install()
 from twisted.internet import reactor  # noqa: E402
@@ -382,6 +383,15 @@ class ServiceContainer:
             LogFileService,
             factory=lambda: LogFileService(
                 telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        # Logging
+        self.container.register(
+            LoggerService,
+            factory=lambda: LoggerService(
+                client_config=self.container.resolve(ConbusClientConfig),
             ),
             scope=punq.Scope.singleton,
         )
