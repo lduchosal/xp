@@ -132,7 +132,6 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
-
         # Telegram services layer
         self.container.register(TelegramService, scope=punq.Scope.singleton)
         self.container.register(

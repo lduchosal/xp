@@ -1,19 +1,11 @@
 """Unit tests for LoggerService."""
 
 import logging
-from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch, call
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from xp.models.conbus.conbus_logger_config import ConbusLoggerConfig, LoggingConfig
-
-# Note: logging.py has wrong import - should be from conbus_logger_config
-# Patching the import to make tests work with current broken code
-import sys
-import xp.models.conbus.conbus_logger_config as logger_config_module
-sys.modules['xp.models.conbus.conbus_client_config'] = logger_config_module
-
 from xp.utils.logging import LoggerService
 
 
@@ -30,7 +22,7 @@ class TestLoggerService:
                 levels={
                     "xp": logging.DEBUG,
                     "bubus": logging.WARNING,
-                }
+                },
             )
         )
         return config
@@ -68,19 +60,12 @@ class TestLoggerService:
         mock_get_logger.return_value = mock_root
 
         config = ConbusLoggerConfig(
-            log=LoggingConfig(
-                path="/tmp/test.log",
-                default_level="DEBUG",
-                levels={}
-            )
+            log=LoggingConfig(path="/tmp/test.log", default_level="DEBUG", levels={})
         )
         service = LoggerService(logger_config=config)
 
         # Execute
-        service.setup_console_logging(
-            log_format="%(message)s",
-            date_format="%H:%M:%S"
-        )
+        service.setup_console_logging(log_format="%(message)s", date_format="%H:%M:%S")
 
         # Verify
         assert mock_root.addHandler.called
@@ -98,19 +83,12 @@ class TestLoggerService:
         mock_get_logger.return_value = mock_root
 
         config = ConbusLoggerConfig(
-            log=LoggingConfig(
-                path="/tmp/test.log",
-                default_level="WARNING",
-                levels={}
-            )
+            log=LoggingConfig(path="/tmp/test.log", default_level="WARNING", levels={})
         )
         service = LoggerService(logger_config=config)
 
         # Execute
-        service.setup_console_logging(
-            log_format="%(message)s",
-            date_format="%H:%M:%S"
-        )
+        service.setup_console_logging(log_format="%(message)s", date_format="%H:%M:%S")
 
         # Verify both handlers got formatter updated
         assert mock_handler1.setFormatter.called
@@ -121,7 +99,9 @@ class TestLoggerService:
     @patch("xp.utils.logging.logging.getLogger")
     @patch("xp.utils.logging.RotatingFileHandler")
     @patch("xp.utils.logging.Path")
-    def test_setup_file_logging_success(self, mock_path, mock_handler_class, mock_get_logger):
+    def test_setup_file_logging_success(
+        self, mock_path, mock_handler_class, mock_get_logger
+    ):
         """Test file logging setup with successful file creation."""
         # Setup
         mock_handler = MagicMock()
@@ -134,26 +114,19 @@ class TestLoggerService:
         mock_path.return_value = mock_path_instance
 
         config = ConbusLoggerConfig(
-            log=LoggingConfig(
-                path="/tmp/test.log",
-                default_level="INFO",
-                levels={}
-            )
+            log=LoggingConfig(path="/tmp/test.log", default_level="INFO", levels={})
         )
         service = LoggerService(logger_config=config)
 
         # Execute
-        service.setup_file_logging(
-            log_format="%(message)s",
-            date_format="%H:%M:%S"
-        )
+        service.setup_file_logging(log_format="%(message)s", date_format="%H:%M:%S")
 
         # Verify
-        mock_path_instance.parent.mkdir.assert_called_once_with(parents=True, exist_ok=True)
+        mock_path_instance.parent.mkdir.assert_called_once_with(
+            parents=True, exist_ok=True
+        )
         mock_handler_class.assert_called_once_with(
-            mock_path_instance,
-            maxBytes=1024 * 1024,
-            backupCount=365
+            mock_path_instance, maxBytes=1024 * 1024, backupCount=365
         )
         assert mock_handler.setFormatter.called
         assert mock_handler.setLevel.called
@@ -178,20 +151,13 @@ class TestLoggerService:
         mock_path.return_value = mock_path_instance
 
         config = ConbusLoggerConfig(
-            log=LoggingConfig(
-                path="/tmp/test.log",
-                default_level="INFO",
-                levels={}
-            )
+            log=LoggingConfig(path="/tmp/test.log", default_level="INFO", levels={})
         )
         service = LoggerService(logger_config=config)
         service.logger = service_logger
 
         # Execute - should not raise exception
-        service.setup_file_logging(
-            log_format="%(message)s",
-            date_format="%H:%M:%S"
-        )
+        service.setup_file_logging(log_format="%(message)s", date_format="%H:%M:%S")
 
         # Verify warning was logged
         assert service_logger.warning.called
@@ -217,20 +183,13 @@ class TestLoggerService:
         )
 
         config = ConbusLoggerConfig(
-            log=LoggingConfig(
-                path="/tmp/test.log",
-                default_level="INFO",
-                levels={}
-            )
+            log=LoggingConfig(path="/tmp/test.log", default_level="INFO", levels={})
         )
         service = LoggerService(logger_config=config)
         service.logger = service_logger
 
         # Execute - should not raise exception
-        service.setup_file_logging(
-            log_format="%(message)s",
-            date_format="%H:%M:%S"
-        )
+        service.setup_file_logging(log_format="%(message)s", date_format="%H:%M:%S")
 
         # Verify warning was logged
         assert service_logger.warning.called
@@ -245,6 +204,14 @@ class TestLoggerService:
         mock_root_logger.handlers = [MagicMock()]
 
         def get_logger_side_effect(name=None):
+            """Return appropriate mock logger based on name.
+
+            Args:
+                name: Logger name to retrieve.
+
+            Returns:
+                Mock logger instance for the specified name.
+            """
             if name is None or name == "":
                 return mock_root_logger
             elif name == "xp":
@@ -263,7 +230,7 @@ class TestLoggerService:
                 levels={
                     "xp": logging.DEBUG,
                     "bubus": logging.WARNING,
-                }
+                },
             )
         )
         service = LoggerService(logger_config=config)
@@ -286,11 +253,7 @@ class TestLoggerService:
         mock_get_logger.return_value = mock_root_logger
 
         config = ConbusLoggerConfig(
-            log=LoggingConfig(
-                path="/tmp/test.log",
-                default_level="INFO",
-                levels={}
-            )
+            log=LoggingConfig(path="/tmp/test.log", default_level="INFO", levels={})
         )
         service = LoggerService(logger_config=config)
 
@@ -309,15 +272,12 @@ class TestLoggerService:
                 with patch("xp.utils.logging.logging.getLogger"):
                     config = ConbusLoggerConfig(
                         log=LoggingConfig(
-                            path="/tmp/test.log",
-                            default_level="INFO",
-                            levels={}
+                            path="/tmp/test.log", default_level="INFO", levels={}
                         )
                     )
                     service = LoggerService(logger_config=config)
                     service.setup_file_logging(
-                        log_format="%(message)s",
-                        date_format="%H:%M:%S"
+                        log_format="%(message)s", date_format="%H:%M:%S"
                     )
 
                     # Verify rotation parameters from config
@@ -336,13 +296,12 @@ class TestLoggerService:
                             default_level="INFO",
                             levels={},
                             max_bytes=5 * 1024 * 1024,  # 5MB
-                            backup_count=30
+                            backup_count=30,
                         )
                     )
                     service = LoggerService(logger_config=config)
                     service.setup_file_logging(
-                        log_format="%(message)s",
-                        date_format="%H:%M:%S"
+                        log_format="%(message)s", date_format="%H:%M:%S"
                     )
 
                     # Verify custom rotation parameters

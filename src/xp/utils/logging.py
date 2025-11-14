@@ -23,19 +23,16 @@ class LoggerService:
         """Setup console and file logging with configured levels."""
         # Setup file logging for term app
         self.setup_console_logging(
-            self.logging_config.log_format,
-            self.logging_config.date_format
+            self.logging_config.log_format, self.logging_config.date_format
         )
         self.setup_file_logging(
-            self.logging_config.log_format,
-            self.logging_config.date_format
+            self.logging_config.log_format, self.logging_config.date_format
         )
 
         for module in self.logging_config.levels.keys():
             logging.getLogger(module).setLevel(self.logging_config.levels[module])
 
-    def setup_console_logging(
-            self, log_format: str, date_format: str) -> None:
+    def setup_console_logging(self, log_format: str, date_format: str) -> None:
         """Setup console logging with specified format.
 
         Args:
@@ -59,8 +56,7 @@ class LoggerService:
             handler.setFormatter(formatter)
             root_logger.addHandler(handler)
 
-    def setup_file_logging(
-            self, log_format: str, date_format: str) -> None:
+    def setup_file_logging(self, log_format: str, date_format: str) -> None:
         """Setup file logging with rotation for term application.
 
         Args:
@@ -78,7 +74,7 @@ class LoggerService:
             file_handler = RotatingFileHandler(
                 log_path,
                 maxBytes=self.logging_config.max_bytes,
-                backupCount=self.logging_config.backup_count
+                backupCount=self.logging_config.backup_count,
             )
 
             # Configure formatter to match console format

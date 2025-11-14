@@ -6,8 +6,6 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, Field
 
-from xp.models.conbus.conbus_logger_config import LoggingConfig
-
 
 class ClientConfig(BaseModel):
     """Client connection configuration.
@@ -28,7 +26,6 @@ class ConbusClientConfig(BaseModel):
 
     Attributes:
         conbus: Client configuration settings.
-        log_path: Optional path for log file output.
     """
 
     conbus: ClientConfig = Field(default_factory=ClientConfig)

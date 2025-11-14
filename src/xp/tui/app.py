@@ -61,16 +61,12 @@ class ProtocolMonitorApp(App[None]):
         if self.protocol_widget:
             self.protocol_widget.send_discover()
 
-
     def action_connect(self) -> None:
-        """Connect protocol on 'c' key press.
-        """
+        """Connect protocol on 'c' key press."""
         if self.protocol_widget:
             self.protocol_widget.connect()
 
-
     def action_disconnect(self) -> None:
-        """Disconnect protocol on 'd' key press.
-        """
+        """Disconnect protocol on 'd' key press."""
         if self.protocol_widget:
             self.protocol_widget.disconnect()

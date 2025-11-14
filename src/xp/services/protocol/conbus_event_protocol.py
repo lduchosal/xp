@@ -304,17 +304,15 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             self._reactor.stop()
 
     def connect(self) -> None:
-        # Connect to TCP server
+        """Connect to TCP server."""
         self.logger.info(
             f"Connecting to TCP server {self.cli_config.ip}:{self.cli_config.port}"
         )
         self._reactor.connectTCP(self.cli_config.ip, self.cli_config.port, self)
 
     def disconnect(self) -> None:
-        # Disconnect to TCP server
-        self.logger.info(
-            "Disconnecting TCP server"
-        )
+        """Disconnect from TCP server."""
+        self.logger.info("Disconnecting TCP server")
         self._reactor.disconnectAll()
 
     def start_reactor(self) -> None:
@@ -323,7 +321,6 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         # Run the reactor (which now uses asyncio underneath)
         self.logger.info("Starting reactor event loop.")
         self._reactor.run()
-
 
     def start_queue_manager(self) -> None:
         """Start the queue manager if it's not running."""

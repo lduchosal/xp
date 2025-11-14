@@ -30,10 +30,12 @@ class LoggingConfig(BaseModel):
     }
     max_bytes: int = 1024 * 1024  # 1MB
     backup_count: int = 365
-    log_format: str = "%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s"
+    log_format: str = (
+        "%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s"
+    )
     date_format: str = "%H:%M:%S"
 
-    @field_validator('levels', mode='before')
+    @field_validator("levels", mode="before")
     @classmethod
     def convert_level_names(cls, v: Dict[str, Union[str, int]]) -> Dict[str, int]:
         """Convert string level names to numeric values.
@@ -76,6 +78,7 @@ class ConbusLoggerConfig(BaseModel):
     Attributes:
         log: LoggingConfig instance for logging settings.
     """
+
     log: LoggingConfig = Field(default_factory=LoggingConfig)
 
     @classmethod

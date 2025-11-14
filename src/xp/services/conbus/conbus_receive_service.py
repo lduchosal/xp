@@ -3,6 +3,7 @@
 This service uses ConbusEventProtocol to provide receive-only functionality,
 allowing clients to receive waiting event telegrams using empty telegram sends.
 """
+
 import asyncio
 import logging
 from typing import Any, Callable, Optional
@@ -106,6 +107,7 @@ class ConbusReceiveService:
             progress_callback: Callback for each received telegram.
             finish_callback: Callback when receiving completes.
             timeout_seconds: Optional timeout in seconds.
+            event_loop: Optional event loop to use for async operations.
         """
         self.logger.info("Starting receive")
         if timeout_seconds:

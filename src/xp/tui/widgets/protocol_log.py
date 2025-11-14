@@ -15,7 +15,14 @@ from xp.services.protocol import ConbusEventProtocol
 
 
 class ConnectionState(str, Enum):
-    """Connection state enumeration."""
+    """Connection state enumeration.
+
+    Attributes:
+        DISCONNECTED: Not connected to server.
+        CONNECTING: Connection in progress.
+        CONNECTED: Successfully connected.
+        FAILED: Connection failed.
+    """
 
     DISCONNECTED = "DISCONNECTED"
     CONNECTING = "CONNECTING"
@@ -111,9 +118,19 @@ class ProtocolLogWidget(Widget):
 
             # Setup service callbacks
             def progress_callback(telegram: str) -> None:
+                """Handle progress updates for telegram reception.
+
+                Args:
+                    telegram: Received telegram string.
+                """
                 pass
 
             def finish_callback(response: Any) -> None:
+                """Handle completion of telegram reception.
+
+                Args:
+                    response: Response object from telegram reception.
+                """
                 pass
 
             # Get the currently running asyncio event loop (Textual's loop)
@@ -125,7 +142,7 @@ class ProtocolLogWidget(Widget):
                 progress_callback=progress_callback,
                 finish_callback=finish_callback,
                 timeout_seconds=None,  # Continuous monitoring
-                event_loop=event_loop
+                event_loop=event_loop,
             )
 
             reactor = self.service.conbus_protocol._reactor
@@ -133,12 +150,13 @@ class ProtocolLogWidget(Widget):
             # This ensures connectTCP is called in the context of the running loop
 
             def do_connect() -> None:
+                """Execute TCP connection in event loop context."""
                 self.logger.info("Executing connectTCP in event loop callback")
                 if self.protocol is not None:
                     reactor.connectTCP(
                         self.protocol.cli_config.ip,
                         self.protocol.cli_config.port,
-                        self.protocol
+                        self.protocol,
                     )
 
             event_loop.call_soon(do_connect)
@@ -219,9 +237,11 @@ class ProtocolLogWidget(Widget):
         self.set_timer(2.0, self.app.exit)
 
     def connect(self) -> None:
+        """Connect to Conbus server."""
         self._start_connection()
 
     def disconnect(self) -> None:
+        """Disconnect from Conbus server."""
         if self.protocol:
             self.protocol.disconnect()
 

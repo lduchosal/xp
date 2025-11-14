@@ -34,7 +34,7 @@ class TestLoggingConfig:
         config = LoggingConfig(
             path="/tmp/test.log",
             default_level="INFO",
-            levels=levels  # type: ignore[arg-type]
+            levels=levels,  # type: ignore[arg-type]
         )
 
         assert config.levels["xp"] == logging.DEBUG
@@ -50,7 +50,7 @@ class TestLoggingConfig:
                 "xp": 10,
                 "bubus": 30,
                 "pyhap": 40,
-            }
+            },
         )
 
         assert config.levels["xp"] == 10
@@ -67,7 +67,7 @@ class TestLoggingConfig:
         config = LoggingConfig(
             path="/tmp/test.log",
             default_level="INFO",
-            levels=levels  # type: ignore[arg-type]
+            levels=levels,  # type: ignore[arg-type]
         )
 
         assert config.levels["xp"] == logging.DEBUG
@@ -120,10 +120,7 @@ class TestLoggingConfig:
 
     def test_custom_rotation_parameters(self):
         """Test custom rotation parameters."""
-        config = LoggingConfig(
-            max_bytes=5 * 1024 * 1024,  # 5MB
-            backup_count=30
-        )
+        config = LoggingConfig(max_bytes=5 * 1024 * 1024, backup_count=30)  # 5MB
 
         assert config.max_bytes == 5 * 1024 * 1024
         assert config.backup_count == 30
@@ -134,8 +131,7 @@ class TestLoggingConfig:
         custom_date_format = "%Y-%m-%d %H:%M:%S"
 
         config = LoggingConfig(
-            log_format=custom_log_format,
-            date_format=custom_date_format
+            log_format=custom_log_format, date_format=custom_date_format
         )
 
         assert config.log_format == custom_log_format
@@ -162,7 +158,7 @@ class TestConbusLoggerConfig:
             log=LoggingConfig(
                 path="/custom/path.log",
                 default_level="ERROR",
-                levels=levels  # type: ignore[arg-type]
+                levels=levels,  # type: ignore[arg-type]
             )
         )
 
@@ -180,7 +176,7 @@ class TestConbusLoggerConfig:
                 "levels": {
                     "xp": "DEBUG",
                     "pyhap": "WARNING",
-                }
+                },
             }
         }
 

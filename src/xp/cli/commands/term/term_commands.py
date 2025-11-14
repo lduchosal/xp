@@ -9,7 +9,7 @@ from xp.cli.commands.term.term import term
 @term.command("protocol")
 @click.pass_context
 def protocol_monitor(ctx: Context) -> None:
-    """Start TUI for real-time protocol monitoring.
+    r"""Start TUI for real-time protocol monitoring.
 
     Displays live RX/TX telegram stream from Conbus server
     in an interactive terminal interface.
