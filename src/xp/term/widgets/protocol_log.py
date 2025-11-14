@@ -18,12 +18,14 @@ class ConnectionState(str, Enum):
     """Connection state enumeration.
 
     Attributes:
+        DISCONNECTING: Disconnecting to server.
         DISCONNECTED: Not connected to server.
         CONNECTING: Connection in progress.
         CONNECTED: Successfully connected.
         FAILED: Connection failed.
     """
 
+    DISCONNECTING = "DISCONNECTING"
     DISCONNECTED = "DISCONNECTED"
     CONNECTING = "CONNECTING"
     CONNECTED = "CONNECTED"
@@ -235,8 +237,12 @@ class ProtocolLogWidget(Widget):
     def disconnect(self) -> None:
         """Disconnect from Conbus server."""
         self.logger.debug("Disconnect")
+        self.connection_state = ConnectionState.DISCONNECTING
         if self.protocol:
             self.protocol.disconnect()
+            self.connection_state = ConnectionState.DISCONNECTED
+            if self.log_widget:
+                self.log_widget.write("[yellow]Disconnected from Conbus server[/yellow]")
 
     def send_discover(self) -> None:
         """Send discover telegram.
