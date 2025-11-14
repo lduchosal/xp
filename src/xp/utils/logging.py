@@ -12,13 +12,15 @@ class LoggerService:
         self.logger = logging.getLogger(__name__)
 
     def setup(self) -> None:
-        # Configure logging with thread information
-        log_format = "%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s"
-        date_format = "%H:%M:%S"
-
         # Setup file logging for term app
-        self.setup_console_logging(log_format, date_format)
-        self.setup_file_logging(log_format, date_format)
+        self.setup_console_logging(
+            self.logging_config.log_format,
+            self.logging_config.date_format
+        )
+        self.setup_file_logging(
+            self.logging_config.log_format,
+            self.logging_config.date_format
+        )
 
         for module in self.logging_config.levels.keys():
             logging.getLogger(module).setLevel(self.logging_config.levels[module])
@@ -59,9 +61,11 @@ class LoggerService:
             # Create log directory if it doesn't exist
             log_path.parent.mkdir(parents=True, exist_ok=True)
 
-            # Create rotating file handler (1MB max, 365 backups)
+            # Create rotating file handler
             file_handler = RotatingFileHandler(
-                log_path, maxBytes=1024 * 1024, backupCount=365
+                log_path,
+                maxBytes=self.logging_config.max_bytes,
+                backupCount=self.logging_config.backup_count
             )
 
             # Configure formatter to match console format

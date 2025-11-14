@@ -1,9 +1,9 @@
 import logging
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Union
 
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class LoggingConfig(BaseModel):
@@ -12,6 +12,10 @@ class LoggingConfig(BaseModel):
     Attributes:
         path: log folder.
         level: DEBUG, WARNING, INFO, ERROR, CRITICAL.
+        max_bytes: Maximum size in bytes before rotating (default: 1MB).
+        backup_count: Number of backup files to keep (default: 365).
+        log_format: Log message format string.
+        date_format: Date format string for timestamps.
     """
 
     path: str = "log"
@@ -21,6 +25,43 @@ class LoggingConfig(BaseModel):
         "xp.services.homekit": logging.WARNING,
         "xp.services.server": logging.WARNING,
     }
+    max_bytes: int = 1024 * 1024  # 1MB
+    backup_count: int = 365
+    log_format: str = "%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s"
+    date_format: str = "%H:%M:%S"
+
+    @field_validator('levels', mode='before')
+    @classmethod
+    def convert_level_names(cls, v: Dict[str, Union[str, int]]) -> Dict[str, int]:
+        """Convert string level names to numeric values.
+
+        Args:
+            v: Dictionary with string or int log levels.
+
+        Returns:
+            Dictionary with numeric log levels.
+        """
+        level_map = {
+            "DEBUG": logging.DEBUG,
+            "INFO": logging.INFO,
+            "WARNING": logging.WARNING,
+            "ERROR": logging.ERROR,
+            "CRITICAL": logging.CRITICAL,
+        }
+
+        result = {}
+        for module, level in v.items():
+            if isinstance(level, str):
+                level_upper = level.upper()
+                if level_upper not in level_map:
+                    raise ValueError(
+                        f"Invalid log level '{level}' for module '{module}'. "
+                        f"Must be one of: {', '.join(level_map.keys())}"
+                    )
+                result[module] = level_map[level_upper]
+            else:
+                result[module] = level
+        return result
 
 
 class ConbusLoggerConfig(BaseModel):
