@@ -2,6 +2,7 @@
 
 /* App-level styling */
 Screen {
+    $background: #000000;
     background: $background;
 }
 
@@ -9,7 +10,11 @@ Screen {
 ProtocolLogWidget {
     border: solid $success;
     height: 1fr;
-    background: $surface;
+    background: $background;
+}
+
+ProtocolLogWidget > RichLog {
+    background: $background;
 }
 
 ProtocolLogWidget > .connection-status {
