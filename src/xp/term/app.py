@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from textual.app import App, ComposeResult
-from textual.widgets import Footer, Header
+from textual.widgets import Footer
 
 from xp.term.widgets.protocol_log import ProtocolLogWidget
 
@@ -47,9 +47,8 @@ class ProtocolMonitorApp(App[None]):
         """Compose the app layout with widgets.
 
         Yields:
-            Header, ProtocolLogWidget, and Footer widgets.
+            ProtocolLogWidget and Footer widgets.
         """
-        yield Header()
         self.protocol_widget = ProtocolLogWidget(container=self.container)
         yield self.protocol_widget
         yield Footer()

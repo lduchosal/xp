@@ -54,6 +54,7 @@ class ProtocolLogWidget(Widget):
             container: ServiceContainer for resolving services.
         """
         super().__init__()
+        self.border_title = "Protocol"
         self.container = container
         self.protocol: Optional[ConbusEventProtocol] = None
         self.service: Optional[ConbusReceiveService] = None
