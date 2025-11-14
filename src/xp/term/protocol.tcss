@@ -7,7 +7,7 @@ Screen {
 
 /* Protocol Log Widget */
 ProtocolLogWidget {
-    border: solid $primary;
+    border: solid $success;
     height: 1fr;
     background: $surface;
 }
