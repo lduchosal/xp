@@ -167,3 +167,45 @@ def my_command(ctx: click.Context, module_type: int, link: int) -> None:
 - **Coverage**: Minimum 75%, run `pdm test-cov`
 - **Quick Tests**: `pdm test-quick` (quiet mode, no coverage)
 
+## Logging
+
+### Overview
+Centralized logging via `LoggerService` with YAML configuration, rotating file output, and per-module log levels.
+
+### Components
+**Location**: `src/xp/utils/logging.py`, `src/xp/models/conbus/conbus_logger_config.py`
+
+- **LoggerService**: Configures Python logging (console + rotating file handlers)
+- **LoggingConfig** (Pydantic): Configuration model with defaults
+- **ConbusLoggerConfig**: YAML loader wrapper
+
+### Configuration
+```yaml
+log:
+  path: "log"                    # Log directory
+  default_level: "DEBUG"         # Root logger level
+  levels:                        # Per-module overrides
+    xp: DEBUG
+    xp.services.homekit: WARNING
+    xp.services.server: WARNING
+  max_bytes: 1048576              # 1MB rotation
+  backup_count: 365               # Keep 365 backups
+  log_format: "%(asctime)s - [%(threadName)s-%(thread)d] - %(levelname)s - %(name)s - %(message)s"
+  date_format: "%H:%M:%S"
+```
+
+### Setup
+```python
+# Automatic setup via CLI initialization
+logger_config = ConbusLoggerConfig.from_yaml("logger.yml")
+logger_service = LoggerService(logger_config)
+logger_service.setup()
+```
+
+### Features
+- **Console Logging**: StreamHandler with configurable format
+- **File Logging**: RotatingFileHandler (1MB default, 365 backups)
+- **Module-Level Control**: Override levels per namespace (e.g., suppress HomeKit verbosity)
+- **Thread-Safe**: Includes thread name/ID in default format
+- **Graceful Fallback**: Continues without file logging if path inaccessible
+

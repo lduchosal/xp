@@ -20,11 +20,20 @@ class LoggerService:
         self.logger = logging.getLogger(__name__)
 
     def setup(self) -> None:
-        """Setup console and file logging with configured levels."""
-        # Setup file logging for term app
-        self.setup_console_logging(
-            self.logging_config.log_format, self.logging_config.date_format
-        )
+        """Setup file logging only with configured levels."""
+        # Setup file logging for term app (console logging disabled)
+        root_logger = logging.getLogger()
+
+        # Remove any existing console handlers
+        root_logger.handlers = [
+            h for h in root_logger.handlers
+            if not isinstance(h, logging.StreamHandler) or isinstance(h, RotatingFileHandler)
+        ]
+
+        # Set root logger level
+        numeric_level = getattr(logging, self.logging_config.default_level.upper())
+        root_logger.setLevel(numeric_level)
+
         self.setup_file_logging(
             self.logging_config.log_format, self.logging_config.date_format
         )
