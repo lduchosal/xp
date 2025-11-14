@@ -2,7 +2,6 @@
 
 /* App-level styling */
 Screen {
-    $background: #000000;
     background: $background;
 }
 
@@ -11,6 +10,7 @@ ProtocolLogWidget {
     border: solid $success;
     height: 1fr;
     background: $background;
+    padding: 1;
 }
 
 ProtocolLogWidget > RichLog {
@@ -50,6 +50,6 @@ ProtocolLogWidget > .connection-status.failed {
 
 /* Footer styling */
 Footer {
-    background: $panel;
+    background: $background;
     color: $text;
 }
