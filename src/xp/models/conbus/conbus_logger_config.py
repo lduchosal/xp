@@ -1,3 +1,5 @@
+"""Logger configuration models for XP application."""
+
 import logging
 from pathlib import Path
 from typing import Dict, Union
@@ -11,7 +13,8 @@ class LoggingConfig(BaseModel):
 
     Attributes:
         path: log folder.
-        level: DEBUG, WARNING, INFO, ERROR, CRITICAL.
+        default_level: DEBUG, WARNING, INFO, ERROR, CRITICAL.
+        levels: Per-module log level overrides.
         max_bytes: Maximum size in bytes before rotating (default: 1MB).
         backup_count: Number of backup files to keep (default: 365).
         log_format: Log message format string.
@@ -40,6 +43,9 @@ class LoggingConfig(BaseModel):
 
         Returns:
             Dictionary with numeric log levels.
+
+        Raises:
+            ValueError: If an invalid log level name is provided.
         """
         level_map = {
             "DEBUG": logging.DEBUG,
@@ -65,7 +71,11 @@ class LoggingConfig(BaseModel):
 
 
 class ConbusLoggerConfig(BaseModel):
-    """Logging configuration."""
+    """Logging configuration.
+
+    Attributes:
+        log: LoggingConfig instance for logging settings.
+    """
     log: LoggingConfig = Field(default_factory=LoggingConfig)
 
     @classmethod
@@ -92,4 +102,3 @@ class ConbusLoggerConfig(BaseModel):
             logger.error(f"File {file_path} is not valid")
             # Return default config if YAML parsing fails
             return cls()
-

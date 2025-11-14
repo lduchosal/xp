@@ -1,11 +1,7 @@
 """XP CLI tool entry point with modular command structure."""
 
-import logging
-from pathlib import Path
-
 import click
 from click_help_colors import HelpColorsGroup
-from docutils.nodes import container
 
 from xp.cli.commands import homekit
 from xp.cli.commands.conbus.conbus import conbus
@@ -20,7 +16,6 @@ from xp.cli.commands.server.server_commands import server
 from xp.cli.commands.telegram.telegram_parse_commands import telegram
 from xp.cli.commands.term.term import term
 from xp.cli.utils.click_tree import add_tree_command
-from xp.models import ConbusClientConfig
 from xp.utils.dependencies import ServiceContainer
 from xp.utils.logging import LoggerService
 
@@ -36,7 +31,6 @@ def cli(ctx: click.Context) -> None:
     Args:
         ctx: Click context object for passing state between commands.
     """
-
     container = ServiceContainer()
     logger_config = container.get_container().resolve(LoggerService)
     logger_config.setup()

@@ -94,6 +94,10 @@ class ProtocolLogWidget(Widget):
             self.logger.error("Service not initialized")
             return
 
+        if self.protocol is None:
+            self.logger.error("Protocol not initialized")
+            return
+
         try:
             # Set state to connecting
             self.connection_state = ConnectionState.CONNECTING
@@ -127,6 +131,7 @@ class ProtocolLogWidget(Widget):
             reactor = self.service.conbus_protocol._reactor
             # Schedule the connection on the running asyncio loop
             # This ensures connectTCP is called in the context of the running loop
+
             def do_connect() -> None:
                 self.logger.info("Executing connectTCP in event loop callback")
                 if self.protocol is not None:

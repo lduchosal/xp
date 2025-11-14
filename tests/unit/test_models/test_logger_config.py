@@ -1,6 +1,7 @@
 """Unit tests for logger configuration models."""
 
 import logging
+from typing import Dict, Union
 
 import pytest
 from pydantic import ValidationError
@@ -25,14 +26,15 @@ class TestLoggingConfig:
 
     def test_levels_with_string_names(self):
         """Test that string level names are converted to integers."""
+        levels: Dict[str, Union[str, int]] = {
+            "xp": "DEBUG",
+            "bubus": "WARNING",
+            "pyhap": "ERROR",
+        }
         config = LoggingConfig(
             path="/tmp/test.log",
             default_level="INFO",
-            levels={
-                "xp": "DEBUG",
-                "bubus": "WARNING",
-                "pyhap": "ERROR",
-            }
+            levels=levels  # type: ignore[arg-type]
         )
 
         assert config.levels["xp"] == logging.DEBUG
@@ -57,14 +59,15 @@ class TestLoggingConfig:
 
     def test_levels_mixed_string_and_numeric(self):
         """Test that mixed string and numeric values work."""
+        levels: Dict[str, Union[str, int]] = {
+            "xp": "DEBUG",
+            "bubus": 30,
+            "pyhap": "ERROR",
+        }
         config = LoggingConfig(
             path="/tmp/test.log",
             default_level="INFO",
-            levels={
-                "xp": "DEBUG",
-                "bubus": 30,
-                "pyhap": "ERROR",
-            }
+            levels=levels  # type: ignore[arg-type]
         )
 
         assert config.levels["xp"] == logging.DEBUG
@@ -73,14 +76,13 @@ class TestLoggingConfig:
 
     def test_levels_case_insensitive(self):
         """Test that level names are case-insensitive."""
-        config = LoggingConfig(
-            levels={
-                "module1": "debug",
-                "module2": "Debug",
-                "module3": "DEBUG",
-                "module4": "WaRnInG",
-            }
-        )
+        levels: Dict[str, Union[str, int]] = {
+            "module1": "debug",
+            "module2": "Debug",
+            "module3": "DEBUG",
+            "module4": "WaRnInG",
+        }
+        config = LoggingConfig(levels=levels)  # type: ignore[arg-type]
 
         assert config.levels["module1"] == logging.DEBUG
         assert config.levels["module2"] == logging.DEBUG
@@ -90,11 +92,10 @@ class TestLoggingConfig:
     def test_invalid_level_name_raises_error(self):
         """Test that invalid level names raise ValidationError."""
         with pytest.raises(ValidationError) as exc_info:
-            LoggingConfig(
-                levels={
-                    "xp": "INVALID_LEVEL",
-                }
-            )
+            levels: Dict[str, Union[str, int]] = {
+                "xp": "INVALID_LEVEL",
+            }
+            LoggingConfig(levels=levels)  # type: ignore[arg-type]
 
         error_msg = str(exc_info.value)
         assert "Invalid log level 'INVALID_LEVEL'" in error_msg
@@ -102,15 +103,14 @@ class TestLoggingConfig:
 
     def test_all_standard_log_levels(self):
         """Test all standard Python log levels."""
-        config = LoggingConfig(
-            levels={
-                "debug_mod": "DEBUG",
-                "info_mod": "INFO",
-                "warning_mod": "WARNING",
-                "error_mod": "ERROR",
-                "critical_mod": "CRITICAL",
-            }
-        )
+        levels: Dict[str, Union[str, int]] = {
+            "debug_mod": "DEBUG",
+            "info_mod": "INFO",
+            "warning_mod": "WARNING",
+            "error_mod": "ERROR",
+            "critical_mod": "CRITICAL",
+        }
+        config = LoggingConfig(levels=levels)  # type: ignore[arg-type]
 
         assert config.levels["debug_mod"] == logging.DEBUG
         assert config.levels["info_mod"] == logging.INFO
@@ -154,14 +154,15 @@ class TestConbusLoggerConfig:
 
     def test_custom_logging_config(self):
         """Test with custom logging configuration."""
+        levels: Dict[str, Union[str, int]] = {
+            "xp": "DEBUG",
+            "bubus": "WARNING",
+        }
         config = ConbusLoggerConfig(
             log=LoggingConfig(
                 path="/custom/path.log",
                 default_level="ERROR",
-                levels={
-                    "xp": "DEBUG",
-                    "bubus": "WARNING",
-                }
+                levels=levels  # type: ignore[arg-type]
             )
         )
 
@@ -183,7 +184,7 @@ class TestConbusLoggerConfig:
             }
         }
 
-        config = ConbusLoggerConfig(**data)
+        config = ConbusLoggerConfig(**data)  # type: ignore[arg-type]
 
         assert config.log.path == "test.log"
         assert config.log.default_level == "INFO"

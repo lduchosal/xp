@@ -320,10 +320,35 @@ class TestLoggerService:
                         date_format="%H:%M:%S"
                     )
 
-                    # Verify rotation parameters
+                    # Verify rotation parameters from config
                     call_args = mock_handler_class.call_args
-                    assert call_args[1]["maxBytes"] == 1024 * 1024  # 1MB
-                    assert call_args[1]["backupCount"] == 365
+                    assert call_args[1]["maxBytes"] == 1024 * 1024  # 1MB default
+                    assert call_args[1]["backupCount"] == 365  # Default
+
+    def test_file_handler_custom_rotation_params(self):
+        """Test that file handler uses custom rotation parameters from config."""
+        with patch("xp.utils.logging.RotatingFileHandler") as mock_handler_class:
+            with patch("xp.utils.logging.Path"):
+                with patch("xp.utils.logging.logging.getLogger"):
+                    config = ConbusLoggerConfig(
+                        log=LoggingConfig(
+                            path="/tmp/test.log",
+                            default_level="INFO",
+                            levels={},
+                            max_bytes=5 * 1024 * 1024,  # 5MB
+                            backup_count=30
+                        )
+                    )
+                    service = LoggerService(logger_config=config)
+                    service.setup_file_logging(
+                        log_format="%(message)s",
+                        date_format="%H:%M:%S"
+                    )
+
+                    # Verify custom rotation parameters
+                    call_args = mock_handler_class.call_args
+                    assert call_args[1]["maxBytes"] == 5 * 1024 * 1024
+                    assert call_args[1]["backupCount"] == 30
 
     def test_log_format_includes_thread_info(self, logger_service):
         """Test that setup uses log format with thread information."""

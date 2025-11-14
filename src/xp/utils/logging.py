@@ -1,3 +1,5 @@
+"""Logging service for XP application."""
+
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -6,12 +8,19 @@ from xp.models.conbus.conbus_logger_config import ConbusLoggerConfig
 
 
 class LoggerService:
+    """Service for managing logging configuration and setup."""
 
     def __init__(self, logger_config: ConbusLoggerConfig):
+        """Initialize LoggerService with configuration.
+
+        Args:
+            logger_config: Logger configuration object.
+        """
         self.logging_config = logger_config.log
         self.logger = logging.getLogger(__name__)
 
     def setup(self) -> None:
+        """Setup console and file logging with configured levels."""
         # Setup file logging for term app
         self.setup_console_logging(
             self.logging_config.log_format,
@@ -25,9 +34,14 @@ class LoggerService:
         for module in self.logging_config.levels.keys():
             logging.getLogger(module).setLevel(self.logging_config.levels[module])
 
-    def setup_console_logging(self,
-        log_format: str, date_format: str) -> None:
+    def setup_console_logging(
+            self, log_format: str, date_format: str) -> None:
+        """Setup console logging with specified format.
 
+        Args:
+            log_format: Log message format string.
+            date_format: Date format string for log timestamps.
+        """
         # Force format on root logger and all handlers
         formatter = logging.Formatter(log_format, datefmt=date_format)
         root_logger = logging.getLogger()
@@ -45,9 +59,8 @@ class LoggerService:
             handler.setFormatter(formatter)
             root_logger.addHandler(handler)
 
-    def setup_file_logging(self,
-        log_format: str, date_format: str
-    ) -> None:
+    def setup_file_logging(
+            self, log_format: str, date_format: str) -> None:
         """Setup file logging with rotation for term application.
 
         Args:

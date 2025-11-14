@@ -3,6 +3,7 @@
 This module implements the Twisted protocol for Conbus communication.
 """
 
+import asyncio
 import logging
 from queue import SimpleQueue
 from random import randint
@@ -350,7 +351,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         later = randint(10, 80) / 100
         self.call_later(later, self.process_telegram_queue)
 
-    def set_event_loop(self, event_loop) -> None:
+    def set_event_loop(self, event_loop: asyncio.AbstractEventLoop) -> None:
         """Change the event loop.
 
         Args:
