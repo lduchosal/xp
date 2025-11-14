@@ -14,7 +14,13 @@ ProtocolLogWidget {
 }
 
 ProtocolLogWidget > RichLog {
-    background: $background;
+    background: $background !important;
+    scrollbar-background: $background;
+}
+
+ProtocolLogWidget > RichLog:focus {
+    background: $background !important;
+    background-tint: transparent;
 }
 
 ProtocolLogWidget > .connection-status {
