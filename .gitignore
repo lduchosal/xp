@@ -25,3 +25,4 @@ __pycache__/
 *$py.class
 /interrogate_badge.svg
 conbus.log
+/logger.yml

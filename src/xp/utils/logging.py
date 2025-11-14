@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from xp.models.conbus.conbus_client_config import ConbusLoggerConfig
+from xp.models.conbus.conbus_logger_config import ConbusLoggerConfig
 
 
 class LoggerService:
