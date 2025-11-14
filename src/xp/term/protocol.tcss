@@ -55,7 +55,23 @@ ProtocolLogWidget > .connection-status.failed {
 }
 
 /* Footer styling */
+#footer-container {
+    dock: bottom;
+    height: 1;
+    background: $background;
+}
+
 Footer {
+    width: auto;
     background: $background;
     color: $text;
+}
+
+#status-line {
+    dock: right;
+    width: auto;
+    padding: 0 1;
+    background: $background;
+    color: $text;
+    text-align: right;
 }
