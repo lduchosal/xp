@@ -12,6 +12,7 @@ from textual.widgets import RichLog
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.protocol import ConbusEventProtocol
+from xp.utils.state_machine import StateMachine
 
 
 class ConnectionState(str, Enum):
@@ -30,6 +31,33 @@ class ConnectionState(str, Enum):
     CONNECTING = "CONNECTING"
     CONNECTED = "CONNECTED"
     FAILED = "FAILED"
+
+
+def create_connection_state_machine() -> StateMachine:
+    """Create and configure state machine for connection management.
+
+    Returns:
+        Configured StateMachine with connection state transitions.
+    """
+    sm = StateMachine(ConnectionState.DISCONNECTED)
+
+    # Define valid transitions
+    sm.define_transition("connect", {ConnectionState.DISCONNECTED, ConnectionState.FAILED})
+    sm.define_transition("disconnect", {ConnectionState.CONNECTED, ConnectionState.CONNECTING})
+    sm.define_transition("connecting", {ConnectionState.DISCONNECTED, ConnectionState.FAILED})
+    sm.define_transition("connected", {ConnectionState.CONNECTING})
+    sm.define_transition("disconnecting", {ConnectionState.CONNECTED, ConnectionState.CONNECTING})
+    sm.define_transition("disconnected", {ConnectionState.DISCONNECTING})
+    sm.define_transition(
+        "failed",
+        {
+            ConnectionState.CONNECTING,
+            ConnectionState.CONNECTED,
+            ConnectionState.DISCONNECTING,
+        },
+    )
+
+    return sm
 
 
 class ProtocolLogWidget(Widget):
@@ -62,6 +90,7 @@ class ProtocolLogWidget(Widget):
         self.service: Optional[ConbusReceiveService] = None
         self.logger = logging.getLogger(__name__)
         self.log_widget: Optional[RichLog] = None
+        self._state_machine = create_connection_state_machine()
 
     def compose(self) -> Any:
         """Compose the widget layout.
@@ -109,15 +138,20 @@ class ProtocolLogWidget(Widget):
             return
 
         # Guard: Don't connect if already connected or connecting
-        if self.connection_state in (ConnectionState.CONNECTED, ConnectionState.CONNECTING):
-            self.logger.warning(f"Already {self.connection_state.value}, ignoring connect request")
+        if not self._state_machine.can_transition("connecting"):
+            self.logger.warning(
+                f"Already {self._state_machine.get_state().value}, ignoring connect request"
+            )
             if self.log_widget:
-                self.log_widget.write(f"[yellow]Already {self.connection_state.value.lower()}[/yellow]")
+                self.log_widget.write(
+                    f"[yellow]Already {self._state_machine.get_state().value.lower()}[/yellow]"
+                )
             return
 
         try:
-            # Set state to connecting
-            self.connection_state = ConnectionState.CONNECTING
+            # Transition to CONNECTING
+            if self._state_machine.transition("connecting", ConnectionState.CONNECTING):
+                self.connection_state = ConnectionState.CONNECTING
             if self.log_widget:
                 self.log_widget.write("[yellow]Connecting to Conbus server...[/yellow]")
 
@@ -173,9 +207,11 @@ class ProtocolLogWidget(Widget):
 
         except Exception as e:
             self.logger.error(f"Connection failed: {e}")
-            self.connection_state = ConnectionState.FAILED
-            if self.log_widget:
-                self.log_widget.write(f"[red]Connection error: {e}[/red]")
+            # Transition to FAILED
+            if self._state_machine.transition("failed", ConnectionState.FAILED):
+                self.connection_state = ConnectionState.FAILED
+                if self.log_widget:
+                    self.log_widget.write(f"[red]Connection error: {e}[/red]")
 
     def _start_connection(self) -> None:
         """Start connection (sync wrapper for async method)."""
@@ -189,10 +225,12 @@ class ProtocolLogWidget(Widget):
         Sets state to CONNECTED and displays success message.
         """
         self.logger.debug("Connection made")
-        self.connection_state = ConnectionState.CONNECTED
-        if self.log_widget:
-            self.log_widget.write("[green]Connected to Conbus server[/green]")
-            self.log_widget.write("[dim]---[/dim]")
+        # Transition to CONNECTED
+        if self._state_machine.transition("connected", ConnectionState.CONNECTED):
+            self.connection_state = ConnectionState.CONNECTED
+            if self.log_widget:
+                self.log_widget.write("[green]Connected to Conbus server[/green]")
+                self.log_widget.write("[dim]---[/dim]")
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
         """Handle telegram received signal.
@@ -230,11 +268,13 @@ class ProtocolLogWidget(Widget):
         Args:
             error: Error message describing the failure.
         """
-        self.connection_state = ConnectionState.FAILED
-        self.logger.error(f"Connection failed: {error}")
+        # Transition to FAILED
+        if self._state_machine.transition("failed", ConnectionState.FAILED):
+            self.connection_state = ConnectionState.FAILED
+            self.logger.error(f"Connection failed: {error}")
 
-        if self.log_widget:
-            self.log_widget.write(f"[red]Connection failed: {error}[/red]")
+            if self.log_widget:
+                self.log_widget.write(f"[red]Connection failed: {error}[/red]")
 
     def connect(self) -> None:
         """Connect to Conbus server.
@@ -243,12 +283,14 @@ class ProtocolLogWidget(Widget):
         """
         self.logger.debug("Connect")
 
-        # Guard: Only connect if disconnected or failed
-        if self.connection_state not in (ConnectionState.DISCONNECTED, ConnectionState.FAILED):
-            self.logger.warning(f"Cannot connect: current state is {self.connection_state.value}")
+        # Guard: Check if connection is allowed
+        if not self._state_machine.can_transition("connect"):
+            self.logger.warning(
+                f"Cannot connect: current state is {self._state_machine.get_state().value}"
+            )
             if self.log_widget:
                 self.log_widget.write(
-                    f"[yellow]Cannot connect: already {self.connection_state.value.lower()}[/yellow]"
+                    f"[yellow]Cannot connect: already {self._state_machine.get_state().value.lower()}[/yellow]"
                 )
             return
 
@@ -261,25 +303,31 @@ class ProtocolLogWidget(Widget):
         """
         self.logger.debug("Disconnect")
 
-        # Guard: Only disconnect if connected or connecting
-        if self.connection_state not in (ConnectionState.CONNECTED, ConnectionState.CONNECTING):
-            self.logger.warning(f"Cannot disconnect: current state is {self.connection_state.value}")
+        # Guard: Check if disconnection is allowed
+        if not self._state_machine.can_transition("disconnect"):
+            self.logger.warning(
+                f"Cannot disconnect: current state is {self._state_machine.get_state().value}"
+            )
             if self.log_widget:
                 self.log_widget.write(
-                    f"[yellow]Cannot disconnect: not connected (state: {self.connection_state.value.lower()})[/yellow]"
+                    f"[yellow]Cannot disconnect: not connected (state: {self._state_machine.get_state().value.lower()})[/yellow]"
                 )
             return
 
-        self.connection_state = ConnectionState.DISCONNECTING
-        if self.log_widget:
-            self.log_widget.write("[yellow]Disconnecting from Conbus server...[/yellow]")
+        # Transition to DISCONNECTING
+        if self._state_machine.transition("disconnecting", ConnectionState.DISCONNECTING):
+            self.connection_state = ConnectionState.DISCONNECTING
+            if self.log_widget:
+                self.log_widget.write("[yellow]Disconnecting from Conbus server...[/yellow]")
 
         if self.protocol:
             self.protocol.disconnect()
 
-        self.connection_state = ConnectionState.DISCONNECTED
-        if self.log_widget:
-            self.log_widget.write("[yellow]Disconnected from Conbus server[/yellow]")
+        # Transition to DISCONNECTED
+        if self._state_machine.transition("disconnected", ConnectionState.DISCONNECTED):
+            self.connection_state = ConnectionState.DISCONNECTED
+            if self.log_widget:
+                self.log_widget.write("[yellow]Disconnected from Conbus server[/yellow]")
 
     def send_discover(self) -> None:
         """Send discover telegram.
