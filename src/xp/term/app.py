@@ -24,6 +24,7 @@ class ProtocolMonitorApp(App[None]):
 
     CSS_PATH = Path(__file__).parent / "protocol.tcss"
     TITLE = "Protocol Monitor"
+    ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [
         ("q", "quit", "Quit"),
