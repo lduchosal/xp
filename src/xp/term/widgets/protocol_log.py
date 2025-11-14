@@ -88,7 +88,7 @@ class ProtocolLogWidget(Widget):
 
         # Delay connection to let UI render
         await asyncio.sleep(0.5)
-        await self._start_connection_async()
+        self._start_connection()
 
     async def _start_connection_async(self) -> None:
         """Start TCP connection to Conbus server (async).
@@ -146,21 +146,11 @@ class ProtocolLogWidget(Widget):
             )
 
             reactor = self.service.conbus_protocol._reactor
-            # Schedule the connection on the running asyncio loop
-            # This ensures connectTCP is called in the context of the running loop
-
-            def do_connect() -> None:
-                """Execute TCP connection in event loop context."""
-                self.logger.info("Executing connectTCP in event loop callback")
-                if self.protocol is not None:
-                    reactor.connectTCP(
-                        self.protocol.cli_config.ip,
-                        self.protocol.cli_config.port,
-                        self.protocol,
-                    )
-
-            event_loop.call_soon(do_connect)
-            self.logger.info("Scheduled connectTCP on running loop")
+            reactor.connectTCP(
+                self.protocol.cli_config.ip,
+                self.protocol.cli_config.port,
+                self.protocol,
+            )
 
             if self.log_widget:
                 self.log_widget.write(
@@ -176,12 +166,11 @@ class ProtocolLogWidget(Widget):
             self.connection_state = ConnectionState.FAILED
             if self.log_widget:
                 self.log_widget.write(f"[red]Connection error: {e}[/red]")
-            # Exit app after brief delay
-            self.set_timer(2.0, self.app.exit)
 
     def _start_connection(self) -> None:
         """Start connection (sync wrapper for async method)."""
         # Use run_worker to run async method from sync context
+        self.logger.debug("Start connection")
         self.run_worker(self._start_connection_async(), exclusive=True)
 
     def _on_connection_made(self) -> None:
@@ -189,6 +178,7 @@ class ProtocolLogWidget(Widget):
 
         Sets state to CONNECTED and displays success message.
         """
+        self.logger.debug("Connection made")
         self.connection_state = ConnectionState.CONNECTED
         if self.log_widget:
             self.log_widget.write("[green]Connected to Conbus server[/green]")
@@ -200,6 +190,7 @@ class ProtocolLogWidget(Widget):
         Args:
             event: Telegram received event with frame data.
         """
+        self.logger.debug("Telegram received")
         if self.log_widget:
             # Display [RX] in green, frame in gray
             self.log_widget.write(f"[green]\\[RX][/green] [dim]{event.frame}[/dim]")
@@ -210,6 +201,7 @@ class ProtocolLogWidget(Widget):
         Args:
             telegram: Sent telegram string.
         """
+        self.logger.debug("Telegram sent")
         if self.log_widget:
             # Display [TX] in green, frame in gray
             self.log_widget.write(f"[green]\\[TX][/green] [dim]{telegram}[/dim]")
@@ -219,6 +211,7 @@ class ProtocolLogWidget(Widget):
 
         Logs timeout but continues monitoring (no action needed).
         """
+        self.logger.debug("Timeout")
         self.logger.debug("Timeout occurred (continuous monitoring)")
 
     def _on_failed(self, error: str) -> None:
@@ -233,15 +226,14 @@ class ProtocolLogWidget(Widget):
         if self.log_widget:
             self.log_widget.write(f"[red]Connection failed: {error}[/red]")
 
-        # Exit app after brief delay to show error
-        self.set_timer(2.0, self.app.exit)
-
     def connect(self) -> None:
         """Connect to Conbus server."""
+        self.logger.debug("Connect")
         self._start_connection()
 
     def disconnect(self) -> None:
         """Disconnect from Conbus server."""
+        self.logger.debug("Disconnect")
         if self.protocol:
             self.protocol.disconnect()
 
@@ -251,6 +243,7 @@ class ProtocolLogWidget(Widget):
         Sends predefined discover telegram <S0000000000F01D00FA> to the bus.
         Called when user presses 'd' key.
         """
+        self.logger.debug("Discover")
         if self.protocol is None:
             self.logger.warning("Cannot send discover: not connected")
             if self.log_widget:

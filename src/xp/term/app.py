@@ -6,7 +6,7 @@ from typing import Any, Optional
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header
 
-from xp.tui.widgets.protocol_log import ProtocolLogWidget
+from xp.term.widgets.protocol_log import ProtocolLogWidget
 
 
 class ProtocolMonitorApp(App[None]):

@@ -26,8 +26,10 @@ class LoggerService:
 
         # Remove any existing console handlers
         root_logger.handlers = [
-            h for h in root_logger.handlers
-            if not isinstance(h, logging.StreamHandler) or isinstance(h, RotatingFileHandler)
+            h
+            for h in root_logger.handlers
+            if not isinstance(h, logging.StreamHandler)
+            or isinstance(h, RotatingFileHandler)
         ]
 
         # Set root logger level

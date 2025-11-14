@@ -68,11 +68,11 @@ src/xp/
 │           ├── __init__.py
 │           └── term_commands.py        # xp term start
 ├── services/
-│   └── tui/
+│   └── term/
 │       ├── __init__.py
 │       ├── tui_service.py              # Main TUI orchestrator
 │       └── tui_state.py                # Shared state management
-└── tui/
+└── term/
     ├── __init__.py
     ├── app.py                          # Textual app entry point
     ├── widgets/
@@ -103,7 +103,7 @@ Add to pyproject.toml:
 ### Data Flow
 
 ```
-CLI Command → TUI Service → Textual App → Widgets
+CLI Command → Term Service → Textual App → Widgets
                 ↓              ↓           ↓
            Conbus Service → State → Reactive Display
 ```

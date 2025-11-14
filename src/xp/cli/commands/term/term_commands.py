@@ -21,7 +21,7 @@ def protocol_monitor(ctx: Context) -> None:
         \b
         xp term protocol
     """
-    from xp.tui.app import ProtocolMonitorApp
+    from xp.term.app import ProtocolMonitorApp
 
     # Resolve ServiceContainer from context
     container = ctx.obj.get("container").get_container()
