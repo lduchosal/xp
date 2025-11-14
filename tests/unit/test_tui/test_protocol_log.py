@@ -163,10 +163,8 @@ class TestProtocolLogWidget:
         assert widget.connection_state == ConnectionState.CONNECTED
         widget.log_widget.write.assert_called()
 
-    @patch(
-        "xp.tui.widgets.protocol_log.ProtocolLogWidget.app", new_callable=lambda: Mock()
-    )
-    def test_on_failed_signal(self, mock_app, widget, mock_container):
+    @patch("xp.tui.widgets.protocol_log.ProtocolLogWidget.app", new_callable=Mock)
+    def test_on_failed_signal(self, _mock_app, widget, mock_container):
         """Test failed signal handler sets state to FAILED and exits app."""
         # Setup widget
         widget.service = mock_container.resolve()

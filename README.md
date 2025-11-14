@@ -346,6 +346,10 @@ xp telegram parse
 xp telegram validate
 xp telegram version
 
+
+xp term
+xp term protocol
+
 <!-- END CLI HELP -->
 ```
 </details>

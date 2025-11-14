@@ -214,12 +214,11 @@ class TestLoggerService:
             """
             if name is None or name == "":
                 return mock_root_logger
-            elif name == "xp":
+            if name == "xp":
                 return mock_xp_logger
-            elif name == "bubus":
+            if name == "bubus":
                 return mock_bubus_logger
-            else:
-                return MagicMock()
+            return MagicMock()
 
         mock_get_logger.side_effect = get_logger_side_effect
 
