@@ -7,6 +7,7 @@ from twisted.internet.interfaces import IConnector
 from twisted.internet.posixbase import PosixReactorBase
 
 from xp.models import ConbusClientConfig
+from xp.models.conbus.conbus_logger_config import ConbusLoggerConfig
 from xp.models.homekit.homekit_config import HomekitConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
@@ -88,7 +89,8 @@ class ServiceContainer:
 
     def __init__(
         self,
-        config_path: str = "cli.yml",
+        client_config_path: str = "cli.yml",
+        logger_config_path: str = "logger.yml",
         homekit_config_path: str = "homekit.yml",
         conson_config_path: str = "conson.yml",
         server_port: int = 10001,
@@ -98,14 +100,16 @@ class ServiceContainer:
         Initialize the service container.
 
         Args:
-            config_path: Path to the Conbus CLI configuration file
+            client_config_path: Path to the Conbus CLI configuration file
+            logger_config_path: Path to the Conbus Loggerr configuration file
             homekit_config_path: Path to the HomeKit configuration file
             conson_config_path: Path to the Conson configuration file
             server_port: Port for the server service
             reverse_proxy_port: Port for the reverse proxy service
         """
         self.container = punq.Container()
-        self._config_path = config_path
+        self._client_config_path = client_config_path
+        self._logger_config_path = logger_config_path
         self._homekit_config_path = homekit_config_path
         self._conson_config_path = conson_config_path
         self._server_port = server_port
@@ -118,9 +122,16 @@ class ServiceContainer:
         # ConbusClientConfig
         self.container.register(
             ConbusClientConfig,
-            factory=lambda: ConbusClientConfig.from_yaml(self._config_path),
+            factory=lambda: ConbusClientConfig.from_yaml(self._client_config_path),
             scope=punq.Scope.singleton,
         )
+
+        self.container.register(
+            ConbusLoggerConfig,
+            factory=lambda: ConbusLoggerConfig.from_yaml(self._logger_config_path),
+            scope=punq.Scope.singleton,
+        )
+
 
         # Telegram services layer
         self.container.register(TelegramService, scope=punq.Scope.singleton)
@@ -391,7 +402,7 @@ class ServiceContainer:
         self.container.register(
             LoggerService,
             factory=lambda: LoggerService(
-                client_config=self.container.resolve(ConbusClientConfig),
+                logger_config=self.container.resolve(ConbusLoggerConfig),
             ),
             scope=punq.Scope.singleton,
         )

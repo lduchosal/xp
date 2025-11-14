@@ -12,6 +12,7 @@ server.yml
 conson.yml*
 homekit.yml*
 rp.yml
+logging.yml
 .idea/workspace.xml
 coverage.xml
 
@@ -23,3 +24,4 @@ __pycache__/
 *.py[cod]
 *$py.class
 /interrogate_badge.svg
+conbus.log

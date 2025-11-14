@@ -24,7 +24,7 @@ Review {specification_file.md} ask questions, if things are unclear, I will clar
 
 ## Review specification as
 
-review {specification_file.md} as :
+review logging.py as :
 - software architect expert 
 - senior software developer
 - expert in UX user experience

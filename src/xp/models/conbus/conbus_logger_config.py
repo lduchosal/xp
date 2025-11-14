@@ -1,40 +1,34 @@
-"""Conbus client configuration models."""
-
 import logging
 from pathlib import Path
+from typing import Dict
 
 import yaml
 from pydantic import BaseModel, Field
 
-from xp.models.conbus.conbus_logger_config import LoggingConfig
 
-
-class ClientConfig(BaseModel):
-    """Client connection configuration.
+class LoggingConfig(BaseModel):
+    """Logging configuration.
 
     Attributes:
-        ip: IP address of the Conbus server.
-        port: Port number for the connection.
-        timeout: Connection timeout in seconds.
+        path: log folder.
+        level: DEBUG, WARNING, INFO, ERROR, CRITICAL.
     """
 
-    ip: str = "192.168.1.100"
-    port: int = 10001
-    timeout: float = 0.1
+    path: str = "log"
+    default_level: str = "DEBUG"
+    levels: Dict[str, int] = {
+        "xp": logging.DEBUG,
+        "xp.services.homekit": logging.WARNING,
+        "xp.services.server": logging.WARNING,
+    }
 
 
-class ConbusClientConfig(BaseModel):
-    """Configuration for Conbus client connection.
-
-    Attributes:
-        conbus: Client configuration settings.
-        log_path: Optional path for log file output.
-    """
-
-    conbus: ClientConfig = Field(default_factory=ClientConfig)
+class ConbusLoggerConfig(BaseModel):
+    """Logging configuration."""
+    log: LoggingConfig = Field(default_factory=LoggingConfig)
 
     @classmethod
-    def from_yaml(cls, file_path: str) -> "ConbusClientConfig":
+    def from_yaml(cls, file_path: str) -> "ConbusLoggerConfig":
         """Load configuration from YAML file.
 
         Args:
@@ -57,3 +51,4 @@ class ConbusClientConfig(BaseModel):
             logger.error(f"File {file_path} is not valid")
             # Return default config if YAML parsing fails
             return cls()
+

@@ -2,13 +2,14 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from xp.models.conbus.conbus_client_config import LoggingConfig, ConbusClientConfig
+from xp.models.conbus.conbus_client_config import ConbusLoggerConfig
 
 
 class LoggerService:
 
-    def __init__(self, client_config: ConbusClientConfig):
-        self.logging_config = client_config.log
+    def __init__(self, logger_config: ConbusLoggerConfig):
+        self.logging_config = logger_config.log
+        self.logger = logging.getLogger(__name__)
 
     def setup(self) -> None:
         # Configure logging with thread information
@@ -19,6 +20,9 @@ class LoggerService:
         self.setup_console_logging(log_format, date_format)
         self.setup_file_logging(log_format, date_format)
 
+        for module in self.logging_config.levels.keys():
+            logging.getLogger(module).setLevel(self.logging_config.levels[module])
+
     def setup_console_logging(self,
         log_format: str, date_format: str) -> None:
 
@@ -27,7 +31,7 @@ class LoggerService:
         root_logger = logging.getLogger()
 
         # Set log level from CLI argument
-        numeric_level = getattr(logging, self.logging_config.level.upper())
+        numeric_level = getattr(logging, self.logging_config.default_level.upper())
         root_logger.setLevel(numeric_level)
 
         # Update all existing handlers or create new one
@@ -39,22 +43,6 @@ class LoggerService:
             handler.setFormatter(formatter)
             root_logger.addHandler(handler)
 
-        # Suppress pyhap.hap_protocol logs
-
-        # bubus
-        # logging.getLogger("bubus").setLevel(logging.WARNING)
-
-        # xp
-        # logging.getLogger("xp").setLevel(logging.DEBUG)
-        # logging.getLogger("xp.services.homekit").setLevel(logging.DEBUG)
-
-        # pyhap
-        # logging.getLogger("pyhap").setLevel(logging.WARNING)
-        # logging.getLogger("pyhap.hap_handler").setLevel(logging.WARNING)
-        # logging.getLogger("pyhap.hap_protocol").setLevel(logging.WARNING)
-        # logging.getLogger('pyhap.accessory_driver').setLevel(logging.WARNING)
-
-
     def setup_file_logging(self,
         log_format: str, date_format: str
     ) -> None:
@@ -64,9 +52,8 @@ class LoggerService:
             log_format: Log message format string.
             date_format: Date format string for log timestamps.
         """
-        logger = logging.getLogger(__name__)
         log_path = Path(self.logging_config.path)
-        log_level = self.logging_config.level
+        log_level = self.logging_config.default_level
 
         try:
             # Create log directory if it doesn't exist
@@ -86,8 +73,6 @@ class LoggerService:
             root_logger = logging.getLogger()
             root_logger.addHandler(file_handler)
 
-            logger.info(f"File logging enabled: {log_path}")
-
         except (OSError, PermissionError) as e:
-            logger.warning(f"Failed to setup file logging at {log_path}: {e}")
-            logger.warning("Continuing without file logging")
+            self.logger.warning(f"Failed to setup file logging at {log_path}: {e}")
+            self.logger.warning("Continuing without file logging")

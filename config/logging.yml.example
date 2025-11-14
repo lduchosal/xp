@@ -1,0 +1,11 @@
+log:
+  path: conbus.log
+  default: ERROR
+  levels:
+    - bubus: DEBUG
+    - xp: DEBUG
+    - xp.services.homekit: DEBUG
+    - pyhap: WARNING
+    - pyhap.hap_handler: WARNING
+    - pyhap.hap_protocol: WARNING
+    - pyhap.accessory_driver: WARNING
