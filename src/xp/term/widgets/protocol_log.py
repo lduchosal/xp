@@ -108,6 +108,13 @@ class ProtocolLogWidget(Widget):
             self.logger.error("Protocol not initialized")
             return
 
+        # Guard: Don't connect if already connected or connecting
+        if self.connection_state in (ConnectionState.CONNECTED, ConnectionState.CONNECTING):
+            self.logger.warning(f"Already {self.connection_state.value}, ignoring connect request")
+            if self.log_widget:
+                self.log_widget.write(f"[yellow]Already {self.connection_state.value.lower()}[/yellow]")
+            return
+
         try:
             # Set state to connecting
             self.connection_state = ConnectionState.CONNECTING
@@ -230,19 +237,49 @@ class ProtocolLogWidget(Widget):
             self.log_widget.write(f"[red]Connection failed: {error}[/red]")
 
     def connect(self) -> None:
-        """Connect to Conbus server."""
+        """Connect to Conbus server.
+
+        Only initiates connection if currently DISCONNECTED or FAILED.
+        """
         self.logger.debug("Connect")
+
+        # Guard: Only connect if disconnected or failed
+        if self.connection_state not in (ConnectionState.DISCONNECTED, ConnectionState.FAILED):
+            self.logger.warning(f"Cannot connect: current state is {self.connection_state.value}")
+            if self.log_widget:
+                self.log_widget.write(
+                    f"[yellow]Cannot connect: already {self.connection_state.value.lower()}[/yellow]"
+                )
+            return
+
         self._start_connection()
 
     def disconnect(self) -> None:
-        """Disconnect from Conbus server."""
+        """Disconnect from Conbus server.
+
+        Only disconnects if currently CONNECTED or CONNECTING.
+        """
         self.logger.debug("Disconnect")
+
+        # Guard: Only disconnect if connected or connecting
+        if self.connection_state not in (ConnectionState.CONNECTED, ConnectionState.CONNECTING):
+            self.logger.warning(f"Cannot disconnect: current state is {self.connection_state.value}")
+            if self.log_widget:
+                self.log_widget.write(
+                    f"[yellow]Cannot disconnect: not connected (state: {self.connection_state.value.lower()})[/yellow]"
+                )
+            return
+
         self.connection_state = ConnectionState.DISCONNECTING
+        if self.log_widget:
+            self.log_widget.write("[yellow]Disconnecting from Conbus server...[/yellow]")
+
         if self.protocol:
             self.protocol.disconnect()
-            self.connection_state = ConnectionState.DISCONNECTED
-            if self.log_widget:
-                self.log_widget.write("[yellow]Disconnected from Conbus server[/yellow]")
+
+        self.connection_state = ConnectionState.DISCONNECTED
+        if self.log_widget:
+            self.log_widget.write("[yellow]Disconnected from Conbus server[/yellow]")
 
     def send_discover(self) -> None:
         """Send discover telegram.
