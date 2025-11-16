@@ -40,6 +40,6 @@ class ProtocolKeysConfig(BaseModel):
         Returns:
             ProtocolKeysConfig instance.
         """
-        with open(config_path, "r") as f:
+        with config_path.open("r") as f:
             data = yaml.safe_load(f)
         return cls(**data)

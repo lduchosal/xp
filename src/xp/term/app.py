@@ -22,6 +22,7 @@ class ProtocolMonitorApp(App[None]):
         CSS_PATH: Path to CSS stylesheet file.
         BINDINGS: Keyboard bindings for app actions.
         TITLE: Application title displayed in header.
+        ENABLE_COMMAND_PALETTE: Disable Textual's command palette feature.
     """
 
     CSS_PATH = Path(__file__).parent / "protocol.tcss"
