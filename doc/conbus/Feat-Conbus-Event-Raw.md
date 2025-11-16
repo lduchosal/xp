@@ -70,7 +70,7 @@ The process finishes normally by timing out after 5 seconds (after sending MAKE 
 - [ ] Event telegram format: Use `TelegramType.EVENT` when calling `send_telegram()`, construct payload string: `E{code:02d}L{link:02d}I{input:02d}{M|B}`
 
 ### 2. CLI Command: `xp conbus event raw`
-**Reference**: doc/architecture.md → Layer 1: CLI/API
+**Reference**: doc/architecture.md → Layer 1: CLI
 
 - [ ] Location: `src/xp/cli/commands/conbus_event.py`
 - [ ] Register: Add to `cli/main.py` command group

@@ -74,7 +74,7 @@ Example conson.yml:
 - [ ] Return response: `ConbusEventListResponse(events=events_dict)`
 
 ### 3. CLI Command: `xp conbus event list`
-**Reference**: doc/architecture.md → Layer 1: CLI/API
+**Reference**: doc/architecture.md → Layer 1: CLI
 
 - [ ] Location: Add to existing `src/xp/cli/commands/conbus/conbus_event_commands.py`
 - [ ] Decorator: `@conbus_event.command("list")` with help text

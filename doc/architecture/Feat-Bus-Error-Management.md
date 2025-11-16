@@ -421,9 +421,8 @@ class TelegramStormDetector:
 ### Phase 4: Monitoring & Observability (Week 3)
 
 15. ✅ Add metrics dashboard
-16. ✅ Expose error statistics via API
-17. ✅ Add CLI commands for error monitoring
-18. ✅ Implement error log aggregation
+16. ✅ Add CLI commands for error monitoring
+17. ✅ Implement error log aggregation
 
 ## Success Metrics
 

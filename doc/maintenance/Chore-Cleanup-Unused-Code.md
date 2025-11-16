@@ -116,7 +116,6 @@ The `build/` directory contains 51 duplicate Python files that should be exclude
 - [ ] Generate and analyze coverage.xml to identify untested code paths
 - [ ] Run vulture with lower confidence threshold (60%) to find more candidates
 - [ ] Review CLI command registration for unused commands
-- [ ] Audit API endpoints for unused routes
 - [ ] Check model classes for unused methods/properties
 - [ ] Cross-reference coverage gaps with static analysis results
 
@@ -127,7 +126,6 @@ The `build/` directory contains 51 duplicate Python files that should be exclude
 - [ ] Simplify overly complex conditional logic
 
 ### Phase 4: Documentation
-- [ ] Update API documentation after route cleanup
 - [ ] Remove outdated code examples
 - [ ] Document intentionally unused code (e.g., event handlers)
 
@@ -196,7 +194,6 @@ Current coverage excludes:
    ```
 
 ### Integration Testing
-- [ ] API endpoints still function after route cleanup
 - [ ] CLI commands work after command cleanup
 - [ ] HomeKit integration remains stable
 - [ ] Telegram parsing accuracy unchanged

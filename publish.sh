@@ -34,9 +34,9 @@ done
 
 # Set total steps based on mode
 if [ "$QUALITY_ONLY" = true ]; then
-    STEPS=15
+    STEPS=16
 else
-    STEPS=22
+    STEPS=23
 fi
 STEP=0
 
@@ -171,6 +171,9 @@ print_step "Creating Tag and Pushing"
 run_command "git tag conson-xp-${VERSION}" "Creating git tag"
 run_command "git push" "Pushing commits"
 run_command "git push --tags" "Pushing tags"
+
+print_step "Cleaning Previous Build (pdm run clean)"
+run_command "pdm run clean" "Clean"
 
 echo ""
 echo "${GREEN}${BOLD}🎉 PUBLISHING COMPLETED SUCCESSFULLY! 🎉${NC}"

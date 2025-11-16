@@ -103,7 +103,7 @@ Create `BubusCacheService` that:
 **Future Enhancement:**
 - Add TTL configuration (e.g., 30 seconds)
 - Clear stale entries on timer
-- Add manual cache invalidation API
+- Add manual cache invalidation mechanism
 
 ### Cache Bypass
 

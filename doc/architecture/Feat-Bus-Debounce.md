@@ -504,7 +504,7 @@ Some telegrams may be more urgent:
    - Current behavior: Timeout handled by protocol layer
    - No change needed: All waiting requests will fail together
 
-3. **Should we expose debounce metrics via API/CLI?**
+3. **Should we expose debounce metrics via CLI?**
    - Recommendation: Yes, add to `xp conbus stats` command
 
 ## Status

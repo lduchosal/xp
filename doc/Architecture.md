@@ -1,7 +1,7 @@
 # Architecture
 
 ## Overview
-XP is a CLI/API toolkit for CONSON XP Protocol operations with HomeKit integration. Event-driven architecture with dependency injection.
+XP is a CLI toolkit for CONSON XP Protocol operations with HomeKit integration. Event-driven architecture with dependency injection.
 
 ## System Purpose
 - **Protocol**: TCP communication with XP130/XP230 servers (CONSON XP Protocol)
@@ -13,15 +13,14 @@ XP is a CLI/API toolkit for CONSON XP Protocol operations with HomeKit integrati
 1. **Dependency Injection**: All services registered in ServiceContainer (punq)
 2. **Event-Driven**: Central EventBus (bubus) for protocol/HomeKit communication
 3. **Type Safety**: Pydantic models, mypy strict mode (no untyped defs)
-4. **Layer Separation**: CLI/API → Services → Protocol → Connection
+4. **Layer Separation**: CLI → Services → Protocol → Connection
 5. **Test Coverage**: Minimum 75% (pytest with strict config)
 
 ## Layer Architecture
 
-### Layer 1: CLI/API
-**Location**: `src/xp/cli/`, `src/xp/api/`
+### Layer 1: CLI
+**Location**: `src/xp/cli/`
 - **CLI**: Click-based commands, resolve services from ServiceContainer via context
-- **API**: FastAPI routers, uses same service layer
 - **Rule**: NO business logic, only input validation and output formatting
 - **Entry**: `cli/main.py` initializes ServiceContainer, registers command groups
 - **Validation**: Click types handle all parameter validation (ranges, enums, custom types)
@@ -61,8 +60,6 @@ src/xp/
 ├── cli/                    # Click CLI commands
 │   ├── main.py            # Entry point, ServiceContainer init
 │   └── commands/          # Command groups (conbus, telegram, homekit, etc.)
-├── api/                    # FastAPI REST endpoints
-│   └── routers/           # API route handlers
 ├── services/              # Business logic layer
 │   ├── telegram/          # Low-level telegram operations
 │   ├── conbus/            # High-level device operations

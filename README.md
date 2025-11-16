@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
-> **A powerful Python CLI and API toolkit for CONSON XP Protocol operations**
+> **A powerful Python CLI toolkit for CONSON XP Protocol operations**
 
 Control and communicate with XP devices through console bus (Conbus), parse telegrams in real-time, and integrate with smart home systems like Apple HomeKit.
 
@@ -28,7 +28,7 @@ Bridge XP devices to Apple HomeKit for seamless smart home control
 Automatically discover XP servers and scan connected modules on your network
 
 ⚡ **Modern Architecture**
-FastAPI REST endpoints and comprehensive type safety
+Comprehensive type safety and robust error handling
 
 ---
 
@@ -43,9 +43,6 @@ xp telegram parse "<E14L00I02MAK>"
 
 # Discover XP servers on your network
 xp conbus discover
-
-# Start the REST API server
-xp api start
 ```
 
 ## 📦 Installation
@@ -148,13 +145,7 @@ xp checksum calculate "E14L00I02M" --algorithm crc32
 ```
 </details>
 
-### 🌐 API & Integration
-
-**REST API Server**
-```bash
-# Start API server with interactive docs at /docs
-xp api start
-```
+### 🌐 Integration
 
 **HomeKit Smart Home Bridge**
 ```bash
@@ -179,7 +170,7 @@ xp reverse-proxy start
 
 **Layered Design**
 ```
-CLI Layer → API Layer → Services → Models → Connection Layer
+CLI Layer → Services → Models → Connection Layer
 ```
 
 **Key Components**: Telegram processing • Real-time Conbus communication • HomeKit bridge • Multiple XP server support • Configuration management
@@ -203,9 +194,8 @@ pdm run check
 <details>
 <summary><b>Project Structure</b></summary>
 
-``` 
+```
 src/xp/
-├── api/           # FastAPI REST endpoints
 ├── cli/           # Command-line interface
 ├── models/        # Core data models
 ├── services/      # Business logic
@@ -354,7 +344,7 @@ xp term protocol
 ```
 </details>
 
-**Requirements**: Python 3.10+ • FastAPI • Pydantic • Click • HAP-python
+**Requirements**: Python 3.10+ • Pydantic • Click • HAP-python
 
 ## License
 

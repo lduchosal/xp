@@ -53,7 +53,6 @@ Command-line interface features:
 - CLI refactoring and structure
 - Blink/unblink operations
 - Click color management
-- FastAPI discovery endpoints
 
 ### Modules
 XP module information and queries:
