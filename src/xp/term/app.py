@@ -30,6 +30,7 @@ class ProtocolMonitorApp(App[None]):
     BINDINGS = [
         ("q", "quit", "Quit"),
         ("c", "toggle_connection", "Connect/Disconnect"),
+        ("r", "reset", "Reset"),
         ("1", "send_key_1", "Discover"),
         ("2", "send_key_2", "Error Code"),
         ("3", "send_key_3", "Module Type"),
@@ -81,6 +82,11 @@ class ProtocolMonitorApp(App[None]):
                 self.protocol_widget.disconnect()
             else:
                 self.protocol_widget.connect()
+
+    def action_reset(self) -> None:
+        """Reset and clear protocol widget on 'r' key press."""
+        if self.protocol_widget:
+            self.protocol_widget.clear_log()
 
     def action_send_key_1(self) -> None:
         """Send discover telegram."""

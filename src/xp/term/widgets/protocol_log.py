@@ -348,6 +348,12 @@ class ProtocolLogWidget(Widget):
             self.logger.error(f"Failed to send telegram: {e}")
             self.post_message(self.StatusMessageChanged(f"Failed: {e}"))
 
+    def clear_log(self) -> None:
+        """Clear the protocol log widget."""
+        if self.log_widget:
+            self.log_widget.clear()
+            self.post_message(self.StatusMessageChanged("Log cleared"))
+
     def on_unmount(self) -> None:
         """Clean up when widget unmounts.
 
