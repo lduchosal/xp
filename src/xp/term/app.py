@@ -30,10 +30,10 @@ class ProtocolMonitorApp(App[None]):
     ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [
-        ("q", "quit", "Quit"),
+        ("Q", "quit", "Quit"),
         ("C", "toggle_connection", "Connect"),
         ("R", "reset", "Reset"),
-        ("0-9,a-c", "protocol_keys", "Keys"),
+        ("0-9,a-q", "protocol_keys", "Keys"),
     ]
 
     def __init__(self, container: Any) -> None:
