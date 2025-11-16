@@ -8,6 +8,7 @@ Screen {
 /* Protocol Log Widget */
 ProtocolLogWidget {
     border: solid $success;
+    width: 1fr;
     height: 1fr;
     background: $background;
     padding: 1;
@@ -54,11 +55,15 @@ ProtocolLogWidget > .connection-status.failed {
     color: $text-muted;
 }
 
+/* Main container */
+#main-container {
+    height: 1fr;
+}
+
 /* Help menu styling */
 #help-menu {
-    display: none;
-    dock: right;
     width: 35;
+    height: 1fr;
     background: $background;
     border: solid $success;
     padding: 1;

@@ -34,7 +34,6 @@ class ProtocolMonitorApp(App[None]):
         ("C", "toggle_connection", "Connect"),
         ("R", "reset", "Reset"),
         ("0-9,a-c", "protocol_keys", "Keys"),
-        ("H", "toggle_help", "Help"),
     ]
 
     def __init__(self, container: Any) -> None:
@@ -66,15 +65,16 @@ class ProtocolMonitorApp(App[None]):
         Yields:
             ProtocolLogWidget and Footer widgets.
         """
-        self.protocol_widget = ProtocolLogWidget(container=self.container)
-        yield self.protocol_widget
+        with Horizontal(id="main-container"):
+            self.protocol_widget = ProtocolLogWidget(container=self.container)
+            yield self.protocol_widget
 
-        # Help menu (hidden by default)
-        help_container = Vertical(id="help-menu")
-        help_container.border_title = "Help menu"
-        with help_container:
-            self.help_table = DataTable(id="help-table", show_header=False)
-            yield self.help_table
+            # Help menu (hidden by default)
+            help_container = Vertical(id="help-menu")
+            help_container.border_title = "Help menu"
+            with help_container:
+                self.help_table = DataTable(id="help-table", show_header=False)
+                yield self.help_table
 
         with Horizontal(id="footer-container"):
             yield Footer()
@@ -99,14 +99,6 @@ class ProtocolMonitorApp(App[None]):
         """Reset and clear protocol widget on 'r' key press."""
         if self.protocol_widget:
             self.protocol_widget.clear_log()
-
-    def action_toggle_help(self) -> None:
-        """Toggle help menu visibility on 'h' key press."""
-        help_menu = self.query_one("#help-menu")
-        if help_menu.styles.display == "none":
-            help_menu.styles.display = "block"
-        else:
-            help_menu.styles.display = "none"
 
     def on_key(self, event: Any) -> None:
         """Handle key press events for protocol keys.
