@@ -5,6 +5,7 @@ import logging
 from enum import Enum
 from typing import Any, Optional
 
+from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import RichLog
@@ -75,6 +76,18 @@ class ProtocolLogWidget(Widget):
         log_widget: RichLog widget for displaying messages.
     """
 
+    class StatusMessageChanged(Message):
+        """Message posted when status message changes."""
+
+        def __init__(self, message: str) -> None:
+            """Initialize the message.
+
+            Args:
+                message: The status message to display.
+            """
+            super().__init__()
+            self.message = message
+
     connection_state = reactive(ConnectionState.DISCONNECTED)
 
     def __init__(self, container: Any) -> None:
@@ -142,18 +155,17 @@ class ProtocolLogWidget(Widget):
             self.logger.warning(
                 f"Already {self._state_machine.get_state().value}, ignoring connect request"
             )
-            if self.log_widget:
-                self.log_widget.write(
-                    f"[yellow]Already {self._state_machine.get_state().value.lower()}[/yellow]"
-                )
             return
 
         try:
             # Transition to CONNECTING
             if self._state_machine.transition("connecting", ConnectionState.CONNECTING):
                 self.connection_state = ConnectionState.CONNECTING
-            if self.log_widget:
-                self.log_widget.write("[yellow]Connecting to Conbus server...[/yellow]")
+                self.post_message(
+                    self.StatusMessageChanged(
+                        f"Connecting to {self.protocol.cli_config.ip}:{self.protocol.cli_config.port}..."
+                    )
+                )
 
             # Store protocol reference
             self.logger.info(f"Protocol object: {self.protocol}")
@@ -196,11 +208,6 @@ class ProtocolLogWidget(Widget):
                 self.protocol,
             )
 
-            if self.log_widget:
-                self.log_widget.write(
-                    f"[dim]→ {self.protocol.cli_config.ip}:{self.protocol.cli_config.port}[/dim]"
-                )
-
             # Wait for connection to establish
             await asyncio.sleep(1.0)
             self.logger.info(f"After 1s - transport: {self.protocol.transport}")
@@ -210,8 +217,7 @@ class ProtocolLogWidget(Widget):
             # Transition to FAILED
             if self._state_machine.transition("failed", ConnectionState.FAILED):
                 self.connection_state = ConnectionState.FAILED
-                if self.log_widget:
-                    self.log_widget.write(f"[red]Connection error: {e}[/red]")
+                self.post_message(self.StatusMessageChanged(f"Connection error: {e}"))
 
     def _start_connection(self) -> None:
         """Start connection (sync wrapper for async method)."""
@@ -228,9 +234,12 @@ class ProtocolLogWidget(Widget):
         # Transition to CONNECTED
         if self._state_machine.transition("connected", ConnectionState.CONNECTED):
             self.connection_state = ConnectionState.CONNECTED
-            if self.log_widget:
-                self.log_widget.write("[green]Connected to Conbus server[/green]")
-                self.log_widget.write("[dim]---[/dim]")
+            if self.protocol:
+                self.post_message(
+                    self.StatusMessageChanged(
+                        f"Connected to {self.protocol.cli_config.ip}:{self.protocol.cli_config.port}"
+                    )
+                )
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
         """Handle telegram received signal.
@@ -272,9 +281,7 @@ class ProtocolLogWidget(Widget):
         if self._state_machine.transition("failed", ConnectionState.FAILED):
             self.connection_state = ConnectionState.FAILED
             self.logger.error(f"Connection failed: {error}")
-
-            if self.log_widget:
-                self.log_widget.write(f"[red]Connection failed: {error}[/red]")
+            self.post_message(self.StatusMessageChanged(f"Failed: {error}"))
 
     def connect(self) -> None:
         """Connect to Conbus server.
@@ -288,10 +295,6 @@ class ProtocolLogWidget(Widget):
             self.logger.warning(
                 f"Cannot connect: current state is {self._state_machine.get_state().value}"
             )
-            if self.log_widget:
-                self.log_widget.write(
-                    f"[yellow]Cannot connect: already {self._state_machine.get_state().value.lower()}[/yellow]"
-                )
             return
 
         self._start_connection()
@@ -308,17 +311,12 @@ class ProtocolLogWidget(Widget):
             self.logger.warning(
                 f"Cannot disconnect: current state is {self._state_machine.get_state().value}"
             )
-            if self.log_widget:
-                self.log_widget.write(
-                    f"[yellow]Cannot disconnect: not connected (state: {self._state_machine.get_state().value.lower()})[/yellow]"
-                )
             return
 
         # Transition to DISCONNECTING
         if self._state_machine.transition("disconnecting", ConnectionState.DISCONNECTING):
             self.connection_state = ConnectionState.DISCONNECTING
-            if self.log_widget:
-                self.log_widget.write("[yellow]Disconnecting from Conbus server...[/yellow]")
+            self.post_message(self.StatusMessageChanged("Disconnecting..."))
 
         if self.protocol:
             self.protocol.disconnect()
@@ -326,8 +324,7 @@ class ProtocolLogWidget(Widget):
         # Transition to DISCONNECTED
         if self._state_machine.transition("disconnected", ConnectionState.DISCONNECTED):
             self.connection_state = ConnectionState.DISCONNECTED
-            if self.log_widget:
-                self.log_widget.write("[yellow]Disconnected from Conbus server[/yellow]")
+            self.post_message(self.StatusMessageChanged("Disconnected"))
 
     def send_discover(self) -> None:
         """Send discover telegram.
@@ -338,10 +335,6 @@ class ProtocolLogWidget(Widget):
         self.logger.debug("Discover")
         if self.protocol is None:
             self.logger.warning("Cannot send discover: not connected")
-            if self.log_widget:
-                self.log_widget.write(
-                    "[yellow]Not connected, cannot send discover[/yellow]"
-                )
             return
 
         try:
@@ -351,6 +344,8 @@ class ProtocolLogWidget(Widget):
             from xp.models.telegram.system_function import SystemFunction
             from xp.models.telegram.telegram_type import TelegramType
 
+            self.post_message(self.StatusMessageChanged("Sending discover telegram..."))
+
             # Send discover: S 0000000000 F01 D00
             self.protocol.send_telegram(
                 telegram_type=TelegramType.SYSTEM,
@@ -359,13 +354,9 @@ class ProtocolLogWidget(Widget):
                 data_value="00",
             )
 
-            if self.log_widget:
-                self.log_widget.write("[yellow]Discover telegram sent[/yellow]")
-
         except Exception as e:
             self.logger.error(f"Failed to send discover: {e}")
-            if self.log_widget:
-                self.log_widget.write(f"[red]Failed to send discover: {e}[/red]")
+            self.post_message(self.StatusMessageChanged(f"Failed to send discover: {e}"))
 
     def on_unmount(self) -> None:
         """Clean up when widget unmounts.

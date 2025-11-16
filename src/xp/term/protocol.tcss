@@ -67,6 +67,15 @@ Footer {
     color: $text;
 }
 
+#status-text {
+    dock: right;
+    width: auto;
+    padding: 0 1;
+    background: $background;
+    color: $text;
+    text-align: right;
+}
+
 #status-line {
     dock: right;
     width: auto;

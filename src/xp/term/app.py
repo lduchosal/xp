@@ -44,6 +44,7 @@ class ProtocolMonitorApp(App[None]):
         self.container = container
         self.protocol_widget: Optional[ProtocolLogWidget] = None
         self.status_widget: Optional[Static] = None
+        self.status_text_widget: Optional[Static] = None
 
     def compose(self) -> ComposeResult:
         """Compose the app layout with widgets.
@@ -55,6 +56,8 @@ class ProtocolMonitorApp(App[None]):
         yield self.protocol_widget
         with Horizontal(id="footer-container"):
             yield Footer()
+            self.status_text_widget = Static("", id="status-text")
+            yield self.status_text_widget
             self.status_widget = Static("○", id="status-line")
             yield self.status_widget
 
@@ -102,3 +105,14 @@ class ProtocolMonitorApp(App[None]):
             }
             dot = status_map.get(state.value, "○")
             self.status_widget.update(dot)
+
+    def on_protocol_log_widget_status_message_changed(
+        self, message: ProtocolLogWidget.StatusMessageChanged
+    ) -> None:
+        """Handle status message changes from protocol widget.
+
+        Args:
+            message: Message containing the status text.
+        """
+        if self.status_text_widget:
+            self.status_text_widget.update(message.message)
