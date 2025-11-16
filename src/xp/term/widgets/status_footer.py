@@ -43,12 +43,11 @@ class StatusFooterWidget(Horizontal):
             state: Current connection state (ConnectionState enum).
         """
         # Map states to colored dots
-        status_map = {
+        dot = {
             "CONNECTED": "[green]●[/green]",
             "CONNECTING": "[yellow]●[/yellow]",
             "DISCONNECTING": "[yellow]●[/yellow]",
             "FAILED": "[red]●[/red]",
             "DISCONNECTED": "○",
-        }
-        dot = status_map.get(state.value, "○")
+        }.get(state.value, "○")
         self.status_widget.update(dot)
