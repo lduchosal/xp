@@ -15,7 +15,7 @@ rp.yml
 logger.yml
 .idea/workspace.xml
 coverage.xml
-conbus.log
+conbus.log*
 
 # Cache directory
 /.cache/
