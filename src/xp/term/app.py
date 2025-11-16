@@ -55,7 +55,7 @@ class ProtocolMonitorApp(App[None]):
         yield self.protocol_widget
         with Horizontal(id="footer-container"):
             yield Footer()
-            self.status_widget = Static("Status: DISCONNECTED", id="status-line")
+            self.status_widget = Static("○", id="status-line")
             yield self.status_widget
 
     def action_discover(self) -> None:
@@ -92,4 +92,13 @@ class ProtocolMonitorApp(App[None]):
             state: Current connection state.
         """
         if self.status_widget:
-            self.status_widget.update(f"Status: {state.value}")
+            # Map states to colored dots
+            status_map = {
+                "CONNECTED": "[green]●[/green]",
+                "CONNECTING": "[yellow]●[/yellow]",
+                "DISCONNECTING": "[yellow]●[/yellow]",
+                "FAILED": "[red]●[/red]",
+                "DISCONNECTED": "○",
+            }
+            dot = status_map.get(state.value, "○")
+            self.status_widget.update(dot)
