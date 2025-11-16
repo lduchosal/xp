@@ -111,7 +111,32 @@ xp module search "push button"
 xp module list --group-by-category
 ```
 
+### 🖥️ Terminal UI (TUI)
 
+**Real-time Protocol Monitor**
+
+Launch an interactive terminal interface for live protocol monitoring and control:
+
+```bash
+# Start the protocol monitor TUI
+xp term protocol
+```
+
+**Features:**
+- 📊 **Live Telegram Stream**: Real-time RX/TX telegram monitoring from Conbus server
+- ⌨️ **Keyboard Shortcuts**: Quick access controls for common operations
+  - `Q` - Quit application
+  - `C` - Toggle connection (connect/disconnect)
+  - `R` - Reset and clear log
+  - `0-9, a-q` - Send predefined protocol telegrams
+- 🎨 **Visual Status Indicators**: Color-coded connection states
+  - 🟢 Green - Connected
+  - 🟡 Yellow - Connecting/Disconnecting
+  - 🔴 Red - Failed
+  - ⚪ White - Disconnected
+- 📝 **Interactive Display**: Scrollable telegram log with detailed parsing information
+
+The TUI provides a convenient way to monitor and interact with XP devices without juggling multiple terminal commands.
 
 ### 🔧 Advanced Features
 
