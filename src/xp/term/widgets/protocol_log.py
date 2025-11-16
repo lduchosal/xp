@@ -326,37 +326,27 @@ class ProtocolLogWidget(Widget):
             self.connection_state = ConnectionState.DISCONNECTED
             self.post_message(self.StatusMessageChanged("Disconnected"))
 
-    def send_discover(self) -> None:
-        """Send discover telegram.
+    def send_telegram(self, telegram: str) -> None:
+        """Send a raw telegram string.
 
-        Sends predefined discover telegram <S0000000000F01D00FA> to the bus.
-        Called when user presses 'd' key.
+        Args:
+            telegram: Telegram string including angle brackets (e.g., "<S0000000000F01D00FA>")
         """
-        self.logger.debug("Discover")
         if self.protocol is None:
-            self.logger.warning("Cannot send discover: not connected")
+            self.logger.warning("Cannot send telegram: not connected")
             return
 
         try:
-            # Send discover telegram
-            # Note: The telegram includes framing <>, but protocol may add it
-            # Check if protocol expects with or without brackets
-            from xp.models.telegram.system_function import SystemFunction
-            from xp.models.telegram.telegram_type import TelegramType
+            # Remove angle brackets if present
+            clean_telegram = telegram.strip("<>")
+            self.post_message(self.StatusMessageChanged(f"Sending {telegram}..."))
 
-            self.post_message(self.StatusMessageChanged("Sending discover telegram..."))
-
-            # Send discover: S 0000000000 F01 D00
-            self.protocol.send_telegram(
-                telegram_type=TelegramType.SYSTEM,
-                serial_number="0000000000",
-                system_function=SystemFunction.DISCOVERY,
-                data_value="00",
-            )
+            # Send raw telegram
+            self.protocol.send_raw_telegram(clean_telegram)
 
         except Exception as e:
-            self.logger.error(f"Failed to send discover: {e}")
-            self.post_message(self.StatusMessageChanged(f"Failed to send discover: {e}"))
+            self.logger.error(f"Failed to send telegram: {e}")
+            self.post_message(self.StatusMessageChanged(f"Failed: {e}"))
 
     def on_unmount(self) -> None:
         """Clean up when widget unmounts.

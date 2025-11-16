@@ -209,6 +209,17 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             f"F{system_function.value}"
             f"D{data_value}"
         )
+        self.send_raw_telegram(payload)
+
+    def send_raw_telegram(
+        self,
+        payload: str
+    ) -> None:
+        """Send telegram with specified parameters.
+
+        Args:
+            payload: Telegram to send.
+        """
         self.telegram_queue.put_nowait(payload.encode())
         self.call_later(0.0, self.start_queue_manager)
 

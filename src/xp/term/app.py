@@ -30,7 +30,15 @@ class ProtocolMonitorApp(App[None]):
     BINDINGS = [
         ("q", "quit", "Quit"),
         ("c", "toggle_connection", "Connect/Disconnect"),
-        ("1", "discover", "Discover"),
+        ("1", "send_key_1", "Discover"),
+        ("2", "send_key_2", "Error Code"),
+        ("3", "send_key_3", "Module Type"),
+        ("4", "send_key_4", "Auto Report"),
+        ("5", "send_key_5", "Link Number"),
+        ("6", "send_key_6", "Blink On"),
+        ("7", "send_key_7", "Blink Off"),
+        ("8", "send_key_8", "Output 1 On"),
+        ("9", "send_key_9", "Output 1 Off"),
     ]
 
     def __init__(self, container: Any) -> None:
@@ -74,13 +82,50 @@ class ProtocolMonitorApp(App[None]):
             else:
                 self.protocol_widget.connect()
 
-    def action_discover(self) -> None:
-        """Send discover telegram on '1' key press.
-
-        Sends predefined discover telegram <S0000000000F01D00FA> to the bus.
-        """
+    def action_send_key_1(self) -> None:
+        """Send discover telegram."""
         if self.protocol_widget:
-            self.protocol_widget.send_discover()
+            self.protocol_widget.send_telegram("<S0000000000F01D00FA>")
+
+    def action_send_key_2(self) -> None:
+        """Send error code telegram."""
+        if self.protocol_widget:
+            self.protocol_widget.send_telegram("<S0020044966F02D10FJ>")
+
+    def action_send_key_3(self) -> None:
+        """Send module type telegram."""
+        if self.protocol_widget:
+            self.protocol_widget.send_telegram("<S0020044966F02D00FI>")
+
+    def action_send_key_4(self) -> None:
+        """Send auto report telegram."""
+        if self.protocol_widget:
+            self.protocol_widget.send_telegram("<S0020044966F02D21FL>")
+
+    def action_send_key_5(self) -> None:
+        """Send link number telegram."""
+        if self.protocol_widget:
+            self.protocol_widget.send_telegram("<S0020044966F02D04FM>")
+
+    def action_send_key_6(self) -> None:
+        """Send blink on telegram."""
+        if self.protocol_widget:
+            self.protocol_widget.send_telegram("<S0020044966F01D01FB>")
+
+    def action_send_key_7(self) -> None:
+        """Send blink off telegram."""
+        if self.protocol_widget:
+            self.protocol_widget.send_telegram("<S0020044966F01D00FA>")
+
+    def action_send_key_8(self) -> None:
+        """Send output 1 on telegram."""
+        if self.protocol_widget:
+            self.protocol_widget.send_telegram("<S0020044966F02101FC>")
+
+    def action_send_key_9(self) -> None:
+        """Send output 1 off telegram."""
+        if self.protocol_widget:
+            self.protocol_widget.send_telegram("<S0020044966F02100FB>")
 
     def on_mount(self) -> None:
         """Set up status line updates when app mounts."""
