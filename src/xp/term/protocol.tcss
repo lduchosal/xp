@@ -69,6 +69,10 @@ ProtocolLogWidget > .connection-status.failed {
     padding: 1;
 }
 
+#help-menu:focus {
+    border: solid $success;
+}
+
 #help-title {
     color: $success;
     text-align: center;

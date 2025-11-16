@@ -72,8 +72,10 @@ class ProtocolMonitorApp(App[None]):
             # Help menu (hidden by default)
             help_container = Vertical(id="help-menu")
             help_container.border_title = "Help menu"
+            help_container.can_focus = False
             with help_container:
                 self.help_table = DataTable(id="help-table", show_header=False)
+                self.help_table.can_focus = False
                 yield self.help_table
 
         with Horizontal(id="footer-container"):
