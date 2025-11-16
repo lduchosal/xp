@@ -1,0 +1,28 @@
+protocol_keys:
+  "1":
+    command: "Discover"
+    telegram: "<S0000000000F01D00FA>"
+  "2":
+    command: "Error Code"
+    telegram: "<S0020044966F02D10FJ>"
+  "3":
+    command: "Module Type"
+    telegram: "<S0020044966F02D00FI>"
+  "4":
+    command: "Auto Report"
+    telegram: "<S0020044966F02D21FL>"
+  "5":
+    command: "Link Number"
+    telegram: "<S0020044966F02D04FM>"
+  "6":
+    command: "Blink On"
+    telegram: "<S0020044966F01D01FB>"
+  "7":
+    command: "Blink Off"
+    telegram: "<S0020044966F01D00FA>"
+  "8":
+    command: "Output 1 On"
+    telegram: "<S0020044966F02101FC>"
+  "9":
+    command: "Output 1 Off"
+    telegram: "<S0020044966F02100FB>"

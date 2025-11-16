@@ -211,10 +211,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         )
         self.send_raw_telegram(payload)
 
-    def send_raw_telegram(
-        self,
-        payload: str
-    ) -> None:
+    def send_raw_telegram(self, payload: str) -> None:
         """Send telegram with specified parameters.
 
         Args:

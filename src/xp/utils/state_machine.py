@@ -5,7 +5,7 @@ managing state transitions with validation.
 """
 
 from enum import Enum
-from typing import Any, Set
+from typing import Set
 
 
 class StateMachine:

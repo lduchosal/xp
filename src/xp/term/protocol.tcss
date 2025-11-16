@@ -54,6 +54,38 @@ ProtocolLogWidget > .connection-status.failed {
     color: $text-muted;
 }
 
+/* Help menu styling */
+#help-menu {
+    display: none;
+    dock: right;
+    width: 30;
+    background: $background;
+    border: solid $success;
+    padding: 1;
+}
+
+#help-title {
+    color: $success;
+    text-align: center;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+#help-table {
+    background: $background;
+    height: auto;
+}
+
+#help-table > .datatable--header {
+    background: $background;
+    color: $success;
+    text-style: bold;
+}
+
+#help-table > .datatable--cursor {
+    background: $primary-darken-1;
+}
+
 /* Footer styling */
 #footer-container {
     dock: bottom;

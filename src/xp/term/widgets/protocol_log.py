@@ -43,11 +43,19 @@ def create_connection_state_machine() -> StateMachine:
     sm = StateMachine(ConnectionState.DISCONNECTED)
 
     # Define valid transitions
-    sm.define_transition("connect", {ConnectionState.DISCONNECTED, ConnectionState.FAILED})
-    sm.define_transition("disconnect", {ConnectionState.CONNECTED, ConnectionState.CONNECTING})
-    sm.define_transition("connecting", {ConnectionState.DISCONNECTED, ConnectionState.FAILED})
+    sm.define_transition(
+        "connect", {ConnectionState.DISCONNECTED, ConnectionState.FAILED}
+    )
+    sm.define_transition(
+        "disconnect", {ConnectionState.CONNECTED, ConnectionState.CONNECTING}
+    )
+    sm.define_transition(
+        "connecting", {ConnectionState.DISCONNECTED, ConnectionState.FAILED}
+    )
     sm.define_transition("connected", {ConnectionState.CONNECTING})
-    sm.define_transition("disconnecting", {ConnectionState.CONNECTED, ConnectionState.CONNECTING})
+    sm.define_transition(
+        "disconnecting", {ConnectionState.CONNECTED, ConnectionState.CONNECTING}
+    )
     sm.define_transition("disconnected", {ConnectionState.DISCONNECTING})
     sm.define_transition(
         "failed",
@@ -314,7 +322,9 @@ class ProtocolLogWidget(Widget):
             return
 
         # Transition to DISCONNECTING
-        if self._state_machine.transition("disconnecting", ConnectionState.DISCONNECTING):
+        if self._state_machine.transition(
+            "disconnecting", ConnectionState.DISCONNECTING
+        ):
             self.connection_state = ConnectionState.DISCONNECTING
             self.post_message(self.StatusMessageChanged("Disconnecting..."))
 

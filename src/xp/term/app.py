@@ -4,9 +4,10 @@ from pathlib import Path
 from typing import Any, Optional
 
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal
-from textual.widgets import Footer, Static
+from textual.containers import Horizontal, Vertical
+from textual.widgets import DataTable, Footer, Static
 
+from xp.models.term import ProtocolKeysConfig
 from xp.term.widgets.protocol_log import ProtocolLogWidget
 
 
@@ -29,17 +30,10 @@ class ProtocolMonitorApp(App[None]):
 
     BINDINGS = [
         ("q", "quit", "Quit"),
-        ("c", "toggle_connection", "Connect/Disconnect"),
+        ("c", "toggle_connection", "Connect"),
         ("r", "reset", "Reset"),
-        ("1", "send_key_1", "Discover"),
-        ("2", "send_key_2", "Error Code"),
-        ("3", "send_key_3", "Module Type"),
-        ("4", "send_key_4", "Auto Report"),
-        ("5", "send_key_5", "Link Number"),
-        ("6", "send_key_6", "Blink On"),
-        ("7", "send_key_7", "Blink Off"),
-        ("8", "send_key_8", "Output 1 On"),
-        ("9", "send_key_9", "Output 1 Off"),
+        ("1-9", "protocol_keys", "Keys"),
+        ("h", "toggle_help", "Help"),
     ]
 
     def __init__(self, container: Any) -> None:
@@ -53,6 +47,17 @@ class ProtocolMonitorApp(App[None]):
         self.protocol_widget: Optional[ProtocolLogWidget] = None
         self.status_widget: Optional[Static] = None
         self.status_text_widget: Optional[Static] = None
+        self.help_table: Optional[DataTable] = None
+        self.protocol_keys = self._load_protocol_keys()
+
+    def _load_protocol_keys(self) -> ProtocolKeysConfig:
+        """Load protocol keys from YAML config file.
+
+        Returns:
+            ProtocolKeysConfig instance.
+        """
+        config_path = Path(__file__).parent / "protocol.yml"
+        return ProtocolKeysConfig.from_yaml(config_path)
 
     def compose(self) -> ComposeResult:
         """Compose the app layout with widgets.
@@ -62,6 +67,13 @@ class ProtocolMonitorApp(App[None]):
         """
         self.protocol_widget = ProtocolLogWidget(container=self.container)
         yield self.protocol_widget
+
+        # Help menu (hidden by default)
+        with Vertical(id="help-menu"):
+            yield Static("Protocol Keys", id="help-title")
+            self.help_table = DataTable(id="help-table")
+            yield self.help_table
+
         with Horizontal(id="footer-container"):
             yield Footer()
             self.status_text_widget = Static("", id="status-text")
@@ -88,50 +100,23 @@ class ProtocolMonitorApp(App[None]):
         if self.protocol_widget:
             self.protocol_widget.clear_log()
 
-    def action_send_key_1(self) -> None:
-        """Send discover telegram."""
-        if self.protocol_widget:
-            self.protocol_widget.send_telegram("<S0000000000F01D00FA>")
+    def action_toggle_help(self) -> None:
+        """Toggle help menu visibility on 'h' key press."""
+        help_menu = self.query_one("#help-menu")
+        if help_menu.styles.display == "none":
+            help_menu.styles.display = "block"
+        else:
+            help_menu.styles.display = "none"
 
-    def action_send_key_2(self) -> None:
-        """Send error code telegram."""
-        if self.protocol_widget:
-            self.protocol_widget.send_telegram("<S0020044966F02D10FJ>")
+    def on_key(self, event: Any) -> None:
+        """Handle key press events for protocol keys.
 
-    def action_send_key_3(self) -> None:
-        """Send module type telegram."""
-        if self.protocol_widget:
-            self.protocol_widget.send_telegram("<S0020044966F02D00FI>")
-
-    def action_send_key_4(self) -> None:
-        """Send auto report telegram."""
-        if self.protocol_widget:
-            self.protocol_widget.send_telegram("<S0020044966F02D21FL>")
-
-    def action_send_key_5(self) -> None:
-        """Send link number telegram."""
-        if self.protocol_widget:
-            self.protocol_widget.send_telegram("<S0020044966F02D04FM>")
-
-    def action_send_key_6(self) -> None:
-        """Send blink on telegram."""
-        if self.protocol_widget:
-            self.protocol_widget.send_telegram("<S0020044966F01D01FB>")
-
-    def action_send_key_7(self) -> None:
-        """Send blink off telegram."""
-        if self.protocol_widget:
-            self.protocol_widget.send_telegram("<S0020044966F01D00FA>")
-
-    def action_send_key_8(self) -> None:
-        """Send output 1 on telegram."""
-        if self.protocol_widget:
-            self.protocol_widget.send_telegram("<S0020044966F02101FC>")
-
-    def action_send_key_9(self) -> None:
-        """Send output 1 off telegram."""
-        if self.protocol_widget:
-            self.protocol_widget.send_telegram("<S0020044966F02100FB>")
+        Args:
+            event: Key press event from Textual.
+        """
+        if event.key in self.protocol_keys.protocol_keys and self.protocol_widget:
+            telegram = self.protocol_keys.protocol_keys[event.key].telegram
+            self.protocol_widget.send_telegram(telegram)
 
     def on_mount(self) -> None:
         """Set up status line updates when app mounts."""
@@ -141,6 +126,12 @@ class ProtocolMonitorApp(App[None]):
                 "connection_state",
                 self._update_status,
             )
+
+        # Initialize help table
+        if self.help_table:
+            self.help_table.add_columns("Key", "Command")
+            for key, config in self.protocol_keys.protocol_keys.items():
+                self.help_table.add_row(key, config.command)
 
     def _update_status(self, state: Any) -> None:
         """Update status line with connection state.
