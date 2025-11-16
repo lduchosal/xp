@@ -191,7 +191,7 @@ class TestProtocolLogWidget:
         widget.log_widget = Mock()
 
         # Call send_telegram
-        widget.send_telegram("S0000000000F01D00")
+        widget.send_telegram("Discover", "S0000000000F01D00")
 
         # Verify send_raw_telegram was called
         widget.protocol.send_raw_telegram.assert_called_once_with("S0000000000F01D00")
@@ -203,7 +203,7 @@ class TestProtocolLogWidget:
         widget.log_widget = Mock()
 
         # Call send_telegram - should not raise, just log warning
-        widget.send_telegram("S0000000000F01D00")
+        widget.send_telegram("Discover", "S0000000000F01D00")
 
     def test_cleanup_on_unmount(self, widget, mock_container):
         """Test on_unmount disconnects signals and closes connection."""
