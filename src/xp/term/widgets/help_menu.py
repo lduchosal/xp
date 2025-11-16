@@ -30,8 +30,8 @@ class HelpMenuWidget(Vertical):
 
         Args:
             protocol_keys: Configuration containing protocol key mappings.
-            *args: Additional positional arguments for Vertical.
-            **kwargs: Additional keyword arguments for Vertical.
+            args: Additional positional arguments for Vertical.
+            kwargs: Additional keyword arguments for Vertical.
         """
         super().__init__(*args, **kwargs)
         self.protocol_keys = protocol_keys

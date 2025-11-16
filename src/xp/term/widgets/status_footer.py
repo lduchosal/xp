@@ -21,8 +21,8 @@ class StatusFooterWidget(Horizontal):
         """Initialize the Status Footer widget.
 
         Args:
-            *args: Additional positional arguments for Horizontal.
-            **kwargs: Additional keyword arguments for Horizontal.
+            args: Additional positional arguments for Horizontal.
+            kwargs: Additional keyword arguments for Horizontal.
         """
         super().__init__(*args, **kwargs)
         self.status_widget: Static = Static("○", id="status-line")
