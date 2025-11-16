@@ -4,11 +4,12 @@ from pathlib import Path
 from typing import Any, Optional
 
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, Vertical
-from textual.widgets import DataTable, Footer, Static
+from textual.containers import Horizontal
 
 from xp.models.term import ProtocolKeysConfig
+from xp.term.widgets.help_menu import HelpMenuWidget
 from xp.term.widgets.protocol_log import ProtocolLogWidget
+from xp.term.widgets.status_footer import StatusFooterWidget
 
 
 class ProtocolMonitorApp(App[None]):
@@ -45,9 +46,8 @@ class ProtocolMonitorApp(App[None]):
         super().__init__()
         self.container = container
         self.protocol_widget: Optional[ProtocolLogWidget] = None
-        self.status_widget: Optional[Static] = None
-        self.status_text_widget: Optional[Static] = None
-        self.help_table: Optional[DataTable] = None
+        self.help_menu: Optional[HelpMenuWidget] = None
+        self.footer_widget: Optional[StatusFooterWidget] = None
         self.protocol_keys = self._load_protocol_keys()
 
     def _load_protocol_keys(self) -> ProtocolKeysConfig:
@@ -70,18 +70,13 @@ class ProtocolMonitorApp(App[None]):
             yield self.protocol_widget
 
             # Help menu (hidden by default)
-            help_container = Vertical(id="help-menu")
-            help_container.border_title = "Help menu"
-            help_container.can_focus = False
-            with help_container:
-                self.help_table = DataTable(id="help-table", show_header=False)
-                self.help_table.can_focus = False
-                yield self.help_table
+            self.help_menu = HelpMenuWidget(
+                protocol_keys=self.protocol_keys, id="help-menu"
+            )
+            yield self.help_menu
 
-        with Horizontal(id="footer-container"):
-            yield Footer()
-            self.status_widget = Static("○", id="status-line")
-            yield self.status_widget
+        self.footer_widget = StatusFooterWidget(id="footer-container")
+        yield self.footer_widget
 
     def action_toggle_connection(self) -> None:
         """Toggle connection on 'c' key press.
@@ -122,37 +117,11 @@ class ProtocolMonitorApp(App[None]):
                 self._update_status,
             )
 
-        # Initialize help table
-        if self.help_table:
-            self.help_table.add_columns("Key", "Command")
-            for key, config in self.protocol_keys.protocol.items():
-                self.help_table.add_row(key, config.name)
-
     def _update_status(self, state: Any) -> None:
         """Update status line with connection state.
 
         Args:
             state: Current connection state.
         """
-        if self.status_widget:
-            # Map states to colored dots
-            status_map = {
-                "CONNECTED": "[green]●[/green]",
-                "CONNECTING": "[yellow]●[/yellow]",
-                "DISCONNECTING": "[yellow]●[/yellow]",
-                "FAILED": "[red]●[/red]",
-                "DISCONNECTED": "○",
-            }
-            dot = status_map.get(state.value, "○")
-            self.status_widget.update(dot)
-
-    def on_protocol_log_widget_status_message_changed(
-        self, message: ProtocolLogWidget.StatusMessageChanged
-    ) -> None:
-        """Handle status message changes from protocol widget.
-
-        Args:
-            message: Message containing the status text.
-        """
-        if self.status_text_widget:
-            self.status_text_widget.update(message.message)
+        if self.footer_widget:
+            self.footer_widget.update_status(state)
