@@ -42,14 +42,12 @@ class TestLoggerService:
 
     @patch("xp.utils.logging.logging.getLogger")
     def test_setup_calls_all_methods(self, mock_get_logger, logger_service):
-        """Test that setup() calls all setup methods."""
-        with patch.object(logger_service, "setup_console_logging") as mock_console:
-            with patch.object(logger_service, "setup_file_logging") as mock_file:
-                logger_service.setup()
+        """Test that setup() calls setup_file_logging."""
+        with patch.object(logger_service, "setup_file_logging") as mock_file:
+            logger_service.setup()
 
-                # Verify all setup methods were called
-                mock_console.assert_called_once()
-                mock_file.assert_called_once()
+            # Verify file logging setup was called
+            mock_file.assert_called_once()
 
     @patch("xp.utils.logging.logging.getLogger")
     def test_setup_console_logging_creates_handler(self, mock_get_logger):
@@ -310,16 +308,10 @@ class TestLoggerService:
 
     def test_log_format_includes_thread_info(self, logger_service):
         """Test that setup uses log format with thread information."""
-        with patch.object(logger_service, "setup_console_logging") as mock_console:
-            with patch.object(logger_service, "setup_file_logging") as mock_file:
-                logger_service.setup()
+        with patch.object(logger_service, "setup_file_logging") as mock_file:
+            logger_service.setup()
 
-                # Check that format includes thread info
-                format_arg = mock_console.call_args[0][0]
-                assert "%(threadName)s" in format_arg
-                assert "%(thread)d" in format_arg
-
-                # Same for file logging
-                format_arg = mock_file.call_args[0][0]
-                assert "%(threadName)s" in format_arg
-                assert "%(thread)d" in format_arg
+            # Check that format includes thread info for file logging
+            format_arg = mock_file.call_args[0][0]
+            assert "%(threadName)s" in format_arg
+            assert "%(thread)d" in format_arg
