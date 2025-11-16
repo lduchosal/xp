@@ -336,11 +336,12 @@ class ProtocolLogWidget(Widget):
             self.connection_state = ConnectionState.DISCONNECTED
             self.post_message(self.StatusMessageChanged("Disconnected"))
 
-    def send_telegram(self, telegram: str) -> None:
+    def send_telegram(self, name: str, telegram: str) -> None:
         """Send a raw telegram string.
 
         Args:
-            telegram: Telegram string including angle brackets (e.g., "<S0000000000F01D00FA>")
+            name: Telegram name (e.g., "Discover")
+            telegram: Telegram string including angle brackets (e.g., "S0000000000F01D00")
         """
         if self.protocol is None:
             self.logger.warning("Cannot send telegram: not connected")
@@ -348,11 +349,9 @@ class ProtocolLogWidget(Widget):
 
         try:
             # Remove angle brackets if present
-            clean_telegram = telegram.strip("<>")
-            self.post_message(self.StatusMessageChanged(f"Sending {telegram}..."))
-
+            self.post_message(self.StatusMessageChanged(f"Sending {name}..."))
             # Send raw telegram
-            self.protocol.send_raw_telegram(clean_telegram)
+            self.protocol.send_raw_telegram(telegram)
 
         except Exception as e:
             self.logger.error(f"Failed to send telegram: {e}")

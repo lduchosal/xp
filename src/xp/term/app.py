@@ -34,7 +34,7 @@ class ProtocolMonitorApp(App[None]):
         ("C", "toggle_connection", "Connect"),
         ("R", "reset", "Reset"),
         ("0-9,a-c", "protocol_keys", "Keys"),
-        ("H", "help", "Help"),
+        ("H", "toggle_help", "Help"),
     ]
 
     def __init__(self, container: Any) -> None:
@@ -70,15 +70,14 @@ class ProtocolMonitorApp(App[None]):
         yield self.protocol_widget
 
         # Help menu (hidden by default)
-        with Vertical(id="help-menu"):
-            yield Static("Protocol Keys", id="help-title")
-            self.help_table = DataTable(id="help-table")
+        help_container = Vertical(id="help-menu")
+        help_container.border_title = "Help menu"
+        with help_container:
+            self.help_table = DataTable(id="help-table", show_header=False)
             yield self.help_table
 
         with Horizontal(id="footer-container"):
             yield Footer()
-            self.status_text_widget = Static("", id="status-text")
-            yield self.status_text_widget
             self.status_widget = Static("○", id="status-line")
             yield self.status_widget
 
@@ -118,7 +117,7 @@ class ProtocolMonitorApp(App[None]):
         if event.key in self.protocol_keys.protocol and self.protocol_widget:
             key_config = self.protocol_keys.protocol[event.key]
             for telegram in key_config.telegrams:
-                self.protocol_widget.send_telegram(telegram)
+                self.protocol_widget.send_telegram(key_config.name, telegram)
 
     def on_mount(self) -> None:
         """Set up status line updates when app mounts."""

@@ -74,16 +74,24 @@ ProtocolLogWidget > .connection-status.failed {
 #help-table {
     background: $background;
     height: auto;
+    color: $success;
 }
 
-#help-table > .datatable--header {
+DataTable {
+    background: $background;
+}
+
+DataTable > .datatable--header {
     background: $background;
     color: $success;
-    text-style: bold;
 }
 
-#help-table > .datatable--cursor {
-    background: $primary-darken-1;
+DataTable > .datatable--cursor {
+    background: $background;
+}
+
+DataTable:focus > .datatable--cursor {
+    background: $background;
 }
 
 /* Footer styling */
