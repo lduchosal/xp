@@ -31,10 +31,10 @@ class ProtocolMonitorApp(App[None]):
 
     BINDINGS = [
         ("q", "quit", "Quit"),
-        ("c", "toggle_connection", "Connect"),
-        ("r", "reset", "Reset"),
+        ("C", "toggle_connection", "Connect"),
+        ("R", "reset", "Reset"),
         ("0-9,a-c", "protocol_keys", "Keys"),
-        ("h", "toggle_help", "Help"),
+        ("H", "help", "Help"),
     ]
 
     def __init__(self, container: Any) -> None:
