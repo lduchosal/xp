@@ -29,8 +29,7 @@ class ProtocolMonitorApp(App[None]):
 
     BINDINGS = [
         ("q", "quit", "Quit"),
-        ("c", "connect", "Connect"),
-        ("d", "disconnect", "Disconnect"),
+        ("c", "toggle_connection", "Connect/Disconnect"),
         ("1", "discover", "Discover"),
     ]
 
@@ -61,23 +60,27 @@ class ProtocolMonitorApp(App[None]):
             self.status_widget = Static("○", id="status-line")
             yield self.status_widget
 
+    def action_toggle_connection(self) -> None:
+        """Toggle connection on 'c' key press.
+
+        Connects if disconnected/failed, disconnects if connected/connecting.
+        """
+        if self.protocol_widget:
+            from xp.term.widgets.protocol_log import ConnectionState
+
+            state = self.protocol_widget.connection_state
+            if state in (ConnectionState.CONNECTED, ConnectionState.CONNECTING):
+                self.protocol_widget.disconnect()
+            else:
+                self.protocol_widget.connect()
+
     def action_discover(self) -> None:
-        """Send discover telegram on 'D' key press.
+        """Send discover telegram on '1' key press.
 
         Sends predefined discover telegram <S0000000000F01D00FA> to the bus.
         """
         if self.protocol_widget:
             self.protocol_widget.send_discover()
-
-    def action_connect(self) -> None:
-        """Connect protocol on 'c' key press."""
-        if self.protocol_widget:
-            self.protocol_widget.connect()
-
-    def action_disconnect(self) -> None:
-        """Disconnect protocol on 'd' key press."""
-        if self.protocol_widget:
-            self.protocol_widget.disconnect()
 
     def on_mount(self) -> None:
         """Set up status line updates when app mounts."""
