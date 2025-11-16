@@ -111,7 +111,7 @@ class ProtocolLogWidget(Widget):
         Yields:
             RichLog widget for message display.
         """
-        self.log_widget = RichLog(highlight=True, markup=True)
+        self.log_widget = RichLog(highlight=False, markup=True)
         yield self.log_widget
 
     async def on_mount(self) -> None:
@@ -249,8 +249,8 @@ class ProtocolLogWidget(Widget):
         """
         self.logger.debug("Telegram received")
         if self.log_widget:
-            # Display [RX] in green, frame in gray
-            self.log_widget.write(f"[green]\\[RX][/green] [dim]{event.frame}[/dim]")
+            # Display [RX] and frame in bright green
+            self.log_widget.write(f"[#00ff00]\\[RX] {event.frame}[/#00ff00]")
 
     def _on_telegram_sent(self, telegram: str) -> None:
         """Handle telegram sent signal.
@@ -260,8 +260,8 @@ class ProtocolLogWidget(Widget):
         """
         self.logger.debug("Telegram sent")
         if self.log_widget:
-            # Display [TX] in green, frame in gray
-            self.log_widget.write(f"[green]\\[TX][/green] [dim]{telegram}[/dim]")
+            # Display [TX] and frame in bold bright green
+            self.log_widget.write(f"[bold #00ff00]\\[TX] {telegram}[/bold #00ff00]")
 
     def _on_timeout(self) -> None:
         """Handle timeout signal.
