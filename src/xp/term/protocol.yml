@@ -1,28 +1,55 @@
-protocol_keys:
+protocol:
   "1":
-    command: "Discover"
-    telegram: "<S0000000000F01D00FA>"
+    name: "Discover"
+    telegrams:
+      - S0000000000F01D00
   "2":
-    command: "Error Code"
-    telegram: "<S0020044966F02D10FJ>"
+    name: "Error Code"
+    telegrams:
+      - S0020044966F02D10
   "3":
-    command: "Module Type"
-    telegram: "<S0020044966F02D00FI>"
+    name: "Module Type"
+    telegrams:
+      - S0020044966F02D00
   "4":
-    command: "Auto Report"
-    telegram: "<S0020044966F02D21FL>"
+    name: "Auto Report"
+    telegrams:
+      - S0020044966F02D21
   "5":
-    command: "Link Number"
-    telegram: "<S0020044966F02D04FM>"
+    name: "Link Number"
+    telegrams:
+      - S0020044966F02D04
   "6":
-    command: "Blink On"
-    telegram: "<S0020044966F01D01FB>"
+    name: "Blink On"
+    telegrams:
+      - S0020044966F01D01
   "7":
-    command: "Blink Off"
-    telegram: "<S0020044966F01D00FA>"
+    name: "Blink Off"
+    telegrams:
+      - S0020044966F01D00
   "8":
-    command: "Output 1 On"
-    telegram: "<S0020044966F02101FC>"
+    name: "Output 1 On"
+    telegrams:
+      - S0020044966F02101
   "9":
-    command: "Output 1 Off"
-    telegram: "<S0020044966F02100FB>"
+    name: "Output 1 Off"
+    telegrams:
+      - S0020044966F02100
+  "0":
+    name: "Output State"
+    telegrams:
+      - S0020044966F02D09
+  "a":
+    name: "Module State"
+    telegrams:
+      - S0020044966F02D09
+  "b":
+    name: "All Off"
+    telegrams:
+      - E02L00I00M
+      - E02L00I00B
+  "c":
+    name: "All On"
+    telegrams:
+      - E02L00I08M
+      - E02L00I08B

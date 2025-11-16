@@ -22,22 +22,35 @@
 
 ## Config file
 
-File: protocol.yml
-```
+File: `src/xp/term/protocol.yml`
+
+```yaml
 protocol:
-    "1":
-        name: "Discover"
-        telegrams:
-            - S0000000000F01D0
-    
-    "2":
-        name: "Error Code"
-        telegrams:
-            - S0020044966F02D10
-    
-    "b":
-        name: "All Off"
-        telegrams:
-            - E02L00I00M
-            - E02L00I00B
+  "1":
+    name: "Discover"
+    telegrams:
+      - S0000000000F01D00
+
+  "2":
+    name: "Error Code"
+    telegrams:
+      - S0020044966F02D10
+
+  "b":
+    name: "All Off"
+    telegrams:
+      - E02L00I00M
+      - E02L00I00B
+
+  "c":
+    name: "All On"
+    telegrams:
+      - E02L00I08M
+      - E02L00I08B
 ```
+
+**Notes:**
+- Telegrams are stored without angle brackets `<>` or checksums
+- Multiple telegrams can be defined for a single key (e.g., "All Off" sends two telegrams)
+- Checksums are calculated automatically by the protocol layer
+- Configuration uses Pydantic models for type safety (`ProtocolKeysConfig`)

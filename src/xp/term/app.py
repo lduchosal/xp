@@ -32,7 +32,7 @@ class ProtocolMonitorApp(App[None]):
         ("q", "quit", "Quit"),
         ("c", "toggle_connection", "Connect"),
         ("r", "reset", "Reset"),
-        ("1-9", "protocol_keys", "Keys"),
+        ("0-9,a-c", "protocol_keys", "Keys"),
         ("h", "toggle_help", "Help"),
     ]
 
@@ -114,9 +114,10 @@ class ProtocolMonitorApp(App[None]):
         Args:
             event: Key press event from Textual.
         """
-        if event.key in self.protocol_keys.protocol_keys and self.protocol_widget:
-            telegram = self.protocol_keys.protocol_keys[event.key].telegram
-            self.protocol_widget.send_telegram(telegram)
+        if event.key in self.protocol_keys.protocol and self.protocol_widget:
+            key_config = self.protocol_keys.protocol[event.key]
+            for telegram in key_config.telegrams:
+                self.protocol_widget.send_telegram(telegram)
 
     def on_mount(self) -> None:
         """Set up status line updates when app mounts."""
@@ -130,8 +131,8 @@ class ProtocolMonitorApp(App[None]):
         # Initialize help table
         if self.help_table:
             self.help_table.add_columns("Key", "Command")
-            for key, config in self.protocol_keys.protocol_keys.items():
-                self.help_table.add_row(key, config.command)
+            for key, config in self.protocol_keys.protocol.items():
+                self.help_table.add_row(key, config.name)
 
     def _update_status(self, state: Any) -> None:
         """Update status line with connection state.

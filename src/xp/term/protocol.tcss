@@ -58,7 +58,7 @@ ProtocolLogWidget > .connection-status.failed {
 #help-menu {
     display: none;
     dock: right;
-    width: 30;
+    width: 35;
     background: $background;
     border: solid $success;
     padding: 1;

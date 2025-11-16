@@ -23,10 +23,10 @@ class ProtocolKeysConfig(BaseModel):
     """Protocol keys configuration.
 
     Attributes:
-        protocol_keys: Dictionary mapping key to protocol configuration.
+        protocol: Dictionary mapping key to protocol configuration.
     """
 
-    protocol_keys: Dict[str, ProtocolKeyConfig] = Field(
+    protocol: Dict[str, ProtocolKeyConfig] = Field(
         default_factory=dict, description="Protocol key mappings"
     )
 
