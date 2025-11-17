@@ -119,7 +119,7 @@ Footer {
 #status-text {
     dock: right;
     width: auto;
-    padding: 0 1;
+    padding: 0 3;
     background: $background;
     color: $text;
     text-align: right;

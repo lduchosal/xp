@@ -156,15 +156,16 @@ class ProtocolLogWidget(Widget):
 
         except Exception as e:
             self.logger.error(f"Connection failed: {e}")
+            self.post_status(f"Connection failed: {e}")
             # Transition to FAILED
             if self._state_machine.transition("failed", ConnectionState.FAILED):
                 self.connection_state = ConnectionState.FAILED
-                self.post_status(f"Connection error: {e}")
 
     def _start_connection(self) -> None:
         """Start connection (sync wrapper for async method)."""
         # Use run_worker to run async method from sync context
         self.logger.debug("Start connection")
+        self.post_status(f"Start connection")
         self.run_worker(self._start_connection_async(), exclusive=True)
 
     def _on_connection_made(self) -> None:
@@ -173,6 +174,7 @@ class ProtocolLogWidget(Widget):
         Sets state to CONNECTED and displays success message.
         """
         self.logger.debug("Connection made")
+        self.post_status(f"Connection made")
         # Transition to CONNECTED
         if self._state_machine.transition("connected", ConnectionState.CONNECTED):
             self.connection_state = ConnectionState.CONNECTED
@@ -187,13 +189,10 @@ class ProtocolLogWidget(Widget):
         Sets state to DISCONNECTED and displays success message.
         """
         self.logger.debug("Connection failed")
+        self.post_status(failure.getErrorMessage())
         # Transition to CONNECTED
         if self._state_machine.transition("disconnected", ConnectionState.DISCONNECTED):
             self.connection_state = ConnectionState.DISCONNECTED
-            if self.protocol:
-                self.post_status(
-                    f"{failure}"
-                )
 
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
@@ -304,7 +303,7 @@ class ProtocolLogWidget(Widget):
 
         try:
             # Remove angle brackets if present
-            self.post_status(f"Sending {name}...")
+            self.post_status(f"{name} sent.")
             # Send raw telegram
             self.protocol.send_raw_telegram(telegram)
 
