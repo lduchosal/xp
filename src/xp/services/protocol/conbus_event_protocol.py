@@ -17,7 +17,7 @@ from twisted.internet.interfaces import IAddress, IConnector
 from twisted.internet.posixbase import PosixReactorBase
 from twisted.python.failure import Failure
 
-from xp.models import ConbusClientConfig
+from xp.models import ConbusClientConfig, ModuleTypeCode
 from xp.models.protocol.conbus_protocol import (
     TelegramReceivedEvent,
 )
@@ -208,6 +208,21 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             f"{serial_number}"
             f"F{system_function.value}"
             f"D{data_value}"
+        )
+        self.send_raw_telegram(payload)
+
+    def send_event_telegram(
+        self, module_type_code: ModuleTypeCode, link_number: int, input_number: int
+    ) -> None:
+        """Send telegram with specified parameters.
+
+        Args:
+            module_type_code: Type code of module.
+            link_number: Link number.
+            input_number: Input number.
+        """
+        payload = (
+            f"E" f"{module_type_code}" f"L{link_number:02d}" f"I{input_number:02d}"
         )
         self.send_raw_telegram(payload)
 

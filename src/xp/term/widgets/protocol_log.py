@@ -2,71 +2,17 @@
 
 import asyncio
 import logging
-from enum import Enum
 from typing import Any, Optional
 
-from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import RichLog
 
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+from xp.models.term.connection_state import ConnectionState
+from xp.models.term.status_message import StatusMessageChanged
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.protocol import ConbusEventProtocol
-from xp.utils.state_machine import StateMachine
-
-
-class ConnectionState(str, Enum):
-    """Connection state enumeration.
-
-    Attributes:
-        DISCONNECTING: Disconnecting to server.
-        DISCONNECTED: Not connected to server.
-        CONNECTING: Connection in progress.
-        CONNECTED: Successfully connected.
-        FAILED: Connection failed.
-    """
-
-    DISCONNECTING = "DISCONNECTING"
-    DISCONNECTED = "DISCONNECTED"
-    CONNECTING = "CONNECTING"
-    CONNECTED = "CONNECTED"
-    FAILED = "FAILED"
-
-
-def create_connection_state_machine() -> StateMachine:
-    """Create and configure state machine for connection management.
-
-    Returns:
-        Configured StateMachine with connection state transitions.
-    """
-    sm = StateMachine(ConnectionState.DISCONNECTED)
-
-    # Define valid transitions
-    sm.define_transition(
-        "connect", {ConnectionState.DISCONNECTED, ConnectionState.FAILED}
-    )
-    sm.define_transition(
-        "disconnect", {ConnectionState.CONNECTED, ConnectionState.CONNECTING}
-    )
-    sm.define_transition(
-        "connecting", {ConnectionState.DISCONNECTED, ConnectionState.FAILED}
-    )
-    sm.define_transition("connected", {ConnectionState.CONNECTING})
-    sm.define_transition(
-        "disconnecting", {ConnectionState.CONNECTED, ConnectionState.CONNECTING}
-    )
-    sm.define_transition("disconnected", {ConnectionState.DISCONNECTING})
-    sm.define_transition(
-        "failed",
-        {
-            ConnectionState.CONNECTING,
-            ConnectionState.CONNECTED,
-            ConnectionState.DISCONNECTING,
-        },
-    )
-
-    return sm
 
 
 class ProtocolLogWidget(Widget):
@@ -84,18 +30,6 @@ class ProtocolLogWidget(Widget):
         log_widget: RichLog widget for displaying messages.
     """
 
-    class StatusMessageChanged(Message):
-        """Message posted when status message changes."""
-
-        def __init__(self, message: str) -> None:
-            """Initialize the message.
-
-            Args:
-                message: The status message to display.
-            """
-            super().__init__()
-            self.message = message
-
     connection_state = reactive(ConnectionState.DISCONNECTED)
 
     def __init__(self, container: Any) -> None:
@@ -111,7 +45,7 @@ class ProtocolLogWidget(Widget):
         self.service: Optional[ConbusReceiveService] = None
         self.logger = logging.getLogger(__name__)
         self.log_widget: Optional[RichLog] = None
-        self._state_machine = create_connection_state_machine()
+        self._state_machine = ConnectionState.create_state_machine()
 
     def compose(self) -> Any:
         """Compose the widget layout.
@@ -169,10 +103,8 @@ class ProtocolLogWidget(Widget):
             # Transition to CONNECTING
             if self._state_machine.transition("connecting", ConnectionState.CONNECTING):
                 self.connection_state = ConnectionState.CONNECTING
-                self.post_message(
-                    self.StatusMessageChanged(
-                        f"Connecting to {self.protocol.cli_config.ip}:{self.protocol.cli_config.port}..."
-                    )
+                self.post_status(
+                    f"Connecting to {self.protocol.cli_config.ip}:{self.protocol.cli_config.port}..."
                 )
 
             # Store protocol reference
@@ -225,7 +157,7 @@ class ProtocolLogWidget(Widget):
             # Transition to FAILED
             if self._state_machine.transition("failed", ConnectionState.FAILED):
                 self.connection_state = ConnectionState.FAILED
-                self.post_message(self.StatusMessageChanged(f"Connection error: {e}"))
+                self.post_status(f"Connection error: {e}")
 
     def _start_connection(self) -> None:
         """Start connection (sync wrapper for async method)."""
@@ -243,10 +175,8 @@ class ProtocolLogWidget(Widget):
         if self._state_machine.transition("connected", ConnectionState.CONNECTED):
             self.connection_state = ConnectionState.CONNECTED
             if self.protocol:
-                self.post_message(
-                    self.StatusMessageChanged(
+                self.post_status(
                         f"Connected to {self.protocol.cli_config.ip}:{self.protocol.cli_config.port}"
-                    )
                 )
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
@@ -289,7 +219,15 @@ class ProtocolLogWidget(Widget):
         if self._state_machine.transition("failed", ConnectionState.FAILED):
             self.connection_state = ConnectionState.FAILED
             self.logger.error(f"Connection failed: {error}")
-            self.post_message(self.StatusMessageChanged(f"Failed: {error}"))
+            self.post_status(f"Failed: {error}")
+
+    def post_status(self, message:str) -> None:
+        """Post status message.
+
+        Args:
+            message: message to be sent to status bar.
+        """
+        self.post_message(StatusMessageChanged(message))
 
     def connect(self) -> None:
         """Connect to Conbus server.
@@ -326,7 +264,7 @@ class ProtocolLogWidget(Widget):
             "disconnecting", ConnectionState.DISCONNECTING
         ):
             self.connection_state = ConnectionState.DISCONNECTING
-            self.post_message(self.StatusMessageChanged("Disconnecting..."))
+            self.post_status("Disconnecting...")
 
         if self.protocol:
             self.protocol.disconnect()
@@ -334,7 +272,7 @@ class ProtocolLogWidget(Widget):
         # Transition to DISCONNECTED
         if self._state_machine.transition("disconnected", ConnectionState.DISCONNECTED):
             self.connection_state = ConnectionState.DISCONNECTED
-            self.post_message(self.StatusMessageChanged("Disconnected"))
+            self.post_status("Disconnected")
 
     def send_telegram(self, name: str, telegram: str) -> None:
         """Send a raw telegram string.
@@ -349,19 +287,19 @@ class ProtocolLogWidget(Widget):
 
         try:
             # Remove angle brackets if present
-            self.post_message(self.StatusMessageChanged(f"Sending {name}..."))
+            self.post_status(f"Sending {name}...")
             # Send raw telegram
             self.protocol.send_raw_telegram(telegram)
 
         except Exception as e:
             self.logger.error(f"Failed to send telegram: {e}")
-            self.post_message(self.StatusMessageChanged(f"Failed: {e}"))
+            self.post_status(f"Failed: {e}")
 
     def clear_log(self) -> None:
         """Clear the protocol log widget."""
         if self.log_widget:
             self.log_widget.clear()
-            self.post_message(self.StatusMessageChanged("Log cleared"))
+            self.post_status("Log cleared")
 
     def on_unmount(self) -> None:
         """Clean up when widget unmounts.
