@@ -7,6 +7,7 @@ from typing import Any, Optional
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import RichLog
+from twisted.python.failure import Failure
 
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.term.connection_state import ConnectionState
@@ -68,6 +69,7 @@ class ProtocolLogWidget(Widget):
 
         # Connect psygnal signals
         self.protocol.on_connection_made.connect(self._on_connection_made)
+        self.protocol.on_connection_failed.connect(self._on_connection_failed)
         self.protocol.on_telegram_received.connect(self._on_telegram_received)
         self.protocol.on_telegram_sent.connect(self._on_telegram_sent)
         self.protocol.on_timeout.connect(self._on_timeout)
@@ -176,8 +178,23 @@ class ProtocolLogWidget(Widget):
             self.connection_state = ConnectionState.CONNECTED
             if self.protocol:
                 self.post_status(
-                        f"Connected to {self.protocol.cli_config.ip}:{self.protocol.cli_config.port}"
+                    f"Connected to {self.protocol.cli_config.ip}:{self.protocol.cli_config.port}"
                 )
+
+    def _on_connection_failed(self, failure: Failure) -> None:
+        """Handle connection failed signal.
+
+        Sets state to DISCONNECTED and displays success message.
+        """
+        self.logger.debug("Connection failed")
+        # Transition to CONNECTED
+        if self._state_machine.transition("disconnected", ConnectionState.DISCONNECTED):
+            self.connection_state = ConnectionState.DISCONNECTED
+            if self.protocol:
+                self.post_status(
+                    f"{failure}"
+                )
+
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
         """Handle telegram received signal.
@@ -221,7 +238,7 @@ class ProtocolLogWidget(Widget):
             self.logger.error(f"Connection failed: {error}")
             self.post_status(f"Failed: {error}")
 
-    def post_status(self, message:str) -> None:
+    def post_status(self, message: str) -> None:
         """Post status message.
 
         Args:

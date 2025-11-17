@@ -1,3 +1,5 @@
+"""Connection state management module."""
+
 from enum import Enum
 
 from xp.utils.state_machine import StateMachine
@@ -54,4 +56,3 @@ class ConnectionState(str, Enum):
         )
 
         return sm
-

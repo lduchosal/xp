@@ -168,9 +168,6 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
 
         Args:
             data: Raw telegram payload (without checksum/framing).
-
-        Raises:
-            IOError: If transport is not open.
         """
         self.on_send_frame.emit(data)
 
@@ -180,8 +177,9 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         frame = b"<" + frame_data.encode() + b">"
 
         if not self.transport:
-            self.logger.info("Invalid transport")
-            raise IOError("Transport is not open")
+            self.logger.info("Invalid transport, connection closed.")
+            self.on_connection_failed.emit(Failure("Invalid transport."))
+            return
 
         self.logger.debug(f"Sending frame: {frame.decode()}")
         self.transport.write(frame)  # type: ignore
