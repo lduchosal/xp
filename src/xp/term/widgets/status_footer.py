@@ -25,6 +25,7 @@ class StatusFooterWidget(Horizontal):
             kwargs: Additional keyword arguments for Horizontal.
         """
         super().__init__(*args, **kwargs)
+        self.status_text_widget: Static = Static("", id="status-text")
         self.status_widget: Static = Static("○", id="status-line")
 
     def compose(self) -> ComposeResult:
@@ -34,6 +35,7 @@ class StatusFooterWidget(Horizontal):
             Footer and status indicator widgets.
         """
         yield Footer()
+        yield self.status_text_widget
         yield self.status_widget
 
     def update_status(self, state: Any) -> None:
@@ -51,3 +53,11 @@ class StatusFooterWidget(Horizontal):
             "DISCONNECTED": "○",
         }.get(state.value, "○")
         self.status_widget.update(dot)
+
+    def update_message(self, message: str) -> None:
+        """Update status text with message.
+
+        Args:
+            message: Status message to display.
+        """
+        self.status_text_widget.update(message)

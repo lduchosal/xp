@@ -7,6 +7,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 
 from xp.models.term import ProtocolKeysConfig
+from xp.models.term.status_message import StatusMessageChanged
 from xp.term.widgets.help_menu import HelpMenuWidget
 from xp.term.widgets.protocol_log import ProtocolLogWidget
 from xp.term.widgets.status_footer import StatusFooterWidget
@@ -125,3 +126,12 @@ class ProtocolMonitorApp(App[None]):
         """
         if self.footer_widget:
             self.footer_widget.update_status(state)
+
+    def on_status_message_changed(self, message: StatusMessageChanged) -> None:
+        """Handle status message changes from protocol widget.
+
+        Args:
+            message: Message containing the status text.
+        """
+        if self.footer_widget:
+            self.footer_widget.update_message(message.message)
