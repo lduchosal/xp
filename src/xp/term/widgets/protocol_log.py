@@ -165,7 +165,7 @@ class ProtocolLogWidget(Widget):
         """Start connection (sync wrapper for async method)."""
         # Use run_worker to run async method from sync context
         self.logger.debug("Start connection")
-        self.post_status(f"Start connection")
+        self.post_status("Start connection")
         self.run_worker(self._start_connection_async(), exclusive=True)
 
     def _on_connection_made(self) -> None:
@@ -174,7 +174,7 @@ class ProtocolLogWidget(Widget):
         Sets state to CONNECTED and displays success message.
         """
         self.logger.debug("Connection made")
-        self.post_status(f"Connection made")
+        self.post_status("Connection made")
         # Transition to CONNECTED
         if self._state_machine.transition("connected", ConnectionState.CONNECTED):
             self.connection_state = ConnectionState.CONNECTED
@@ -193,7 +193,6 @@ class ProtocolLogWidget(Widget):
         # Transition to CONNECTED
         if self._state_machine.transition("disconnected", ConnectionState.DISCONNECTED):
             self.connection_state = ConnectionState.DISCONNECTED
-
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
         """Handle telegram received signal.
