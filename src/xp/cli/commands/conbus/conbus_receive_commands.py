@@ -43,8 +43,9 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
             response_received: Receive response object with telegrams.
         """
         click.echo(json.dumps(response_received.to_dict(), indent=2))
+        service.stop_reactor()
 
-    def progress(telegram_received: str) -> None:
+    def on_progress(telegram_received: str) -> None:
         """Handle progress updates during telegram receive operation.
 
         Args:
@@ -56,5 +57,7 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
         ctx.obj.get("container").get_container().resolve(ConbusReceiveService)
     )
     with service:
-        service.init(progress, on_finish, timeout)
+        service.on_progress.connect(on_progress)
+        service.on_finish.connect(on_finish)
+        service.set_timeout(timeout)
         service.start_reactor()

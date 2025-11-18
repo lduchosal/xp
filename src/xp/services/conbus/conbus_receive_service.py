@@ -6,7 +6,9 @@ allowing clients to receive waiting event telegrams using empty telegram sends.
 
 import asyncio
 import logging
-from typing import Any, Callable, Optional
+from typing import Any, Optional
+
+from psygnal import Signal
 
 from xp.models.conbus.conbus_receive import ConbusReceiveResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
@@ -22,9 +24,13 @@ class ConbusReceiveService:
 
     Attributes:
         conbus_protocol: Protocol instance for Conbus communication.
+        on_progress: Signal emitted when a telegram is received (with telegram frame).
+        on_finish: Signal emitted when receiving finishes (with result).
     """
 
     conbus_protocol: ConbusEventProtocol
+    on_progress: Signal = Signal(str)
+    on_finish: Signal = Signal(ConbusReceiveResponse)
 
     def __init__(self, conbus_protocol: ConbusEventProtocol) -> None:
         """Initialize the Conbus receive service.
@@ -32,8 +38,6 @@ class ConbusReceiveService:
         Args:
             conbus_protocol: ConbusEventProtocol instance.
         """
-        self.progress_callback: Optional[Callable[[str], None]] = None
-        self.finish_callback: Optional[Callable[[ConbusReceiveResponse], None]] = None
         self.receive_response: ConbusReceiveResponse = ConbusReceiveResponse(
             success=True
         )
@@ -67,8 +71,7 @@ class ConbusReceiveService:
             telegram_received: The telegram received event.
         """
         self.logger.debug(f"Telegram received: {telegram_received}")
-        if self.progress_callback:
-            self.progress_callback(telegram_received.frame)
+        self.on_progress.emit(telegram_received.frame)
 
         if not self.receive_response.received_telegrams:
             self.receive_response.received_telegrams = []
@@ -79,8 +82,7 @@ class ConbusReceiveService:
         timeout = self.conbus_protocol.timeout_seconds
         self.logger.info("Receive stopped after: %ss", timeout)
         self.receive_response.success = True
-        if self.finish_callback:
-            self.finish_callback(self.receive_response)
+        self.on_finish.emit(self.receive_response)
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -91,36 +93,36 @@ class ConbusReceiveService:
         self.logger.debug("Failed %s:", message)
         self.receive_response.success = False
         self.receive_response.error = message
-        if self.finish_callback:
-            self.finish_callback(self.receive_response)
+        self.on_finish.emit(self.receive_response)
 
-    def init(
+    def set_timeout(self, timeout_seconds: float) -> None:
+        """Setup callbacks and timeout for receiving telegrams.
+
+        Args:
+            timeout_seconds: Optional timeout in seconds.
+        """
+        self.logger.debug("Set timeout")
+        self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def set_event_loop(
         self,
-        progress_callback: Callable[[str], None],
-        finish_callback: Callable[[ConbusReceiveResponse], None],
-        timeout_seconds: Optional[float] = None,
-        event_loop: Optional[asyncio.AbstractEventLoop] = None,
+        event_loop: asyncio.AbstractEventLoop,
     ) -> None:
         """Setup callbacks and timeout for receiving telegrams.
 
         Args:
-            progress_callback: Callback for each received telegram.
-            finish_callback: Callback when receiving completes.
-            timeout_seconds: Optional timeout in seconds.
             event_loop: Optional event loop to use for async operations.
         """
-        self.logger.info("Starting receive")
-        if timeout_seconds:
-            self.conbus_protocol.timeout_seconds = timeout_seconds
-        self.progress_callback = progress_callback
-        self.finish_callback = finish_callback
-
-        if event_loop:
-            self.conbus_protocol.set_event_loop(event_loop)
+        self.logger.debug("Set eventloop")
+        self.conbus_protocol.set_event_loop(event_loop)
 
     def start_reactor(self) -> None:
         """Start the reactor."""
         self.conbus_protocol.start_reactor()
+
+    def stop_reactor(self) -> None:
+        """Start the reactor."""
+        self.conbus_protocol.stop_reactor()
 
     def __enter__(self) -> "ConbusReceiveService":
         """Enter context manager.
@@ -141,3 +143,6 @@ class ConbusReceiveService:
         self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
         self.conbus_protocol.on_timeout.disconnect(self.timeout)
         self.conbus_protocol.on_failed.disconnect(self.failed)
+        self.on_progress.disconnect()
+        self.on_finish.disconnect()
+        self.stop_reactor()

@@ -12,7 +12,6 @@ from twisted.python.failure import Failure
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.term.connection_state import ConnectionState
 from xp.models.term.status_message import StatusMessageChanged
-from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.protocol import ConbusEventProtocol
 
 
@@ -26,7 +25,6 @@ class ProtocolLogWidget(Widget):
         container: ServiceContainer for dependency injection.
         connection_state: Current connection state (reactive).
         protocol: Reference to ConbusEventProtocol (prevents duplicate connections).
-        service: ConbusReceiveService instance.
         logger: Logger instance for this widget.
         log_widget: RichLog widget for displaying messages.
     """
@@ -43,7 +41,6 @@ class ProtocolLogWidget(Widget):
         self.border_title = "Protocol"
         self.container = container
         self.protocol: Optional[ConbusEventProtocol] = None
-        self.service: Optional[ConbusReceiveService] = None
         self.logger = logging.getLogger(__name__)
         self.log_widget: Optional[RichLog] = None
         self._state_machine = ConnectionState.create_state_machine()
@@ -64,8 +61,7 @@ class ProtocolLogWidget(Widget):
         Resolves ConbusReceiveService and connects signals.
         """
         # Resolve service from container (singleton)
-        self.service = self.container.resolve(ConbusReceiveService)
-        self.protocol = self.service.conbus_protocol
+        self.protocol = self.container.resolve(ConbusEventProtocol)
 
         # Connect psygnal signals
         self.protocol.on_connection_made.connect(self._on_connection_made)
@@ -86,10 +82,6 @@ class ProtocolLogWidget(Widget):
         Integrates Twisted reactor with Textual's asyncio loop cleanly.
         """
         # Guard against duplicate connections (race condition)
-        if self.service is None:
-            self.logger.error("Service not initialized")
-            return
-
         if self.protocol is None:
             self.logger.error("Protocol not initialized")
             return
@@ -114,41 +106,12 @@ class ProtocolLogWidget(Widget):
             self.logger.info(f"Reactor object: {self.protocol._reactor}")
             self.logger.info(f"Reactor running: {self.protocol._reactor.running}")
 
-            # Setup service callbacks
-            def progress_callback(telegram: str) -> None:
-                """Handle progress updates for telegram reception.
-
-                Args:
-                    telegram: Received telegram string.
-                """
-                pass
-
-            def finish_callback(response: Any) -> None:
-                """Handle completion of telegram reception.
-
-                Args:
-                    response: Response object from telegram reception.
-                """
-                pass
-
             # Get the currently running asyncio event loop (Textual's loop)
             event_loop = asyncio.get_running_loop()
             self.logger.info(f"Current running loop: {event_loop}")
             self.logger.info(f"Loop is running: {event_loop.is_running()}")
 
-            self.service.init(
-                progress_callback=progress_callback,
-                finish_callback=finish_callback,
-                timeout_seconds=None,  # Continuous monitoring
-                event_loop=event_loop,
-            )
-
-            reactor = self.service.conbus_protocol._reactor
-            reactor.connectTCP(
-                self.protocol.cli_config.ip,
-                self.protocol.cli_config.port,
-                self.protocol,
-            )
+            self.protocol.connect()
 
             # Wait for connection to establish
             await asyncio.sleep(1.0)

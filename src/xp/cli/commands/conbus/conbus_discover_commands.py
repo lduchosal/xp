@@ -36,6 +36,7 @@ def send_discover_telegram(ctx: click.Context) -> None:
             discovered_devices: Discover response with all found devices.
         """
         click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
+        service.stop_reactor()
 
     def on_device_discovered(discovered_device: DiscoveredDevice) -> None:
         """Handle discovery of sa single module.
@@ -57,5 +58,9 @@ def send_discover_telegram(ctx: click.Context) -> None:
     service: ConbusDiscoverService = (
         ctx.obj.get("container").get_container().resolve(ConbusDiscoverService)
     )
-    service.run(progress, on_device_discovered, on_finish, 5)
-    service.start_reactor()
+    with service:
+        service.on_progress.connect(progress)
+        service.on_device_discovered.connect(on_device_discovered)
+        service.on_finish.connect(on_finish)
+        service.set_timeout(5)
+        service.start_reactor()
