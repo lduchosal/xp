@@ -325,10 +325,23 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             self._reactor.stop()
 
     def connect(self) -> None:
-        """Connect to TCP server."""
+        """Connect to TCP server.
+
+        Automatically detects and integrates with running asyncio event loop if present.
+        """
         self.logger.info(
             f"Connecting to TCP server {self.cli_config.ip}:{self.cli_config.port}"
         )
+
+        # Auto-detect and integrate with asyncio event loop if available
+        try:
+            event_loop = asyncio.get_running_loop()
+            self.logger.debug(f"Detected running event loop: {event_loop}")
+            self.set_event_loop(event_loop)
+        except RuntimeError:
+            # No running event loop - that's fine for non-async contexts
+            self.logger.debug("No running event loop detected - using reactor only")
+
         self._reactor.connectTCP(self.cli_config.ip, self.cli_config.port, self)
 
     def disconnect(self) -> None:

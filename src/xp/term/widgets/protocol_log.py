@@ -101,16 +101,7 @@ class ProtocolLogWidget(Widget):
                     f"Connecting to {self.protocol.cli_config.ip}:{self.protocol.cli_config.port}..."
                 )
 
-            # Store protocol reference
-            self.logger.info(f"Protocol object: {self.protocol}")
-            self.logger.info(f"Reactor object: {self.protocol._reactor}")
-            self.logger.info(f"Reactor running: {self.protocol._reactor.running}")
-
-            # Get the currently running asyncio event loop (Textual's loop)
-            event_loop = asyncio.get_running_loop()
-            self.logger.info(f"Current running loop: {event_loop}")
-            self.logger.info(f"Loop is running: {event_loop.is_running()}")
-
+            # Connect to server (auto-detects and integrates with asyncio event loop)
             self.protocol.connect()
 
             # Wait for connection to establish
