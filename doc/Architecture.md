@@ -21,6 +21,7 @@ XP is a CLI toolkit for CONSON XP Protocol operations with HomeKit integration. 
 ### Layer 1: CLI
 **Location**: `src/xp/cli/`
 - **CLI**: Click-based commands, resolve services from ServiceContainer via context
+- **Term**: Textual TUI (Protocol Monitor), app owns service, injects into widgets
 - **Rule**: NO business logic, only input validation and output formatting
 - **Entry**: `cli/main.py` initializes ServiceContainer, registers command groups
 - **Validation**: Click types handle all parameter validation (ranges, enums, custom types)
@@ -29,6 +30,7 @@ XP is a CLI toolkit for CONSON XP Protocol operations with HomeKit integration. 
 **Location**: `src/xp/services/`
 - **Telegram Services**: Low-level telegram operations (parse, generate, validate)
 - **Conbus Services**: High-level device operations (discover, scan, control)
+- **Term Services**: TUI business logic (ProtocolMonitorService)
 - **HomeKit Services**: HAP-python integration, event handling
 - **Server Services**: XP protocol emulators
 - **Pattern**: All services injected via ServiceContainer, use EventBus for communication
@@ -123,6 +125,39 @@ Reply:  <R0020012521F02D18+26,0§CIL> # Device response
 - `homekit.yml`: HomeKit bridge configuration
 - `conson.yml`: Module definitions
 - `server.yml`: Emulator settings
+- `protocol.yml`: Term UI protocol key mappings
+
+### 6. Terminal UI Architecture
+**Pattern**: App → Service → Protocol (clean separation)
+
+```
+ProtocolMonitorApp (Textual)
+  ├─ Owns: ProtocolMonitorService (DI-injected singleton)
+  ├─ Widgets: ProtocolLogWidget, HelpMenuWidget, StatusFooterWidget
+  │   └─ Constructor-injected: service (not container)
+  └─ Actions: Delegate to service methods
+      ├─ toggle_connection() → service.toggle_connection()
+      ├─ on_key(event) → service.handle_key_press(event.key)
+      └─ send_telegram() → service.send_telegram()
+
+ProtocolMonitorService
+  ├─ Owns: ConbusEventProtocol, ProtocolKeysConfig
+  ├─ State: connection_state, state_machine
+  ├─ Methods: connect(), disconnect(), toggle_connection(), send_telegram(), handle_key_press()
+  └─ Signals: on_connection_state_changed, on_telegram_display, on_status_message
+
+ConbusEventProtocol (Twisted)
+  ├─ TCP: connect(), disconnect(), send_raw_telegram()
+  └─ Signals: on_connection_made, on_telegram_received, on_telegram_sent, on_failed
+```
+
+**Dependency Flow**:
+1. ServiceContainer creates ProtocolMonitorService (singleton)
+2. ServiceContainer injects service into ProtocolMonitorApp
+3. App injects service into widgets (ProtocolLogWidget, HelpMenuWidget, StatusFooterWidget)
+4. Widgets connect to service signals, call service methods
+
+**Benefits**: App handles UI events, service handles business logic, protocol handles TCP
 
 ## Implementation Patterns
 
