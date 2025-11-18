@@ -52,7 +52,6 @@ class TestProtocolLogWidget:
         """Test widget can be initialized with required dependencies."""
         assert widget.container == mock_container
         assert widget.protocol is None
-        assert widget.service is None
         assert widget.connection_state == ConnectionState.DISCONNECTED
 
     def test_connection_state_transitions(self, widget, mock_container):
