@@ -8,6 +8,7 @@ from twisted.python.failure import Failure
 
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.term.connection_state import ConnectionState
+from xp.models.term.protocol_keys_config import ProtocolKeysConfig
 from xp.models.term.telegram_display import TelegramDisplayEvent
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 
@@ -20,6 +21,9 @@ class ProtocolMonitorService:
 
     Attributes:
         conbus_protocol: Protocol instance for Conbus communication.
+        protocol_keys: Configuration for protocol keyboard shortcuts.
+        connection_state: Current connection state (read-only property).
+        server_info: Server connection info as "IP:port" (read-only property).
         on_connection_state_changed: Signal emitted when connection state changes.
         on_telegram_display: Signal emitted when telegram should be displayed.
         on_status_message: Signal emitted for status updates.
@@ -29,16 +33,22 @@ class ProtocolMonitorService:
     on_telegram_display: Signal = Signal(TelegramDisplayEvent)
     on_status_message: Signal = Signal(str)
 
-    def __init__(self, conbus_protocol: ConbusEventProtocol) -> None:
+    def __init__(
+        self,
+        conbus_protocol: ConbusEventProtocol,
+        protocol_keys: ProtocolKeysConfig,
+    ) -> None:
         """Initialize the Protocol Monitor service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
+            protocol_keys: Protocol keys configuration.
         """
         self.logger = logging.getLogger(__name__)
         self.conbus_protocol = conbus_protocol
         self._connection_state = ConnectionState.DISCONNECTED
         self._state_machine = ConnectionState.create_state_machine()
+        self.protocol_keys = protocol_keys
 
         # Connect to protocol signals
         self._connect_signals()

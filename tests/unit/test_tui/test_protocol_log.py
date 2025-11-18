@@ -64,23 +64,6 @@ class TestProtocolLogWidget:
         assert "[TX]" in call_args
         assert "<S0000000000F01D00FA>" in call_args
 
-    def test_connect_delegates_to_service(self, widget, mock_service):
-        """Test connect method delegates to service."""
-        widget.connect()
-        mock_service.connect.assert_called_once()
-
-    def test_disconnect_delegates_to_service(self, widget, mock_service):
-        """Test disconnect method delegates to service."""
-        widget.disconnect()
-        mock_service.disconnect.assert_called_once()
-
-    def test_send_telegram_delegates_to_service(self, widget, mock_service):
-        """Test send_telegram delegates to service."""
-        widget.send_telegram("Discover", "S0000000000F01D00")
-        mock_service.send_telegram.assert_called_once_with(
-            "Discover", "S0000000000F01D00"
-        )
-
     def test_clear_log(self, widget):
         """Test clear_log clears the log widget."""
         widget.log_widget = Mock()

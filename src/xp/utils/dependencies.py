@@ -10,6 +10,7 @@ from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_logger_config import ConbusLoggerConfig
 from xp.models.homekit.homekit_config import HomekitConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
+from xp.models.term.protocol_keys_config import ProtocolKeysConfig
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.actiontable.msactiontable_serializer import MsActionTableSerializer
 from xp.services.actiontable.msactiontable_xp20_serializer import (
@@ -74,6 +75,7 @@ from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
 from xp.services.term.protocol_monitor_service import ProtocolMonitorService
+from xp.term.protocol import ProtocolMonitorApp
 from xp.utils.logging import LoggerService
 
 asyncioreactor.install()
@@ -95,6 +97,7 @@ class ServiceContainer:
         homekit_config_path: str = "homekit.yml",
         conson_config_path: str = "conson.yml",
         server_port: int = 10001,
+        protocol_keys_config_path: str = "protocol.yml",
         reverse_proxy_port: int = 10001,
     ):
         """
@@ -105,6 +108,7 @@ class ServiceContainer:
             logger_config_path: Path to the Conbus Loggerr configuration file
             homekit_config_path: Path to the HomeKit configuration file
             conson_config_path: Path to the Conson configuration file
+            protocol_keys_config_path: Path to the protocol keys configuration file
             server_port: Port for the server service
             reverse_proxy_port: Port for the reverse proxy service
         """
@@ -113,6 +117,7 @@ class ServiceContainer:
         self._logger_config_path = logger_config_path
         self._homekit_config_path = homekit_config_path
         self._conson_config_path = conson_config_path
+        self._protocol_keys_config_path = protocol_keys_config_path
         self._server_port = server_port
         self._reverse_proxy_port = reverse_proxy_port
 
@@ -194,10 +199,20 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
+        # Terminal UI
         self.container.register(
             ProtocolMonitorService,
             factory=lambda: ProtocolMonitorService(
-                conbus_protocol=self.container.resolve(ConbusEventProtocol)
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
+                protocol_keys=self._load_protocol_keys(),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ProtocolMonitorApp,
+            factory=lambda: ProtocolMonitorApp(
+                protocol_service=self.container.resolve(ProtocolMonitorService)
             ),
             scope=punq.Scope.singleton,
         )
@@ -557,6 +572,19 @@ class ServiceContainer:
             ),
             scope=punq.Scope.singleton,
         )
+
+    def _load_protocol_keys(self) -> "ProtocolKeysConfig":
+        """Load protocol keys from YAML config file.
+
+        Returns:
+            ProtocolKeysConfig instance loaded from configuration path.
+        """
+        from pathlib import Path
+
+        from xp.models.term.protocol_keys_config import ProtocolKeysConfig
+
+        config_path = Path(self._protocol_keys_config_path).resolve()
+        return ProtocolKeysConfig.from_yaml(config_path)
 
     def get_container(self) -> punq.Container:
         """

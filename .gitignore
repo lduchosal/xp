@@ -15,6 +15,7 @@ rp.yml
 logger.yml
 .idea/workspace.xml
 coverage.xml
+log/
 conbus.log*
 
 # Cache directory
@@ -25,3 +26,4 @@ __pycache__/
 *.py[cod]
 *$py.class
 /interrogate_badge.svg
+/protocol.yml

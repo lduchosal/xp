@@ -73,23 +73,6 @@ class ProtocolLogWidget(Widget):
                     f"[bold #00ff00]\\[TX] {event.telegram}[/bold #00ff00]"
                 )
 
-    def connect(self) -> None:
-        """Connect to Conbus server."""
-        self.service.connect()
-
-    def disconnect(self) -> None:
-        """Disconnect from Conbus server."""
-        self.service.disconnect()
-
-    def send_telegram(self, name: str, telegram: str) -> None:
-        """Send a raw telegram string.
-
-        Args:
-            name: Telegram name (e.g., "Discover")
-            telegram: Telegram string (e.g., "S0000000000F01D00")
-        """
-        self.service.send_telegram(name, telegram)
-
     def clear_log(self) -> None:
         """Clear the protocol log widget."""
         if self.log_widget:

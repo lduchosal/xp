@@ -23,9 +23,5 @@ def protocol_monitor(ctx: Context) -> None:
     """
     from xp.term.protocol import ProtocolMonitorApp
 
-    # Resolve ServiceContainer from context
-    container = ctx.obj.get("container").get_container()
-
-    # Initialize and run Textual app
-    app = ProtocolMonitorApp(container=container)
-    app.run()
+    # Resolve ProtocolMonitorApp from container and run
+    ctx.obj.get("container").get_container().resolve(ProtocolMonitorApp).run()

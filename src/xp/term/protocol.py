@@ -6,7 +6,6 @@ from typing import Any, Optional
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 
-from xp.models.term import ProtocolKeysConfig
 from xp.term.widgets.help_menu import HelpMenuWidget
 from xp.term.widgets.protocol_log import ProtocolLogWidget
 from xp.term.widgets.status_footer import StatusFooterWidget
@@ -19,7 +18,7 @@ class ProtocolMonitorApp(App[None]):
     terminal interface with keyboard shortcuts for control.
 
     Attributes:
-        container: ServiceContainer for dependency injection.
+        protocol_service: ProtocolMonitorService for protocol operations.
         CSS_PATH: Path to CSS stylesheet file.
         BINDINGS: Keyboard bindings for app actions.
         TITLE: Application title displayed in header.
@@ -37,32 +36,17 @@ class ProtocolMonitorApp(App[None]):
         ("0-9,a-q", "protocol_keys", "Keys"),
     ]
 
-    def __init__(self, container: Any) -> None:
+    def __init__(self, protocol_service: Any) -> None:
         """Initialize the Protocol Monitor app.
 
         Args:
-            container: ServiceContainer for resolving services.
+            protocol_service: ProtocolMonitorService for protocol operations.
         """
         super().__init__()
-        self.container = container
-
-        # Import here to avoid circular dependency
-        from xp.services.term.protocol_monitor_service import ProtocolMonitorService
-
-        self.protocol_service = container.resolve(ProtocolMonitorService)
+        self.protocol_service = protocol_service
         self.protocol_widget: Optional[ProtocolLogWidget] = None
         self.help_menu: Optional[HelpMenuWidget] = None
         self.footer_widget: Optional[StatusFooterWidget] = None
-        self.protocol_keys = self._load_protocol_keys()
-
-    def _load_protocol_keys(self) -> ProtocolKeysConfig:
-        """Load protocol keys from YAML config file.
-
-        Returns:
-            ProtocolKeysConfig instance.
-        """
-        config_path = Path(__file__).parent / "protocol.yml"
-        return ProtocolKeysConfig.from_yaml(config_path)
 
     def compose(self) -> ComposeResult:
         """Compose the app layout with widgets.
@@ -76,7 +60,7 @@ class ProtocolMonitorApp(App[None]):
 
             # Help menu (hidden by default)
             self.help_menu = HelpMenuWidget(
-                protocol_keys=self.protocol_keys, id="help-menu"
+                protocol_keys=self.protocol_service.protocol_keys, id="help-menu"
             )
             yield self.help_menu
 
@@ -109,7 +93,7 @@ class ProtocolMonitorApp(App[None]):
         Args:
             event: Key press event from Textual.
         """
-        if event.key in self.protocol_keys.protocol and self.protocol_widget:
-            key_config = self.protocol_keys.protocol[event.key]
+        if event.key in self.protocol_service.protocol_keys.protocol:
+            key_config = self.protocol_service.protocol_keys.protocol[event.key]
             for telegram in key_config.telegrams:
-                self.protocol_widget.send_telegram(key_config.name, telegram)
+                self.protocol_service.send_telegram(key_config.name, telegram)
