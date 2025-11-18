@@ -110,11 +110,11 @@ Update `start()` method behavior:
 - [ ] Add `__exit__(self, _exc_type, _exc_val, _exc_tb) -> None` method
 - [ ] Disconnect all signals in __exit__ to prevent memory leaks:
   ```python
-  self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
-  self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
-  self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
-  self.conbus_protocol.on_timeout.disconnect(self.timeout)
-  self.conbus_protocol.on_failed.disconnect(self.failed)
+  self._conbus_protocol.on_connection_made.disconnect(self.connection_made)
+  self._conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+  self._conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+  self._conbus_protocol.on_timeout.disconnect(self.timeout)
+  self._conbus_protocol.on_failed.disconnect(self.failed)
   ```
 - [ ] Verify CLI command's `with service:` statement continues to work
 

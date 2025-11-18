@@ -1,6 +1,5 @@
 """Protocol Log Widget for displaying telegram stream."""
 
-import asyncio
 import logging
 from typing import Any, Optional
 
@@ -44,18 +43,13 @@ class ProtocolLogWidget(Widget):
         self.log_widget = RichLog(highlight=False, markup=True)
         yield self.log_widget
 
-    async def on_mount(self) -> None:
-        """Initialize connection when widget mounts.
+    def on_mount(self) -> None:
+        """Initialize widget when mounted.
 
-        Delays connection by 0.5s to let UI render first.
-        Connects to service signals.
+        Connects to service signals for telegram display.
         """
         # Connect to service signals
         self.service.on_telegram_display.connect(self._on_telegram_display)
-
-        # Delay connection to let UI render
-        await asyncio.sleep(0.5)
-        self.service.connect()
 
     def _on_telegram_display(self, event: TelegramDisplayEvent) -> None:
         """Handle telegram display event from service.
@@ -64,14 +58,10 @@ class ProtocolLogWidget(Widget):
             event: Telegram display event with direction and telegram data.
         """
         if self.log_widget:
-            if event.direction == "RX":
-                # Display [RX] and frame in bright green
-                self.log_widget.write(f"[#00ff00]\\[RX] {event.telegram}[/#00ff00]")
-            else:  # TX
-                # Display [TX] and frame in bold bright green
-                self.log_widget.write(
-                    f"[bold #00ff00]\\[TX] {event.telegram}[/bold #00ff00]"
-                )
+            color = "bold #00ff00" if event.direction == "TX" else "#00ff00"
+            self.log_widget.write(
+                f"[{color}]\\[{event.direction}] {event.telegram}[/{color}]"
+            )
 
     def clear_log(self) -> None:
         """Clear the protocol log widget."""

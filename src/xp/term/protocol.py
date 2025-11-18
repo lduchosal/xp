@@ -60,7 +60,7 @@ class ProtocolMonitorApp(App[None]):
 
             # Help menu (hidden by default)
             self.help_menu = HelpMenuWidget(
-                protocol_keys=self.protocol_service.protocol_keys, id="help-menu"
+                service=self.protocol_service, id="help-menu"
             )
             yield self.help_menu
 
@@ -69,18 +69,23 @@ class ProtocolMonitorApp(App[None]):
         )
         yield self.footer_widget
 
+    async def on_mount(self) -> None:
+        """Initialize app after UI is mounted.
+
+        Delays connection by 0.5s to let UI render first.
+        """
+        import asyncio
+
+        # Delay connection to let UI render
+        await asyncio.sleep(0.5)
+        self.protocol_service.connect()
+
     def action_toggle_connection(self) -> None:
         """Toggle connection on 'c' key press.
 
         Connects if disconnected/failed, disconnects if connected/connecting.
         """
-        from xp.models.term.connection_state import ConnectionState
-
-        state = self.protocol_service.connection_state
-        if state in (ConnectionState.CONNECTED, ConnectionState.CONNECTING):
-            self.protocol_service.disconnect()
-        else:
-            self.protocol_service.connect()
+        self.protocol_service.toggle_connection()
 
     def action_reset(self) -> None:
         """Reset and clear protocol widget on 'r' key press."""
@@ -93,7 +98,4 @@ class ProtocolMonitorApp(App[None]):
         Args:
             event: Key press event from Textual.
         """
-        if event.key in self.protocol_service.protocol_keys.protocol:
-            key_config = self.protocol_service.protocol_keys.protocol[event.key]
-            for telegram in key_config.telegrams:
-                self.protocol_service.send_telegram(key_config.name, telegram)
+        self.protocol_service.handle_key_press(event.key)

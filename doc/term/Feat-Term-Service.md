@@ -378,6 +378,7 @@ Changes needed:
    - Simplify by using service instead of checking widget state
 
 **Updated App Constructor:**
+
 ```python
 def __init__(self, container: Any) -> None:
     """Initialize the Protocol Monitor app.
@@ -391,10 +392,11 @@ def __init__(self, container: Any) -> None:
     self.protocol_widget: Optional[ProtocolLogWidget] = None
     self.help_menu: Optional[HelpMenuWidget] = None
     self.footer_widget: Optional[StatusFooterWidget] = None
-    self.protocol_keys = self._load_protocol_keys()
+    self._protocol_keys = self._load_protocol_keys()
 ```
 
 **Updated compose method:**
+
 ```python
 def compose(self) -> ComposeResult:
     """Compose the app layout with widgets.
@@ -408,7 +410,7 @@ def compose(self) -> ComposeResult:
 
         # Help menu (hidden by default)
         self.help_menu = HelpMenuWidget(
-            protocol_keys=self.protocol_keys, id="help-menu"
+            protocol_keys=self._protocol_keys, id="help-menu"
         )
         yield self.help_menu
 
