@@ -73,6 +73,7 @@ from xp.services.telegram.telegram_discover_service import TelegramDiscoverServi
 from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
+from xp.services.term.protocol_monitor_service import ProtocolMonitorService
 from xp.utils.logging import LoggerService
 
 asyncioreactor.install()
@@ -188,6 +189,14 @@ class ServiceContainer:
         self.container.register(
             ConbusDiscoverService,
             factory=lambda: ConbusDiscoverService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol)
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ProtocolMonitorService,
+            factory=lambda: ProtocolMonitorService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol)
             ),
             scope=punq.Scope.singleton,

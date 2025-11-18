@@ -46,6 +46,11 @@ class ProtocolMonitorApp(App[None]):
         """
         super().__init__()
         self.container = container
+
+        # Import here to avoid circular dependency
+        from xp.services.term.protocol_monitor_service import ProtocolMonitorService
+
+        self.protocol_service = container.resolve(ProtocolMonitorService)
         self.protocol_widget: Optional[ProtocolLogWidget] = None
         self.help_menu: Optional[HelpMenuWidget] = None
         self.footer_widget: Optional[StatusFooterWidget] = None
@@ -67,7 +72,7 @@ class ProtocolMonitorApp(App[None]):
             ProtocolLogWidget and Footer widgets.
         """
         with Horizontal(id="main-container"):
-            self.protocol_widget = ProtocolLogWidget(container=self.container)
+            self.protocol_widget = ProtocolLogWidget(service=self.protocol_service)
             yield self.protocol_widget
 
             # Help menu (hidden by default)
@@ -84,19 +89,25 @@ class ProtocolMonitorApp(App[None]):
 
         Connects if disconnected/failed, disconnects if connected/connecting.
         """
-        if self.protocol_widget:
-            from xp.term.widgets.protocol_log import ConnectionState
+        from xp.models.term.connection_state import ConnectionState
 
-            state = self.protocol_widget.connection_state
-            if state in (ConnectionState.CONNECTED, ConnectionState.CONNECTING):
-                self.protocol_widget.disconnect()
-            else:
-                self.protocol_widget.connect()
+        state = self.protocol_service.connection_state
+        if state in (ConnectionState.CONNECTED, ConnectionState.CONNECTING):
+            self.protocol_service.disconnect()
+        else:
+            self.protocol_service.connect()
 
     def action_reset(self) -> None:
         """Reset and clear protocol widget on 'r' key press."""
         if self.protocol_widget:
             self.protocol_widget.clear_log()
+
+    def on_mount(self) -> None:
+        """Set up status line updates when app mounts."""
+        if self.protocol_widget and self.footer_widget:
+            self.protocol_service.on_connection_state_changed.connect(
+                self.footer_widget.update_status
+            )
 
     def on_key(self, event: Any) -> None:
         """Handle key press events for protocol keys.
@@ -108,24 +119,6 @@ class ProtocolMonitorApp(App[None]):
             key_config = self.protocol_keys.protocol[event.key]
             for telegram in key_config.telegrams:
                 self.protocol_widget.send_telegram(key_config.name, telegram)
-
-    def on_mount(self) -> None:
-        """Set up status line updates when app mounts."""
-        if self.protocol_widget:
-            self.protocol_widget.watch(
-                self.protocol_widget,
-                "connection_state",
-                self._update_status,
-            )
-
-    def _update_status(self, state: Any) -> None:
-        """Update status line with connection state.
-
-        Args:
-            state: Current connection state.
-        """
-        if self.footer_widget:
-            self.footer_widget.update_status(state)
 
     def on_status_message_changed(self, message: StatusMessageChanged) -> None:
         """Handle status message changes from protocol widget.
