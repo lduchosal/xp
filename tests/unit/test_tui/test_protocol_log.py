@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import pytest
 
 from xp.models.term.telegram_display import TelegramDisplayEvent
-from xp.term.widgets.protocol_log import ConnectionState, ProtocolLogWidget
+from xp.term.widgets.protocol_log import ProtocolLogWidget
 
 
 class TestProtocolLogWidget:
@@ -15,17 +15,9 @@ class TestProtocolLogWidget:
     def mock_service(self):
         """Create a mock ProtocolMonitorService."""
         service = Mock()
-        service.connection_state = ConnectionState.DISCONNECTED
-        service.server_info = "192.168.1.1:4001"
-        service.on_connection_state_changed = Mock()
         service.on_telegram_display = Mock()
-        service.on_status_message = Mock()
-        service.on_connection_state_changed.connect = Mock()
         service.on_telegram_display.connect = Mock()
-        service.on_status_message.connect = Mock()
-        service.on_connection_state_changed.disconnect = Mock()
         service.on_telegram_display.disconnect = Mock()
-        service.on_status_message.disconnect = Mock()
         service.connect = Mock()
         service.disconnect = Mock()
         service.send_telegram = Mock()
@@ -39,40 +31,6 @@ class TestProtocolLogWidget:
     def test_widget_initialization(self, widget, mock_service):
         """Test widget can be initialized with required dependencies."""
         assert widget.service == mock_service
-        assert widget.connection_state == ConnectionState.DISCONNECTED
-
-    def test_connection_state_transitions(self, widget):
-        """Test connection state transitions from DISCONNECTED to CONNECTED."""
-        # Initial state
-        assert widget.connection_state == ConnectionState.DISCONNECTED
-
-        # Simulate state change
-        widget.connection_state = ConnectionState.CONNECTING
-        assert widget.connection_state == ConnectionState.CONNECTING
-
-        # Simulate connection made
-        widget.connection_state = ConnectionState.CONNECTED
-        assert widget.connection_state == ConnectionState.CONNECTED
-
-    def test_connection_state_failure(self, widget):
-        """Test connection state on failure transitions to FAILED."""
-        # Initial state
-        assert widget.connection_state == ConnectionState.DISCONNECTED
-
-        # Simulate connection attempt
-        widget.connection_state = ConnectionState.CONNECTING
-
-        # Simulate failure
-        widget.connection_state = ConnectionState.FAILED
-        assert widget.connection_state == ConnectionState.FAILED
-
-    def test_on_state_changed_handler(self, widget):
-        """Test state changed handler updates widget state."""
-        widget._on_state_changed(ConnectionState.CONNECTED)
-        assert widget.connection_state == ConnectionState.CONNECTED
-
-        widget._on_state_changed(ConnectionState.FAILED)
-        assert widget.connection_state == ConnectionState.FAILED
 
     def test_on_telegram_display_rx(self, widget):
         """Test telegram display handler for RX telegrams."""
@@ -106,16 +64,6 @@ class TestProtocolLogWidget:
         assert "[TX]" in call_args
         assert "<S0000000000F01D00FA>" in call_args
 
-    def test_on_status_message(self, widget):
-        """Test status message handler posts message."""
-        widget.post_status = Mock()
-
-        # Call handler
-        widget._on_status_message("Test message")
-
-        # Verify post_status was called
-        widget.post_status.assert_called_once_with("Test message")
-
     def test_connect_delegates_to_service(self, widget, mock_service):
         """Test connect method delegates to service."""
         widget.connect()
@@ -136,12 +84,10 @@ class TestProtocolLogWidget:
     def test_clear_log(self, widget):
         """Test clear_log clears the log widget."""
         widget.log_widget = Mock()
-        widget.post_status = Mock()
 
         widget.clear_log()
 
         widget.log_widget.clear.assert_called_once()
-        widget.post_status.assert_called_once_with("Log cleared")
 
     def test_cleanup_on_unmount(self, widget, mock_service):
         """Test on_unmount disconnects signals from service."""
@@ -149,6 +95,4 @@ class TestProtocolLogWidget:
         widget.on_unmount()
 
         # Verify signals disconnected
-        mock_service.on_connection_state_changed.disconnect.assert_called_once()
         mock_service.on_telegram_display.disconnect.assert_called_once()
-        mock_service.on_status_message.disconnect.assert_called_once()

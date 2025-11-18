@@ -4,12 +4,9 @@ import asyncio
 import logging
 from typing import Any, Optional
 
-from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import RichLog
 
-from xp.models.term.connection_state import ConnectionState
-from xp.models.term.status_message import StatusMessageChanged
 from xp.models.term.telegram_display import TelegramDisplayEvent
 from xp.services.term.protocol_monitor_service import ProtocolMonitorService
 
@@ -22,12 +19,9 @@ class ProtocolLogWidget(Widget):
 
     Attributes:
         service: ProtocolMonitorService for protocol operations.
-        connection_state: Current connection state (reactive).
         logger: Logger instance for this widget.
         log_widget: RichLog widget for displaying messages.
     """
-
-    connection_state = reactive(ConnectionState.DISCONNECTED)
 
     def __init__(self, service: ProtocolMonitorService) -> None:
         """Initialize the Protocol Log widget.
@@ -57,21 +51,11 @@ class ProtocolLogWidget(Widget):
         Connects to service signals.
         """
         # Connect to service signals
-        self.service.on_connection_state_changed.connect(self._on_state_changed)
         self.service.on_telegram_display.connect(self._on_telegram_display)
-        self.service.on_status_message.connect(self._on_status_message)
 
         # Delay connection to let UI render
         await asyncio.sleep(0.5)
         self.service.connect()
-
-    def _on_state_changed(self, state: ConnectionState) -> None:
-        """Handle connection state change from service.
-
-        Args:
-            state: New connection state.
-        """
-        self.connection_state = state
 
     def _on_telegram_display(self, event: TelegramDisplayEvent) -> None:
         """Handle telegram display event from service.
@@ -88,22 +72,6 @@ class ProtocolLogWidget(Widget):
                 self.log_widget.write(
                     f"[bold #00ff00]\\[TX] {event.telegram}[/bold #00ff00]"
                 )
-
-    def _on_status_message(self, message: str) -> None:
-        """Handle status message from service.
-
-        Args:
-            message: Status message to display.
-        """
-        self.post_status(message)
-
-    def post_status(self, message: str) -> None:
-        """Post status message.
-
-        Args:
-            message: message to be sent to status bar.
-        """
-        self.post_message(StatusMessageChanged(message))
 
     def connect(self) -> None:
         """Connect to Conbus server."""
@@ -126,7 +94,6 @@ class ProtocolLogWidget(Widget):
         """Clear the protocol log widget."""
         if self.log_widget:
             self.log_widget.clear()
-            self.post_status("Log cleared")
 
     def on_unmount(self) -> None:
         """Clean up when widget unmounts.
@@ -135,9 +102,7 @@ class ProtocolLogWidget(Widget):
         """
         try:
             # Disconnect service signals
-            self.service.on_connection_state_changed.disconnect(self._on_state_changed)
             self.service.on_telegram_display.disconnect(self._on_telegram_display)
-            self.service.on_status_message.disconnect(self._on_status_message)
 
         except Exception as e:
             self.logger.error(f"Error during cleanup: {e}")
