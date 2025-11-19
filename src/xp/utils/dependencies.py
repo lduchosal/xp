@@ -75,7 +75,9 @@ from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
 from xp.services.term.protocol_monitor_service import ProtocolMonitorService
+from xp.services.term.state_monitor_service import StateMonitorService
 from xp.term.protocol import ProtocolMonitorApp
+from xp.term.state import StateMonitorApp
 from xp.utils.logging import LoggerService
 
 asyncioreactor.install()
@@ -213,6 +215,23 @@ class ServiceContainer:
             ProtocolMonitorApp,
             factory=lambda: ProtocolMonitorApp(
                 protocol_service=self.container.resolve(ProtocolMonitorService)
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            StateMonitorService,
+            factory=lambda: StateMonitorService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
+                conson_config=self.container.resolve(ConsonModuleListConfig),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            StateMonitorApp,
+            factory=lambda: StateMonitorApp(
+                state_service=self.container.resolve(StateMonitorService)
             ),
             scope=punq.Scope.singleton,
         )

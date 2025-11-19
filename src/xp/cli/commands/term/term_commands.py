@@ -25,3 +25,24 @@ def protocol_monitor(ctx: Context) -> None:
 
     # Resolve ProtocolMonitorApp from container and run
     ctx.obj.get("container").get_container().resolve(ProtocolMonitorApp).run()
+
+
+@term.command("state")
+@click.pass_context
+def state_monitor(ctx: Context) -> None:
+    r"""Start TUI for module state monitoring.
+
+    Displays module states from Conson configuration with real-time
+    updates in an interactive terminal interface.
+
+    Args:
+        ctx: Click context object.
+
+    Examples:
+        \b
+        xp term state
+    """
+    from xp.term.state import StateMonitorApp
+
+    # Resolve StateMonitorApp from container and run
+    ctx.obj.get("container").get_container().resolve(StateMonitorApp).run()

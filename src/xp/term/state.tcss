@@ -1,0 +1,75 @@
+/* State Monitor TUI Styling */
+
+/* App-level styling */
+Screen {
+    background: $background;
+}
+
+/* Header */
+Header {
+    background: $background;
+    color: $success;
+}
+
+/* Modules List Widget */
+ModulesListWidget {
+    border: solid $success;
+    width: 1fr;
+    height: 1fr;
+    background: $background;
+    padding: 1;
+}
+
+#modules-table {
+    background: $background;
+    height: 1fr;
+}
+
+DataTable {
+    background: $background;
+}
+
+DataTable > .datatable--header {
+    background: $background;
+    color: $success;
+    text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+    background: $surface;
+}
+
+DataTable:focus > .datatable--cursor {
+    background: $surface;
+}
+
+/* Footer styling */
+#footer-container {
+    dock: bottom;
+    height: 1;
+    background: $background;
+}
+
+Footer {
+    width: auto;
+    background: $background;
+    color: $text;
+}
+
+#status-text {
+    dock: right;
+    width: auto;
+    padding: 0 3;
+    background: $background;
+    color: $text;
+    text-align: right;
+}
+
+#status-line {
+    dock: right;
+    width: auto;
+    padding: 0 1;
+    background: $background;
+    color: $text;
+    text-align: right;
+}
