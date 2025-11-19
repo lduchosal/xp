@@ -55,29 +55,77 @@ XP is a CLI toolkit for CONSON XP Protocol operations with HomeKit integration. 
 - `conbus/`: Operation requests/responses
 - `homekit/`: Configuration and accessory models
 - `protocol/`: Event definitions (BaseEvent from bubus)
+- `term/`: Term UI models (ConnectionState, ProtocolKeysConfig, TelegramDisplayEvent, etc.)
+
+### Layer 6: Terminal UI (Term)
+**Location**: `src/xp/term/`
+**Purpose**: Interactive TUI for real-time protocol monitoring and control via keyboard shortcuts.
+
+**Pattern**: App → Service → Protocol (clean separation with signal-based communication)
+
+```
+ProtocolMonitorApp (Textual)
+  ├─ Owns: ProtocolMonitorService (DI-injected singleton)
+  ├─ Widgets: ProtocolLogWidget, HelpMenuWidget, StatusFooterWidget
+  │   └─ Constructor-injected: service (not container)
+  └─ Actions: Delegate to service methods
+      ├─ toggle_connection() → service.toggle_connection()
+      ├─ on_key(event) → service.handle_key_press(event.key)
+      └─ send_telegram() → service.send_telegram()
+
+ProtocolMonitorService
+  ├─ Owns: ConbusEventProtocol, ProtocolKeysConfig
+  ├─ State: connection_state, state_machine
+  ├─ Methods: connect(), disconnect(), toggle_connection(), send_telegram(), handle_key_press()
+  └─ Signals: on_connection_state_changed, on_telegram_display, on_status_message
+
+ConbusEventProtocol (Twisted)
+  ├─ TCP: connect(), disconnect(), send_raw_telegram()
+  └─ Signals: on_connection_made, on_telegram_received, on_telegram_sent, on_failed
+```
+
+**Dependency Flow**:
+1. ServiceContainer creates ProtocolMonitorService (singleton)
+2. ServiceContainer injects service into ProtocolMonitorApp
+3. App injects service into widgets (ProtocolLogWidget, HelpMenuWidget, StatusFooterWidget)
+4. Widgets connect to service signals, call service methods
+
+**Benefits**: App handles UI events, service handles business logic, protocol handles TCP
 
 ## Actual Project Structure
 ```
 src/xp/
 ├── cli/                    # Click CLI commands
 │   ├── main.py            # Entry point, ServiceContainer init
-│   └── commands/          # Command groups (conbus, telegram, homekit, etc.)
+│   └── commands/          # Command groups (conbus, telegram, homekit, term, etc.)
+│       └── term/          # Term CLI group and commands
 ├── services/              # Business logic layer
 │   ├── telegram/          # Low-level telegram operations
 │   ├── conbus/            # High-level device operations
 │   ├── homekit/           # HomeKit integration
-│   ├── protocol/          # TelegramProtocol, TelegramFactory
+│   ├── protocol/          # TelegramProtocol, TelegramFactory, ConbusEventProtocol
+│   ├── term/              # Term service layer (ProtocolMonitorService)
 │   └── server/            # XP emulators (XP20, XP24, XP33, etc.)
 ├── models/                # Pydantic data models
 │   ├── telegram/          # Telegram types (Event, System, Reply)
 │   ├── conbus/            # Conbus operation models
 │   ├── homekit/           # HomeKit config and accessories
+│   ├── term/              # Term models (ConnectionState, ProtocolKeysConfig, etc.)
 │   └── protocol/          # Event definitions (bubus BaseEvent)
+├── term/                  # Term TUI application
+│   ├── protocol.py        # ProtocolMonitorApp (Textual app)
+│   ├── protocol.tcss      # CSS stylesheet for Term UI
+│   └── widgets/           # Term UI widgets
+│       ├── protocol_log.py    # ProtocolLogWidget (telegram stream display)
+│       ├── status_footer.py   # StatusFooterWidget (connection status)
+│       └── help_menu.py       # HelpMenuWidget (keyboard shortcuts)
 ├── connection/            # TCP/socket exceptions
 └── utils/                 # Dependency injection (ServiceContainer)
 
 tests/
 ├── unit/                  # Service/model unit tests
+│   └── test_services/
+│       └── test_protocol_monitor_service.py
 └── integration/           # End-to-end integration tests
 ```
 
@@ -127,37 +175,38 @@ Reply:  <R0020012521F02D18+26,0§CIL> # Device response
 - `server.yml`: Emulator settings
 - `protocol.yml`: Term UI protocol key mappings
 
-### 6. Terminal UI Architecture
-**Pattern**: App → Service → Protocol (clean separation)
+### 6. Term Principles & Patterns
+**Separation of Concerns**:
+- App layer (Textual UI), service layer (business logic), widget layer (components), protocol layer (TCP)
+- Widgets never access protocol directly - all operations through service
 
-```
-ProtocolMonitorApp (Textual)
-  ├─ Owns: ProtocolMonitorService (DI-injected singleton)
-  ├─ Widgets: ProtocolLogWidget, HelpMenuWidget, StatusFooterWidget
-  │   └─ Constructor-injected: service (not container)
-  └─ Actions: Delegate to service methods
-      ├─ toggle_connection() → service.toggle_connection()
-      ├─ on_key(event) → service.handle_key_press(event.key)
-      └─ send_telegram() → service.send_telegram()
+**Signal-Based Communication** (psygnal):
+- Service signals: `on_connection_state_changed`, `on_telegram_display`, `on_status_message`
+- Protocol signals: `on_connection_made`, `on_telegram_received`, `on_telegram_sent`, `on_failed`
+- Pattern: Service transforms protocol events into widget-level signals
 
-ProtocolMonitorService
-  ├─ Owns: ConbusEventProtocol, ProtocolKeysConfig
-  ├─ State: connection_state, state_machine
-  ├─ Methods: connect(), disconnect(), toggle_connection(), send_telegram(), handle_key_press()
-  └─ Signals: on_connection_state_changed, on_telegram_display, on_status_message
+**State Machine**:
+- States: DISCONNECTED → CONNECTING → CONNECTED → DISCONNECTING → DISCONNECTED
+- FAILED state allows retry from any state
+- Prevents invalid transitions, thread-safe
 
-ConbusEventProtocol (Twisted)
-  ├─ TCP: connect(), disconnect(), send_raw_telegram()
-  └─ Signals: on_connection_made, on_telegram_received, on_telegram_sent, on_failed
-```
+**Configuration-Driven Keys**:
+- Keyboard shortcuts loaded from `protocol.yml`
+- Multiple telegrams per key, hot-reload without recompile
+- Pydantic validation for correctness
 
-**Dependency Flow**:
-1. ServiceContainer creates ProtocolMonitorService (singleton)
-2. ServiceContainer injects service into ProtocolMonitorApp
-3. App injects service into widgets (ProtocolLogWidget, HelpMenuWidget, StatusFooterWidget)
-4. Widgets connect to service signals, call service methods
+**Widget Lifecycle**:
+- Mount: Connect to service signals
+- Unmount: Disconnect signals (prevents memory leaks)
+- Pattern: Always pair connect/disconnect
 
-**Benefits**: App handles UI events, service handles business logic, protocol handles TCP
+**Async Integration**:
+- Textual (asyncio) + Twisted (reactor) bridged via signals
+- `on_mount()` delays connection 0.5s for UI render
+
+**Context Manager**:
+- `ProtocolMonitorService` supports `with` statement
+- Auto-cleanup: disconnect signals, close TCP
 
 ## Implementation Patterns
 
@@ -192,6 +241,37 @@ def my_command(ctx: click.Context, module_type: int, link: int) -> None:
 1. Extend `BaseEvent` in `models/protocol/conbus_protocol.py`
 2. Dispatch via `event_bus.dispatch(YourEvent(...))`
 3. Subscribe in service: `@event_bus.on(YourEvent)`
+
+### Adding a New Term Widget
+1. Create widget in `src/xp/term/widgets/`
+2. Inherit from `Widget` (or `RichLog`, `Static`, etc. from Textual)
+3. Inject `ProtocolMonitorService` via constructor (NOT ServiceContainer)
+4. Connect to service signals in `on_mount()`, disconnect in `on_unmount()`
+5. Add widget to `ProtocolMonitorApp.compose()` with dependency injection
+6. Update CSS in `protocol.tcss` if needed
+
+**Example**:
+```python
+from textual.widget import Widget
+from xp.services.term import ProtocolMonitorService
+
+class MyWidget(Widget):
+    def __init__(self, service: ProtocolMonitorService) -> None:
+        super().__init__()
+        self.service = service
+
+    def on_mount(self) -> None:
+        # Connect signals
+        self.service.on_status_message.connect(self._on_status)
+
+    def on_unmount(self) -> None:
+        # ALWAYS disconnect to prevent memory leaks
+        self.service.on_status_message.disconnect(self._on_status)
+
+    def _on_status(self, message: str) -> None:
+        # Handle signal
+        pass
+```
 
 ### Testing Pattern
 - **Unit Tests**: Mock dependencies, inject via constructor
