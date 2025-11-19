@@ -6,6 +6,7 @@ from typing import Any, Optional
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 
+from xp.services.term import ProtocolMonitorService
 from xp.term.widgets.help_menu import HelpMenuWidget
 from xp.term.widgets.protocol_log import ProtocolLogWidget
 from xp.term.widgets.status_footer import StatusFooterWidget
@@ -36,14 +37,14 @@ class ProtocolMonitorApp(App[None]):
         ("0-9,a-q", "protocol_keys", "Keys"),
     ]
 
-    def __init__(self, protocol_service: Any) -> None:
+    def __init__(self, protocol_service: ProtocolMonitorService) -> None:
         """Initialize the Protocol Monitor app.
 
         Args:
             protocol_service: ProtocolMonitorService for protocol operations.
         """
         super().__init__()
-        self.protocol_service = protocol_service
+        self.protocol_service: ProtocolMonitorService = protocol_service
         self.protocol_widget: Optional[ProtocolLogWidget] = None
         self.help_menu: Optional[HelpMenuWidget] = None
         self.footer_widget: Optional[StatusFooterWidget] = None

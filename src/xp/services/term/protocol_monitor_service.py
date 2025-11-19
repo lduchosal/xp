@@ -93,7 +93,7 @@ class ProtocolMonitorService:
         """
         return f"{self._conbus_protocol.cli_config.ip}:{self._conbus_protocol.cli_config.port}"
 
-    def _connect(self) -> None:
+    def connect(self) -> None:
         """Initiate connection to server."""
         if not self._state_machine.can_transition("connect"):
             self.logger.warning(
@@ -108,7 +108,7 @@ class ProtocolMonitorService:
 
         self._conbus_protocol.connect()
 
-    def _disconnect(self) -> None:
+    def disconnect(self) -> None:
         """Disconnect from server."""
         if not self._state_machine.can_transition("disconnect"):
             self.logger.warning(
@@ -140,9 +140,9 @@ class ProtocolMonitorService:
             ConnectionState.CONNECTED,
             ConnectionState.CONNECTING,
         ):
-            self._disconnect()
+            self.disconnect()
         else:
-            self._connect()
+            self.connect()
 
     def _send_telegram(self, name: str, telegram: str) -> None:
         """Send a raw telegram.
@@ -231,7 +231,7 @@ class ProtocolMonitorService:
         """Clean up service resources."""
         self._disconnect_signals()
         if self._conbus_protocol.transport:
-            self._disconnect()
+            self.disconnect()
 
     def get_keys(self) -> ItemsView[str, ProtocolKeyConfig]:
         """Get protocol key mappings.

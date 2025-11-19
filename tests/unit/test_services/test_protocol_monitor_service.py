@@ -89,7 +89,7 @@ class TestProtocolMonitorService:
     def test_on_connection_made_handler(self, service):
         """Test _on_connection_made updates state and emits signals."""
         # Must be in CONNECTING state first for transition to work
-        service._connect()
+        service.connect()
         service._on_connection_made()
 
         assert service.connection_state == ConnectionState.CONNECTED
@@ -114,7 +114,7 @@ class TestProtocolMonitorService:
     def test_on_failed_handler(self, service):
         """Test _on_failed updates state."""
         # Must be in valid state for transition to FAILED
-        service._connect()  # DISCONNECTED -> CONNECTING
+        service.connect()  # DISCONNECTED -> CONNECTING
         service._on_failed("Connection lost")
         assert service.connection_state == ConnectionState.FAILED
 
@@ -144,7 +144,7 @@ class TestProtocolMonitorService:
         """Test cleanup disconnects when transport exists."""
         mock_protocol.transport = Mock()
         # Set up proper connected state through state machine
-        service._connect()
+        service.connect()
         service._on_connection_made()
 
         service.cleanup()
