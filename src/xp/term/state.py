@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Optional
 
 from textual.app import App, ComposeResult
-from textual.widgets import Header
 
 from xp.services.term.state_monitor_service import StateMonitorService
 from xp.term.widgets.modules_list import ModulesListWidget
@@ -30,8 +29,8 @@ class StateMonitorApp(App[None]):
     ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [
-        ("q", "quit", "Quit"),
-        ("c", "toggle_connection", "Connect"),
+        ("Q", "quit", "Quit"),
+        ("C", "toggle_connection", "Connect"),
         ("r", "refresh_all", "Refresh"),
     ]
 
@@ -50,10 +49,8 @@ class StateMonitorApp(App[None]):
         """Compose the app layout with widgets.
 
         Yields:
-            Header, ModulesListWidget, and StatusFooterWidget.
+            ModulesListWidget and StatusFooterWidget.
         """
-        yield Header()
-
         self.modules_widget = ModulesListWidget(service=self.state_service, id="modules-list")
         yield self.modules_widget
 

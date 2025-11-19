@@ -50,6 +50,9 @@ class ModulesListWidget(Static):
 
     def on_mount(self) -> None:
         """Initialize table and subscribe to service signals when widget mounts."""
+        # Set border title
+        self.border_title = "Module State Monitor"
+
         if self.table:
             # Setup table columns
             self.table.add_column("name", key="name")

@@ -5,15 +5,10 @@ Screen {
     background: $background;
 }
 
-/* Header */
-Header {
-    background: $background;
-    color: $success;
-}
-
 /* Modules List Widget */
 ModulesListWidget {
     border: solid $success;
+    border-title-align: left;
     width: 1fr;
     height: 1fr;
     background: $background;
@@ -22,6 +17,7 @@ ModulesListWidget {
 
 #modules-table {
     background: $background;
+    width: 100%;
     height: 1fr;
 }
 
@@ -32,15 +28,14 @@ DataTable {
 DataTable > .datatable--header {
     background: $background;
     color: $success;
-    text-style: bold;
 }
 
 DataTable > .datatable--cursor {
-    background: $surface;
+    background: $background;
 }
 
 DataTable:focus > .datatable--cursor {
-    background: $surface;
+    background: $background;
 }
 
 /* Footer styling */
