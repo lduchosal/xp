@@ -158,9 +158,61 @@ CLI Command → Textual App → Widgets  → Term Service
 4. **Action execution**: Select and execute actions from tree
 5. **Protocol monitoring**: Live RX/TX message stream
 
-### Quality Standards
+## Implementation Checklist
 
-Reference:
-- Quality.md
-- Coding.md
-- Architecture.md
+Follow ProtocolMonitorApp pattern (src/xp/term/protocol.py) for reference.
+
+### Models
+- [ ] Create ModuleState dataclass in src/xp/models/term/module_state.py
+- [ ] Fields: name, serial_number, module_type, outputs, auto_report, error_status, last_update
+
+### Service Layer
+- [ ] Create StateMonitorService in src/xp/services/term/state_monitor_service.py
+- [ ] Implement 5 psygnal Signals: on_connection_state_changed, on_module_list_updated, on_module_state_changed, on_module_error, on_status_message
+- [ ] Load ConsonModuleListConfig from conson.yml on connection
+- [ ] Connect to ConbusEventProtocol signals
+- [ ] Handle TelegramReceivedEvent → update module outputs
+- [ ] Handle OutputStateReceivedEvent → update module outputs
+- [ ] Handle ConnectionMadeEvent → load config, emit on_module_list_updated
+- [ ] Handle InvalidTelegramReceived → emit on_module_error
+- [ ] Track last_update timestamp per module
+- [ ] Implement context manager with cleanup
+
+### Widgets
+- [ ] Create ModulesListWidget in src/xp/term/widgets/modules_list.py
+- [ ] Display DataTable with 7 columns (name, serial_number, module_type, outputs, report, status, last_update)
+- [ ] Use Textual reactive attributes for live updates
+- [ ] Connect to service on_module_list_updated signal
+- [ ] Connect to service on_module_state_changed signal
+- [ ] Update table rows on signal events
+- [ ] Create StatusFooter widget in src/xp/term/widgets/status_footer.py
+- [ ] Display connection state (Connected to IP 🟢)
+- [ ] Show keyboard shortcuts (^u Update module, ^q Quit)
+- [ ] Connect to service on_connection_state_changed signal
+- [ ] Connect to service on_status_message signal
+
+### Textual App
+- [ ] Create StateMonitorApp in src/xp/term/state.py
+- [ ] Compose ModulesListWidget and StatusFooter
+- [ ] Initialize StateMonitorService with ConbusEventProtocol and ConsonModuleListConfig
+- [ ] Wire all service signals to widget update methods
+- [ ] Implement keyboard bindings (ctrl+u, ctrl+q)
+- [ ] Handle app lifecycle (on_mount, on_unmount)
+- [ ] Call service cleanup on exit
+
+### CLI Command
+- [ ] Add state_command in src/xp/cli/commands/term/term_commands.py
+- [ ] Command: xp term state
+- [ ] Load CLI config (IP, port)
+- [ ] Create ConbusEventProtocol instance
+- [ ] Load conson.yml config
+- [ ] Initialize and run StateMonitorApp
+- [ ] Setup Twisted reactor integration
+
+### Quality
+- [ ] Pass mypy strict type checking
+- [ ] Follow Quality.md standards
+- [ ] Follow Coding.md conventions
+- [ ] Follow Architecture.md patterns
+- [ ] Add docstrings to all public methods
+- [ ] Handle error cases gracefully
