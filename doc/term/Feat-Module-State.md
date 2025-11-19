@@ -27,13 +27,13 @@ The main pane has module detail
  │  A04     0020041824     XP20                        Y        OK      00:00:03     │
  │  A05     0020044991     XP24           0 1 0 0      Y        OK      00:00:03     │
  │  A06     0020044974     XP24           0 1 0 0      Y        OK      00:00:03     │
- │  A06     0020044989     XP24           0 1 0 0      Y        OK      00:00:03     │
- │  A07     0020044964     XP24           0 1 0 0      Y        OK      00:00:03     │
- │  A08     0020044986     XP24           0 1 0 0      Y        OK      00:00:03     │
- │  A09     0020044966     XP24           0 1 0 0      Y        OK      00:00:03     │
- │  A10     0020042796     XP33LR           0 1 0      Y        OK      00:00:03     │
- │  A11     0020045056     XP33LED          0 1 0      Y        OK      00:00:03     │
- │  A12     0020045057     XP33LED          0 1 0      Y        OK      00:00:03     │
+ │  A07     0020044989     XP24           0 1 0 0      Y        OK      00:00:03     │
+ │  A08     0020044964     XP24           0 1 0 0      Y        OK      00:00:03     │
+ │  A09     0020044986     XP24           0 1 0 0      Y        OK      00:00:03     │
+ │  A10     0020044966     XP24           0 1 0 0      Y        OK      00:00:03     │
+ │  A11     0020042796     XP33LR           0 1 0      Y        OK      00:00:03     │
+ │  A12     0020045056     XP33LED          0 1 0      Y        OK      00:00:03     │
+ │  A13     0020045057     XP33LED          0 1 0      Y        OK      00:00:03     │
  │                                                                                   │
  ╰───────────────────────────────────────────────────────────────────────────────────╯ 
    ^u Update module   ^q Quit                             Connected to 127.0.0.1  🟢    
@@ -43,14 +43,34 @@ The main pane has module detail
 - module state
 - status footer
 
+### Keyboard Shortcuts
+
+- **^u** (Ctrl+U): Refresh all module data - Force reload all module states from the system
+- **^q** (Ctrl+Q): Quit the application
+
+### Behavior Details
+
+**Update Strategy**: Event-driven only
+- Updates occur only when protocol events are received from ConbusEventProtocol
+- No automatic polling or periodic refresh
+- Manual refresh available via ^u keyboard shortcut
+
+**Auto-report Mapping**:
+- `auto_report_status: PP` in conson.yml → Display as `Y` in report column
+- Other values → Display as `N`
+
+**Error Status Source**:
+- Error codes obtained from module status queries
+- Displayed as error codes (e.g., `E10`) or `OK` for healthy modules
+
 ### Columns:
-- **name**: Module name/identifier (e.g., A01, A02)
+- **name**: Module name/identifier (e.g., A01, A02) - Must be unique per module
 - **serial number**: Module serial number (e.g., 0020041013)
 - **module type**: Module type designation (e.g., XP130, XP230, XP24)
-- **outputs**: Current output states (space-separated binary values)
-- **report**: Auto-report status (Y/N)
-- **status**: Module status (OK, or error code like E10)
-- **last update**: Time since last communication (HH:MM:SS)
+- **outputs**: Current output states (space-separated binary values). Empty string for modules without outputs.
+- **report**: Auto-report status (Y/N). Derived from `auto_report_status` in conson.yml (PP → Y)
+- **status**: Module status (OK, or error code like E10). Obtained from module status queries.
+- **last update**: Time elapsed since last communication (HH:MM:SS format). Shows `--:--:--` for modules that haven't been updated yet.
 
 ### Data source
 
@@ -165,16 +185,19 @@ Follow ProtocolMonitorApp pattern (src/xp/term/protocol.py) for reference.
 ### Models
 - [ ] Create ModuleState dataclass in src/xp/models/term/module_state.py
 - [ ] Fields: name, serial_number, module_type, outputs, auto_report, error_status, last_update
+- [ ] Initialize last_update to None for modules not yet seen
+- [ ] Store outputs as Optional[str] (empty string for modules without outputs)
 
 ### Service Layer
 - [ ] Create StateMonitorService in src/xp/services/term/state_monitor_service.py
 - [ ] Implement 5 psygnal Signals: on_connection_state_changed, on_module_list_updated, on_module_state_changed, on_module_error, on_status_message
 - [ ] Load ConsonModuleListConfig from conson.yml on connection
-- [ ] Connect to ConbusEventProtocol signals
+- [ ] Connect to ConbusEventProtocol signals (event-driven updates only)
+- [ ] Map auto_report_status field: PP → True (Y), others → False (N)
 - [ ] Handle TelegramReceivedEvent → update module outputs
 - [ ] Handle OutputStateReceivedEvent → update module outputs
 - [ ] Handle ConnectionMadeEvent → load config, emit on_module_list_updated
-- [ ] Handle InvalidTelegramReceived → emit on_module_error
+- [ ] Query module status to obtain error codes (OK or E10, etc.)
 - [ ] Track last_update timestamp per module
 - [ ] Implement context manager with cleanup
 
@@ -185,6 +208,9 @@ Follow ProtocolMonitorApp pattern (src/xp/term/protocol.py) for reference.
 - [ ] Connect to service on_module_list_updated signal
 - [ ] Connect to service on_module_state_changed signal
 - [ ] Update table rows on signal events
+- [ ] Format last_update: None → "--:--:--", datetime → elapsed time "HH:MM:SS"
+- [ ] Format outputs: Empty string for modules without outputs
+- [ ] Format report: bool → "Y"/"N" string
 - [ ] Create StatusFooter widget in src/xp/term/widgets/status_footer.py
 - [ ] Display connection state (Connected to IP 🟢)
 - [ ] Show keyboard shortcuts (^u Update module, ^q Quit)
