@@ -63,12 +63,21 @@ class StateMonitorApp(App[None]):
         """Initialize app after UI is mounted.
 
         Delays connection by 0.5s to let UI render first.
+        Sets up automatic screen refresh every second to update elapsed times.
         """
         import asyncio
 
         # Delay connection to let UI render
         await asyncio.sleep(0.5)
         self.state_service.connect()
+
+        # Set up periodic refresh to update elapsed times
+        self.set_interval(1.0, self._refresh_last_update_column)
+
+    def _refresh_last_update_column(self) -> None:
+        """Refresh only the last_update column to show elapsed time."""
+        if self.modules_widget:
+            self.modules_widget.refresh_last_update_times()
 
     def action_toggle_connection(self) -> None:
         """Toggle connection on 'c' key press.

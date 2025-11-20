@@ -184,3 +184,24 @@ class ModulesListWidget(Static):
         seconds = total_seconds % 60
 
         return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+    def refresh_last_update_times(self) -> None:
+        """Refresh only the last_update column for all modules.
+
+        Updates the elapsed time display without querying the service.
+        """
+        if not self.table or not self.service:
+            return
+
+        # Update last_update column for each module
+        for serial_number, row_key in self._row_keys.items():
+            # Get the module state from service
+            module_states = self.service.module_states
+            module_state = next(
+                (m for m in module_states if m.serial_number == serial_number), None
+            )
+            if module_state:
+                # Update only the last_update cell
+                self.table.update_cell(
+                    row_key, "last_update", self._format_last_update(module_state.last_update)
+                )
