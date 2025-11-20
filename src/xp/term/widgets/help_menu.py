@@ -36,10 +36,8 @@ class HelpMenuWidget(Vertical):
         """
         super().__init__(*args, **kwargs)
         self.service: ProtocolMonitorService = service
-        self.help_table: DataTable = DataTable(id="help-table", show_header=False)
-        self.help_table.can_focus = False
+        self.help_table: DataTable = DataTable(id="help-table", show_header=False, cursor_type="row")
         self.border_title = "Help menu"
-        self.can_focus = False
 
     def compose(self) -> ComposeResult:
         """Compose the help menu layout.

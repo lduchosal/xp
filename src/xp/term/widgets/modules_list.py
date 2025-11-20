@@ -45,15 +45,18 @@ class ModulesListWidget(Static):
         Yields:
             DataTable widget.
         """
-        self.table = DataTable(id="modules-table")
+        self.table = DataTable(id="modules-table", cursor_type="row")
         yield self.table
 
     def on_mount(self) -> None:
         """Initialize table and subscribe to service signals when widget mounts."""
         # Set border title
-        self.border_title = "Module State Monitor"
+        self.border_title = "Modules"
 
         if self.table:
+            # Set table to full width
+            self.table.styles.width = "100%"
+
             # Setup table columns
             self.table.add_column("name", key="name")
             self.table.add_column("serial number", key="serial_number")

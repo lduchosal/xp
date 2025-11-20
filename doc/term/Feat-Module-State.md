@@ -63,6 +63,14 @@ The main pane has module detail
 - Error codes obtained from module status queries
 - Displayed as error codes (e.g., `E10`) or `OK` for healthy modules
 
+**Refresh Action Behavior**:
+- Triggered by 'r' key press
+- Iterates through all configured modules
+- Filters modules by type: XP24, XP33LR, XP33LED
+- Queries `module_output_state` datapoint for each eligible module
+- Updates outputs column with received state
+- Updates last_update timestamp for each queried module
+
 ### Columns:
 - **name**: Module name/identifier (e.g., A01, A02) - Must be unique per module
 - **serial number**: Module serial number (e.g., 0020041013)
@@ -199,6 +207,11 @@ Follow ProtocolMonitorApp pattern (src/xp/term/protocol.py) for reference.
 - [ ] Handle ConnectionMadeEvent → load config, emit on_module_list_updated
 - [ ] Query module status to obtain error codes (OK or E10, etc.)
 - [ ] Track last_update timestamp per module
+- [ ] Implement refresh_all() method:
+  - [ ] Filter modules by type (XP24, XP33LR, XP33LED)
+  - [ ] Query module_output_state datapoint for each eligible module
+  - [ ] Update outputs column with received state
+  - [ ] Update last_update timestamp
 - [ ] Implement context manager with cleanup
 
 ### Widgets

@@ -25,7 +25,7 @@ class StateMonitorApp(App[None]):
     """
 
     CSS_PATH = Path(__file__).parent / "state.tcss"
-    TITLE = "Module State Monitor"
+    TITLE = "Modules"
     ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [
