@@ -30,6 +30,9 @@ class StateMonitorService:
         on_module_state_changed: Signal emitted when individual module state updates.
         on_module_error: Signal emitted when module error occurs.
         on_status_message: Signal emitted for status messages.
+        connection_state: Property returning current connection state.
+        server_info: Property returning server connection info (IP:port).
+        module_states: Property returning list of all module states.
     """
 
     on_connection_state_changed: Signal = Signal(ConnectionState)
@@ -262,14 +265,14 @@ class StateMonitorService:
             module_state = self._module_states[serial_number]
 
             # Parse output state from data_value using TelegramOutputService
-            outputs = TelegramOutputService.format_output_state(reply_telegram.data_value)
+            outputs = TelegramOutputService.format_output_state(
+                reply_telegram.data_value
+            )
             module_state.outputs = outputs
             module_state.last_update = datetime.now()
 
             self.on_module_state_changed.emit(module_state)
-            self.logger.debug(
-                f"Updated outputs for {module_state.name}: {outputs}"
-            )
+            self.logger.debug(f"Updated outputs for {module_state.name}: {outputs}")
 
     def _on_timeout(self) -> None:
         """Handle timeout event."""
@@ -299,12 +302,12 @@ class StateMonitorService:
         """
         return self
 
-    def __exit__(self, exc_type: object, exc_val: object, exc_tb: object) -> None:
+    def __exit__(self, _exc_type: object, _exc_val: object, _exc_tb: object) -> None:
         """Context manager exit.
 
         Args:
-            exc_type: Exception type.
-            exc_val: Exception value.
-            exc_tb: Exception traceback.
+            _exc_type: Exception type.
+            _exc_val: Exception value.
+            _exc_tb: Exception traceback.
         """
         self.cleanup()

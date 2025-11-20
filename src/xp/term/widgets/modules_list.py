@@ -111,10 +111,18 @@ class ModulesListWidget(Static):
         if serial_number in self._row_keys:
             # Update existing row
             row_key = self._row_keys[serial_number]
-            self.table.update_cell(row_key, "outputs", self._format_outputs(module_state.outputs))
-            self.table.update_cell(row_key, "report", self._format_report(module_state.auto_report))
+            self.table.update_cell(
+                row_key, "outputs", self._format_outputs(module_state.outputs)
+            )
+            self.table.update_cell(
+                row_key, "report", self._format_report(module_state.auto_report)
+            )
             self.table.update_cell(row_key, "status", module_state.error_status)
-            self.table.update_cell(row_key, "last_update", self._format_last_update(module_state.last_update))
+            self.table.update_cell(
+                row_key,
+                "last_update",
+                self._format_last_update(module_state.last_update),
+            )
         else:
             # Add new row
             self._add_module_row(module_state)
@@ -148,7 +156,7 @@ class ModulesListWidget(Static):
         Returns:
             Formatted output string (empty string for modules without outputs).
         """
-        return outputs if outputs else ""
+        return outputs
 
     def _format_report(self, auto_report: bool) -> str:
         """Format auto-report status for display.
@@ -203,5 +211,7 @@ class ModulesListWidget(Static):
             if module_state:
                 # Update only the last_update cell
                 self.table.update_cell(
-                    row_key, "last_update", self._format_last_update(module_state.last_update)
+                    row_key,
+                    "last_update",
+                    self._format_last_update(module_state.last_update),
                 )

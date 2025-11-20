@@ -51,7 +51,9 @@ class StateMonitorApp(App[None]):
         Yields:
             ModulesListWidget and StatusFooterWidget.
         """
-        self.modules_widget = ModulesListWidget(service=self.state_service, id="modules-list")
+        self.modules_widget = ModulesListWidget(
+            service=self.state_service, id="modules-list"
+        )
         yield self.modules_widget
 
         self.footer_widget = StatusFooterWidget(

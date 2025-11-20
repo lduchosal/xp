@@ -1,6 +1,5 @@
 """Unit tests for TelegramOutputService.format_output_state method."""
 
-
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 
 

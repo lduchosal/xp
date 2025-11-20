@@ -161,9 +161,7 @@ class XP24ServerService(BaseServerService):
 
         data_value = handler()
         data_part = (
-            f"R{self.serial_number}"
-            f"F02D{datapoint_type.value}"
-                f"{data_value}"
+            f"R{self.serial_number}" f"F02D{datapoint_type.value}" f"{data_value}"
         )
         telegram = self._build_response_telegram(data_part)
 

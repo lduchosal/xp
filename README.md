@@ -364,6 +364,7 @@ xp telegram version
 
 xp term
 xp term protocol
+xp term state
 
 <!-- END CLI HELP -->
 ```
