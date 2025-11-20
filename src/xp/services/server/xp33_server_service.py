@@ -228,7 +228,6 @@ class XP33ServerService(BaseServerService):
         data_part = (
             f"R{self.serial_number}"
             f"F02D{datapoint_type.value}"
-            f"{self.module_type_code.value:02}"
             f"{data_value}"
         )
         telegram = self._build_response_telegram(data_part)

@@ -8,9 +8,14 @@ from psygnal import Signal
 
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.system_function import SystemFunction
+from xp.models.telegram.telegram_type import TelegramType
 from xp.models.term.connection_state import ConnectionState
 from xp.models.term.module_state import ModuleState
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
+from xp.services.telegram.telegram_output_service import TelegramOutputService
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class StateMonitorService:
@@ -37,16 +42,19 @@ class StateMonitorService:
         self,
         conbus_protocol: ConbusEventProtocol,
         conson_config: ConsonModuleListConfig,
+        telegram_service: TelegramService,
     ) -> None:
         """Initialize the State Monitor service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
             conson_config: ConsonModuleListConfig for module configuration.
+            telegram_service: TelegramService for parsing telegrams.
         """
         self.logger = logging.getLogger(__name__)
         self._conbus_protocol = conbus_protocol
         self._conson_config = conson_config
+        self._telegram_service = telegram_service
         self._connection_state = ConnectionState.DISCONNECTED
         self._state_machine = ConnectionState.create_state_machine()
         self._module_states: Dict[str, ModuleState] = {}
@@ -175,22 +183,34 @@ class StateMonitorService:
     def refresh_all(self) -> None:
         """Refresh all module states.
 
-        Force reload all module states from the system by querying status.
+        Queries module_output_state datapoint for eligible modules (XP24, XP33LR, XP33LED).
+        Updates outputs column and last_update timestamp for each queried module.
         """
-        self.on_status_message.emit("Refreshing all module states...")
-        # Query each module for status
-        for module_state in self._module_states.values():
-            self._query_module_status(module_state.serial_number)
+        self.on_status_message.emit("Refreshing module states...")
 
-    def _query_module_status(self, serial_number: str) -> None:
-        """Query module status.
+        # Eligible module types that support output state queries
+        eligible_types = {"XP24", "XP33LR", "XP33LED"}
+
+        # Filter and query eligible modules
+        for module_state in self._module_states.values():
+            if module_state.module_type in eligible_types:
+                self._query_module_output_state(module_state.serial_number)
+                self.logger.debug(
+                    f"Querying output state for {module_state.name} ({module_state.module_type})"
+                )
+
+    def _query_module_output_state(self, serial_number: str) -> None:
+        """Query module output state datapoint.
 
         Args:
             serial_number: Module serial number to query.
         """
-        # TODO: Implement actual status query via protocol
-        # For now, just emit status message
-        self.logger.debug(f"Querying status for module {serial_number}")
+        self._conbus_protocol.send_telegram(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number=serial_number,
+            system_function=SystemFunction.READ_DATAPOINT,
+            data_value=str(DataPointType.MODULE_OUTPUT_STATE.value),
+        )
 
     def _on_connection_made(self) -> None:
         """Handle connection made event."""
@@ -221,13 +241,35 @@ class StateMonitorService:
         Args:
             event: Telegram received event.
         """
-        # Update last_update for the module that sent the telegram
+        # Only process reply telegrams
+        if event.telegram_type != TelegramType.REPLY:
+            return
+
         serial_number = event.serial_number
-        if serial_number and serial_number in self._module_states:
+        if not serial_number or serial_number not in self._module_states:
+            return
+
+        # Parse the reply telegram
+        reply_telegram = self._telegram_service.parse_reply_telegram(event.frame)
+        if not reply_telegram:
+            return
+
+        # Check if this is a module output state response
+        if (
+            reply_telegram.system_function == SystemFunction.READ_DATAPOINT
+            and reply_telegram.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
+        ):
             module_state = self._module_states[serial_number]
+
+            # Parse output state from data_value using TelegramOutputService
+            outputs = TelegramOutputService.format_output_state(reply_telegram.data_value)
+            module_state.outputs = outputs
             module_state.last_update = datetime.now()
+
             self.on_module_state_changed.emit(module_state)
-            self.logger.debug(f"Updated last_update for {serial_number}")
+            self.logger.debug(
+                f"Updated outputs for {module_state.name}: {outputs}"
+            )
 
     def _on_timeout(self) -> None:
         """Handle timeout event."""

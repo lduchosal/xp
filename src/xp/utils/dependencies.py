@@ -224,6 +224,7 @@ class ServiceContainer:
             factory=lambda: StateMonitorService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 conson_config=self.container.resolve(ConsonModuleListConfig),
+                telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,
         )

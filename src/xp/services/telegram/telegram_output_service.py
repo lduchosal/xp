@@ -320,3 +320,36 @@ class TelegramOutputService:
             f"Timestamp: {telegram.timestamp}\n"
             f"Checksum: {telegram.checksum}{checksum_status}"
         )
+
+    @staticmethod
+    def format_output_state(data_value: str) -> str:
+        """Format module output state data value for display.
+
+        Algorithm:
+        1. Remove 'x' characters
+        2. Format to 4 chars with space padding on the right
+        3. Invert order
+        4. Add spaces between characters
+
+        Args:
+            data_value: Raw data value from module output state datapoint (e.g., "xxxx0101", "xx1110").
+
+        Returns:
+            Formatted output string with spaces (e.g., "1 0 1 0", "0 1 1 1").
+
+        Examples:
+            >>> TelegramOutputService.format_output_state("xxxx0101")
+            "1 0 1 0"
+            >>> TelegramOutputService.format_output_state("xx1110")
+            "0 1 1 1"
+            >>> TelegramOutputService.format_output_state("xxxx01")
+            "  1 0"
+        """
+        # Remove 'x' characters
+        cleaned = data_value.replace("x", "").replace("X", "")
+        # Format to 4 chars with space padding on the right
+        padded = cleaned.ljust(4)[:4]
+        # Invert order
+        inverted = padded[::-1]
+        # Add spaces between characters
+        return " ".join(inverted)
