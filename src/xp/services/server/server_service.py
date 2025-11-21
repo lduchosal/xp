@@ -16,6 +16,7 @@ from xp.models.homekit.homekit_conson_config import (
     ConsonModuleListConfig,
 )
 from xp.services.server.base_server_service import BaseServerService
+from xp.services.server.client_buffer_manager import ClientBufferManager
 from xp.services.server.device_service_factory import DeviceServiceFactory
 from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
 from xp.services.telegram.telegram_service import TelegramService
@@ -69,7 +70,7 @@ class ServerService:
             None  # Background thread for storm
         )
         self.collector_stop_event = threading.Event()  # Event to stop thread
-        self.collector_buffer: queue.Queue[str] = queue.Queue()  # Thread-safe buffer
+        self.client_buffers = ClientBufferManager()  # Per-client queue manager
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -192,6 +193,9 @@ class ServerService:
         self, client_socket: socket.socket, client_address: tuple[str, int]
     ) -> None:
         """Handle individual client connection."""
+        # Register client and get its dedicated queue
+        client_queue = self.client_buffers.register_client(client_socket)
+
         try:
 
             idle_timeout = 300
@@ -203,10 +207,10 @@ class ServerService:
 
             while True:
 
-                # send waiting buffer
-                while not self.collector_buffer.empty():
+                # send waiting buffer from client's dedicated queue
+                while not client_queue.empty():
                     try:
-                        buffer = self.collector_buffer.get_nowait()
+                        buffer = client_queue.get_nowait()
                         client_socket.send(buffer.encode("latin-1"))
                         self.logger.debug(f"Sent buffer to {client_address}")
                     except queue.Empty:
@@ -235,7 +239,7 @@ class ServerService:
                 # Process request (discover or data request)
                 responses = self._process_request(message)
                 for response in responses:
-                    self.collector_buffer.put(response)
+                    self.client_buffers.broadcast(response)
 
         except socket.timeout:
             self.logger.debug(f"Client {client_address} timed out")
@@ -243,6 +247,8 @@ class ServerService:
             self.logger.error(f"Error handling client {client_address}: {e}")
         finally:
             try:
+                # Unregister client before closing socket
+                self.client_buffers.unregister_client(client_socket)
                 client_socket.close()
                 self.logger.info(f"Client {client_address} disconnected")
             except Exception as e:
@@ -423,7 +429,7 @@ class ServerService:
             for device_service in self.device_services.values():
                 telegram_buffer = device_service.collect_telegram_buffer()
                 for telegram in telegram_buffer:
-                    self.collector_buffer.put(telegram)
+                    self.client_buffers.broadcast(telegram)
                 collected += len(telegram_buffer)
 
             # Wait a bit before checking again
