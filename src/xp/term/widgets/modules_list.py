@@ -3,6 +3,7 @@
 from datetime import datetime
 from typing import Any, List, Optional
 
+from rich.text import Text
 from textual.app import ComposeResult
 from textual.widgets import DataTable, Static
 
@@ -56,9 +57,9 @@ class ModulesListWidget(Static):
         if self.table:
             # Setup table columns
             self.table.add_column("name", key="name")
+            self.table.add_column("link", key="link_number")
             self.table.add_column("serial number", key="serial_number")
             self.table.add_column("module type", key="module_type")
-            self.table.add_column("link number", key="link_number")
             self.table.add_column("outputs", key="outputs")
             self.table.add_column("report", key="report")
             self.table.add_column("status", key="status")
@@ -113,13 +114,13 @@ class ModulesListWidget(Static):
                 row_key, "outputs", self._format_outputs(module_state.outputs)
             )
             self.table.update_cell(
-                row_key, "report", self._format_report(module_state.auto_report)
+                row_key, "report", Text(self._format_report(module_state.auto_report), justify="center")
             )
             self.table.update_cell(row_key, "status", module_state.error_status)
             self.table.update_cell(
                 row_key,
                 "last_update",
-                self._format_last_update(module_state.last_update),
+                Text(self._format_last_update(module_state.last_update), justify="center"),
             )
         else:
             # Add new row
@@ -136,13 +137,13 @@ class ModulesListWidget(Static):
 
         row_key = self.table.add_row(
             module_state.name,
+            Text(str(module_state.link_number), justify="right"),
             module_state.serial_number,
             module_state.module_type,
-            str(module_state.link_number),
             self._format_outputs(module_state.outputs),
-            self._format_report(module_state.auto_report),
+            Text(self._format_report(module_state.auto_report), justify="center"),
             module_state.error_status,
-            self._format_last_update(module_state.last_update),
+            Text(self._format_last_update(module_state.last_update), justify="center"),
         )
         self._row_keys[module_state.serial_number] = row_key
 
@@ -212,5 +213,5 @@ class ModulesListWidget(Static):
                 self.table.update_cell(
                     row_key,
                     "last_update",
-                    self._format_last_update(module_state.last_update),
+                    Text(self._format_last_update(module_state.last_update), justify="center"),
                 )
