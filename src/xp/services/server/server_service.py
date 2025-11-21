@@ -5,6 +5,7 @@ Discover Request telegrams with configurable device information.
 """
 
 import logging
+import queue
 import socket
 import threading
 from pathlib import Path
@@ -68,7 +69,7 @@ class ServerService:
             None  # Background thread for storm
         )
         self.collector_stop_event = threading.Event()  # Event to stop thread
-        self.collector_buffer: list[str] = []  # All collected buffers
+        self.collector_buffer: queue.Queue[str] = queue.Queue()  # Thread-safe buffer
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -203,10 +204,13 @@ class ServerService:
             while True:
 
                 # send waiting buffer
-                for i in range(len(self.collector_buffer)):
-                    buffer = self.collector_buffer.pop()
-                    client_socket.send(buffer.encode("latin-1"))
-                    self.logger.debug(f"Sent buffer to {client_address}")
+                while not self.collector_buffer.empty():
+                    try:
+                        buffer = self.collector_buffer.get_nowait()
+                        client_socket.send(buffer.encode("latin-1"))
+                        self.logger.debug(f"Sent buffer to {client_address}")
+                    except queue.Empty:
+                        break
 
                 # Receive data from client
                 data = None
@@ -230,11 +234,8 @@ class ServerService:
 
                 # Process request (discover or data request)
                 responses = self._process_request(message)
-
-                # Send responses
                 for response in responses:
-                    client_socket.send(response.encode("latin-1"))
-                    self.logger.debug(f"Sent to {client_address}: {response[:-1]}")
+                    self.collector_buffer.put(response)
 
         except socket.timeout:
             self.logger.debug(f"Client {client_address} timed out")
@@ -421,7 +422,8 @@ class ServerService:
             collected = 0
             for device_service in self.device_services.values():
                 telegram_buffer = device_service.collect_telegram_buffer()
-                self.collector_buffer.extend(telegram_buffer)
+                for telegram in telegram_buffer:
+                    self.collector_buffer.put(telegram)
                 collected += len(telegram_buffer)
 
             # Wait a bit before checking again

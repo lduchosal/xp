@@ -54,9 +54,6 @@ class ModulesListWidget(Static):
         self.border_title = "Modules"
 
         if self.table:
-            # Set table to full width
-            self.table.styles.width = "100%"
-
             # Setup table columns
             self.table.add_column("name", key="name")
             self.table.add_column("serial number", key="serial_number")
