@@ -19,30 +19,36 @@ All telegrams from device services broadcast to all connected clients:
 ## Implementation Checklist
 
 ### Phase 1: Refactor Buffer Architecture
-- [ ] Replace `collector_buffer: queue.Queue[str]` with per-client queue structure
-- [ ] Create `client_buffers: Dict[socket.socket, queue.Queue[str]]` to store individual client queues
-- [ ] Add `client_buffers_lock: threading.Lock` for thread-safe dictionary operations
+- [ ] Create `ClientBufferManager` class to encapsulate client queue management
+  - [ ] Internal `_buffers: Dict[socket.socket, queue.Queue[str]]` attribute
+  - [ ] Internal `_lock: threading.Lock` for thread-safe operations
+  - [ ] Method `register_client(socket) -> queue.Queue[str]` - create and return new queue
+  - [ ] Method `unregister_client(socket) -> None` - remove client queue
+  - [ ] Method `broadcast(telegram: str) -> None` - put telegram into all client queues
+  - [ ] Method `get_queue(socket) -> Optional[queue.Queue[str]]` - retrieve client's queue
+- [ ] Replace `collector_buffer: queue.Queue[str]` with `client_buffers: ClientBufferManager`
 
 ### Phase 2: Client Queue Management
-- [ ] Update `_handle_client` to create new queue in `client_buffers` on connection
-- [ ] Update `_handle_client` to remove queue from `client_buffers` on disconnect
-- [ ] Ensure thread-safe access to `client_buffers` dictionary during add/remove operations
+- [ ] Update `_handle_client` to call `client_buffers.register_client(socket)` on connection
+- [ ] Store returned queue reference for this client thread
+- [ ] Update `_handle_client` to call `client_buffers.unregister_client(socket)` on disconnect
+- [ ] Thread safety handled internally by `ClientBufferManager`
 
 ### Phase 3: Broadcast Logic in Collector Thread
-- [ ] Modify `_device_collector_thread` to iterate through all `client_buffers`
-- [ ] For each collected telegram, put it into every client's individual queue
-- [ ] Use thread-safe operations when accessing `client_buffers` dictionary
+- [ ] Modify `_device_collector_thread` to call `client_buffers.broadcast(telegram)` for each collected telegram
+- [ ] Remove direct queue.put operations
+- [ ] Thread safety handled internally by `ClientBufferManager.broadcast()`
 
 ### Phase 4: Client Thread Consumption
-- [ ] Modify `_handle_client` loop to read from its own dedicated queue
-- [ ] Replace `self.collector_buffer.get_nowait()` with per-client queue access
+- [ ] Modify `_handle_client` loop to read from client's dedicated queue (obtained from register_client)
+- [ ] Replace `self.collector_buffer.get_nowait()` with `client_queue.get_nowait()`
 - [ ] Maintain existing send logic (encode to latin-1 and socket.send)
 
 ### Phase 5: Thread Safety
-- [ ] Verify `client_buffers_lock` protects all dictionary operations
+- [ ] Verify `ClientBufferManager` uses lock for all dictionary operations
 - [ ] Test concurrent client connections and disconnections
 - [ ] Validate no race conditions in telegram routing
-- [ ] Ensure collector thread safely iterates client buffers during modifications
+- [ ] Ensure collector thread's broadcast safely handles concurrent client add/remove
 
 ### Phase 6: Quality Assurance
 Reference: `doc/quality.md`, `doc/coding.md`, `doc/architecture.md`
@@ -61,10 +67,10 @@ Reference: `doc/quality.md`, `doc/coding.md`, `doc/architecture.md`
 
 ## Technical Constraints
 - Multi-threaded: One thread per client (server_service.py:179-183)
-- Collector thread independent of request processing (server_service.py:416-428)
+- Collector thread independent of request processing (server_service.py:417-430)
 - Shared telegram buffer across device services
-- Must use existing `telegram_buffer_lock` for thread safety
-- Pydantic models for any new data structures
+- `ClientBufferManager` encapsulates thread safety with internal lock
+- Type hints for all methods (mypy strict)
 - Absolute imports only
 - Line length: 88 characters
 
