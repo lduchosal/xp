@@ -1,42 +1,50 @@
-# Feature: Broadcast Telegram to Connected Clients
+# Feature: Broadcast Telegram to All Connected Clients
 
 ## Context
-Enable ConbusServerService to broadcast telegrams from device services to all connected clients, excluding the originating client.
+Enable ConbusServerService to broadcast telegrams from device services to all connected clients simultaneously.
 
 ## Current State
-- Server maintains collector thread polling device telegram buffers (server_service.py:416-428)
-- Telegrams stored in `collector_buffer` (server_service.py:71)
-- Buffer sent to clients in `_handle_client` loop (server_service.py:205-209)
-- No tracking of telegram origination client
+- Server maintains collector thread polling device telegram buffers (server_service.py:417-428)
+- Telegrams (strings) stored in single shared `collector_buffer: queue.Queue[str]` (server_service.py:72)
+- Buffer sent to clients in `_handle_client` loop (server_service.py:207-213)
+- Current architecture: single queue consumed by multiple client threads causes telegrams to go to only one client
 
 ## Target Behavior
-When client sends telegram triggering device response:
-1. Server notes originating client identity
-2. Broadcasts resulting telegrams to all other connected clients
-3. Excludes originating client from receiving own triggered responses
+All telegrams from device services broadcast to all connected clients:
+1. Multiple device services contribute telegrams to collection system
+2. Collector thread gathers telegrams from all device services
+3. All collected telegrams broadcast to every connected client
+4. No exclusions - every client receives every telegram
 
 ## Implementation Checklist
 
-### Phase 1: Client Tracking Infrastructure
-- [ ] Add `active_clients: Set[socket.socket]` to ServerService state
-- [ ] Update `_handle_client` to register socket in `active_clients` on connection
-- [ ] Update `_handle_client` to unregister socket in `active_clients` on disconnect
-- [ ] Ensure thread-safe access to `active_clients` using existing `socket_list_lock`
+### Phase 1: Refactor Buffer Architecture
+- [ ] Replace `collector_buffer: queue.Queue[str]` with per-client queue structure
+- [ ] Create `client_buffers: Dict[socket.socket, queue.Queue[str]]` to store individual client queues
+- [ ] Add `client_buffers_lock: threading.Lock` for thread-safe dictionary operations
 
-### Phase 2: Request Tracking
-- [ ] When client sends telegram in `_handle_client`, tag resulting device telegrams with originating socket
+### Phase 2: Client Queue Management
+- [ ] Update `_handle_client` to create new queue in `client_buffers` on connection
+- [ ] Update `_handle_client` to remove queue from `client_buffers` on disconnect
+- [ ] Ensure thread-safe access to `client_buffers` dictionary during add/remove operations
 
-### Phase 3: Selective Broadcast
-- [ ] Modify buffer send logic in `_handle_client` to filter telegrams by origination
-- [ ] Skip telegrams where `client_socket == current_socket`
-- [ ] Send all other telegrams (device-originated or from different clients)
+### Phase 3: Broadcast Logic in Collector Thread
+- [ ] Modify `_device_collector_thread` to iterate through all `client_buffers`
+- [ ] For each collected telegram, put it into every client's individual queue
+- [ ] Use thread-safe operations when accessing `client_buffers` dictionary
 
-### Phase 4: Thread Safety
-- [ ] Verify `socket_list_lock` covers new socket set operations
+### Phase 4: Client Thread Consumption
+- [ ] Modify `_handle_client` loop to read from its own dedicated queue
+- [ ] Replace `self.collector_buffer.get_nowait()` with per-client queue access
+- [ ] Maintain existing send logic (encode to latin-1 and socket.send)
+
+### Phase 5: Thread Safety
+- [ ] Verify `client_buffers_lock` protects all dictionary operations
 - [ ] Test concurrent client connections and disconnections
 - [ ] Validate no race conditions in telegram routing
+- [ ] Ensure collector thread safely iterates client buffers during modifications
 
-### Phase 5: Quality Assurance
+### Phase 6: Quality Assurance
 Reference: `doc/quality.md`, `doc/coding.md`, `doc/architecture.md`
 
 - [ ] Type hints for all new/modified functions (mypy strict)
