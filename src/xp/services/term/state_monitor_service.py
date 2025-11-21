@@ -18,7 +18,7 @@ from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class StateMonitorService:
+class XP24:
     """Service for module state monitoring in terminal interface.
 
     Wraps ConbusEventProtocol and ConsonModuleListConfig to provide
