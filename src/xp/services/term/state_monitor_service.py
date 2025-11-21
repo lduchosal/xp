@@ -78,6 +78,7 @@ class StateMonitorService:
                 name=module_config.name,
                 serial_number=module_config.serial_number,
                 module_type=module_config.module_type,
+                link_number=module_config.link_number,
                 outputs="",  # Empty initially
                 auto_report=auto_report,
                 error_status="OK",

@@ -13,6 +13,7 @@ class ModuleState:
         name: Module name/identifier (e.g., A01, A02).
         serial_number: Module serial number.
         module_type: Module type designation (e.g., XP130, XP230, XP24).
+        link_number: Link number for the module.
         outputs: Output states as space-separated binary values. Empty string for modules without outputs.
         auto_report: Auto-report enabled status (Y/N).
         error_status: Module status ("OK" or error code like "E10").
@@ -22,6 +23,7 @@ class ModuleState:
     name: str
     serial_number: str
     module_type: str
+    link_number: int
     outputs: str
     auto_report: bool
     error_status: str

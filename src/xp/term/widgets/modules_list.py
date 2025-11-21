@@ -14,7 +14,7 @@ class ModulesListWidget(Static):
     """Widget displaying module states in a data table.
 
     Shows module information with real-time updates from StateMonitorService.
-    Table displays: name, serial_number, module_type, outputs, report, status, last_update.
+    Table displays: name, serial_number, module_type, link_number, outputs, report, status, last_update.
 
     Attributes:
         service: StateMonitorService for module state updates.
@@ -58,6 +58,7 @@ class ModulesListWidget(Static):
             self.table.add_column("name", key="name")
             self.table.add_column("serial number", key="serial_number")
             self.table.add_column("module type", key="module_type")
+            self.table.add_column("link number", key="link_number")
             self.table.add_column("outputs", key="outputs")
             self.table.add_column("report", key="report")
             self.table.add_column("status", key="status")
@@ -137,6 +138,7 @@ class ModulesListWidget(Static):
             module_state.name,
             module_state.serial_number,
             module_state.module_type,
+            str(module_state.link_number),
             self._format_outputs(module_state.outputs),
             self._format_report(module_state.auto_report),
             module_state.error_status,
