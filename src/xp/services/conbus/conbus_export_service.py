@@ -235,11 +235,12 @@ class ConbusExportService:
             self.logger.debug(f"Device {serial_number} complete (7/7 datapoints)")
             config = self.device_configs[serial_number]
 
-            # Build ConsonModuleConfig with default name
+            # Build ConsonModuleConfig with name based on link_number
             try:
-                # Add required 'name' field with default value
+                # Add required 'name' field as A{link_number}
                 if "name" not in config:
-                    config["name"] = f"module_{serial_number}"
+                    link_number = config.get("link_number", 0)
+                    config["name"] = f"A{link_number}"
                 module_config = ConsonModuleConfig(**config)
                 self.on_device_exported.emit(module_config)
             except Exception as e:
@@ -270,14 +271,18 @@ class ConbusExportService:
         for serial_number in self.discovered_devices:
             config = self.device_configs[serial_number].copy()
             try:
-                # Add required 'name' field with default value if not present
+                # Add required 'name' field as A{link_number} if not present
                 if "name" not in config:
-                    config["name"] = f"module_{serial_number}"
+                    link_number = config.get("link_number", 0)
+                    config["name"] = f"A{link_number}"
                 # Only include fields that were received
                 module_config = ConsonModuleConfig(**config)
                 modules.append(module_config)
             except Exception as e:
                 self.logger.warning(f"Partial device {serial_number}: {e}")
+
+        # Sort modules by link_number
+        modules.sort(key=lambda m: m.link_number if m.link_number is not None else 999)
 
         # Create ConsonModuleListConfig
         try:
@@ -313,12 +318,11 @@ class ConbusExportService:
             output_path = Path(path)
 
             if self.export_result.config:
-                # Use Pydantic's model_dump to serialize, excluding 'name' and 'enabled' fields
+                # Use Pydantic's model_dump to serialize, excluding only internal fields
                 data = self.export_result.config.model_dump(
                     exclude={
                         "root": {
                             "__all__": {
-                                "name",
                                 "enabled",
                                 "conbus_ip",
                                 "conbus_port",
@@ -329,8 +333,25 @@ class ConbusExportService:
                     exclude_none=True,
                 )
 
+                # Export as list at root level (not wrapped in 'root:' key)
+                modules_list = data.get("root", [])
+
                 with output_path.open("w") as f:
-                    yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+                    # Dump each module separately with blank lines between them
+                    for i, module in enumerate(modules_list):
+                        # Add blank line before each module except the first
+                        if i > 0:
+                            f.write("\n")
+
+                        # Dump single item as list element
+                        yaml_str = yaml.safe_dump(
+                            [module],
+                            default_flow_style=False,
+                            sort_keys=False,
+                            allow_unicode=True,
+                        )
+                        # Remove the trailing newline and write
+                        f.write(yaml_str.rstrip("\n") + "\n")
 
             self.logger.info(f"Export written to {path}")
             self.export_result.output_file = path
