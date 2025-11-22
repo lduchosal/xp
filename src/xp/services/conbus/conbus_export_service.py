@@ -228,9 +228,7 @@ class ConbusExportService:
             elif datapoint == DataPointType.AUTO_REPORT_STATUS:
                 module.auto_report_status = value
         except (ValueError, TypeError) as e:
-            self.logger.warning(
-                f"Invalid value '{value}' for {datapoint.name}: {e}"
-            )
+            self.logger.warning(f"Invalid value '{value}' for {datapoint.name}: {e}")
 
     def _is_device_complete(self, serial_number: str) -> bool:
         """Check if a device has all required datapoints.
@@ -242,15 +240,17 @@ class ConbusExportService:
             True if device is complete, False otherwise.
         """
         module = self.device_configs[serial_number]
-        return all([
-            module.module_type not in ("UNKNOWN", None, ""),
-            module.module_type_code is not None and module.module_type_code > 0,
-            module.link_number is not None and module.link_number > 0,
-            module.sw_version is not None,
-            module.hw_version is not None,
-            module.auto_report_status is not None,
-            module.module_number is not None,
-        ])
+        return all(
+            [
+                module.module_type not in ("UNKNOWN", None, ""),
+                module.module_type_code is not None and module.module_type_code > 0,
+                module.link_number is not None and module.link_number > 0,
+                module.sw_version is not None,
+                module.hw_version is not None,
+                module.auto_report_status is not None,
+                module.module_number is not None,
+            ]
+        )
 
     def _check_device_complete(self, serial_number: str) -> None:
         """Check if device has all datapoints and emit completion signal.
@@ -264,9 +264,7 @@ class ConbusExportService:
             self.on_device_exported.emit(module)
 
             # Check if all devices complete
-            if all(
-                self._is_device_complete(sn) for sn in self.discovered_devices
-            ):
+            if all(self._is_device_complete(sn) for sn in self.discovered_devices):
                 self.logger.debug("All devices complete")
                 self._finalize_export()
 
@@ -377,9 +375,7 @@ class ConbusExportService:
 
         # Check if any devices incomplete
         incomplete = [
-            sn
-            for sn in self.discovered_devices
-            if not self._is_device_complete(sn)
+            sn for sn in self.discovered_devices if not self._is_device_complete(sn)
         ]
 
         if incomplete:
