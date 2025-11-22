@@ -747,7 +747,7 @@ xp conbus datapoint read 0012345678 00
 - No params needed
 - No storage needed
 - Emit: `self.on_finish.emit(result)`
-- CLI: `service.on_finish.connect(on_finish)`
+- CLI: `service.on_finish.connect(on_finish)` + `service.stop_reactor()` in handler
 - Exit: `self.on_finish.disconnect()`
 
 ### Services with Callbacks to Migrate
