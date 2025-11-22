@@ -272,6 +272,7 @@ xp conbus event
 xp conbus event list
 xp conbus event raw
 
+xp conbus export
 
 xp conbus lightlevel
 xp conbus lightlevel get
