@@ -35,7 +35,11 @@ class TestConbusBlinkIntegration:
         mock_signal = MagicMock()
 
         def mock_connect(callback):
-            """Mock signal connect that immediately calls the callback."""
+            """Mock signal connect that immediately calls the callback.
+
+            Args:
+                callback: Callback function to invoke with mock response.
+            """
             callback(mock_response)
 
         mock_signal.connect = mock_connect
@@ -75,7 +79,11 @@ class TestConbusBlinkIntegration:
         mock_signal = MagicMock()
 
         def mock_connect(callback):
-            """Mock signal connect that immediately calls the callback."""
+            """Mock signal connect that immediately calls the callback.
+
+            Args:
+                callback: Callback function to invoke with mock response.
+            """
             callback(mock_response)
 
         mock_signal.connect = mock_connect
@@ -116,7 +124,11 @@ class TestConbusBlinkIntegration:
         mock_signal = MagicMock()
 
         def mock_connect(callback):
-            """Mock signal connect that immediately calls the callback."""
+            """Mock signal connect that immediately calls the callback.
+
+            Args:
+                callback: Callback function to invoke with mock response.
+            """
             callback(mock_response)
 
         mock_signal.connect = mock_connect
