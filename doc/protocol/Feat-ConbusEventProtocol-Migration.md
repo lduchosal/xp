@@ -30,7 +30,7 @@ Migrate 12 services from inheritance-based `ConbusProtocol` to composition-based
 ## Scope
 
 ### Services to Migrate
-1. `ConbusBlinkService` (src/xp/services/conbus/conbus_blink_service.py:22)
+1. [x] done: `ConbusBlinkService` (src/xp/services/conbus/conbus_blink_service.py:22)
 2. `ConbusRawService` (src/xp/services/conbus/conbus_raw_service.py:18)
 3. `ConbusCustomService` (src/xp/services/conbus/conbus_custom_service.py:22)
 4. `ConbusScanService` (src/xp/services/conbus/conbus_scan_service.py:21)
