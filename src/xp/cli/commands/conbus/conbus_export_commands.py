@@ -61,6 +61,9 @@ def export_conbus_config(ctx: click.Context) -> None:
 
         Args:
             result: Export result.
+
+        Raises:
+            ClickException: When export fails with error message from result.
         """
         # Try to stop reactor (may already be stopped)
         with suppress(Exception):
