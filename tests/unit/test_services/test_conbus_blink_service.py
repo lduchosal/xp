@@ -52,7 +52,6 @@ class TestConbusBlinkService:
         """Test service can be initialized with required dependencies."""
         assert service.serial_number == ""
         assert service.on_or_off == "none"
-        assert service.finish_callback is None
         assert service.service_response.success is False
         assert service.service_response.system_function == SystemFunction.NONE
         assert service.service_response.operation == "none"
@@ -211,15 +210,15 @@ class TestConbusBlinkService:
         assert service.service_response.received_telegrams == ["<R0012345999F18DFA>"]
         assert service.service_response.success is False
 
-    def test_telegram_received_with_callback(
+    def test_telegram_received_emits_signal(
         self, service, mock_telegram_service, mock_conbus_protocol
     ):
-        """Test telegram_received calls finish callback."""
+        """Test telegram_received emits on_finish signal."""
         from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.reply_telegram import ReplyTelegram
 
         finish_mock = Mock()
-        service.finish_callback = finish_mock
+        service.on_finish.connect(finish_mock)
         service.serial_number = "0012345008"
 
         # Mock reply telegram
@@ -247,9 +246,9 @@ class TestConbusBlinkService:
         finish_mock.assert_called_once_with(service.service_response)
 
     def test_failed(self, service):
-        """Test failed callback updates service response."""
+        """Test failed emits on_finish signal with error."""
         finish_mock = Mock()
-        service.finish_callback = finish_mock
+        service.on_finish.connect(finish_mock)
 
         service.failed("Connection timeout")
 
@@ -258,9 +257,9 @@ class TestConbusBlinkService:
         finish_mock.assert_called_once_with(service.service_response)
 
     def test_timeout(self, service):
-        """Test timeout callback updates service response."""
+        """Test timeout emits on_finish signal with error."""
         finish_mock = Mock()
-        service.finish_callback = finish_mock
+        service.on_finish.connect(finish_mock)
 
         service.timeout()
 

@@ -31,21 +31,15 @@ class TestConbusBlinkIntegration:
             operation="on",
         )
 
-        # Make the mock service call the callback immediately
-        def mock_send_blink_telegram(
-            serial_number, on_or_off, finish_callback, timeout_seconds=None
-        ):
-            """Test helper function.
+        # Mock on_finish signal that emits immediately when connected
+        mock_signal = MagicMock()
 
-            Args:
-                serial_number: Serial number of the module.
-                on_or_off: Blink on or off.
-                finish_callback: Callback when finished.
-                timeout_seconds: Timeout in seconds.
-            """
-            finish_callback(mock_response)
+        def mock_connect(callback):
+            """Mock signal connect that immediately calls the callback."""
+            callback(mock_response)
 
-        mock_service.send_blink_telegram.side_effect = mock_send_blink_telegram
+        mock_signal.connect = mock_connect
+        mock_service.on_finish = mock_signal
 
         # Mock the container
         mock_container = MagicMock()
@@ -77,21 +71,15 @@ class TestConbusBlinkIntegration:
             operation="off",
         )
 
-        # Make the mock service call the callback immediately
-        def mock_send_blink_telegram(
-            serial_number, on_or_off, finish_callback, timeout_seconds=None
-        ):
-            """Test helper function.
+        # Mock on_finish signal that emits immediately when connected
+        mock_signal = MagicMock()
 
-            Args:
-                serial_number: Serial number of the module.
-                on_or_off: Blink on or off.
-                finish_callback: Callback when finished.
-                timeout_seconds: Timeout in seconds.
-            """
-            finish_callback(mock_response)
+        def mock_connect(callback):
+            """Mock signal connect that immediately calls the callback."""
+            callback(mock_response)
 
-        mock_service.send_blink_telegram.side_effect = mock_send_blink_telegram
+        mock_signal.connect = mock_connect
+        mock_service.on_finish = mock_signal
 
         # Mock the container
         mock_container = MagicMock()
@@ -124,21 +112,15 @@ class TestConbusBlinkIntegration:
             error="Connection failed",
         )
 
-        # Make the mock service call the callback immediately
-        def mock_send_blink_telegram(
-            serial_number, on_or_off, finish_callback, timeout_seconds=None
-        ):
-            """Test helper function.
+        # Mock on_finish signal that emits immediately when connected
+        mock_signal = MagicMock()
 
-            Args:
-                serial_number: Serial number of the module.
-                on_or_off: Blink on or off.
-                finish_callback: Callback when finished.
-                timeout_seconds: Timeout in seconds.
-            """
-            finish_callback(mock_response)
+        def mock_connect(callback):
+            """Mock signal connect that immediately calls the callback."""
+            callback(mock_response)
 
-        mock_service.send_blink_telegram.side_effect = mock_send_blink_telegram
+        mock_signal.connect = mock_connect
+        mock_service.on_finish = mock_signal
 
         # Mock the container
         mock_container = MagicMock()

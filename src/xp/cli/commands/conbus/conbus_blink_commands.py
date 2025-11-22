@@ -115,6 +115,7 @@ def blink_all_off(ctx: Context) -> None:
             discovered_devices: Blink response with all devices.
         """
         click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
+        service.stop_reactor()
 
     def progress(message: str) -> None:
         """Handle progress updates during blink all off operation.
@@ -122,13 +123,16 @@ def blink_all_off(ctx: Context) -> None:
         Args:
             message: Progress message string.
         """
-        click.echo(message)
+        click.echo(message, nl=False)
 
     service: ConbusBlinkAllService = (
         ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)
     )
     with service:
-        service.send_blink_all_telegram("off", progress, on_finish, 0.5)
+        service.on_progress.connect(progress)
+        service.on_finish.connect(on_finish)
+        service.send_blink_all_telegram("off", 5)
+        service.start_reactor()
 
 
 @conbus_blink_all.command("on", short_help="Turn on blinking for all devices")
@@ -153,6 +157,7 @@ def blink_all_on(ctx: Context) -> None:
             discovered_devices: Blink response with all devices.
         """
         click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
+        service.stop_reactor()
 
     def progress(message: str) -> None:
         """Handle progress updates during blink all on operation.
@@ -160,10 +165,13 @@ def blink_all_on(ctx: Context) -> None:
         Args:
             message: Progress message string.
         """
-        click.echo(message)
+        click.echo(message, nl=False)
 
     service: ConbusBlinkAllService = (
         ctx.obj.get("container").get_container().resolve(ConbusBlinkAllService)
     )
     with service:
-        service.send_blink_all_telegram("on", progress, on_finish, 0.5)
+        service.on_progress.connect(progress)
+        service.on_finish.connect(on_finish)
+        service.send_blink_all_telegram("on", 5)
+        service.start_reactor()
