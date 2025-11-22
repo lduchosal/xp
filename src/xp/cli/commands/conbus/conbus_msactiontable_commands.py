@@ -78,9 +78,6 @@ def conbus_download_msactiontable(
 
         Args:
             error: Error message string.
-
-        Raises:
-            Abort: Always raised to abort the command on error.
         """
         click.echo(f"Error: {error}")
 

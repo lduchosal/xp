@@ -19,6 +19,11 @@ class ActionTableUploadService:
 
     Manages TCP socket connections, handles telegram generation and transmission,
     and processes server responses for action table uploads.
+
+    Attributes:
+        on_progress: Signal emitted with telegram frame when progress is made.
+        on_error: Signal emitted with error message string when an error occurs.
+        on_finish: Signal emitted with bool (True on success) when upload completes.
     """
 
     on_progress: Signal = Signal(str)

@@ -12,6 +12,10 @@ class ActionTableListService:
 
     Reads conson.yml and returns a list of all modules that have action table
     configurations defined.
+
+    Attributes:
+        on_finish: Signal emitted with dict[str, Any] when listing completes.
+        on_error: Signal emitted with error message string when an error occurs.
     """
 
     on_finish: Signal = Signal(object)  # dict[str, Any]
@@ -44,7 +48,6 @@ class ActionTableListService:
         Args:
             config_path: Optional path to conson.yml. Defaults to current directory.
         """
-
         # Default to current directory if not specified
         if config_path is None:
             config_path = Path.cwd() / "conson.yml"

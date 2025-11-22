@@ -57,8 +57,7 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
     with service:
         service.on_finish.connect(on_finish)
         service.query_datapoint(
-            serial_number=serial_number,
-            datapoint_type=DataPointType.AUTO_REPORT_STATUS
+            serial_number=serial_number, datapoint_type=DataPointType.AUTO_REPORT_STATUS
         )
 
 
@@ -80,7 +79,6 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
         xp conbus autoreport set 0123450001 on
         xp conbus autoreport set 0123450001 off
     """
-
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )

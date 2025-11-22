@@ -95,9 +95,9 @@ class TestActionTableService:
         assert service.serializer == mock_serializer
         assert service.telegram_service == mock_telegram_service
         assert service.serial_number == ""
-        assert service.progress_callback is None
-        assert service.error_callback is None
-        assert service.finish_callback is None
+        assert hasattr(service, "on_progress")
+        assert hasattr(service, "on_error")
+        assert hasattr(service, "on_finish")
         assert service.actiontable_data == []
 
     def test_connection_made(self, service):
@@ -125,7 +125,7 @@ class TestActionTableService:
 
         service.serial_number = "0123450001"
         mock_progress = Mock()
-        service.progress_callback = mock_progress
+        service.on_progress.connect(mock_progress)
 
         # Create mock telegram received event
         telegram_event = TelegramReceivedEvent.model_construct(
@@ -174,7 +174,7 @@ class TestActionTableService:
         service.actiontable_data = ["AAAAACAAAABAAAAC"]
 
         mock_finish = Mock()
-        service.finish_callback = mock_finish
+        service.on_finish.connect(mock_finish)
 
         # Mock serializer to return sample actiontable
         service.serializer.from_encoded_string.return_value = sample_actiontable
@@ -211,7 +211,7 @@ class TestActionTableService:
         expected_dict = asdict(sample_actiontable)
         expected_short = ["CP20 0 0 > 1 OFF;", "CP20 0 1 > 1 ~ON;"]
         mock_finish.assert_called_once_with(
-            sample_actiontable, expected_dict, expected_short
+            (sample_actiontable, expected_dict, expected_short)
         )
 
     def test_telegram_received_invalid_checksum(self, service):
@@ -267,30 +267,20 @@ class TestActionTableService:
     def test_failed_callback(self, service):
         """Test failed method calls error_callback."""
         mock_error = Mock()
-        service.error_callback = mock_error
+        service.on_error.connect(mock_error)
 
         service.failed("Connection timeout")
 
         mock_error.assert_called_once_with("Connection timeout")
 
     def test_start_method(self, service):
-        """Test start method sets up callbacks and timeout."""
-        mock_progress = Mock()
-        mock_error = Mock()
-        mock_finish = Mock()
-
+        """Test start method sets up serial number and timeout."""
         service.start(
             serial_number="0123450001",
-            progress_callback=mock_progress,
-            error_callback=mock_error,
-            finish_callback=mock_finish,
             timeout_seconds=10.0,
         )
 
         assert service.serial_number == "0123450001"
-        assert service.progress_callback == mock_progress
-        assert service.error_callback == mock_error
-        assert service.finish_callback == mock_finish
         assert service.conbus_protocol.timeout_seconds == 10.0
 
     def test_context_manager(self, service):

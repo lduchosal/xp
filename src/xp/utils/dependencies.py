@@ -177,8 +177,7 @@ class ServiceContainer:
         self.container.register(
             ConbusScanService,
             factory=lambda: ConbusScanService(
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
             ),
             scope=punq.Scope.singleton,
         )
@@ -281,9 +280,8 @@ class ServiceContainer:
         self.container.register(
             ConbusOutputService,
             factory=lambda: ConbusOutputService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 telegram_output_service=self.container.resolve(TelegramOutputService),
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )
@@ -291,9 +289,8 @@ class ServiceContainer:
         self.container.register(
             WriteConfigService,
             factory=lambda: WriteConfigService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 telegram_service=self.container.resolve(TelegramService),
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )
@@ -317,8 +314,7 @@ class ServiceContainer:
         self.container.register(
             ActionTableUploadService,
             factory=lambda: ActionTableUploadService(
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
                 telegram_service=self.container.resolve(TelegramService),
                 conson_config=self.container.resolve(ConsonModuleListConfig),
@@ -380,8 +376,7 @@ class ServiceContainer:
         self.container.register(
             ConbusRawService,
             factory=lambda: ConbusRawService(
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
             ),
             scope=punq.Scope.singleton,
         )

@@ -231,7 +231,7 @@ class TestConbusDatapointService:
         assert service.telegram_service == self.mock_telegram_service
         assert service.serial_number == ""
         assert service.datapoint_type is None
-        assert service.datapoint_finished_callback is None
+        assert hasattr(service, "on_finish")
         assert service.service_response.success is False
 
     def test_service_context_manager(self):

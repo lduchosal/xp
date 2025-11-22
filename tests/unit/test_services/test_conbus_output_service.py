@@ -121,8 +121,8 @@ def test_telegram_received_processes_ack(
     )
 
     # Track signal emission
-    signal_emitted = []
-    conbus_output_service.on_finish.connect(lambda x: signal_emitted.append(x))
+    signal_emitted: list = []
+    conbus_output_service.on_finish.connect(signal_emitted.append)
 
     conbus_output_service.telegram_received(event)
 
@@ -134,8 +134,8 @@ def test_telegram_received_processes_ack(
 def test_timeout_calls_failed(conbus_output_service):
     """Test that timeout calls failed with timeout message."""
     # Track signal emission
-    signal_emitted = []
-    conbus_output_service.on_finish.connect(lambda x: signal_emitted.append(x))
+    signal_emitted: list = []
+    conbus_output_service.on_finish.connect(signal_emitted.append)
 
     conbus_output_service.timeout()
 
@@ -148,8 +148,8 @@ def test_timeout_calls_failed(conbus_output_service):
 def test_failed_emits_signal(conbus_output_service):
     """Test that failed emits on_finish signal."""
     # Track signal emission
-    signal_emitted = []
-    conbus_output_service.on_finish.connect(lambda x: signal_emitted.append(x))
+    signal_emitted: list = []
+    conbus_output_service.on_finish.connect(signal_emitted.append)
 
     conbus_output_service.failed("Test error")
 
@@ -243,8 +243,8 @@ def test_succeed_emits_signal_with_output_telegram(conbus_output_service):
     )
 
     # Track signal emission
-    signal_emitted = []
-    conbus_output_service.on_finish.connect(lambda x: signal_emitted.append(x))
+    signal_emitted: list = []
+    conbus_output_service.on_finish.connect(signal_emitted.append)
 
     conbus_output_service.succeed(output_telegram)
 

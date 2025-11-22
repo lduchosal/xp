@@ -117,9 +117,9 @@ class TestActionTableUploadService:
         assert service.telegram_service == mock_telegram_service
         assert service.conson_config == mock_conson_config
         assert service.serial_number == ""
-        assert service.progress_callback is None
-        assert service.error_callback is None
-        assert service.success_callback is None
+        assert hasattr(service, "on_progress")
+        assert hasattr(service, "on_error")
+        assert hasattr(service, "on_finish")
         assert service.upload_data_chunks == []
         assert service.current_chunk_index == 0
 
@@ -353,7 +353,8 @@ class TestActionTableUploadChunkPrefix:
         service.serial_number = "0123450001"
         service.upload_data_chunks = ["CHUNK1", "CHUNK2"]
         service.current_chunk_index = 2  # All chunks sent
-        service.success_callback = Mock()
+        mock_finish = Mock()
+        service.on_finish.connect(mock_finish)
 
         # Create mock ACK reply
         mock_reply = Mock()
@@ -369,8 +370,8 @@ class TestActionTableUploadChunkPrefix:
             data_value="00",
         )
 
-        # Should call success callback
-        service.success_callback.assert_called_once()
+        # Should call finish signal with True
+        mock_finish.assert_called_once_with(True)
 
 
 class TestActionTableUploadFullSequence:
@@ -492,18 +493,16 @@ class TestActionTableUploadFullSequence:
 
         mock_conbus_protocol.send_telegram.side_effect = capture_telegram
 
-        # Setup callbacks
-        service.progress_callback = Mock()
-        service.error_callback = Mock()
-        service.success_callback = Mock()
+        # Setup signal connections
+        mock_progress = Mock()
+        mock_error = Mock()
+        mock_finish = Mock()
+        service.on_progress.connect(mock_progress)
+        service.on_error.connect(mock_error)
+        service.on_finish.connect(mock_finish)
 
         # Start upload
-        service.start(
-            serial_number="0020044974",
-            progress_callback=Mock(),
-            error_callback=Mock(),
-            success_callback=Mock(),
-        )
+        service.start(serial_number="0020044974")
 
         # Simulate connection made
         service.connection_made()
@@ -574,24 +573,21 @@ class TestActionTableUploadFullSequence:
             all_chunks == "A" * 960
         ), "Concatenated chunks should match serialized data"
 
-        # Verify: Success callback was called
-        service.success_callback.assert_called_once()
+        # Verify: Finish signal was called with True
+        mock_finish.assert_called_once_with(True)
 
     def test_upload_with_module_not_found(self, service, mock_conson_config):
         """Test upload fails when module is not found."""
         mock_conson_config.find_module.return_value = None
 
-        error_callback = Mock()
-        service.start(
-            serial_number="9999999999",
-            progress_callback=Mock(),
-            error_callback=error_callback,
-            success_callback=Mock(),
-        )
+        mock_error = Mock()
+        service.on_error.connect(mock_error)
 
-        # Verify error callback was called with appropriate message
-        error_callback.assert_called_once()
-        assert "not found" in error_callback.call_args[0][0].lower()
+        service.start(serial_number="9999999999")
+
+        # Verify error signal was called with appropriate message
+        mock_error.assert_called_once()
+        assert "not found" in mock_error.call_args[0][0].lower()
 
     def test_upload_with_invalid_action_table(
         self, service, mock_serializer, mock_conson_config
@@ -607,14 +603,11 @@ class TestActionTableUploadFullSequence:
             "Invalid action table format"
         )
 
-        error_callback = Mock()
-        service.start(
-            serial_number="0020044974",
-            progress_callback=Mock(),
-            error_callback=error_callback,
-            success_callback=Mock(),
-        )
+        mock_error = Mock()
+        service.on_error.connect(mock_error)
 
-        # Verify error callback was called
-        error_callback.assert_called_once()
-        assert "invalid" in error_callback.call_args[0][0].lower()
+        service.start(serial_number="0020044974")
+
+        # Verify error signal was called
+        mock_error.assert_called_once()
+        assert "invalid" in mock_error.call_args[0][0].lower()

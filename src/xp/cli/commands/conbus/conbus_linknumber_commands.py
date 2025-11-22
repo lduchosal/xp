@@ -36,7 +36,6 @@ def set_linknumber_command(
         \b
         xp conbus linknumber set 0123450001 25
     """
-
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )

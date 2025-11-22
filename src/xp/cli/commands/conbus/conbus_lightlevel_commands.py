@@ -39,7 +39,6 @@ def xp_lightlevel_set(
         xp conbus lightlevel set 0123450001 2 50   # Set output 2 to 50%
         xp conbus lightlevel set 0011223344 0 100  # Set output 0 to 100%
     """
-
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )
@@ -86,7 +85,6 @@ def xp_lightlevel_off(
         xp conbus lightlevel off 0123450001 2   # Turn off output 2
         xp conbus lightlevel off 0011223344 0   # Turn off output 0
     """
-
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )
@@ -134,7 +132,6 @@ def xp_lightlevel_on(
         xp conbus lightlevel on 0123450001 2   # Turn on output 2 (80%)
         xp conbus lightlevel on 0011223344 0   # Turn on output 0 (80%)
     """
-
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )

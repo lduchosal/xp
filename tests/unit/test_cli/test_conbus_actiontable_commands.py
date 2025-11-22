@@ -44,32 +44,62 @@ class TestConbusActionTableCommands:
         return ActionTable(entries=entries)
 
     def _create_mock_service(self, actiontable=None, error=None):
-        """Create mock service with callback pattern.
+        """Create mock service with signal pattern.
 
         Args:
             actiontable: Optional ActionTable to return on success.
             error: Optional error message to trigger error callback.
 
         Returns:
-            Mock service object configured with callbacks.
+            Mock service object configured with signals.
         """
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        def mock_start(
-            serial_number, progress_callback, finish_callback, error_callback
-        ):
-            """Execute mock start operation.
+        # Create mock signals
+        mock_service.on_progress = Mock()
+        mock_service.on_finish = Mock()
+        mock_service.on_error = Mock()
+
+        # Track connected callbacks
+        progress_callbacks = []
+        finish_callbacks = []
+        error_callbacks = []
+
+        def connect_progress(callback):
+            """Mock connect for progress signal.
 
             Args:
-                serial_number: Serial number for the operation.
-                progress_callback: Callback for progress updates.
-                finish_callback: Callback for successful completion.
-                error_callback: Callback for error conditions.
+                callback: Callback function to connect.
             """
+            progress_callbacks.append(callback)
+
+        def connect_finish(callback):
+            """Mock connect for finish signal.
+
+            Args:
+                callback: Callback function to connect.
+            """
+            finish_callbacks.append(callback)
+
+        def connect_error(callback):
+            """Mock connect for error signal.
+
+            Args:
+                callback: Callback function to connect.
+            """
+            error_callbacks.append(callback)
+
+        mock_service.on_progress.connect = connect_progress
+        mock_service.on_finish.connect = connect_finish
+        mock_service.on_error.connect = connect_error
+
+        def mock_start_reactor():
+            """Execute mock start_reactor operation."""
             if error:
-                error_callback(error)
+                for callback in error_callbacks:
+                    callback(error)
             else:
                 if actiontable:
                     # Generate dict and short format like the service does
@@ -77,9 +107,12 @@ class TestConbusActionTableCommands:
                     actiontable_short = ActionTableSerializer.format_decoded_output(
                         actiontable
                     )
-                    finish_callback(actiontable, actiontable_dict, actiontable_short)
+                    for callback in finish_callbacks:
+                        callback((actiontable, actiontable_dict, actiontable_short))
 
-        mock_service.start.side_effect = mock_start
+        mock_service.start = Mock()
+        mock_service.start_reactor.side_effect = mock_start_reactor
+        mock_service.stop_reactor = Mock()
         return mock_service
 
     def test_conbus_download_actiontable_success(self, runner, sample_actiontable):
@@ -396,13 +429,34 @@ class TestConbusActionTableCommands:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        def mock_start(finish_callback, error_callback):
-            """Execute mock start operation.
+        # Create mock signals
+        mock_service.on_finish = Mock()
+        mock_service.on_error = Mock()
+
+        finish_callbacks = []
+        error_callbacks = []
+
+        def connect_finish(callback):
+            """Mock connect for finish signal.
 
             Args:
-                finish_callback: Callback for successful completion.
-                error_callback: Callback for error handling.
+                callback: Callback function to connect.
             """
+            finish_callbacks.append(callback)
+
+        def connect_error(callback):
+            """Mock connect for error signal.
+
+            Args:
+                callback: Callback function to connect.
+            """
+            error_callbacks.append(callback)
+
+        mock_service.on_finish.connect = connect_finish
+        mock_service.on_error.connect = connect_error
+
+        def mock_start():
+            """Execute mock start operation."""
             module_list = {
                 "modules": [
                     {"serial_number": "0020044991", "module_type": "XP24"},
@@ -410,9 +464,10 @@ class TestConbusActionTableCommands:
                 ],
                 "total": 2,
             }
-            finish_callback(module_list)
+            for callback in finish_callbacks:
+                callback(module_list)
 
-        mock_service.start.side_effect = mock_start
+        mock_service.start = Mock(side_effect=mock_start)
 
         # Setup mock container
         mock_container = Mock()
@@ -441,17 +496,39 @@ class TestConbusActionTableCommands:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        def mock_start(finish_callback, error_callback):
-            """Execute mock start operation.
+        # Create mock signals
+        mock_service.on_finish = Mock()
+        mock_service.on_error = Mock()
+
+        finish_callbacks = []
+        error_callbacks = []
+
+        def connect_finish(callback):
+            """Mock connect for finish signal.
 
             Args:
-                finish_callback: Callback for successful completion.
-                error_callback: Callback for error handling.
+                callback: Callback function to connect.
             """
-            module_list = {"modules": [], "total": 0}
-            finish_callback(module_list)
+            finish_callbacks.append(callback)
 
-        mock_service.start.side_effect = mock_start
+        def connect_error(callback):
+            """Mock connect for error signal.
+
+            Args:
+                callback: Callback function to connect.
+            """
+            error_callbacks.append(callback)
+
+        mock_service.on_finish.connect = connect_finish
+        mock_service.on_error.connect = connect_error
+
+        def mock_start():
+            """Execute mock start operation."""
+            module_list = {"modules": [], "total": 0}
+            for callback in finish_callbacks:
+                callback(module_list)
+
+        mock_service.start = Mock(side_effect=mock_start)
 
         # Setup mock container
         mock_container = Mock()
@@ -478,16 +555,38 @@ class TestConbusActionTableCommands:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        def mock_start(finish_callback, error_callback):
-            """Execute mock start operation.
+        # Create mock signals
+        mock_service.on_finish = Mock()
+        mock_service.on_error = Mock()
+
+        finish_callbacks = []
+        error_callbacks = []
+
+        def connect_finish(callback):
+            """Mock connect for finish signal.
 
             Args:
-                finish_callback: Callback for successful completion.
-                error_callback: Callback for error handling.
+                callback: Callback function to connect.
             """
-            error_callback("Error: conson.yml not found in current directory")
+            finish_callbacks.append(callback)
 
-        mock_service.start.side_effect = mock_start
+        def connect_error(callback):
+            """Mock connect for error signal.
+
+            Args:
+                callback: Callback function to connect.
+            """
+            error_callbacks.append(callback)
+
+        mock_service.on_finish.connect = connect_finish
+        mock_service.on_error.connect = connect_error
+
+        def mock_start():
+            """Execute mock start operation."""
+            for callback in error_callbacks:
+                callback("Error: conson.yml not found in current directory")
+
+        mock_service.start = Mock(side_effect=mock_start)
 
         # Setup mock container
         mock_container = Mock()

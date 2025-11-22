@@ -19,6 +19,11 @@ class ActionTableService:
 
     Manages TCP socket connections, handles telegram generation and transmission,
     and processes server responses for action table downloads.
+
+    Attributes:
+        on_progress: Signal emitted with telegram frame when progress is made.
+        on_error: Signal emitted with error message string when an error occurs.
+        on_finish: Signal emitted with (ActionTable, Dict[str, Any], list[str]) when complete.
     """
 
     on_progress: Signal = Signal(str)
