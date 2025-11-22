@@ -3,25 +3,48 @@
 ## TL;DR
 Migrate 12 services from inheritance-based `ConbusProtocol` to composition-based `ConbusEventProtocol`. **Key changes**: Constructor takes protocol parameter, connect signals in `__init__` and disconnect in `__exit__`, delegate reactor lifecycle to protocol, use context manager in CLI.
 
+**Estimated Time**: 2-3 hours per service
+**Order**: Follow checklist sequentially (1’10)
+
+##   CRITICAL: Read This First
+
+### Breaking Changes
+1. **CLI Update Required**: Commands MUST add explicit `service.start_reactor()` call after setup
+2. **Context Manager**: Services MUST implement `__enter__`/`__exit__` (no longer inherited)
+3. **Method Signature**: `timeout()` changes from `-> bool` to `-> None`
+4. **Constructor**: Takes `ConbusEventProtocol` instead of `ConbusClientConfig` + `reactor`
+5. **Lifecycle Methods**: Must add `set_timeout()`, `start_reactor()`, `stop_reactor()`
+
+### Common Mistakes to Avoid
+- L DON'T call `stop_reactor()` in `timeout()` - protocol handles it automatically
+- L DON'T call `start_reactor()` in service methods - caller's responsibility
+- L DON'T use `bytes` for `telegram_sent` parameter - signal emits `str`
+- L DON'T forget to disconnect signals in `__exit__` - causes memory leaks
+- L DON'T use `self._conbus_protocol` - it's `self.conbus_protocol` (no underscore)
+-  DO set timeout on protocol: `self.conbus_protocol.timeout_seconds = timeout_seconds`
+-  DO reset state in `__enter__` for singleton reuse
+-  DO maintain singleton scope in container registration
+-  DO call `self.stop_reactor()` in `__exit__`
+
 ## Scope
 
 ### Services to Migrate
-- `MsActionTableService` (src/xp/services/conbus/actiontable/msactiontable_service.py:34)
-- `ActionTableService` (src/xp/services/conbus/actiontable/actiontable_download_service.py:19)
-- `ActionTableUploadService` (src/xp/services/conbus/actiontable/actiontable_upload_service.py:18)
-- `ConbusBlinkService` (src/xp/services/conbus/conbus_blink_service.py:22)
-- `ConbusBlinkAllService` (src/xp/services/conbus/conbus_blink_all_service.py:22)
-- `ConbusCustomService` (src/xp/services/conbus/conbus_custom_service.py:22)
-- `ConbusDatapointService` (src/xp/services/conbus/conbus_datapoint_service.py:22)
-- `ConbusDatapointQueryAllService` (src/xp/services/conbus/conbus_datapoint_queryall_service.py:22)
-- `ConbusOutputService` (src/xp/services/conbus/conbus_output_service.py:33)
-- `ConbusRawService` (src/xp/services/conbus/conbus_raw_service.py:18)
-- `ConbusScanService` (src/xp/services/conbus/conbus_scan_service.py:21)
-- `WriteConfigService` (src/xp/services/conbus/write_config_service.py:22)
+1. `ConbusBlinkService` (src/xp/services/conbus/conbus_blink_service.py:22)
+2. `ConbusRawService` (src/xp/services/conbus/conbus_raw_service.py:18)
+3. `ConbusCustomService` (src/xp/services/conbus/conbus_custom_service.py:22)
+4. `ConbusScanService` (src/xp/services/conbus/conbus_scan_service.py:21)
+5. `ConbusDatapointService` (src/xp/services/conbus/conbus_datapoint_service.py:22)
+6. `ConbusDatapointQueryAllService` (src/xp/services/conbus/conbus_datapoint_queryall_service.py:22)
+7. `WriteConfigService` (src/xp/services/conbus/write_config_service.py:22)
+8. `ConbusOutputService` (src/xp/services/conbus/conbus_output_service.py:33)
+9. `ConbusBlinkAllService` (src/xp/services/conbus/conbus_blink_all_service.py:22)
+10. `ActionTableService` (src/xp/services/conbus/actiontable/actiontable_download_service.py:19)
+11. `ActionTableUploadService` (src/xp/services/conbus/actiontable/actiontable_upload_service.py:18)
+12. `MsActionTableService` (src/xp/services/conbus/actiontable/msactiontable_service.py:34)
 
 ### Reference Implementation
-- ConbusDiscoverService (src/xp/services/conbus/conbus_discover_service.py:23)
-- Migration spec (doc/conbus/Refactor-ConbusEventProtocol-For-ConbusReceiveService.md)
+- **ConbusDiscoverService** (src/xp/services/conbus/conbus_discover_service.py:23) - Primary pattern
+- **ConbusReceiveService** (src/xp/services/conbus/conbus_receive_service.py:18) - Already migrated
 
 ## Architecture Changes
 
@@ -45,7 +68,7 @@ class MsActionTableService(ConbusProtocol):
         return False  # Stop reactor
 ```
 
-**Issues**:
+**Problems**:
 - Tight coupling to protocol lifecycle
 - Cannot reuse protocol across services
 - Hard to test (requires full reactor stack)
@@ -62,16 +85,45 @@ class MsActionTableService:
         self.conbus_protocol = conbus_protocol
         self.telegram_service = telegram_service
 
-        # Connect signals
+        # Connect signals in __init__
         self.conbus_protocol.on_connection_made.connect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.connect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.connect(self.telegram_received)
         self.conbus_protocol.on_timeout.connect(self.timeout)
+        self.conbus_protocol.on_failed.connect(self.failed)
 
-    def connection_made(self) -> None:  # Renamed
+    def connection_made(self) -> None:  # Renamed from connection_established
         self.conbus_protocol.send_telegram(...)
 
     def timeout(self) -> None:  # No return value
         self.failed("Timeout")
-        # Protocol handles reactor stop
+        # Protocol handles reactor stop automatically
+
+    def set_timeout(self, timeout_seconds: float) -> None:
+        self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def start_reactor(self) -> None:
+        self.conbus_protocol.start_reactor()
+
+    def stop_reactor(self) -> None:
+        self.conbus_protocol.stop_reactor()
+
+    def __enter__(self) -> "MsActionTableService":
+        # Reset state for singleton reuse
+        self.response = ServiceResponse(success=False)
+        self.msactiontable_data = []
+        return self
+
+    def __exit__(self, _exc_type, _exc_val, _exc_tb) -> None:
+        # Disconnect all signals
+        self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+        self.conbus_protocol.on_timeout.disconnect(self.timeout)
+        self.conbus_protocol.on_failed.disconnect(self.failed)
+        # Disconnect service signals if any
+        # self.on_progress.disconnect()
+        self.stop_reactor()
 ```
 
 **Benefits**:
@@ -82,53 +134,70 @@ class MsActionTableService:
 
 ## Migration Checklist
 
-### Per Service
-
-#### 1. Class Definition
-- [ ] Remove inheritance: `class Service(ConbusProtocol)` â†’ `class Service`
+### 1. Class Definition [CRITICAL - DO FIRST]
+- [ ] Remove inheritance: `class Service(ConbusProtocol)` ’ `class Service`
 - [ ] Keep service-specific state (callbacks, response models, etc.)
 
-#### 2. Constructor
+### 2. Constructor Refactoring [CRITICAL]
 - [ ] Replace `cli_config: ConbusClientConfig, reactor: PosixReactorBase` with `conbus_protocol: ConbusEventProtocol`
 - [ ] Remove `super().__init__(cli_config, reactor)` call
 - [ ] Store protocol: `self.conbus_protocol = conbus_protocol`
 - [ ] Keep other dependencies (telegram_service, serializers, etc.)
-- [ ] Connect signals after storing protocol
+- [ ] Initialize response models and state
+- [ ] Connect signals after storing protocol (next step)
 
-#### 3. Signal Connections (in `__init__`)
-- [ ] `on_connection_made.connect(self.connection_made)`
-- [ ] `on_telegram_sent.connect(self.telegram_sent)`
-- [ ] `on_telegram_received.connect(self.telegram_received)`
-- [ ] `on_timeout.connect(self.timeout)`
-- [ ] `on_failed.connect(self.failed)`
+### 3. Signal Connections [CRITICAL]
+Connect event handlers in `__init__` after storing protocol reference:
+- [ ] `self.conbus_protocol.on_connection_made.connect(self.connection_made)`
+- [ ] `self.conbus_protocol.on_telegram_sent.connect(self.telegram_sent)`
+- [ ] `self.conbus_protocol.on_telegram_received.connect(self.telegram_received)`
+- [ ] `self.conbus_protocol.on_timeout.connect(self.timeout)`
+- [ ] `self.conbus_protocol.on_failed.connect(self.failed)`
+- [ ] Note: Only connect signals the service actually uses (not all services use all 5)
 
-#### 4. Method Updates
-- [ ] Rename: `connection_established()` â†’ `connection_made()`
-- [ ] `telegram_sent(str)` - Already correct signature
-- [ ] `telegram_received(TelegramReceivedEvent)` - No changes
-- [ ] `timeout()` - Change `-> bool` to `-> None`
+### 4. Method Updates [IMPORTANT]
+- [ ] Rename: `connection_established()` ’ `connection_made()`
+- [ ] `telegram_sent(telegram_sent: str)` - Parameter is `str`, not `bytes`
+- [ ] `telegram_received(telegram_received: TelegramReceivedEvent)` - No changes needed
+- [ ] `timeout()` - Change return type from `-> bool` to `-> None`
 - [ ] `timeout()` - Remove `return False` statement
-- [ ] `timeout()` - Remove `self._stop_reactor()` calls
-- [ ] `failed(str)` - Remove `self._stop_reactor()` calls
+- [ ] `timeout()` - Remove any `self._stop_reactor()` calls
+- [ ] `failed(message: str)` - Remove `self._stop_reactor()` calls
 - [ ] Replace `self.send_telegram()` with `self.conbus_protocol.send_telegram()`
 - [ ] Replace `self.timeout_seconds` with `self.conbus_protocol.timeout_seconds`
 
-#### 5. Lifecycle Delegation Methods
-- [ ] Add `set_timeout(timeout_seconds: float)` - delegates to `self.conbus_protocol.timeout_seconds = timeout_seconds`
-- [ ] Add `start_reactor()` - delegates to `self.conbus_protocol.start_reactor()`
-- [ ] Add `stop_reactor()` - delegates to `self.conbus_protocol.stop_reactor()`
+### 5. Lifecycle Delegation Methods [CRITICAL]
+Add these delegation methods to all services:
+- [ ] Add `set_timeout(timeout_seconds: float)`:
+  ```python
+  def set_timeout(self, timeout_seconds: float) -> None:
+      """Set operation timeout."""
+      self.conbus_protocol.timeout_seconds = timeout_seconds
+  ```
+- [ ] Add `start_reactor()`:
+  ```python
+  def start_reactor(self) -> None:
+      """Start the reactor."""
+      self.conbus_protocol.start_reactor()
+  ```
+- [ ] Add `stop_reactor()`:
+  ```python
+  def stop_reactor(self) -> None:
+      """Stop the reactor."""
+      self.conbus_protocol.stop_reactor()
+  ```
 - [ ] Optional: Add `set_event_loop(event_loop)` - only if service needs async integration
 - [ ] Update existing `start()` or `send_*()` methods - remove internal `self.start_reactor()` calls
 
-#### 6. Context Manager
+### 6. Context Manager [CRITICAL - BLOCKS CLI]
 - [ ] Add `__enter__(self) -> "ServiceName"` returning `self`
 - [ ] Reset state in `__enter__` for singleton reuse:
   - Response/result models: Create new instance (e.g., `self.response = ServiceResponse(success=False)`)
   - Accumulated lists/dicts: Clear or reinitialize to empty (`[]`, `{}`)
   - Operation-specific state: Reset to defaults (serial_number, counters, etc.)
   - Callbacks: Keep if set via constructor, clear if set via start() methods
-- [ ] Add `__exit__(self, _exc_type, _exc_val, _exc_tb)` disconnecting all signals
-- [ ] Disconnect protocol signals:
+- [ ] Add `__exit__(self, _exc_type, _exc_val, _exc_tb) -> None`
+- [ ] Disconnect protocol signals in `__exit__`:
   ```python
   self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
   self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
@@ -137,84 +206,149 @@ class MsActionTableService:
   self.conbus_protocol.on_failed.disconnect(self.failed)
   ```
 - [ ] Disconnect service-specific signals (if any): `self.on_progress.disconnect()`, etc.
-- [ ] Call `self.stop_reactor()` in `__exit__`
+- [ ] **CRITICAL**: Call `self.stop_reactor()` at end of `__exit__`
 
-#### 7. Dependencies Registration
-- [ ] Update factory in `src/xp/utils/dependencies.py`
-- [ ] Change constructor parameters
+### 7. Dependencies Registration [CRITICAL - BLOCKS CLI]
+Update dependency injection in `src/xp/utils/dependencies.py`:
+- [ ] Update factory lambda for the service
 - [ ] Before: `Service(cli_config=..., reactor=...)`
-- [ ] After: `Service(conbus_protocol=self.container.resolve(ConbusEventProtocol))`
-- [ ] Keep singleton scope: `punq.Scope.singleton`
-- [ ] Note: Keep old `ConbusProtocol` registration during migration (other services may still use it)
-- [ ] Final step (after all 12 services): Remove `ConbusProtocol` registration from dependencies.py
+- [ ] After: `Service(conbus_protocol=self.container.resolve(ConbusEventProtocol), ...)`
+- [ ] Keep singleton scope: `scope=punq.Scope.singleton`
+- [ ] Keep other dependencies unchanged (telegram_service, serializers, etc.)
+- [ ] Note: Keep old `ConbusProtocol` registration during migration (other services may use it)
+- [ ] Final step (after all 12 services): Remove `ConbusProtocol` registration
 
-#### 8. CLI Commands
+### 8. CLI Commands [CRITICAL - BLOCKS CLI]
+Update CLI command for the service:
 - [ ] **Mandatory**: Use `with service:` context manager (ensures signal cleanup)
-- [ ] Connect service-specific signals inside context (if any)
-- [ ] Call setup methods: `service.set_timeout(seconds)`
-- [ ] Add explicit `service.start_reactor()` after setup
 - [ ] Pattern:
   ```python
   with service:
-      # Connect signals (if service provides them)
+      # Connect service-specific signals (if any)
       service.on_finish.connect(callback)
+      service.on_progress.connect(progress)
       # Setup
       service.set_timeout(5)
       # Start (blocks until completion)
       service.start_reactor()
   # Automatic cleanup via __exit__
   ```
+- [ ] Verify context manager usage still works
+- [ ] Verify command interface remains unchanged for users
 
-#### 9. Tests
-- [ ] Create/update unit tests
-- [ ] Mock ConbusEventProtocol for testing
-- [ ] Test signal connections
-- [ ] Test all event handlers
-- [ ] Test context manager (state reset, signal disconnection)
-- [ ] Update integration tests if needed
+### 9. Unit Testing [IMPORTANT - PREVENTS REGRESSION]
+Create or update `tests/unit/test_services/test_<service>_service.py`:
+- [ ] Create fixture for mock `ConbusEventProtocol`
+- [ ] Test signal connections established in `__init__`
+- [ ] Test `connection_made()` behavior
+- [ ] Test `telegram_sent()` parameter type (str, not bytes)
+- [ ] Test `telegram_received()` updates response and calls callbacks
+- [ ] Test `timeout()` return type is None
+- [ ] Test `failed()` sets error message
+- [ ] Test `set_timeout()` delegates to protocol
+- [ ] Test `start_reactor()` delegates to protocol
+- [ ] Test `stop_reactor()` delegates to protocol
+- [ ] Test `__enter__` resets state
+- [ ] Test `__exit__` disconnects all signals and stops reactor
 
-#### 10. Validation
-- [ ] `pdm typecheck` - Type safety
-- [ ] `pdm lint` - Code style
-- [ ] `pdm format` - Formatting
-- [ ] `pdm test-quick` - Unit tests
-- [ ] `pdm check` - Full validation
-- [ ] Manual CLI test for affected commands
+### 10. Quality Validation [IMPORTANT]
+Run all quality checks:
+- [ ] `pdm typecheck` - Verify all type hints correct
+- [ ] `pdm lint` - Ensure code style compliance
+- [ ] `pdm format` - Apply formatting
+- [ ] `pdm test-quick` - Validate unit tests pass
+- [ ] `pdm check` - Full quality validation suite
+- [ ] Manual CLI test: `xp conbus <command> <args>`
+- [ ] Verify 75% minimum test coverage maintained
 
 ## Service-Specific Notes
 
-### MsActionTableService
-- Complex serializer dependencies (xp20, xp24, xp33)
-- State: `msactiontable_data: list[str]`
-- Reset in `__enter__`: Clear `msactiontable_data`
+### ConbusBlinkService (Priority 1)
+**Signals used**: connection_made, telegram_received, timeout, failed (4/5)
+**Service signals**: None
+**State reset in `__enter__`**:
+- `self.service_response = ConbusBlinkResponse(success=False, ...)`
+- `self.serial_number = ""`
+- `self.on_or_off = "none"`
 
-### ActionTableService & ActionTableUploadService
-- File I/O operations
-- Reset in `__enter__`: Clear data buffers
+### ConbusRawService (Priority 2)
+**Signals used**: All 5
+**Service signals**: None
+**State reset in `__enter__`**:
+- `self.raw_response = ConbusRawResponse(success=False)`
+- Clear received telegrams list
 
-### ConbusBlinkService & ConbusBlinkAllService
-- Simple request/response pattern
-- Minimal state
+### ConbusCustomService (Priority 3)
+**Signals used**: All 5
+**Service signals**: None
+**State reset in `__enter__`**:
+- `self.custom_response = ConbusCustomResponse(success=False)`
 
-### ConbusDatapointService & ConbusDatapointQueryAllService
-- Datapoint query/response handling
-- Reset in `__enter__`: Clear response collections
+### ConbusScanService (Priority 4)
+**Signals used**: All 5
+**Service signals**: on_progress, on_finish
+**State reset in `__enter__`**:
+- `self.scan_result = ConbusScanResponse(success=False)`
+- `self.discovered_devices = []`
 
-### ConbusOutputService
-- Output state management
-- Reset in `__enter__`: Clear output state
+### ConbusDatapointService (Priority 5)
+**Signals used**: All 5
+**Service signals**: None
+**State reset in `__enter__`**:
+- `self.datapoint_response = ConbusDatapointResponse(success=False)`
 
-### ConbusRawService
-- Raw telegram handling
-- Minimal changes needed
+### ConbusDatapointQueryAllService (Priority 6)
+**Signals used**: All 5
+**Service signals**: on_progress
+**State reset in `__enter__`**:
+- `self.query_all_response = ConbusDatapointQueryAllResponse(success=False)`
+- `self.datapoints = []`
 
-### ConbusScanService
-- Scan state and progress
-- Reset in `__enter__`: Clear discovered devices
+### WriteConfigService (Priority 7)
+**Signals used**: All 5
+**Service signals**: None
+**State reset in `__enter__`**:
+- `self.write_config_response = WriteConfigResponse(success=False)`
 
-### WriteConfigService
-- Config write operations
-- Reset in `__enter__`: Clear write state
+### ConbusOutputService (Priority 8)
+**Signals used**: All 5
+**Service signals**: None
+**State reset in `__enter__`**:
+- `self.output_response = ConbusOutputResponse(success=False)`
+- `self.output_state = ""`
+
+### ConbusBlinkAllService (Priority 9)
+**Signals used**: All 5
+**Service signals**: on_progress
+**State reset in `__enter__`**:
+- `self.blink_all_response = ConbusBlinkAllResponse(success=False)`
+- `self.device_results = []`
+
+### ActionTableService (Priority 10)
+**Signals used**: All 5
+**Service signals**: None
+**State reset in `__enter__`**:
+- `self.action_table_response = ActionTableResponse(success=False)`
+- `self.action_table_data = []`
+
+### ActionTableUploadService (Priority 11)
+**Signals used**: All 5
+**Service signals**: None
+**State reset in `__enter__`**:
+- `self.upload_response = ActionTableUploadResponse(success=False)`
+- `self.upload_buffer = []`
+
+### MsActionTableService (Priority 12 - Most Complex)
+**Signals used**: All 5
+**Service signals**: None
+**Complex serializer dependencies**: xp20, xp24, xp33
+**State reset in `__enter__`**:
+- `self.msactiontable_data = []`
+- `self.serial_number = ""`
+- `self.xpmoduletype = ""`
+- `self.progress_callback = None`
+- `self.error_callback = None`
+- `self.finish_callback = None`
 
 ## Common Patterns
 
@@ -266,8 +400,38 @@ def start(self, ..., timeout_seconds: float) -> None:
         self.conbus_protocol.timeout_seconds = timeout_seconds
     # Caller invokes start_reactor()
 
+def set_timeout(self, timeout_seconds: float) -> None:
+    self.conbus_protocol.timeout_seconds = timeout_seconds
+
 def start_reactor(self) -> None:
     self.conbus_protocol.start_reactor()
+```
+
+### Context Manager Pattern
+```python
+def __enter__(self) -> "ServiceName":
+    """Enter context manager - reset state for singleton reuse."""
+    # Reset response models (create new instance)
+    self.response = ServiceResponse(success=False)
+    # Clear accumulated data
+    self.data_buffer = []
+    # Reset operation-specific state
+    self.serial_number = ""
+    return self
+
+def __exit__(self, _exc_type, _exc_val, _exc_tb) -> None:
+    """Exit context manager - cleanup signals and reactor."""
+    # Disconnect protocol signals
+    self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
+    self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+    self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+    self.conbus_protocol.on_timeout.disconnect(self.timeout)
+    self.conbus_protocol.on_failed.disconnect(self.failed)
+    # Disconnect service signals (if any)
+    # self.on_progress.disconnect()
+    # self.on_finish.disconnect()
+    # Stop reactor
+    self.stop_reactor()
 ```
 
 ## Migration Order
@@ -286,34 +450,6 @@ Recommended order (simplest to most complex):
 10. **ActionTableService** - File operations
 11. **ActionTableUploadService** - Upload logic
 12. **MsActionTableService** - Most complex (multiple serializers)
-
-## Validation
-
-### Per Service
-```bash
-# After each service migration
-pdm typecheck
-pdm lint
-pdm format
-pdm test-quick
-
-# Test CLI command
-xp conbus <command> <args>
-```
-
-### Final
-```bash
-# All quality checks
-pdm check
-
-# Full test suite
-pdm test
-
-# Integration tests
-xp conbus blink 0012345678 on
-xp conbus scan
-xp conbus datapoint read 0012345678 00
-```
 
 ## Important Notes
 
@@ -358,17 +494,102 @@ def timeout(self) -> None:
 - TypeError raised immediately if signature mismatch
 - Fail fast during initialization
 
-**Common Issues**
+## Troubleshooting
 
-| Issue                        | Cause                                     | Fix                                            |
-|------------------------------|-------------------------------------------|------------------------------------------------|
-| Cannot resolve Service       | Missing registration in dependencies.py   | Add service registration before use            |
-| Signal connection TypeError  | Handler signature mismatch                | Check signal definition in ConbusEventProtocol |
-| Memory leak                  | Signals not disconnected                  | Verify `__exit__` calls all `.disconnect()`    |
-| State persists between calls | State not reset in `__enter__`            | Reset all mutable state                        |
+### Reactor doesn't stop after timeout
+**Symptom**: Service hangs, never calls finish_callback
+**Cause**: Signal not connected properly
+**Fix**: Verify `self.conbus_protocol.on_timeout.connect(self.timeout)` in `__init__`
+**Debug**: Add logging in `timeout()` to verify it's being called
 
-## Success Criteria
+### TypeError: 'bytes' object has no attribute
+**Symptom**: TypeError when telegram_sent signal emits
+**Cause**: Method signature mismatch - expecting bytes instead of str
+**Fix**: Verify `telegram_sent` parameter type is `str`, not `bytes`
+**Note**: Signal emits `str`, not `bytes`
 
+### Service state persists between calls
+**Symptom**: Previous data appears in new requests
+**Cause**: Singleton scope with mutable state not being reset
+**Fix**: Reset all mutable state in `__enter__` method
+**Pattern**: `self.response = ServiceResponse(success=False)`
+
+### Memory leak in long-running process
+**Symptom**: Memory grows over time with repeated calls
+**Cause**: Signals not disconnected in `__exit__`
+**Fix**: Add disconnect calls in `__exit__` for all signals
+**Verify**: Monitor memory with repeated CLI calls
+
+### Reactor doesn't stop on exit
+**Symptom**: Program hangs after context manager exits
+**Cause**: Missing `self.stop_reactor()` call in `__exit__`
+**Fix**: Add `self.stop_reactor()` as last line of `__exit__`
+
+### Import errors after refactoring
+**Symptom**: ModuleNotFoundError or ImportError
+**Cause**: Missing import for ConbusEventProtocol
+**Fix**: Add `from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol`
+**Check**: Remove old imports of ConbusProtocol if unused
+
+### Container resolution fails
+**Symptom**: "Cannot resolve Service" error
+**Cause**: Factory lambda not updated in dependencies.py
+**Fix**: Verify registration uses new constructor signature
+**Debug**: Check ConbusEventProtocol is registered before service
+
+### TypeError: disconnect() called with wrong signature
+**Symptom**: Error when disconnecting signals in `__exit__`
+**Cause**: Using `self._conbus_protocol` instead of `self.conbus_protocol`
+**Fix**: Verify attribute name is `self.conbus_protocol` (no underscore)
+
+### Common Issues Summary
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| Cannot resolve Service | Missing registration in dependencies.py | Add service registration before use |
+| Signal connection TypeError | Handler signature mismatch | Check signal definition in ConbusEventProtocol |
+| Memory leak | Signals not disconnected | Verify `__exit__` calls all `.disconnect()` |
+| State persists between calls | State not reset in `__enter__` | Reset all mutable state |
+| Reactor hangs on exit | Missing `stop_reactor()` in `__exit__` | Add `self.stop_reactor()` call |
+| Typo: `_conbus_protocol` | Wrong attribute name | Use `self.conbus_protocol` (no underscore) |
+
+## Validation
+
+### Per Service
+```bash
+# After each service migration
+pdm typecheck
+pdm lint
+pdm format
+pdm test-quick
+
+# Test CLI command
+xp conbus <command> <args>
+```
+
+### Final Validation
+```bash
+# All quality checks
+pdm check
+
+# Full test suite
+pdm test
+
+# Integration tests
+xp conbus blink 0012345678 on
+xp conbus scan
+xp conbus datapoint read 0012345678 00
+```
+
+## Completion Criteria
+
+### Must Pass (Per Service)
+- [ ] All quality checks pass (`pdm check`)
+- [ ] CLI command works identically to before
+- [ ] No breaking changes to public API or command interface
+- [ ] All unit tests pass with 75%+ coverage
+- [ ] Integration tests show no regression
+
+### Final Completion (All Services)
 - [ ] All 12 services migrated
 - [ ] All quality checks pass (`pdm check`)
 - [ ] All tests pass (`pdm test`)
@@ -378,3 +599,33 @@ def timeout(self) -> None:
 - [ ] Signal connections/disconnections verified
 - [ ] Context managers tested
 - [ ] ConbusProtocol registration removed from dependencies.py
+
+## Key Differences Summary
+
+### Lifecycle Management
+- **Old**: Service controls lifecycle via override methods, returns bool to stop reactor
+- **New**: Protocol emits signals, service handles events, protocol manages reactor lifecycle
+
+### Coupling
+- **Old**: Inheritance creates tight coupling to protocol internals
+- **New**: Composition allows dependency injection and mocking
+
+### Testability
+- **Old**: Must instantiate full protocol stack (reactor, config) for testing
+- **New**: Mock protocol interface, test service in isolation
+
+### Reusability
+- **Old**: Cannot reuse protocol with multiple services simultaneously
+- **New**: Single protocol instance can notify multiple subscribers
+
+### Reactor Control
+- **Old**: Service calls `self.start_reactor()` and returns False to stop
+- **New**: Caller calls `service.start_reactor()`, protocol stops automatically on timeout
+
+## References
+- **Architecture**: doc/Architecture.md - Dependency injection patterns
+- **Coding**: doc/Coding.md - Type safety, error handling, service patterns
+- **Quality**: doc/Quality.md - Validation commands and coverage requirements
+- **Reference**: src/xp/services/conbus/conbus_discover_service.py:23 - Complete migration example
+- **Reference**: src/xp/services/conbus/conbus_receive_service.py:18 - Already migrated
+- **Protocol**: src/xp/services/protocol/conbus_event_protocol.py - Signal interface
