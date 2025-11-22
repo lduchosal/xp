@@ -1,0 +1,120 @@
+
+- name: A2
+  serial_number: 0020037487
+  module_type: XP20
+  module_type_code: 33
+  link_number: 2
+  module_number: 0
+  sw_version: XP20_V0.01.05
+  hw_version: XP20
+  auto_report_status: AA
+
+- name: A3
+  serial_number: 0020042796
+  module_type: XP33LR
+  module_type_code: 30
+  link_number: 3
+  module_number: 4
+  sw_version: XP33LR_V0.04.02
+  hw_version: XP33LR_HW_VER1
+  auto_report_status: PP
+
+- name: A4
+  serial_number: 0020044991
+  module_type: XP24
+  module_type_code: 7
+  link_number: 4
+  module_number: 2
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+
+- name: A5
+  serial_number: 0020044974
+  module_type: XP24
+  module_type_code: 7
+  link_number: 5
+  module_number: 9
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+
+- name: A6
+  serial_number: 0020044966
+  module_type: XP24
+  module_type_code: 7
+  link_number: 6
+  module_number: 7
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+
+- name: A7
+  serial_number: 0020044989
+  module_type: XP24
+  module_type_code: 7
+  link_number: 7
+  module_number: 8
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+
+- name: A8
+  serial_number: 0020044964
+  module_type: XP24
+  module_type_code: 7
+  link_number: 8
+  module_number: 0
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+
+- name: A9
+  serial_number: 0020044986
+  module_type: XP24
+  module_type_code: 7
+  link_number: 9
+  module_number: 3
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+
+- name: A10
+  serial_number: 0020041824
+  module_type: XP20
+  module_type_code: 33
+  link_number: 10
+  module_number: 10
+  sw_version: XP20_V0.01.05
+  hw_version: XP20
+  auto_report_status: PP
+
+- name: A11
+  serial_number: 0020030837
+  module_type: XP130
+  module_type_code: 34
+  link_number: 11
+  module_number: 5
+  sw_version: XP230_V1.00.04
+  hw_version: XP130_HW_Rev B
+  auto_report_status: AA
+
+- name: A12
+  serial_number: '0020045056'
+  module_type: XP33LED
+  module_type_code: 35
+  link_number: 12
+  module_number: 2
+  sw_version: XP33LED_V0.04.01
+  hw_version: XP33LED_HW_VER1
+  auto_report_status: PP
+
+- name: A13
+  serial_number: '0020045057'
+  module_type: XP33LED
+  module_type_code: 35
+  link_number: 13
+  module_number: 0
+  sw_version: XP33LED_V0.04.01
+  hw_version: XP33LED_HW_VER1
+  auto_report_status: AE

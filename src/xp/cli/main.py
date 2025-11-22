@@ -4,11 +4,13 @@ import click
 from click_help_colors import HelpColorsGroup
 
 from xp.cli.commands import homekit
+
+# Import all conbus command modules to register their commands
+from xp.cli.commands.conbus import conbus_discover_commands  # noqa: F401
+from xp.cli.commands.conbus import conbus_export_commands  # noqa: F401
 from xp.cli.commands.conbus.conbus import conbus
 from xp.cli.commands.file_commands import file
 from xp.cli.commands.module_commands import module
-
-# Import all conbus command modules to register their commands
 from xp.cli.commands.reverse_proxy_commands import reverse_proxy
 from xp.cli.commands.server.server_commands import server
 
