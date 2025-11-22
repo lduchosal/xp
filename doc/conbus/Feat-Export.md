@@ -36,9 +36,6 @@ root:
     sw_version: XP130_V0.10.04
     hw_version: XP130_HW_Rev B
     auto_report_status: AA
-    action_table: 
-      - table 1
-      - table 2
 
   - serial_number: "1234567890"
     module_type: XP24
@@ -53,13 +50,19 @@ root:
 ## CLI Interface
 
 ```bash
-# Export to default file (export.yml)
+# Export to export.yml in current directory
 xp conbus export
 ```
 
 ### Command Options
 
-none
+None. Output file is fixed as `export.yml` in current working directory.
+
+### Output
+
+- **File**: `export.yml` (current directory)
+- **Format**: YAML matching `ConsonModuleListConfig` structure
+- **Metadata**: Includes `export_status` field for diagnostics
 
 ## Implementation Approach
 
@@ -78,25 +81,27 @@ Following `ConbusDiscoverService` pattern:
 - Wait for device responses
 
 **3. Telegram Received** (`telegram_received`)
-- **Discovery Response** (F01D): Add serial to device queue, send first datapoint query
-- **Datapoint Response** (F02D): Store value, query next datapoint or next device
+- **Discovery Response** (F01D): Add serial to device queue, immediately send all datapoint queries for that device (ConbusEventProtocol handles throttling)
+- **Datapoint Response** (F02D): Store value in device config, check if device complete
 - Parse telegram type and payload to determine response type
-- Update internal state for current device being queried
+- Track which datapoints have been received for each device
 
 **4. Datapoint Query Sequence** (per device)
-- Query MODULE_TYPE_CODE → store code
-- Query MODULE_TYPE → store type string
-- Query LINK_NUMBER → store link
-- Query MODULE_NUMBER → store number
-- Query SOFTWARE_VERSION → store version
-- Query HARDWARE_VERSION → store hw version
-- Query AUTO_REPORT → store status
-- When complete: emit `on_device_exported`, query next device
+All queries sent immediately upon discovery (throttled by protocol):
+- Query MODULE_TYPE → store type string (e.g., "XP130")
+- Query MODULE_TYPE_CODE → store code (e.g., 13)
+- Query LINK_NUMBER → store link (datapoint)
+- Query MODULE_NUMBER → store number (datapoint)
+- Query SOFTWARE_VERSION → store version (datapoint)
+- Query HARDWARE_VERSION → store hw version (datapoint)
+- Query AUTO_REPORT → store status (datapoint)
+- When all 7 datapoints received: emit `on_device_exported`
 
 **5. Finalization** (`timeout` or all devices complete)
-- Build `ConsonModuleListConfig` from collected data
+- Build `ConsonModuleListConfig` from collected data (including partial devices)
+- Add `export_status` field to output: "OK" if all complete, "FAILED_TIMEOUT" if partial
 - Serialize to YAML
-- Write to output file
+- Write to `export.yml` in current directory
 - Emit `on_finish` with result
 
 **6. Cleanup** (`__exit__`)
@@ -107,11 +112,11 @@ Following `ConbusDiscoverService` pattern:
 ### State Management
 
 Service maintains:
-- `device_queue: List[str]` - Serial numbers to query
-- `current_device: Optional[str]` - Device being queried
-- `current_datapoint_index: int` - Which datapoint to query next
-- `device_configs: Dict[str, ConsonModuleConfig]` - Collected configs
+- `discovered_devices: List[str]` - Serial numbers discovered
+- `device_configs: Dict[str, Dict[str, Any]]` - Partial configs being built (serial → {field → value})
+- `device_datapoints_received: Dict[str, Set[str]]` - Track which datapoints received per device
 - `export_result: ConbusExportResponse` - Final result
+- `export_status: str` - "OK" or "FAILED_TIMEOUT"
 
 ### Data Models
 
@@ -135,7 +140,8 @@ class ConbusExportResponse:
     success: bool
     config: Optional[ConsonModuleListConfig] = None
     device_count: int = 0
-    output_file: Optional[str] = None
+    output_file: str = "export.yml"  # Fixed filename in current directory
+    export_status: str = "OK"  # "OK" or "FAILED_TIMEOUT"
     error: Optional[str] = None
     sent_telegrams: List[str] = field(default_factory=list)
     received_telegrams: List[str] = field(default_factory=list)
@@ -165,12 +171,11 @@ ConbusExportService
 │  ├─ timeout() → finalize export
 │  └─ failed(message: str) → emit error
 ├─ Internal Methods
-│  ├─ _handle_discovery_response(serial_number: str)
-│  ├─ _handle_datapoint_response(serial_number: str, datapoint: str, value: str)
-│  ├─ _query_next_datapoint(serial_number: str)
-│  ├─ _query_next_device()
-│  ├─ _finalize_export()
-│  └─ _write_export_file(path: str)
+│  ├─ _handle_discovery_response(serial_number: str) → send all datapoint queries
+│  ├─ _handle_datapoint_response(serial_number: str, datapoint: str, value: str) → store value
+│  ├─ _check_device_complete(serial_number: str) → emit on_device_exported if all 7 datapoints received
+│  ├─ _finalize_export() → build ConsonModuleListConfig from partial/complete data
+│  └─ _write_export_file(path: str) → serialize and write YAML
 ├─ Context Manager
 │  ├─ __enter__() → reset state
 │  └─ __exit__() → disconnect signals, stop reactor
@@ -185,23 +190,24 @@ ConbusExportService
 
 | Field | Datapoint Type | Notes |
 |-------|---------------|-------|
-| `serial_number` | From discovery | Already available |
-| `module_type` | `MODULE_TYPE` | Converted using `ModuleType.from_code()` |
-| `module_type_code` | `MODULE_TYPE` | Raw code value |
-| `link_number` | `LINK_NUMBER` | Integer 0-99 |
-| `module_number` | `MODULE_NUMBER` | Integer (position in system) |
-| `sw_version` | `SOFTWARE_VERSION` | String (e.g., "XP130_V0.10.04") |
-| `hw_version` | `HARDWARE_VERSION` | String (e.g., "XP130_HW_Rev B") |
-| `auto_report_status` | `AUTO_REPORT` | String ("AA", "PP", etc.) |
-| `action_table` | N/A | Empty dict (future enhancement) |
+| `serial_number` | From discovery | Already available from F01D response |
+| `module_type` | `MODULE_TYPE` | String (e.g., "XP130", "XP24") |
+| `module_type_code` | `MODULE_TYPE_CODE` | Integer (e.g., 13, 7) |
+| `link_number` | `LINK_NUMBER` | Integer 0-99 (datapoint query) |
+| `module_number` | `MODULE_NUMBER` | Integer (datapoint query) |
+| `sw_version` | `SOFTWARE_VERSION` | String (e.g., "XP130_V0.10.04") (datapoint query) |
+| `hw_version` | `HARDWARE_VERSION` | String (e.g., "XP130_HW_Rev B") (datapoint query) |
+| `auto_report_status` | `AUTO_REPORT` | String ("AA", "PP", etc.) (datapoint query) |
+| `action_table` | N/A | Omitted if empty (future enhancement) |
 
 ## Error Handling
 
-- **No devices found**: Report error, exit with code 1
-- **Query timeout**: Log warning, set field to default/empty
-- **Invalid response**: Log warning, skip device or use defaults
-- **File write error**: Report error, exit with code 1
-- **Connection failure**: Report error, exit with code 1
+- **No devices found**: Report error, set `export_status="FAILED_NO_DEVICES"`, exit with code 1
+- **Query timeout**: Write partial export, set `export_status="FAILED_TIMEOUT"`, include incomplete devices with available fields
+- **Missing datapoints**: Omit fields that were not received (partial device export)
+- **Invalid response**: Log warning, continue processing other devices
+- **File write error**: Report error, set `export_status="FAILED_WRITE"`, exit with code 1
+- **Connection failure**: Report error, set `export_status="FAILED_CONNECTION"`, exit with code 1
 
 ## Progress Reporting
 
@@ -232,11 +238,15 @@ Export complete: export.yml (3 devices)
 
 ### Unit Tests
 
-- Test `_discover_devices()` with mocked discovery service
-- Test `_query_device_config()` with mocked datapoint service
-- Test `_write_export()` with temp file
-- Test error handling (timeout, invalid data)
-- Test progress callback invocation
+- Test `_handle_discovery_response()` adds device and sends queries
+- Test `_handle_datapoint_response()` stores values correctly
+- Test device completion detection when all 7 datapoints received
+- Test `_finalize_export()` builds ConsonModuleListConfig
+- Test `_write_export_file()` serializes to YAML
+- Test partial export on timeout (incomplete devices included)
+- Test export_status field values (OK, FAILED_TIMEOUT, etc.)
+- Test signal emission (on_progress, on_device_exported, on_finish)
+- Mock `ConbusEventProtocol` and verify telegram sending
 
 ### Integration Tests
 
