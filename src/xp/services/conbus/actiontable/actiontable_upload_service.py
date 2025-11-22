@@ -1,31 +1,33 @@
 """Service for uploading ActionTable via Conbus protocol."""
 
 import logging
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
-from twisted.internet.posixbase import PosixReactorBase
+from psygnal import Signal
 
-from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
-from xp.services.protocol import ConbusProtocol
+from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class ActionTableUploadService(ConbusProtocol):
+class ActionTableUploadService:
     """TCP client service for uploading action tables to Conbus modules.
 
     Manages TCP socket connections, handles telegram generation and transmission,
     and processes server responses for action table uploads.
     """
 
+    on_progress: Signal = Signal(str)
+    on_error: Signal = Signal(str)
+    on_finish: Signal = Signal(bool)  # True on success
+
     def __init__(
         self,
-        cli_config: ConbusClientConfig,
-        reactor: PosixReactorBase,
+        conbus_protocol: ConbusEventProtocol,
         actiontable_serializer: ActionTableSerializer,
         telegram_service: TelegramService,
         conson_config: ConsonModuleListConfig,
@@ -33,20 +35,16 @@ class ActionTableUploadService(ConbusProtocol):
         """Initialize the action table upload service.
 
         Args:
-            cli_config: Conbus client configuration.
-            reactor: Twisted reactor instance.
+            conbus_protocol: ConbusEventProtocol for communication.
             actiontable_serializer: Action table serializer.
             telegram_service: Telegram service for parsing.
             conson_config: Conson module list configuration.
         """
-        super().__init__(cli_config, reactor)
+        self.conbus_protocol = conbus_protocol
         self.serializer = actiontable_serializer
         self.telegram_service = telegram_service
         self.conson_config = conson_config
         self.serial_number: str = ""
-        self.progress_callback: Optional[Callable[[str], None]] = None
-        self.error_callback: Optional[Callable[[str], None]] = None
-        self.success_callback: Optional[Callable[[], None]] = None
 
         # Upload state
         self.upload_data_chunks: list[str] = []
@@ -55,10 +53,17 @@ class ActionTableUploadService(ConbusProtocol):
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def connection_established(self) -> None:
+        # Connect protocol signals
+        self.conbus_protocol.on_connection_made.connect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.connect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.connect(self.telegram_received)
+        self.conbus_protocol.on_timeout.connect(self.timeout)
+        self.conbus_protocol.on_failed.connect(self.failed)
+
+    def connection_made(self) -> None:
         """Handle connection established event."""
         self.logger.debug("Connection established, sending upload actiontable telegram")
-        self.send_telegram(
+        self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
             system_function=SystemFunction.UPLOAD_ACTIONTABLE,
@@ -112,32 +117,34 @@ class ActionTableUploadService(ConbusProtocol):
                 # Second character: 'A' + chunk_index (sequential counter A-O for 15 chunks)
                 prefix_hex = f"AAA{ord('A') + self.current_chunk_index:c}"
 
-                self.send_telegram(
+                self.conbus_protocol.send_telegram(
                     telegram_type=TelegramType.SYSTEM,
                     serial_number=self.serial_number,
                     system_function=SystemFunction.ACTIONTABLE,
                     data_value=f"{prefix_hex}{chunk}",
                 )
                 self.current_chunk_index += 1
-                if self.progress_callback:
-                    self.progress_callback(".")
+                self.on_progress.emit(".")
             else:
                 # All chunks sent, send EOF
                 self.logger.debug("All chunks sent, sending EOF")
-                self.send_telegram(
+                self.conbus_protocol.send_telegram(
                     telegram_type=TelegramType.SYSTEM,
                     serial_number=self.serial_number,
                     system_function=SystemFunction.EOF,
                     data_value="00",
                 )
-                if self.success_callback:
-                    self.success_callback()
-                self._stop_reactor()
+                self.on_finish.emit(True)
         elif reply_telegram.system_function == SystemFunction.NAK:
             self.logger.debug("Received NAK during upload")
             self.failed("Upload failed: NAK received")
         else:
             self.logger.debug(f"Unexpected response during upload: {reply_telegram}")
+
+    def timeout(self) -> None:
+        """Handle timeout event."""
+        self.logger.debug("Upload timeout")
+        self.failed("Upload timeout")
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -146,16 +153,11 @@ class ActionTableUploadService(ConbusProtocol):
             message: Failure message.
         """
         self.logger.debug(f"Failed: {message}")
-        if self.error_callback:
-            self.error_callback(message)
-        self._stop_reactor()
+        self.on_error.emit(message)
 
     def start(
         self,
         serial_number: str,
-        progress_callback: Callable[[str], None],
-        error_callback: Callable[[str], None],
-        success_callback: Callable[[], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Upload action table to module.
@@ -164,18 +166,12 @@ class ActionTableUploadService(ConbusProtocol):
 
         Args:
             serial_number: Module serial number.
-            progress_callback: Callback for progress updates.
-            error_callback: Callback for errors.
-            success_callback: Callback when upload completes successfully.
             timeout_seconds: Optional timeout in seconds.
         """
         self.logger.info("Starting actiontable upload")
         self.serial_number = serial_number
         if timeout_seconds:
-            self.timeout_seconds = timeout_seconds
-        self.progress_callback = progress_callback
-        self.error_callback = error_callback
-        self.success_callback = success_callback
+            self.conbus_protocol.timeout_seconds = timeout_seconds
 
         # Find module
         module = self.conson_config.find_module(serial_number)
@@ -208,4 +204,45 @@ class ActionTableUploadService(ConbusProtocol):
             f"{len(self.upload_data_chunks)} chunks"
         )
 
-        self.start_reactor()
+    def set_timeout(self, timeout_seconds: float) -> None:
+        """Set operation timeout.
+
+        Args:
+            timeout_seconds: Timeout in seconds.
+        """
+        self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def start_reactor(self) -> None:
+        """Start the reactor."""
+        self.conbus_protocol.start_reactor()
+
+    def stop_reactor(self) -> None:
+        """Stop the reactor."""
+        self.conbus_protocol.stop_reactor()
+
+    def __enter__(self) -> "ActionTableUploadService":
+        """Enter context manager - reset state for singleton reuse.
+
+        Returns:
+            Self for context manager protocol.
+        """
+        # Reset state
+        self.upload_data_chunks = []
+        self.current_chunk_index = 0
+        self.serial_number = ""
+        return self
+
+    def __exit__(self, _exc_type: Any, _exc_val: Any, _exc_tb: Any) -> None:
+        """Exit context manager - cleanup signals and reactor."""
+        # Disconnect protocol signals
+        self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+        self.conbus_protocol.on_timeout.disconnect(self.timeout)
+        self.conbus_protocol.on_failed.disconnect(self.failed)
+        # Disconnect service signals
+        self.on_progress.disconnect()
+        self.on_error.disconnect()
+        self.on_finish.disconnect()
+        # Stop reactor
+        self.stop_reactor()

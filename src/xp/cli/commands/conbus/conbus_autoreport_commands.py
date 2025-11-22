@@ -55,10 +55,10 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
         click.echo(json.dumps(result, indent=2))
 
     with service:
+        service.on_finish.connect(on_finish)
         service.query_datapoint(
             serial_number=serial_number,
-            datapoint_type=DataPointType.AUTO_REPORT_STATUS,
-            finish_callback=on_finish,
+            datapoint_type=DataPointType.AUTO_REPORT_STATUS
         )
 
 
@@ -81,6 +81,13 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
         xp conbus autoreport set 0123450001 off
     """
 
+    service: WriteConfigService = (
+        ctx.obj.get("container").get_container().resolve(WriteConfigService)
+    )
+    telegram_service: TelegramDatapointService = (
+        ctx.obj.get("container").get_container().resolve(TelegramDatapointService)
+    )
+
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
@@ -88,21 +95,17 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
             response: Light level response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
+        service.stop_reactor()
 
-    service: WriteConfigService = (
-        ctx.obj.get("container").get_container().resolve(WriteConfigService)
-    )
-    telegram_service: TelegramDatapointService = (
-        ctx.obj.get("container").get_container().resolve(TelegramDatapointService)
-    )
     status_value = True if status == "on" else False
     data_value = telegram_service.get_autoreport_status_data_value(status_value)
 
     with service:
+        service.on_finish.connect(on_finish)
         service.write_config(
             serial_number=serial_number,
             datapoint_type=DataPointType.AUTO_REPORT_STATUS,
             data_value=data_value,
-            finish_callback=on_finish,
             timeout_seconds=0.5,
         )
+        service.start_reactor()

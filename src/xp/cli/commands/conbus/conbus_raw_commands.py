@@ -52,11 +52,16 @@ def send_raw_telegrams(ctx: Context, raw_telegrams: str) -> None:
             service_response: Raw response object.
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
+        service.stop_reactor()
 
     with service:
+        # Connect service signals
+        service.on_progress.connect(on_progress)
+        service.on_finish.connect(on_finish)
+        # Setup
         service.send_raw_telegram(
             raw_input=raw_telegrams,
-            progress_callback=on_progress,
-            finish_callback=on_finish,
             timeout_seconds=5.0,
         )
+        # Start (blocks until completion)
+        service.start_reactor()

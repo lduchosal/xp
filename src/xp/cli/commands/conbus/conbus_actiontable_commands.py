@@ -3,7 +3,6 @@
 import json
 from contextlib import suppress
 from pathlib import Path
-from typing import Any
 
 import click
 from click import Context
@@ -13,7 +12,6 @@ from xp.cli.utils.decorators import (
     connection_command,
 )
 from xp.cli.utils.serial_number_type import SERIAL
-from xp.models.actiontable.actiontable import ActionTable
 from xp.models.homekit.homekit_conson_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
@@ -53,7 +51,7 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         ctx.obj.get("container").get_container().resolve(ActionTableService)
     )
 
-    def progress_callback(progress: str) -> None:
+    def on_progress(progress: str) -> None:
         """Handle progress updates during action table download.
 
         Args:
@@ -61,40 +59,36 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         """
         click.echo(progress)
 
-    def on_finish(
-        _actiontable: ActionTable,
-        actiontable_dict: dict[str, Any],
-        actiontable_short: list[str],
-    ) -> None:
+    def on_finish(result: tuple) -> None:
         """Handle successful completion of action table download.
 
         Args:
-            _actiontable: Downloaded action table object.
-            actiontable_dict: Dictionary representation of action table.
-            actiontable_short: List of textual format strings.
+            result: Tuple of (_actiontable, actiontable_dict, actiontable_short).
         """
+        _actiontable, actiontable_dict, actiontable_short = result
         output = {
             "serial_number": serial_number,
             "actiontable_short": actiontable_short,
             "actiontable": actiontable_dict,
         }
         click.echo(json.dumps(output, indent=2, default=str))
+        service.stop_reactor()
 
-    def error_callback(error: str) -> None:
+    def on_error(error: str) -> None:
         """Handle errors during action table download.
 
         Args:
             error: Error message string.
         """
         click.echo(error)
+        service.stop_reactor()
 
     with service:
-        service.start(
-            serial_number=serial_number,
-            progress_callback=progress_callback,
-            finish_callback=on_finish,
-            error_callback=error_callback,
-        )
+        service.on_progress.connect(on_progress)
+        service.on_finish.connect(on_finish)
+        service.on_error.connect(on_error)
+        service.start(serial_number=serial_number)
+        service.start_reactor()
 
 
 @conbus_actiontable.command("upload", short_help="Upload ActionTable")
@@ -125,13 +119,19 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
         """
         click.echo(progress, nl=False)
 
-    def success_callback() -> None:
-        """Handle successful completion of action table upload."""
-        click.echo("\nAction table uploaded successfully")
-        if entries_count > 0:
-            click.echo(f"{entries_count} entries written")
+    def on_finish(success: bool) -> None:
+        """Handle completion of action table upload.
 
-    def error_callback(error: str) -> None:
+        Args:
+            success: True if upload succeeded.
+        """
+        if success:
+            click.echo("\nAction table uploaded successfully")
+            if entries_count > 0:
+                click.echo(f"{entries_count} entries written")
+        service.stop_reactor()
+
+    def on_error(error: str) -> None:
         """Handle errors during action table upload.
 
         Args:
@@ -140,6 +140,7 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
         Raises:
             ActionTableError: Always raised with upload failure message.
         """
+        service.stop_reactor()
         raise ActionTableError(f"Upload failed: {error}")
 
     with service:
@@ -152,12 +153,11 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
                 if module and module.action_table:
                     entries_count = len(module.action_table)
 
-        service.start(
-            serial_number=serial_number,
-            progress_callback=progress_callback,
-            success_callback=success_callback,
-            error_callback=error_callback,
-        )
+        service.on_progress.connect(progress_callback)
+        service.on_finish.connect(on_finish)
+        service.on_error.connect(on_error)
+        service.start(serial_number=serial_number)
+        service.start_reactor()
 
 
 @conbus_actiontable.command("list", short_help="List modules with ActionTable")
@@ -180,7 +180,7 @@ def conbus_list_actiontable(ctx: Context) -> None:
         """
         click.echo(json.dumps(module_list, indent=2, default=str))
 
-    def error_callback(error: str) -> None:
+    def on_error(error: str) -> None:
         """Handle errors during action table list.
 
         Args:
@@ -189,10 +189,9 @@ def conbus_list_actiontable(ctx: Context) -> None:
         click.echo(error)
 
     with service:
-        service.start(
-            finish_callback=on_finish,
-            error_callback=error_callback,
-        )
+        service.on_finish.connect(on_finish)
+        service.on_error.connect(on_error)
+        service.start()
 
 
 @conbus_actiontable.command("show", short_help="Show ActionTable configuration")

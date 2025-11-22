@@ -6,43 +6,50 @@ telegrams to scan modules for all datapoints by function code.
 
 import logging
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Any, Optional
 
-from twisted.internet.posixbase import PosixReactorBase
+from psygnal import Signal
 
-from xp.models import (
-    ConbusClientConfig,
-    ConbusResponse,
-)
+from xp.models import ConbusResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
-from xp.services.protocol import ConbusProtocol
+from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 
 
-class ConbusScanService(ConbusProtocol):
+class ConbusScanService:
     """
     Service for scanning modules for all datapoints by function code.
 
-    Uses ConbusProtocol to provide scan functionality for discovering
+    Uses ConbusEventProtocol to provide scan functionality for discovering
     all available datapoints on a module.
+
+    Attributes:
+        conbus_protocol: Protocol instance for Conbus communication.
+        on_progress: Signal emitted when scan progress is made (with telegram frame).
+        on_finish: Signal emitted when scan finishes (with result).
     """
+
+    on_progress: Signal = Signal(str)
+    on_finish: Signal = Signal(ConbusResponse)
 
     def __init__(
         self,
-        cli_config: ConbusClientConfig,
-        reactor: PosixReactorBase,
+        conbus_protocol: ConbusEventProtocol,
     ) -> None:
         """Initialize the Conbus scan service.
 
         Args:
-            cli_config: Conbus client configuration.
-            reactor: Twisted reactor instance.
+            conbus_protocol: ConbusEventProtocol instance.
         """
-        super().__init__(cli_config, reactor)
+        self.conbus_protocol = conbus_protocol
+        self.conbus_protocol.on_connection_made.connect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.connect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.connect(self.telegram_received)
+        self.conbus_protocol.on_timeout.connect(self.timeout)
+        self.conbus_protocol.on_failed.connect(self.failed)
+
         self.serial_number: str = ""
         self.function_code: str = ""
         self.datapoint_value: int = -1
-        self.progress_callback: Optional[Callable[[str], None]] = None
-        self.finish_callback: Optional[Callable[[ConbusResponse], None]] = None
         self.service_response: ConbusResponse = ConbusResponse(
             success=False,
             serial_number=self.serial_number,
@@ -53,8 +60,8 @@ class ConbusScanService(ConbusProtocol):
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def connection_established(self) -> None:
-        """Handle connection established event."""
+    def connection_made(self) -> None:
+        """Handle connection made event."""
         self.logger.debug("Connection established, starting scan")
         self.scan_next_datacode()
 
@@ -66,14 +73,13 @@ class ConbusScanService(ConbusProtocol):
         """
         self.datapoint_value += 1
         if self.datapoint_value >= 100:
-            if self.finish_callback:
-                self.finish_callback(self.service_response)
+            self.on_finish.emit(self.service_response)
             return False
 
         self.logger.debug(f"Scanning next datacode: {self.datapoint_value:02d}")
         data = f"{self.datapoint_value:02d}"
         telegram_body = f"S{self.serial_number}F{self.function_code}D{data}"
-        self.sendFrame(telegram_body.encode())
+        self.conbus_protocol.sendFrame(telegram_body.encode())
         return True
 
     def telegram_sent(self, telegram_sent: str) -> None:
@@ -96,18 +102,13 @@ class ConbusScanService(ConbusProtocol):
             self.service_response.received_telegrams = []
         self.service_response.received_telegrams.append(telegram_received.frame)
 
-        if self.progress_callback:
-            self.progress_callback(telegram_received.frame)
+        self.on_progress.emit(telegram_received.frame)
 
-    def timeout(self) -> bool:
-        """Handle timeout event by scanning next data code.
-
-        Returns:
-            True to continue scanning, False to stop.
-        """
-        self.logger.debug(f"Timeout: {self.timeout_seconds}s")
-        continue_scan = self.scan_next_datacode()
-        return continue_scan
+    def timeout(self) -> None:
+        """Handle timeout event by scanning next data code."""
+        timeout_seconds = self.conbus_protocol.timeout_seconds
+        self.logger.debug(f"Timeout: {timeout_seconds}s")
+        self.scan_next_datacode()
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -119,15 +120,12 @@ class ConbusScanService(ConbusProtocol):
         self.service_response.success = False
         self.service_response.timestamp = datetime.now()
         self.service_response.error = message
-        if self.finish_callback:
-            self.finish_callback(self.service_response)
+        self.on_finish.emit(self.service_response)
 
     def scan_module(
         self,
         serial_number: str,
         function_code: str,
-        progress_callback: Callable[[str], None],
-        finish_callback: Callable[[ConbusResponse], None],
         timeout_seconds: float = 0.25,
     ) -> None:
         """Scan a module for all datapoints by function code.
@@ -135,16 +133,62 @@ class ConbusScanService(ConbusProtocol):
         Args:
             serial_number: 10-digit module serial number.
             function_code: The function code to scan.
-            progress_callback: Callback to handle progress.
-            finish_callback: Callback function to call when the scan is complete.
             timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting scan_module")
         if timeout_seconds:
-            self.timeout_seconds = timeout_seconds
+            self.conbus_protocol.timeout_seconds = timeout_seconds
 
         self.serial_number = serial_number
         self.function_code = function_code
-        self.progress_callback = progress_callback
-        self.finish_callback = finish_callback
-        self.start_reactor()
+
+    def set_timeout(self, timeout_seconds: float) -> None:
+        """Set operation timeout.
+
+        Args:
+            timeout_seconds: Timeout in seconds.
+        """
+        self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def start_reactor(self) -> None:
+        """Start the reactor."""
+        self.conbus_protocol.start_reactor()
+
+    def stop_reactor(self) -> None:
+        """Stop the reactor."""
+        self.conbus_protocol.stop_reactor()
+
+    def __enter__(self) -> "ConbusScanService":
+        """Enter context manager - reset state for singleton reuse.
+
+        Returns:
+            Self for context manager protocol.
+        """
+        # Reset state for singleton reuse
+        self.serial_number = ""
+        self.function_code = ""
+        self.datapoint_value = -1
+        self.service_response = ConbusResponse(
+            success=False,
+            serial_number="",
+            sent_telegrams=[],
+            received_telegrams=[],
+            timestamp=datetime.now(),
+        )
+        return self
+
+    def __exit__(
+        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+    ) -> None:
+        """Exit context manager and disconnect signals."""
+        # Disconnect protocol signals
+        self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+        self.conbus_protocol.on_timeout.disconnect(self.timeout)
+        self.conbus_protocol.on_failed.disconnect(self.failed)
+        # Disconnect service signals
+        self.on_progress.disconnect()
+        self.on_finish.disconnect()
+        # Stop reactor
+        self.stop_reactor()

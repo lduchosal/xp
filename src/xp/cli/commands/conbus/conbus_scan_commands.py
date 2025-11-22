@@ -48,11 +48,13 @@ def scan_module(ctx: Context, serial_number: str, function_code: str) -> None:
             service_response: Scan response object.
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
+        service.stop_reactor()
 
     with service:
+        service.on_progress.connect(on_progress)
+        service.on_finish.connect(on_finish)
         service.scan_module(
             serial_number=serial_number,
             function_code=function_code,
-            progress_callback=on_progress,
-            finish_callback=on_finish,
         )
+        service.start_reactor()

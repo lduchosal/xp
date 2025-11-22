@@ -56,14 +56,16 @@ def query_datapoint(ctx: Context, serial_number: str, datapoint: DataPointType) 
             service_response: Datapoint response object.
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
+        service.stop_reactor()
 
     # Send telegram
     with service:
+        service.on_finish.connect(on_finish)
         service.query_datapoint(
             serial_number=serial_number,
             datapoint_type=datapoint,
-            finish_callback=on_finish,
         )
+        service.start_reactor()
 
 
 # Add the single datapoint query command to the group
@@ -96,6 +98,7 @@ def query_all_datapoints(ctx: Context, serial_number: str) -> None:
             service_response: Datapoint response object with all datapoints.
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
+        service.stop_reactor()
 
     def on_progress(reply_telegram: ReplyTelegram) -> None:
         """Handle progress updates during all datapoints query.
@@ -106,8 +109,7 @@ def query_all_datapoints(ctx: Context, serial_number: str) -> None:
         click.echo(json.dumps(reply_telegram.to_dict(), indent=2))
 
     with service:
-        service.query_all_datapoints(
-            serial_number=serial_number,
-            finish_callback=on_finish,
-            progress_callback=on_progress,
-        )
+        service.on_finish.connect(on_finish)
+        service.on_progress.connect(on_progress)
+        service.query_all_datapoints(serial_number=serial_number)
+        service.start_reactor()

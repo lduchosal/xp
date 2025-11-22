@@ -5,49 +5,49 @@ This service handles setting link numbers for modules through Conbus telegrams.
 
 import logging
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Any, Optional
 
-from twisted.internet.posixbase import PosixReactorBase
+from psygnal import Signal
 
-from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
-from xp.services.protocol import ConbusProtocol
+from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class WriteConfigService(ConbusProtocol):
-    """
-    Service for writing module settings via Conbus telegrams.
+class WriteConfigService:
+    """Service for writing module settings via Conbus telegrams.
 
     Handles setting assignment by sending F04DXX telegrams and processing
     ACK/NAK responses from modules.
+
+    Attributes:
+        conbus_protocol: Protocol for Conbus communication.
+        telegram_service: Service for parsing telegrams.
+        on_finish: Signal emitted when write operation completes (with response).
     """
+
+    on_finish: Signal = Signal(ConbusWriteConfigResponse)
 
     def __init__(
         self,
+        conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
-        cli_config: ConbusClientConfig,
-        reactor: PosixReactorBase,
     ) -> None:
         """Initialize the Conbus link number set service.
 
         Args:
+            conbus_protocol: Protocol for Conbus communication.
             telegram_service: Service for parsing telegrams.
-            cli_config: Configuration for Conbus client connection.
-            reactor: Twisted reactor for event loop.
         """
-        super().__init__(cli_config, reactor)
+        self.conbus_protocol = conbus_protocol
         self.telegram_service = telegram_service
         self.datapoint_type: Optional[DataPointType] = None
         self.serial_number: str = ""
         self.data_value: str = ""
-        self.write_config_finished_callback: Optional[
-            Callable[[ConbusWriteConfigResponse], None]
-        ] = None
         self.write_config_response: ConbusWriteConfigResponse = (
             ConbusWriteConfigResponse(
                 success=False,
@@ -58,8 +58,15 @@ class WriteConfigService(ConbusProtocol):
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def connection_established(self) -> None:
-        """Handle connection established event."""
+        # Connect protocol signals
+        self.conbus_protocol.on_connection_made.connect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.connect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.connect(self.telegram_received)
+        self.conbus_protocol.on_timeout.connect(self.timeout)
+        self.conbus_protocol.on_failed.connect(self.failed)
+
+    def connection_made(self) -> None:
+        """Handle connection made event."""
         self.logger.debug(f"Connection established, writing config {self.data_value}.")
 
         # Validate parameters before sending
@@ -79,7 +86,7 @@ class WriteConfigService(ConbusProtocol):
         # Function F04 = WRITE_CONFIG,
         # Datapoint = D datapoint_type
         # Data = XX
-        self.send_telegram(
+        self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
             system_function=SystemFunction.WRITE_CONFIG,
@@ -133,6 +140,11 @@ class WriteConfigService(ConbusProtocol):
             succeed_or_failed=succeed, system_function=reply_telegram.system_function
         )
 
+    def timeout(self) -> None:
+        """Handle timeout event."""
+        self.logger.debug("Timeout occurred")
+        self.finished(succeed_or_failed=False, message="Timeout")
+
     def failed(self, message: str) -> None:
         """Handle telegram failed event.
 
@@ -163,16 +175,15 @@ class WriteConfigService(ConbusProtocol):
         self.write_config_response.system_function = system_function
         self.write_config_response.datapoint_type = self.datapoint_type
         self.write_config_response.data_value = self.data_value
-        if self.write_config_finished_callback:
-            self.write_config_finished_callback(self.write_config_response)
-        self._stop_reactor()
+
+        # Emit finish signal
+        self.on_finish.emit(self.write_config_response)
 
     def write_config(
         self,
         serial_number: str,
         datapoint_type: DataPointType,
         data_value: str,
-        finish_callback: Callable[[ConbusWriteConfigResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Write config to a specific module.
@@ -181,14 +192,53 @@ class WriteConfigService(ConbusProtocol):
             serial_number: 10-digit module serial number.
             datapoint_type: the datapoint type to write to.
             data_value: the data to write.
-            finish_callback: Callback function to call when operation completes.
             timeout_seconds: Optional timeout in seconds.
         """
         self.logger.info("Starting write_config")
         if timeout_seconds:
-            self.timeout_seconds = timeout_seconds
+            self.conbus_protocol.timeout_seconds = timeout_seconds
         self.serial_number = serial_number
         self.datapoint_type = datapoint_type
         self.data_value = data_value
-        self.write_config_finished_callback = finish_callback
-        self.start_reactor()
+
+    def set_timeout(self, timeout_seconds: float) -> None:
+        """Set operation timeout.
+
+        Args:
+            timeout_seconds: Timeout in seconds.
+        """
+        self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def start_reactor(self) -> None:
+        """Start the reactor."""
+        self.conbus_protocol.start_reactor()
+
+    def stop_reactor(self) -> None:
+        """Stop the reactor."""
+        self.conbus_protocol.stop_reactor()
+
+    def __enter__(self) -> "WriteConfigService":
+        """Enter context manager - reset state for singleton reuse.
+
+        Returns:
+            Self for context manager protocol.
+        """
+        self.write_config_response = ConbusWriteConfigResponse(
+            success=False, serial_number=""
+        )
+        self.datapoint_type = None
+        self.serial_number = ""
+        self.data_value = ""
+        return self
+
+    def __exit__(
+        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+    ) -> None:
+        """Exit context manager and disconnect signals."""
+        self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+        self.conbus_protocol.on_timeout.disconnect(self.timeout)
+        self.conbus_protocol.on_failed.disconnect(self.failed)
+        self.on_finish.disconnect()
+        self.stop_reactor()

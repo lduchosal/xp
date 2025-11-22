@@ -48,16 +48,24 @@ class TestXp20ActionTableIntegration:
         # without actually making network calls
         from unittest.mock import Mock
 
-        mock_cli_config = Mock()
-        mock_reactor = Mock()
+        mock_conbus_protocol = Mock()
+        mock_conbus_protocol.on_connection_made = Mock()
+        mock_conbus_protocol.on_connection_made.connect = Mock()
+        mock_conbus_protocol.on_telegram_sent = Mock()
+        mock_conbus_protocol.on_telegram_sent.connect = Mock()
+        mock_conbus_protocol.on_telegram_received = Mock()
+        mock_conbus_protocol.on_telegram_received.connect = Mock()
+        mock_conbus_protocol.on_timeout = Mock()
+        mock_conbus_protocol.on_timeout.connect = Mock()
+        mock_conbus_protocol.on_failed = Mock()
+        mock_conbus_protocol.on_failed.connect = Mock()
         mock_xp20_serializer = Mock()
         mock_xp24_serializer = Mock()
         mock_xp33_serializer = Mock()
         mock_telegram = Mock()
 
         service = MsActionTableService(
-            cli_config=mock_cli_config,
-            reactor=mock_reactor,
+            conbus_protocol=mock_conbus_protocol,
             xp20ms_serializer=mock_xp20_serializer,
             xp24ms_serializer=mock_xp24_serializer,
             xp33ms_serializer=mock_xp33_serializer,

@@ -222,10 +222,10 @@ class TestConbusDatapointService:
 
     def test_service_initialization(self):
         """Test service can be initialized with required dependencies."""
+        mock_protocol = Mock()
         service = ConbusDatapointService(
+            conbus_protocol=mock_protocol,
             telegram_service=self.mock_telegram_service,
-            cli_config=self.mock_cli_config,
-            reactor=self.mock_reactor,
         )
 
         assert service.telegram_service == self.mock_telegram_service
@@ -236,10 +236,10 @@ class TestConbusDatapointService:
 
     def test_service_context_manager(self):
         """Test service can be used as context manager."""
+        mock_protocol = Mock()
         service = ConbusDatapointService(
+            conbus_protocol=mock_protocol,
             telegram_service=self.mock_telegram_service,
-            cli_config=self.mock_cli_config,
-            reactor=self.mock_reactor,
         )
 
         with service as s:
@@ -252,28 +252,24 @@ class TestConbusDatapointQueryAllService:
     def setup_method(self):
         """Set up test fixtures."""
         self.valid_serial = "0123450001"
-        self.mock_cli_config = Mock()
-        self.mock_reactor = Mock()
+        self.mock_conbus_protocol = Mock()
         self.mock_telegram_service = Mock()
 
     def test_service_initialization(self):
         """Test service can be initialized with required dependencies."""
         service = ConbusDatapointQueryAllService(
+            conbus_protocol=self.mock_conbus_protocol,
             telegram_service=self.mock_telegram_service,
-            cli_config=self.mock_cli_config,
-            reactor=self.mock_reactor,
         )
 
         assert service.telegram_service == self.mock_telegram_service
-        assert service.cli_config == self.mock_cli_config.conbus
-        assert service.reactor == self.mock_reactor
+        assert service.conbus_protocol == self.mock_conbus_protocol
 
     def test_service_context_manager(self):
         """Test service can be used as context manager."""
         service = ConbusDatapointQueryAllService(
+            conbus_protocol=self.mock_conbus_protocol,
             telegram_service=self.mock_telegram_service,
-            cli_config=self.mock_cli_config,
-            reactor=self.mock_reactor,
         )
 
         with service as s:

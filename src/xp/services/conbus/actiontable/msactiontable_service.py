@@ -1,11 +1,10 @@
 """Service for downloading XP24 action tables via Conbus protocol."""
 
 import logging
-from typing import Callable, Optional, Union
+from typing import Any, Optional, Union
 
-from twisted.internet.posixbase import PosixReactorBase
+from psygnal import Signal
 
-from xp.models import ConbusClientConfig
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
@@ -21,7 +20,7 @@ from xp.services.actiontable.msactiontable_xp24_serializer import (
 from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
-from xp.services.protocol import ConbusProtocol
+from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
 
@@ -31,34 +30,42 @@ class MsActionTableError(Exception):
     pass
 
 
-class MsActionTableService(ConbusProtocol):
+class MsActionTableService:
     """
-    TCP client service for sending telegrams to Conbus servers.
+    Service for downloading MS action tables via Conbus protocol.
 
-    Manages TCP socket connections, handles telegram generation and transmission,
-    and processes server responses.
+    Uses ConbusEventProtocol to download action tables from XP20, XP24, or XP33 modules.
+    Emits signals for progress updates, errors, and completion.
+
+    Attributes:
+        conbus_protocol: Protocol instance for Conbus communication.
+        on_progress: Signal emitted for progress updates (str).
+        on_error: Signal emitted for errors (str).
+        on_finish: Signal emitted when download completes (MsActionTable or None).
     """
+
+    on_progress: Signal = Signal(str)
+    on_error: Signal = Signal(str)
+    on_finish: Signal = Signal(object)  # Union type for Xp20/24/33 or None
 
     def __init__(
         self,
-        cli_config: ConbusClientConfig,
-        reactor: PosixReactorBase,
+        conbus_protocol: ConbusEventProtocol,
         xp20ms_serializer: Xp20MsActionTableSerializer,
         xp24ms_serializer: Xp24MsActionTableSerializer,
         xp33ms_serializer: Xp33MsActionTableSerializer,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the Conbus client send service.
+        """Initialize the MS action table service.
 
         Args:
-            cli_config: Conbus client configuration.
-            reactor: Twisted reactor instance.
+            conbus_protocol: ConbusEventProtocol instance.
             xp20ms_serializer: XP20 MS action table serializer.
             xp24ms_serializer: XP24 MS action table serializer.
             xp33ms_serializer: XP33 MS action table serializer.
             telegram_service: Telegram service for parsing.
         """
-        super().__init__(cli_config, reactor)
+        self.conbus_protocol = conbus_protocol
         self.xp20ms_serializer = xp20ms_serializer
         self.xp24ms_serializer = xp24ms_serializer
         self.xp33ms_serializer = xp33ms_serializer
@@ -70,24 +77,23 @@ class MsActionTableService(ConbusProtocol):
         self.telegram_service = telegram_service
         self.serial_number: str = ""
         self.xpmoduletype: str = ""
-        self.progress_callback: Optional[Callable[[str], None]] = None
-        self.error_callback: Optional[Callable[[str], None]] = None
-        self.finish_callback: Optional[
-            Callable[
-                [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None]],
-                None,
-            ]
-        ] = None
         self.msactiontable_data: list[str] = []
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def connection_established(self) -> None:
-        """Handle connection established event."""
+        # Connect protocol signals
+        self.conbus_protocol.on_connection_made.connect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.connect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.connect(self.telegram_received)
+        self.conbus_protocol.on_timeout.connect(self.timeout)
+        self.conbus_protocol.on_failed.connect(self.failed)
+
+    def connection_made(self) -> None:
+        """Handle connection made event."""
         self.logger.debug(
             "Connection established, sending download msactiontable telegram"
         )
-        self.send_telegram(
+        self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
             system_function=SystemFunction.DOWNLOAD_MSACTIONTABLE,
@@ -143,10 +149,9 @@ class MsActionTableService(ConbusProtocol):
             self.msactiontable_data.extend(
                 (reply_telegram.data, reply_telegram.data_value)
             )
-            if self.progress_callback:
-                self.progress_callback(".")
+            self.on_progress.emit(".")
 
-            self.send_telegram(
+            self.conbus_protocol.send_telegram(
                 telegram_type=TelegramType.SYSTEM,
                 serial_number=self.serial_number,
                 system_function=SystemFunction.ACK,
@@ -164,6 +169,11 @@ class MsActionTableService(ConbusProtocol):
 
         self.logger.debug("Invalid msactiontable response")
 
+    def timeout(self) -> None:
+        """Handle timeout event."""
+        self.logger.debug("Timeout occurred")
+        self.failed("Timeout")
+
     def failed(self, message: str) -> None:
         """Handle failed connection event.
 
@@ -171,9 +181,8 @@ class MsActionTableService(ConbusProtocol):
             message: Failure message.
         """
         self.logger.debug(f"Failed: {message}")
-        if self.error_callback:
-            self.error_callback(message)
-        self._stop_reactor()
+        self.on_error.emit(message)
+        self.on_finish.emit(None)
 
     def succeed(
         self,
@@ -184,29 +193,19 @@ class MsActionTableService(ConbusProtocol):
         Args:
             msactiontable: result.
         """
-        if self.finish_callback:
-            self.finish_callback(msactiontable)
-        self._stop_reactor()
+        self.on_finish.emit(msactiontable)
 
     def start(
         self,
         serial_number: str,
         xpmoduletype: str,
-        progress_callback: Callable[[str], None],
-        error_callback: Callable[[str], None],
-        finish_callback: Callable[
-            [Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None]], None
-        ],
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Run reactor in dedicated thread with its own event loop.
+        """Setup download parameters.
 
         Args:
             serial_number: Module serial number.
             xpmoduletype: XP module type (xp20, xp24, xp33).
-            progress_callback: Callback for progress updates.
-            error_callback: Callback for errors.
-            finish_callback: Callback when download completes.
             timeout_seconds: Optional timeout in seconds.
 
         Raises:
@@ -225,8 +224,49 @@ class MsActionTableService(ConbusProtocol):
             raise MsActionTableError(f"Unsupported module type: {xpmoduletype}")
 
         if timeout_seconds:
-            self.timeout_seconds = timeout_seconds
-        self.progress_callback = progress_callback
-        self.error_callback = error_callback
-        self.finish_callback = finish_callback
-        self.start_reactor()
+            self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def set_timeout(self, timeout_seconds: float) -> None:
+        """Set operation timeout.
+
+        Args:
+            timeout_seconds: Timeout in seconds.
+        """
+        self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def start_reactor(self) -> None:
+        """Start the reactor."""
+        self.conbus_protocol.start_reactor()
+
+    def stop_reactor(self) -> None:
+        """Stop the reactor."""
+        self.conbus_protocol.stop_reactor()
+
+    def __enter__(self) -> "MsActionTableService":
+        """Enter context manager.
+
+        Returns:
+            Self for context manager protocol.
+        """
+        # Reset state for singleton reuse
+        self.msactiontable_data = []
+        self.serial_number = ""
+        self.xpmoduletype = ""
+        return self
+
+    def __exit__(
+        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+    ) -> None:
+        """Exit context manager and disconnect signals."""
+        # Disconnect protocol signals
+        self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+        self.conbus_protocol.on_timeout.disconnect(self.timeout)
+        self.conbus_protocol.on_failed.disconnect(self.failed)
+        # Disconnect service signals
+        self.on_progress.disconnect()
+        self.on_error.disconnect()
+        self.on_finish.disconnect()
+        # Stop reactor
+        self.stop_reactor()

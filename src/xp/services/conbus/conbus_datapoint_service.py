@@ -5,48 +5,57 @@ This service handles datapoint query operations for modules through Conbus teleg
 
 import logging
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Any, Optional
 
-from twisted.internet.posixbase import PosixReactorBase
+from psygnal import Signal
 
-from xp.models import ConbusClientConfig, ConbusDatapointResponse
+from xp.models import ConbusDatapointResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
-from xp.services.protocol import ConbusProtocol
+from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class ConbusDatapointService(ConbusProtocol):
-    """
-    Service for querying datapoints from Conbus modules.
+class ConbusDatapointService:
+    """Service for querying datapoints from Conbus modules.
 
-    Uses ConbusProtocol to provide datapoint query functionality
+    Uses ConbusEventProtocol to provide datapoint query functionality
     for reading sensor data and module information.
+
+    Attributes:
+        conbus_protocol: Protocol instance for Conbus communication.
+        telegram_service: Service for parsing telegrams.
+        on_finish: Signal emitted when datapoint query completes (with response).
     """
+
+    on_finish: Signal = Signal(ConbusDatapointResponse)
 
     def __init__(
         self,
+        conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
-        cli_config: ConbusClientConfig,
-        reactor: PosixReactorBase,
     ) -> None:
         """Initialize the Conbus datapoint service.
 
         Args:
+            conbus_protocol: Protocol instance for Conbus communication.
             telegram_service: Service for parsing telegrams.
-            cli_config: Configuration for Conbus client connection.
-            reactor: Twisted reactor for event loop.
         """
-        super().__init__(cli_config, reactor)
+        self.conbus_protocol = conbus_protocol
         self.telegram_service = telegram_service
+
+        # Connect protocol signals
+        self.conbus_protocol.on_connection_made.connect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.connect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.connect(self.telegram_received)
+        self.conbus_protocol.on_timeout.connect(self.timeout)
+        self.conbus_protocol.on_failed.connect(self.failed)
+
         self.serial_number: str = ""
         self.datapoint_type: Optional[DataPointType] = None
-        self.datapoint_finished_callback: Optional[
-            Callable[[ConbusDatapointResponse], None]
-        ] = None
         self.service_response: ConbusDatapointResponse = ConbusDatapointResponse(
             success=False,
             serial_number=self.serial_number,
@@ -55,7 +64,7 @@ class ConbusDatapointService(ConbusProtocol):
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def connection_established(self) -> None:
+    def connection_made(self) -> None:
         """Handle connection established event."""
         self.logger.debug(
             f"Connection established, querying datapoint {self.datapoint_type}."
@@ -64,7 +73,7 @@ class ConbusDatapointService(ConbusProtocol):
             self.failed("Datapoint type not set")
             return
 
-        self.send_telegram(
+        self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
             system_function=SystemFunction.READ_DATAPOINT,
@@ -128,9 +137,14 @@ class ConbusDatapointService(ConbusProtocol):
         self.service_response.datapoint_type = self.datapoint_type
         self.service_response.datapoint_telegram = datapoint_telegram
         self.service_response.data_value = datapoint_telegram.data_value
-        if self.datapoint_finished_callback:
-            self.datapoint_finished_callback(self.service_response)
-        self._stop_reactor()
+
+        # Emit finish signal
+        self.on_finish.emit(self.service_response)
+        self.stop_reactor()
+
+    def timeout(self) -> None:
+        """Handle timeout event."""
+        self.failed("Timeout")
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -143,14 +157,14 @@ class ConbusDatapointService(ConbusProtocol):
         self.service_response.timestamp = datetime.now()
         self.service_response.serial_number = self.serial_number
         self.service_response.error = message
-        if self.datapoint_finished_callback:
-            self.datapoint_finished_callback(self.service_response)
+
+        # Emit finish signal
+        self.on_finish.emit(self.service_response)
 
     def query_datapoint(
         self,
         serial_number: str,
         datapoint_type: DataPointType,
-        finish_callback: Callable[[ConbusDatapointResponse], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Query a specific datapoint from a module.
@@ -158,13 +172,47 @@ class ConbusDatapointService(ConbusProtocol):
         Args:
             serial_number: 10-digit module serial number.
             datapoint_type: Type of datapoint to query.
-            finish_callback: Callback function to call when the datapoint is received.
             timeout_seconds: Timeout in seconds.
         """
         self.logger.info("Starting query_datapoint")
         if timeout_seconds:
-            self.timeout_seconds = timeout_seconds
-        self.datapoint_finished_callback = finish_callback
+            self.conbus_protocol.timeout_seconds = timeout_seconds
         self.serial_number = serial_number
         self.datapoint_type = datapoint_type
-        self.start_reactor()
+
+    def set_timeout(self, timeout_seconds: float) -> None:
+        """Set operation timeout.
+
+        Args:
+            timeout_seconds: Timeout in seconds.
+        """
+        self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def start_reactor(self) -> None:
+        """Start the reactor."""
+        self.conbus_protocol.start_reactor()
+
+    def stop_reactor(self) -> None:
+        """Stop the reactor."""
+        self.conbus_protocol.stop_reactor()
+
+    def __enter__(self) -> "ConbusDatapointService":
+        """Enter context manager - reset state for singleton reuse.
+
+        Returns:
+            Self for context manager protocol.
+        """
+        self.datapoint_response = ConbusDatapointResponse(success=False)
+        return self
+
+    def __exit__(
+        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+    ) -> None:
+        """Exit context manager and disconnect signals."""
+        self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+        self.conbus_protocol.on_timeout.disconnect(self.timeout)
+        self.conbus_protocol.on_failed.disconnect(self.failed)
+        self.on_finish.disconnect()
+        self.stop_reactor()

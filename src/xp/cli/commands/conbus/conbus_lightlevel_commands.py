@@ -40,6 +40,10 @@ def xp_lightlevel_set(
         xp conbus lightlevel set 0011223344 0 100  # Set output 0 to 100%
     """
 
+    service: WriteConfigService = (
+        ctx.obj.get("container").get_container().resolve(WriteConfigService)
+    )
+
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
@@ -47,21 +51,19 @@ def xp_lightlevel_set(
             response: Light level response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
-
-    service: WriteConfigService = (
-        ctx.obj.get("container").get_container().resolve(WriteConfigService)
-    )
+        service.stop_reactor()
 
     data_value = f"{output_number:02d}:{level:03d}"
 
     with service:
+        service.on_finish.connect(on_finish)
         service.write_config(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
             data_value=data_value,
-            finish_callback=on_finish,
             timeout_seconds=0.5,
         )
+        service.start_reactor()
 
 
 @conbus_lightlevel.command("off")
@@ -85,6 +87,10 @@ def xp_lightlevel_off(
         xp conbus lightlevel off 0011223344 0   # Turn off output 0
     """
 
+    service: WriteConfigService = (
+        ctx.obj.get("container").get_container().resolve(WriteConfigService)
+    )
+
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
@@ -92,22 +98,20 @@ def xp_lightlevel_off(
             response: Light level response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
-
-    service: WriteConfigService = (
-        ctx.obj.get("container").get_container().resolve(WriteConfigService)
-    )
+        service.stop_reactor()
 
     level = 0
     data_value = f"{output_number:02d}:{level:03d}"
 
     with service:
+        service.on_finish.connect(on_finish)
         service.write_config(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
             data_value=data_value,
-            finish_callback=on_finish,
             timeout_seconds=0.5,
         )
+        service.start_reactor()
 
 
 @conbus_lightlevel.command("on")
@@ -131,6 +135,10 @@ def xp_lightlevel_on(
         xp conbus lightlevel on 0011223344 0   # Turn on output 0 (80%)
     """
 
+    service: WriteConfigService = (
+        ctx.obj.get("container").get_container().resolve(WriteConfigService)
+    )
+
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
@@ -138,22 +146,20 @@ def xp_lightlevel_on(
             response: Light level response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
-
-    service: WriteConfigService = (
-        ctx.obj.get("container").get_container().resolve(WriteConfigService)
-    )
+        service.stop_reactor()
 
     level = 60
     data_value = f"{output_number:02d}:{level:03d}"
 
     with service:
+        service.on_finish.connect(on_finish)
         service.write_config(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
             data_value=data_value,
-            finish_callback=on_finish,
             timeout_seconds=0.5,
         )
+        service.start_reactor()
 
 
 @conbus_lightlevel.command("get")
@@ -199,9 +205,9 @@ def xp_lightlevel_get(
         click.echo(json.dumps(result, indent=2))
 
     with service:
+        service.on_finish.connect(on_finish)
         service.query_datapoint(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
-            finish_callback=on_finish,
             timeout_seconds=0.5,
         )

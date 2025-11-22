@@ -159,9 +159,8 @@ class ServiceContainer:
         self.container.register(
             ConbusDatapointService,
             factory=lambda: ConbusDatapointService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 telegram_service=self.container.resolve(TelegramService),
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )
@@ -169,9 +168,8 @@ class ServiceContainer:
         self.container.register(
             ConbusDatapointQueryAllService,
             factory=lambda: ConbusDatapointQueryAllService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 telegram_service=self.container.resolve(TelegramService),
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )
@@ -309,8 +307,7 @@ class ServiceContainer:
         self.container.register(
             ActionTableService,
             factory=lambda: ActionTableService(
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
                 telegram_service=self.container.resolve(TelegramService),
             ),
@@ -362,8 +359,7 @@ class ServiceContainer:
         self.container.register(
             MsActionTableService,
             factory=lambda: MsActionTableService(
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
                 xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
                 xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
@@ -375,9 +371,8 @@ class ServiceContainer:
         self.container.register(
             ConbusCustomService,
             factory=lambda: ConbusCustomService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 telegram_service=self.container.resolve(TelegramService),
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
             ),
             scope=punq.Scope.singleton,
         )

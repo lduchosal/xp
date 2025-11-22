@@ -40,7 +40,7 @@ def conbus_download_msactiontable(
         ctx.obj.get("container").get_container().resolve(MsActionTableService)
     )
 
-    def progress_callback(progress: str) -> None:
+    def on_progress(progress: str) -> None:
         """Handle progress updates during MS action table download.
 
         Args:
@@ -61,6 +61,7 @@ def conbus_download_msactiontable(
         Raises:
             Abort: If action table download failed.
         """
+        service.stop_reactor()
         if action_table is None:
             click.echo("Error: Failed to download MS action table")
             raise click.Abort()
@@ -72,7 +73,7 @@ def conbus_download_msactiontable(
         }
         click.echo(json.dumps(output, indent=2, default=str))
 
-    def error_callback(error: str) -> None:
+    def on_error(error: str) -> None:
         """Handle errors during MS action table download.
 
         Args:
@@ -82,13 +83,13 @@ def conbus_download_msactiontable(
             Abort: Always raised to abort the command on error.
         """
         click.echo(f"Error: {error}")
-        raise click.Abort()
 
     with service:
+        service.on_progress.connect(on_progress)
+        service.on_error.connect(on_error)
+        service.on_finish.connect(on_finish)
         service.start(
             serial_number=serial_number,
             xpmoduletype=xpmoduletype,
-            progress_callback=progress_callback,
-            finish_callback=on_finish,
-            error_callback=error_callback,
         )
+        service.start_reactor()

@@ -40,18 +40,20 @@ def send_custom_telegram(
         ctx.obj.get("container").get_container().resolve(ConbusCustomService)
     )
 
-    def on_finish(service_response: "ConbusCustomResponse") -> None:
+    def on_finish(response: ConbusCustomResponse) -> None:
         """Handle successful completion of custom telegram.
 
         Args:
-            service_response: Custom response object.
+            response: Custom response object.
         """
-        click.echo(json.dumps(service_response.to_dict(), indent=2))
+        click.echo(json.dumps(response.to_dict(), indent=2))
+        service.stop_reactor()
 
     with service:
+        service.on_finish.connect(on_finish)
         service.send_custom_telegram(
             serial_number=serial_number,
             function_code=function_code,
             data=datapoint_code,
-            finish_callback=on_finish,
         )
+        service.start_reactor()

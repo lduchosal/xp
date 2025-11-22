@@ -5,9 +5,7 @@ import json
 import click
 
 from xp.cli.commands.conbus.conbus import conbus_output
-from xp.cli.utils.decorators import (
-    connection_command,
-)
+from xp.cli.utils.decorators import connection_command
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models import ConbusDatapointResponse
 from xp.models.conbus.conbus_output import ConbusOutputResponse
@@ -45,14 +43,16 @@ def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> 
             response: Output response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
+        service.stop_reactor()
 
     with service:
+        service.on_finish.connect(on_finish)
         service.send_action(
             serial_number=serial_number,
             output_number=output_number,
             action_type=ActionType.ON_RELEASE,
-            finish_callback=on_finish,
         )
+        service.start_reactor()
 
 
 @conbus_output.command("off")
@@ -83,14 +83,16 @@ def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) ->
             response: Output response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
+        service.stop_reactor()
 
     with service:
+        service.on_finish.connect(on_finish)
         service.send_action(
             serial_number=serial_number,
             output_number=output_number,
             action_type=ActionType.OFF_PRESS,
-            finish_callback=on_finish,
         )
+        service.start_reactor()
 
 
 @conbus_output.command("status")
@@ -121,10 +123,10 @@ def xp_output_status(ctx: click.Context, serial_number: str) -> None:
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     with service:
+        service.on_finish.connect(on_finish)
         service.query_datapoint(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
-            finish_callback=on_finish,
         )
 
 
@@ -156,8 +158,8 @@ def xp_module_state(ctx: click.Context, serial_number: str) -> None:
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     with service:
+        service.on_finish.connect(on_finish)
         service.query_datapoint(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_STATE,
-            finish_callback=on_finish,
         )

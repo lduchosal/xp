@@ -37,6 +37,10 @@ def set_modulenumber_command(
         xp conbus modulenumber set 0123450001 25
     """
 
+    service: WriteConfigService = (
+        ctx.obj.get("container").get_container().resolve(WriteConfigService)
+    )
+
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
         """Handle successful completion of light level on command.
 
@@ -44,20 +48,18 @@ def set_modulenumber_command(
             response: Light level response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
-
-    service: WriteConfigService = (
-        ctx.obj.get("container").get_container().resolve(WriteConfigService)
-    )
+        service.stop_reactor()
 
     data_value = f"{module_number:02d}"
     with service:
+        service.on_finish.connect(on_finish)
         service.write_config(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_NUMBER,
             data_value=data_value,
-            finish_callback=on_finish,
             timeout_seconds=0.5,
         )
+        service.start_reactor()
 
 
 @conbus_modulenumber.command("get", short_help="Get module number for a module")
@@ -96,9 +98,9 @@ def get_modulenumber_command(ctx: click.Context, serial_number: str) -> None:
         click.echo(json.dumps(result, indent=2))
 
     with service:
+        service.on_finish.connect(on_finish)
         service.query_datapoint(
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_NUMBER,
-            finish_callback=on_finish,
             timeout_seconds=0.5,
         )

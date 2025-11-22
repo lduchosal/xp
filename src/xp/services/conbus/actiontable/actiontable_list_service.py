@@ -2,7 +2,9 @@
 
 import logging
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Optional
+
+from psygnal import Signal
 
 
 class ActionTableListService:
@@ -12,11 +14,12 @@ class ActionTableListService:
     configurations defined.
     """
 
+    on_finish: Signal = Signal(object)  # dict[str, Any]
+    on_error: Signal = Signal(str)
+
     def __init__(self) -> None:
         """Initialize the action table list service."""
         self.logger = logging.getLogger(__name__)
-        self.finish_callback: Optional[Callable[[dict[str, Any]], None]] = None
-        self.error_callback: Optional[Callable[[str], None]] = None
 
     def __enter__(self) -> "ActionTableListService":
         """Context manager entry.
@@ -28,23 +31,19 @@ class ActionTableListService:
 
     def __exit__(self, _exc_type: Any, _exc_val: Any, _exc_tb: Any) -> None:
         """Context manager exit."""
-        pass
+        # Disconnect service signals
+        self.on_finish.disconnect()
+        self.on_error.disconnect()
 
     def start(
         self,
-        finish_callback: Callable[[dict[str, Any]], None],
-        error_callback: Callable[[str], None],
         config_path: Optional[Path] = None,
     ) -> None:
         """List all modules with action table configurations.
 
         Args:
-            finish_callback: Callback to invoke with the module list.
-            error_callback: Callback to invoke on error.
             config_path: Optional path to conson.yml. Defaults to current directory.
         """
-        self.finish_callback = finish_callback
-        self.error_callback = error_callback
 
         # Default to current directory if not specified
         if config_path is None:
@@ -77,15 +76,13 @@ class ActionTableListService:
         # Prepare result
         result = {"modules": modules_with_actiontable}
 
-        # Invoke callback
-        if self.finish_callback is not None:
-            self.finish_callback(result)
+        # Emit finish signal
+        self.on_finish.emit(result)
 
     def _handle_error(self, message: str) -> None:
-        """Handle error and invoke error callback.
+        """Handle error and emit error signal.
 
         Args:
             message: Error message.
         """
-        if self.error_callback is not None:
-            self.error_callback(message)
+        self.on_error.emit(message)

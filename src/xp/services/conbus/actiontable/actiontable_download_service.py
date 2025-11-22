@@ -2,62 +2,63 @@
 
 import logging
 from dataclasses import asdict
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Optional
 
-from twisted.internet.posixbase import PosixReactorBase
+from psygnal import Signal
 
-from xp.models import ConbusClientConfig
-from xp.models.actiontable.actiontable import ActionTable
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
-from xp.services.protocol import ConbusProtocol
+from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class ActionTableService(ConbusProtocol):
+class ActionTableService:
     """TCP client service for downloading action tables from Conbus modules.
 
     Manages TCP socket connections, handles telegram generation and transmission,
     and processes server responses for action table downloads.
     """
 
+    on_progress: Signal = Signal(str)
+    on_error: Signal = Signal(str)
+    on_finish: Signal = Signal(object)  # (ActionTable, Dict[str, Any], list[str])
+
     def __init__(
         self,
-        cli_config: ConbusClientConfig,
-        reactor: PosixReactorBase,
+        conbus_protocol: ConbusEventProtocol,
         actiontable_serializer: ActionTableSerializer,
         telegram_service: TelegramService,
     ) -> None:
         """Initialize the action table download service.
 
         Args:
-            cli_config: Conbus client configuration.
-            reactor: Twisted reactor instance.
+            conbus_protocol: ConbusEventProtocol instance.
             actiontable_serializer: Action table serializer.
             telegram_service: Telegram service for parsing.
         """
-        super().__init__(cli_config, reactor)
+        self.conbus_protocol = conbus_protocol
         self.serializer = actiontable_serializer
         self.telegram_service = telegram_service
         self.serial_number: str = ""
-        self.progress_callback: Optional[Callable[[str], None]] = None
-        self.error_callback: Optional[Callable[[str], None]] = None
-        self.finish_callback: Optional[
-            Callable[[ActionTable, Dict[str, Any], list[str]], None]
-        ] = None
-
         self.actiontable_data: list[str] = []
         # Set up logging
         self.logger = logging.getLogger(__name__)
 
-    def connection_established(self) -> None:
+        # Connect protocol signals
+        self.conbus_protocol.on_connection_made.connect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.connect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.connect(self.telegram_received)
+        self.conbus_protocol.on_timeout.connect(self.timeout)
+        self.conbus_protocol.on_failed.connect(self.failed)
+
+    def connection_made(self) -> None:
         """Handle connection established event."""
         self.logger.debug(
             "Connection established, sending download actiontable telegram"
         )
-        self.send_telegram(
+        self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
             system_function=SystemFunction.DOWNLOAD_ACTIONTABLE,
@@ -101,10 +102,9 @@ class ActionTableService(ConbusProtocol):
             self.logger.debug("Saving actiontable response")
             data_part = reply_telegram.data_value[2:]
             self.actiontable_data.append(data_part)
-            if self.progress_callback:
-                self.progress_callback(".")
+            self.on_progress.emit(".")
 
-            self.send_telegram(
+            self.conbus_protocol.send_telegram(
                 telegram_type=TelegramType.SYSTEM,
                 serial_number=self.serial_number,
                 system_function=SystemFunction.ACK,
@@ -118,8 +118,12 @@ class ActionTableService(ConbusProtocol):
             actiontable = self.serializer.from_encoded_string(all_data)
             actiontable_dict = asdict(actiontable)
             actiontable_short = self.serializer.format_decoded_output(actiontable)
-            if self.finish_callback:
-                self.finish_callback(actiontable, actiontable_dict, actiontable_short)
+            self.on_finish.emit((actiontable, actiontable_dict, actiontable_short))
+
+    def timeout(self) -> None:
+        """Handle timeout event."""
+        self.logger.debug("Timeout occurred")
+        self.failed("Timeout")
 
     def failed(self, message: str) -> None:
         """Handle failed connection event.
@@ -128,31 +132,64 @@ class ActionTableService(ConbusProtocol):
             message: Failure message.
         """
         self.logger.debug(f"Failed: {message}")
-        if self.error_callback:
-            self.error_callback(message)
+        self.on_error.emit(message)
 
     def start(
         self,
         serial_number: str,
-        progress_callback: Callable[[str], None],
-        error_callback: Callable[[str], None],
-        finish_callback: Callable[[ActionTable, Dict[str, Any], list[str]], None],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """Run reactor in dedicated thread with its own event loop.
 
         Args:
             serial_number: Module serial number.
-            progress_callback: Callback for progress updates.
-            error_callback: Callback for errors.
-            finish_callback: Callback when download completes.
             timeout_seconds: Optional timeout in seconds.
         """
         self.logger.info("Starting actiontable")
         self.serial_number = serial_number
         if timeout_seconds:
-            self.timeout_seconds = timeout_seconds
-        self.progress_callback = progress_callback
-        self.error_callback = error_callback
-        self.finish_callback = finish_callback
-        self.start_reactor()
+            self.conbus_protocol.timeout_seconds = timeout_seconds
+        # Caller invokes start_reactor()
+
+    def set_timeout(self, timeout_seconds: float) -> None:
+        """Set operation timeout.
+
+        Args:
+            timeout_seconds: Timeout in seconds.
+        """
+        self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def start_reactor(self) -> None:
+        """Start the reactor."""
+        self.conbus_protocol.start_reactor()
+
+    def stop_reactor(self) -> None:
+        """Stop the reactor."""
+        self.conbus_protocol.stop_reactor()
+
+    def __enter__(self) -> "ActionTableService":
+        """Enter context manager - reset state for singleton reuse.
+
+        Returns:
+            Self for context manager protocol.
+        """
+        # Reset state for singleton reuse
+        self.actiontable_data = []
+        return self
+
+    def __exit__(
+        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+    ) -> None:
+        """Exit context manager and disconnect signals."""
+        # Disconnect protocol signals
+        self.conbus_protocol.on_connection_made.disconnect(self.connection_made)
+        self.conbus_protocol.on_telegram_sent.disconnect(self.telegram_sent)
+        self.conbus_protocol.on_telegram_received.disconnect(self.telegram_received)
+        self.conbus_protocol.on_timeout.disconnect(self.timeout)
+        self.conbus_protocol.on_failed.disconnect(self.failed)
+        # Disconnect service signals
+        self.on_progress.disconnect()
+        self.on_error.disconnect()
+        self.on_finish.disconnect()
+        # Stop reactor
+        self.stop_reactor()

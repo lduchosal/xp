@@ -1,6 +1,6 @@
 """Unit tests for ActionTableUploadService."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -17,14 +17,29 @@ class TestActionTableUploadService:
     """Test cases for ActionTableUploadService."""
 
     @pytest.fixture
-    def mock_cli_config(self):
-        """Create mock CLI config."""
-        return Mock()
-
-    @pytest.fixture
-    def mock_reactor(self):
-        """Create mock reactor."""
-        return Mock()
+    def mock_conbus_protocol(self):
+        """Create mock ConbusEventProtocol."""
+        protocol = Mock()
+        protocol.on_connection_made = Mock()
+        protocol.on_connection_made.connect = Mock()
+        protocol.on_connection_made.disconnect = Mock()
+        protocol.on_telegram_sent = Mock()
+        protocol.on_telegram_sent.connect = Mock()
+        protocol.on_telegram_sent.disconnect = Mock()
+        protocol.on_telegram_received = Mock()
+        protocol.on_telegram_received.connect = Mock()
+        protocol.on_telegram_received.disconnect = Mock()
+        protocol.on_timeout = Mock()
+        protocol.on_timeout.connect = Mock()
+        protocol.on_timeout.disconnect = Mock()
+        protocol.on_failed = Mock()
+        protocol.on_failed.connect = Mock()
+        protocol.on_failed.disconnect = Mock()
+        protocol.send_telegram = Mock()
+        protocol.start_reactor = Mock()
+        protocol.stop_reactor = Mock()
+        protocol.timeout_seconds = 5.0
+        return protocol
 
     @pytest.fixture
     def mock_serializer(self):
@@ -44,16 +59,14 @@ class TestActionTableUploadService:
     @pytest.fixture
     def service(
         self,
-        mock_cli_config,
-        mock_reactor,
+        mock_conbus_protocol,
         mock_serializer,
         mock_telegram_service,
         mock_conson_config,
     ):
         """Create service instance for testing."""
         return ActionTableUploadService(
-            cli_config=mock_cli_config,
-            reactor=mock_reactor,
+            conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
             telegram_service=mock_telegram_service,
             conson_config=mock_conson_config,
@@ -86,21 +99,20 @@ class TestActionTableUploadService:
 
     def test_service_initialization(
         self,
-        mock_cli_config,
-        mock_reactor,
+        mock_conbus_protocol,
         mock_serializer,
         mock_telegram_service,
         mock_conson_config,
     ):
         """Test service can be initialized with required dependencies."""
         service = ActionTableUploadService(
-            cli_config=mock_cli_config,
-            reactor=mock_reactor,
+            conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
             telegram_service=mock_telegram_service,
             conson_config=mock_conson_config,
         )
 
+        assert service.conbus_protocol == mock_conbus_protocol
         assert service.serializer == mock_serializer
         assert service.telegram_service == mock_telegram_service
         assert service.conson_config == mock_conson_config
@@ -111,36 +123,57 @@ class TestActionTableUploadService:
         assert service.upload_data_chunks == []
         assert service.current_chunk_index == 0
 
-    def test_connection_established(self, service):
-        """Test connection_established sends UPLOAD_ACTIONTABLE telegram."""
+        # Verify signals were connected
+        mock_conbus_protocol.on_connection_made.connect.assert_called_once()
+        mock_conbus_protocol.on_telegram_sent.connect.assert_called_once()
+        mock_conbus_protocol.on_telegram_received.connect.assert_called_once()
+        mock_conbus_protocol.on_timeout.connect.assert_called_once()
+        mock_conbus_protocol.on_failed.connect.assert_called_once()
+
+    def test_connection_made(self, service, mock_conbus_protocol):
+        """Test connection_made sends UPLOAD_ACTIONTABLE telegram."""
         service.serial_number = "0123450001"
 
-        with patch.object(service, "send_telegram") as mock_send:
-            service.connection_established()
+        from xp.models.telegram.system_function import SystemFunction
+        from xp.models.telegram.telegram_type import TelegramType
 
-            from xp.models.telegram.system_function import SystemFunction
-            from xp.models.telegram.telegram_type import TelegramType
+        service.connection_made()
 
-            mock_send.assert_called_once_with(
-                telegram_type=TelegramType.SYSTEM,
-                serial_number="0123450001",
-                system_function=SystemFunction.UPLOAD_ACTIONTABLE,
-                data_value="00",
-            )
+        mock_conbus_protocol.send_telegram.assert_called_once_with(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number="0123450001",
+            system_function=SystemFunction.UPLOAD_ACTIONTABLE,
+            data_value="00",
+        )
 
 
 class TestActionTableUploadChunkPrefix:
     """Test cases for chunk prefix sequence (AA, AB, AC, AD...)."""
 
     @pytest.fixture
-    def mock_cli_config(self):
-        """Create mock CLI config."""
-        return Mock()
-
-    @pytest.fixture
-    def mock_reactor(self):
-        """Create mock reactor."""
-        return Mock()
+    def mock_conbus_protocol(self):
+        """Create mock ConbusEventProtocol."""
+        protocol = Mock()
+        protocol.on_connection_made = Mock()
+        protocol.on_connection_made.connect = Mock()
+        protocol.on_connection_made.disconnect = Mock()
+        protocol.on_telegram_sent = Mock()
+        protocol.on_telegram_sent.connect = Mock()
+        protocol.on_telegram_sent.disconnect = Mock()
+        protocol.on_telegram_received = Mock()
+        protocol.on_telegram_received.connect = Mock()
+        protocol.on_telegram_received.disconnect = Mock()
+        protocol.on_timeout = Mock()
+        protocol.on_timeout.connect = Mock()
+        protocol.on_timeout.disconnect = Mock()
+        protocol.on_failed = Mock()
+        protocol.on_failed.connect = Mock()
+        protocol.on_failed.disconnect = Mock()
+        protocol.send_telegram = Mock()
+        protocol.start_reactor = Mock()
+        protocol.stop_reactor = Mock()
+        protocol.timeout_seconds = 5.0
+        return protocol
 
     @pytest.fixture
     def mock_serializer(self):
@@ -160,22 +193,20 @@ class TestActionTableUploadChunkPrefix:
     @pytest.fixture
     def service(
         self,
-        mock_cli_config,
-        mock_reactor,
+        mock_conbus_protocol,
         mock_serializer,
         mock_telegram_service,
         mock_conson_config,
     ):
         """Create service instance for testing."""
         return ActionTableUploadService(
-            cli_config=mock_cli_config,
-            reactor=mock_reactor,
+            conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
             telegram_service=mock_telegram_service,
             conson_config=mock_conson_config,
         )
 
-    def test_first_chunk_has_aa_prefix(self, service):
+    def test_first_chunk_has_aa_prefix(self, service, mock_conbus_protocol):
         """Test that first chunk is sent with AA prefix."""
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -188,18 +219,17 @@ class TestActionTableUploadChunkPrefix:
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK
 
-        with patch.object(service, "send_telegram") as mock_send:
-            service._handle_upload_response(mock_reply)
+        service._handle_upload_response(mock_reply)
 
-            # Verify first chunk sent with AA prefix
-            mock_send.assert_called_once_with(
-                telegram_type=TelegramType.SYSTEM,
-                serial_number="0123450001",
-                system_function=SystemFunction.ACTIONTABLE,
-                data_value="AAAACHUNK1DATA",  # AA prefix
-            )
+        # Verify first chunk sent with AA prefix
+        mock_conbus_protocol.send_telegram.assert_called_once_with(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number="0123450001",
+            system_function=SystemFunction.ACTIONTABLE,
+            data_value="AAAACHUNK1DATA",  # AA prefix
+        )
 
-    def test_second_chunk_has_ab_prefix(self, service):
+    def test_second_chunk_has_ab_prefix(self, service, mock_conbus_protocol):
         """Test that second chunk is sent with AB prefix."""
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -212,18 +242,17 @@ class TestActionTableUploadChunkPrefix:
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK
 
-        with patch.object(service, "send_telegram") as mock_send:
-            service._handle_upload_response(mock_reply)
+        service._handle_upload_response(mock_reply)
 
-            # Verify second chunk sent with AB prefix
-            mock_send.assert_called_once_with(
-                telegram_type=TelegramType.SYSTEM,
-                serial_number="0123450001",
-                system_function=SystemFunction.ACTIONTABLE,
-                data_value="AAABCHUNK2DATA",  # AB prefix
-            )
+        # Verify second chunk sent with AB prefix
+        mock_conbus_protocol.send_telegram.assert_called_once_with(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number="0123450001",
+            system_function=SystemFunction.ACTIONTABLE,
+            data_value="AAABCHUNK2DATA",  # AB prefix
+        )
 
-    def test_third_chunk_has_ac_prefix(self, service):
+    def test_third_chunk_has_ac_prefix(self, service, mock_conbus_protocol):
         """Test that third chunk is sent with AC prefix."""
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -236,18 +265,17 @@ class TestActionTableUploadChunkPrefix:
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK
 
-        with patch.object(service, "send_telegram") as mock_send:
-            service._handle_upload_response(mock_reply)
+        service._handle_upload_response(mock_reply)
 
-            # Verify third chunk sent with AC prefix
-            mock_send.assert_called_once_with(
-                telegram_type=TelegramType.SYSTEM,
-                serial_number="0123450001",
-                system_function=SystemFunction.ACTIONTABLE,
-                data_value="AAACCHUNK3",  # AC prefix
-            )
+        # Verify third chunk sent with AC prefix
+        mock_conbus_protocol.send_telegram.assert_called_once_with(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number="0123450001",
+            system_function=SystemFunction.ACTIONTABLE,
+            data_value="AAACCHUNK3",  # AC prefix
+        )
 
-    def test_fourth_chunk_has_ad_prefix(self, service):
+    def test_fourth_chunk_has_ad_prefix(self, service, mock_conbus_protocol):
         """Test that fourth chunk is sent with AD prefix."""
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -260,18 +288,17 @@ class TestActionTableUploadChunkPrefix:
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK
 
-        with patch.object(service, "send_telegram") as mock_send:
-            service._handle_upload_response(mock_reply)
+        service._handle_upload_response(mock_reply)
 
-            # Verify fourth chunk sent with AD prefix
-            mock_send.assert_called_once_with(
-                telegram_type=TelegramType.SYSTEM,
-                serial_number="0123450001",
-                system_function=SystemFunction.ACTIONTABLE,
-                data_value="AAADC4",  # AD prefix
-            )
+        # Verify fourth chunk sent with AD prefix
+        mock_conbus_protocol.send_telegram.assert_called_once_with(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number="0123450001",
+            system_function=SystemFunction.ACTIONTABLE,
+            data_value="AAADC4",  # AD prefix
+        )
 
-    def test_chunk_prefix_sequence_increments(self, service):
+    def test_chunk_prefix_sequence_increments(self, service, mock_conbus_protocol):
         """Test that chunk prefix increments correctly through sequence."""
         from xp.models.telegram.system_function import SystemFunction
 
@@ -285,23 +312,19 @@ class TestActionTableUploadChunkPrefix:
 
         expected_prefixes = ["AAAA", "AAAB", "AAAC", "AAAD", "AAAE", "AAAF"]
 
-        with (
-            patch.object(service, "send_telegram") as mock_send,
-            patch.object(service, "_stop_reactor"),
-        ):
-            for i, expected_prefix in enumerate(expected_prefixes):
-                service.current_chunk_index = i
-                mock_send.reset_mock()
+        for i, expected_prefix in enumerate(expected_prefixes):
+            service.current_chunk_index = i
+            mock_conbus_protocol.send_telegram.reset_mock()
 
-                service._handle_upload_response(mock_reply)
+            service._handle_upload_response(mock_reply)
 
-                # Verify correct prefix
-                mock_send.assert_called_once()
-                call_args = mock_send.call_args
-                data_value = call_args.kwargs["data_value"]
-                assert data_value.startswith(
-                    expected_prefix
-                ), f"Chunk {i} should have prefix {expected_prefix}, got {data_value[:2]}"
+            # Verify correct prefix
+            mock_conbus_protocol.send_telegram.assert_called_once()
+            call_args = mock_conbus_protocol.send_telegram.call_args
+            data_value = call_args.kwargs["data_value"]
+            assert data_value.startswith(
+                expected_prefix
+            ), f"Chunk {i} should have prefix {expected_prefix}, got {data_value[:4]}"
 
     def test_chunk_prefix_calculation(self, service):
         """Test chunk prefix calculation formula: 0xA0 | (0xA + index)."""
@@ -322,7 +345,7 @@ class TestActionTableUploadChunkPrefix:
                 prefix_value == expected_value
             ), f"Chunk {chunk_index}: expected 0x{expected_value:02X}, got 0x{prefix_value:02X}"
 
-    def test_sends_eof_after_all_chunks(self, service):
+    def test_sends_eof_after_all_chunks(self, service, mock_conbus_protocol):
         """Test that EOF is sent after all chunks are transmitted."""
         from xp.models.telegram.system_function import SystemFunction
         from xp.models.telegram.telegram_type import TelegramType
@@ -336,36 +359,47 @@ class TestActionTableUploadChunkPrefix:
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK
 
-        with (
-            patch.object(service, "send_telegram") as mock_send,
-            patch.object(service, "_stop_reactor"),
-        ):
-            service._handle_upload_response(mock_reply)
+        service._handle_upload_response(mock_reply)
 
-            # Should send EOF
-            mock_send.assert_called_once_with(
-                telegram_type=TelegramType.SYSTEM,
-                serial_number="0123450001",
-                system_function=SystemFunction.EOF,
-                data_value="00",
-            )
+        # Should send EOF
+        mock_conbus_protocol.send_telegram.assert_called_once_with(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number="0123450001",
+            system_function=SystemFunction.EOF,
+            data_value="00",
+        )
 
-            # Should call success callback
-            service.success_callback.assert_called_once()
+        # Should call success callback
+        service.success_callback.assert_called_once()
 
 
 class TestActionTableUploadFullSequence:
     """Test complete 96-entry ActionTable upload telegram sequence."""
 
     @pytest.fixture
-    def mock_cli_config(self):
-        """Create mock CLI config."""
-        return Mock()
-
-    @pytest.fixture
-    def mock_reactor(self):
-        """Create mock reactor."""
-        return Mock()
+    def mock_conbus_protocol(self):
+        """Create mock ConbusEventProtocol."""
+        protocol = Mock()
+        protocol.on_connection_made = Mock()
+        protocol.on_connection_made.connect = Mock()
+        protocol.on_connection_made.disconnect = Mock()
+        protocol.on_telegram_sent = Mock()
+        protocol.on_telegram_sent.connect = Mock()
+        protocol.on_telegram_sent.disconnect = Mock()
+        protocol.on_telegram_received = Mock()
+        protocol.on_telegram_received.connect = Mock()
+        protocol.on_telegram_received.disconnect = Mock()
+        protocol.on_timeout = Mock()
+        protocol.on_timeout.connect = Mock()
+        protocol.on_timeout.disconnect = Mock()
+        protocol.on_failed = Mock()
+        protocol.on_failed.connect = Mock()
+        protocol.on_failed.disconnect = Mock()
+        protocol.send_telegram = Mock()
+        protocol.start_reactor = Mock()
+        protocol.stop_reactor = Mock()
+        protocol.timeout_seconds = 5.0
+        return protocol
 
     @pytest.fixture
     def mock_serializer(self):
@@ -385,16 +419,14 @@ class TestActionTableUploadFullSequence:
     @pytest.fixture
     def service(
         self,
-        mock_cli_config,
-        mock_reactor,
+        mock_conbus_protocol,
         mock_serializer,
         mock_telegram_service,
         mock_conson_config,
     ):
         """Create service instance for testing."""
         return ActionTableUploadService(
-            cli_config=mock_cli_config,
-            reactor=mock_reactor,
+            conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
             telegram_service=mock_telegram_service,
             conson_config=mock_conson_config,
@@ -418,7 +450,12 @@ class TestActionTableUploadFullSequence:
         return ActionTable(entries=entries)
 
     def test_upload_generates_correct_telegram_sequence(
-        self, service, mock_serializer, mock_conson_config, nomod_96_actiontable
+        self,
+        service,
+        mock_conbus_protocol,
+        mock_serializer,
+        mock_conson_config,
+        nomod_96_actiontable,
     ):
         """Test that full 96-entry ActionTable upload generates correct telegram sequence.
 
@@ -453,36 +490,30 @@ class TestActionTableUploadFullSequence:
             """
             sent_telegrams.append(kwargs)
 
+        mock_conbus_protocol.send_telegram.side_effect = capture_telegram
+
         # Setup callbacks
         service.progress_callback = Mock()
         service.error_callback = Mock()
         service.success_callback = Mock()
 
-        with (
-            patch.object(service, "send_telegram", side_effect=capture_telegram),
-            patch.object(service, "start_reactor") as mock_start_reactor,
-            patch.object(service, "_stop_reactor"),
-        ):
-            # Start upload
-            service.start(
-                serial_number="0020044974",
-                progress_callback=Mock(),
-                error_callback=Mock(),
-                success_callback=Mock(),
-            )
+        # Start upload
+        service.start(
+            serial_number="0020044974",
+            progress_callback=Mock(),
+            error_callback=Mock(),
+            success_callback=Mock(),
+        )
 
-            # Verify start_reactor was called
-            mock_start_reactor.assert_called_once()
+        # Simulate connection made
+        service.connection_made()
 
-            # Simulate connection established
-            service.connection_established()
+        # Simulate ACK responses for each chunk + final ACK to trigger EOF
+        mock_ack = Mock()
+        mock_ack.system_function = SystemFunction.ACK
 
-            # Simulate ACK responses for each chunk + final ACK to trigger EOF
-            mock_ack = Mock()
-            mock_ack.system_function = SystemFunction.ACK
-
-            for _ in range(16):  # 15 chunks + 1 final ACK to trigger EOF
-                service._handle_upload_response(mock_ack)
+        for _ in range(16):  # 15 chunks + 1 final ACK to trigger EOF
+            service._handle_upload_response(mock_ack)
 
         # Verify: Exactly 17 telegrams sent (1 UPLOAD_ACTIONTABLE + 15 ACTIONTABLE + 1 EOF)
         assert (
@@ -551,13 +582,12 @@ class TestActionTableUploadFullSequence:
         mock_conson_config.find_module.return_value = None
 
         error_callback = Mock()
-        with patch.object(service, "_stop_reactor"):
-            service.start(
-                serial_number="9999999999",
-                progress_callback=Mock(),
-                error_callback=error_callback,
-                success_callback=Mock(),
-            )
+        service.start(
+            serial_number="9999999999",
+            progress_callback=Mock(),
+            error_callback=error_callback,
+            success_callback=Mock(),
+        )
 
         # Verify error callback was called with appropriate message
         error_callback.assert_called_once()
@@ -578,13 +608,12 @@ class TestActionTableUploadFullSequence:
         )
 
         error_callback = Mock()
-        with patch.object(service, "_stop_reactor"):
-            service.start(
-                serial_number="0020044974",
-                progress_callback=Mock(),
-                error_callback=error_callback,
-                success_callback=Mock(),
-            )
+        service.start(
+            serial_number="0020044974",
+            progress_callback=Mock(),
+            error_callback=error_callback,
+            success_callback=Mock(),
+        )
 
         # Verify error callback was called
         error_callback.assert_called_once()
