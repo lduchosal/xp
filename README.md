@@ -38,6 +38,9 @@ Comprehensive type safety and robust error handling
 # Install with PIP (recommended)
 pip install conson-xp
 
+# Export your Conbus device configuration (recommended first step)
+xp conbus export
+
 # Parse a telegram
 xp telegram parse "<E14L00I02MAK>"
 
@@ -80,7 +83,29 @@ xp telegram validate "<E14L00I02MAK>"
 ```
 
 **Device Communication**
+
+> **⚠️ Important**: Bridge modules (XP130, XP230) accept **only one TCP connection at a time**.
+> Close any existing connections (including the official app) before using xp commands.
+
 ```bash
+# Export device configuration (RECOMMENDED - run this first!)
+# Discovers all devices and exports complete configuration to export.yml
+xp conbus export
+
+# What it does:
+# - Automatically discovers all devices on the Conbus network
+# - Queries 7 datapoints per device (type, version, link number, etc.)
+# - Generates export.yml in conson.yml format
+# - Shows real-time progress for each device
+# - Handles timeouts gracefully with partial exports
+#
+# Example output:
+#   Querying device 1/12: 0020041013...
+#     ✓ Module type: X130 (1)
+#     ✓ Link number: 1
+#     ✓ Software version: V2.3
+#   Export complete: export.yml (12 devices)
+
 # Discover XP servers on your network
 xp conbus discover
 
