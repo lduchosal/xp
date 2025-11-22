@@ -399,13 +399,13 @@ class TestStateMonitorService:
         """Test _handle_event_telegram processes XP33LR channel ON event."""
         # Mock event telegram for XP33LR L03 channel 0 ON
         event_telegram = EventTelegram(
-            raw_telegram="<E30L03I00MAE>",
+            raw_telegram="<E30L03I80MAE>",
             checksum="AE",
             checksum_validated=True,
             event_telegram_type="E",
             module_type=30,  # XP33LR
             link_number=3,
-            input_number=0,  # Channel 0
+            input_number=80,  # Channel 0 (I80)
             event_type=EventType.BUTTON_PRESS,
         )
         mock_telegram_service.parse_event_telegram.return_value = event_telegram
@@ -419,7 +419,7 @@ class TestStateMonitorService:
         service.on_module_state_changed.connect(signal_handler)
 
         # Create event
-        event = self._make_event(mock_protocol, "<E30L03I00MAE>", "E")
+        event = self._make_event(mock_protocol, "<E30L03I80MAE>", "E")
 
         # Process event
         service._handle_event_telegram(event)
@@ -435,13 +435,13 @@ class TestStateMonitorService:
         """Test _handle_event_telegram processes XP33LR channel OFF event."""
         # Mock event telegram for XP33LR L03 channel 1 OFF
         event_telegram = EventTelegram(
-            raw_telegram="<E30L03I01BAE>",
+            raw_telegram="<E30L03I81BAE>",
             checksum="AE",
             checksum_validated=True,
             event_telegram_type="E",
             module_type=30,  # XP33LR
             link_number=3,
-            input_number=1,  # Channel 1
+            input_number=81,  # Channel 1 (I81)
             event_type=EventType.BUTTON_RELEASE,
         )
         mock_telegram_service.parse_event_telegram.return_value = event_telegram
@@ -449,7 +449,7 @@ class TestStateMonitorService:
         module = service._find_module_by_link(3)
         module.outputs = "1 1 1"
 
-        event = self._make_event(mock_protocol, "<E30L03I01BAE>", "E")
+        event = self._make_event(mock_protocol, "<E30L03I81BAE>", "E")
 
         service._handle_event_telegram(event)
         assert module.outputs == "1 0 1"
@@ -460,13 +460,13 @@ class TestStateMonitorService:
         """Test _handle_event_telegram processes XP33LED channel ON event."""
         # Mock event telegram for XP33LED L04 channel 2 ON
         event_telegram = EventTelegram(
-            raw_telegram="<E35L04I02MAE>",
+            raw_telegram="<E35L04I82MAE>",
             checksum="AE",
             checksum_validated=True,
             event_telegram_type="E",
             module_type=35,  # XP33LED
             link_number=4,
-            input_number=2,  # Channel 2
+            input_number=82,  # Channel 2 (I82)
             event_type=EventType.BUTTON_PRESS,
         )
         mock_telegram_service.parse_event_telegram.return_value = event_telegram
@@ -476,7 +476,7 @@ class TestStateMonitorService:
         module.outputs = "0 0 0"
 
         # Create event
-        event = self._make_event(mock_protocol, "<E35L04I02MAE>", "E")
+        event = self._make_event(mock_protocol, "<E35L04I82MAE>", "E")
 
         # Process event
         service._handle_event_telegram(event)

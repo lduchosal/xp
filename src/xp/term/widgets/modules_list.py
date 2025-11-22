@@ -111,8 +111,9 @@ class ModulesListWidget(Static):
             # Update existing row
             row_key = self._row_keys[serial_number]
             self.table.update_cell(
-                row_key, "outputs",
-                Text(self._format_outputs(module_state.outputs), justify="right")
+                row_key,
+                "outputs",
+                Text(self._format_outputs(module_state.outputs), justify="right"),
             )
             self.table.update_cell(
                 row_key,
