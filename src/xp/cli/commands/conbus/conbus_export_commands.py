@@ -56,6 +56,8 @@ def export_conbus_config(ctx: click.Context) -> None:
         if module.sw_version:
             click.echo(f"  ✓ Software version: {module.sw_version}")
 
+    exit_code = [0]  # Use list to allow modification in nested function
+
     def on_finish(result: ConbusExportResponse) -> None:
         """Handle export completion.
 
@@ -66,14 +68,14 @@ def export_conbus_config(ctx: click.Context) -> None:
         with suppress(Exception):
             service.stop_reactor()
 
-        if result.export_status == "OK":
+        if result.success:
             click.echo(
                 f"\nExport complete: {result.output_file} ({result.device_count} devices)"
             )
-            ctx.exit(0)
+            exit_code[0] = 0
         else:
-            click.echo(f"Error: Export failed: {result.error}", err=True)
-            ctx.exit(1)
+            click.echo(f"Error: {result.error}", err=True)
+            exit_code[0] = 1
 
     service: ConbusExportService = (
         ctx.obj.get("container").get_container().resolve(ConbusExportService)
@@ -84,3 +86,6 @@ def export_conbus_config(ctx: click.Context) -> None:
         service.on_finish.connect(on_finish)
         service.set_timeout(5)
         service.start_reactor()
+
+    # Exit with stored code (deferred from signal handler)
+    ctx.exit(exit_code[0])
