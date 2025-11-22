@@ -321,7 +321,7 @@ class StateMonitorService:
 
         Args:
             module_state: Module state to update.
-            output_number: Output number (0-3 for XP24).
+            output_number: Output number (0-3 for XP24, 0-2 for XP33 modules).
             output_state: True for ON, False for OFF.
         """
         # Parse existing outputs string "0 1 0 0" → [0, 1, 0, 0]
@@ -340,8 +340,9 @@ class StateMonitorService:
     def _handle_event_telegram(self, event: TelegramReceivedEvent) -> None:
         """Handle event telegram for output state changes.
 
-        Processes XP24 output event telegrams to update module state in real-time.
-        Output events use input_number field with values 80-83 to represent outputs 0-3.
+        Processes XP24 and XP33 output event telegrams to update module state in real-time.
+        - XP24 output events use input_number 80-83 to represent outputs 0-3.
+        - XP33 output events use input_number 0-2 to represent channels 0-2.
 
         Args:
             event: Telegram received event containing event telegram.
@@ -352,17 +353,37 @@ class StateMonitorService:
             self.logger.debug("Failed to parse event telegram")
             return
 
-        # Only process XP24 output events
-        if event_telegram.module_type != ModuleTypeCode.XP24.value:
+        # Determine output number based on module type
+        output_number = None
+
+        if event_telegram.module_type == ModuleTypeCode.XP24.value:
+            # XP24 uses input_number 80-83 for outputs 0-3
+            if 80 <= event_telegram.input_number <= 83:
+                output_number = event_telegram.input_number - 80
+            else:
+                self.logger.debug(
+                    f"Ignoring XP24 input event I{event_telegram.input_number:02d}"
+                )
+                return
+
+        elif event_telegram.module_type in (
+            ModuleTypeCode.XP33.value,
+            ModuleTypeCode.XP33LR.value,
+            ModuleTypeCode.XP33LED.value,
+        ):
+            # XP33 modules use input_number 0-2 for channels 0-2
+            if 80 <= event_telegram.input_number <= 82:
+                output_number = event_telegram.input_number - 80
+            else:
+                self.logger.debug(
+                    f"Ignoring XP33 input event I{event_telegram.input_number:02d}"
+                )
+                return
+
+        else:
+            # Ignore events from other module types
             self.logger.debug(
                 f"Ignoring event from module type {event_telegram.module_type}"
-            )
-            return
-
-        # Validate output number range (80-83 for XP24 outputs 0-3)
-        if not (80 <= event_telegram.input_number <= 83):
-            self.logger.debug(
-                f"Ignoring input event I{event_telegram.input_number:02d}"
             )
             return
 
@@ -374,9 +395,8 @@ class StateMonitorService:
             )
             return
 
-        # Convert input_number to output_number (80→0, 81→1, 82→2, 83→3)
-        output_number = event_telegram.input_number - 80
-        output_state = event_telegram.is_button_press  # M=True, B=False
+        # Determine output state (M=True/ON, B=False/OFF)
+        output_state = event_telegram.is_button_press
 
         # Update output state
         self._update_output_bit(module_state, output_number, output_state)

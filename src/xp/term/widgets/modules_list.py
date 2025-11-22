@@ -111,7 +111,8 @@ class ModulesListWidget(Static):
             # Update existing row
             row_key = self._row_keys[serial_number]
             self.table.update_cell(
-                row_key, "outputs", self._format_outputs(module_state.outputs)
+                row_key, "outputs",
+                Text(self._format_outputs(module_state.outputs), justify="right")
             )
             self.table.update_cell(
                 row_key,
@@ -144,7 +145,7 @@ class ModulesListWidget(Static):
             Text(str(module_state.link_number), justify="right"),
             module_state.serial_number,
             module_state.module_type,
-            self._format_outputs(module_state.outputs),
+            Text(self._format_outputs(module_state.outputs), justify="right"),
             Text(self._format_report(module_state.auto_report), justify="center"),
             module_state.error_status,
             Text(self._format_last_update(module_state.last_update), justify="center"),

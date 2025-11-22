@@ -84,6 +84,22 @@ class TestStateMonitorService:
                     link_number=5,
                     auto_report_status="NN",
                 ),
+                ConsonModuleConfig(
+                    name="A03",
+                    serial_number="1111111111",
+                    module_type="XP33LR",
+                    module_type_code=30,
+                    link_number=3,
+                    auto_report_status="PP",
+                ),
+                ConsonModuleConfig(
+                    name="A04",
+                    serial_number="2222222222",
+                    module_type="XP33LED",
+                    module_type_code=35,
+                    link_number=4,
+                    auto_report_status="PP",
+                ),
             ]
         )
 
@@ -107,7 +123,7 @@ class TestStateMonitorService:
 
     def test_initialization(self, service):
         """Test service initializes module states from config."""
-        assert len(service.module_states) == 2
+        assert len(service.module_states) == 4
 
         # Check first module (XP24)
         xp24_state = next(m for m in service.module_states if m.name == "A01")
@@ -122,6 +138,20 @@ class TestStateMonitorService:
         xp130_state = next(m for m in service.module_states if m.name == "A02")
         assert xp130_state.link_number == 5
         assert xp130_state.auto_report is False
+
+        # Check third module (XP33LR)
+        xp33lr_state = next(m for m in service.module_states if m.name == "A03")
+        assert xp33lr_state.serial_number == "1111111111"
+        assert xp33lr_state.module_type == "XP33LR"
+        assert xp33lr_state.link_number == 3
+        assert xp33lr_state.auto_report is True
+
+        # Check fourth module (XP33LED)
+        xp33led_state = next(m for m in service.module_states if m.name == "A04")
+        assert xp33led_state.serial_number == "2222222222"
+        assert xp33led_state.module_type == "XP33LED"
+        assert xp33led_state.link_number == 4
+        assert xp33led_state.auto_report is True
 
     def test_find_module_by_link_found(self, service):
         """Test _find_module_by_link returns module when found."""
@@ -362,3 +392,122 @@ class TestStateMonitorService:
 
         # Verify parse_reply_telegram was called
         mock_telegram_service.parse_reply_telegram.assert_called_once()
+
+    def test_handle_event_telegram_xp33lr_channel_on(
+        self, service, mock_telegram_service, mock_protocol
+    ):
+        """Test _handle_event_telegram processes XP33LR channel ON event."""
+        # Mock event telegram for XP33LR L03 channel 0 ON
+        event_telegram = EventTelegram(
+            raw_telegram="<E30L03I00MAE>",
+            checksum="AE",
+            checksum_validated=True,
+            event_telegram_type="E",
+            module_type=30,  # XP33LR
+            link_number=3,
+            input_number=0,  # Channel 0
+            event_type=EventType.BUTTON_PRESS,
+        )
+        mock_telegram_service.parse_event_telegram.return_value = event_telegram
+
+        # Setup module initial state
+        module = service._find_module_by_link(3)
+        module.outputs = "0 0 0"
+
+        # Mock signal to verify emission
+        signal_handler = Mock()
+        service.on_module_state_changed.connect(signal_handler)
+
+        # Create event
+        event = self._make_event(mock_protocol, "<E30L03I00MAE>", "E")
+
+        # Process event
+        service._handle_event_telegram(event)
+
+        # Verify output updated
+        assert module.outputs == "1 0 0"
+        assert module.last_update is not None
+        signal_handler.assert_called_once()
+
+    def test_handle_event_telegram_xp33lr_channel_off(
+        self, service, mock_telegram_service, mock_protocol
+    ):
+        """Test _handle_event_telegram processes XP33LR channel OFF event."""
+        # Mock event telegram for XP33LR L03 channel 1 OFF
+        event_telegram = EventTelegram(
+            raw_telegram="<E30L03I01BAE>",
+            checksum="AE",
+            checksum_validated=True,
+            event_telegram_type="E",
+            module_type=30,  # XP33LR
+            link_number=3,
+            input_number=1,  # Channel 1
+            event_type=EventType.BUTTON_RELEASE,
+        )
+        mock_telegram_service.parse_event_telegram.return_value = event_telegram
+
+        module = service._find_module_by_link(3)
+        module.outputs = "1 1 1"
+
+        event = self._make_event(mock_protocol, "<E30L03I01BAE>", "E")
+
+        service._handle_event_telegram(event)
+        assert module.outputs == "1 0 1"
+
+    def test_handle_event_telegram_xp33led_channel_on(
+        self, service, mock_telegram_service, mock_protocol
+    ):
+        """Test _handle_event_telegram processes XP33LED channel ON event."""
+        # Mock event telegram for XP33LED L04 channel 2 ON
+        event_telegram = EventTelegram(
+            raw_telegram="<E35L04I02MAE>",
+            checksum="AE",
+            checksum_validated=True,
+            event_telegram_type="E",
+            module_type=35,  # XP33LED
+            link_number=4,
+            input_number=2,  # Channel 2
+            event_type=EventType.BUTTON_PRESS,
+        )
+        mock_telegram_service.parse_event_telegram.return_value = event_telegram
+
+        # Setup module initial state
+        module = service._find_module_by_link(4)
+        module.outputs = "0 0 0"
+
+        # Create event
+        event = self._make_event(mock_protocol, "<E35L04I02MAE>", "E")
+
+        # Process event
+        service._handle_event_telegram(event)
+
+        # Verify output updated
+        assert module.outputs == "0 0 1"
+        assert module.last_update is not None
+
+    def test_handle_event_telegram_xp33_ignores_invalid_channel(
+        self, service, mock_telegram_service, mock_protocol
+    ):
+        """Test _handle_event_telegram ignores XP33 events for invalid channels."""
+        # Mock event telegram for XP33LR with invalid channel number
+        event_telegram = EventTelegram(
+            raw_telegram="<E30L03I05MAE>",
+            checksum="AE",
+            checksum_validated=True,
+            event_telegram_type="E",
+            module_type=30,  # XP33LR
+            link_number=3,
+            input_number=5,  # Invalid channel (only 0-2 valid)
+            event_type=EventType.BUTTON_PRESS,
+        )
+        mock_telegram_service.parse_event_telegram.return_value = event_telegram
+
+        module = service._find_module_by_link(3)
+        module.outputs = "0 0 0"
+
+        event = self._make_event(mock_protocol, "<E30L03I05MAE>", "E")
+
+        service._handle_event_telegram(event)
+
+        # Output should not change
+        assert module.outputs == "0 0 0"
