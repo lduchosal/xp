@@ -4,16 +4,17 @@
 Migrate 12 services from inheritance-based `ConbusProtocol` to composition-based `ConbusEventProtocol`. **Key changes**: Constructor takes protocol parameter, connect signals in `__init__` and disconnect in `__exit__`, delegate reactor lifecycle to protocol, use context manager in CLI.
 
 **Estimated Time**: 2-3 hours per service
-**Order**: Follow checklist sequentially (1�10)
+**Order**: Follow checklist sequentially (1�10)
 
-## � CRITICAL: Read This First
+## � CRITICAL: Read This First
 
 ### Breaking Changes
-1. **CLI Update Required**: Commands MUST add explicit `service.start_reactor()` call after setup
-2. **Context Manager**: Services MUST implement `__enter__`/`__exit__` (no longer inherited)
-3. **Method Signature**: `timeout()` changes from `-> bool` to `-> None`
-4. **Constructor**: Takes `ConbusEventProtocol` instead of `ConbusClientConfig` + `reactor`
-5. **Lifecycle Methods**: Must add `set_timeout()`, `start_reactor()`, `stop_reactor()`
+1. **Callbacks → Signals**: Replace callback parameters with Signal attributes (e.g., `finish_callback` → `on_finish: Signal`)
+2. **CLI Update Required**: Commands connect to service signals instead of passing callbacks
+3. **Context Manager**: Services MUST implement `__enter__`/`__exit__` (no longer inherited)
+4. **Method Signature**: `timeout()` changes from `-> bool` to `-> None`
+5. **Constructor**: Takes `ConbusEventProtocol` instead of `ConbusClientConfig` + `reactor`
+6. **Lifecycle Methods**: Must add `set_timeout()`, `start_reactor()`, `stop_reactor()`
 
 ### Common Mistakes to Avoid
 - L DON'T call `stop_reactor()` in `timeout()` - protocol handles it automatically
@@ -132,10 +133,105 @@ class MsActionTableService:
 - Easy to test (mock protocol interface)
 - Protocol manages its own lifecycle
 
+## Callbacks → Signals Migration
+
+### Old Pattern (Callbacks)
+```python
+class ConbusBlinkService(ConbusProtocol):
+    def __init__(self, ...):
+        super().__init__(...)
+        self.finish_callback: Optional[Callable[[ConbusBlinkResponse], None]] = None
+        self.progress_callback: Optional[Callable[[str], None]] = None
+
+    def send_blink_telegram(
+        self,
+        finish_callback: Callable[[ConbusBlinkResponse], None],
+        progress_callback: Callable[[str], None],
+    ) -> None:
+        self.finish_callback = finish_callback
+        self.progress_callback = progress_callback
+        self.start_reactor()
+
+    def telegram_received(self, event: TelegramReceivedEvent) -> None:
+        if self.progress_callback:
+            self.progress_callback("Processing...")
+        # ... processing ...
+        if self.finish_callback:
+            self.finish_callback(self.response)
+
+# CLI usage
+def on_finish(response: ConbusBlinkResponse) -> None:
+    click.echo(json.dumps(response.to_dict()))
+
+service.send_blink_telegram(on_finish, None)
+```
+
+**Problems**:
+- Callbacks stored as mutable state
+- Must pass callbacks through multiple method calls
+- Hard to connect multiple listeners
+- No automatic cleanup
+
+### New Pattern (Signals)
+```python
+from psygnal import Signal
+
+class ConbusBlinkService:
+    # Define signals as class attributes
+    on_finish: Signal = Signal(ConbusBlinkResponse)
+    on_progress: Signal = Signal(str)
+
+    def __init__(self, conbus_protocol: ConbusEventProtocol):
+        self.conbus_protocol = conbus_protocol
+        # Signals are already initialized by class definition
+
+    def send_blink_telegram(self) -> None:
+        # No callback parameters needed
+        pass
+
+    def telegram_received(self, event: TelegramReceivedEvent) -> None:
+        self.on_progress.emit("Processing...")
+        # ... processing ...
+        self.on_finish.emit(self.response)
+
+    def __exit__(self, _exc_type, _exc_val, _exc_tb) -> None:
+        # Disconnect all signals
+        self.on_finish.disconnect()
+        self.on_progress.disconnect()
+        self.stop_reactor()
+
+# CLI usage
+def on_finish(response: ConbusBlinkResponse) -> None:
+    click.echo(json.dumps(response.to_dict()))
+    service.stop_reactor()  # CRITICAL: Stop reactor when done
+
+with service:
+    service.on_finish.connect(on_finish)  # Connect in CLI
+    service.start_reactor()
+```
+
+**Benefits**:
+- Signals are stateless (no mutable callback storage)
+- Multiple listeners can connect to same signal
+- Automatic type checking (signal signature)
+- Clean separation: service emits, caller connects
+- CLI controls when to connect/disconnect
+
+### Migration Steps for Callbacks → Signals
+
+1. **Identify Callbacks**: Find all `*_callback` attributes and parameters
+2. **Define Signals**: Add class-level signal definitions with correct types
+3. **Remove Callback Storage**: Delete `self.*_callback = None` from `__init__`
+4. **Remove Callback Parameters**: Delete callback params from `send_*()` methods
+5. **Replace Callback Calls**: Change `if self.callback: self.callback(data)` to `self.signal.emit(data)`
+6. **Add Signal Disconnection**: Add `self.signal.disconnect()` to `__exit__`
+7. **Update CLI**: Connect to signals inside `with service:` block
+8. **Update Tests**: Mock signals or connect test handlers
+
 ## Migration Checklist
 
 ### 1. Class Definition [CRITICAL - DO FIRST]
-- [ ] Remove inheritance: `class Service(ConbusProtocol)` � `class Service`
+- [ ] Remove inheritance: `class Service(ConbusProtocol)` � `class Service`
 - [ ] Keep service-specific state (callbacks, response models, etc.)
 
 ### 2. Constructor Refactoring [CRITICAL]
@@ -156,7 +252,7 @@ Connect event handlers in `__init__` after storing protocol reference:
 - [ ] Note: Only connect signals the service actually uses (not all services use all 5)
 
 ### 4. Method Updates [IMPORTANT]
-- [ ] Rename: `connection_established()` � `connection_made()`
+- [ ] Rename: `connection_established()` � `connection_made()`
 - [ ] `telegram_sent(telegram_sent: str)` - Parameter is `str`, not `bytes`
 - [ ] `telegram_received(telegram_received: TelegramReceivedEvent)` - No changes needed
 - [ ] `timeout()` - Change return type from `-> bool` to `-> None`
@@ -221,11 +317,16 @@ Update dependency injection in `src/xp/utils/dependencies.py`:
 ### 8. CLI Commands [CRITICAL - BLOCKS CLI]
 Update CLI command for the service:
 - [ ] **Mandatory**: Use `with service:` context manager (ensures signal cleanup)
+- [ ] **CRITICAL**: Add `service.stop_reactor()` call in signal handlers (especially `on_finish`)
 - [ ] Pattern:
   ```python
+  def on_finish(response: ServiceResponse) -> None:
+      click.echo(json.dumps(response.to_dict()))
+      service.stop_reactor()  # CRITICAL: Stop reactor when done
+
   with service:
       # Connect service-specific signals (if any)
-      service.on_finish.connect(callback)
+      service.on_finish.connect(on_finish)
       service.on_progress.connect(progress)
       # Setup
       service.set_timeout(5)
@@ -629,3 +730,54 @@ xp conbus datapoint read 0012345678 00
 - **Reference**: src/xp/services/conbus/conbus_discover_service.py:23 - Complete migration example
 - **Reference**: src/xp/services/conbus/conbus_receive_service.py:18 - Already migrated
 - **Protocol**: src/xp/services/protocol/conbus_event_protocol.py - Signal interface
+
+## Callback to Signal Migration - Quick Reference
+
+### Pattern Comparison
+
+**Old (Callbacks)**:
+- Constructor: `self.finish_callback: Optional[Callable] = None`
+- Method params: `finish_callback: Callable[[Response], None]`
+- Store: `self.finish_callback = finish_callback`
+- Call: `if self.finish_callback: self.finish_callback(result)`
+- CLI: `service.send_telegram(..., finish_callback=on_finish)`
+
+**New (Signals)**:
+- Class attr: `on_finish: Signal = Signal(Response)`
+- No params needed
+- No storage needed
+- Emit: `self.on_finish.emit(result)`
+- CLI: `service.on_finish.connect(on_finish)`
+- Exit: `self.on_finish.disconnect()`
+
+### Services with Callbacks to Migrate
+
+- ConbusBlinkService: finish_callback → on_finish
+- ConbusScanService: progress_callback, finish_callback → on_progress, on_finish
+- ConbusDatapointQueryAllService: progress_callback → on_progress
+- ConbusBlinkAllService: progress_callback, finish_callback → on_progress, on_finish
+- MsActionTableService: progress_callback, error_callback, finish_callback → on_progress, on_error, on_finish
+
+
+## Callback → Signal Migration Checklist (For Services with Callbacks)
+
+If your service has callback parameters (finish_callback, progress_callback, error_callback):
+
+- [ ] Add Signal import: `from psygnal import Signal`
+- [ ] Define signals as class attributes before `__init__`:
+  ```python
+  on_finish: Signal = Signal(ServiceResponse)
+  on_progress: Signal = Signal(str)  # if needed
+  ```
+- [ ] Remove callback attributes from `__init__`: Delete `self.finish_callback = None`
+- [ ] Remove callback parameters from methods: Delete `finish_callback: Callable` from method signatures
+- [ ] Replace callback calls with signal emissions:
+  - Before: `if self.finish_callback: self.finish_callback(result)`
+  - After: `self.on_finish.emit(result)`
+- [ ] Add signal disconnection to `__exit__`: `self.on_finish.disconnect()`
+- [ ] Update CLI commands:
+  - Remove callback from method call
+  - Add signal connection: `service.on_finish.connect(on_finish)`
+  - **CRITICAL**: Add `service.stop_reactor()` in `on_finish` handler to stop reactor when operation completes
+- [ ] Update tests to use signal pattern (mock or connect handlers)
+

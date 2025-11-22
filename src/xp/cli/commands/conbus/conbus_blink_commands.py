@@ -41,12 +41,15 @@ def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
             service_response: Blink response object.
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
+        service.stop_reactor()
 
     service: ConbusBlinkService = (
         ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
     )
     with service:
-        service.send_blink_telegram(serial_number, "on", on_finish, 0.5)
+        service.on_finish.connect(on_finish)
+        service.send_blink_telegram(serial_number, "on", 0.5)
+        service.start_reactor()
 
 
 @conbus_blink.command("off")
@@ -73,12 +76,15 @@ def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
             service_response: Blink response object.
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
+        service.stop_reactor()
 
     service: ConbusBlinkService = (
         ctx.obj.get("container").get_container().resolve(ConbusBlinkService)
     )
     with service:
-        service.send_blink_telegram(serial_number, "off", on_finish, 0.5)
+        service.on_finish.connect(on_finish)
+        service.send_blink_telegram(serial_number, "off", 0.5)
+        service.start_reactor()
 
 
 @conbus_blink.group("all", short_help="Control blink state for all devices")
