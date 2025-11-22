@@ -2,7 +2,7 @@
 
 ## Read spécifications
 
-Update {specification_file.md} :
+Write a checklist: 
   - implementation checklist
   - targeted at LLM model
   - concise
@@ -13,14 +13,15 @@ Update {specification_file.md} :
     - quality.md
     - coding.md
     - architecture.md
-  - use the new ConbusEventProtocol
-  - reference implementation:
-    - ConbusDiscoverService 
+
+from file: doc/conbus/Feat-Export.md
+to checklist file: doc/conbus/Feat-Export-Checklist.md
+
 
 
 ## Review specification
 
-Review {specification_file.md} ask questions, if things are unclear, I will clarify issues, you will update document based on my answers 
+Review the doc, ask questions, if things are unclear, I will clarify issues, you will update document based on my answers : {specification_file.md}
 
 ## Review specification as
 
