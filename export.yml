@@ -89,16 +89,6 @@
   auto_report_status: PP
 
 - name: A12
-  serial_number: '0020041013'
-  module_type: XP130
-  module_type_code: 13
-  link_number: 12
-  module_number: 1
-  sw_version: XP130_V0.10.04
-  hw_version: XP130_HW_Rev B
-  auto_report_status: AA
-
-- name: A12
   serial_number: '0020045056'
   module_type: XP33LED
   module_type_code: 35
@@ -117,3 +107,13 @@
   sw_version: XP33LED_V0.04.01
   hw_version: XP33LED_HW_VER1
   auto_report_status: PP
+
+- name: A14
+  serial_number: '0020041013'
+  module_type: XP130
+  module_type_code: 13
+  link_number: 14
+  module_number: 1
+  sw_version: XP130_V0.10.04
+  hw_version: XP130_HW_Rev B
+  auto_report_status: AA
