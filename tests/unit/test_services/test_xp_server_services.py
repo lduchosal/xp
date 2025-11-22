@@ -337,7 +337,7 @@ class TestXP33StormModeSimulator:
         recovery_response = service._handle_device_specific_data_request(request_error)
         assert recovery_response is not None
         assert service.storm_mode is False
-        assert "FE" in recovery_response  # type: ignore[unreachable]
+        assert "FE" in recovery_response
 
         # Step 5: Verify normal operation resumed
         normal_again = service._handle_device_specific_data_request(request_error)

@@ -132,6 +132,7 @@ disable_error_code = ["method-assign"]
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
+warn_unreachable = false
 
 [tool.isort]
 profile = "black"

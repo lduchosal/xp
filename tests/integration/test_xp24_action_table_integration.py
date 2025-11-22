@@ -48,9 +48,19 @@ class TestXp24ActionTableIntegration:
         callbacks = {"on_finish": None, "on_error": None}
 
         def mock_on_finish_connect(callback):
+            """Mock on_finish event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_finish"] = callback
 
         def mock_on_error_connect(callback):
+            """Mock on_error event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_error"] = callback
 
         mock_service.on_finish.connect.side_effect = mock_on_finish_connect
@@ -69,10 +79,12 @@ class TestXp24ActionTableIntegration:
                 callbacks["on_finish"](mock_action_table)
 
         def mock_start_reactor():
+            """Mock reactor start method."""
             # Do nothing in test
             pass
 
         def mock_stop_reactor():
+            """Mock reactor stop method."""
             # Do nothing in test
             pass
 
@@ -125,9 +137,19 @@ class TestXp24ActionTableIntegration:
         callbacks = {"on_finish": None, "on_error": None}
 
         def mock_on_finish_connect(callback):
+            """Mock on_finish event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_finish"] = callback
 
         def mock_on_error_connect(callback):
+            """Mock on_error event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_error"] = callback
 
         mock_service.on_finish.connect.side_effect = mock_on_finish_connect
@@ -149,10 +171,12 @@ class TestXp24ActionTableIntegration:
                 callbacks["on_finish"](None)
 
         def mock_start_reactor():
+            """Mock reactor start method."""
             # Do nothing in test
             pass
 
         def mock_stop_reactor():
+            """Mock reactor stop method."""
             # Do nothing in test
             pass
 
@@ -188,9 +212,19 @@ class TestXp24ActionTableIntegration:
         callbacks = {"on_finish": None, "on_error": None}
 
         def mock_on_finish_connect(callback):
+            """Mock on_finish event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_finish"] = callback
 
         def mock_on_error_connect(callback):
+            """Mock on_error event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_error"] = callback
 
         mock_service.on_finish.connect.side_effect = mock_on_finish_connect
@@ -212,10 +246,12 @@ class TestXp24ActionTableIntegration:
                 callbacks["on_finish"](None)
 
         def mock_start_reactor():
+            """Mock reactor start method."""
             # Do nothing in test
             pass
 
         def mock_stop_reactor():
+            """Mock reactor stop method."""
             # Do nothing in test
             pass
 

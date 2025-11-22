@@ -37,9 +37,19 @@ class TestConbusRawIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
+            """Mock on_finish event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
+            """Mock on_progress event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_progress"] = callback
 
         mock_service.on_finish.connect.side_effect = mock_on_finish_connect
@@ -57,7 +67,8 @@ class TestConbusRawIntegration:
             if callbacks["on_finish"]:
                 callbacks["on_finish"](mock_response)
 
-        def mock_start_reactor():  # type: ignore[unreachable]
+        def mock_start_reactor() -> None:
+            """Mock reactor start method."""
             # Do nothing in test
             pass
 
@@ -101,9 +112,19 @@ class TestConbusRawIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
+            """Mock on_finish event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
+            """Mock on_progress event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_progress"] = callback
 
         mock_service.on_finish.connect.side_effect = mock_on_finish_connect
@@ -126,7 +147,8 @@ class TestConbusRawIntegration:
             if callbacks["on_finish"]:
                 callbacks["on_finish"](mock_response)
 
-        def mock_start_reactor():  # type: ignore[unreachable]
+        def mock_start_reactor() -> None:
+            """Mock reactor start method."""
             # Do nothing in test
             pass
 
@@ -162,9 +184,19 @@ class TestConbusRawIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
+            """Mock on_finish event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
+            """Mock on_progress event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_progress"] = callback
 
         mock_service.on_finish.connect.side_effect = mock_on_finish_connect
@@ -182,7 +214,8 @@ class TestConbusRawIntegration:
             if callbacks["on_finish"]:
                 callbacks["on_finish"](mock_response)
 
-        def mock_start_reactor():  # type: ignore[unreachable]
+        def mock_start_reactor() -> None:
+            """Mock reactor start method."""
             # Do nothing in test
             pass
 
@@ -221,9 +254,19 @@ class TestConbusRawIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
+            """Mock on_finish event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
+            """Mock on_progress event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
             callbacks["on_progress"] = callback
 
         mock_service.on_finish.connect.side_effect = mock_on_finish_connect
@@ -241,7 +284,8 @@ class TestConbusRawIntegration:
             if callbacks["on_finish"]:
                 callbacks["on_finish"](mock_response)
 
-        def mock_start_reactor():  # type: ignore[unreachable]
+        def mock_start_reactor() -> None:
+            """Mock reactor start method."""
             # Do nothing in test
             pass
 
