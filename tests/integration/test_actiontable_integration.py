@@ -102,26 +102,42 @@ class TestActionTableIntegration:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_progress": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_progress_connect(callback):
+            callbacks["on_progress"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_progress.connect.side_effect = mock_on_progress_connect
+
         # Mock the start method to call finish_callback immediately
-        def mock_start(
-            serial_number, progress_callback, finish_callback, error_callback
-        ):
+        def mock_start(serial_number):
             """Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
-                progress_callback: Callback for progress updates.
-                finish_callback: Callback when finished.
-                error_callback: Callback for errors.
             """
             # Generate dict and short format like the service does
             actiontable_dict = asdict(sample_actiontable)
             actiontable_short = ActionTableSerializer.format_decoded_output(
                 sample_actiontable
             )
-            finish_callback(sample_actiontable, actiontable_dict, actiontable_short)
+            # Call the on_finish callback that was connected
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](
+                    (sample_actiontable, actiontable_dict, actiontable_short)
+                )
+
+        def mock_start_reactor():  # type: ignore[unreachable]
+            # Do nothing in test
+            pass
 
         mock_service.start.side_effect = mock_start
+        mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Setup mock container
         mock_container = Mock()

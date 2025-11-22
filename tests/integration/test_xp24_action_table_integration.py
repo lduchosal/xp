@@ -44,26 +44,41 @@ class TestXp24ActionTableIntegration:
             curtain34=True,
         )
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_error": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_error_connect(callback):
+            callbacks["on_error"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_error.connect.side_effect = mock_on_error_connect
+
         # Mock the start method to call finish_callback immediately
-        def mock_start(
-            serial_number,
-            xpmoduletype,
-            progress_callback,
-            finish_callback,
-            error_callback,
-        ):
+        def mock_start(serial_number, xpmoduletype):
             """Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
                 xpmoduletype: XP module type.
-                progress_callback: Callback for progress updates.
-                finish_callback: Callback when finished.
-                error_callback: Callback for errors.
             """
-            finish_callback(mock_action_table)
+            # Call the on_finish callback that was connected
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](mock_action_table)
+
+        def mock_start_reactor():
+            # Do nothing in test
+            pass
+
+        def mock_stop_reactor():
+            # Do nothing in test
+            pass
 
         mock_service.start.side_effect = mock_start
+        mock_service.start_reactor.side_effect = mock_start_reactor
+        mock_service.stop_reactor.side_effect = mock_stop_reactor
 
         # Create mock container
         mock_container = Mock(spec=ServiceContainer)
@@ -106,26 +121,44 @@ class TestXp24ActionTableIntegration:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_error": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_error_connect(callback):
+            callbacks["on_error"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_error.connect.side_effect = mock_on_error_connect
+
         # Mock the start method to call error_callback
-        def mock_start(
-            serial_number,
-            xpmoduletype,
-            progress_callback,
-            finish_callback,
-            error_callback,
-        ):
+        def mock_start(serial_number, xpmoduletype):
             """Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
                 xpmoduletype: XP module type.
-                progress_callback: Callback for progress updates.
-                finish_callback: Callback when finished.
-                error_callback: Callback for errors.
             """
-            error_callback("Invalid serial number")
+            # Call the on_error callback that was connected
+            if callbacks["on_error"]:
+                callbacks["on_error"]("Invalid serial number")
+            # Call on_finish with None to signal failure
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](None)
+
+        def mock_start_reactor():
+            # Do nothing in test
+            pass
+
+        def mock_stop_reactor():
+            # Do nothing in test
+            pass
 
         mock_service.start.side_effect = mock_start
+        mock_service.start_reactor.side_effect = mock_start_reactor
+        mock_service.stop_reactor.side_effect = mock_stop_reactor
 
         # Create mock container
         mock_container = Mock(spec=ServiceContainer)
@@ -151,26 +184,44 @@ class TestXp24ActionTableIntegration:
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_error": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_error_connect(callback):
+            callbacks["on_error"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_error.connect.side_effect = mock_on_error_connect
+
         # Mock the start method to call error_callback
-        def mock_start(
-            serial_number,
-            xpmoduletype,
-            progress_callback,
-            finish_callback,
-            error_callback,
-        ):
+        def mock_start(serial_number, xpmoduletype):
             """Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
                 xpmoduletype: XP module type.
-                progress_callback: Callback for progress updates.
-                finish_callback: Callback when finished.
-                error_callback: Callback for errors.
             """
-            error_callback("Conbus communication failed")
+            # Call the on_error callback that was connected
+            if callbacks["on_error"]:
+                callbacks["on_error"]("Conbus communication failed")
+            # Call on_finish with None to signal failure
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](None)
+
+        def mock_start_reactor():
+            # Do nothing in test
+            pass
+
+        def mock_stop_reactor():
+            # Do nothing in test
+            pass
 
         mock_service.start.side_effect = mock_start
+        mock_service.start_reactor.side_effect = mock_start_reactor
+        mock_service.stop_reactor.side_effect = mock_stop_reactor
 
         # Create mock container
         mock_container = Mock(spec=ServiceContainer)

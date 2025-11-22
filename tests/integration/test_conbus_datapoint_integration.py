@@ -45,20 +45,35 @@ class TestConbusDatapointIntegration:
             ],
         )
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_progress": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_progress_connect(callback):
+            callbacks["on_progress"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_progress.connect.side_effect = mock_on_progress_connect
+
         # Make the mock service call the callback immediately
-        def mock_query_all_datapoints(
-            serial_number, finish_callback, progress_callback
-        ):
+        def mock_query_all_datapoints(serial_number):
             """Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
-                finish_callback: Callback when finished.
-                progress_callback: Callback for progress updates.
             """
-            finish_callback(mock_response)
+            # Call the on_finish callback that was connected
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](mock_response)
+
+        def mock_start_reactor():  # type: ignore[unreachable]
+            # Do nothing in test
+            pass
 
         mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
+        mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Setup mock container to resolve ConbusDatapointQueryAllService
         mock_container = Mock()
@@ -127,20 +142,35 @@ class TestConbusDatapointIntegration:
             datapoints=[],
         )
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_progress": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_progress_connect(callback):
+            callbacks["on_progress"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_progress.connect.side_effect = mock_on_progress_connect
+
         # Make the mock service call the callback immediately
-        def mock_query_all_datapoints(
-            serial_number, finish_callback, progress_callback
-        ):
+        def mock_query_all_datapoints(serial_number):
             """Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
-                finish_callback: Callback when finished.
-                progress_callback: Callback for progress updates.
             """
-            finish_callback(mock_response)
+            # Call the on_finish callback that was connected
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](mock_response)
+
+        def mock_start_reactor():  # type: ignore[unreachable]
+            # Do nothing in test
+            pass
 
         mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
+        mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Setup mock container to resolve ConbusDatapointQueryAllService
         mock_container = Mock()
@@ -174,20 +204,35 @@ class TestConbusDatapointIntegration:
             datapoints=[],
         )
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_progress": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_progress_connect(callback):
+            callbacks["on_progress"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_progress.connect.side_effect = mock_on_progress_connect
+
         # Make the mock service call the callback immediately
-        def mock_query_all_datapoints(
-            serial_number, finish_callback, progress_callback
-        ):
+        def mock_query_all_datapoints(serial_number):
             """Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
-                finish_callback: Callback when finished.
-                progress_callback: Callback for progress updates.
             """
-            finish_callback(mock_response)
+            # Call the on_finish callback that was connected
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](mock_response)
+
+        def mock_start_reactor():  # type: ignore[unreachable]
+            # Do nothing in test
+            pass
 
         mock_service.query_all_datapoints.side_effect = mock_query_all_datapoints
+        mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Setup mock container to resolve ConbusDatapointQueryAllService
         mock_container = Mock()

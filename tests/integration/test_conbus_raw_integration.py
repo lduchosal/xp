@@ -33,21 +33,36 @@ class TestConbusRawIntegration:
             received_telegrams=["<R2113010000F02D12>"],
         )
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_progress": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_progress_connect(callback):
+            callbacks["on_progress"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_progress.connect.side_effect = mock_on_progress_connect
+
         # Make the mock service call the callback immediately
-        def mock_send_raw_telegram(
-            raw_input, progress_callback, finish_callback, timeout_seconds=None
-        ):
+        def mock_send_raw_telegram(raw_input, timeout_seconds=None):
             """Test helper function.
 
             Args:
                 raw_input: Raw telegram input.
-                progress_callback: Callback for progress updates.
-                finish_callback: Callback when finished.
                 timeout_seconds: Timeout in seconds.
             """
-            finish_callback(mock_response)
+            # Call the on_finish callback that was connected
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](mock_response)
+
+        def mock_start_reactor():  # type: ignore[unreachable]
+            # Do nothing in test
+            pass
 
         mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
+        mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Mock the container
         mock_container = MagicMock()
@@ -82,25 +97,41 @@ class TestConbusRawIntegration:
             ],
         )
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_progress": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_progress_connect(callback):
+            callbacks["on_progress"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_progress.connect.side_effect = mock_on_progress_connect
+
         # Make the mock service call the callback immediately
-        def mock_send_raw_telegram(
-            raw_input, progress_callback, finish_callback, timeout_seconds=None
-        ):
+        def mock_send_raw_telegram(raw_input, timeout_seconds=None):
             """Test helper function.
 
             Args:
                 raw_input: Raw telegram input.
-                progress_callback: Callback for progress updates.
-                finish_callback: Callback when finished.
                 timeout_seconds: Timeout in seconds.
             """
             # Simulate progress callbacks for each received telegram
             if mock_response.received_telegrams:
                 for telegram in mock_response.received_telegrams:
-                    progress_callback(telegram)
-            finish_callback(mock_response)
+                    if callbacks["on_progress"]:
+                        callbacks["on_progress"](telegram)
+            # Call the on_finish callback that was connected
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](mock_response)
+
+        def mock_start_reactor():  # type: ignore[unreachable]
+            # Do nothing in test
+            pass
 
         mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
+        mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Mock the container
         mock_container = MagicMock()
@@ -127,21 +158,36 @@ class TestConbusRawIntegration:
         # Mock the response with error
         mock_response = ConbusRawResponse(success=False, error="Connection failed")
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_progress": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_progress_connect(callback):
+            callbacks["on_progress"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_progress.connect.side_effect = mock_on_progress_connect
+
         # Make the mock service call the callback immediately
-        def mock_send_raw_telegram(
-            raw_input, progress_callback, finish_callback, timeout_seconds=None
-        ):
+        def mock_send_raw_telegram(raw_input, timeout_seconds=None):
             """Test helper function.
 
             Args:
                 raw_input: Raw telegram input.
-                progress_callback: Callback for progress updates.
-                finish_callback: Callback when finished.
                 timeout_seconds: Timeout in seconds.
             """
-            finish_callback(mock_response)
+            # Call the on_finish callback that was connected
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](mock_response)
+
+        def mock_start_reactor():  # type: ignore[unreachable]
+            # Do nothing in test
+            pass
 
         mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
+        mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Mock the container
         mock_container = MagicMock()
@@ -171,21 +217,36 @@ class TestConbusRawIntegration:
             success=True, sent_telegrams="<S2113010000F02D12>", received_telegrams=[]
         )
 
+        # Store the callbacks that are connected
+        callbacks = {"on_finish": None, "on_progress": None}
+
+        def mock_on_finish_connect(callback):
+            callbacks["on_finish"] = callback
+
+        def mock_on_progress_connect(callback):
+            callbacks["on_progress"] = callback
+
+        mock_service.on_finish.connect.side_effect = mock_on_finish_connect
+        mock_service.on_progress.connect.side_effect = mock_on_progress_connect
+
         # Make the mock service call the callback immediately
-        def mock_send_raw_telegram(
-            raw_input, progress_callback, finish_callback, timeout_seconds=None
-        ):
+        def mock_send_raw_telegram(raw_input, timeout_seconds=None):
             """Test helper function.
 
             Args:
                 raw_input: Raw telegram input.
-                progress_callback: Callback for progress updates.
-                finish_callback: Callback when finished.
                 timeout_seconds: Timeout in seconds.
             """
-            finish_callback(mock_response)
+            # Call the on_finish callback that was connected
+            if callbacks["on_finish"]:
+                callbacks["on_finish"](mock_response)
+
+        def mock_start_reactor():  # type: ignore[unreachable]
+            # Do nothing in test
+            pass
 
         mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
+        mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Mock the container
         mock_container = MagicMock()
