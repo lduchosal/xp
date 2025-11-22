@@ -71,22 +71,6 @@ def export_conbus_config(ctx: click.Context) -> None:
                 f"\nExport complete: {result.output_file} ({result.device_count} devices)"
             )
             ctx.exit(0)
-        elif result.export_status == "FAILED_NO_DEVICES":
-            click.echo("Error: No devices found on network", err=True)
-            ctx.exit(1)
-        elif result.export_status == "FAILED_TIMEOUT":
-            click.echo(
-                f"\nWarning: Partial export due to timeout: {result.output_file} ({result.device_count} devices)",
-                err=True,
-            )
-            click.echo("Some devices may have incomplete configuration", err=True)
-            ctx.exit(1)
-        elif result.export_status == "FAILED_WRITE":
-            click.echo(f"Error: Failed to write export file: {result.error}", err=True)
-            ctx.exit(1)
-        elif result.export_status == "FAILED_CONNECTION":
-            click.echo(f"Error: Connection failed: {result.error}", err=True)
-            ctx.exit(1)
         else:
             click.echo(f"Error: Export failed: {result.error}", err=True)
             ctx.exit(1)
