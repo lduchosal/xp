@@ -2,13 +2,14 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from psygnal import Signal
 
 from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.module_type_code import ModuleTypeCode
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.models.term.connection_state import ConnectionState
@@ -18,7 +19,7 @@ from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class XP24:
+class StateMonitorService:
     """Service for module state monitoring in terminal interface.
 
     Wraps ConbusEventProtocol and ConsonModuleListConfig to provide
@@ -240,15 +241,24 @@ class XP24:
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
         """Handle telegram received event.
 
-        Parse output states from telegram and update module state.
+        Routes telegrams to appropriate handlers based on type.
+        Processes reply telegrams for datapoint queries and event telegrams for state changes.
 
         Args:
             event: Telegram received event.
         """
-        # Only process reply telegrams
-        if event.telegram_type != TelegramType.REPLY:
-            return
+        # Route based on telegram type
+        if event.telegram_type == TelegramType.REPLY:
+            self._handle_reply_telegram(event)
+        elif event.telegram_type == TelegramType.EVENT:
+            self._handle_event_telegram(event)
 
+    def _handle_reply_telegram(self, event: TelegramReceivedEvent) -> None:
+        """Handle reply telegram for datapoint queries.
+
+        Args:
+            event: Telegram received event.
+        """
         serial_number = event.serial_number
         if not serial_number or serial_number not in self._module_states:
             return
@@ -289,6 +299,95 @@ class XP24:
             self._connection_state = ConnectionState.FAILED
             self.on_connection_state_changed.emit(self._connection_state)
             self.on_status_message.emit(f"Protocol error: {failure}")
+
+    def _find_module_by_link(self, link_number: int) -> Optional[ModuleState]:
+        """Find module state by link number.
+
+        Args:
+            link_number: Link number to search for.
+
+        Returns:
+            ModuleState if found, None otherwise.
+        """
+        for module_state in self._module_states.values():
+            if module_state.link_number == link_number:
+                return module_state
+        return None
+
+    def _update_output_bit(
+        self, module_state: ModuleState, output_number: int, output_state: bool
+    ) -> None:
+        """Update a single output bit in module state.
+
+        Args:
+            module_state: Module state to update.
+            output_number: Output number (0-3 for XP24).
+            output_state: True for ON, False for OFF.
+        """
+        # Parse existing outputs string "0 1 0 0" → [0, 1, 0, 0]
+        outputs = module_state.outputs.split() if module_state.outputs else []
+
+        # Ensure we have enough outputs
+        while len(outputs) <= output_number:
+            outputs.append("0")
+
+        # Update the specific output
+        outputs[output_number] = "1" if output_state else "0"
+
+        # Convert back to string format
+        module_state.outputs = " ".join(outputs)
+
+    def _handle_event_telegram(self, event: TelegramReceivedEvent) -> None:
+        """Handle event telegram for output state changes.
+
+        Processes XP24 output event telegrams to update module state in real-time.
+        Output events use input_number field with values 80-83 to represent outputs 0-3.
+
+        Args:
+            event: Telegram received event containing event telegram.
+        """
+        # Parse the event telegram
+        event_telegram = self._telegram_service.parse_event_telegram(event.frame)
+        if not event_telegram:
+            self.logger.debug("Failed to parse event telegram")
+            return
+
+        # Only process XP24 output events
+        if event_telegram.module_type != ModuleTypeCode.XP24.value:
+            self.logger.debug(
+                f"Ignoring event from module type {event_telegram.module_type}"
+            )
+            return
+
+        # Validate output number range (80-83 for XP24 outputs 0-3)
+        if not (80 <= event_telegram.input_number <= 83):
+            self.logger.debug(
+                f"Ignoring input event I{event_telegram.input_number:02d}"
+            )
+            return
+
+        # Find module by link number
+        module_state = self._find_module_by_link(event_telegram.link_number)
+        if not module_state:
+            self.logger.debug(
+                f"Module not found for link number {event_telegram.link_number}"
+            )
+            return
+
+        # Convert input_number to output_number (80→0, 81→1, 82→2, 83→3)
+        output_number = event_telegram.input_number - 80
+        output_state = event_telegram.is_button_press  # M=True, B=False
+
+        # Update output state
+        self._update_output_bit(module_state, output_number, output_state)
+        module_state.last_update = datetime.now()
+
+        # Emit signal for UI update
+        self.on_module_state_changed.emit(module_state)
+        self.logger.debug(
+            f"Updated {module_state.name} output {output_number} to "
+            f"{'ON' if output_state else 'OFF'}"
+        )
 
     def cleanup(self) -> None:
         """Clean up service resources."""

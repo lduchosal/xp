@@ -114,13 +114,17 @@ class ModulesListWidget(Static):
                 row_key, "outputs", self._format_outputs(module_state.outputs)
             )
             self.table.update_cell(
-                row_key, "report", Text(self._format_report(module_state.auto_report), justify="center")
+                row_key,
+                "report",
+                Text(self._format_report(module_state.auto_report), justify="center"),
             )
             self.table.update_cell(row_key, "status", module_state.error_status)
             self.table.update_cell(
                 row_key,
                 "last_update",
-                Text(self._format_last_update(module_state.last_update), justify="center"),
+                Text(
+                    self._format_last_update(module_state.last_update), justify="center"
+                ),
             )
         else:
             # Add new row
@@ -213,5 +217,8 @@ class ModulesListWidget(Static):
                 self.table.update_cell(
                     row_key,
                     "last_update",
-                    Text(self._format_last_update(module_state.last_update), justify="center"),
+                    Text(
+                        self._format_last_update(module_state.last_update),
+                        justify="center",
+                    ),
                 )
