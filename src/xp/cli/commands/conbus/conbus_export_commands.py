@@ -1,5 +1,7 @@
 """Conbus export CLI command."""
 
+from contextlib import suppress
+
 import click
 
 from xp.cli.commands.conbus.conbus import conbus
@@ -60,7 +62,9 @@ def export_conbus_config(ctx: click.Context) -> None:
         Args:
             result: Export result.
         """
-        service.stop_reactor()
+        # Try to stop reactor (may already be stopped)
+        with suppress(Exception):
+            service.stop_reactor()
 
         if result.export_status == "OK":
             click.echo(

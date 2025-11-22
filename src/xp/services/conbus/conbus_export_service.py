@@ -15,9 +15,11 @@ from xp.models.homekit.homekit_conson_config import (
 )
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
+from xp.services.telegram.telegram_service import TelegramService
 
 
 class ConbusExportService:
@@ -63,6 +65,7 @@ class ConbusExportService:
         """
         self.logger = logging.getLogger(__name__)
         self.conbus_protocol = conbus_protocol
+        self.telegram_service = TelegramService()
 
         # State management
         self.discovered_devices: list[str] = []
@@ -70,6 +73,7 @@ class ConbusExportService:
         self.device_datapoints_received: dict[str, set[str]] = {}
         self.export_result = ConbusExportResponse(success=False)
         self.export_status = "OK"
+        self._finalized = False  # Track if export has been finalized
 
         # Connect protocol signals
         self.conbus_protocol.on_connection_made.connect(self.connection_made)
@@ -106,26 +110,29 @@ class ConbusExportService:
         """
         self.export_result.received_telegrams.append(event.telegram)
 
+        # Only process valid reply telegrams
+        if not event.checksum_valid or event.telegram_type != TelegramType.REPLY.value:
+            return
+
+        # Parse telegram using TelegramService
+        try:
+            parsed: ReplyTelegram = self.telegram_service.parse_reply_telegram(
+                event.frame
+            )
+        except Exception as e:
+            self.logger.debug(f"Failed to parse telegram: {e}")
+            return
+
         # Check for discovery response (F01D)
-        if (
-            event.checksum_valid
-            and event.telegram_type == TelegramType.REPLY.value
-            and event.payload[11:15] == "F01D"
-            and len(event.payload) == 15
-        ):
-            self._handle_discovery_response(event.serial_number)
+        if parsed.system_function == SystemFunction.DISCOVERY:
+            self._handle_discovery_response(parsed.serial_number)
 
         # Check for datapoint response (F02D)
-        elif (
-            event.checksum_valid
-            and event.telegram_type == TelegramType.REPLY.value
-            and event.payload[11:15] == "F02D"
-            and len(event.payload) >= 17
-        ):
-            datapoint_code = event.payload[15:17]
-            # Value starts at position 17, extract until end of payload
-            value = event.payload[17:]
-            self._handle_datapoint_response(event.serial_number, datapoint_code, value)
+        elif parsed.system_function == SystemFunction.READ_DATAPOINT:
+            if parsed.datapoint_type and parsed.data_value:
+                self._handle_datapoint_response(
+                    parsed.serial_number, parsed.datapoint_type.value, parsed.data_value
+                )
 
     def _handle_discovery_response(self, serial_number: str) -> None:
         """Handle discovery response and query all datapoints.
@@ -256,6 +263,11 @@ class ConbusExportService:
 
     def _finalize_export(self) -> None:
         """Finalize export and write file."""
+        # Only finalize once
+        if self._finalized:
+            return
+
+        self._finalized = True
         self.logger.info("Finalizing export")
 
         if not self.discovered_devices:
@@ -430,6 +442,7 @@ class ConbusExportService:
         self.device_datapoints_received = {}
         self.export_result = ConbusExportResponse(success=False)
         self.export_status = "OK"
+        self._finalized = False
         return self
 
     def __exit__(
