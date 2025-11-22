@@ -88,6 +88,16 @@
   hw_version: XP20
   auto_report_status: PP
 
+- name: A11
+  serial_number: 0020030837
+  module_type: XP130
+  module_type_code: 34
+  link_number: 11
+  module_number: 5
+  sw_version: XP230_V1.00.04
+  hw_version: XP130_HW_Rev B
+  auto_report_status: AA
+
 - name: A12
   serial_number: '0020045056'
   module_type: XP33LED

@@ -31,8 +31,7 @@ class ConbusExportService:
     Attributes:
         conbus_protocol: Protocol for Conbus communication.
         discovered_devices: List of discovered device serial numbers.
-        device_configs: Partial device configurations being built.
-        device_datapoints_received: Set of datapoints received per device.
+        device_configs: Device configurations (ConsonModuleConfig instances).
         export_result: Final export result.
         export_status: Export status (OK, FAILED_TIMEOUT, etc.).
         on_progress: Signal emitted on device discovery (serial, current, total).
@@ -69,8 +68,7 @@ class ConbusExportService:
 
         # State management
         self.discovered_devices: list[str] = []
-        self.device_configs: dict[str, dict[str, Any]] = {}
-        self.device_datapoints_received: dict[str, set[str]] = {}
+        self.device_configs: dict[str, ConsonModuleConfig] = {}
         self.export_result = ConbusExportResponse(success=False)
         self.export_status = "OK"
         self._finalized = False  # Track if export has been finalized
@@ -146,8 +144,16 @@ class ConbusExportService:
 
         self.logger.debug(f"Device discovered: {serial_number}")
         self.discovered_devices.append(serial_number)
-        self.device_configs[serial_number] = {"serial_number": serial_number}
-        self.device_datapoints_received[serial_number] = set()
+
+        # Create ConsonModuleConfig with placeholder values for required fields
+        module = ConsonModuleConfig(
+            name="UNKNOWN",  # Will be updated when link_number arrives
+            serial_number=serial_number,
+            module_type="UNKNOWN",  # Required field
+            module_type_code=0,  # Required field
+            link_number=0,  # Required field
+        )
+        self.device_configs[serial_number] = module
 
         # Emit progress signal
         current = len(self.discovered_devices)
@@ -188,7 +194,6 @@ class ConbusExportService:
         datapoint = DataPointType.from_code(datapoint_code)
         if datapoint:
             self._store_datapoint_value(serial_number, datapoint, value)
-            self.device_datapoints_received[serial_number].add(datapoint_code)
             self._check_device_complete(serial_number)
         else:
             self.logger.warning(f"Unknown datapoint code: {datapoint_code}")
@@ -203,31 +208,49 @@ class ConbusExportService:
             datapoint: Datapoint type.
             value: Datapoint value.
         """
-        config = self.device_configs[serial_number]
+        module = self.device_configs[serial_number]
 
-        if datapoint == DataPointType.MODULE_TYPE:
-            config["module_type"] = value
-        elif datapoint == DataPointType.MODULE_TYPE_CODE:
-            try:
-                config["module_type_code"] = int(value)
-            except ValueError:
-                self.logger.warning(f"Invalid module_type_code: {value}")
-        elif datapoint == DataPointType.LINK_NUMBER:
-            try:
-                config["link_number"] = int(value)
-            except ValueError:
-                self.logger.warning(f"Invalid link_number: {value}")
-        elif datapoint == DataPointType.MODULE_NUMBER:
-            try:
-                config["module_number"] = int(value)
-            except ValueError:
-                self.logger.warning(f"Invalid module_number: {value}")
-        elif datapoint == DataPointType.SW_VERSION:
-            config["sw_version"] = value
-        elif datapoint == DataPointType.HW_VERSION:
-            config["hw_version"] = value
-        elif datapoint == DataPointType.AUTO_REPORT_STATUS:
-            config["auto_report_status"] = value
+        try:
+            if datapoint == DataPointType.MODULE_TYPE:
+                module.module_type = value
+            elif datapoint == DataPointType.MODULE_TYPE_CODE:
+                module.module_type_code = int(value)
+            elif datapoint == DataPointType.LINK_NUMBER:
+                link = int(value)
+                module.link_number = link
+                module.name = f"A{link}"
+            elif datapoint == DataPointType.MODULE_NUMBER:
+                module.module_number = int(value)
+            elif datapoint == DataPointType.SW_VERSION:
+                module.sw_version = value
+            elif datapoint == DataPointType.HW_VERSION:
+                module.hw_version = value
+            elif datapoint == DataPointType.AUTO_REPORT_STATUS:
+                module.auto_report_status = value
+        except (ValueError, TypeError) as e:
+            self.logger.warning(
+                f"Invalid value '{value}' for {datapoint.name}: {e}"
+            )
+
+    def _is_device_complete(self, serial_number: str) -> bool:
+        """Check if a device has all required datapoints.
+
+        Args:
+            serial_number: Serial number of device.
+
+        Returns:
+            True if device is complete, False otherwise.
+        """
+        module = self.device_configs[serial_number]
+        return all([
+            module.module_type not in ("UNKNOWN", None, ""),
+            module.module_type_code is not None and module.module_type_code > 0,
+            module.link_number is not None and module.link_number > 0,
+            module.sw_version is not None,
+            module.hw_version is not None,
+            module.auto_report_status is not None,
+            module.module_number is not None,
+        ])
 
     def _check_device_complete(self, serial_number: str) -> None:
         """Check if device has all datapoints and emit completion signal.
@@ -235,28 +258,14 @@ class ConbusExportService:
         Args:
             serial_number: Serial number of device.
         """
-        received = self.device_datapoints_received[serial_number]
-        expected = {dp.value for dp in self.DATAPOINT_SEQUENCE}
-
-        if received == expected:
+        if self._is_device_complete(serial_number):
             self.logger.debug(f"Device {serial_number} complete (7/7 datapoints)")
-            config = self.device_configs[serial_number]
-
-            # Build ConsonModuleConfig with name based on link_number
-            try:
-                # Add required 'name' field as A{link_number}
-                if "name" not in config:
-                    link_number = config.get("link_number", 0)
-                    config["name"] = f"A{link_number}"
-                module_config = ConsonModuleConfig(**config)
-                self.on_device_exported.emit(module_config)
-            except Exception as e:
-                self.logger.error(f"Failed to build config for {serial_number}: {e}")
+            module = self.device_configs[serial_number]
+            self.on_device_exported.emit(module)
 
             # Check if all devices complete
             if all(
-                len(self.device_datapoints_received[sn]) == len(self.DATAPOINT_SEQUENCE)
-                for sn in self.discovered_devices
+                self._is_device_complete(sn) for sn in self.discovered_devices
             ):
                 self.logger.debug("All devices complete")
                 self._finalize_export()
@@ -278,20 +287,8 @@ class ConbusExportService:
             self.on_finish.emit(self.export_result)
             return
 
-        # Build module list (including partial devices)
-        modules = []
-        for serial_number in self.discovered_devices:
-            config = self.device_configs[serial_number].copy()
-            try:
-                # Add required 'name' field as A{link_number} if not present
-                if "name" not in config:
-                    link_number = config.get("link_number", 0)
-                    config["name"] = f"A{link_number}"
-                # Only include fields that were received
-                module_config = ConsonModuleConfig(**config)
-                modules.append(module_config)
-            except Exception as e:
-                self.logger.warning(f"Partial device {serial_number}: {e}")
+        # Convert dict values to list (already ConsonModuleConfig instances!)
+        modules = list(self.device_configs.values())
 
         # Sort modules by link_number
         modules.sort(key=lambda m: m.link_number if m.link_number is not None else 999)
@@ -382,7 +379,7 @@ class ConbusExportService:
         incomplete = [
             sn
             for sn in self.discovered_devices
-            if len(self.device_datapoints_received[sn]) < len(self.DATAPOINT_SEQUENCE)
+            if not self._is_device_complete(sn)
         ]
 
         if incomplete:
@@ -439,7 +436,6 @@ class ConbusExportService:
         # Reset state for reuse
         self.discovered_devices = []
         self.device_configs = {}
-        self.device_datapoints_received = {}
         self.export_result = ConbusExportResponse(success=False)
         self.export_status = "OK"
         self._finalized = False
