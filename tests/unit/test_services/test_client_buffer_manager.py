@@ -192,7 +192,11 @@ class TestClientBufferManagerThreadSafety:
         threads = []
 
         def register_client(sock):
-            """Register a client socket."""
+            """Register a client socket.
+
+            Args:
+                sock: Socket to register.
+            """
             manager.register_client(sock)
 
         for sock in sockets:
@@ -213,7 +217,11 @@ class TestClientBufferManagerThreadSafety:
         threads = []
 
         def broadcast_telegram(msg):
-            """Broadcast a telegram message."""
+            """Broadcast a telegram message.
+
+            Args:
+                msg: Message to broadcast.
+            """
             manager.broadcast(msg)
 
         for i in range(10):
@@ -231,8 +239,12 @@ class TestClientBufferManagerThreadSafety:
         manager = ClientBufferManager()
         results = []
 
-        def register_and_receive(sock_id):
-            """Register client and receive messages."""
+        def register_and_receive(_sock_id):
+            """Register client and receive messages.
+
+            Args:
+                _sock_id: Socket identifier (unused).
+            """
             sock = Mock(spec=socket.socket)
             client_queue = manager.register_client(sock)
             time.sleep(0.01)  # Small delay to ensure broadcasts happen
