@@ -4,18 +4,12 @@ import json
 
 import click
 
-from xp.cli.commands.conbus.conbus import conbus
+from xp.cli.commands.conbus.conbus import conbus, conbus_event
 from xp.cli.utils.decorators import connection_command
 from xp.cli.utils.module_type_choice import MODULE_TYPE
 from xp.models import ConbusEventRawResponse
 from xp.services.conbus.conbus_event_list_service import ConbusEventListService
 from xp.services.conbus.conbus_event_raw_service import ConbusEventRawService
-
-
-@click.group(name="event")
-def conbus_event() -> None:
-    """Send event telegrams to Conbus modules."""
-    pass
 
 
 @conbus_event.command("list")

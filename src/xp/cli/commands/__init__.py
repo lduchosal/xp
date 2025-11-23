@@ -12,7 +12,7 @@ from xp.cli.commands.conbus.conbus import (
     conbus_linknumber,
     conbus_modulenumber,
     conbus_msactiontable,
-    conbus_output,
+    conbus_output, conbus_export,
 )
 from xp.cli.commands.conbus.conbus_actiontable_commands import (
     conbus_download_actiontable,
@@ -101,6 +101,7 @@ __all__ = [
     "conbus_msactiontable",
     "conbus_actiontable",
     "conbus_event",
+    "conbus_export",
     "file",
     "module",
     "reverse_proxy",

@@ -3,6 +3,7 @@
 import json
 from contextlib import suppress
 from pathlib import Path
+from typing import Dict, Any
 
 import click
 from click import Context
@@ -12,6 +13,7 @@ from xp.cli.utils.decorators import (
     connection_command,
 )
 from xp.cli.utils.serial_number_type import SERIAL
+from xp.models.actiontable.actiontable import ActionTable
 from xp.models.homekit.homekit_conson_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
@@ -59,13 +61,14 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         """
         click.echo(progress, nl=False)
 
-    def on_finish(result: tuple) -> None:
+    def on_finish(_actiontable: ActionTable, actiontable_dict: Dict[str, Any], actiontable_short: list[str]) -> None:
         """Handle successful completion of action table download.
 
         Args:
-            result: Tuple of (_actiontable, actiontable_dict, actiontable_short).
+            _actiontable: a list of ActionTableEntries.
+            actiontable_dict: action table in a dictionary.
+            actiontable_short: short representation of action table.
         """
-        _actiontable, actiontable_dict, actiontable_short = result
         output = {
             "serial_number": serial_number,
             "actiontable_short": actiontable_short,

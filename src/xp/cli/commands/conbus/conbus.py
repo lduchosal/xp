@@ -116,6 +116,27 @@ def conbus_actiontable() -> None:
     """Download ActionTable from Conbus modules."""
     pass
 
+@click.group(
+    "event",
+    cls=HelpColorsGroup,
+    help_headers_color="yellow",
+    help_options_color="green",
+    short_help="Export operations",
+)
+def conbus_event() -> None:
+    """Event telegrams to Conbus modules."""
+    pass
+
+@click.group(
+    "export",
+    cls=HelpColorsGroup,
+    help_headers_color="yellow",
+    help_options_color="green",
+    short_help="Export operations",
+)
+def conbus_export() -> None:
+    """Download ActionTable from Conbus modules."""
+    pass
 
 conbus.add_command(conbus_blink)
 conbus.add_command(conbus_output)
@@ -126,3 +147,5 @@ conbus.add_command(conbus_autoreport)
 conbus.add_command(conbus_lightlevel)
 conbus.add_command(conbus_msactiontable)
 conbus.add_command(conbus_actiontable)
+conbus.add_command(conbus_event)
+conbus.add_command(conbus_export)

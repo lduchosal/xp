@@ -10,6 +10,7 @@ from xp.cli.commands.conbus.conbus import (
     conbus_linknumber,
     conbus_msactiontable,
     conbus_output,
+    conbus_export,
 )
 
 __all__ = [
@@ -22,4 +23,5 @@ __all__ = [
     "conbus_lightlevel",
     "conbus_msactiontable",
     "conbus_actiontable",
+    "conbus_export",
 ]
