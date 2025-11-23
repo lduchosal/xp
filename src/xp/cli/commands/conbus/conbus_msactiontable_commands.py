@@ -58,13 +58,13 @@ def conbus_download_msactiontable(
         msaction_table: Union[
             Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None
         ],
-        msaction_table_xp24: str,
+        msaction_table_short: str,
     ) -> None:
         """Handle successful completion of MS action table download.
 
         Args:
             msaction_table: Downloaded MS action table object or None if failed.
-            msaction_table_xp24: Short version of MS action table object or None if failed.
+            msaction_table_short: Short version of MS action table object or None if failed.
 
         Raises:
             Abort: If action table download failed.
@@ -74,13 +74,11 @@ def conbus_download_msactiontable(
             click.echo("Error: Failed to download MS action table")
             raise click.Abort()
 
-        output = {
-            "serial_number": serial_number,
-            "xpmoduletype": xpmoduletype,
-            "msaction_table_xp24": msaction_table_xp24,
-            "msaction_table": msaction_table.model_dump(),
-        }
-        click.echo(json.dumps(output, indent=2, default=str))
+        click.echo(f"\nModule: {serial_number}")
+        click.echo("Short:")
+        for line in msaction_table_short.split("\n"):
+            click.echo(f"  - {line}")
+        click.echo("")
 
     def on_error(error: str) -> None:
         """Handle errors during MS action table download.
@@ -155,9 +153,40 @@ def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
         Args:
             module: Dictionary containing module configuration.
         """
+        click.echo(f"\nModule: {module.alias} ({module.serial_number})")
+
+        # Display short format if action table exists
+        if module.xp33_msaction_table:
+            click.echo("Short:")
+            short_format = module.xp33_msaction_table.to_short_format()
+            for line in short_format.split("\n"):
+                click.echo(f"  - {line}")
+        elif module.xp24_msaction_table:
+            click.echo("Short:")
+            short_format = module.xp24_msaction_table.to_short_format()
+            for line in short_format.split("\n"):
+                click.echo(f"  - {line}")
+        elif module.xp20_msaction_table:
+            click.echo("Short:")
+            short_format = module.xp20_msaction_table.to_short_format()
+            for line in short_format.split("\n"):
+                click.echo(f"  - {line}")
+
+        # Display full YAML format
+        click.echo("Full:")
         module_data = module.model_dump()
         module_data.pop("action_table", None)
-        click.echo(json.dumps(module_data, indent=2, default=str))
+
+        # Show the action table in YAML format
+        if module.xp33_msaction_table:
+            yaml_dict = {"xp33_msaction_table": module.xp33_msaction_table.model_dump()}
+            click.echo(_format_yaml(yaml_dict, indent=2))
+        elif module.xp24_msaction_table:
+            yaml_dict = {"xp24_msaction_table": module.xp24_msaction_table.model_dump()}
+            click.echo(_format_yaml(yaml_dict, indent=2))
+        elif module.xp20_msaction_table:
+            yaml_dict = {"xp20_msaction_table": module.xp20_msaction_table.model_dump()}
+            click.echo(_format_yaml(yaml_dict, indent=2))
 
     def error_callback(error: str) -> None:
         """Handle errors during action table show.
@@ -173,3 +202,30 @@ def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
             finish_callback=on_finish,
             error_callback=error_callback,
         )
+
+
+def _format_yaml(data: dict, indent: int = 0) -> str:
+    """Format a dictionary as YAML-like output.
+
+    Args:
+        data: Dictionary to format.
+        indent: Current indentation level.
+
+    Returns:
+        YAML-like formatted string.
+    """
+    lines = []
+    for key, value in data.items():
+        if isinstance(value, dict):
+            lines.append(f"{' ' * indent}{key}:")
+            lines.append(_format_yaml(value, indent + 2))
+        elif isinstance(value, list):
+            lines.append(f"{' ' * indent}{key}:")
+            for item in value:
+                if isinstance(item, dict):
+                    lines.append(_format_yaml(item, indent + 2))
+                else:
+                    lines.append(f"{' ' * (indent + 2)}- {item}")
+        else:
+            lines.append(f"{' ' * indent}{key}: {value}")
+    return "\n".join(lines)

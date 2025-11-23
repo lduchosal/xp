@@ -328,3 +328,40 @@ class TestXp20MsActionTableSerializer:
         serialized = Xp20MsActionTableSerializer.to_data(deserialized)
 
         assert serialized_table == serialized
+
+    def test_format_decoded_output_default(self):
+        """Test format_decoded_output with default configuration."""
+        table = Xp20MsActionTable()
+        output = Xp20MsActionTableSerializer.format_decoded_output(table)
+
+        lines = output.split("\n")
+        assert len(lines) == 8
+        for i, line in enumerate(lines, 1):
+            assert line == f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0"
+
+    def test_format_decoded_output_mixed(self):
+        """Test format_decoded_output with mixed configuration."""
+        table = Xp20MsActionTable(
+            input1=InputChannel(
+                invert=True,
+                short_long=False,
+                group_on_off=True,
+                and_functions=[True, False, True, False, True, False, True, False],
+                sa_function=False,
+                ta_function=True,
+            ),
+            input2=InputChannel(
+                invert=False,
+                short_long=True,
+                group_on_off=False,
+                and_functions=[False, True, False, True, False, True, False, True],
+                sa_function=True,
+                ta_function=False,
+            ),
+        )
+        output = Xp20MsActionTableSerializer.format_decoded_output(table)
+
+        lines = output.split("\n")
+        assert lines[0] == "CH1 I:1 S:0 G:1 AND:10101010 SA:0 TA:1"
+        assert lines[1] == "CH2 I:0 S:1 G:0 AND:01010101 SA:1 TA:0"
+        assert lines[2] == "CH3 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"

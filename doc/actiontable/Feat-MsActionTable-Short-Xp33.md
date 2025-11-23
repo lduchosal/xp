@@ -45,12 +45,12 @@ Each output is represented as:
 `OUT<num> MIN:<min> MAX:<max> SO:<scene_output> SF:<start_at_full> LE:<leading_edge>`
 
 Where:
-- `OUT<num>`: Output (0-2)
+- `OUT<num>`: Output number (1-3)
 - `MIN:<min>`: Minimum output level (0-100)
 - `MAX:<max>`: Maximum output level (0-100)
-- `SO:<scene_output>`: Scene outputs enabled
-- `SF<start_at_full>`: Start at full brightness
-- `LE<leading_edge>`: Leading edge dimming
+- `SO:<scene_output>`: Scene outputs enabled (0=off, 1=on)
+- `SF:<start_at_full>`: Start at full brightness (0=off, 1=on)
+- `LE:<leading_edge>`: Leading edge dimming (0=off, 1=on)
 
 **Examples:**
 ```
@@ -63,7 +63,7 @@ Each scene is represented as:
 `SCENE<num> OUT1:<o1> OUT2:<o2> OUT3:<o3> T:NONE`
 
 Where:
-- `SCENE<num>`: Scene (0-2)
+- `SCENE<num>`: Scene number (1-4)
 - `OUT1:<o1>`: Output 1 level (0-100)
 - `OUT2:<o2>`: Output 2 level (0-100)
 - `OUT3:<o3>`: Output 3 level (0-100)
@@ -206,7 +206,7 @@ OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1
 OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0
 OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1
 SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC
-SCENE2 OUT1:25 OUT235 OUT3:45 T:T10SEC
+SCENE2 OUT1:25 OUT2:35 OUT3:45 T:T10SEC
 SCENE3 OUT1:75 OUT2:85 OUT3:95 T:T1MIN
 SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE
 ```
@@ -310,7 +310,7 @@ def _format_output(output: Xp33Output) -> str:
         output: Xp33Output instance.
 
     Returns:
-        Short string like "10-90[SO+LE]".
+        Short string like "MIN:10 MAX:90 SO:1 SF:0 LE:1".
     """
     pass
 
@@ -319,7 +319,7 @@ def _parse_output(output_str: str) -> Xp33Output:
     """Parse output configuration from short string.
 
     Args:
-        output_str: Short string like "10-90[SO+LE]".
+        output_str: Short string like "MIN:10 MAX:90 SO:1 SF:0 LE:1".
 
     Returns:
         Xp33Output instance.
@@ -337,7 +337,7 @@ def _format_scene(scene: Xp33Scene) -> str:
         scene: Xp33Scene instance.
 
     Returns:
-        Short string like "50/60/70@T5SEC".
+        Short string like "OUT1:50 OUT2:60 OUT3:70 T:T5SEC".
     """
     pass
 
@@ -346,7 +346,7 @@ def _parse_scene(scene_str: str) -> Xp33Scene:
     """Parse scene configuration from short string.
 
     Args:
-        scene_str: Short string like "50/60/70@T5SEC".
+        scene_str: Short string like "OUT1:50 OUT2:60 OUT3:70 T:T5SEC".
 
     Returns:
         Xp33Scene instance.
@@ -365,12 +365,12 @@ The short format should be displayed in CLI output for:
 ```bash
 $ xp conbus msactiontable download 0020045056 xp33
 Module: A4 (0020045056)
-Short: 
+Short:
   - OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1
   - OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0
   - OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1
   - SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC
-  - SCENE2 OUT1:25 OUT235 OUT3:45 T:T10SEC
+  - SCENE2 OUT1:25 OUT2:35 OUT3:45 T:T10SEC
   - SCENE3 OUT1:75 OUT2:85 OUT3:95 T:T1MIN
   - SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE
 
@@ -380,12 +380,12 @@ Short:
 ```bash
 $ xp conbus msactiontable show 0020045056
 Module: A4 (0020045056)
-Short: 
+Short:
   - OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1
   - OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0
   - OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1
   - SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC
-  - SCENE2 OUT1:25 OUT235 OUT3:45 T:T10SEC
+  - SCENE2 OUT1:25 OUT2:35 OUT3:45 T:T10SEC
   - SCENE3 OUT1:75 OUT2:85 OUT3:95 T:T1MIN
   - SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE
 Full:

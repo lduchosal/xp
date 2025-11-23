@@ -22,7 +22,7 @@ class Xp33MsActionTableSerializer:
         Returns:
             Human-readable string describing XP33 action table
         """
-        return ""
+        return action_table.to_short_format()
 
     @staticmethod
     def _percentage_to_byte(percentage: int) -> int:
