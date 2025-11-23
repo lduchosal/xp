@@ -2,7 +2,7 @@
 
 ## Overview
 
-Extend `xp conbus export` to automatically download action tables from each discovered device. This provides a complete snapshot of both device configuration and programmed behavior in a single operation.
+Add a new `xp conbus export actiontable` command to download action tables for devices listed in `export.yml`. This allows users to separately export action tables after capturing device metadata, providing flexibility in export workflows.
 
 ## Problem Statement
 
@@ -14,12 +14,12 @@ The current `xp conbus export` command captures device metadata (type, version, 
 
 ## Solution
 
-Enhance `xp conbus export` to always download action tables:
+Add a new `xp conbus export actiontable` command that:
 
-1. Performs standard device discovery and metadata export
-2. For each device, automatically downloads its action table using `ActionTableService`
-3. Includes action table data in the exported YAML
-4. Shows progress for both metadata and action table downloads
+1. Reads the `export.yml` file to discover devices
+2. For each device in the export file, downloads its action table using `ActionTableService`
+3. Updates the `export.yml` file with action table data
+4. Shows progress for each device's action table download
 
 ## Use Cases
 
@@ -31,14 +31,18 @@ Enhance `xp conbus export` to always download action tables:
 ## CLI Interface
 
 ```bash
-# Export complete configuration (metadata + action tables)
+# Step 1: Export device metadata
 xp conbus export
+
+# Step 2: Download action tables for all devices in export.yml
+xp conbus export actiontable
 ```
 
 ### Command Behavior
 
-- **Always downloads action tables** for all discovered devices
-- No flags needed - complete export by default
+- Reads `export.yml` to discover devices
+- Downloads action table for each device sequentially
+- Updates `export.yml` with action table data
 - Gracefully handles devices without action tables (omitted from YAML)
 - Errors downloading action tables don't fail the entire export
 
@@ -81,63 +85,59 @@ Export file format remains `export.yml` with optional `action_table` field per d
 ### High-Level Flow
 
 ```
-1. Discovery Phase (existing)
-   └─ Send DISCOVERY telegram
-   └─ Collect device serial numbers
+1. Read Export File Phase
+   └─ Load export.yml using ConsonConfigLoader
+   └─ Extract device list with serial numbers
 
-2. Metadata Query Phase (existing)
-   └─ For each device: query 7 datapoints
-   └─ Store in device_configs
-
-3. Action Table Download Phase (NEW)
-  └─ For each device:
+2. Action Table Download Phase
+  └─ For each device in export.yml:
      └─ Use ActionTableService to download
-     └─ Store ActionTable in device_configs
+     └─ Store ActionTable in device config
      └─ Handle download errors gracefully
 
-4. Finalization Phase (existing + enhanced)
-   └─ Build ConsonModuleListConfig
-   └─ Include action_table field if present
-   └─ Write to export.yml
+3. Update Export File Phase
+   └─ Update ConsonModuleListConfig with action tables
+   └─ Write back to export.yml
 ```
 
-### Service Architecture Enhancement
+### Service Architecture
 
-Extend `ConbusExportService` with action table support:
+New `ConbusExportActionTableService`:
 
 ```
-ConbusExportService (enhanced)
-├─ Dependencies (enhanced)
-│  ├─ conbus_protocol: ConbusEventProtocol (existing)
-│  └─ actiontable_service: ActionTableService (existing)
-├─ State (enhanced)
-│  ├─ discovered_devices: List[str] (existing)
-│  ├─ device_configs: Dict[str, Dict[str, Any]] (existing)
-│  ├─ device_datapoints_received: Dict[str, Set[str]] (existing)
-│  ├─ actiontable_download_queue: List[str] (NEW)
-│  └─ actiontable_download_complete: Set[str] (NEW)
-├─ Enhanced Flow
-│  ├─ _check_device_complete() (modified)
-│  │  └─ If all 7 datapoints received:
-│  │     └─ Start action table download for this device
-│  ├─ _download_actiontable(serial_number: str) (NEW)
+ConbusExportActionTableService (new)
+├─ Dependencies
+│  ├─ cli_config: CliConfig
+│  ├─ reactor: Reactor
+│  ├─ actiontable_serializer: ActionTableSerializer
+│  ├─ telegram_service: TelegramService
+│  └─ conson_config_loader: ConsonConfigLoader
+├─ State
+│  ├─ module_configs: List[ConsonModuleConfig] (loaded from export.yml)
+│  ├─ current_device_index: int
+│  ├─ actiontable_download_complete: Set[str]
+│  └─ actiontable_failed: Set[str]
+├─ Flow
+│  ├─ start(export_file: str = "export.yml")
+│  │  └─ Load export.yml using ConsonConfigLoader
+│  │  └─ Extract devices with serial numbers
+│  │  └─ Start sequential downloads
+│  ├─ _download_next_actiontable()
+│  │  └─ Get next device from module_configs
 │  │  └─ Use ActionTableService.start()
 │  │  └─ Register callbacks for progress/finish/error
-│  ├─ _on_actiontable_progress(serial_number: str, message: str) (NEW)
-│  │  └─ Emit progress updates
-│  ├─ _on_actiontable_finish(serial_number: str, actiontable_short: List[str]) (NEW)
+│  ├─ _on_actiontable_finish(serial_number: str, actiontable_short: List[str])
 │  │  └─ Clean semicolons from actiontable_short
-│  │  └─ Store in device_configs[serial_number]['action_table']
+│  │  └─ Update device config's action_table field
 │  │  └─ Mark device as complete
-│  │  └─ Check if all downloads complete
-│  ├─ _on_actiontable_error(serial_number: str, error: str) (NEW)
+│  │  └─ Download next device or finalize
+│  ├─ _on_actiontable_error(serial_number: str, error: str)
 │  │  └─ Log warning
-│  │  └─ Mark device as complete (without action_table field)
-│  │  └─ Continue with remaining devices
-│  └─ _finalize_export() (modified)
-│     └─ Wait for all action table downloads to complete
-│     └─ Build ConsonModuleListConfig including action_table fields
-│     └─ Write to export.yml using Pydantic serialization
+│  │  └─ Mark device as failed (without action_table field)
+│  │  └─ Download next device or finalize
+│  └─ _finalize_export()
+│     └─ Build ConsonModuleListConfig from updated module_configs
+│     └─ Write back to export.yml using Pydantic serialization
 ```
 
 ### Sequential vs Parallel Downloads
@@ -263,34 +263,22 @@ Action table download errors should **not** fail the entire export:
 
 ### Progress Reporting
 
-Enhanced progress display:
+Progress display for `xp conbus export actiontable`:
 
 ```
-Discovering devices... (timeout: 5s)
+Loading export.yml...
 Found 3 devices
 
-Querying device 1/3: 0020041013...
-  ✓ Module type: XP130 (13)
-  ✓ Link number: 12
-  ✓ Software version: XP130_V0.10.04
-  ✓ Downloading action table...
+Downloading action table 1/3: A12 (0020041013)...
   ✓ Action table: 42 entries
 
-Querying device 2/3: 1234567890...
-  ✓ Module type: XP24 (7)
-  ✓ Link number: 9
-  ✓ Software version: XP24_V0.34.03
-  ✓ Downloading action table...
+Downloading action table 2/3: A9 (1234567890)...
   ⚠ Action table: timeout (skipped)
 
-Querying device 3/3: 9876543210...
-  ✓ Module type: XP33 (11)
-  ✓ Link number: 15
-  ✓ Software version: XP33_V1.02.01
-  ✓ Downloading action table...
-  ✓ Action table: empty
+Downloading action table 3/3: A15 (9876543210)...
+  ✓ Action table: 0 entries
 
-Export complete: export.yml (3 devices, 2/3 action tables)
+Export updated: export.yml (2/3 action tables downloaded)
 ```
 
 ## Data Models
@@ -364,56 +352,66 @@ class ConsonModuleConfig:
 
 ### Command Definition
 
-The CLI command remains unchanged - action tables are downloaded automatically:
+New command under `xp conbus export`:
 
 ```python
-@conbus.command("export")
+@export_group.command("actiontable")
+@click.option(
+    "--file",
+    "-f",
+    "export_file",
+    default="export.yml",
+    help="Export file to read/update (default: export.yml)",
+)
 @click.pass_context
 @connection_command()
-def export_conbus_config(ctx: click.Context) -> None:
-    """Export Conbus device configuration to YAML file.
+def export_actiontable(ctx: click.Context, export_file: str) -> None:
+    """Download action tables for devices in export file.
 
-    Discovers all devices on the Conbus network and queries their configuration
-    datapoints (including action tables) to generate a complete export.yml file
-    in conson.yml format.
+    Reads the specified export.yml file, downloads action tables for each
+    device, and updates the file with the action table data.
 
     Args:
         ctx: Click context object.
+        export_file: Path to export file (default: export.yml).
 
     Examples:
         \\b
-        # Export complete configuration
-        xp conbus export
+        # Download action tables for devices in export.yml
+        xp conbus export actiontable
+
+        # Download action tables for devices in custom file
+        xp conbus export actiontable --file my-export.yml
     """
     # ... implementation ...
-    # Action tables are always downloaded
 ```
 
 ### Service Changes
 
-No configuration needed - `ConbusExportService` always downloads action tables after collecting metadata.
+New `ConbusExportActionTableService` handles:
+- Loading export.yml
+- Sequential action table downloads
+- Updating export.yml with action table data
 
 ## Performance Considerations
 
 ### Timeouts
 
-- **Metadata query timeout**: 5 seconds (existing)
-- **Action table download timeout per device**: 10 seconds (new)
-- **Total timeout estimate**: 5s + (10s × num_devices)
+- **Action table download timeout per device**: 10 seconds
+- **Total timeout estimate**: ~10s × num_devices
 
 For 12 devices:
-- Without action tables: ~5 seconds
-- With action tables: ~125 seconds (2+ minutes)
+- Estimated time: ~120 seconds (2 minutes)
 
 ### User Experience
 
-Add warning for large installations:
+Display estimated time for large installations:
 
 ```python
 if device_count > 10:
     click.echo(
-        f"⚠ Downloading action tables for {device_count} devices "
-        f"(est. {device_count * 10}s)",
+        f"Downloading action tables for {device_count} devices "
+        f"(est. {device_count * 10}s)...",
         err=True,
     )
 ```
@@ -432,8 +430,8 @@ if device_count > 10:
 
 - **YAML format**: Existing exports remain valid (action_table field is optional)
 - **Model compatibility**: ConsonModuleConfig already supports action_table field
-- **Export behavior change**: Now includes action tables by default (was metadata-only)
-- **Performance impact**: Export takes longer (~10s per device for action tables)
+- **Export behavior**: `xp conbus export` remains unchanged (metadata-only)
+- **New command**: `xp conbus export actiontable` is an additive feature
 
 ## Future Enhancements
 
@@ -446,11 +444,11 @@ if device_count > 10:
 
 ### Existing Components
 
-- `src/xp/services/conbus/conbus_export_service.py` - Base export service
 - `src/xp/services/conbus/actiontable/actiontable_download_service.py` - Action table download
 - `src/xp/models/actiontable/actiontable.py` - Action table models
 - `src/xp/models/homekit/homekit_conson_config.py` - ConsonModuleConfig (already has action_table field!)
 - `src/xp/services/actiontable/actiontable_serializer.py` - Serialization logic
+- `src/xp/loaders/conson_config_loader.py` - For loading export.yml
 
 ### Related Documentation
 
@@ -460,8 +458,10 @@ if device_count > 10:
 
 ### Implementation Pattern
 
-Follow the pattern from existing action table commands:
-- `src/xp/cli/commands/conbus/actiontable/actiontable_download_commands.py` - CLI pattern
+Follow the pattern from existing action table and export commands:
+- `src/xp/cli/commands/conbus/actiontable/actiontable_download_commands.py` - CLI pattern for action tables
+- `src/xp/cli/commands/conbus/export_commands.py` - CLI pattern for export commands
 - Sequential processing with progress callbacks
 - Error handling that doesn't fail entire operation
 - Reactor and event loop management
+- Load/update YAML using ConsonConfigLoader
