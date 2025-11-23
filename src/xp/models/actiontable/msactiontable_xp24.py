@@ -159,14 +159,11 @@ class Xp24MsActionTable(MsActionTable):
     curtain34: bool = False  # Curtain setting for inputs 3-4
     mutual_deadtime: int = MS300  # Master timing (MS300=12 or MS500=20)
 
-    def to_short_format(self, include_settings: bool = False) -> str:
+    def to_short_format(self) -> str:
         """Convert action table to short format string.
 
-        Args:
-            include_settings: Include settings after pipe separator.
-
         Returns:
-            Short format string (e.g., "XP24 T:1 T:2 T:0 T:0").
+            Short format string with settings (e.g., "XP24 T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12").
         """
         # Format input actions
         actions = [
@@ -184,16 +181,15 @@ class Xp24MsActionTable(MsActionTable):
 
         result = f"XP24 {' '.join(action_parts)}"
 
-        # Add settings if requested
-        if include_settings:
-            settings = (
-                f"M12:{1 if self.mutex12 else 0} "
-                f"M34:{1 if self.mutex34 else 0} "
-                f"C12:{1 if self.curtain12 else 0} "
-                f"C34:{1 if self.curtain34 else 0} "
-                f"DT:{self.mutual_deadtime}"
-            )
-            result = f"{result} | {settings}"
+        # Add settings
+        settings = (
+            f"M12:{1 if self.mutex12 else 0} "
+            f"M34:{1 if self.mutex34 else 0} "
+            f"C12:{1 if self.curtain12 else 0} "
+            f"C34:{1 if self.curtain34 else 0} "
+            f"DT:{self.mutual_deadtime}"
+        )
+        result = f"{result} | {settings}"
 
         return result
 
@@ -213,7 +209,7 @@ class Xp24MsActionTable(MsActionTable):
         # Split by pipe to separate actions from settings
         parts = short_str.split("|")
         action_part = parts[0].strip()
-        settings_part = parts[1].strip() if len(parts) > 1 else None
+        settings_part = parts[1].strip()
 
         # Parse action part
         tokens = action_part.split()
@@ -253,23 +249,22 @@ class Xp24MsActionTable(MsActionTable):
             "input4_action": input_actions[3],
         }
 
-        if settings_part:
-            # Parse settings: M12:0 M34:1 C12:0 C34:1 DT:12
-            for setting in settings_part.split():
-                if ":" not in setting:
-                    continue
+        # Parse settings: M12:0 M34:1 C12:0 C34:1 DT:12
+        for setting in settings_part.split():
+            if ":" not in setting:
+                continue
 
-                key, value = setting.split(":", 1)
+            key, value = setting.split(":", 1)
 
-                if key == "M12":
-                    kwargs["mutex12"] = value == "1"
-                elif key == "M34":
-                    kwargs["mutex34"] = value == "1"
-                elif key == "C12":
-                    kwargs["curtain12"] = value == "1"
-                elif key == "C34":
-                    kwargs["curtain34"] = value == "1"
-                elif key == "DT":
-                    kwargs["mutual_deadtime"] = int(value)
+            if key == "M12":
+                kwargs["mutex12"] = value == "1"
+            elif key == "M34":
+                kwargs["mutex34"] = value == "1"
+            elif key == "C12":
+                kwargs["curtain12"] = value == "1"
+            elif key == "C34":
+                kwargs["curtain34"] = value == "1"
+            elif key == "DT":
+                kwargs["mutual_deadtime"] = int(value)
 
         return cls(**kwargs)

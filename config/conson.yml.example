@@ -13,57 +13,393 @@
   serial_number: "0012345002"
   module_type: XP20
   module_type_code: 33
-  link_number: 11
-  module_number: 11
+  link_number: 2
+  module_number: 0
+  sw_version: XP20_V0.01.05
+  hw_version: XP20
+  auto_report_status: AA
 
 - name: A3
   serial_number: "0012345003"
   module_type: XP33LR
   module_type_code: 30
-  link_number: 04
+  link_number: 3
   module_number: 4
+  sw_version: XP33LR_V0.04.02
+  hw_version: XP33LR_HW_VER1
+  auto_report_status: PP
+  action_table:
+    - XP20 10 0 > 0 OFF
+    - XP20 10 0 > 1 OFF
+    - XP20 10 0 > 2 OFF
+    - XP20 10 8 > 0 ON
+    - XP20 10 8 > 1 ON
+    - XP20 10 8 > 2 ON
+
+    - XP20 2 0 > 0 OFF
+    - XP20 2 0 > 1 OFF
+    - XP20 2 0 > 2 OFF
+    - XP20 2 8 > 0 ON
+    - XP20 2 8 > 1 ON
+    - XP20 2 8 > 2 ON
+
+    - CP20 0 0 > 0 OFF
+    - CP20 0 0 > 1 OFF
+    - CP20 0 0 > 2 OFF
+    - CP20 0 8 > 0 ON
+    - CP20 0 8 > 1 ON
+    - CP20 0 8 > 2 ON
+
+    - CP20 3 0 > 0 ON
+    - CP20 3 1 > 1 ON
+    - CP20 3 2 > 2 ON
+    - CP20 3 3 > 0 OFF
+    - CP20 3 4 > 1 OFF
+    - CP20 3 5 > 2 OFF
+
+    - CP20 3 8 > 0 ON
+    - CP20 3 8 > 1 ON
+    - CP20 3 8 > 2 ON
+    - CP20 3 9 > 0 OFF
+    - CP20 3 9 > 1 OFF
+    - CP20 3 9 > 2 OFF
 
 - name: A4
   serial_number: "0012345004"
   module_type: XP24
-  module_type_code: 07
-  link_number: 02
+  module_type_code: 7
+  link_number: 4
   module_number: 2
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+  msaction_table: XP24 V:0 V:0 V:0 V:0 | M12:0 M34:0 C12:0 C34:0 DT:2
+  action_table:
+    - XP20 10 0 > 0 OFF
+    - XP20 10 0 > 1 OFF
+    - XP20 10 0 > 2 OFF
+    - XP20 10 0 > 3 OFF
+    - XP20 10 8 > 0 ON
+    - XP20 10 8 > 1 ON
+    - XP20 10 8 > 2 ON
+    - XP20 10 8 > 3 ON
+
+    - XP20 2 0 > 0 OFF
+    - XP20 2 0 > 1 OFF
+    - XP20 2 0 > 2 OFF
+    - XP20 2 0 > 3 OFF
+    - XP20 2 8 > 0 ON
+    - XP20 2 8 > 1 ON
+    - XP20 2 8 > 2 ON
+    - XP20 2 8 > 3 ON
+
+    - CP20 0 0 > 0 OFF
+    - CP20 0 0 > 1 OFF
+    - CP20 0 0 > 2 OFF
+    - CP20 0 0 > 3 OFF
+    - CP20 0 8 > 0 ON
+    - CP20 0 8 > 1 ON
+    - CP20 0 8 > 2 ON
+    - CP20 0 8 > 3 ON
+
+    - CP20 4 0 > 0 ON
+    - CP20 4 1 > 1 ON
+    - CP20 4 2 > 2 ON
+    - CP20 4 3 > 3 ON
+    - CP20 4 4 > 0 OFF
+    - CP20 4 5 > 1 OFF
+    - CP20 4 6 > 2 OFF
+    - CP20 4 7 > 3 OFF
+
+    - CP20 4 8 > 0 ON
+    - CP20 4 8 > 1 ON
+    - CP20 4 8 > 2 ON
+    - CP20 4 8 > 3 ON
+    - CP20 4 9 > 0 OFF
+    - CP20 4 9 > 1 OFF
+    - CP20 4 9 > 2 OFF
+    - CP20 4 9 > 3 OFF
 
 - name: A5
   serial_number: "0012345005"
   module_type: XP24
-  module_type_code: 07
-  link_number: 09
+  module_type_code: 7
+  link_number: 5
   module_number: 9
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+  msaction_table: XP24 V:0 V:0 V:0 V:0 | M12:0 M34:0 C12:0 C34:0 DT:2
+  action_table:
+    - XP20 10 0 > 0 OFF
+    - XP20 10 0 > 1 OFF
+    - XP20 10 0 > 2 OFF
+    - XP20 10 0 > 3 OFF
+    - XP20 10 8 > 0 ON
+    - XP20 10 8 > 1 ON
+    - XP20 10 8 > 2 ON
+    - XP20 10 8 > 3 ON
+
+    - XP20 2 0 > 0 OFF
+    - XP20 2 0 > 1 OFF
+    - XP20 2 0 > 2 OFF
+    - XP20 2 0 > 3 OFF
+    - XP20 2 8 > 0 ON
+    - XP20 2 8 > 1 ON
+    - XP20 2 8 > 2 ON
+    - XP20 2 8 > 3 ON
+
+    - CP20 0 0 > 0 OFF
+    - CP20 0 0 > 1 OFF
+    - CP20 0 0 > 2 OFF
+    - CP20 0 0 > 3 OFF
+    - CP20 0 8 > 0 ON
+    - CP20 0 8 > 1 ON
+    - CP20 0 8 > 2 ON
+    - CP20 0 8 > 3 ON
+
+    - CP20 5 0 > 0 ON
+    - CP20 5 1 > 1 ON
+    - CP20 5 2 > 2 ON
+    - CP20 5 3 > 3 ON
+    - CP20 5 4 > 0 OFF
+    - CP20 5 5 > 1 OFF
+    - CP20 5 6 > 2 OFF
+    - CP20 5 7 > 3 OFF
+
+    - CP20 5 8 > 0 ON
+    - CP20 5 8 > 1 ON
+    - CP20 5 8 > 2 ON
+    - CP20 5 8 > 3 ON
+    - CP20 5 9 > 0 OFF
+    - CP20 5 9 > 1 OFF
+    - CP20 5 9 > 2 OFF
+    - CP20 5 9 > 3 OFF
 
 - name: A6
   serial_number: "0012345006"
   module_type: XP24
-  module_type_code: 07
-  link_number: 07
+  module_type_code: 7
+  link_number: 6
   module_number: 7
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+  msaction_table: XP24 T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
+  action_table:
+    - XP20 10 0 > 0 OFF
+    - XP20 10 0 > 1 OFF
+    - XP20 10 0 > 2 OFF
+    - XP20 10 0 > 3 OFF
+    - XP20 10 8 > 0 ON
+    - XP20 10 8 > 1 ON
+    - XP20 10 8 > 2 ON
+    - XP20 10 8 > 3 ON
+
+    - XP20 2 0 > 0 OFF
+    - XP20 2 0 > 1 OFF
+    - XP20 2 0 > 2 OFF
+    - XP20 2 0 > 3 OFF
+    - XP20 2 8 > 0 ON
+    - XP20 2 8 > 1 ON
+    - XP20 2 8 > 2 ON
+    - XP20 2 8 > 3 ON
+
+    - CP20 0 0 > 0 OFF
+    - CP20 0 0 > 1 OFF
+    - CP20 0 0 > 2 OFF
+    - CP20 0 0 > 3 OFF
+    - CP20 0 8 > 0 ON
+    - CP20 0 8 > 1 ON
+    - CP20 0 8 > 2 ON
+    - CP20 0 8 > 3 ON
+
+    - CP20 6 0 > 0 ON
+    - CP20 6 1 > 1 ON
+    - CP20 6 2 > 2 ON
+    - CP20 6 3 > 3 ON
+    - CP20 6 4 > 0 OFF
+    - CP20 6 5 > 1 OFF
+    - CP20 6 6 > 2 OFF
+    - CP20 6 7 > 3 OFF
+
+    - CP20 6 8 > 0 ON
+    - CP20 6 8 > 1 ON
+    - CP20 6 8 > 2 ON
+    - CP20 6 8 > 3 ON
+    - CP20 6 9 > 0 OFF
+    - CP20 6 9 > 1 OFF
+    - CP20 6 9 > 2 OFF
+    - CP20 6 9 > 3 OFF
+
 
 - name: A7
   serial_number: "0012345007"
   module_type: XP24
-  module_type_code: 07
-  link_number: 08
+  module_type_code: 7
+  link_number: 7
   module_number: 8
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+  msaction_table: XP24 T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
+  action_table:
+    - XP20 10 0 > 0 OFF
+    - XP20 10 0 > 1 OFF
+    - XP20 10 0 > 2 OFF
+    - XP20 10 0 > 3 OFF
+    - XP20 10 8 > 0 ON
+    - XP20 10 8 > 1 ON
+    - XP20 10 8 > 2 ON
+    - XP20 10 8 > 3 ON
+
+    - XP20 2 0 > 0 OFF
+    - XP20 2 0 > 1 OFF
+    - XP20 2 0 > 2 OFF
+    - XP20 2 0 > 3 OFF
+    - XP20 2 8 > 0 ON
+    - XP20 2 8 > 1 ON
+    - XP20 2 8 > 2 ON
+    - XP20 2 8 > 3 ON
+
+    - CP20 0 0 > 0 OFF
+    - CP20 0 0 > 1 OFF
+    - CP20 0 0 > 2 OFF
+    - CP20 0 0 > 3 OFF
+    - CP20 0 8 > 0 ON
+    - CP20 0 8 > 1 ON
+    - CP20 0 8 > 2 ON
+    - CP20 0 8 > 3 ON
+
+    - CP20 7 0 > 0 ON
+    - CP20 7 1 > 1 ON
+    - CP20 7 2 > 2 ON
+    - CP20 7 3 > 3 ON
+    - CP20 7 4 > 0 OFF
+    - CP20 7 5 > 1 OFF
+    - CP20 7 6 > 2 OFF
+    - CP20 7 7 > 3 OFF
+
+    - CP20 7 8 > 0 ON
+    - CP20 7 8 > 1 ON
+    - CP20 7 8 > 2 ON
+    - CP20 7 8 > 3 ON
+    - CP20 7 9 > 0 OFF
+    - CP20 7 9 > 1 OFF
+    - CP20 7 9 > 2 OFF
+    - CP20 7 9 > 3 OFF
 
 - name: A8
   serial_number: "0012345008"
   module_type: XP24
-  module_type_code: 07
-  link_number: 06
-  module_number: 6
+  module_type_code: 7
+  link_number: 8
+  module_number: 0
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+  msaction_table: XP24 V:0 V:0 V:0 V:0 | M12:0 M34:0 C12:0 C34:0 DT:2
+  action_table:
+    - XP20 10 0 > 0 OFF
+    - XP20 10 0 > 1 OFF
+    - XP20 10 0 > 2 OFF
+    - XP20 10 0 > 3 OFF
+    - XP20 10 8 > 0 ON
+    - XP20 10 8 > 1 ON
+    - XP20 10 8 > 2 ON
+    - XP20 10 8 > 3 ON
+
+    - XP20 2 0 > 0 OFF
+    - XP20 2 0 > 1 OFF
+    - XP20 2 0 > 2 OFF
+    - XP20 2 0 > 3 OFF
+    - XP20 2 8 > 0 ON
+    - XP20 2 8 > 1 ON
+    - XP20 2 8 > 2 ON
+    - XP20 2 8 > 3 ON
+
+    - CP20 0 0 > 0 OFF
+    - CP20 0 0 > 1 OFF
+    - CP20 0 0 > 2 OFF
+    - CP20 0 0 > 3 OFF
+    - CP20 0 8 > 0 ON
+    - CP20 0 8 > 1 ON
+    - CP20 0 8 > 2 ON
+    - CP20 0 8 > 3 ON
+
+    - CP20 8 0 > 0 ON
+    - CP20 8 1 > 1 ON
+    - CP20 8 2 > 2 ON
+    - CP20 8 3 > 3 ON
+    - CP20 8 4 > 0 OFF
+    - CP20 8 5 > 1 OFF
+    - CP20 8 6 > 2 OFF
+    - CP20 8 7 > 3 OFF
+
+    - CP20 8 8 > 0 ON
+    - CP20 8 8 > 1 ON
+    - CP20 8 8 > 2 ON
+    - CP20 8 8 > 3 ON
+    - CP20 8 9 > 0 OFF
+    - CP20 8 9 > 1 OFF
+    - CP20 8 9 > 2 OFF
+    - CP20 8 9 > 3 OFF
 
 - name: A9
   serial_number: "0012345009"
   module_type: XP24
-  module_type_code: 07
-  link_number: 03
+  module_type_code: 7
+  link_number: 9
   module_number: 3
+  sw_version: XP24_V0.34.03
+  hw_version: XP24
+  auto_report_status: PP
+  msaction_table: XP24 V:0 V:0 V:0 V:0 | M12:0 M34:0 C12:0 C34:0 DT:2
+  action_table:
+    - XP20 10 0 > 0 OFF
+    - XP20 10 0 > 1 OFF
+    - XP20 10 0 > 2 OFF
+    - XP20 10 0 > 3 OFF
+    - XP20 10 8 > 0 ON
+    - XP20 10 8 > 1 ON
+    - XP20 10 8 > 2 ON
+    - XP20 10 8 > 3 ON
+
+    - XP20 2 0 > 0 OFF
+    - XP20 2 0 > 1 OFF
+    - XP20 2 0 > 2 OFF
+    - XP20 2 0 > 3 OFF
+    - XP20 2 8 > 0 ON
+    - XP20 2 8 > 1 ON
+    - XP20 2 8 > 2 ON
+    - XP20 2 8 > 3 ON
+
+    - CP20 0 0 > 0 OFF
+    - CP20 0 0 > 1 OFF
+    - CP20 0 0 > 2 OFF
+    - CP20 0 0 > 3 OFF
+    - CP20 0 8 > 0 ON
+    - CP20 0 8 > 1 ON
+    - CP20 0 8 > 2 ON
+    - CP20 0 8 > 3 ON
+
+    - CP20 9 0 > 0 ON
+    - CP20 9 1 > 1 ON
+    - CP20 9 2 > 2 ON
+    - CP20 9 3 > 3 ON
+    - CP20 9 4 > 0 OFF
+    - CP20 9 5 > 1 OFF
+    - CP20 9 6 > 2 OFF
+    - CP20 9 7 > 3 OFF
+
+    - CP20 9 8 > 0 ON
+    - CP20 9 8 > 1 ON
+    - CP20 9 8 > 2 ON
+    - CP20 9 8 > 3 ON
+    - CP20 9 9 > 0 OFF
+    - CP20 9 9 > 1 OFF
+    - CP20 9 9 > 2 OFF
+    - CP20 9 9 > 3 OFF
 
 - name: A10
   serial_number: "0012345010"
@@ -71,45 +407,177 @@
   module_type_code: 33
   link_number: 10
   module_number: 10
+  sw_version: XP20_V0.01.05
+  hw_version: XP20
+  auto_report_status: PP
 
 - name: A11
   serial_number: "0012345011"
   module_type: XP130
   module_type_real: XP230
   module_type_code: 34
-  link_number: 13
+  link_number: 11
   module_number: 5
   conbus_ip: 127.0.0.1
   conbus_port: 10001
   sw_version: XP230_V1.00.04
   hw_version: XP130_HW_Rev B
+  auto_report_status: AA
 
 - name: A12
   serial_number: "0012345012"
   module_type: XP33LED
-  module_type_code: 36
-  link_number: 14
+  module_type_code: 35
+  link_number: 12
+  module_number: 2
+  sw_version: XP33LED_V0.04.01
+  hw_version: XP33LED_HW_VER1
+  auto_report_status: PP
+  module_state: OFF
+  module_error_code: 00
+  module_input_state: xxx00000
+  module_output_state: xxxxx000
+  module_fw_crc: PGJALJLM
+  module_action_table_crc: MHIEIJBG
+  module_light_level: 00:000[%],01:000[%],02:000[%]
+  module_operating_hours: ??
+  module_energy_level: ??
+  temperature: -20,0\u00a7C
+  sw_top_version: ??
+  voltage: ??
+  action_table:
+    - XP20 10 0 > 0 OFF
+    - XP20 10 0 > 1 OFF
+    - XP20 10 0 > 2 OFF
+    - XP20 10 8 > 0 ON
+    - XP20 10 8 > 1 ON
+    - XP20 10 8 > 2 ON
+
+    - XP20 2 0 > 0 OFF
+    - XP20 2 0 > 1 OFF
+    - XP20 2 0 > 2 OFF
+    - XP20 2 8 > 0 ON
+    - XP20 2 8 > 1 ON
+    - XP20 2 8 > 2 ON
+
+    - CP20 0 0 > 0 OFF
+    - CP20 0 0 > 1 OFF
+    - CP20 0 0 > 2 OFF
+    - CP20 0 8 > 0 ON
+    - CP20 0 8 > 1 ON
+    - CP20 0 8 > 2 ON
+
+    - CP20 12 0 > 0 ON
+    - CP20 12 1 > 1 ON
+    - CP20 12 2 > 2 ON
+    - CP20 12 3 > 0 OFF
+    - CP20 12 4 > 1 OFF
+    - CP20 12 5 > 2 OFF
+
+    - CP20 12 8 > 0 ON
+    - CP20 12 8 > 1 ON
+    - CP20 12 8 > 2 ON
+    - CP20 12 9 > 0 OFF
+    - CP20 12 9 > 1 OFF
+    - CP20 12 9 > 2 OFF
 
 - name: A13
   serial_number: "0012345013"
   module_type: XP33LED
-  link_number: 15
-  module_type_code: 36
+  module_type_code: 35
+  link_number: 13
+  module_number: 0
+  sw_version: XP33LED_V0.04.01
+  hw_version: XP33LED_HW_VER1
+  auto_report_status: PP
+  module_state: OFF
+  module_error_code: 00
+  module_input_state: xxx00000
+  module_output_state: xxxxx000
+  module_fw_crc: PGJALJLM
+  module_action_table_crc: MHIEIJBG
+  module_light_level: 00:000[%],01:000[%],02:000[%]
+  module_operating_hours: ??
+  module_energy_level: ??
+  temperature: -20,0\u00a7C
+  sw_top_version: ??
+  voltage: ??
+  action_table:
+    - XP20 10 0 > 0 OFF
+    - XP20 10 0 > 1 OFF
+    - XP20 10 0 > 2 OFF
+    - XP20 10 8 > 0 ON
+    - XP20 10 8 > 1 ON
+    - XP20 10 8 > 2 ON
+
+    - XP20 2 0 > 0 OFF
+    - XP20 2 0 > 1 OFF
+    - XP20 2 0 > 2 OFF
+    - XP20 2 8 > 0 ON
+    - XP20 2 8 > 1 ON
+    - XP20 2 8 > 2 ON
+
+    - CP20 0 0 > 0 OFF
+    - CP20 0 0 > 1 OFF
+    - CP20 0 0 > 2 OFF
+    - CP20 0 8 > 0 ON
+    - CP20 0 8 > 1 ON
+    - CP20 0 8 > 2 ON
+
+    - CP20 13 0 > 0 ON
+    - CP20 13 1 > 1 ON
+    - CP20 13 2 > 2 ON
+    - CP20 13 3 > 0 OFF
+    - CP20 13 4 > 1 OFF
+    - CP20 13 5 > 2 OFF
+
+    - CP20 13 8 > 0 ON
+    - CP20 13 8 > 1 ON
+    - CP20 13 8 > 2 ON
+    - CP20 13 9 > 0 OFF
+    - CP20 13 9 > 1 OFF
+    - CP20 13 9 > 2 OFF
 
 - name: A14
-  serial_number: "0012345014"
+  serial_number: '0012345014'
+  module_type: XP130
+  module_type_code: 13
+  link_number: 14
+  module_number: 1
+  conbus_ip: 10.0.3.26
+  conbus_port: 10001
+  sw_version: XP130_V0.10.04
+  hw_version: XP130_HW_Rev B
+  auto_report_status: AA
+  action_table:
+
+- name: A15
+  serial_number: "9900000001"
   link_number: 91
   module_type: XP11
   module_type_code: 99
 
-- name: A15
-  serial_number: "0012345015"
+- name: A16
+  serial_number: "9900000002"
   link_number: 92
   module_type: XP11
   module_type_code: 99
 
-- name: A16
-  serial_number: "0012345016"
+- name: A17
+  serial_number: "9900000003"
   link_number: 93
   module_type: XP11
   module_type_code: 99
+
+- name: A18
+  serial_number: "000000000"
+  link_number: 00
+  module_type: CP20
+  module_type_code: 02
+
+- name: A19
+  serial_number: "0012345678"
+  link_number: 14
+  module_number: 14
+  module_type: XP70C
+  module_type_code: 5
