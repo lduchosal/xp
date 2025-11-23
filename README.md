@@ -297,7 +297,10 @@ xp conbus event
 xp conbus event list
 xp conbus event raw
 
+
 xp conbus export
+xp conbus export config
+
 
 xp conbus lightlevel
 xp conbus lightlevel get
@@ -318,6 +321,8 @@ xp conbus modulenumber set
 
 xp conbus msactiontable
 xp conbus msactiontable download
+xp conbus msactiontable list
+xp conbus msactiontable show
 
 
 xp conbus output

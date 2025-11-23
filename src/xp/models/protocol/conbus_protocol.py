@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Union
 from bubus import BaseEvent
 from pydantic import Field
 
-from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.config.conson_module_config import ConsonModuleConfig
+from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.telegram.datapoint_type import DataPointType
 
 if TYPE_CHECKING:

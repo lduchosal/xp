@@ -1,15 +1,15 @@
 """Unit tests for HomeKit configuration validator."""
 
+from xp.models.config.conson_module_config import (
+    ConsonModuleConfig,
+    ConsonModuleListConfig,
+)
 from xp.models.homekit.homekit_config import (
     BridgeConfig,
     HomekitAccessoryConfig,
     HomekitConfig,
     NetworkConfig,
     RoomConfig,
-)
-from xp.models.config.conson_module_config import (
-    ConsonModuleConfig,
-    ConsonModuleListConfig,
 )
 from xp.services.homekit.homekit_config_validator import (
     CrossReferenceValidator,

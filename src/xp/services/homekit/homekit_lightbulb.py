@@ -10,8 +10,8 @@ from pyhap.accessory import Accessory
 from pyhap.accessory_driver import AccessoryDriver
 from pyhap.const import CATEGORY_LIGHTBULB
 
-from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.config.conson_module_config import ConsonModuleConfig
+from xp.models.homekit.homekit_config import HomekitAccessoryConfig
 from xp.models.protocol.conbus_protocol import (
     LightBulbGetOnEvent,
     LightBulbSetOnEvent,

@@ -253,8 +253,8 @@ class ConfigValidationService:
             conson_config_path: Path to conson.yml configuration file.
             homekit_config_path: Path to homekit.yml configuration file.
         """
-        from xp.models.homekit.homekit_config import HomekitConfig
         from xp.models.config.conson_module_config import ConsonModuleListConfig
+        from xp.models.homekit.homekit_config import HomekitConfig
 
         self.conson_config = ConsonModuleListConfig.from_yaml(conson_config_path)
         self.homekit_config = HomekitConfig.from_yaml(homekit_config_path)
