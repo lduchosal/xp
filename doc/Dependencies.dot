@@ -1,180 +1,174 @@
-digraph ServiceDependencies {
+digraph LayeredArchitecture {
     // Graph settings
-    rankdir=LR;
+    rankdir=TB;
     compound=true;
     node [shape=box, style=filled, fillcolor=lightblue];
+    splines=ortho;
+    nodesep=0.8;
+    ranksep=1.2;
 
-    // Core infrastructure layer
-    subgraph cluster_core {
-        label="Core Infrastructure";
+    // Layer 1: CLI Layer (Top)
+    subgraph cluster_cli {
+        label="CLI Layer\n(src/xp/cli)";
         style=filled;
-        fillcolor=lightgray;
+        fillcolor="#E8F4F8";
 
-        ConbusConnectionPool [fillcolor=orange];
-        EventBus [fillcolor=orange];
+        CLI_Main [label="CLI Main\n__main__.py\nmain.py", fillcolor="#B3D9E6"];
+        CLI_Commands [label="Commands\nconbus/\ntelegram/\nterm/\nhomekit/\nserver/\nfile/module", fillcolor="#B3D9E6"];
+        CLI_Utils [label="CLI Utils\nformatters\nerror_handlers\ndecorators\ntype choices", fillcolor="#B3D9E6"];
     }
 
-    // Conbus services layer
-    subgraph cluster_conbus {
-        label="Conbus Services";
+    // Layer 2: Term Layer (TUI)
+    subgraph cluster_term {
+        label="Term Layer\n(src/xp/term)";
         style=filled;
-        fillcolor=lightyellow;
+        fillcolor="#F0E8F4";
 
-        ConbusProtocol [fillcolor=yellow];
-        ConbusDatapointService;
-        ConbusOutputService;
-        ConbusScanService;
-        ConbusDiscoverService;
-        ConbusBlinkService;
-        ConbusLightlevelService;
-        ConbusAutoreportService;
-        ConbusLinknumberService;
-        ConbusRawService;
-        ConbusReceiveService;
-        ConbusCustomService;
-
-        ActionTableService;
-        MsActionTableService;
+        Term_Apps [label="TUI Apps\nProtocolMonitorApp\nStateMonitorApp", fillcolor="#D9B3E6"];
+        Term_Widgets [label="Widgets\nProtocolLogWidget\nStatusFooterWidget\nModulesListWidget\nHelpMenuWidget", fillcolor="#D9B3E6"];
     }
 
-    // Telegram services layer
-    subgraph cluster_telegram {
-        label="Telegram Services";
+    // Layer 3: Services Layer
+    subgraph cluster_services {
+        label="Services Layer\n(src/xp/services)";
         style=filled;
-        fillcolor=lightcyan;
+        fillcolor="#F4F0E8";
 
-        TelegramService [fillcolor=orange];
-        TelegramOutputService;
-        TelegramDiscoverService;
-        TelegramBlinkService;
-        TelegramChecksumService;
-        TelegramLinkNumberService;
-        TelegramVersionService;
+        subgraph cluster_conbus_services {
+            label="Conbus Services";
+            style=filled;
+            fillcolor="#FFE8B3";
+
+            Conbus_Services [label="ConbusDatapointService\nConbusOutputService\nConbusScanService\nConbusDiscoverService\nConbusBlinkService\nConbusCustomService\nConbusReceiveService\nConbusExportService\nWriteConfigService", fillcolor="#FFDB80"];
+            ActionTable_Services [label="ActionTableService\nMsActionTableService\nMsActionTableDownload\nMsActionTableList\nMsActionTableShow", fillcolor="#FFDB80"];
+        }
+
+        subgraph cluster_telegram_services {
+            label="Telegram Services";
+            style=filled;
+            fillcolor="#B3E6FF";
+
+            Telegram_Services [label="TelegramService\nTelegramOutputService\nTelegramDiscoverService\nTelegramBlinkService\nTelegramChecksumService\nTelegramLinkNumberService\nTelegramVersionService\nTelegramDatapointService", fillcolor="#80D4FF"];
+        }
+
+        subgraph cluster_homekit_services {
+            label="HomeKit Services";
+            style=filled;
+            fillcolor="#C2F0C2";
+
+            Homekit_Services [label="HomekitService\nHomekitModuleService\nHomekitHapService\nHomekitConbusService\nHomekitCacheService\nHomekitLightbulbService\nHomekitOutletService\nHomekitDimmingLightService\nConfigValidationService", fillcolor="#99E699"];
+        }
+
+        subgraph cluster_server_services {
+            label="Server Services";
+            style=filled;
+            fillcolor="#FFD9B3";
+
+            Server_Services [label="ServerService\nBaseServerService\nXP20/XP24/XP33\nXP130/XP230\nCP20ServerService\nDeviceServiceFactory", fillcolor="#FFCC99"];
+        }
+
+        subgraph cluster_term_services {
+            label="Term Services";
+            style=filled;
+            fillcolor="#E6B3FF";
+
+            Term_Services [label="ProtocolMonitorService\nStateMonitorService", fillcolor="#D980FF"];
+        }
+
+        Other_Services [label="Other Services\nLogFileService\nModuleTypeService\nReverseProxyService", fillcolor="#E6E6E6"];
     }
 
-    // Protocol services layer
+    // Layer 4: Protocol Layer
     subgraph cluster_protocol {
-        label="Protocol Services";
+        label="Protocol Layer\n(src/xp/services/protocol + src/xp/models/protocol)";
         style=filled;
-        fillcolor=lightpink;
+        fillcolor="#FFE6F0";
 
-        TelegramFactory;
-        TelegramProtocol;
+        Protocol_Services [label="Protocol Services\nConbusProtocol\nConbusEventProtocol\nTelegramProtocol\nProtocolFactory", fillcolor="#FFB3D9"];
+        Protocol_Models [label="Protocol Events\nConnectionMadeEvent\nConnectionFailedEvent\nTelegramReceivedEvent\nEventTelegramReceivedEvent\nInvalidTelegramReceivedEvent\nDatapointEvent\nModuleDiscoveredEvent\nSendWriteConfigEvent\nSendActionEvent", fillcolor="#FFB3D9"];
     }
 
-    // HomeKit services layer
-    subgraph cluster_homekit {
-        label="HomeKit Services";
+    // Layer 5: Models Layer
+    subgraph cluster_models {
+        label="Models Layer\n(src/xp/models)";
         style=filled;
-        fillcolor=lightgreen;
+        fillcolor="#F0F0E8";
 
-        HomekitService [fillcolor=lightgreen];
-        HomekitModuleService;
-        HomekitHapService;
-        HomekitConbusService;
-        HomekitCacheService;
-        HomekitLightbulbService;
-        HomekitOutletService;
-        HomekitDimmingLightService;
+        Conbus_Models [label="Conbus Models\nConbusRequest\nConbusResponse\nConbusClientConfig\nConbusCustomResponse\nConbusDatapointResponse\nConbusOutputResponse\nConbusBlinkResponse\nConbusScanResponse\nConbusExportResponse\nConbusReceiveResponse\nConbusWriteConfigResponse", fillcolor="#E6E6CC"];
+        ActionTable_Models [label="ActionTable Models\nActionTable\nMsActionTable\nXp20/Xp24/Xp33\nMsActionTable", fillcolor="#E6E6CC"];
+        Homekit_Models [label="HomeKit Models\nHomekitConfig\nHomekitAccessoryConfig", fillcolor="#E6E6CC"];
+        Config_Models [label="Config Models\nConsonModuleConfig\nConsonModuleListConfig", fillcolor="#E6E6CC"];
+        Term_Models [label="Term Models\nConnectionState\nModuleState\nProtocolKeysConfig\nTelegramDisplayEvent\nStatusMessage", fillcolor="#E6E6CC"];
+        Core_Models [label="Core Models\nResponse\nLogEntry\nWriteConfigType", fillcolor="#E6E6CC"];
     }
 
-    // Server services layer
-    subgraph cluster_server {
-        label="Server Services";
+    // Layer 6: Telegrams Layer (Foundation)
+    subgraph cluster_telegrams {
+        label="Telegrams Layer\n(src/xp/models/telegram)";
         style=filled;
-        fillcolor=wheat;
+        fillcolor="#E8F0E8";
 
-        ServerService;
-        BaseServerService;
-        XP20ServerService;
-        XP24ServerService;
-        XP33ServerService;
-        XP130ServerService;
-        XP230ServerService;
-        CP20ServerService;
+        Telegram_Classes [label="Telegram Classes\nTelegram (base)\nEventTelegram\nOutputTelegram\nReplyTelegram\nSystemTelegram", fillcolor="#B3D9B3"];
+        Telegram_Types [label="Telegram Types & Enums\nTelegramType\nActionType\nDataPointType\nEventType\nInputType\nInputActionType\nModuleType\nModuleTypeCode\nSystemFunction\nTimeParam", fillcolor="#B3D9B3"];
     }
 
-    // Other services
-    ReverseProxyService [fillcolor=plum];
-    LogFileService [fillcolor=plum];
-    ModuleTypeService [fillcolor=plum];
+    // External Dependencies (shown as single nodes)
+    External_Twisted [label="External:\nTwisted\n(Protocol, Reactor)", shape=ellipse, fillcolor="#CCCCCC"];
+    External_Pydantic [label="External:\nPydantic\n(BaseModel)", shape=ellipse, fillcolor="#CCCCCC"];
+    External_Click [label="External:\nClick\n(CLI Framework)", shape=ellipse, fillcolor="#CCCCCC"];
+    External_Textual [label="External:\nTextual\n(TUI Framework)", shape=ellipse, fillcolor="#CCCCCC"];
+    External_HAP [label="External:\nHAP-python\n(HomeKit)", shape=ellipse, fillcolor="#CCCCCC"];
+    External_Psygnal [label="External:\nPsygnal/Bubus\n(Events, Signals)", shape=ellipse, fillcolor="#CCCCCC"];
 
-    // Core dependencies
-    ConbusProtocol -> ConbusConnectionPool;
+    // Layer Dependencies (High-Level)
+    CLI_Commands -> Conbus_Services [label="imports", color="#0066CC", penwidth=2];
+    CLI_Commands -> Telegram_Services [label="imports", color="#0066CC", penwidth=2];
+    CLI_Commands -> Homekit_Services [label="imports", color="#0066CC", penwidth=2];
+    CLI_Commands -> Server_Services [label="imports", color="#0066CC", penwidth=2];
+    CLI_Commands -> Other_Services [label="imports", color="#0066CC", penwidth=2];
+    CLI_Commands -> Conbus_Models [label="imports", color="#006699", penwidth=1.5];
+    CLI_Commands -> ActionTable_Models [label="imports", color="#006699", penwidth=1.5];
+    CLI_Commands -> Telegram_Classes [label="imports", color="#006699", penwidth=1.5];
 
-    // ConbusDatapointService dependencies
-    ConbusDatapointService -> ConbusProtocol;
-    ConbusDatapointService -> TelegramService;
+    Term_Apps -> Term_Services [label="imports", color="#9933CC", penwidth=2];
+    Term_Widgets -> Term_Services [label="imports", color="#9933CC", penwidth=2];
+    Term_Apps -> Term_Models [label="imports", color="#9966CC", penwidth=1.5];
+    Term_Widgets -> Term_Models [label="imports", color="#9966CC", penwidth=1.5];
 
-    // ConbusOutputService dependencies
-    ConbusOutputService -> ConbusProtocol;
-    ConbusOutputService -> ConbusDatapointService;
-    ConbusOutputService -> TelegramService;
-    ConbusOutputService -> TelegramOutputService;
+    Conbus_Services -> Protocol_Services [label="uses", color="#CC6600", penwidth=2];
+    Telegram_Services -> Protocol_Services [label="uses", color="#CC6600", penwidth=2];
+    Homekit_Services -> Protocol_Services [label="uses", color="#CC6600", penwidth=2];
+    Server_Services -> Telegram_Services [label="uses", color="#CC6600", penwidth=2];
+    Term_Services -> Protocol_Services [label="uses", color="#CC6600", penwidth=2];
 
-    // ConbusScanService dependencies
-    ConbusScanService -> ConbusProtocol;
-    ConbusScanService -> TelegramService;
+    Conbus_Services -> Conbus_Models [label="imports", color="#996600", penwidth=1.5];
+    Telegram_Services -> Telegram_Classes [label="imports", color="#996600", penwidth=1.5];
+    Homekit_Services -> Homekit_Models [label="imports", color="#996600", penwidth=1.5];
+    Server_Services -> Config_Models [label="imports", color="#996600", penwidth=1.5];
+    ActionTable_Services -> ActionTable_Models [label="imports", color="#996600", penwidth=1.5];
 
-    // ConbusDiscoverService dependencies
-    ConbusDiscoverService -> ConbusProtocol;
-    ConbusDiscoverService -> TelegramService;
-    ConbusDiscoverService -> TelegramDiscoverService;
+    Protocol_Services -> Protocol_Models [label="emits", color="#CC0066", penwidth=2];
+    Protocol_Services -> Telegram_Classes [label="imports", color="#990066", penwidth=1.5];
+    Protocol_Services -> Config_Models [label="imports", color="#990066", penwidth=1.5];
+    Protocol_Models -> Telegram_Classes [label="references", color="#990066", penwidth=1.5];
 
-    // ConbusBlinkService dependencies
-    ConbusBlinkService -> ConbusProtocol;
-    ConbusBlinkService -> ConbusDiscoverService;
-    ConbusBlinkService -> TelegramService;
-    ConbusBlinkService -> TelegramBlinkService;
+    Conbus_Models -> Telegram_Classes [label="imports", color="#666600", penwidth=1.5];
+    ActionTable_Models -> Telegram_Types [label="imports", color="#666600", penwidth=1.5];
+    Config_Models -> Telegram_Types [label="imports", color="#666600", penwidth=1.5];
+    Term_Models -> Telegram_Classes [label="imports", color="#666600", penwidth=1.5];
 
-    // ConbusLightlevelService dependencies
-    ConbusLightlevelService -> ConbusProtocol;
-    ConbusLightlevelService -> ConbusDatapointService;
-    ConbusLightlevelService -> TelegramService;
+    Telegram_Classes -> Telegram_Types [label="uses", color="#336600", penwidth=2];
 
-    // ActionTableService dependencies
-    ActionTableService -> ConbusProtocol;
-    ActionTableService -> TelegramService;
-
-    // Telegram service dependencies
-    TelegramOutputService -> TelegramService;
-    TelegramDiscoverService [fillcolor=lightcyan];
-    TelegramBlinkService [fillcolor=lightcyan];
-
-    // HomeKit service dependencies
-    HomekitService -> EventBus;
-    HomekitService -> TelegramFactory;
-    HomekitService -> TelegramService;
-    HomekitService -> HomekitModuleService;
-    HomekitService -> HomekitHapService;
-    HomekitService -> HomekitConbusService;
-    HomekitService -> HomekitCacheService;
-    HomekitService -> HomekitLightbulbService;
-    HomekitService -> HomekitOutletService;
-    HomekitService -> HomekitDimmingLightService;
-
-    // Protocol dependencies
-    TelegramFactory -> TelegramProtocol [style=dashed, label="creates"];
-    TelegramFactory -> EventBus;
-
-    // ServerService dependencies
-    ServerService -> TelegramService;
-    ServerService -> TelegramDiscoverService;
-    ServerService -> BaseServerService [style=dashed, label="creates"];
-    ServerService -> XP20ServerService [style=dashed, label="creates"];
-    ServerService -> XP24ServerService [style=dashed, label="creates"];
-    ServerService -> XP33ServerService [style=dashed, label="creates"];
-    ServerService -> XP130ServerService [style=dashed, label="creates"];
-    ServerService -> XP230ServerService [style=dashed, label="creates"];
-    ServerService -> CP20ServerService [style=dashed, label="creates"];
-
-    // Server inheritance (all server services extend BaseServerService)
-    XP20ServerService -> BaseServerService [style=dotted, label="extends"];
-    XP24ServerService -> BaseServerService [style=dotted, label="extends"];
-    XP33ServerService -> BaseServerService [style=dotted, label="extends"];
-    XP130ServerService -> BaseServerService [style=dotted, label="extends"];
-    XP230ServerService -> BaseServerService [style=dotted, label="extends"];
-    CP20ServerService -> BaseServerService [style=dotted, label="extends"];
+    // External Dependencies
+    CLI_Main -> External_Click [style=dashed, color="#999999"];
+    Term_Apps -> External_Textual [style=dashed, color="#999999"];
+    Term_Widgets -> External_Textual [style=dashed, color="#999999"];
+    Protocol_Services -> External_Twisted [style=dashed, color="#999999"];
+    Protocol_Services -> External_Psygnal [style=dashed, color="#999999"];
+    Protocol_Models -> External_Psygnal [style=dashed, color="#999999"];
+    Homekit_Services -> External_HAP [style=dashed, color="#999999"];
+    Telegram_Classes -> External_Pydantic [style=dashed, color="#999999"];
+    Conbus_Models -> External_Pydantic [style=dashed, color="#999999"];
 
     // Legend
     subgraph cluster_legend {
@@ -183,12 +177,16 @@ digraph ServiceDependencies {
         fillcolor=white;
 
         node [shape=plaintext];
-        edge [style=solid];
-        legend1 [label="Solid = Direct Dependency"];
-        legend2 [label="Dashed = Factory/Creates"];
-        legend3 [label="Dotted = Inheritance"];
+        legend1 [label="Solid Lines = Layer Dependencies"];
+        legend2 [label="Dashed Lines = External Framework Dependencies"];
+        legend3 [label="Arrows = Import Direction (from → to)"];
+        legend4 [label="Line Width = Dependency Strength"];
 
         legend1 -> legend2 [style=invis];
         legend2 -> legend3 [style=invis];
+        legend3 -> legend4 [style=invis];
     }
+
+    // Annotations
+    note1 [label="Clean Layered Architecture\n\nDependency Flow:\nCLI → Services → Protocol → Models → Telegrams\n\nNo circular dependencies\nEach layer only depends on layers below", shape=note, fillcolor="#FFFFCC"];
 }
