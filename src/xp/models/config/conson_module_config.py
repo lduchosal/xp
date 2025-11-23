@@ -23,7 +23,9 @@ class ConsonModuleConfig(BaseModel):
         sw_version: Optional software version.
         hw_version: Optional hardware version.
         action_table: Optional action table configuration.
-        msaction_table: Optional ms action table configuration.
+         msaction_table_xp20: Optional xp20 ms action table configuration.
+        msaction_table_xp24: Optional xp24 ms action table configuration.
+        msaction_table_xp33: Optional xp33 ms action table configuration.
         auto_report_status: Optional auto report status.
     """
 
@@ -40,8 +42,9 @@ class ConsonModuleConfig(BaseModel):
     hw_version: Optional[str] = None
     auto_report_status: Optional[str] = None
     action_table: Optional[List[str]] = None
-    msaction_table: Optional[str] = None
-
+    msaction_table_xp20: Optional[List[str]] = None
+    msaction_table_xp24: Optional[str] = None
+    msaction_table_xp33: Optional[List[str]] = None
 
 class ConsonModuleListConfig(BaseModel):
     """Configuration list for Conson modules.

@@ -58,13 +58,13 @@ def conbus_download_msactiontable(
         msaction_table: Union[
             Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None
         ],
-        msaction_table_short: str,
+        msaction_table_xp24: str,
     ) -> None:
         """Handle successful completion of MS action table download.
 
         Args:
             msaction_table: Downloaded MS action table object or None if failed.
-            msaction_table_short: Short version of MS action table object or None if failed.
+            msaction_table_xp24: Short version of MS action table object or None if failed.
 
         Raises:
             Abort: If action table download failed.
@@ -77,7 +77,7 @@ def conbus_download_msactiontable(
         output = {
             "serial_number": serial_number,
             "xpmoduletype": xpmoduletype,
-            "msaction_table_short": msaction_table_short,
+            "msaction_table_xp24": msaction_table_xp24,
             "msaction_table": msaction_table.model_dump(),
         }
         click.echo(json.dumps(output, indent=2, default=str))
