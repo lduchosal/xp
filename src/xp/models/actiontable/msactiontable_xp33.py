@@ -154,7 +154,7 @@ class Xp33MsActionTable(BaseModel):
 
                 try:
                     out_num = int(out_key[3:])
-                    if out_num not in [1, 2, 3]:
+                    if out_num not in (1, 2, 3):
                         raise ValueError(
                             f"Invalid output number: {out_num}, expected 1-3"
                         )
@@ -175,7 +175,7 @@ class Xp33MsActionTable(BaseModel):
 
                 try:
                     scene_num = int(scene_key[5:])
-                    if scene_num not in [1, 2, 3, 4]:
+                    if scene_num not in (1, 2, 3, 4):
                         raise ValueError(
                             f"Invalid scene number: {scene_num}, expected 1-4"
                         )
@@ -185,11 +185,11 @@ class Xp33MsActionTable(BaseModel):
                 scenes[scene_num] = cls._parse_scene(parts[1])
 
         # Validate we have all required outputs and scenes
-        for i in [1, 2, 3]:
+        for i in (1, 2, 3):
             if i not in outputs:
                 raise ValueError(f"Missing output{i} configuration")
 
-        for i in [1, 2, 3, 4]:
+        for i in (1, 2, 3, 4):
             if i not in scenes:
                 raise ValueError(f"Missing scene{i} configuration")
 

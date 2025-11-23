@@ -234,8 +234,7 @@ class TestXp20ShortFormat:
 
     def test_to_short_format_default(self):
         """Test short format with default (all zeros) configuration."""
-        table = Xp20MsActionTable()
-        lines = table.to_short_format()
+        lines = Xp20MsActionTable().to_short_format()
 
         assert len(lines) == 8
         for i, line in enumerate(lines, 1):

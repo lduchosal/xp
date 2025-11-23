@@ -208,8 +208,7 @@ class TestXp33ShortFormat:
         )
 
         # Convert and parse back
-        short = action_table.to_short_format()
-        parsed = Xp33MsActionTable.from_short_format(short)
+        parsed = Xp33MsActionTable.from_short_format(action_table.to_short_format())
 
         # Verify boundary values
         assert parsed.output1.min_level == 0

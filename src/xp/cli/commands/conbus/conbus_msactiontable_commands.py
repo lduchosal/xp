@@ -171,13 +171,13 @@ def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
 
         # Show the action table in YAML format
         if module.xp33_msaction_table:
-            yaml_dict = {"xp33_msaction_table": module.model_dump()}
+            yaml_dict = {"xp33_msaction_table": module_data}
             click.echo(_format_yaml(yaml_dict, indent=2))
         elif module.xp24_msaction_table:
-            yaml_dict = {"xp24_msaction_table": module.model_dump()}
+            yaml_dict = {"xp24_msaction_table": module_data}
             click.echo(_format_yaml(yaml_dict, indent=2))
         elif module.xp20_msaction_table:
-            yaml_dict = {"xp20_msaction_table": module.model_dump()}
+            yaml_dict = {"xp20_msaction_table": module_data}
             click.echo(_format_yaml(yaml_dict, indent=2))
 
     def error_callback(error: str) -> None:
@@ -206,7 +206,7 @@ def _format_yaml(data: dict, indent: int = 0) -> str:
     Returns:
         YAML-like formatted string.
     """
-    lines = []
+    lines: list[str] = []
     for key, value in data.items():
         if isinstance(value, dict):
             lines.extend((f"{' ' * indent}{key}:", _format_yaml(value, indent + 2)))
