@@ -2,9 +2,13 @@
 
 import logging
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from pydantic import BaseModel, IPvAnyAddress
+
+from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
+from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
+from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 
 
 class ConsonModuleConfig(BaseModel):
@@ -23,6 +27,7 @@ class ConsonModuleConfig(BaseModel):
         sw_version: Optional software version.
         hw_version: Optional hardware version.
         action_table: Optional action table configuration.
+        msaction_table: Optional ms action table configuration.
         auto_report_status: Optional auto report status.
     """
 
@@ -39,7 +44,9 @@ class ConsonModuleConfig(BaseModel):
     hw_version: Optional[str] = None
     auto_report_status: Optional[str] = None
     action_table: Optional[List[str]] = None
-    msaction_table: Optional[List[str]] = None
+    xp20_msaction_table: Optional[Xp20MsActionTable] = None
+    xp24_msaction_table: Optional[Xp24MsActionTable] = None
+    xp33_msaction_table: Optional[Xp33MsActionTable] = None
 
 
 class ConsonModuleListConfig(BaseModel):

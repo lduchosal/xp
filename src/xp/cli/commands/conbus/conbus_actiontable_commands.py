@@ -221,7 +221,9 @@ def conbus_show_actiontable(ctx: Context, serial_number: str) -> None:
         Args:
             module: Dictionary containing module configuration.
         """
-        click.echo(json.dumps(module.model_dump(), indent=2, default=str))
+        module_data = module.model_dump()
+        module_data.pop("msactiontable", None)
+        click.echo(json.dumps(module_data, indent=2, default=str))
 
     def error_callback(error: str) -> None:
         """Handle errors during action table show.

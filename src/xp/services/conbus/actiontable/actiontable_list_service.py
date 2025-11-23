@@ -72,9 +72,9 @@ class ActionTableListService:
             {
                 "serial_number": module.serial_number,
                 "module_type": module.module_type,
+                "action_table": len(module.action_table) if module.action_table else 0
             }
             for module in config.root
-            if module.action_table
         ]
 
         # Prepare result

@@ -72,9 +72,9 @@ class MsActionTableListService:
             {
                 "serial_number": module.serial_number,
                 "module_type": module.module_type,
+                "msaction_table": 1 if module.msaction_table else 0
             }
             for module in config.root
-            if module.msaction_table
         ]
 
         # Prepare result
