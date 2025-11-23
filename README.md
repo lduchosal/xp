@@ -323,6 +323,7 @@ xp conbus msactiontable
 xp conbus msactiontable download
 xp conbus msactiontable list
 xp conbus msactiontable show
+xp conbus msactiontable upload
 
 
 xp conbus output
