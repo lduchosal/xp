@@ -188,7 +188,7 @@ class MsActionTableDownloadService:
     def succeed(
         self,
         msactiontable: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable],
-        msactiontable_short: str
+        msactiontable_short: str,
     ) -> None:
         """Handle succeed connection event.
 

@@ -58,7 +58,7 @@ def conbus_download_msactiontable(
         msaction_table: Union[
             Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None
         ],
-        msaction_table_short: str
+        msaction_table_short: str,
     ) -> None:
         """Handle successful completion of MS action table download.
 

@@ -13,22 +13,37 @@ class TestXp24ShortFormat:
     def test_to_short_format_basic(self):
         """Test basic conversion to short format."""
         action_table = Xp24MsActionTable(
-            input1_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.T05SEC),
-            input2_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.T1SEC),
-            input3_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE),
-            input4_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE),
+            input1_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.T05SEC
+            ),
+            input2_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.T1SEC
+            ),
+            input3_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.NONE
+            ),
+            input4_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.NONE
+            ),
         )
 
-        short = action_table.to_short_format()
-        assert short == "XP24 T:1 T:2 T:0 T:0"
+        assert action_table.to_short_format() == "XP24 T:1 T:2 T:0 T:0"
 
     def test_to_short_format_with_settings(self):
         """Test conversion to short format with settings."""
         action_table = Xp24MsActionTable(
-            input1_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE),
-            input2_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE),
-            input3_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE),
-            input4_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE),
+            input1_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.NONE
+            ),
+            input2_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.NONE
+            ),
+            input3_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.NONE
+            ),
+            input4_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.NONE
+            ),
             mutex12=True,
             mutex34=True,
             curtain12=False,
@@ -44,8 +59,12 @@ class TestXp24ShortFormat:
         action_table = Xp24MsActionTable(
             input1_action=InputAction(type=InputActionType.ON, param=TimeParam.T5SEC),
             input2_action=InputAction(type=InputActionType.OFF, param=TimeParam.NONE),
-            input3_action=InputAction(type=InputActionType.LEVELSET, param=TimeParam.T5MIN),
-            input4_action=InputAction(type=InputActionType.SCENESET, param=TimeParam.T2MIN),
+            input3_action=InputAction(
+                type=InputActionType.LEVELSET, param=TimeParam.T5MIN
+            ),
+            input4_action=InputAction(
+                type=InputActionType.SCENESET, param=TimeParam.T2MIN
+            ),
         )
 
         short = action_table.to_short_format()
@@ -105,10 +124,16 @@ class TestXp24ShortFormat:
     def test_round_trip_conversion(self):
         """Test that converting to short and back preserves data."""
         original = Xp24MsActionTable(
-            input1_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.T05SEC),
+            input1_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.T05SEC
+            ),
             input2_action=InputAction(type=InputActionType.ON, param=TimeParam.T5SEC),
-            input3_action=InputAction(type=InputActionType.LEVELSET, param=TimeParam.T5MIN),
-            input4_action=InputAction(type=InputActionType.SCENESET, param=TimeParam.T2MIN),
+            input3_action=InputAction(
+                type=InputActionType.LEVELSET, param=TimeParam.T5MIN
+            ),
+            input4_action=InputAction(
+                type=InputActionType.SCENESET, param=TimeParam.T2MIN
+            ),
             mutex12=True,
             mutex34=False,
             curtain12=True,
@@ -213,7 +238,9 @@ class TestXp24ShortFormat:
 
         for time_param in time_params:
             action_table = Xp24MsActionTable(
-                input1_action=InputAction(type=InputActionType.TOGGLE, param=time_param),
+                input1_action=InputAction(
+                    type=InputActionType.TOGGLE, param=time_param
+                ),
             )
             short = action_table.to_short_format()
             assert short == f"XP24 T:{time_param.value} T:0 T:0 T:0"

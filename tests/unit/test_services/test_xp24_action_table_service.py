@@ -215,7 +215,9 @@ class TestMsActionTableService:
 
         # Mock serializer to return sample msactiontable
         service.serializer.from_data.return_value = sample_xp24_msactiontable
-        service.serializer.format_decoded_output.return_value = "XP24 T:0 ON:4 LS:12 SS:11"
+        service.serializer.format_decoded_output.return_value = (
+            "XP24 T:0 ON:4 LS:12 SS:11"
+        )
 
         # Create mock telegram received event
         telegram_event = TelegramReceivedEvent(

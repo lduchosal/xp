@@ -6,10 +6,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel, IPvAnyAddress
 
-from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
-from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
-from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
-
 
 class ConsonModuleConfig(BaseModel):
     """Configuration for a Conson module.
@@ -27,9 +23,7 @@ class ConsonModuleConfig(BaseModel):
         sw_version: Optional software version.
         hw_version: Optional hardware version.
         action_table: Optional action table configuration.
-        xp20_msaction_table: Optional XP20 ms action table configuration.
-        xp24_msaction_table: Optional XP24 ms action table configuration.
-        xp33_msaction_table: Optional XP33 ms action table configuration.
+        msaction_table: Optional ms action table configuration.
         auto_report_status: Optional auto report status.
     """
 
@@ -46,9 +40,7 @@ class ConsonModuleConfig(BaseModel):
     hw_version: Optional[str] = None
     auto_report_status: Optional[str] = None
     action_table: Optional[List[str]] = None
-    xp20_msaction_table: Optional[str] = None
-    xp24_msaction_table: Optional[str] = None
-    xp33_msaction_table: Optional[str] = None
+    msaction_table: Optional[str] = None
 
 
 class ConsonModuleListConfig(BaseModel):

@@ -82,7 +82,7 @@ class TestXp24ActionTableIntegration:
             """
             # Call the on_finish callback that was connected
             if callbacks["on_finish"]:
-                callbacks["on_finish"](mock_action_table)
+                callbacks["on_finish"](mock_action_table, "XP24 T:0 ON:4 LS:12 SS:11")
 
         def mock_start_reactor():
             """Mock reactor start method."""
@@ -119,12 +119,16 @@ class TestXp24ActionTableIntegration:
         output = json.loads(result.output)
         assert "serial_number" in output
         assert "xpmoduletype" in output
-        assert "action_table" in output
+        assert "msaction_table" in output
+        assert "msaction_table_short" in output
         assert output["serial_number"] == self.valid_serial
         assert output["xpmoduletype"] == "xp24"
 
+        # Verify short format
+        assert output["msaction_table_short"] == "XP24 T:0 ON:4 LS:12 SS:11"
+
         # Verify action table structure
-        action_table = output["action_table"]
+        action_table = output["msaction_table"]
         assert action_table["input1_action"]["type"] == str(InputActionType.TOGGLE)
         assert action_table["input1_action"]["param"] == TimeParam.NONE.value
         assert action_table["input2_action"]["type"] == str(InputActionType.ON)
@@ -174,7 +178,7 @@ class TestXp24ActionTableIntegration:
                 callbacks["on_error"]("Invalid serial number")
             # Call on_finish with None to signal failure
             if callbacks["on_finish"]:
-                callbacks["on_finish"](None)
+                callbacks["on_finish"](None, "")
 
         def mock_start_reactor():
             """Mock reactor start method."""

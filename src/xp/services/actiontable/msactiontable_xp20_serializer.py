@@ -179,4 +179,3 @@ class Xp20MsActionTableSerializer:
                 and_functions_byte |= 1 << bit_index
 
         raw_bytes[AND_FUNCTIONS_INDEX + input_index] = and_functions_byte
-
