@@ -33,10 +33,16 @@ class TestXp24ActionTableIntegration:
 
         # Create mock action table
         mock_action_table = Xp24MsActionTable(
-            input1_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE),
+            input1_action=InputAction(
+                type=InputActionType.TOGGLE, param=TimeParam.NONE
+            ),
             input2_action=InputAction(type=InputActionType.ON, param=TimeParam.T5SEC),
-            input3_action=InputAction(type=InputActionType.LEVELSET, param=TimeParam.T2MIN),
-            input4_action=InputAction(type=InputActionType.SCENESET, param=TimeParam.T2MIN),
+            input3_action=InputAction(
+                type=InputActionType.LEVELSET, param=TimeParam.T2MIN
+            ),
+            input4_action=InputAction(
+                type=InputActionType.SCENESET, param=TimeParam.T2MIN
+            ),
             mutex12=False,
             mutex34=True,
             mutual_deadtime=Xp24MsActionTable.MS300,
