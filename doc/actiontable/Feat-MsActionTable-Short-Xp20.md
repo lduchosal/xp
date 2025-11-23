@@ -18,14 +18,14 @@ This document specifies a compact, human-readable short format for representing 
 ### XP20 Short Format
 
 ```
-CH:1 I:0 S:0 G:0 AND:10000000 A:0 TA:0
-CH:2 I:0 S:0 G:0 AND:01000000 A:0 TA:0
-CH:3 I:0 S:0 G:0 AND:00100000 A:0 TA:0
-CH:4 I:0 S:0 G:0 AND:00010000 A:0 TA:0
-CH:5 I:0 S:0 G:0 AND:00001000 A:0 TA:0
-CH:6 I:0 S:0 G:0 AND:00000100 A:0 TA:0
-CH:7 I:0 S:0 G:0 AND:00000010 A:0 TA:0
-CH:8 I:0 S:0 G:0 AND:00000001 A:0 TA:0
+CH1 I:0 S:0 G:0 AND:10000000 SA:0 TA:0
+CH2 I:0 S:0 G:0 AND:01000000 SA:0 TA:0
+CH3 I:0 S:0 G:0 AND:00100000 SA:0 TA:0
+CH4 I:0 S:0 G:0 AND:00010000 SA:0 TA:0
+CH5 I:0 S:0 G:0 AND:00001000 SA:0 TA:0
+CH6 I:0 S:0 G:0 AND:00000100 SA:0 TA:0
+CH7 I:0 S:0 G:0 AND:00000010 SA:0 TA:0
+CH8 I:0 S:0 G:0 AND:00000001 SA:0 TA:0
 ```
 
 **Components:**
@@ -35,38 +35,47 @@ CH:8 I:0 S:0 G:0 AND:00000001 A:0 TA:0
 
 ### Input Channel Format
 
-Each input channel is represented as: `<flags>:<and_functions_hex>`
+Each input channel is represented with labeled fields:
+```
+CHX I:Y S:Y G:Y AND:YYYYYYYY SA:Y TA:Y
+```
 
 Where:
-- `<flags>`: Compact flag representation (see below)
-- `<and_functions_hex>`: 2-digit hexadecimal value (00-FF) representing 8 AND function bits
+- `CHX`: Channel number (1-8)
+- `I:Y`: Invert flag (0 or 1)
+- `S:Y`: Short/long flag (0 or 1)
+- `G:Y`: Group on/off flag (0 or 1)
+- `AND:YYYYYYYY`: 8-digit binary value representing 8 AND function bits
+- `SA:Y`: SA function flag (0 or 1)
+- `TA:Y`: TA function flag (0 or 1)
 
 ### Flag Representation
 
-Flags are represented as a string of characters, where each present flag adds a character:
+Each flag is represented as a separate field with a 0 or 1 value:
 
-| Flag         | Character | Description                        |
-|--------------|-----------|------------------------------------|
-| invert       | I         | Input inversion enabled            |
-| short_long   | S         | Short/long press detection enabled |
-| group_on_off | G         | Group on/off function enabled      |
-| and_function | AND       | AND Functions                      |
-| sa_function  | A         | SA function enabled                |
-| ta_function  | T         | TA function enabled                |
+| Field        | Description                        | Values |
+|--------------|------------------------------------|--------|
+| I            | Input inversion enabled            | 0 or 1 |
+| S            | Short/long press detection enabled | 0 or 1 |
+| G            | Group on/off function enabled      | 0 or 1 |
+| AND          | 8-bit AND functions                | 8-digit binary |
+| SA           | SA function enabled                | 0 or 1 |
+| TA           | TA function enabled                | 0 or 1 |
 
 
-### AND Functions Hexadecimal Encoding
+### AND Functions Binary Encoding
 
-The 8 AND function bits are encoded as a 2-digit hexadecimal value:
+The 8 AND function bits are encoded as an 8-digit binary string:
 
-| Bits (7-0)  |  Example                    |
-|-------------|-----------------------------|
-| 00000000    |  All AND functions disabled |
-| 11111111    |  All AND functions enabled  |
-| 10101010    |  Alternating pattern        |
-| 01010101    |  Alternating pattern        |
+| Binary (bits 7-0) | Hex  | Description                     |
+|-------------------|------|---------------------------------|
+| 00000000          | 0x00 | All AND functions disabled      |
+| 11111111          | 0xFF | All AND functions enabled       |
+| 10101010          | 0xAA | Alternating pattern (even bits) |
+| 01010101          | 0x55 | Alternating pattern (odd bits)  |
 
 **Bit order:** LSB (bit 0) to MSB (bit 7) represents and_functions[0] to and_functions[7]
+
 
 ## Examples
 
@@ -93,8 +102,8 @@ xp20_msaction_table:
 
 **Short format:**
 ```
-CH:1 I:0 S:0 G:0 AND:00000000 A:0 TA:0
-CH:2 I:0 S:0 G:0 AND:00000000 A:0 TA:0
+CH1 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
+CH2 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
 ...
 ```
 
@@ -135,10 +144,10 @@ xp20_msaction_table:
 
 **Short format:**
 ```
-CH:1 I:1 S:0 G:1 AND:10101010 A:0 TA:1
-CH:2 I:0 S:1 G:0 AND:01010101 A:1 TA:0
-CH:3 I:1 S:1 G:1 AND:11001100 A:1 TA:1
-CH:4 I:0 S:0 G:0 AND:00000000 A:0 TA:0
+CH1 I:1 S:0 G:1 AND:10101010 SA:0 TA:1
+CH2 I:0 S:1 G:0 AND:01010101 SA:1 TA:0
+CH3 I:1 S:1 G:1 AND:11001100 SA:1 TA:1
+CH4 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
 ```
 
 ## Implementation
@@ -154,7 +163,11 @@ class Xp20MsActionTable(BaseModel):
         """Convert action table to short format string.
 
         Returns:
-            Short format string (e.g., "XP20 -:00 -:00 -:00 -:00 -:00 -:00 -:00 -:00").
+            Short format string with each channel on a separate line.
+            Example:
+                CH1 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
+                CH2 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
+                ...
         """
         pass
 
@@ -200,14 +213,23 @@ The short format should be displayed in CLI output for:
 ```bash
 $ xp conbus msactiontable download 0020044991 xp20
 Module: A4 (0020044991)
-Short: XP20 -:00 -:00 -:00 -:00 -:00 -:00 -:00 -:00
+Short:
+  - CH1 I:1 S:0 G:1 AND:10101010 SA:0 TA:1
+  - CH2 I:0 S:1 G:0 AND:01010101 SA:1 TA:0
+  - CH3 I:1 S:1 G:1 AND:11001100 SA:1 TA:1
+  - CH4 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
+
 ```
 
 2. **Show Command:**
 ```bash
 $ xp conbus msactiontable show 0020044991
 Module: A4 (0020044991)
-Short: XP20 I:00 I:00 -:00 -:00 -:00 -:00 -:00 -:00
+Short: 
+  - CH1 I:1 S:0 G:1 AND:10101010 SA:0 TA:1
+  - CH2 I:0 S:1 G:0 AND:01010101 SA:1 TA:0
+  - CH3 I:1 S:1 G:1 AND:11001100 SA:1 TA:1
+  - CH4 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
 Full:
   input1:
     invert: true
@@ -222,35 +244,42 @@ Full:
 3. **List Command:**
 ```bash
 $ xp conbus msactiontable list
-Module: A4 (0020044991) - XP20 -:00 -:00 -:00 -:00 -:00 -:00 -:00 -:00
-Module: A5 (0020044992) - XP20 I:FF -:AA -:00 -:00 -:00 -:00 -:00 -:00
+Module: A4 (0020044991) 
+Module: A5 (0020044992) 
 ```
 
 ## Testing Requirements
 
 1. **Round-trip conversion**: `model.to_short_format()` → `from_short_format()` → should equal original
 2. **All flag combinations**: Test each flag individually and in combination
-3. **AND functions**: Test all hex values (0x00, 0xFF, 0x55, 0xAA, etc.)
-4. **Default channels**: Test channels with all defaults
+3. **AND functions**: Test all binary patterns (00000000, 11111111, 10101010, 01010101, etc.)
+4. **Default channels**: Test channels with all defaults (all zeros)
 5. **Error handling**: Invalid format strings should raise ValueError
 6. **Edge cases**:
-   - Empty flags (dash representation)
-   - All flags enabled
-   - Invalid hex values
-   - Wrong number of channels
-   - Malformed strings
+   - All flags disabled (all zeros)
+   - All flags enabled (all ones)
+   - Invalid binary values (non 0/1 characters in AND field)
+   - Wrong number of channels (not 8)
+   - Malformed strings (missing fields, wrong field names)
+   - Invalid channel numbers (not 1-8)
 
 ## Format Validation
 
-Valid format must match:
-```
-^XP20(?: [A-Z\-]+:[0-9A-F]{2}){8}$
+Each line must match the pattern:
+```regex
+^CH([1-8]) I:([01]) S:([01]) G:([01]) AND:([01]{8}) SA:([01]) TA:([01])$
 ```
 
 Where:
-- Exactly 8 channel specifications
-- Each channel has flags (letters A-Z or dash) followed by colon and 2-digit hex
-- Spaces separate module type and channels
+- `CH([1-8])`: Channel number from 1 to 8
+- `I:([01])`: Invert flag, 0 or 1
+- `S:([01])`: Short/long flag, 0 or 1
+- `G:([01])`: Group on/off flag, 0 or 1
+- `AND:([01]{8})`: Exactly 8 binary digits (0 or 1)
+- `SA:([01])`: SA function flag, 0 or 1
+- `TA:([01])`: TA function flag, 0 or 1
+- Single spaces separate each field
+- Each channel must appear on a separate line
 
 ## References
 
