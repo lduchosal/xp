@@ -68,7 +68,12 @@ def conbus_download_msactiontable(
 
         # Format short representation based on module type
         short_field_name = f"{xpmoduletype}_msaction_table"
-        short_value = msaction_table_short[0] if len(msaction_table_short) == 1 else msaction_table_short
+        # XP24 returns single-element list, XP20/XP33 return multi-line lists
+        short_value: Union[str, list[str]]
+        if len(msaction_table_short) == 1:
+            short_value = msaction_table_short[0]
+        else:
+            short_value = msaction_table_short
 
         output = {
             "serial_number": serial_number,

@@ -73,15 +73,15 @@ class TestXp33ShortFormat:
         """Test conversion to short format with default values."""
         short = default_action_table.to_short_format()
 
-        expected = (
-            "OUT1 MIN:0 MAX:100 SO:0 SF:0 LE:0\n"
-            "OUT2 MIN:0 MAX:100 SO:0 SF:0 LE:0\n"
-            "OUT3 MIN:0 MAX:100 SO:0 SF:0 LE:0\n"
-            "SCENE1 OUT1:0 OUT2:0 OUT3:0 T:NONE\n"
-            "SCENE2 OUT1:0 OUT2:0 OUT3:0 T:NONE\n"
-            "SCENE3 OUT1:0 OUT2:0 OUT3:0 T:NONE\n"
-            "SCENE4 OUT1:0 OUT2:0 OUT3:0 T:NONE"
-        )
+        expected = [
+            "OUT1 MIN:0 MAX:100 SO:0 SF:0 LE:0",
+            "OUT2 MIN:0 MAX:100 SO:0 SF:0 LE:0",
+            "OUT3 MIN:0 MAX:100 SO:0 SF:0 LE:0",
+            "SCENE1 OUT1:0 OUT2:0 OUT3:0 T:NONE",
+            "SCENE2 OUT1:0 OUT2:0 OUT3:0 T:NONE",
+            "SCENE3 OUT1:0 OUT2:0 OUT3:0 T:NONE",
+            "SCENE4 OUT1:0 OUT2:0 OUT3:0 T:NONE",
+        ]
 
         assert short == expected
 
@@ -89,15 +89,15 @@ class TestXp33ShortFormat:
         """Test conversion to short format with sample values."""
         short = sample_action_table.to_short_format()
 
-        expected = (
-            "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1\n"
-            "OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0\n"
-            "OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1\n"
-            "SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC\n"
-            "SCENE2 OUT1:25 OUT2:35 OUT3:45 T:T10SEC\n"
-            "SCENE3 OUT1:75 OUT2:85 OUT3:95 T:T1MIN\n"
-            "SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE"
-        )
+        expected = [
+            "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1",
+            "OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0",
+            "OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1",
+            "SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC",
+            "SCENE2 OUT1:25 OUT2:35 OUT3:45 T:T10SEC",
+            "SCENE3 OUT1:75 OUT2:85 OUT3:95 T:T1MIN",
+            "SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE",
+        ]
 
         assert short == expected
 
@@ -279,13 +279,13 @@ class TestXp33ShortFormat:
     def test_invalid_format_missing_scene(self):
         """Test error handling for missing scene."""
         short_str = [
-            "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1\n"
-            "OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0\n"
-            "OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1\n"
-            "SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC\n"
-            "SCENE2 OUT1:25 OUT2:35 OUT3:45 T:T10SEC\n"
+            "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1",
+            "OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0",
+            "OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1",
+            "SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC",
+            "SCENE2 OUT1:25 OUT2:35 OUT3:45 T:T10SEC",
             # Missing SCENE3
-            "SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE"
+            "SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE",
         ]
 
         with pytest.raises(ValueError, match="Missing scene3"):

@@ -125,7 +125,7 @@ class Xp33MsActionTable(BaseModel):
         """Parse short format string into action table.
 
         Args:
-            short_str: Short format string.
+            short_str: Short format string (list of lines).
 
         Returns:
             Xp33MsActionTable instance.
