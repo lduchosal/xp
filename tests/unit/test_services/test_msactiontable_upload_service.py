@@ -412,7 +412,7 @@ class TestMsActionTableUploadService:
             checksum_valid=True,
         )
 
-        finish_emitted: list[str] = []
+        finish_emitted: list[bool] = []
         service.on_finish.connect(finish_emitted.append)
 
         service.telegram_received(telegram_event)
@@ -422,7 +422,7 @@ class TestMsActionTableUploadService:
         call_args = mock_conbus_protocol.send_telegram.call_args
         assert call_args[1]["system_function"] == SystemFunction.EOF
         assert len(finish_emitted) == 1
-        assert finish_emitted[0] is True
+        assert finish_emitted[0]
 
     def test_handle_nak_response(
         self, service, mock_telegram_service, mock_conbus_protocol
