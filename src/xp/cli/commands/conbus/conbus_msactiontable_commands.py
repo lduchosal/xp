@@ -65,10 +65,15 @@ def conbus_download_msactiontable(
             msaction_table_short: Short version of XP24 MS action table.
         """
         service.stop_reactor()
+
+        # Format short representation based on module type
+        short_field_name = f"{xpmoduletype}_msaction_table"
+        short_value = msaction_table_short[0] if len(msaction_table_short) == 1 else msaction_table_short
+
         output = {
             "serial_number": serial_number,
             "xpmoduletype": xpmoduletype,
-            "msaction_table_short": msaction_table_short,
+            short_field_name: short_value,
             "msaction_table": msaction_table.model_dump(),
         }
         click.echo(json.dumps(output, indent=2, default=str))

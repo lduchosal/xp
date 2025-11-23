@@ -190,7 +190,7 @@ class Xp24MsActionTable(BaseModel):
         )
         result = f"{result} | {settings}"
 
-        return list(result)
+        return [result]
 
     @classmethod
     def from_short_format(cls, short_str: list[str]) -> "Xp24MsActionTable":
