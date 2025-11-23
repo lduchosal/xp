@@ -268,14 +268,14 @@ The short format should be displayed in CLI output for:
 ```bash
 $ xp conbus msactiontable download 0020044991 xp24
 Module: A4 (0020044991)
-Short: XP24 T:1 T:2 T:0 T:0
+Short: T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 ```
 
 2. **Show Command:**
 ```bash
 $ xp conbus msactiontable show 0020044991
 Module: A4 (0020044991)
-Short: XP24 T:1 T:2 T:0 T:0
+Short: T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 Full:
   input1_action:
     type: TOGGLE
@@ -286,8 +286,8 @@ Full:
 3. **List Command:**
 ```bash
 $ xp conbus msactiontable list
-Module: A4 (0020044991) - XP24 T:1 T:2 T:0 T:0
-Module: A5 (0020044992) - XP24 ON:4 OF:0 T:0 T:0
+Module: A4 (0020044991) - T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
+Module: A5 (0020044992) - ON:4 OF:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 ```
 
 ## Testing Requirements
@@ -295,9 +295,10 @@ Module: A5 (0020044992) - XP24 ON:4 OF:0 T:0 T:0
 1. **Round-trip conversion**: `model.to_short_format()` → `from_short_format()` → should equal original
 2. **All action types**: Test each InputActionType short code
 3. **All time params**: Test each TimeParam value (0-19)
-4. **Settings variations**: Test with/without settings
+4. **Settings variations**: Test all settings combinations (mutex, curtain, deadtime)
 5. **Error handling**: Invalid format strings should raise ValueError
-6. **Edge cases**: Empty inputs, boundary values, malformed strings
+6. **Missing settings**: Format without settings section should raise ValueError
+7. **Edge cases**: Empty inputs, boundary values, malformed strings
 
 ## References
 

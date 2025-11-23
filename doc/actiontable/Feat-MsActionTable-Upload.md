@@ -15,7 +15,7 @@ Add `xpXX_msaction_table` field to module configuration:
   module_number: 2
   auto_report_status: PP
   xp24_msaction_table:
-    - XP24 T:1 T:2 ON:0 OF:0 | M12:0 M34:0 C12:0 C34:0 DT:12
+    - T:1 T:2 ON:0 OF:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 ```
 
 ## CLI
