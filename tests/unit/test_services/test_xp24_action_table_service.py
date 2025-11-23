@@ -211,7 +211,7 @@ class TestMsActionTableService:
         service.msactiontable_data = ["AAAAACAAAABAAAAC"]
 
         mock_finish = Mock()
-        service.on_finish_xp24.connect(mock_finish)
+        service.on_finish.connect(mock_finish)
 
         # Mock serializer to return sample msactiontable
         service.serializer.from_data.return_value = sample_xp24_msactiontable

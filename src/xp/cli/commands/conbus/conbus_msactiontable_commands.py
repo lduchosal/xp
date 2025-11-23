@@ -209,8 +209,7 @@ def _format_yaml(data: dict, indent: int = 0) -> str:
     lines = []
     for key, value in data.items():
         if isinstance(value, dict):
-            lines.append(f"{' ' * indent}{key}:")
-            lines.append(_format_yaml(value, indent + 2))
+            lines.extend((f"{' ' * indent}{key}:", _format_yaml(value, indent + 2)))
         elif isinstance(value, list):
             lines.append(f"{' ' * indent}{key}:")
             for item in value:

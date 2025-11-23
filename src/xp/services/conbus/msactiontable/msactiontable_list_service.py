@@ -72,7 +72,15 @@ class MsActionTableListService:
             {
                 "serial_number": module.serial_number,
                 "module_type": module.module_type,
-                "msaction_table": 1 if (module.xp20_msaction_table or module.xp24_msaction_table or module.xp33_msaction_table) else 0,
+                "msaction_table": (
+                    1
+                    if (
+                        module.xp20_msaction_table
+                        or module.xp24_msaction_table
+                        or module.xp33_msaction_table
+                    )
+                    else 0
+                ),
             }
             for module in config.root
         ]

@@ -46,6 +46,7 @@ class ConsonModuleConfig(BaseModel):
     xp24_msaction_table: Optional[List[str]] = None
     xp33_msaction_table: Optional[List[str]] = None
 
+
 class ConsonModuleListConfig(BaseModel):
     """Configuration list for Conson modules.
 

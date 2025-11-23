@@ -193,7 +193,7 @@ class Xp24MsActionTable(BaseModel):
         return list(result)
 
     @classmethod
-    def from_short_format(cls, short_str: str) -> "Xp24MsActionTable":
+    def from_short_format(cls, short_str: list[str]) -> "Xp24MsActionTable":
         """Parse short format string into action table.
 
         Args:
@@ -206,7 +206,7 @@ class Xp24MsActionTable(BaseModel):
             ValueError: If format is invalid.
         """
         # Split by pipe to separate actions from settings
-        parts = short_str.split("|")
+        parts = short_str[0].split("|")
         action_part = parts[0].strip()
         settings_part = parts[1].strip()
 

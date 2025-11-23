@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel, Field
 
+
 class InputChannel(BaseModel):
     """Configuration for a single input channel in XP20 action table.
 

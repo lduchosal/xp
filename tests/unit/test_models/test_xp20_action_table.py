@@ -246,7 +246,16 @@ class TestXp20ShortFormat:
         table = Xp20MsActionTable()
         table.input1.invert = True
         table.input1.short_long = True
-        table.input1.and_functions = [True, False, True, False, True, False, True, False]
+        table.input1.and_functions = [
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+        ]
 
         lines = table.to_short_format()
 
@@ -272,17 +281,44 @@ class TestXp20ShortFormat:
         table = Xp20MsActionTable()
         table.input1.invert = True
         table.input1.group_on_off = True
-        table.input1.and_functions = [True, False, True, False, True, False, True, False]
+        table.input1.and_functions = [
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+        ]
         table.input1.ta_function = True
 
         table.input2.short_long = True
-        table.input2.and_functions = [False, True, False, True, False, True, False, True]
+        table.input2.and_functions = [
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+        ]
         table.input2.sa_function = True
 
         table.input3.invert = True
         table.input3.short_long = True
         table.input3.group_on_off = True
-        table.input3.and_functions = [True, True, False, False, True, True, False, False]
+        table.input3.and_functions = [
+            True,
+            True,
+            False,
+            False,
+            True,
+            True,
+            False,
+            False,
+        ]
         table.input3.sa_function = True
         table.input3.ta_function = True
 
@@ -295,9 +331,7 @@ class TestXp20ShortFormat:
 
     def test_from_short_format_default(self):
         """Test parsing short format with default configuration."""
-        short = "\n".join(
-            [f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0" for i in range(1, 9)]
-        )
+        short = [f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0" for i in range(1, 9)]
 
         table = Xp20MsActionTable.from_short_format(short)
 
@@ -314,9 +348,8 @@ class TestXp20ShortFormat:
         """Test parsing short format with single channel configured."""
         lines = [f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0" for i in range(1, 9)]
         lines[0] = "CH1 I:1 S:1 G:0 AND:10101010 SA:0 TA:0"
-        short = "\n".join(lines)
 
-        table = Xp20MsActionTable.from_short_format(short)
+        table = Xp20MsActionTable.from_short_format(lines)
 
         assert table.input1.invert is True
         assert table.input1.short_long is True
@@ -336,9 +369,8 @@ class TestXp20ShortFormat:
         """Test parsing short format with all flags enabled."""
         lines = [f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0" for i in range(1, 9)]
         lines[0] = "CH1 I:1 S:1 G:1 AND:11111111 SA:1 TA:1"
-        short = "\n".join(lines)
 
-        table = Xp20MsActionTable.from_short_format(short)
+        table = Xp20MsActionTable.from_short_format(lines)
 
         assert table.input1.invert is True
         assert table.input1.short_long is True
@@ -349,14 +381,16 @@ class TestXp20ShortFormat:
 
     def test_from_short_format_mixed_configuration(self):
         """Test parsing short format with mixed configuration."""
-        short = """CH1 I:1 S:0 G:1 AND:10101010 SA:0 TA:1
-CH2 I:0 S:1 G:0 AND:01010101 SA:1 TA:0
-CH3 I:1 S:1 G:1 AND:11001100 SA:1 TA:1
-CH4 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-CH5 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-CH6 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-CH7 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"""
+        short = [
+            "CH1 I:1 S:0 G:1 AND:10101010 SA:0 TA:1",
+            "CH2 I:0 S:1 G:0 AND:01010101 SA:1 TA:0",
+            "CH3 I:1 S:1 G:1 AND:11001100 SA:1 TA:1",
+            "CH4 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "CH5 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "CH6 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "CH7 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+        ]
 
         table = Xp20MsActionTable.from_short_format(short)
 
@@ -381,11 +415,29 @@ CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"""
         table1 = Xp20MsActionTable()
         table1.input1.invert = True
         table1.input1.short_long = True
-        table1.input1.and_functions = [True, False, True, False, True, False, True, False]
+        table1.input1.and_functions = [
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+        ]
         table1.input2.group_on_off = True
         table1.input2.sa_function = True
         table1.input3.ta_function = True
-        table1.input3.and_functions = [False, False, True, True, False, False, True, True]
+        table1.input3.and_functions = [
+            False,
+            False,
+            True,
+            True,
+            False,
+            False,
+            True,
+            True,
+        ]
         table1.input8.invert = True
         table1.input8.and_functions = [True] * 8
 
@@ -396,7 +448,7 @@ CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"""
 
     def test_from_short_format_invalid_line_count(self):
         """Test parsing fails with wrong number of lines."""
-        short = "CH1 I:0 S:0 G:0 AND:00000000 SA:0 TA:0\n" * 5
+        short = ["CH1 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"] * 5
 
         try:
             Xp20MsActionTable.from_short_format(short)
@@ -408,10 +460,9 @@ CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"""
         """Test parsing fails with invalid format."""
         lines = [f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0" for i in range(1, 9)]
         lines[0] = "INVALID FORMAT"
-        short = "\n".join(lines)
 
         try:
-            Xp20MsActionTable.from_short_format(short)
+            Xp20MsActionTable.from_short_format(lines)
             assert False, "Should have raised ValueError"
         except ValueError as e:
             assert "Invalid channel format" in str(e)
@@ -420,10 +471,9 @@ CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"""
         """Test parsing fails with invalid channel number."""
         lines = [f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0" for i in range(1, 9)]
         lines[0] = "CH9 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"
-        short = "\n".join(lines)
 
         try:
-            Xp20MsActionTable.from_short_format(short)
+            Xp20MsActionTable.from_short_format(lines)
             assert False, "Should have raised ValueError"
         except ValueError as e:
             assert "Invalid channel format" in str(e)
@@ -432,10 +482,9 @@ CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"""
         """Test parsing fails with invalid binary value in AND field."""
         lines = [f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0" for i in range(1, 9)]
         lines[0] = "CH1 I:0 S:0 G:0 AND:00000002 SA:0 TA:0"
-        short = "\n".join(lines)
 
         try:
-            Xp20MsActionTable.from_short_format(short)
+            Xp20MsActionTable.from_short_format(lines)
             assert False, "Should have raised ValueError"
         except ValueError as e:
             assert "Invalid channel format" in str(e)
@@ -443,24 +492,25 @@ CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"""
     def test_from_short_format_missing_channel(self):
         """Test parsing fails when a channel is missing."""
         lines = [f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0" for i in range(1, 8)]
-        short = "\n".join(lines)
 
         try:
-            Xp20MsActionTable.from_short_format(short)
+            Xp20MsActionTable.from_short_format(lines)
             assert False, "Should have raised ValueError"
         except ValueError as e:
             assert "Expected 8 channel lines" in str(e)
 
     def test_from_short_format_with_whitespace(self):
         """Test parsing handles leading/trailing whitespace."""
-        short = """  CH1 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-  CH2 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-  CH3 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-  CH4 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-  CH5 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-  CH6 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-  CH7 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
-  CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0  """
+        short = [
+            "  CH1 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "  CH2 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "  CH3 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "  CH4 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "  CH5 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "  CH6 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "  CH7 I:0 S:0 G:0 AND:00000000 SA:0 TA:0",
+            "  CH8 I:0 S:0 G:0 AND:00000000 SA:0 TA:0  ",
+        ]
 
         table = Xp20MsActionTable.from_short_format(short)
         assert table is not None
