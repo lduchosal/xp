@@ -60,6 +60,9 @@ from xp.services.conbus.msactiontable.msactiontable_list_service import (
 from xp.services.conbus.msactiontable.msactiontable_show_service import (
     MsActionTableShowService,
 )
+from xp.services.conbus.msactiontable.msactiontable_upload_service import (
+    MsActionTableUploadService,
+)
 from xp.services.conbus.write_config_service import WriteConfigService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
@@ -377,6 +380,19 @@ class ServiceContainer:
                 xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
                 xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
                 telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            MsActionTableUploadService,
+            factory=lambda: MsActionTableUploadService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
+                xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
+                xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
+                xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
+                telegram_service=self.container.resolve(TelegramService),
+                conson_config=self.container.resolve(ConsonModuleListConfig),
             ),
             scope=punq.Scope.singleton,
         )

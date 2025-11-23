@@ -25,6 +25,9 @@ from xp.services.conbus.msactiontable.msactiontable_list_service import (
 from xp.services.conbus.msactiontable.msactiontable_show_service import (
     MsActionTableShowService,
 )
+from xp.services.conbus.msactiontable.msactiontable_upload_service import (
+    MsActionTableUploadService,
+)
 
 
 @conbus_msactiontable.command("download", short_help="Download MSActionTable")
@@ -204,6 +207,65 @@ def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
             finish_callback=on_finish,
             error_callback=error_callback,
         )
+
+
+@conbus_msactiontable.command("upload", short_help="Upload MSActionTable")
+@click.argument("serial_number", type=SERIAL)
+@click.argument("xpmoduletype", type=XP_MODULE_TYPE)
+@click.pass_context
+@connection_command()
+def conbus_upload_msactiontable(
+    ctx: Context, serial_number: str, xpmoduletype: str
+) -> None:
+    """Upload MS action table from conson.yml to XP module.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+        xpmoduletype: XP module type.
+    """
+    service: MsActionTableUploadService = (
+        ctx.obj.get("container").get_container().resolve(MsActionTableUploadService)
+    )
+
+    def on_progress(progress: str) -> None:
+        """Handle progress updates during MS action table upload.
+
+        Args:
+            progress: Progress message string.
+        """
+        click.echo(progress, nl=False)
+
+    def on_finish(success: bool) -> None:
+        """Handle successful completion of MS action table upload.
+
+        Args:
+            success: Whether upload was successful.
+        """
+        service.stop_reactor()
+        if success:
+            click.echo("\nMsactiontable uploaded successfully")
+
+    def on_error(error: str) -> None:
+        """Handle errors during MS action table upload.
+
+        Args:
+            error: Error message string.
+        """
+        service.stop_reactor()
+        click.echo(f"\nError: {error}")
+
+    click.echo(f"Uploading msactiontable to {serial_number}...")
+
+    with service:
+        service.on_progress.connect(on_progress)
+        service.on_error.connect(on_error)
+        service.on_finish.connect(on_finish)
+        service.start(
+            serial_number=serial_number,
+            xpmoduletype=xpmoduletype,
+        )
+        service.start_reactor()
 
 
 def _format_yaml(data: dict, indent: int = 0) -> str:

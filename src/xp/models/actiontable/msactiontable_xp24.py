@@ -212,14 +212,14 @@ class Xp24MsActionTable(BaseModel):
 
         # Parse action part
         tokens = action_part.split()
-        if len(tokens) != 5 or tokens[0] != "XP24":
+        if len(tokens) != 4:
             raise ValueError(
                 f"Invalid short format: expected 'XP24 <a1> <a2> <a3> <a4>', got '{action_part}'"
             )
 
         # Parse input actions
         input_actions = []
-        for i, token in enumerate(tokens[1:5], 1):
+        for i, token in enumerate(tokens[0:4], 1):
             if ":" not in token:
                 raise ValueError(f"Invalid action format at position {i}: '{token}'")
 
