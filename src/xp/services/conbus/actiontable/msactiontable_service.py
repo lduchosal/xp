@@ -182,7 +182,6 @@ class MsActionTableService:
         """
         self.logger.debug(f"Failed: {message}")
         self.on_error.emit(message)
-        self.on_finish.emit(None)
 
     def succeed(
         self,

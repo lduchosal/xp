@@ -121,6 +121,7 @@ def xp_output_status(ctx: click.Context, serial_number: str) -> None:
             response: Datapoint response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
+        service.stop_reactor()
 
     with service:
         service.on_finish.connect(on_finish)
@@ -128,6 +129,7 @@ def xp_output_status(ctx: click.Context, serial_number: str) -> None:
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_OUTPUT_STATE,
         )
+        service.start_reactor()
 
 
 @conbus_output.command("state")
@@ -156,6 +158,7 @@ def xp_module_state(ctx: click.Context, serial_number: str) -> None:
             response: Datapoint response object.
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
+        service.stop_reactor()
 
     with service:
         service.on_finish.connect(on_finish)
@@ -163,3 +166,4 @@ def xp_module_state(ctx: click.Context, serial_number: str) -> None:
             serial_number=serial_number,
             datapoint_type=DataPointType.MODULE_STATE,
         )
+        service.start_reactor()

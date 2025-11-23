@@ -57,7 +57,7 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         Args:
             progress: Progress message string.
         """
-        click.echo(progress)
+        click.echo(progress, nl=False)
 
     def on_finish(result: tuple) -> None:
         """Handle successful completion of action table download.

@@ -6,7 +6,6 @@ from typing import Optional
 
 class DataPointType(str, Enum):
     """Data point types for system telegrams.
-
     Attributes:
         MODULE_TYPE: Module type (XP24, XP33, etc).
         HW_VERSION: Hardware version information.
@@ -30,8 +29,37 @@ class DataPointType(str, Enum):
         SW_TOP_VERSION: Software top version.
         VOLTAGE: Voltage data point.
         AUTO_REPORT_STATUS: Auto report status.
-    """
 
+    Sample telegram datapoint request:
+       <S0020044966F02D30FL>
+
+    Sample telegram datapoint reply:
+       <R0020044966F02D00XP24FH>
+       <R0020044966F02D01XP24FG>
+       <R0020044966F02D02XP24_V0.34.03GI>
+       <R0020044966F02D030020044966FB>
+       <R0020044966F02D0406FL>
+       <R0020044966F02D050007FL>
+       <R0020044966F02D0601FO>
+       <R0020044966F02D0707FJ>
+       <R0020044966F02D08MIFF>
+       <R0020044966F02D09OFFBP>
+       <R0020044966F02D1000FI>
+       <R0020044966F02D11xxxx0000FJ>
+       <R0020044966F02D12xxxx0000FK>
+       <R0020044966F02D1500:000[%],01:000[%],02:000[%],03:000[%]HB>
+       <R0020044966F02D1600:000[H],01:000[H],02:000[H],03:000[H]HC>
+       <R0020044966F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]HD>
+       <R0020044966F02D18+28,5§CIM>
+       <R0020044966F02D19??FB>
+       <R0020044966F02D20??FL>
+       <R0020044966F02D21PPFK>
+       <R0020044966F02D22PLLKMDINEM>
+       <R0020044966F02D23AAFI>
+       <R0020044966F02D24AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFP>
+       <R0020044966F02D25AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFO>
+       <R0020044966F02D26??FN>
+    """
     MODULE_TYPE = "00"  # Module type (XP24, XP33, ..)
     HW_VERSION = "01"  # Hardware version information
     SW_VERSION = "02"  # Software version information
@@ -80,3 +108,4 @@ class DataPointType(str, Enum):
             if dp_type.value == code:
                 return dp_type
         return None
+

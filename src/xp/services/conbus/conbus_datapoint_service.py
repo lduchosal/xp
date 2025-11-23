@@ -165,7 +165,7 @@ class ConbusDatapointService:
         self,
         serial_number: str,
         datapoint_type: DataPointType,
-        timeout_seconds: Optional[float] = None,
+        timeout_seconds: float = 1.0,
     ) -> None:
         """Query a specific datapoint from a module.
 

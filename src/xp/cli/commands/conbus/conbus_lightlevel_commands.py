@@ -200,6 +200,7 @@ def xp_lightlevel_get(
         result["output_number"] = output_number
         result["lightlevel_level"] = lightlevel_level
         click.echo(json.dumps(result, indent=2))
+        service.stop_reactor()
 
     with service:
         service.on_finish.connect(on_finish)
@@ -208,3 +209,4 @@ def xp_lightlevel_get(
             datapoint_type=DataPointType.MODULE_LIGHT_LEVEL,
             timeout_seconds=0.5,
         )
+        service.start_reactor()

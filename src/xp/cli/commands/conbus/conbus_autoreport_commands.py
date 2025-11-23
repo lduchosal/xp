@@ -57,8 +57,11 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
     with service:
         service.on_finish.connect(on_finish)
         service.query_datapoint(
-            serial_number=serial_number, datapoint_type=DataPointType.AUTO_REPORT_STATUS
+            serial_number=serial_number,
+            datapoint_type=DataPointType.AUTO_REPORT_STATUS,
+            timeout_seconds=1.0
         )
+        service.start_reactor()
 
 
 @conbus_autoreport.command("set", short_help="Set auto report status for a module")
@@ -104,6 +107,6 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
             serial_number=serial_number,
             datapoint_type=DataPointType.AUTO_REPORT_STATUS,
             data_value=data_value,
-            timeout_seconds=0.5,
+            timeout_seconds=1.0,
         )
         service.start_reactor()

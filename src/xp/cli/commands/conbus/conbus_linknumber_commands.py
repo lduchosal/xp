@@ -93,6 +93,7 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
         result = service_response.to_dict()
         result["linknumber_value"] = linknumber_value
         click.echo(json.dumps(result, indent=2))
+        service.stop_reactor()
 
     with service:
         service.on_finish.connect(on_finish)
@@ -101,3 +102,4 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
             datapoint_type=DataPointType.LINK_NUMBER,
             timeout_seconds=0.5,
         )
+        service.start_reactor()

@@ -320,9 +320,13 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
 
     def stop_reactor(self) -> None:
         """Stop the reactor if it's running."""
-        if self._reactor.running:
-            self.logger.info("Stopping reactor")
-            self._reactor.stop()
+        try:
+            if self._reactor.running:
+                self.logger.info("Stopping reactor")
+                self._reactor.stop()
+        except Exception as e:
+            # Reactor might have already stopped or not been started via run()
+            self.logger.debug(f"Reactor stop failed (likely already stopped): {e}")
 
     def connect(self) -> None:
         """Connect to TCP server.
