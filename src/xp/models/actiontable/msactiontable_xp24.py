@@ -178,7 +178,7 @@ class Xp24MsActionTable(BaseModel):
             param_value = action.param.value
             action_parts.append(f"{short_code}:{param_value}")
 
-        result = f"XP24 {' '.join(action_parts)}"
+        result = " ".join(action_parts)
 
         # Add settings
         settings = (
@@ -214,7 +214,7 @@ class Xp24MsActionTable(BaseModel):
         tokens = action_part.split()
         if len(tokens) != 4:
             raise ValueError(
-                f"Invalid short format: expected 'XP24 <a1> <a2> <a3> <a4>', got '{action_part}'"
+                f"Invalid short format: expected '<a1> <a2> <a3> <a4>', got '{action_part}'"
             )
 
         # Parse input actions
