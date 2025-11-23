@@ -1,7 +1,6 @@
 """XP24 Action Table CLI commands."""
 
 import json
-from dataclasses import asdict
 from typing import Union
 
 import click
@@ -76,7 +75,7 @@ def conbus_download_msactiontable(
         output = {
             "serial_number": serial_number,
             "xpmoduletype": xpmoduletype,
-            "action_table": asdict(action_table),
+            "action_table": action_table.model_dump(),
         }
         click.echo(json.dumps(output, indent=2, default=str))
 

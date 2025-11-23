@@ -81,10 +81,10 @@ class TestMsActionTableService:
     def sample_xp24_msactiontable(self):
         """Create sample XP24 MsActionTable for testing."""
         return Xp24MsActionTable(
-            input1_action=Xp24InputAction(InputActionType.TOGGLE, TimeParam.NONE),
-            input2_action=Xp24InputAction(InputActionType.ON, TimeParam.T5SEC),
-            input3_action=Xp24InputAction(InputActionType.LEVELSET, TimeParam.T5MIN),
-            input4_action=Xp24InputAction(InputActionType.SCENESET, TimeParam.T2MIN),
+            input1_action=Xp24InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE),
+            input2_action=Xp24InputAction(type=InputActionType.ON, param=TimeParam.T5SEC),
+            input3_action=Xp24InputAction(type=InputActionType.LEVELSET, param=TimeParam.T5MIN),
+            input4_action=Xp24InputAction(type=InputActionType.SCENESET, param=TimeParam.T2MIN),
             mutex12=True,
             mutex34=False,
             mutual_deadtime=Xp24MsActionTable.MS500,

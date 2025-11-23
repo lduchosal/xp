@@ -1,10 +1,9 @@
 """XP20 Action Table models for input actions and settings."""
 
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field
 
 
-@dataclass
-class InputChannel:
+class InputChannel(BaseModel):
     """Configuration for a single input channel in XP20 action table.
 
     Attributes:
@@ -19,13 +18,12 @@ class InputChannel:
     invert: bool = False
     short_long: bool = False
     group_on_off: bool = False
-    and_functions: list[bool] = field(default_factory=lambda: [False] * 8)
+    and_functions: list[bool] = Field(default_factory=lambda: [False] * 8)
     sa_function: bool = False
     ta_function: bool = False
 
 
-@dataclass
-class Xp20MsActionTable:
+class Xp20MsActionTable(BaseModel):
     """XP20 Action Table for managing 8 input channels.
 
     Contains configuration for 8 input channels (input1 through input8),
@@ -43,11 +41,11 @@ class Xp20MsActionTable:
         input8: Configuration for input channel 8.
     """
 
-    input1: InputChannel = field(default_factory=InputChannel)
-    input2: InputChannel = field(default_factory=InputChannel)
-    input3: InputChannel = field(default_factory=InputChannel)
-    input4: InputChannel = field(default_factory=InputChannel)
-    input5: InputChannel = field(default_factory=InputChannel)
-    input6: InputChannel = field(default_factory=InputChannel)
-    input7: InputChannel = field(default_factory=InputChannel)
-    input8: InputChannel = field(default_factory=InputChannel)
+    input1: InputChannel = Field(default_factory=InputChannel)
+    input2: InputChannel = Field(default_factory=InputChannel)
+    input3: InputChannel = Field(default_factory=InputChannel)
+    input4: InputChannel = Field(default_factory=InputChannel)
+    input5: InputChannel = Field(default_factory=InputChannel)
+    input6: InputChannel = Field(default_factory=InputChannel)
+    input7: InputChannel = Field(default_factory=InputChannel)
+    input8: InputChannel = Field(default_factory=InputChannel)

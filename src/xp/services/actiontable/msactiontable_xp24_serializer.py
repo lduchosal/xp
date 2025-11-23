@@ -117,4 +117,4 @@ class Xp24MsActionTableSerializer:
         action_type = InputActionType(function_id)
         param_type = TimeParam(param_id)
 
-        return InputAction(action_type, param_type)
+        return InputAction(type=action_type, param=param_type)

@@ -1,12 +1,13 @@
 """XP33 Action Table models for output and scene configuration."""
 
-from dataclasses import dataclass, field
+from typing import Union
+
+from pydantic import BaseModel, Field, field_validator
 
 from xp.models.telegram.timeparam_type import TimeParam
 
 
-@dataclass
-class Xp33Output:
+class Xp33Output(BaseModel):
     """Represents an XP33 output configuration.
 
     Attributes:
@@ -24,8 +25,7 @@ class Xp33Output:
     leading_edge: bool = False
 
 
-@dataclass
-class Xp33Scene:
+class Xp33Scene(BaseModel):
     """Represents a scene configuration.
 
     Attributes:
@@ -40,9 +40,36 @@ class Xp33Scene:
     output3_level: int = 0
     time: TimeParam = TimeParam.NONE
 
+    @field_validator("time", mode="before")
+    @classmethod
+    def validate_time_param(cls, v: Union[str, int, TimeParam]) -> TimeParam:
+        """Convert string or int to TimeParam enum.
 
-@dataclass
-class Xp33MsActionTable:
+        Args:
+            v: Input value (can be string name, int value, or enum).
+
+        Returns:
+            TimeParam enum value.
+
+        Raises:
+            ValueError: If the value cannot be converted to TimeParam.
+        """
+        if isinstance(v, TimeParam):
+            return v
+        if isinstance(v, str):
+            try:
+                return TimeParam[v]
+            except KeyError:
+                raise ValueError(f"Invalid TimeParam: {v}")
+        if isinstance(v, int):
+            try:
+                return TimeParam(v)
+            except ValueError:
+                raise ValueError(f"Invalid TimeParam value: {v}")
+        raise ValueError(f"Invalid type for TimeParam: {type(v)}")
+
+
+class Xp33MsActionTable(BaseModel):
     """XP33 Action Table for managing outputs and scenes.
 
     Attributes:
@@ -55,11 +82,11 @@ class Xp33MsActionTable:
         scene4: Configuration for scene 4.
     """
 
-    output1: Xp33Output = field(default_factory=Xp33Output)
-    output2: Xp33Output = field(default_factory=Xp33Output)
-    output3: Xp33Output = field(default_factory=Xp33Output)
+    output1: Xp33Output = Field(default_factory=Xp33Output)
+    output2: Xp33Output = Field(default_factory=Xp33Output)
+    output3: Xp33Output = Field(default_factory=Xp33Output)
 
-    scene1: Xp33Scene = field(default_factory=Xp33Scene)
-    scene2: Xp33Scene = field(default_factory=Xp33Scene)
-    scene3: Xp33Scene = field(default_factory=Xp33Scene)
-    scene4: Xp33Scene = field(default_factory=Xp33Scene)
+    scene1: Xp33Scene = Field(default_factory=Xp33Scene)
+    scene2: Xp33Scene = Field(default_factory=Xp33Scene)
+    scene3: Xp33Scene = Field(default_factory=Xp33Scene)
+    scene4: Xp33Scene = Field(default_factory=Xp33Scene)
