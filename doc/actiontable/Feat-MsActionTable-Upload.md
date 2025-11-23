@@ -21,25 +21,30 @@ Add `xpXX_msaction_table` field to module configuration:
 ## CLI
 
 ```bash
-xp conbus msactiontable upload <serial_number>
+xp conbus msactiontable upload <serial_number> <xpmoduletype>
 ```
 
 ### Output
 
 ```
 Uploading msactiontable to 0020044991...
+.
 Msactiontable uploaded successfully
 ```
 
 ## Upload Protocol
 
+MsActionTable is short enough to send in a single chunk (68 characters: AAAA fixed header + 64 data chars).
+
 ```
 1. [TX] <S{serial}F12D00{checksum}>         # Client: UPLOAD_MSACTIONTABLE
 2. [RX] <R{serial}F18D{checksum}>           # Module: ACK
-3. [TX] <S{serial}F17D{data}{checksum}>     # Client: MSACTIONTABLE
+3. [TX] <S{serial}F17D{data}{checksum}>     # Client: MSACTIONTABLE (single chunk, 68 chars)
 4. [RX] <R{serial}F18D00{checksum}>         # Module: ACK
 5. [TX] <S{serial}F16D{checksum}>           # Client: EOF
 ```
+
+**Data format:** AAAA (fixed header) + 64 characters (32 bytes encoded as A-P nibbles)
 
 ## Implementation Checklist
 
@@ -70,20 +75,23 @@ Msactiontable uploaded successfully
 ### Upload State Management
 
 - [ ] Store serializer based on module type (xp20/xp24/xp33)
-- [ ] Read msactiontable from conson.yml
-- [ ] Parse short format to model using `from_short_format()`
-- [ ] Serialize to telegram data using `to_data()`
-- [ ] Track upload state (ready/in_progress/complete)
+- [ ] Read msactiontable from conson.yml via `ConsonModuleListConfig` (injected via DI)
+- [ ] Extract first element from config list field (e.g., `module.xp24_msaction_table[0]`)
+- [ ] Parse short format string to model using `XpXXMsActionTable.from_short_format()`
+- [ ] Serialize model to telegram data using `XpXXMsActionTableSerializer.to_data()`
+- [ ] Store single 68-character data chunk (no chunking needed)
+- [ ] Track upload state: send data chunk after first ACK, then EOF
 - [ ] Reset state in `__enter__()` for singleton reuse
 
 ### CLI Layer
 
 - [ ] Add `upload` command to `conbus_msactiontable` group
   - [ ] File: `src/xp/cli/commands/conbus/conbus_msactiontable_commands.py`
-  - [ ] Read module config from conson.yml
-  - [ ] Validate msactiontable field exists
-  - [ ] Determine module type (xp20/xp24/xp33)
-  - [ ] Progress indicator during upload
+  - [ ] Accept `serial_number` and `xpmoduletype` arguments
+  - [ ] Read module config from conson.yml via injected service
+  - [ ] Validate module's `module_type` matches `xpmoduletype` argument
+  - [ ] Validate correct msactiontable field exists (e.g., `xp24_msaction_table` for XP24)
+  - [ ] Progress indicator: show dots (`.`) during upload
   - [ ] Success/error message output
 
 ### CLI Command Structure
@@ -91,18 +99,19 @@ Msactiontable uploaded successfully
 ```python
 @conbus_msactiontable.command("upload")
 @click.argument("serial_number", type=SERIAL)
-def conbus_upload_msactiontable(serial_number: str) -> None:
+@click.argument("xpmoduletype", type=XP_MODULE_TYPE)
+def conbus_upload_msactiontable(serial_number: str, xpmoduletype: str) -> None:
     """Upload msactiontable from conson.yml to XP module"""
 ```
 
 ### Configuration Integration
 
-- [ ] Support `xp20_msaction_table` field in conson.yml
-- [ ] Support `xp24_msaction_table` field in conson.yml
-- [ ] Support `xp33_msaction_table` field in conson.yml
-- [ ] Read short format strings from config
-- [ ] Module type detection from `module_type` field
-- [ ] Validate field matches module type
+- [ ] Support `xp20_msaction_table` field in conson.yml (single-element list)
+- [ ] Support `xp24_msaction_table` field in conson.yml (single-element list)
+- [ ] Support `xp33_msaction_table` field in conson.yml (single-element list)
+- [ ] Read short format string from config (first element of list)
+- [ ] Validate `xpmoduletype` argument matches module's `module_type` field
+- [ ] Validate correct msactiontable field exists for module type (e.g., XP24 requires `xp24_msaction_table`)
 
 ### Serializer Integration
 
@@ -128,8 +137,10 @@ def conbus_upload_msactiontable(serial_number: str) -> None:
 - [ ] CLI tests: `tests/unit/test_cli/test_conbus_msactiontable_commands.py`
   - [ ] `test_upload_msactiontable_success()`
   - [ ] `test_upload_missing_config()`
-  - [ ] `test_upload_error_handling()`
+  - [ ] `test_upload_module_type_mismatch()`
   - [ ] `test_upload_wrong_module_type_field()`
+  - [ ] `test_upload_empty_msactiontable_list()`
+  - [ ] `test_upload_error_handling()`
 
 - [ ] Integration tests: `tests/integration/test_msactiontable_integration.py`
   - [ ] `test_upload_msactiontable_integration()`
@@ -139,9 +150,11 @@ def conbus_upload_msactiontable(serial_number: str) -> None:
 ### Error Handling
 
 - [ ] Module not found in conson.yml
-- [ ] Missing msactiontable field in config
-- [ ] Invalid short format syntax
-- [ ] Wrong module type field (xp20 vs xp24 vs xp33)
+- [ ] Module type mismatch: `xpmoduletype` arg doesn't match module's `module_type` field
+- [ ] Missing msactiontable field in config for module type (e.g., XP24 but no `xp24_msaction_table`)
+- [ ] Wrong msactiontable field for module type (e.g., XP24 with `xp20_msaction_table`)
+- [ ] Empty msactiontable list in config
+- [ ] Invalid short format syntax in config string
 - [ ] Unsupported module type
 - [ ] Communication timeout
 - [ ] NAK response from module

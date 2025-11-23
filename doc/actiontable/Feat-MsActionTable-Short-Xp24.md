@@ -17,18 +17,17 @@ This document specifies a compact, human-readable short format for representing 
 ### XP24 Short Format
 
 ```
-XP24 <input1> <input2> <input3> <input4> [| <settings>]
+XP24 <input1> <input2> <input3> <input4> | <settings>
 ```
 
 **Components:**
 
 1. **Module Type**: `XP24`
 2. **Input Actions**: Four input action specifications in format `<type>:<param>`
-3. **Settings** (optional): Additional configuration flags
+3. **Settings** (required): Additional configuration flags
 
 **Example:**
 ```
-XP24 T:1 T:2 T:0 T:0
 XP24 T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 ```
 
@@ -99,9 +98,9 @@ Where:
 | 18 | T60MIN | 60 minute delay |
 | 19 | T120MIN | 120 minute delay |
 
-### Settings Format (Optional)
+### Settings Format (Required)
 
-Settings are appended after a pipe `|` separator:
+Settings must be appended after a pipe `|` separator:
 
 ```
 | M12:<0|1> M34:<0|1> C12:<0|1> C34:<0|1> DT:<12|20>
@@ -114,10 +113,7 @@ Where:
 - `C34`: curtain34 (0=false, 1=true)
 - `DT`: mutual_deadtime (12=MS300, 20=MS500)
 
-**Default Settings:**
-When settings are omitted, defaults are assumed:
-- All mutex/curtain flags: false (0)
-- mutual_deadtime: 12 (MS300)
+All settings fields are required in the short format.
 
 ## Examples
 
@@ -136,11 +132,16 @@ xp24_msaction_table:
   input4_action:
     type: TOGGLE
     param: 0
+  mutex12: false
+  mutex34: false
+  curtain12: false
+  curtain34: false
+  mutual_deadtime: 12
 ```
 
 **Short format:**
 ```
-XP24 T:1 T:2 T:0 T:0
+XP24 T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 ```
 
 ### Mixed Action Types
@@ -158,11 +159,16 @@ xp24_msaction_table:
   input4_action:
     type: SCENESET
     param: 11
+  mutex12: false
+  mutex34: false
+  curtain12: false
+  curtain34: false
+  mutual_deadtime: 12
 ```
 
 **Short format:**
 ```
-XP24 ON:4 OF:0 LS:12 SS:11
+XP24 ON:4 OF:0 LS:12 SS:11 | M12:0 M34:0 C12:0 C34:0 DT:12
 ```
 
 ### With Custom Settings
@@ -207,11 +213,16 @@ xp24_msaction_table:
   input4_action:
     type: VOID
     param: 0
+  mutex12: false
+  mutex34: false
+  curtain12: false
+  curtain34: false
+  mutual_deadtime: 12
 ```
 
 **Short format:**
 ```
-XP24 V:0 V:0 V:0 V:0
+XP24 V:0 V:0 V:0 V:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 ```
 
 ## Implementation
@@ -223,14 +234,13 @@ Add the following methods to `Xp24MsActionTable`:
 ```python
 class Xp24MsActionTable(BaseModel):
 
-    def to_short_format(self, include_settings: bool = False) -> str:
+    def to_short_format(self) -> str:
         """Convert action table to short format string.
 
-        Args:
-            include_settings: Include settings after pipe separator.
+        Settings are always included (required).
 
         Returns:
-            Short format string (e.g., "XP24 T:1 T:2 T:0 T:0").
+            Short format string (e.g., "XP24 T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12").
         """
         pass
 
@@ -239,13 +249,13 @@ class Xp24MsActionTable(BaseModel):
         """Parse short format string into action table.
 
         Args:
-            short_str: Short format string.
+            short_str: Short format string with required settings section.
 
         Returns:
             Xp24MsActionTable instance.
 
         Raises:
-            ValueError: If format is invalid.
+            ValueError: If format is invalid or settings are missing.
         """
         pass
 ```
