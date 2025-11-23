@@ -18,10 +18,10 @@ class TestXp24MsActionTableSerializer:
     def sample_action_table(self):
         """Create sample action table for testing."""
         return Xp24MsActionTable(
-            input1_action=InputAction(InputActionType.TOGGLE, TimeParam.NONE),
-            input2_action=InputAction(InputActionType.ON, TimeParam.T5SEC),
-            input3_action=InputAction(InputActionType.LEVELSET, TimeParam.T5SEC),
-            input4_action=InputAction(InputActionType.SCENESET, TimeParam.T5SEC),
+            input1_action=InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE),
+            input2_action=InputAction(type=InputActionType.ON, param=TimeParam.T5SEC),
+            input3_action=InputAction(type=InputActionType.LEVELSET, param=TimeParam.T5SEC),
+            input4_action=InputAction(type=InputActionType.SCENESET, param=TimeParam.T5SEC),
             mutex12=True,
             mutex34=False,
             mutual_deadtime=Xp24MsActionTable.MS500,
