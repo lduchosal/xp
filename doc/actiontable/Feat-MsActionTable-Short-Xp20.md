@@ -18,7 +18,14 @@ This document specifies a compact, human-readable short format for representing 
 ### XP20 Short Format
 
 ```
-XP20 <ch1> <ch2> <ch3> <ch4> <ch5> <ch6> <ch7> <ch8>
+CH:1 I:0 S:0 G:0 AND:10000000 A:0 TA:0
+CH:2 I:0 S:0 G:0 AND:01000000 A:0 TA:0
+CH:3 I:0 S:0 G:0 AND:00100000 A:0 TA:0
+CH:4 I:0 S:0 G:0 AND:00010000 A:0 TA:0
+CH:5 I:0 S:0 G:0 AND:00001000 A:0 TA:0
+CH:6 I:0 S:0 G:0 AND:00000100 A:0 TA:0
+CH:7 I:0 S:0 G:0 AND:00000010 A:0 TA:0
+CH:8 I:0 S:0 G:0 AND:00000001 A:0 TA:0
 ```
 
 **Components:**
@@ -38,32 +45,26 @@ Where:
 
 Flags are represented as a string of characters, where each present flag adds a character:
 
-| Flag | Character | Description |
-|------|-----------|-------------|
-| invert | I | Input inversion enabled |
-| short_long | S | Short/long press detection enabled |
-| group_on_off | G | Group on/off function enabled |
-| sa_function | A | SA function enabled |
-| ta_function | T | TA function enabled |
+| Flag         | Character | Description                        |
+|--------------|-----------|------------------------------------|
+| invert       | I         | Input inversion enabled            |
+| short_long   | S         | Short/long press detection enabled |
+| group_on_off | G         | Group on/off function enabled      |
+| and_function | AND       | AND Functions                      |
+| sa_function  | A         | SA function enabled                |
+| ta_function  | T         | TA function enabled                |
 
-- If no flags are set: use `-` (dash) to represent empty flags
-- Flags should appear in alphabetical order when multiple are set: A, G, I, S, T
-- Examples:
-  - No flags: `-:00`
-  - Only invert: `I:00`
-  - Invert + SA: `AI:00`
-  - All flags: `AGIST:FF`
 
 ### AND Functions Hexadecimal Encoding
 
 The 8 AND function bits are encoded as a 2-digit hexadecimal value:
 
-| Bits (7-0) | Hex Value | Example |
-|------------|-----------|---------|
-| 00000000 | 00 | All AND functions disabled |
-| 11111111 | FF | All AND functions enabled |
-| 10101010 | AA | Alternating pattern |
-| 01010101 | 55 | Alternating pattern |
+| Bits (7-0)  |  Example                    |
+|-------------|-----------------------------|
+| 00000000    |  All AND functions disabled |
+| 11111111    |  All AND functions enabled  |
+| 10101010    |  Alternating pattern        |
+| 01010101    |  Alternating pattern        |
 
 **Bit order:** LSB (bit 0) to MSB (bit 7) represents and_functions[0] to and_functions[7]
 
@@ -92,7 +93,9 @@ xp20_msaction_table:
 
 **Short format:**
 ```
-XP20 -:00 -:00 -:00 -:00 -:00 -:00 -:00 -:00
+CH:1 I:0 S:0 G:0 AND:00000000 A:0 TA:0
+CH:2 I:0 S:0 G:0 AND:00000000 A:0 TA:0
+...
 ```
 
 ### Mixed Configuration
@@ -132,58 +135,10 @@ xp20_msaction_table:
 
 **Short format:**
 ```
-XP20 GIT:55 AS:AA AGIST:33 -:00 -:00 -:00 -:00 -:00
-```
-
-**Explanation:**
-- `GIT:55` - input1: Group, Invert, TA function enabled, AND functions = 0x55
-- `AS:AA` - input2: SA, Short/long enabled, AND functions = 0xAA
-- `AGIST:33` - input3: All flags enabled, AND functions = 0x33
-- `-:00` - input4-8: No flags, no AND functions
-
-### Only Invert Flags Set
-
-```yaml
-xp20_msaction_table:
-  input1:
-    invert: true
-    short_long: false
-    group_on_off: false
-    and_functions: [false, false, false, false, false, false, false, false]
-    sa_function: false
-    ta_function: false
-  input2:
-    invert: true
-    short_long: false
-    group_on_off: false
-    and_functions: [false, false, false, false, false, false, false, false]
-    sa_function: false
-    ta_function: false
-  # ... input3-input8 defaults
-```
-
-**Short format:**
-```
-XP20 I:00 I:00 -:00 -:00 -:00 -:00 -:00 -:00
-```
-
-### AND Functions Only
-
-```yaml
-xp20_msaction_table:
-  input1:
-    invert: false
-    short_long: false
-    group_on_off: false
-    and_functions: [true, true, true, true, true, true, true, true]  # 0xFF
-    sa_function: false
-    ta_function: false
-  # ... input2-input8 defaults
-```
-
-**Short format:**
-```
-XP20 -:FF -:00 -:00 -:00 -:00 -:00 -:00 -:00
+CH:1 I:1 S:0 G:1 AND:10101010 A:0 TA:1
+CH:2 I:0 S:1 G:0 AND:01010101 A:1 TA:0
+CH:3 I:1 S:1 G:1 AND:11001100 A:1 TA:1
+CH:4 I:0 S:0 G:0 AND:00000000 A:0 TA:0
 ```
 
 ## Implementation
@@ -217,87 +172,6 @@ class Xp20MsActionTable(BaseModel):
             ValueError: If format is invalid.
         """
         pass
-```
-
-### Helper Functions
-
-```python
-def _channel_to_short(channel: InputChannel) -> str:
-    """Convert InputChannel to short format representation.
-
-    Args:
-        channel: InputChannel to convert
-
-    Returns:
-        Short format string (e.g., "GIT:55", "-:00")
-    """
-    # Build flags string
-    flags = []
-    if channel.sa_function:
-        flags.append('A')
-    if channel.group_on_off:
-        flags.append('G')
-    if channel.invert:
-        flags.append('I')
-    if channel.short_long:
-        flags.append('S')
-    if channel.ta_function:
-        flags.append('T')
-
-    flags_str = ''.join(flags) if flags else '-'
-
-    # Convert AND functions list to hex byte
-    and_byte = 0
-    for i, bit in enumerate(channel.and_functions[:8]):
-        if bit:
-            and_byte |= (1 << i)
-
-    return f"{flags_str}:{and_byte:02X}"
-
-
-def _short_to_channel(short: str) -> InputChannel:
-    """Parse short format string into InputChannel.
-
-    Args:
-        short: Short format string (e.g., "GIT:55", "-:00")
-
-    Returns:
-        InputChannel instance
-
-    Raises:
-        ValueError: If format is invalid
-    """
-    # Split on colon
-    parts = short.split(':')
-    if len(parts) != 2:
-        raise ValueError(f"Invalid channel format: {short}")
-
-    flags_str, and_hex = parts
-
-    # Parse flags
-    invert = 'I' in flags_str
-    short_long = 'S' in flags_str
-    group_on_off = 'G' in flags_str
-    sa_function = 'A' in flags_str
-    ta_function = 'T' in flags_str
-
-    # Parse AND functions hex
-    try:
-        and_byte = int(and_hex, 16)
-    except ValueError:
-        raise ValueError(f"Invalid hex value in channel: {and_hex}")
-
-    # Convert byte to bool list
-    and_functions = [(and_byte >> i) & 1 == 1 for i in range(8)]
-
-    return InputChannel(
-        invert=invert,
-        short_long=short_long,
-        group_on_off=group_on_off,
-        and_functions=and_functions,
-        sa_function=sa_function,
-        ta_function=ta_function
-    )
 ```
 
 ### Serializer Integration

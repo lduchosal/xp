@@ -19,7 +19,8 @@ XP33 modules feature 3 dimming outputs with scene control, making the configurat
 ### XP33 Short Format
 
 ```
-XP33 O:<output_cfg> S:<scene_cfg>
+OUTX <output_cfg> 
+SCENEX <scene_cfg>
 ```
 
 **Components:**
@@ -30,72 +31,75 @@ XP33 O:<output_cfg> S:<scene_cfg>
 
 **Example:**
 ```
-XP33 O:10-90[SO+LE] 20-80[SA] 30-70[SO+SA+LE] S:50/60/70@T5SEC 25/35/45@T10SEC 75/85/95@T1MIN 0/100/50@NONE
+OUT1 MIN:0 MAX:100 SO:0 SF:0 LE:0
+OUT2 MIN:0 MAX:100 SO:0 SF:0 LE:0
+OUT3 MIN:0 MAX:100 SO:0 SF:0 LE:0
+SCENE1 OUT1:0 OUT2:0 OUT3:0 T:NONE
+SCENE2 OUT1:0 OUT2:0 OUT3:0 T:NONE
+SCENE3 OUT1:0 OUT2:0 OUT3:0 T:NONE
 ```
 
 ### Output Configuration Format
 
-Each output is represented as: `<min>-<max>[flags]`
+Each output is represented as: 
+`OUT<num> MIN:<min> MAX:<max> SO:<scene_output> SF:<start_at_full> LE:<leading_edge>`
 
 Where:
-- `<min>`: Minimum output level (0-100)
-- `<max>`: Maximum output level (0-100)
-- `[flags]`: Optional flags separated by `+`:
-  - `SO`: Scene outputs enabled
-  - `SA`: Start at full brightness
-  - `LE`: Leading edge dimming
+- `OUT<num>`: Output (0-2)
+- `MIN:<min>`: Minimum output level (0-100)
+- `MAX:<max>`: Maximum output level (0-100)
+- `SO:<scene_output>`: Scene outputs enabled
+- `SF<start_at_full>`: Start at full brightness
+- `LE<leading_edge>`: Leading edge dimming
 
 **Examples:**
 ```
-0-100           # Full range, no special flags
-10-90[SO]       # 10-90% with scene outputs
-20-80[SA+LE]    # 20-80% with start at full and leading edge
-0-100[SO+SA+LE] # All flags enabled
+OUT1 MIN:0 MAX:100 SO:0 SF:0 LE:0
 ```
 
 ### Scene Configuration Format
 
-Each scene is represented as: `<o1>/<o2>/<o3>@<time>`
+Each scene is represented as: 
+`SCENE<num> OUT1:<o1> OUT2:<o2> OUT3:<o3> T:NONE`
 
 Where:
-- `<o1>`: Output 1 level (0-100)
-- `<o2>`: Output 2 level (0-100)
-- `<o3>`: Output 3 level (0-100)
-- `<time>`: TimeParam value (see TimeParam Values section below)
+- `SCENE<num>`: Scene (0-2)
+- `OUT1:<o1>`: Output 1 level (0-100)
+- `OUT2:<o2>`: Output 2 level (0-100)
+- `OUT3:<o3>`: Output 3 level (0-100)
+- `T:<time>`: TimeParam value (see TimeParam Values section below)
 
 **Examples:**
 ```
-50/60/70@T5SEC     # Scene with 50%, 60%, 70% levels, 5 second transition
-0/0/0@NONE         # All outputs off, no transition
-100/100/100@T1MIN  # All outputs full, 1 minute transition
+SCENE1 OUT1:0 OUT2:0 OUT3:0 T:NONE
 ```
 
 ### TimeParam Values
 
 TimeParam values can be specified using either the enum name or numeric value:
 
-| Value | Name | Description |
-|-------|------|-------------|
-| 0 | NONE | No time parameter |
-| 1 | T05SEC | 0.5 second delay |
-| 2 | T1SEC | 1 second delay |
-| 3 | T2SEC | 2 second delay |
-| 4 | T5SEC | 5 second delay |
-| 5 | T10SEC | 10 second delay |
-| 6 | T15SEC | 15 second delay |
-| 7 | T20SEC | 20 second delay |
-| 8 | T30SEC | 30 second delay |
-| 9 | T45SEC | 45 second delay |
-| 10 | T1MIN | 1 minute delay |
-| 11 | T2MIN | 2 minute delay |
-| 12 | T5MIN | 5 minute delay |
-| 13 | T10MIN | 10 minute delay |
-| 14 | T15MIN | 15 minute delay |
-| 15 | T20MIN | 20 minute delay |
-| 16 | T30MIN | 30 minute delay |
-| 17 | T45MIN | 45 minute delay |
-| 18 | T60MIN | 60 minute delay |
-| 19 | T120MIN | 120 minute delay |
+| Value  | Name    | Description       |
+|--------|---------|-------------------|
+| 0      | NONE    | No time parameter |
+| 1      | T05SEC  | 0.5 second delay  |
+| 2      | T1SEC   | 1 second delay    |
+| 3      | T2SEC   | 2 second delay    |
+| 4      | T5SEC   | 5 second delay    |
+| 5      | T10SEC  | 10 second delay   |
+| 6      | T15SEC  | 15 second delay   |
+| 7      | T20SEC  | 20 second delay   |
+| 8      | T30SEC  | 30 second delay   |
+| 9      | T45SEC  | 45 second delay   |
+| 10     | T1MIN   | 1 minute delay    |
+| 11     | T2MIN   | 2 minute delay    |
+| 12     | T5MIN   | 5 minute delay    |
+| 13     | T10MIN  | 10 minute delay   |
+| 14     | T15MIN  | 15 minute delay   |
+| 15     | T20MIN  | 20 minute delay   |
+| 16     | T30MIN  | 30 minute delay   |
+| 17     | T45MIN  | 45 minute delay   |
+| 18     | T60MIN  | 60 minute delay   |
+| 19     | T120MIN | 120 minute delay  |
 
 ## Examples
 
@@ -144,7 +148,13 @@ xp33_msaction_table:
 
 **Short format:**
 ```
-XP33 O:0-100 0-100 0-100 S:0/0/0@NONE 0/0/0@NONE 0/0/0@NONE 0/0/0@NONE
+OUT1 MIN:0 MAX:100 SO:0 SF:0 LE:0
+OUT2 MIN:0 MAX:100 SO:0 SF:0 LE:0
+OUT3 MIN:0 MAX:100 SO:0 SF:0 LE:0
+SCENE1 OUT1:0 OUT2:0 OUT3:0 T:0
+SCENE2 OUT1:0 OUT2:0 OUT3:0 T:0
+SCENE3 OUT1:0 OUT2:0 OUT3:0 T:0
+SCENE4 OUT1:0 OUT2:0 OUT3:0 T:0
 ```
 
 ### Dimmer Configuration with Limited Range
@@ -192,9 +202,14 @@ xp33_msaction_table:
 
 **Short format:**
 ```
-XP33 O:10-90[SO+LE] 20-80[SA] 30-70[SO+SA+LE] S:50/60/70@T5SEC 25/35/45@T10SEC 75/85/95@T1MIN 0/100/50@NONE
+OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1
+OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0
+OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1
+SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC
+SCENE2 OUT1:25 OUT235 OUT3:45 T:T10SEC
+SCENE3 OUT1:75 OUT2:85 OUT3:95 T:T1MIN
+SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE
 ```
-
 ### Scene Presets for Theater Lighting
 ```yaml
 xp33_msaction_table:
@@ -240,7 +255,13 @@ xp33_msaction_table:
 
 **Short format:**
 ```
-XP33 O:0-100[SO] 0-100[SO] 0-100[SO] S:100/100/100@T2SEC 50/30/20@T5SEC 0/0/100@T10SEC 0/0/0@T1SEC
+OUT1 MIN:0 MAX:100 SO:1 SF:0 LE:0
+OUT2 MIN:0 MAX:100 SO:1 SF:0 LE:0
+OUT3 MIN:0 MAX:100 SO:1 SF:0 LE:0
+SCENE1 OUT1:100 OUT2:100 OUT3:100 T:T2SEC
+SCENE2 OUT1:50 OUT2:30 OUT3:20 T:T5SEC
+SCENE3 OUT1:0 OUT2:0 OUT3:100 T:T10SEC
+SCENE4 OUT1:0 OUT2:0 OUT3:0 T:T1SEC
 ```
 
 ## Implementation
@@ -344,14 +365,29 @@ The short format should be displayed in CLI output for:
 ```bash
 $ xp conbus msactiontable download 0020045056 xp33
 Module: A4 (0020045056)
-Short: XP33 O:10-90[SO+LE] 20-80[SA] 30-70[SO+SA+LE] S:50/60/70@T5SEC 25/35/45@T10SEC 75/85/95@T1MIN 0/100/50@NONE
+Short: 
+  - OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1
+  - OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0
+  - OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1
+  - SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC
+  - SCENE2 OUT1:25 OUT235 OUT3:45 T:T10SEC
+  - SCENE3 OUT1:75 OUT2:85 OUT3:95 T:T1MIN
+  - SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE
+
 ```
 
 2. **Show Command:**
 ```bash
 $ xp conbus msactiontable show 0020045056
 Module: A4 (0020045056)
-Short: XP33 O:10-90[SO+LE] 20-80[SA] 30-70[SO+SA+LE] S:50/60/70@T5SEC 25/35/45@T10SEC 75/85/95@T1MIN 0/100/50@NONE
+Short: 
+  - OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1
+  - OUT2 MIN:20 MAX:80 SO:0 SF:1 LE:0
+  - OUT3 MIN:30 MAX:70 SO:1 SF:1 LE:1
+  - SCENE1 OUT1:50 OUT2:60 OUT3:70 T:T5SEC
+  - SCENE2 OUT1:25 OUT235 OUT3:45 T:T10SEC
+  - SCENE3 OUT1:75 OUT2:85 OUT3:95 T:T1MIN
+  - SCENE4 OUT1:0 OUT2:100 OUT3:50 T:NONE
 Full:
   output1:
     min_level: 10
@@ -365,8 +401,8 @@ Full:
 3. **List Command:**
 ```bash
 $ xp conbus msactiontable list
-Module: A4 (0020044991) - XP24 T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
-Module: A5 (0020045056) - XP33 O:10-90[SO+LE] 20-80[SA] 30-70[SO+SA+LE] S:50/60/70@T5SEC 25/35/45@T10SEC 75/85/95@T1MIN 0/100/50@NONE
+Module: A4 (0020044991)
+Module: A5 (0020045056)
 ```
 
 ## Testing Requirements
@@ -385,14 +421,14 @@ Module: A5 (0020045056) - XP33 O:10-90[SO+LE] 20-80[SA] 30-70[SO+SA+LE] S:50/60/
 
 ## Differences from XP24
 
-| Aspect | XP24 | XP33 |
-|--------|------|------|
-| Focus | Input actions | Output control and scenes |
-| Configuration | 4 input actions + settings | 3 outputs + 4 scenes |
-| Action Types | 28 different InputActionType values | N/A |
-| Output Control | N/A | Min/max levels, dimming flags |
-| Scene Support | Via SCENESET action type | Direct scene configurations |
-| Settings | Mutex, curtain, deadtime | Scene outputs, start behavior, dimming mode |
+| Aspect         | XP24                                | XP33                                        |
+|----------------|-------------------------------------|---------------------------------------------|
+| Focus          | Input actions                       | Output control and scenes                   |
+| Configuration  | 4 input actions + settings          | 3 outputs + 4 scenes                        |
+| Action Types   | 28 different InputActionType values | N/A                                         |
+| Output Control | N/A                                 | Min/max levels, dimming flags               |
+| Scene Support  | Via SCENESET action type            | Direct scene configurations                 |
+| Settings       | Mutex, curtain, deadtime            | Scene outputs, start behavior, dimming mode |
 
 ## References
 
