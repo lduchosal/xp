@@ -12,6 +12,7 @@ class InputAction(BaseModel):
     """Represents an input action with type and parameter.
 
     Attributes:
+        model_config: Pydantic configuration to preserve enum objects.
         type: The input action type.
         param: Time parameter for the action.
     """
@@ -23,7 +24,9 @@ class InputAction(BaseModel):
 
     @field_validator("type", mode="before")
     @classmethod
-    def validate_action_type(cls, v: Union[str, int, InputActionType]) -> InputActionType:
+    def validate_action_type(
+        cls, v: Union[str, int, InputActionType]
+    ) -> InputActionType:
         """Convert string or int to InputActionType enum.
 
         Args:

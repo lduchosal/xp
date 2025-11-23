@@ -2,7 +2,7 @@
 
 import logging
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from pydantic import BaseModel, IPvAnyAddress
 
@@ -27,7 +27,9 @@ class ConsonModuleConfig(BaseModel):
         sw_version: Optional software version.
         hw_version: Optional hardware version.
         action_table: Optional action table configuration.
-        msaction_table: Optional ms action table configuration.
+        xp20_msaction_table: Optional XP20 ms action table configuration.
+        xp24_msaction_table: Optional XP24 ms action table configuration.
+        xp33_msaction_table: Optional XP33 ms action table configuration.
         auto_report_status: Optional auto report status.
     """
 

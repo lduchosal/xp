@@ -54,8 +54,12 @@ from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.msactiontable.msactiontable_download_service import (
     MsActionTableDownloadService,
 )
-from xp.services.conbus.msactiontable.msactiontable_list_service import MsActionTableListService
-from xp.services.conbus.msactiontable.msactiontable_show_service import MsActionTableShowService
+from xp.services.conbus.msactiontable.msactiontable_list_service import (
+    MsActionTableListService,
+)
+from xp.services.conbus.msactiontable.msactiontable_show_service import (
+    MsActionTableShowService,
+)
 from xp.services.conbus.write_config_service import WriteConfigService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
@@ -473,7 +477,6 @@ class ServiceContainer:
             ),
             scope=punq.Scope.singleton,
         )
-
 
         self.container.register(
             MsActionTableListService,
