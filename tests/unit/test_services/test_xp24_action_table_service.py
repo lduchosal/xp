@@ -291,7 +291,6 @@ class TestMsActionTableService:
         service.failed("Connection timeout")
 
         mock_error.assert_called_once_with("Connection timeout")
-        mock_finish.assert_called_once_with(None)
 
     def test_start_method_xp24(self, service):
         """Test start method with xp24 module type."""

@@ -59,7 +59,7 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
         service.query_datapoint(
             serial_number=serial_number,
             datapoint_type=DataPointType.AUTO_REPORT_STATUS,
-            timeout_seconds=1.0
+            timeout_seconds=1.0,
         )
         service.start_reactor()
 

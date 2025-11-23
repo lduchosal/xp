@@ -6,6 +6,7 @@ from typing import Optional
 
 class DataPointType(str, Enum):
     """Data point types for system telegrams.
+
     Attributes:
         MODULE_TYPE: Module type (XP24, XP33, etc).
         HW_VERSION: Hardware version information.
@@ -60,6 +61,7 @@ class DataPointType(str, Enum):
        <R0020044966F02D25AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFO>
        <R0020044966F02D26??FN>
     """
+
     MODULE_TYPE = "00"  # Module type (XP24, XP33, ..)
     HW_VERSION = "01"  # Hardware version information
     SW_VERSION = "02"  # Software version information
@@ -108,4 +110,3 @@ class DataPointType(str, Enum):
             if dp_type.value == code:
                 return dp_type
         return None
-
