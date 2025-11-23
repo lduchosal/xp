@@ -215,6 +215,7 @@ class TestMsActionTableService:
 
         # Mock serializer to return sample msactiontable
         service.serializer.from_data.return_value = sample_xp24_msactiontable
+        service.serializer.format_decoded_output.return_value = "XP24 T:0 ON:4 LS:12 SS:11"
 
         # Create mock telegram received event
         telegram_event = TelegramReceivedEvent(
@@ -238,8 +239,13 @@ class TestMsActionTableService:
         # Should deserialize all collected data
         service.serializer.from_data.assert_called_once_with("AAAAACAAAABAAAAC")
 
-        # Should emit finish signal with msactiontable
-        mock_finish.assert_called_once_with(sample_xp24_msactiontable)
+        # Should emit finish signal with msactiontable and short format
+        # The second argument should be the short format string
+        assert mock_finish.call_count == 1
+        call_args = mock_finish.call_args[0]
+        assert call_args[0] == sample_xp24_msactiontable
+        assert isinstance(call_args[1], str)
+        assert call_args[1].startswith("XP24")
 
     def test_telegram_received_invalid_checksum(self, service):
         """Test telegram with invalid checksum is ignored."""

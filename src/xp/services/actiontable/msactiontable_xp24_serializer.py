@@ -19,7 +19,7 @@ class Xp24MsActionTableSerializer:
         Returns:
             Human-readable string describing XP24 action table
         """
-        return ""
+        return action_table.to_short_format()
 
     @staticmethod
     def to_data(action_table: Xp24MsActionTable) -> str:

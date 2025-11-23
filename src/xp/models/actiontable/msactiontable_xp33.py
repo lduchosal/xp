@@ -4,6 +4,7 @@ from typing import Union
 
 from pydantic import BaseModel, Field, field_validator
 
+from xp.models.actiontable.msactiontable import MsActionTable
 from xp.models.telegram.timeparam_type import TimeParam
 
 
@@ -69,7 +70,7 @@ class Xp33Scene(BaseModel):
         raise ValueError(f"Invalid type for TimeParam: {type(v)}")
 
 
-class Xp33MsActionTable(BaseModel):
+class Xp33MsActionTable(MsActionTable):
     """XP33 Action Table for managing outputs and scenes.
 
     Attributes:

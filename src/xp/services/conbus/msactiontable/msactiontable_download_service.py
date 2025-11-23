@@ -5,6 +5,7 @@ from typing import Any, Optional, Union
 
 from psygnal import Signal
 
+from xp.models.actiontable.msactiontable import MsActionTable
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
@@ -46,7 +47,7 @@ class MsActionTableDownloadService:
 
     on_progress: Signal = Signal(str)
     on_error: Signal = Signal(str)
-    on_finish: Signal = Signal(Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable], str)  # Union type for Xp20/24/33 or None
+    on_finish: Signal = Signal(MsActionTable, str)  # Union type for Xp20/24/33 or None
 
     def __init__(
         self,
@@ -164,7 +165,7 @@ class MsActionTableDownloadService:
             all_data = "".join(self.msactiontable_data)
             # Deserialize from received data
             msactiontable = self.serializer.from_data(all_data)
-            msactiontable_short = self.serializer.format_decoded_output(msactiontable)
+            msactiontable_short = self.serializer.format_decoded_output(msactiontable)  # type: ignore[arg-type]
             self.succeed(msactiontable, msactiontable_short)
             return
 

@@ -2,6 +2,8 @@
 
 from pydantic import BaseModel, Field
 
+from xp.models.actiontable.msactiontable import MsActionTable
+
 
 class InputChannel(BaseModel):
     """Configuration for a single input channel in XP20 action table.
@@ -23,7 +25,7 @@ class InputChannel(BaseModel):
     ta_function: bool = False
 
 
-class Xp20MsActionTable(BaseModel):
+class Xp20MsActionTable(MsActionTable):
     """XP20 Action Table for managing 8 input channels.
 
     Contains configuration for 8 input channels (input1 through input8),
