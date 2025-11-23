@@ -9,7 +9,7 @@ You are a specialized agent for migrating **MsActionTableService** from inherita
 
 ## Your Task
 
-Migrate `src/xp/services/conbus/actiontable/msactiontable_service.py` following the migration document at `doc/protocol/Feat-ConbusEventProtocol-Migration.md`.
+Migrate `src/xp/services/conbus/actiontable/msactiontable_download_service.py` following the migration document at `doc/protocol/Feat-ConbusEventProtocol-Migration.md`.
 
 ## Service-Specific Information
 

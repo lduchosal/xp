@@ -30,7 +30,7 @@ class MsActionTableError(Exception):
     pass
 
 
-class MsActionTableService:
+class MsActionTableDownloadService:
     """
     Service for downloading MS action tables via Conbus protocol.
 
@@ -241,7 +241,7 @@ class MsActionTableService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "MsActionTableService":
+    def __enter__(self) -> "MsActionTableDownloadService":
         """Enter context manager.
 
         Returns:

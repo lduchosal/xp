@@ -37,8 +37,9 @@ class ConsonModuleConfig(BaseModel):
     conbus_port: Optional[int] = None
     sw_version: Optional[str] = None
     hw_version: Optional[str] = None
-    action_table: Optional[List[str]] = None
     auto_report_status: Optional[str] = None
+    action_table: Optional[List[str]] = None
+    msaction_table: Optional[List[str]] = None
 
 
 class ConsonModuleListConfig(BaseModel):

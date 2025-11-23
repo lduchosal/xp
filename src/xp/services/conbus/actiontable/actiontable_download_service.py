@@ -15,7 +15,7 @@ from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class ActionTableService:
+class ActionTableDownloadService:
     """TCP client service for downloading action tables from Conbus modules.
 
     Manages TCP socket connections, handles telegram generation and transmission,
@@ -175,7 +175,7 @@ class ActionTableService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "ActionTableService":
+    def __enter__(self) -> "ActionTableDownloadService":
         """Enter context manager - reset state for singleton reuse.
 
         Returns:

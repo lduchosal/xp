@@ -3,8 +3,8 @@
 import pytest
 
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
-from xp.services.conbus.actiontable.msactiontable_service import (
-    MsActionTableService,
+from xp.services.conbus.msactiontable.msactiontable_download_service import (
+    MsActionTableDownloadService,
     Xp20MsActionTableSerializer,
 )
 
@@ -64,7 +64,7 @@ class TestXp20ActionTableIntegration:
         mock_xp33_serializer = Mock()
         mock_telegram = Mock()
 
-        service = MsActionTableService(
+        service = MsActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             xp20ms_serializer=mock_xp20_serializer,
             xp24ms_serializer=mock_xp24_serializer,

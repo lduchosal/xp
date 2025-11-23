@@ -207,7 +207,7 @@ Use existing conbus services and commands as templates for implementation:
 - Integration tests: `tests/integration/test_*_integration.py`
 - CLI tests: `tests/unit/test_cli/test_*_commands.py`
 
-**Protocol reference:** `src/xp/services/msactiontable_service.py`
+**Protocol reference:** `src/xp/services/msactiontable_download_service.py`
 - Shows F13 download protocol (adapt for F11D)
 - Demonstrates ACK/EOF handling patterns
 - Provides telegram parsing examples

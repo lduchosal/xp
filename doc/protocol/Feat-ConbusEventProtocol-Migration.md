@@ -41,7 +41,7 @@ Migrate 12 services from inheritance-based `ConbusProtocol` to composition-based
 9. `ConbusBlinkAllService` (src/xp/services/conbus/conbus_blink_all_service.py:22)
 10. `ActionTableService` (src/xp/services/conbus/actiontable/actiontable_download_service.py:19)
 11. `ActionTableUploadService` (src/xp/services/conbus/actiontable/actiontable_upload_service.py:18)
-12. `MsActionTableService` (src/xp/services/conbus/actiontable/msactiontable_service.py:34)
+12. `MsActionTableService` (src/xp/services/conbus/actiontable/msactiontable_download_service.py:34)
 
 ### Reference Implementation
 - **ConbusDiscoverService** (src/xp/services/conbus/conbus_discover_service.py:23) - Primary pattern

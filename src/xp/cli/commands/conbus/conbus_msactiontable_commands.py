@@ -16,8 +16,15 @@ from xp.cli.utils.xp_module_type import XP_MODULE_TYPE
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
-from xp.services.conbus.actiontable.msactiontable_service import (
-    MsActionTableService,
+from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
+from xp.services.conbus.msactiontable.msactiontable_download_service import (
+    MsActionTableDownloadService,
+)
+from xp.services.conbus.msactiontable.msactiontable_list_service import (
+    MsActionTableListService,
+)
+from xp.services.conbus.msactiontable.msactiontable_show_service import (
+    MsActionTableShowService,
 )
 
 
@@ -36,8 +43,8 @@ def conbus_download_msactiontable(
         serial_number: 10-digit module serial number.
         xpmoduletype: XP module type.
     """
-    service: MsActionTableService = (
-        ctx.obj.get("container").get_container().resolve(MsActionTableService)
+    service: MsActionTableDownloadService = (
+        ctx.obj.get("container").get_container().resolve(MsActionTableDownloadService)
     )
 
     def on_progress(progress: str) -> None:
@@ -90,3 +97,75 @@ def conbus_download_msactiontable(
             xpmoduletype=xpmoduletype,
         )
         service.start_reactor()
+
+
+@conbus_msactiontable.command("list", short_help="List modules with MsActionTable")
+@click.pass_context
+def conbus_list_msactiontable(ctx: Context) -> None:
+    """List all modules with action table configurations from conson.yml.
+
+    Args:
+        ctx: Click context object.
+    """
+    service: MsActionTableListService = (
+        ctx.obj.get("container").get_container().resolve(MsActionTableListService)
+    )
+
+    def on_finish(module_list: dict) -> None:
+        """Handle successful completion of action table list.
+
+        Args:
+            module_list: Dictionary containing modules and total count.
+        """
+        click.echo(json.dumps(module_list, indent=2, default=str))
+
+    def on_error(error: str) -> None:
+        """Handle errors during action table list.
+
+        Args:
+            error: Error message string.
+        """
+        click.echo(error)
+
+    with service:
+        service.on_finish.connect(on_finish)
+        service.on_error.connect(on_error)
+        service.start()
+
+
+@conbus_msactiontable.command("show", short_help="Show MsActionTable configuration")
+@click.argument("serial_number", type=SERIAL)
+@click.pass_context
+def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
+    """Show ms action table configuration for a specific module from conson.yml.
+
+    Args:
+        ctx: Click context object.
+        serial_number: 10-digit module serial number.
+    """
+    service: MsActionTableShowService = (
+        ctx.obj.get("container").get_container().resolve(MsActionTableShowService)
+    )
+
+    def on_finish(module: ConsonModuleConfig) -> None:
+        """Handle successful completion of action table show.
+
+        Args:
+            module: Dictionary containing module configuration.
+        """
+        click.echo(json.dumps(module.model_dump(), indent=2, default=str))
+
+    def error_callback(error: str) -> None:
+        """Handle errors during action table show.
+
+        Args:
+            error: Error message string.
+        """
+        click.echo(error)
+
+    with service:
+        service.start(
+            serial_number=serial_number,
+            finish_callback=on_finish,
+            error_callback=error_callback,
+        )

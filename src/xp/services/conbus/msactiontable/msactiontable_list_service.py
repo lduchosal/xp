@@ -7,7 +7,7 @@ from typing import Any, Optional
 from psygnal import Signal
 
 
-class ActionTableListService:
+class MsActionTableListService:
     """Service for listing modules with action table configurations.
 
     Reads conson.yml and returns a list of all modules that have action table
@@ -25,7 +25,7 @@ class ActionTableListService:
         """Initialize the action table list service."""
         self.logger = logging.getLogger(__name__)
 
-    def __enter__(self) -> "ActionTableListService":
+    def __enter__(self) -> "MsActionTableListService":
         """Context manager entry.
 
         Returns:
@@ -67,18 +67,18 @@ class ActionTableListService:
             self._handle_error(f"Error: Failed to load conson.yml: {e}")
             return
 
-        # Filter modules that have action_table configured
-        modules_with_actiontable = [
+        # Filter modules that have ms_action_table configured
+        modules_with_msactiontable = [
             {
                 "serial_number": module.serial_number,
                 "module_type": module.module_type,
             }
             for module in config.root
-            if module.action_table
+            if module.msaction_table
         ]
 
         # Prepare result
-        result = {"modules": modules_with_actiontable}
+        result = {"modules": modules_with_msactiontable}
 
         # Emit finish signal
         self.on_finish.emit(result)

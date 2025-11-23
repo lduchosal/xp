@@ -181,7 +181,7 @@ Use existing download implementation as reference for protocol patterns.
 - Follow download command pattern
 - Add configuration reading logic
 
-**Protocol reference:** `src/xp/services/msactiontable_service.py`
+**Protocol reference:** `src/xp/services/msactiontable_download_service.py`
 - Shows F10D upload protocol (adapt for F11D)
 - Demonstrates telegram chunking patterns
 

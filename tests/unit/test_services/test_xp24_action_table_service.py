@@ -12,9 +12,9 @@ from xp.models.actiontable.msactiontable_xp24 import (
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.conbus.actiontable.msactiontable_service import (
+from xp.services.conbus.msactiontable.msactiontable_download_service import (
+    MsActionTableDownloadService,
     MsActionTableError,
-    MsActionTableService,
 )
 
 
@@ -69,7 +69,7 @@ class TestMsActionTableService:
         mock_telegram_service,
     ):
         """Create service instance for testing."""
-        return MsActionTableService(
+        return MsActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             xp20ms_serializer=mock_xp20_serializer,
             xp24ms_serializer=mock_xp24_serializer,
@@ -111,7 +111,7 @@ class TestMsActionTableService:
         mock_telegram_service,
     ):
         """Test service can be initialized with required dependencies."""
-        service = MsActionTableService(
+        service = MsActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             xp20ms_serializer=mock_xp20_serializer,
             xp24ms_serializer=mock_xp24_serializer,

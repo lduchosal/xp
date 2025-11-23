@@ -9,7 +9,7 @@ from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.conbus.actiontable.actiontable_download_service import (
-    ActionTableService,
+    ActionTableDownloadService,
 )
 
 
@@ -50,7 +50,7 @@ class TestActionTableService:
     @pytest.fixture
     def service(self, mock_conbus_protocol, mock_serializer, mock_telegram_service):
         """Create service instance for testing."""
-        return ActionTableService(
+        return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
             telegram_service=mock_telegram_service,
@@ -85,7 +85,7 @@ class TestActionTableService:
         self, mock_conbus_protocol, mock_serializer, mock_telegram_service
     ):
         """Test service can be initialized with required dependencies."""
-        service = ActionTableService(
+        service = ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
             telegram_service=mock_telegram_service,

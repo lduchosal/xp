@@ -9,8 +9,8 @@ from xp.cli.main import cli
 from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.conbus.actiontable.msactiontable_service import (
-    MsActionTableService,
+from xp.services.conbus.msactiontable.msactiontable_download_service import (
+    MsActionTableDownloadService,
 )
 from xp.utils.dependencies import ServiceContainer
 
@@ -27,7 +27,7 @@ class TestXp24ActionTableIntegration:
     def test_xp24_download_action_table(self):
         """Test downloading action table from module."""
         # Create mock service
-        mock_service = Mock(spec=MsActionTableService)
+        mock_service = Mock(spec=MsActionTableDownloadService)
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -129,7 +129,7 @@ class TestXp24ActionTableIntegration:
     def test_xp24_download_action_table_invalid_serial(self):
         """Test downloading with invalid serial number."""
         # Create mock service with error
-        mock_service = Mock(spec=MsActionTableService)
+        mock_service = Mock(spec=MsActionTableDownloadService)
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
@@ -204,7 +204,7 @@ class TestXp24ActionTableIntegration:
     def test_xp24_download_action_table_connection_error(self):
         """Test downloading with network failure."""
         # Create mock service with error
-        mock_service = Mock(spec=MsActionTableService)
+        mock_service = Mock(spec=MsActionTableDownloadService)
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
