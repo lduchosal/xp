@@ -43,15 +43,27 @@ class TestConbusMsActionTableUploadCommand:
         error_callbacks = []
 
         def connect_progress(callback):
-            """Mock connect for progress signal."""
+            """Mock connect for progress signal.
+
+            Args:
+                callback: Callback function to connect.
+            """
             progress_callbacks.append(callback)
 
         def connect_finish(callback):
-            """Mock connect for finish signal."""
+            """Mock connect for finish signal.
+
+            Args:
+                callback: Callback function to connect.
+            """
             finish_callbacks.append(callback)
 
         def connect_error(callback):
-            """Mock connect for error signal."""
+            """Mock connect for error signal.
+
+            Args:
+                callback: Callback function to connect.
+            """
             error_callbacks.append(callback)
 
         mock_service.on_progress.connect = connect_progress

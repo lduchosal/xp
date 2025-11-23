@@ -239,8 +239,8 @@ class TestMsActionTableUploadService:
         """Test error when module not found in config."""
         mock_conson_config.find_module.return_value = None
 
-        error_emitted = []
-        service.on_error.connect(lambda msg: error_emitted.append(msg))
+        error_emitted: list[str] = []
+        service.on_error.connect(error_emitted.append)
 
         service.start(
             serial_number="0020044991",
@@ -256,8 +256,8 @@ class TestMsActionTableUploadService:
         module.module_type = "XP20"
         mock_conson_config.find_module.return_value = module
 
-        error_emitted = []
-        service.on_error.connect(lambda msg: error_emitted.append(msg))
+        error_emitted: list[str] = []
+        service.on_error.connect(error_emitted.append)
 
         service.start(
             serial_number="0020044991",
@@ -274,8 +274,8 @@ class TestMsActionTableUploadService:
         module.xp24_msaction_table = None
         mock_conson_config.find_module.return_value = module
 
-        error_emitted = []
-        service.on_error.connect(lambda msg: error_emitted.append(msg))
+        error_emitted: list[str] = []
+        service.on_error.connect(error_emitted.append)
 
         service.start(
             serial_number="0020044991",
@@ -292,8 +292,8 @@ class TestMsActionTableUploadService:
         module.xp24_msaction_table = []
         mock_conson_config.find_module.return_value = module
 
-        error_emitted = []
-        service.on_error.connect(lambda msg: error_emitted.append(msg))
+        error_emitted: list[str] = []
+        service.on_error.connect(error_emitted.append)
 
         service.start(
             serial_number="0020044991",
@@ -314,8 +314,8 @@ class TestMsActionTableUploadService:
         module.xp24_msaction_table = ["invalid format"]
         mock_conson_config.find_module.return_value = module
 
-        error_emitted = []
-        service.on_error.connect(lambda msg: error_emitted.append(msg))
+        error_emitted: list[str] = []
+        service.on_error.connect(error_emitted.append)
 
         with patch(
             "xp.models.actiontable.msactiontable_xp24.Xp24MsActionTable.from_short_format",
@@ -369,8 +369,8 @@ class TestMsActionTableUploadService:
             checksum_valid=True,
         )
 
-        progress_emitted = []
-        service.on_progress.connect(lambda p: progress_emitted.append(p))
+        progress_emitted: list[str] = []
+        service.on_progress.connect(progress_emitted.append)
 
         service.telegram_received(telegram_event)
 
@@ -412,8 +412,8 @@ class TestMsActionTableUploadService:
             checksum_valid=True,
         )
 
-        finish_emitted = []
-        service.on_finish.connect(lambda success: finish_emitted.append(success))
+        finish_emitted: list[str] = []
+        service.on_finish.connect(finish_emitted.append)
 
         service.telegram_received(telegram_event)
 
@@ -452,8 +452,8 @@ class TestMsActionTableUploadService:
             checksum_valid=True,
         )
 
-        error_emitted = []
-        service.on_error.connect(lambda msg: error_emitted.append(msg))
+        error_emitted: list[str] = []
+        service.on_error.connect(error_emitted.append)
 
         service.telegram_received(telegram_event)
 
@@ -462,8 +462,8 @@ class TestMsActionTableUploadService:
 
     def test_timeout_triggers_error(self, service):
         """Test timeout triggers error signal."""
-        error_emitted = []
-        service.on_error.connect(lambda msg: error_emitted.append(msg))
+        error_emitted: list[str] = []
+        service.on_error.connect(error_emitted.append)
 
         service.timeout()
 
