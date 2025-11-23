@@ -31,7 +31,7 @@ class TestXp24ShortFormat:
 
     def test_to_short_format_with_settings(self):
         """Test conversion to short format with settings."""
-        action_table = Xp24MsActionTable(
+        short = Xp24MsActionTable(
             input1_action=InputAction(
                 type=InputActionType.TOGGLE, param=TimeParam.NONE
             ),
@@ -49,14 +49,12 @@ class TestXp24ShortFormat:
             curtain12=False,
             curtain34=False,
             mutual_deadtime=20,
-        )
-
-        short = action_table.to_short_format(include_settings=True)
+        ).to_short_format(include_settings=True)
         assert short == "XP24 T:0 T:0 T:0 T:0 | M12:1 M34:1 C12:0 C34:0 DT:20"
 
     def test_to_short_format_mixed_actions(self):
         """Test conversion with mixed action types."""
-        action_table = Xp24MsActionTable(
+        short = Xp24MsActionTable(
             input1_action=InputAction(type=InputActionType.ON, param=TimeParam.T5SEC),
             input2_action=InputAction(type=InputActionType.OFF, param=TimeParam.NONE),
             input3_action=InputAction(
@@ -65,21 +63,17 @@ class TestXp24ShortFormat:
             input4_action=InputAction(
                 type=InputActionType.SCENESET, param=TimeParam.T2MIN
             ),
-        )
-
-        short = action_table.to_short_format()
+        ).to_short_format()
         assert short == "XP24 ON:4 OF:0 LS:12 SS:11"
 
     def test_to_short_format_all_void(self):
         """Test conversion with all VOID actions."""
-        action_table = Xp24MsActionTable(
+        short = Xp24MsActionTable(
             input1_action=InputAction(type=InputActionType.VOID, param=TimeParam.NONE),
             input2_action=InputAction(type=InputActionType.VOID, param=TimeParam.NONE),
             input3_action=InputAction(type=InputActionType.VOID, param=TimeParam.NONE),
             input4_action=InputAction(type=InputActionType.VOID, param=TimeParam.NONE),
-        )
-
-        short = action_table.to_short_format()
+        ).to_short_format()
         assert short == "XP24 V:0 V:0 V:0 V:0"
 
     def test_from_short_format_basic(self):
