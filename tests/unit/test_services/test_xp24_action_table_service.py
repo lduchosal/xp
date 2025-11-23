@@ -211,7 +211,7 @@ class TestMsActionTableService:
         service.msactiontable_data = ["AAAAACAAAABAAAAC"]
 
         mock_finish = Mock()
-        service.on_finish.connect(mock_finish)
+        service.on_finish_xp24.connect(mock_finish)
 
         # Mock serializer to return sample msactiontable
         service.serializer.from_data.return_value = sample_xp24_msactiontable
@@ -298,11 +298,9 @@ class TestMsActionTableService:
         service.conbus_protocol.send_telegram.assert_not_called()
 
     def test_failed_emits_signals(self, service):
-        """Test failed method emits error and finish signals."""
+        """Test failed method emits error signal."""
         mock_error = Mock()
-        mock_finish = Mock()
         service.on_error.connect(mock_error)
-        service.on_finish.connect(mock_finish)
 
         service.failed("Connection timeout")
 

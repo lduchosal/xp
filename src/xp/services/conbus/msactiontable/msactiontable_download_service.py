@@ -5,7 +5,6 @@ from typing import Any, Optional, Union
 
 from psygnal import Signal
 
-from xp.models.actiontable.msactiontable import MsActionTable
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
@@ -42,12 +41,12 @@ class MsActionTableDownloadService:
         conbus_protocol: Protocol instance for Conbus communication.
         on_progress: Signal emitted for progress updates (str).
         on_error: Signal emitted for errors (str).
-        on_finish: Signal emitted when download completes (MsActionTable or None).
+        on_finish: Signal emitted when XP download completes (Xp20MsActionTable, str).
     """
 
     on_progress: Signal = Signal(str)
     on_error: Signal = Signal(str)
-    on_finish: Signal = Signal(MsActionTable, str)  # Union type for Xp20/24/33 or None
+    on_finish: Signal = Signal(object, list[str])
 
     def __init__(
         self,
@@ -165,7 +164,7 @@ class MsActionTableDownloadService:
             all_data = "".join(self.msactiontable_data)
             # Deserialize from received data
             msactiontable = self.serializer.from_data(all_data)
-            msactiontable_short = self.serializer.format_decoded_output(msactiontable)  # type: ignore[arg-type]
+            msactiontable_short = self.serializer.format_decoded_output(msactiontable)
             self.succeed(msactiontable, msactiontable_short)
             return
 
@@ -188,7 +187,7 @@ class MsActionTableDownloadService:
     def succeed(
         self,
         msactiontable: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable],
-        msactiontable_short: str,
+        msactiontable_short: list[str],
     ) -> None:
         """Handle succeed connection event.
 
@@ -196,6 +195,7 @@ class MsActionTableDownloadService:
             msactiontable: result.
             msactiontable_short: result in short form.
         """
+        # Emit to the appropriate signal based on module type
         self.on_finish.emit(msactiontable, msactiontable_short)
 
     def start(

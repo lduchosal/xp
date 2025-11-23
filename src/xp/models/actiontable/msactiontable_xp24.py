@@ -4,7 +4,6 @@ from typing import Any, ClassVar, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from xp.models.actiontable.msactiontable import MsActionTable
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 
@@ -82,7 +81,7 @@ class InputAction(BaseModel):
         raise ValueError(f"Invalid type for TimeParam: {type(v)}")
 
 
-class Xp24MsActionTable(MsActionTable):
+class Xp24MsActionTable(BaseModel):
     """XP24 Action Table for managing input actions and settings.
 
     Each input has an action type (TOGGLE, ON, LEVELSET, etc.)
@@ -159,7 +158,7 @@ class Xp24MsActionTable(MsActionTable):
     curtain34: bool = False  # Curtain setting for inputs 3-4
     mutual_deadtime: int = MS300  # Master timing (MS300=12 or MS500=20)
 
-    def to_short_format(self) -> str:
+    def to_short_format(self) -> list[str]:
         """Convert action table to short format string.
 
         Returns:
@@ -191,7 +190,7 @@ class Xp24MsActionTable(MsActionTable):
         )
         result = f"{result} | {settings}"
 
-        return result
+        return list(result)
 
     @classmethod
     def from_short_format(cls, short_str: str) -> "Xp24MsActionTable":

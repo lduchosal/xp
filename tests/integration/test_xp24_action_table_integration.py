@@ -120,12 +120,12 @@ class TestXp24ActionTableIntegration:
         assert "serial_number" in output
         assert "xpmoduletype" in output
         assert "msaction_table" in output
-        assert "msaction_table_xp24" in output
+        assert "xp24_msaction_table" in output
         assert output["serial_number"] == self.valid_serial
         assert output["xpmoduletype"] == "xp24"
 
         # Verify short format
-        assert output["msaction_table_xp24"] == "XP24 T:0 ON:4 LS:12 SS:11"
+        assert output["xp24_msaction_table"] == "XP24 T:0 ON:4 LS:12 SS:11"
 
         # Verify action table structure
         action_table = output["msaction_table"]

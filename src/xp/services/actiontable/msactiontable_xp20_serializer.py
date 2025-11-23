@@ -16,7 +16,7 @@ class Xp20MsActionTableSerializer:
     """Handles serialization/deserialization of XP20 action tables to/from telegrams."""
 
     @staticmethod
-    def format_decoded_output(action_table: Xp20MsActionTable) -> str:
+    def format_decoded_output(action_table: Xp20MsActionTable) -> list[str]:
         """Serialize XP20 action table to humane compact readable format.
 
         Args:

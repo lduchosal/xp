@@ -2,9 +2,6 @@
 
 from pydantic import BaseModel, Field
 
-from xp.models.actiontable.msactiontable import MsActionTable
-
-
 class InputChannel(BaseModel):
     """Configuration for a single input channel in XP20 action table.
 
@@ -25,7 +22,7 @@ class InputChannel(BaseModel):
     ta_function: bool = False
 
 
-class Xp20MsActionTable(MsActionTable):
+class Xp20MsActionTable(BaseModel):
     """XP20 Action Table for managing 8 input channels.
 
     Contains configuration for 8 input channels (input1 through input8),
@@ -52,7 +49,7 @@ class Xp20MsActionTable(MsActionTable):
     input7: InputChannel = Field(default_factory=InputChannel)
     input8: InputChannel = Field(default_factory=InputChannel)
 
-    def to_short_format(self) -> str:
+    def to_short_format(self) -> list[str]:
         """Convert action table to short format string.
 
         Returns:
@@ -77,10 +74,10 @@ class Xp20MsActionTable(MsActionTable):
                 f"TA:{1 if channel.ta_function else 0}"
             )
             lines.append(line)
-        return "\n".join(lines)
+        return lines
 
     @classmethod
-    def from_short_format(cls, short_str: str) -> "Xp20MsActionTable":
+    def from_short_format(cls, short_str: list[str]) -> "Xp20MsActionTable":
         """Parse short format string into action table.
 
         Args:
@@ -94,16 +91,15 @@ class Xp20MsActionTable(MsActionTable):
         """
         import re
 
-        lines = short_str.strip().split("\n")
-        if len(lines) != 8:
-            raise ValueError(f"Expected 8 channel lines, got {len(lines)}")
+        if len(short_str) != 8:
+            raise ValueError(f"Expected 8 channel lines, got {len(short_str)}")
 
         pattern = re.compile(
             r"^CH([1-8]) I:([01]) S:([01]) G:([01]) AND:([01]{8}) SA:([01]) TA:([01])$"
         )
 
         channels = {}
-        for line in lines:
+        for line in short_str:
             line = line.strip()
             match = pattern.match(line)
             if not match:

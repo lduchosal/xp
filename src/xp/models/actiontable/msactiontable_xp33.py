@@ -4,7 +4,6 @@ from typing import Union
 
 from pydantic import BaseModel, Field, field_validator
 
-from xp.models.actiontable.msactiontable import MsActionTable
 from xp.models.telegram.timeparam_type import TimeParam
 
 
@@ -70,7 +69,7 @@ class Xp33Scene(BaseModel):
         raise ValueError(f"Invalid type for TimeParam: {type(v)}")
 
 
-class Xp33MsActionTable(MsActionTable):
+class Xp33MsActionTable(BaseModel):
     """XP33 Action Table for managing outputs and scenes.
 
     Attributes:
@@ -92,7 +91,7 @@ class Xp33MsActionTable(MsActionTable):
     scene3: Xp33Scene = Field(default_factory=Xp33Scene)
     scene4: Xp33Scene = Field(default_factory=Xp33Scene)
 
-    def to_short_format(self) -> str:
+    def to_short_format(self) -> list[str]:
         """Convert action table to short format string.
 
         Returns:
@@ -119,10 +118,10 @@ class Xp33MsActionTable(MsActionTable):
         for num, scene in scenes:
             lines.append(f"SCENE{num} {self._format_scene(scene)}")
 
-        return "\n".join(lines)
+        return lines
 
     @classmethod
-    def from_short_format(cls, short_str: str) -> "Xp33MsActionTable":
+    def from_short_format(cls, short_str: list[str]) -> "Xp33MsActionTable":
         """Parse short format string into action table.
 
         Args:
@@ -134,13 +133,11 @@ class Xp33MsActionTable(MsActionTable):
         Raises:
             ValueError: If format is invalid.
         """
-        lines = short_str.strip().split("\n")
-
         # Parse outputs and scenes from lines
         outputs = {}
         scenes = {}
 
-        for line in lines:
+        for line in short_str:
             line = line.strip()
             if not line:
                 continue

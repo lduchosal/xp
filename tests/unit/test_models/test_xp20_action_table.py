@@ -235,8 +235,7 @@ class TestXp20ShortFormat:
     def test_to_short_format_default(self):
         """Test short format with default (all zeros) configuration."""
         table = Xp20MsActionTable()
-        short = table.to_short_format()
-        lines = short.split("\n")
+        lines = table.to_short_format()
 
         assert len(lines) == 8
         for i, line in enumerate(lines, 1):
@@ -249,8 +248,7 @@ class TestXp20ShortFormat:
         table.input1.short_long = True
         table.input1.and_functions = [True, False, True, False, True, False, True, False]
 
-        short = table.to_short_format()
-        lines = short.split("\n")
+        lines = table.to_short_format()
 
         assert lines[0] == "CH1 I:1 S:1 G:0 AND:10101010 SA:0 TA:0"
         assert lines[1] == "CH2 I:0 S:0 G:0 AND:00000000 SA:0 TA:0"
@@ -265,8 +263,7 @@ class TestXp20ShortFormat:
         table.input1.sa_function = True
         table.input1.ta_function = True
 
-        short = table.to_short_format()
-        lines = short.split("\n")
+        lines = table.to_short_format()
 
         assert lines[0] == "CH1 I:1 S:1 G:1 AND:11111111 SA:1 TA:1"
 
@@ -289,8 +286,7 @@ class TestXp20ShortFormat:
         table.input3.sa_function = True
         table.input3.ta_function = True
 
-        short = table.to_short_format()
-        lines = short.split("\n")
+        lines = table.to_short_format()
 
         assert lines[0] == "CH1 I:1 S:0 G:1 AND:10101010 SA:0 TA:1"
         assert lines[1] == "CH2 I:0 S:1 G:0 AND:01010101 SA:1 TA:0"
