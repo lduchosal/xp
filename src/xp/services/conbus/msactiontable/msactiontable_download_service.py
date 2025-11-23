@@ -46,7 +46,7 @@ class MsActionTableDownloadService:
 
     on_progress: Signal = Signal(str)
     on_error: Signal = Signal(str)
-    on_finish: Signal = Signal(object)  # Union type for Xp20/24/33 or None
+    on_finish: Signal = Signal(Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable], str)  # Union type for Xp20/24/33 or None
 
     def __init__(
         self,
@@ -164,7 +164,8 @@ class MsActionTableDownloadService:
             all_data = "".join(self.msactiontable_data)
             # Deserialize from received data
             msactiontable = self.serializer.from_data(all_data)
-            self.succeed(msactiontable)
+            msactiontable_short = self.serializer.format_decoded_output(msactiontable)
+            self.succeed(msactiontable, msactiontable_short)
             return
 
         self.logger.debug("Invalid msactiontable response")
@@ -186,13 +187,15 @@ class MsActionTableDownloadService:
     def succeed(
         self,
         msactiontable: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable],
+        msactiontable_short: str
     ) -> None:
         """Handle succeed connection event.
 
         Args:
             msactiontable: result.
+            msactiontable_short: result in short form.
         """
-        self.on_finish.emit(msactiontable)
+        self.on_finish.emit(msactiontable, msactiontable_short)
 
     def start(
         self,

@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from typing import Any, Callable, Optional
 
-from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
+from xp.models.config.conson_module_config import ConsonModuleConfig
 
 
 class ActionTableShowService:
@@ -61,7 +61,7 @@ class ActionTableShowService:
 
         # Load configuration
         try:
-            from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
+            from xp.models.config.conson_module_config import ConsonModuleListConfig
 
             config = ConsonModuleListConfig.from_yaml(str(config_path))
         except Exception as e:

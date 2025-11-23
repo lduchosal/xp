@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
+from xp.models.config.conson_module_config import ConsonModuleListConfig
 
 
 @dataclass

@@ -10,6 +10,18 @@ class Xp24MsActionTableSerializer:
     """Handles serialization/deserialization of XP24 action tables to/from telegrams."""
 
     @staticmethod
+    def format_decoded_output(action_table: Xp24MsActionTable) -> str:
+        """Serialize XP24 action table to humane compact readable format.
+
+        Args:
+            action_table: XP24 action table to serialize
+
+        Returns:
+            Human-readable string describing XP24 action table
+        """
+        return ""
+
+    @staticmethod
     def to_data(action_table: Xp24MsActionTable) -> str:
         """Serialize action table to telegram format.
 

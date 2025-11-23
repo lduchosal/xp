@@ -13,6 +13,18 @@ class Xp33MsActionTableSerializer:
     """Handles serialization/deserialization of XP33 action tables to/from telegrams."""
 
     @staticmethod
+    def format_decoded_output(action_table: Xp33MsActionTable) -> str:
+        """Serialize XP33 action table to humane compact readable format.
+
+        Args:
+            action_table: XP33 action table to serialize
+
+        Returns:
+            Human-readable string describing XP33 action table
+        """
+        return ""
+
+    @staticmethod
     def _percentage_to_byte(percentage: int) -> int:
         """Convert percentage (0-100) to byte value for telegram encoding."""
         return min(max(percentage, 0), 100)

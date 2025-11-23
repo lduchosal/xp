@@ -9,7 +9,7 @@ from twisted.internet.posixbase import PosixReactorBase
 from xp.models import ConbusClientConfig
 from xp.models.conbus.conbus_logger_config import ConbusLoggerConfig
 from xp.models.homekit.homekit_config import HomekitConfig
-from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
+from xp.models.config.conson_module_config import ConsonModuleListConfig
 from xp.models.term.protocol_keys_config import ProtocolKeysConfig
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.actiontable.msactiontable_serializer import MsActionTableSerializer

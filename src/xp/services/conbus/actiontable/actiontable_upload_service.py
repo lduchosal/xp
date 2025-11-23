@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 from psygnal import Signal
 
-from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
+from xp.models.config.conson_module_config import ConsonModuleListConfig
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType

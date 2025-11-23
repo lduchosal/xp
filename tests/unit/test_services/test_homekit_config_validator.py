@@ -7,7 +7,7 @@ from xp.models.homekit.homekit_config import (
     NetworkConfig,
     RoomConfig,
 )
-from xp.models.homekit.homekit_conson_config import (
+from xp.models.config.conson_module_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
 )

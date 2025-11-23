@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 
 from psygnal import Signal
 
-from xp.models.homekit.homekit_conson_config import ConsonModuleListConfig
+from xp.models.config.conson_module_config import ConsonModuleListConfig
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.module_type_code import ModuleTypeCode

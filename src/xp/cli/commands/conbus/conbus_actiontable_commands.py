@@ -14,7 +14,7 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.actiontable.actiontable import ActionTable
-from xp.models.homekit.homekit_conson_config import (
+from xp.models.config.conson_module_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
 )

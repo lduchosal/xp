@@ -7,7 +7,7 @@ import click
 from xp.cli.commands.conbus.conbus import conbus_export
 from xp.cli.utils.decorators import connection_command
 from xp.models.conbus.conbus_export import ConbusExportResponse
-from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
+from xp.models.config.conson_module_config import ConsonModuleConfig
 from xp.services.conbus.conbus_export_service import ConbusExportService
 
 

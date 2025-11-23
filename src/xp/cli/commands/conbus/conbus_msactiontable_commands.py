@@ -15,7 +15,7 @@ from xp.cli.utils.xp_module_type import XP_MODULE_TYPE
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
-from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
+from xp.models.config.conson_module_config import ConsonModuleConfig
 from xp.services.conbus.msactiontable.msactiontable_download_service import (
     MsActionTableDownloadService,
 )
@@ -55,27 +55,30 @@ def conbus_download_msactiontable(
         click.echo(progress, nl=False)
 
     def on_finish(
-        action_table: Union[
+        msaction_table: Union[
             Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable, None
         ],
+        msaction_table_short: str
     ) -> None:
         """Handle successful completion of MS action table download.
 
         Args:
-            action_table: Downloaded MS action table object or None if failed.
+            msaction_table: Downloaded MS action table object or None if failed.
+            msaction_table_short: Short version of MS action table object or None if failed.
 
         Raises:
             Abort: If action table download failed.
         """
         service.stop_reactor()
-        if action_table is None:
+        if msaction_table is None:
             click.echo("Error: Failed to download MS action table")
             raise click.Abort()
 
         output = {
             "serial_number": serial_number,
             "xpmoduletype": xpmoduletype,
-            "action_table": action_table.model_dump(),
+            "msaction_table_short": msaction_table_short,
+            "msaction_table": msaction_table.model_dump(),
         }
         click.echo(json.dumps(output, indent=2, default=str))
 

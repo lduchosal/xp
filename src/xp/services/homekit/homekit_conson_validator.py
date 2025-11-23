@@ -5,7 +5,7 @@ This module validates conson.yml configuration files for HomeKit integration.
 
 from typing import List, Set
 
-from xp.models.homekit.homekit_conson_config import (
+from xp.models.config.conson_module_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
 )

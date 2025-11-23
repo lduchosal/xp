@@ -16,6 +16,18 @@ class Xp20MsActionTableSerializer:
     """Handles serialization/deserialization of XP20 action tables to/from telegrams."""
 
     @staticmethod
+    def format_decoded_output(action_table: Xp20MsActionTable) -> str:
+        """Serialize XP20 action table to humane compact readable format.
+
+        Args:
+            action_table: XP20 action table to serialize
+
+        Returns:
+            Human-readable string describing XP20 action table
+        """
+        return ""
+
+    @staticmethod
     def to_data(action_table: Xp20MsActionTable) -> str:
         """Serialize XP20 action table to telegram hex string format.
 
@@ -167,3 +179,4 @@ class Xp20MsActionTableSerializer:
                 and_functions_byte |= 1 << bit_index
 
         raw_bytes[AND_FUNCTIONS_INDEX + input_index] = and_functions_byte
+

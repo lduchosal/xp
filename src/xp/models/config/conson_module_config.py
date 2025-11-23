@@ -46,9 +46,9 @@ class ConsonModuleConfig(BaseModel):
     hw_version: Optional[str] = None
     auto_report_status: Optional[str] = None
     action_table: Optional[List[str]] = None
-    xp20_msaction_table: Optional[Xp20MsActionTable] = None
-    xp24_msaction_table: Optional[Xp24MsActionTable] = None
-    xp33_msaction_table: Optional[Xp33MsActionTable] = None
+    xp20_msaction_table: Optional[str] = None
+    xp24_msaction_table: Optional[str] = None
+    xp33_msaction_table: Optional[str] = None
 
 
 class ConsonModuleListConfig(BaseModel):

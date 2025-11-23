@@ -8,7 +8,7 @@ from twisted.internet.posixbase import PosixReactorBase
 
 from xp.models import ConbusClientConfig
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
-from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
+from xp.models.config.conson_module_config import ConsonModuleConfig
 from xp.models.protocol.conbus_protocol import (
     ConnectionFailedEvent,
     ConnectionLostEvent,

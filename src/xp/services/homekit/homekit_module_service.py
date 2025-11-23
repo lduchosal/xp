@@ -6,7 +6,7 @@ This module provides service implementation for HomeKit module management.
 import logging
 from typing import Optional
 
-from xp.models.homekit.homekit_conson_config import (
+from xp.models.config.conson_module_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
 )

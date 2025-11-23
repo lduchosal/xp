@@ -13,7 +13,7 @@ from xp.cli.commands.conbus.conbus_actiontable_commands import (
 )
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
-from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
+from xp.models.config.conson_module_config import ConsonModuleConfig
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
