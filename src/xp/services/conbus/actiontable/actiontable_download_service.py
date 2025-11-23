@@ -2,10 +2,11 @@
 
 import logging
 from dataclasses import asdict
-from typing import Any, Optional
+from typing import Any, Optional, Dict, Tuple
 
 from psygnal import Signal
 
+from xp.models.actiontable.actiontable import ActionTable
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
@@ -28,7 +29,7 @@ class ActionTableService:
 
     on_progress: Signal = Signal(str)
     on_error: Signal = Signal(str)
-    on_finish: Signal = Signal(object)  # (ActionTable, Dict[str, Any], list[str])
+    on_finish: Signal = Signal(ActionTable, Dict[str, Any], list[str])  # (ActionTable, Dict[str, Any], list[str])
 
     def __init__(
         self,
@@ -123,7 +124,7 @@ class ActionTableService:
             actiontable = self.serializer.from_encoded_string(all_data)
             actiontable_dict = asdict(actiontable)
             actiontable_short = self.serializer.format_decoded_output(actiontable)
-            self.on_finish.emit((actiontable, actiontable_dict, actiontable_short))
+            self.on_finish.emit(actiontable, actiontable_dict, actiontable_short)
 
     def timeout(self) -> None:
         """Handle timeout event."""
