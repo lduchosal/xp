@@ -1,21 +1,21 @@
-"""Conbus export CLI command."""
+"""Conbus export CLI commands."""
 
 from contextlib import suppress
 
 import click
 
-from xp.cli.commands.conbus.conbus import conbus
 from xp.cli.utils.decorators import connection_command
+from xp.cli.commands.conbus.conbus import conbus_export
 from xp.models.conbus.conbus_export import ConbusExportResponse
 from xp.models.homekit.homekit_conson_config import ConsonModuleConfig
 from xp.services.conbus.conbus_export_service import ConbusExportService
 
 
-@conbus.command("export")
+@conbus_export.command("config")
 @click.pass_context
 @connection_command()
 def export_conbus_config(ctx: click.Context) -> None:
-    r"""Export Conbus device configuration to YAML file.
+    r"""Export Conbus device metadata to YAML file.
 
     Discovers all devices on the Conbus network and queries their configuration
     datapoints to generate a complete export.yml file in conson.yml format.
@@ -25,8 +25,9 @@ def export_conbus_config(ctx: click.Context) -> None:
 
     Examples:
         \b
-        # Export to export.yml in current directory
+        # Export device metadata to export.yml
         xp conbus export
+        xp conbus export config
     """
 
     def on_progress(serial_number: str, current: int, total: int) -> None:

@@ -2,7 +2,7 @@
 
 import logging
 from dataclasses import asdict
-from typing import Any, Optional, Dict, Tuple
+from typing import Any, Optional, Dict
 
 from psygnal import Signal
 

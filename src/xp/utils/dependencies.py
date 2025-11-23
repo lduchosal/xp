@@ -99,6 +99,7 @@ class ServiceContainer:
         logger_config_path: str = "logger.yml",
         homekit_config_path: str = "homekit.yml",
         conson_config_path: str = "conson.yml",
+        export_config_path: str = "export.yml",
         server_port: int = 10001,
         protocol_keys_config_path: str = "protocol.yml",
         reverse_proxy_port: int = 10001,
@@ -111,6 +112,7 @@ class ServiceContainer:
             logger_config_path: Path to the Conbus Loggerr configuration file
             homekit_config_path: Path to the HomeKit configuration file
             conson_config_path: Path to the Conson configuration file
+            export_config_path: Path to the Conson export file
             protocol_keys_config_path: Path to the protocol keys configuration file
             server_port: Port for the server service
             reverse_proxy_port: Port for the reverse proxy service
@@ -120,6 +122,7 @@ class ServiceContainer:
         self._logger_config_path = logger_config_path
         self._homekit_config_path = homekit_config_path
         self._conson_config_path = conson_config_path
+        self._export_config_path = export_config_path
         self._protocol_keys_config_path = protocol_keys_config_path
         self._server_port = server_port
         self._reverse_proxy_port = reverse_proxy_port
@@ -138,6 +141,12 @@ class ServiceContainer:
         self.container.register(
             ConbusLoggerConfig,
             factory=lambda: ConbusLoggerConfig.from_yaml(self._logger_config_path),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            ConsonModuleListConfig,
+            factory=lambda: ConsonModuleListConfig.from_yaml(self._conson_config_path),
             scope=punq.Scope.singleton,
         )
 
@@ -386,13 +395,6 @@ class ServiceContainer:
             factory=lambda: ConbusReceiveService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol)
             ),
-            scope=punq.Scope.singleton,
-        )
-
-        # HomeKit conson config
-        self.container.register(
-            ConsonModuleListConfig,
-            factory=lambda: ConsonModuleListConfig.from_yaml(self._conson_config_path),
             scope=punq.Scope.singleton,
         )
 

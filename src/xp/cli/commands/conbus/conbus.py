@@ -116,6 +116,7 @@ def conbus_actiontable() -> None:
     """Download ActionTable from Conbus modules."""
     pass
 
+
 @click.group(
     "event",
     cls=HelpColorsGroup,
@@ -127,6 +128,7 @@ def conbus_event() -> None:
     """Event telegrams to Conbus modules."""
     pass
 
+
 @click.group(
     "export",
     cls=HelpColorsGroup,
@@ -137,6 +139,7 @@ def conbus_event() -> None:
 def conbus_export() -> None:
     """Download ActionTable from Conbus modules."""
     pass
+
 
 conbus.add_command(conbus_blink)
 conbus.add_command(conbus_output)
