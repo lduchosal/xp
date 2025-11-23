@@ -108,7 +108,7 @@ class TestConbusActionTableCommands:
                         actiontable
                     )
                     for callback in finish_callbacks:
-                        callback((actiontable, actiontable_dict, actiontable_short))
+                        callback(actiontable, actiontable_dict, actiontable_short)
 
         mock_service.start = Mock()
         mock_service.start_reactor.side_effect = mock_start_reactor

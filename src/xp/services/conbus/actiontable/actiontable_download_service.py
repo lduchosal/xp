@@ -2,7 +2,7 @@
 
 import logging
 from dataclasses import asdict
-from typing import Any, Optional, Dict
+from typing import Any, Dict, Optional
 
 from psygnal import Signal
 
@@ -29,7 +29,9 @@ class ActionTableService:
 
     on_progress: Signal = Signal(str)
     on_error: Signal = Signal(str)
-    on_finish: Signal = Signal(ActionTable, Dict[str, Any], list[str])  # (ActionTable, Dict[str, Any], list[str])
+    on_finish: Signal = Signal(
+        ActionTable, Dict[str, Any], list[str]
+    )  # (ActionTable, Dict[str, Any], list[str])
 
     def __init__(
         self,

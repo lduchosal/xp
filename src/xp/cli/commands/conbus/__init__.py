@@ -6,11 +6,11 @@ from xp.cli.commands.conbus.conbus import (
     conbus_autoreport,
     conbus_blink,
     conbus_datapoint,
+    conbus_export,
     conbus_lightlevel,
     conbus_linknumber,
     conbus_msactiontable,
     conbus_output,
-    conbus_export,
 )
 
 __all__ = [

@@ -139,7 +139,7 @@ class TestActionTableIntegration:
             # Call the on_finish callback that was connected
             if callbacks["on_finish"]:
                 callbacks["on_finish"](
-                    (sample_actiontable, actiontable_dict, actiontable_short)
+                    sample_actiontable, actiontable_dict, actiontable_short
                 )
 
         def mock_start_reactor() -> None:

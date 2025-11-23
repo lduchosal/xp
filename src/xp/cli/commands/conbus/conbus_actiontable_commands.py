@@ -3,7 +3,7 @@
 import json
 from contextlib import suppress
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 import click
 from click import Context
@@ -61,7 +61,11 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         """
         click.echo(progress, nl=False)
 
-    def on_finish(_actiontable: ActionTable, actiontable_dict: Dict[str, Any], actiontable_short: list[str]) -> None:
+    def on_finish(
+        _actiontable: ActionTable,
+        actiontable_dict: Dict[str, Any],
+        actiontable_short: list[str],
+    ) -> None:
         """Handle successful completion of action table download.
 
         Args:

@@ -211,7 +211,7 @@ class TestActionTableService:
         expected_dict = asdict(sample_actiontable)
         expected_short = ["CP20 0 0 > 1 OFF;", "CP20 0 1 > 1 ~ON;"]
         mock_finish.assert_called_once_with(
-            (sample_actiontable, expected_dict, expected_short)
+            sample_actiontable, expected_dict, expected_short
         )
 
     def test_telegram_received_invalid_checksum(self, service):

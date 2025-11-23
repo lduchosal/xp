@@ -8,11 +8,12 @@ from xp.cli.commands.conbus.conbus import (
     conbus_autoreport,
     conbus_blink,
     conbus_datapoint,
+    conbus_export,
     conbus_lightlevel,
     conbus_linknumber,
     conbus_modulenumber,
     conbus_msactiontable,
-    conbus_output, conbus_export,
+    conbus_output,
 )
 from xp.cli.commands.conbus.conbus_actiontable_commands import (
     conbus_download_actiontable,
