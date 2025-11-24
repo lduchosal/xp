@@ -54,30 +54,6 @@ protocol:
       - E02L00I08M
       - E02L00I08B
 
-  "d":
-    name: "Link 1 On"
-    telegrams:
-      - E02L01I08M
-      - E02L01I08B
-
-  "e":
-    name: "Link 1 Off"
-    telegrams:
-      - E02L01I09M
-      - E02L01I09B
-
-  "f":
-    name: "Link 2 On"
-    telegrams:
-      - E02L02I08M
-      - E02L02I08B
-
-  "g":
-    name: "Link 2 Off"
-    telegrams:
-      - E02L02I09M
-      - E02L02I09B
-
   "h":
     name: "Link 3 On"
     telegrams:
@@ -137,3 +113,55 @@ protocol:
     telegrams:
       - E02L07I09M
       - E02L07I09B
+
+  "r":
+    name: "Link 8 On"
+    telegrams:
+      - E02L08I08M
+      - E02L08I08B
+
+  "s":
+    name: "Link 8 Off"
+    telegrams:
+      - E02L08I09M
+      - E02L08I09B
+
+
+  "t":
+    name: "Link 9 On"
+    telegrams:
+      - E02L09I08M
+      - E02L09I08B
+
+  "u":
+    name: "Link 9 Off"
+    telegrams:
+      - E02L09I09M
+      - E02L09I09B
+
+
+  "v":
+    name: "Link 12 On"
+    telegrams:
+      - E02L12I08M
+      - E02L12I08B
+
+  "w":
+    name: "Link 12 Off"
+    telegrams:
+      - E02L12I09M
+      - E02L12I09B
+
+
+  "x":
+    name: "Link 13 On"
+    telegrams:
+      - E02L13I08M
+      - E02L13I08B
+
+  "y":
+    name: "Link 13 Off"
+    telegrams:
+      - E02L13I09M
+      - E02L13I09B
+
