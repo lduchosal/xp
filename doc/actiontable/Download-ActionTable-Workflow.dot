@@ -1,0 +1,61 @@
+digraph ActionTableDownloadStateMachine {
+    rankdir=TB;
+    node [shape=rectanlge, style=filled, fillcolor=lightblue];
+
+    // States
+    IDLE [label="IDLE", fillcolor=lightgreen];
+    RECEIVING [label="RECEIVING" fillcolor=lightpink];
+    RESETTING [label="RESETTING" fillcolor=lightpink];
+    WAITING_OK [label="WAITING_OK" fillcolor=lightpink];
+    REQUESTING [label="REQUESTING"];
+    WAITING_DATA [label="WAITING\nDATA"];
+    RECEIVING_CHUNK [label="RECEIVING\nCHUNK"];
+    PROCESSING_EOF [label="PROCESSING\nEOF"];
+
+    RECEIVING2 [label="RECEIVING" fillcolor=lightpink];
+    RESETTING2 [label="RESETTING" fillcolor=lightpink];
+    WAITING_OK2 [label="WAITING_OK" fillcolor=lightpink];
+
+    COMPLETED [label="COMPLETED", fillcolor=black];
+
+    // Initial state
+    IDLE [shape=point, width=0.3];
+    COMPLETED [shape=point, width=0.3];
+
+    // State transitions with events
+    IDLE -> RECEIVING [label="   on_connection_made"];
+
+    RECEIVING -> RESETTING [label="   on_timeout   "];
+
+    RECEIVING -> RECEIVING [label="   on_telegram_received"];
+
+    RESETTING -> WAITING_OK [label="   send_datapoint_error_status           "];
+
+    WAITING_OK -> RECEIVING [label="   nak_received\non_timeout"];
+
+    WAITING_OK -> REQUESTING [label="   ack_received"];
+
+    REQUESTING -> WAITING_DATA [label="   send_download_actiontable"];
+
+    WAITING_DATA -> RECEIVING_CHUNK [label="   actiontable_received   "];
+
+    RECEIVING_CHUNK -> WAITING_DATA [label="   send_ack    "];
+
+    WAITING_DATA -> PROCESSING_EOF [label="   eof_received   "];
+
+    WAITING_DATA -> WAITING_DATA [label="    on_telegram_received"];
+
+    PROCESSING_EOF -> RECEIVING2 [label="   on_finish   "];
+
+
+    RECEIVING2 -> RECEIVING2 [label="   on_telegram_received"];
+
+    RECEIVING2 -> RESETTING2 [label="   on_timeout"];
+
+    RESETTING2 -> WAITING_OK2 [label="   send_datapoint_error_status           "];
+
+    WAITING_OK2 -> RECEIVING2 [label="   nak_received\non_timeout"];
+
+    WAITING_OK2 -> COMPLETED [label="   ack_received"];
+
+}

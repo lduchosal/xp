@@ -157,7 +157,6 @@ class ActionTableDownloadService:
         self.serial_number = serial_number
         if timeout_seconds:
             self.conbus_protocol.timeout_seconds = timeout_seconds
-        # Caller invokes start_reactor()
 
     def set_timeout(self, timeout_seconds: float) -> None:
         """Set operation timeout.
