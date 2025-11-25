@@ -2,123 +2,47 @@
 
 ## Goal
 
-Refactor `ActionTableDownloadService` to use explicit state machine from `xp/utils/state_machine.py`.
+Refactor `ActionTableDownloadService` to inherit from [python-statemachine](https://pypi.org/project/python-statemachine/) `StateMachine` class.
 
-## Current State
+## Checklist
 
-- `ActionTableDownloadService` uses implicit state via signal handlers
-- `StateMachine` utility exists but is not used
-- Workflow diagram defines 9 states, current implementation has none
+### Phase 1: Add Dependency
 
-## Tasks
+- [ ] Add `python-statemachine = "^2.5.0"` to `pyproject.toml`
+- [ ] Run `pdm install`
 
-### 1. Define State Enum
+### Phase 2: Refactor Service
 
-File: `src/xp/services/conbus/actiontable/actiontable_download_state.py`
+- [ ] Add `from statemachine import StateMachine, State` import
+- [ ] Change class to `class ActionTableDownloadService(StateMachine):`
+- [ ] Define 9 states as class attributes using `State()`
+- [ ] Define all transitions using `State.to()`
+- [ ] Call `super().__init__()` at end of `__init__`
+- [ ] Implement lifecycle hooks (`on_enter_*`, `on_exit_*`, `after_*`)
 
-```python
-class ActionTableDownloadState(str, Enum):
-    IDLE = "IDLE"
-    RECEIVING = "RECEIVING"
-    RESETTING = "RESETTING"
-    WAITING_OK = "WAITING_OK"
-    REQUESTING = "REQUESTING"
-    WAITING_DATA = "WAITING_DATA"
-    RECEIVING_CHUNK = "RECEIVING_CHUNK"
-    PROCESSING_EOF = "PROCESSING_EOF"
-    COMPLETED = "COMPLETED"
-```
+### Phase 3: Update Event Handlers
 
-### 2. Integrate StateMachine
-
-File: `src/xp/services/conbus/actiontable/actiontable_download_service.py`
-
-- Add `StateMachine` instance with `IDLE` as initial state
-- Define valid transitions per workflow spec
-- Guard signal handlers with state checks
-- Transition state on events
-
-### 3. Define Transitions
-
-```
-Action                    Valid Sources              Target
-─────────────────────────────────────────────────────────────
-on_connection_made        {IDLE}                     RECEIVING
-on_telegram_received      {RECEIVING, WAITING_DATA}  (self)
-on_timeout                {RECEIVING}                RESETTING
-send_error_status         {RESETTING}                WAITING_OK
-nak_received              {WAITING_OK}               RECEIVING
-ack_received              {WAITING_OK}               REQUESTING
-send_download             {REQUESTING}               WAITING_DATA
-actiontable_received      {WAITING_DATA}             RECEIVING_CHUNK
-send_ack                  {RECEIVING_CHUNK}          WAITING_DATA
-eof_received              {WAITING_DATA}             PROCESSING_EOF
-on_finish                 {PROCESSING_EOF}           RECEIVING
-ack_final                 {WAITING_OK}               COMPLETED
-```
-
-### 4. Update Signal Handlers
-
-| Handler | Add State Check | Transition To |
-|---------|-----------------|---------------|
-| `connection_made` | IDLE | RECEIVING |
-| `telegram_received` | RECEIVING, WAITING_DATA | context-dependent |
-| `timeout` | RECEIVING | RESETTING |
-
-### 5. Tests
-
-File: `tests/unit/test_services/test_actiontable_download_service.py`
-
-- Test state transitions
-- Test invalid transition rejection
-- Test state after each signal
-
-## Files Changed
-
-| File | Change |
-|------|--------|
-| `actiontable_download_state.py` | New - state enum |
-| `actiontable_download_service.py` | Modify - add state machine |
-| `test_actiontable_download_service.py` | Modify - add state tests |
-
-## Dependencies
-
-- `xp/utils/state_machine.py` (existing)
-
-## Implementation Checklist
-
-### Phase 1: State Enum
-
-- [ ] Create `src/xp/services/conbus/actiontable/actiontable_download_state.py`
-- [ ] Define `ActionTableDownloadState(str, Enum)` with 9 states
-- [ ] Export from `__init__.py`
-
-### Phase 2: Integrate StateMachine
-
-- [ ] Import `StateMachine` from `xp.utils.state_machine`
-- [ ] Import `ActionTableDownloadState`
-- [ ] Add `self.state_machine = StateMachine(ActionTableDownloadState.IDLE)` in `__init__`
-- [ ] Define all transitions using `define_transition()`
-
-### Phase 3: Update Handlers
-
-- [ ] `connection_made`: check state is IDLE, transition to RECEIVING
-- [ ] `telegram_received`: check state, branch logic by current state
-- [ ] `timeout`: check state is RECEIVING, transition to RESETTING
-- [ ] Add `_handle_actiontable_chunk()`: transition WAITING_DATA → RECEIVING_CHUNK → WAITING_DATA
-- [ ] Add `_handle_eof()`: transition WAITING_DATA → PROCESSING_EOF → RECEIVING
-- [ ] Reset state to IDLE in `__enter__`
+- [ ] Replace state checks with `self.<state>.is_active`
+- [ ] Replace transitions with `self.<event>()` calls
+- [ ] Handle `TransitionNotAllowed` exceptions
+- [ ] Ensure existing signal handlers work with state machine
 
 ### Phase 4: Tests
 
-- [ ] Test initial state is IDLE
-- [ ] Test `connection_made` transitions IDLE → RECEIVING
-- [ ] Test `timeout` transitions RECEIVING → RESETTING
-- [ ] Test chunk flow: WAITING_DATA → RECEIVING_CHUNK → WAITING_DATA
-- [ ] Test EOF flow: WAITING_DATA → PROCESSING_EOF
-- [ ] Test invalid transitions are rejected
+- [ ] Test initial state is `idle`
+- [ ] Test `connection_made` transitions `idle → receiving`
+- [ ] Test `timeout` transitions `receiving → resetting`
+- [ ] Test chunk flow: `waiting_data → receiving_chunk → waiting_data`
+- [ ] Test EOF flow: `waiting_data → processing_eof`
+- [ ] Test invalid transitions raise `TransitionNotAllowed`
+- [ ] Test full download flow end-to-end
+- [ ] Test lifecycle hooks access service attributes
 
 ### Phase 5: Quality
 
 - [ ] Run `sh publish.sh --quality`
 - [ ] Fix any issues
+
+### Phase 6: Cleanup
+
+- [ ] Remove `xp/utils/state_machine.py` if unused elsewhere
