@@ -103,6 +103,12 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         # Start inactivity timeout
         self._reset_timeout()
 
+    def wait(self, wait_timeout: Optional[float] = None) -> None:
+
+        if wait_timeout:
+            self.timeout_seconds = wait_timeout
+        self._reset_timeout()
+
     def dataReceived(self, data: bytes) -> None:
         """Handle received data from TCP connection.
 

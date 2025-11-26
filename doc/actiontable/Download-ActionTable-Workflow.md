@@ -11,7 +11,7 @@ Downloads actiontable from XP module via Conbus protocol using a signal-driven s
 | IDLE            | Initial state, waiting for connection                 |
 | RECEIVING       | Listening for telegrams, filtering relevant responses |
 | RESETTING       | Timeout occurred, preparing error status              |
-| WAITING_OK      | Sent error status, awaiting ACK/NAK                   |
+| WAITING_OK      | Sent error status, awaiting ERROR/NO_ERROR            |
 | REQUESTING      | Ready to send download request                        |
 | WAITING_DATA    | Awaiting actiontable chunk or EOF                     |
 | RECEIVING_CHUNK | Processing received actiontable data                  |
@@ -26,7 +26,7 @@ Downloads actiontable from XP module via Conbus protocol using a signal-driven s
 IDLE → RECEIVING           on_connection_made
 RECEIVING → RECEIVING      on_telegram_received (filter non-relevant)
 RECEIVING → RESETTING      on_timeout
-RESETTING → WAITING_OK     send_datapoint_error_status
+RESETTING → WAITING_OK     query_datapoint_module_error_code
 WAITING_OK → RECEIVING     nak_received | on_timeout (retry)
 WAITING_OK → REQUESTING    ack_received
 ```
@@ -46,7 +46,7 @@ WAITING_DATA → PROCESSING_EOF   eof_received (F6D)
 ```
 PROCESSING_EOF → RECEIVING      on_finish (emit actiontable)
 RECEIVING → RESETTING           on_timeout
-RESETTING → WAITING_OK          send_datapoint_error_status
+RESETTING → WAITING_OK          query_datapoint_module_error_code
 WAITING_OK → RECEIVING          nak_received | on_timeout
 WAITING_OK → COMPLETED          ack_received
 ```

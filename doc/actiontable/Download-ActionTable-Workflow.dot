@@ -13,9 +13,9 @@ digraph ActionTableDownloadStateMachine {
     RECEIVING_CHUNK [label="RECEIVING\nCHUNK"];
     PROCESSING_EOF [label="PROCESSING\nEOF"];
 
-    RECEIVING2 [label="RECEIVING", fillcolor=lightpink];
-    RESETTING2 [label="RESETTING", fillcolor=lightpink];
-    WAITING_OK2 [label="WAITING_OK", fillcolor=lightpink];
+    RECEIVING2 [label="RECEIVING2", fillcolor=lightpink];
+    RESETTING2 [label="RESETTING2", fillcolor=lightpink];
+    WAITING_OK2 [label="WAITING_OK2", fillcolor=lightpink];
 
     COMPLETED [label="COMPLETED", fillcolor=black];
 
@@ -27,18 +27,17 @@ digraph ActionTableDownloadStateMachine {
     IDLE -> RECEIVING [label="  on_connection_made  "];
     RECEIVING -> RESETTING [label="  on_timeout  "];
     RECEIVING -> RECEIVING [label="  on_telegram_received  "];
-    RESETTING -> WAITING_OK [label="  send_datapoint_error_status  "];
-    WAITING_OK -> RECEIVING [label="  nak_received\non_timeout  "];
-    WAITING_OK -> REQUESTING [label="  ack_received  "];
+    RESETTING -> WAITING_OK [label="  query_datapoint_module_error_code  "];
+    WAITING_OK -> RECEIVING [label="  error_state\non_timeout  "];
+    WAITING_OK -> REQUESTING [label="  no error_state  "];
     REQUESTING -> WAITING_DATA [label="  send_download_actiontable  "];
     WAITING_DATA -> RECEIVING_CHUNK [label="  actiontable_received  "];
     RECEIVING_CHUNK -> WAITING_DATA [label="  send_ack  "];
     WAITING_DATA -> PROCESSING_EOF [label="  eof_received  "];
-    WAITING_DATA -> WAITING_DATA [label="  on_telegram_received  "];
     PROCESSING_EOF -> RECEIVING2 [label="  on_finish  "];
     RECEIVING2 -> RECEIVING2 [label="  on_telegram_received  "];
     RECEIVING2 -> RESETTING2 [label="  on_timeout  "];
-    RESETTING2 -> WAITING_OK2 [label="  send_datapoint_error_status  "];
+    RESETTING2 -> WAITING_OK2 [label="  query_datapoint_module_error_code  "];
     WAITING_OK2 -> RECEIVING2 [label="  nak_received\non_timeout  "];
     WAITING_OK2 -> COMPLETED [label="  ack_received  "];
 

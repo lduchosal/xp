@@ -61,7 +61,7 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         """
         click.echo(progress, nl=False)
 
-    def on_finish(
+    def on_actiontable_received(
         _actiontable: ActionTable,
         actiontable_dict: Dict[str, Any],
         actiontable_short: list[str],
@@ -79,6 +79,10 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
             "actiontable": actiontable_dict,
         }
         click.echo(json.dumps(output, indent=2, default=str))
+
+    def on_finish() -> None:
+        """Handle successful completion of action table download.
+        """
         service.stop_reactor()
 
     def on_error(error: str) -> None:
@@ -93,6 +97,7 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
     with service:
         service.on_progress.connect(on_progress)
         service.on_finish.connect(on_finish)
+        service.on_actiontable_received.connect(on_actiontable_received)
         service.on_error.connect(on_error)
         service.start(serial_number=serial_number)
         service.start_reactor()

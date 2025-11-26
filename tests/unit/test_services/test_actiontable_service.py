@@ -101,21 +101,13 @@ class TestActionTableService:
         assert service.actiontable_data == []
 
     def test_connection_made(self, service):
-        """Test connection_made sends DOWNLOAD_ACTIONTABLE telegram."""
+        """Test _on_connection_made transitions to receiving state."""
         service.serial_number = "0123450001"
 
-        with patch.object(service.conbus_protocol, "send_telegram") as mock_send:
-            service.connection_made()
+        service._on_connection_made()
 
-            from xp.models.telegram.system_function import SystemFunction
-            from xp.models.telegram.telegram_type import TelegramType
-
-            mock_send.assert_called_once_with(
-                telegram_type=TelegramType.SYSTEM,
-                serial_number="0123450001",
-                system_function=SystemFunction.DOWNLOAD_ACTIONTABLE,
-                data_value="00",
-            )
+        # Should be in receiving state after connection
+        assert service.receiving.is_active
 
     def test_telegram_received_actiontable_data(self, service, sample_actiontable):
         """Test receiving ACTIONTABLE telegram appends data and sends ACK."""
@@ -126,6 +118,12 @@ class TestActionTableService:
         service.serial_number = "0123450001"
         mock_progress = Mock()
         service.on_progress.connect(mock_progress)
+
+        # Get to waiting_data state
+        service.do_connect()
+        service.do_timeout()
+        service.ack_received()
+        assert service.waiting_data.is_active
 
         # Create mock telegram received event
         telegram_event = TelegramReceivedEvent.model_construct(
@@ -146,7 +144,7 @@ class TestActionTableService:
         service.telegram_service.parse_reply_telegram.return_value = mock_reply
 
         with patch.object(service.conbus_protocol, "send_telegram") as mock_send:
-            service.telegram_received(telegram_event)
+            service._on_telegram_received(telegram_event)
 
             # Should append data (without first 2 chars)
             assert service.actiontable_data == ["AAAAACAAAABAAAAC"]
@@ -154,7 +152,7 @@ class TestActionTableService:
             # Should call progress callback
             mock_progress.assert_called_once_with(".")
 
-            # Should send ACK
+            # Should send ACK (on_enter_receiving_chunk)
             mock_send.assert_called_once_with(
                 telegram_type=TelegramType.SYSTEM,
                 serial_number="0123450001",
@@ -183,6 +181,12 @@ class TestActionTableService:
             "CP20 0 1 > 1 ~ON;",
         ]
 
+        # Get to waiting_data state
+        service.do_connect()
+        service.do_timeout()
+        service.ack_received()
+        assert service.waiting_data.is_active
+
         # Create mock telegram received event
         telegram_event = TelegramReceivedEvent.model_construct(
             protocol=service.conbus_protocol,
@@ -200,7 +204,7 @@ class TestActionTableService:
         mock_reply.system_function = SystemFunction.EOF
         service.telegram_service.parse_reply_telegram.return_value = mock_reply
 
-        service.telegram_received(telegram_event)
+        service._on_telegram_received(telegram_event)
 
         # Should deserialize all collected data
         service.serializer.from_encoded_string.assert_called_once_with(
@@ -221,6 +225,11 @@ class TestActionTableService:
 
         service.serial_number = "0123450001"
 
+        # Get to waiting_data state
+        service.do_connect()
+        service.do_timeout()
+        service.ack_received()
+
         telegram_event = TelegramReceivedEvent.model_construct(
             protocol=service.conbus_protocol,
             frame="<R0123450001F17DINVALIDFK>",
@@ -233,7 +242,7 @@ class TestActionTableService:
         )
 
         with patch.object(service.conbus_protocol, "send_telegram") as mock_send:
-            service.telegram_received(telegram_event)
+            service._on_telegram_received(telegram_event)
 
             # Should not process the telegram
             assert service.actiontable_data == []
@@ -245,6 +254,11 @@ class TestActionTableService:
         from xp.models.telegram.telegram_type import TelegramType
 
         service.serial_number = "0123450001"
+
+        # Get to waiting_data state
+        service.do_connect()
+        service.do_timeout()
+        service.ack_received()
 
         telegram_event = TelegramReceivedEvent.model_construct(
             protocol=service.conbus_protocol,
@@ -258,18 +272,18 @@ class TestActionTableService:
         )
 
         with patch.object(service.conbus_protocol, "send_telegram") as mock_send:
-            service.telegram_received(telegram_event)
+            service._on_telegram_received(telegram_event)
 
             # Should not process the telegram
             assert service.actiontable_data == []
             mock_send.assert_not_called()
 
     def test_failed_callback(self, service):
-        """Test failed method calls error_callback."""
+        """Test _on_failed method calls error_callback."""
         mock_error = Mock()
         service.on_error.connect(mock_error)
 
-        service.failed("Connection timeout")
+        service._on_failed("Connection timeout")
 
         mock_error.assert_called_once_with("Connection timeout")
 

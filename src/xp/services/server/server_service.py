@@ -337,7 +337,7 @@ class ServerService:
                 self.logger.warning(f"Failed to parse telegram: {telegram}")
                 return responses
 
-            self.client_buffers.broadcast(parsed_telegram.raw_telegram)
+            # self.client_buffers.broadcast(parsed_telegram.raw_telegram)
 
             # Handle discover requests
             if self.discover_service.is_discover_request(parsed_telegram):

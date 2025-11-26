@@ -19,6 +19,7 @@ dependencies = [
     "bubus>=1.5.6",
     "psygnal>=0.15.0",
     "textual>=1.0.0",
+    "python-statemachine>=2.5.0",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
