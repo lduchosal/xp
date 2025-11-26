@@ -122,7 +122,7 @@ class TestActionTableService:
         # Get to waiting_data state
         service.do_connect()
         service.do_timeout()
-        service.ack_received()
+        service.no_error_status_received()
         assert service.waiting_data.is_active
 
         # Create mock telegram received event
@@ -171,8 +171,8 @@ class TestActionTableService:
         service.serial_number = "0123450001"
         service.actiontable_data = ["AAAAACAAAABAAAAC"]
 
-        mock_finish = Mock()
-        service.on_finish.connect(mock_finish)
+        mock_actiontable_received = Mock()
+        service.on_actiontable_received.connect(mock_actiontable_received)
 
         # Mock serializer to return sample actiontable
         service.serializer.from_encoded_string.return_value = sample_actiontable
@@ -184,7 +184,7 @@ class TestActionTableService:
         # Get to waiting_data state
         service.do_connect()
         service.do_timeout()
-        service.ack_received()
+        service.no_error_status_received()
         assert service.waiting_data.is_active
 
         # Create mock telegram received event
@@ -211,10 +211,10 @@ class TestActionTableService:
             "AAAAACAAAABAAAAC"
         )
 
-        # Should call finish callback with actiontable, dict, and short format
+        # Should call on_actiontable_received with actiontable, dict, and short format
         expected_dict = asdict(sample_actiontable)
         expected_short = ["CP20 0 0 > 1 OFF;", "CP20 0 1 > 1 ~ON;"]
-        mock_finish.assert_called_once_with(
+        mock_actiontable_received.assert_called_once_with(
             sample_actiontable, expected_dict, expected_short
         )
 
@@ -228,7 +228,7 @@ class TestActionTableService:
         # Get to waiting_data state
         service.do_connect()
         service.do_timeout()
-        service.ack_received()
+        service.no_error_status_received()
 
         telegram_event = TelegramReceivedEvent.model_construct(
             protocol=service.conbus_protocol,
@@ -258,7 +258,7 @@ class TestActionTableService:
         # Get to waiting_data state
         service.do_connect()
         service.do_timeout()
-        service.ack_received()
+        service.no_error_status_received()
 
         telegram_event = TelegramReceivedEvent.model_construct(
             protocol=service.conbus_protocol,

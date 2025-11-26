@@ -60,11 +60,13 @@ class TestConbusActionTableCommands:
         # Create mock signals
         mock_service.on_progress = Mock()
         mock_service.on_finish = Mock()
+        mock_service.on_actiontable_received = Mock()
         mock_service.on_error = Mock()
 
         # Track connected callbacks
         progress_callbacks = []
         finish_callbacks = []
+        actiontable_received_callbacks = []
         error_callbacks = []
 
         def connect_progress(callback):
@@ -83,6 +85,14 @@ class TestConbusActionTableCommands:
             """
             finish_callbacks.append(callback)
 
+        def connect_actiontable_received(callback):
+            """Mock connect for actiontable_received signal.
+
+            Args:
+                callback: Callback function to connect.
+            """
+            actiontable_received_callbacks.append(callback)
+
         def connect_error(callback):
             """Mock connect for error signal.
 
@@ -93,6 +103,7 @@ class TestConbusActionTableCommands:
 
         mock_service.on_progress.connect = connect_progress
         mock_service.on_finish.connect = connect_finish
+        mock_service.on_actiontable_received.connect = connect_actiontable_received
         mock_service.on_error.connect = connect_error
 
         def mock_start_reactor():
@@ -107,8 +118,12 @@ class TestConbusActionTableCommands:
                     actiontable_short = ActionTableSerializer.format_decoded_output(
                         actiontable
                     )
-                    for callback in finish_callbacks:
+                    # Emit on_actiontable_received with data
+                    for callback in actiontable_received_callbacks:
                         callback(actiontable, actiontable_dict, actiontable_short)
+                    # Emit on_finish without arguments
+                    for callback in finish_callbacks:
+                        callback()
 
         mock_service.start = Mock()
         mock_service.start_reactor.side_effect = mock_start_reactor

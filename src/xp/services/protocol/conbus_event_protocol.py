@@ -104,7 +104,11 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self._reset_timeout()
 
     def wait(self, wait_timeout: Optional[float] = None) -> None:
+        """Wait for incoming telegrams with optional timeout override.
 
+        Args:
+            wait_timeout: Optional timeout in seconds to override default.
+        """
         if wait_timeout:
             self.timeout_seconds = wait_timeout
         self._reset_timeout()

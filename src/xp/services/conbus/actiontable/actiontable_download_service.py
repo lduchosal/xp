@@ -49,6 +49,15 @@ class ActionTableDownloadService(StateMachine):
         send_ack: Transition from receiving_chunk to waiting_data.
         receive_eof: Transition from waiting_data to processing_eof.
         do_finish: Transition from processing_eof to receiving.
+        receiving2: Second receiving state after EOF processing.
+        resetting2: Second resetting state for finalization phase.
+        waiting_ok2: Second waiting_ok state for finalization phase.
+        filter_telegram: Self-transition for filtering telegrams in receiving state.
+        filter_telegram2: Self-transition for filtering telegrams in receiving2 state.
+        do_timeout2: Timeout transition for finalization phase.
+        send_error_status2: Error status query transition for finalization phase.
+        error_status_received2: Error received transition for finalization phase.
+        no_error_status_received2: No error received transition to completed state.
     """
 
     # States (9 states as per spec)
@@ -89,7 +98,6 @@ class ActionTableDownloadService(StateMachine):
     send_error_status2 = resetting2.to(waiting_ok2)
     error_status_received2 = waiting_ok2.to(receiving2)
     no_error_status_received2 = waiting_ok2.to(completed)
-
 
     def __init__(
         self,
@@ -154,7 +162,6 @@ class ActionTableDownloadService(StateMachine):
         )
         self.send_error_status()
 
-
     def on_enter_resetting2(self) -> None:
         """Enter resetting state - query error status."""
         self.logger.debug("Entering RESETTING2 state - querying error status")
@@ -212,14 +219,15 @@ class ActionTableDownloadService(StateMachine):
         actiontable = self.serializer.from_encoded_string(all_data)
         actiontable_dict = asdict(actiontable)
         actiontable_short = self.serializer.format_decoded_output(actiontable)
-        self.on_actiontable_received.emit(actiontable, actiontable_dict, actiontable_short)
+        self.on_actiontable_received.emit(
+            actiontable, actiontable_dict, actiontable_short
+        )
         self.do_finish()
 
     def on_enter_completed(self) -> None:
         """Enter completed state - download finished."""
         self.logger.debug("Entering COMPLETED state - download finished")
         self.on_finish.emit()
-
 
     # Protocol event handlers
 
@@ -228,7 +236,6 @@ class ActionTableDownloadService(StateMachine):
         self.logger.debug("Connection made")
         if self.idle.is_active:
             self.do_connect()
-
 
     def _on_telegram_sent(self, telegram_sent: str) -> None:
         """Handle telegram sent event.
@@ -239,10 +246,17 @@ class ActionTableDownloadService(StateMachine):
         self.logger.debug(f"Telegram sent: {telegram_sent}")
 
     def _on_read_datapoint_received(self, reply_telegram: ReplyTelegram) -> None:
+        """Handle READ_DATAPOINT response for error status check.
+
+        Args:
+            reply_telegram: The parsed reply telegram.
+        """
         self.logger.debug(f"Received READ_DATAPOINT in {self.current_state}")
 
         if reply_telegram.datapoint_type != DataPointType.MODULE_ERROR_CODE:
-            self.logger.debug(f"Filtered: not a MODULE_ERROR_CODE (got {reply_telegram.datapoint_type})")
+            self.logger.debug(
+                f"Filtered: not a MODULE_ERROR_CODE (got {reply_telegram.datapoint_type})"
+            )
             return
 
         if reply_telegram.data_value == "00":
@@ -253,7 +267,6 @@ class ActionTableDownloadService(StateMachine):
             if self.waiting_ok.is_active:
                 self.error_status_received()
 
-
         if reply_telegram.data_value == "00":
             if self.waiting_ok2.is_active:
                 self.no_error_status_received2()
@@ -262,8 +275,12 @@ class ActionTableDownloadService(StateMachine):
             if self.waiting_ok2.is_active:
                 self.error_status_received2()
 
-
     def _on_ack_received(self, _reply_telegram: ReplyTelegram) -> None:
+        """Handle ACK telegram received.
+
+        Args:
+            _reply_telegram: The parsed reply telegram (unused).
+        """
         self.logger.debug(f"Received ACK in {self.current_state}")
         if self.waiting_ok.is_active:
             self.ack_received()
@@ -272,11 +289,21 @@ class ActionTableDownloadService(StateMachine):
             self.ack_received2()
 
     def _on_nack_received(self, _reply_telegram: ReplyTelegram) -> None:
+        """Handle NAK telegram received.
+
+        Args:
+            _reply_telegram: The parsed reply telegram (unused).
+        """
         self.logger.debug(f"Received NAK in {self.current_state}")
         if self.waiting_ok.is_active:
             self.nak_received()
 
     def _on_actiontable_chunk_received(self, reply_telegram: ReplyTelegram) -> None:
+        """Handle actiontable chunk telegram received.
+
+        Args:
+            reply_telegram: The parsed reply telegram containing chunk data.
+        """
         self.logger.debug(f"Received actiontable chunk in {self.current_state}")
         if self.waiting_data.is_active:
             data_part = reply_telegram.data_value[2:]
@@ -285,6 +312,11 @@ class ActionTableDownloadService(StateMachine):
             self.receive_chunk()
 
     def _on_eof_received(self, _reply_telegram: ReplyTelegram) -> None:
+        """Handle EOF telegram received.
+
+        Args:
+            _reply_telegram: The parsed reply telegram (unused).
+        """
         self.logger.debug(f"Received EOF in {self.current_state}")
         if self.waiting_data.is_active:
             self.receive_eof()
@@ -300,26 +332,26 @@ class ActionTableDownloadService(StateMachine):
             self.filter_telegram()
             return
 
-
         # Filter invalid telegrams
-
         if not telegram_received.checksum_valid:
-            self.logger.debug(f"Filtered: invalid checksum")
+            self.logger.debug("Filtered: invalid checksum")
             return
         if telegram_received.telegram_type != TelegramType.REPLY.value:
-            self.logger.debug(f"Filtered: not a reply (got {telegram_received.telegram_type})")
+            self.logger.debug(
+                f"Filtered: not a reply (got {telegram_received.telegram_type})"
+            )
             return
         if telegram_received.serial_number != self.serial_number:
-            self.logger.debug(f"Filtered: wrong serial {telegram_received.serial_number} != {self.serial_number}")
+            self.logger.debug(
+                f"Filtered: wrong serial {telegram_received.serial_number} != {self.serial_number}"
+            )
             return
 
         reply_telegram = self.telegram_service.parse_reply_telegram(
             telegram_received.frame
         )
 
-        if (
-            reply_telegram.system_function == SystemFunction.READ_DATAPOINT
-        ):
+        if reply_telegram.system_function == SystemFunction.READ_DATAPOINT:
             self._on_read_datapoint_received(reply_telegram)
             return
 
@@ -338,7 +370,6 @@ class ActionTableDownloadService(StateMachine):
         if reply_telegram.system_function == SystemFunction.EOF:
             self._on_eof_received(reply_telegram)
             return
-
 
     def _on_timeout(self) -> None:
         """Handle timeout event."""

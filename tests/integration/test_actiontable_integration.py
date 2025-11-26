@@ -103,7 +103,11 @@ class TestActionTableIntegration:
         mock_service.__exit__ = Mock(return_value=None)
 
         # Store the callbacks that are connected
-        callbacks = {"on_finish": None, "on_progress": None}
+        callbacks = {
+            "on_finish": None,
+            "on_progress": None,
+            "on_actiontable_received": None,
+        }
 
         def mock_on_finish_connect(callback):
             """Mock on_finish event connection.
@@ -121,10 +125,21 @@ class TestActionTableIntegration:
             """
             callbacks["on_progress"] = callback
 
+        def mock_on_actiontable_received_connect(callback):
+            """Mock on_actiontable_received event connection.
+
+            Args:
+                callback: Callback function to store.
+            """
+            callbacks["on_actiontable_received"] = callback
+
         mock_service.on_finish.connect.side_effect = mock_on_finish_connect
         mock_service.on_progress.connect.side_effect = mock_on_progress_connect
+        mock_service.on_actiontable_received.connect.side_effect = (
+            mock_on_actiontable_received_connect
+        )
 
-        # Mock the start method to call finish_callback immediately
+        # Mock the start method to call callbacks immediately
         def mock_start(serial_number):
             """Test helper function.
 
@@ -136,11 +151,14 @@ class TestActionTableIntegration:
             actiontable_short = ActionTableSerializer.format_decoded_output(
                 sample_actiontable
             )
-            # Call the on_finish callback that was connected
-            if callbacks["on_finish"]:
-                callbacks["on_finish"](
+            # Call the on_actiontable_received callback with data
+            if callbacks["on_actiontable_received"]:
+                callbacks["on_actiontable_received"](
                     sample_actiontable, actiontable_dict, actiontable_short
                 )
+            # Call the on_finish callback without arguments
+            if callbacks["on_finish"]:
+                callbacks["on_finish"]()
 
         def mock_start_reactor() -> None:
             """Mock reactor start method."""

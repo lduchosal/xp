@@ -81,8 +81,7 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         click.echo(json.dumps(output, indent=2, default=str))
 
     def on_finish() -> None:
-        """Handle successful completion of action table download.
-        """
+        """Handle successful completion of action table download."""
         service.stop_reactor()
 
     def on_error(error: str) -> None:
