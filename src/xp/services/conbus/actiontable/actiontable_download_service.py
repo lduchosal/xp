@@ -29,7 +29,8 @@ class ActionTableDownloadService(StateMachine):
     Attributes:
         on_progress: Signal emitted with telegram frame when progress is made.
         on_error: Signal emitted with error message string when an error occurs.
-        on_finish: Signal emitted with (ActionTable, Dict[str, Any], list[str]) when complete.
+        on_actiontable_received: Signal emitted with (ActionTable, Dict[str, Any], list[str]).
+        on_finish: Signal emitted when cleanup complete.
         idle: Initial state, waiting for connection.
         receiving: Listening for telegrams, filtering relevant responses.
         resetting: Timeout occurred, preparing error status query.
@@ -262,41 +263,16 @@ class ActionTableDownloadService(StateMachine):
         if reply_telegram.data_value == "00":
             if self.waiting_ok.is_active:
                 self.no_error_status_received()
-
-        if reply_telegram.data_value != "00":
+        else:
             if self.waiting_ok.is_active:
                 self.error_status_received()
 
         if reply_telegram.data_value == "00":
             if self.waiting_ok2.is_active:
                 self.no_error_status_received2()
-
-        if reply_telegram.data_value != "00":
+        else:
             if self.waiting_ok2.is_active:
                 self.error_status_received2()
-
-    def _on_ack_received(self, _reply_telegram: ReplyTelegram) -> None:
-        """Handle ACK telegram received.
-
-        Args:
-            _reply_telegram: The parsed reply telegram (unused).
-        """
-        self.logger.debug(f"Received ACK in {self.current_state}")
-        if self.waiting_ok.is_active:
-            self.ack_received()
-
-        if self.waiting_ok2.is_active:
-            self.ack_received2()
-
-    def _on_nack_received(self, _reply_telegram: ReplyTelegram) -> None:
-        """Handle NAK telegram received.
-
-        Args:
-            _reply_telegram: The parsed reply telegram (unused).
-        """
-        self.logger.debug(f"Received NAK in {self.current_state}")
-        if self.waiting_ok.is_active:
-            self.nak_received()
 
     def _on_actiontable_chunk_received(self, reply_telegram: ReplyTelegram) -> None:
         """Handle actiontable chunk telegram received.
@@ -332,15 +308,21 @@ class ActionTableDownloadService(StateMachine):
             self.filter_telegram()
             return
 
+        if self.receiving2.is_active:
+            self.filter_telegram()
+            return
+
         # Filter invalid telegrams
         if not telegram_received.checksum_valid:
             self.logger.debug("Filtered: invalid checksum")
             return
+
         if telegram_received.telegram_type != TelegramType.REPLY.value:
             self.logger.debug(
                 f"Filtered: not a reply (got {telegram_received.telegram_type})"
             )
             return
+
         if telegram_received.serial_number != self.serial_number:
             self.logger.debug(
                 f"Filtered: wrong serial {telegram_received.serial_number} != {self.serial_number}"
@@ -437,7 +419,6 @@ class ActionTableDownloadService(StateMachine):
         """
         # Reset state for singleton reuse
         self.actiontable_data = []
-        self._download_complete = False
         # Reset state machine to idle
         self._reset_state()
         return self
@@ -447,7 +428,6 @@ class ActionTableDownloadService(StateMachine):
         # python-statemachine uses model.state to track current state
         # Set it directly to the initial state id
         self.model.state = self.idle.id
-        self._download_complete = False
 
     def __exit__(
         self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
@@ -462,6 +442,7 @@ class ActionTableDownloadService(StateMachine):
         # Disconnect service signals
         self.on_progress.disconnect()
         self.on_error.disconnect()
+        self.on_actiontable_received.disconnect()
         self.on_finish.disconnect()
         # Stop reactor
         self.stop_reactor()
