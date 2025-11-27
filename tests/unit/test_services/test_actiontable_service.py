@@ -289,7 +289,7 @@ class TestActionTableService:
 
     def test_start_method(self, service):
         """Test start method sets up serial number and timeout."""
-        service.start(
+        service.configure(
             serial_number="0123450001",
             timeout_seconds=10.0,
         )

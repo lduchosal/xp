@@ -20,6 +20,8 @@ from xp.services.telegram.telegram_service import TelegramService
 
 # Constants
 NO_ERROR_CODE = "00"
+CHUNK_HEADER_LENGTH = 2  # data_value format: 2-char counter + actiontable chunk
+MAX_ERROR_RETRIES = 3  # Max retries for error_status_received before giving up
 
 
 class Phase(Enum):
@@ -98,7 +100,9 @@ class ActionTableDownloadService(StateMachine):
     filter_telegram = receiving.to(receiving)  # Self-transition: drain to /dev/null
     do_timeout = receiving.to(resetting) | waiting_ok.to(receiving)
     send_error_status = resetting.to(waiting_ok)
-    error_status_received = waiting_ok.to(receiving)  # Retry on error
+    error_status_received = (
+        waiting_ok.to(receiving, cond="can_retry")  # Retry if under limit
+    )
 
     # Conditional transitions based on phase
     no_error_status_received = (
@@ -135,6 +139,8 @@ class ActionTableDownloadService(StateMachine):
         self.actiontable_data: list[str] = []
         self.logger = logging.getLogger(__name__)
         self._phase: Phase = Phase.INIT
+        self._error_retry_count: int = 0
+        self._signals_connected: bool = False
 
         # Signals (instance attributes to avoid conflict with statemachine)
         self.on_progress: SignalInstance = SignalInstance((str,))
@@ -159,6 +165,10 @@ class ActionTableDownloadService(StateMachine):
     def is_cleanup_phase(self) -> bool:
         """Guard: check if currently in CLEANUP phase."""
         return self._phase == Phase.CLEANUP
+
+    def can_retry(self) -> bool:
+        """Guard: check if retry is allowed (under max limit)."""
+        return self._error_retry_count < MAX_ERROR_RETRIES
 
     # State machine lifecycle hooks
     # Note: receiving state is used to drain pending telegrams from the connection
@@ -268,9 +278,23 @@ class ActionTableDownloadService(StateMachine):
 
         is_no_error = reply_telegram.data_value == NO_ERROR_CODE
         if is_no_error:
+            self._error_retry_count = 0  # Reset on success
             self.no_error_status_received()  # Guards determine target state
         else:
+            self._error_retry_count += 1
+            self.logger.debug(
+                f"Error status received, retry {self._error_retry_count}/{MAX_ERROR_RETRIES}"
+            )
+            # Guard can_retry blocks transition if max retries exceeded
             self.error_status_received()
+            # Check if guard blocked the transition (still in waiting_ok)
+            if self.waiting_ok.is_active:
+                self.logger.error(
+                    f"Max error retries ({MAX_ERROR_RETRIES}) exceeded, giving up"
+                )
+                self.on_error.emit(
+                    f"Module error persists after {MAX_ERROR_RETRIES} retries"
+                )
 
     def _on_actiontable_chunk_received(self, reply_telegram: ReplyTelegram) -> None:
         """Handle actiontable chunk telegram received.
@@ -280,7 +304,7 @@ class ActionTableDownloadService(StateMachine):
         """
         self.logger.debug(f"Received actiontable chunk in {self.current_state}")
         if self.waiting_data.is_active:
-            data_part = reply_telegram.data_value[2:]
+            data_part = reply_telegram.data_value[CHUNK_HEADER_LENGTH:]
             self.actiontable_data.append(data_part)
             self.on_progress.emit(".")
             self.receive_chunk()
@@ -334,14 +358,6 @@ class ActionTableDownloadService(StateMachine):
             self._on_read_datapoint_received(reply_telegram)
             return
 
-        if reply_telegram.system_function == SystemFunction.ACK:
-            self._on_ack_received(reply_telegram)
-            return
-
-        if reply_telegram.system_function == SystemFunction.NAK:
-            self._on_nack_received(reply_telegram)
-            return
-
         if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
             self._on_actiontable_chunk_received(reply_telegram)
             return
@@ -357,6 +373,9 @@ class ActionTableDownloadService(StateMachine):
             self.do_timeout()  # receiving -> resetting
         elif self.waiting_ok.is_active:
             self.do_timeout()  # waiting_ok -> receiving (retry)
+        elif self.waiting_data.is_active:
+            self.logger.error("Timeout waiting for actiontable data")
+            self.on_error.emit("Timeout waiting for actiontable data")
         else:
             self.logger.debug("Timeout in non-recoverable state")
             self.on_error.emit("Timeout")
@@ -385,7 +404,12 @@ class ActionTableDownloadService(StateMachine):
         Args:
             serial_number: Module serial number to download from.
             timeout_seconds: Timeout in seconds for each operation (default 2.0).
+
+        Raises:
+            RuntimeError: If called while download is in progress.
         """
+        if not self.idle.is_active:
+            raise RuntimeError("Cannot configure while download in progress")
         self.logger.info("Configuring actiontable download")
         self.serial_number = serial_number
         if timeout_seconds:
@@ -408,20 +432,26 @@ class ActionTableDownloadService(StateMachine):
         self.conbus_protocol.stop_reactor()
 
     def _connect_signals(self) -> None:
-        """Connect protocol signals to handlers."""
+        """Connect protocol signals to handlers (idempotent)."""
+        if self._signals_connected:
+            return
         self.conbus_protocol.on_connection_made.connect(self._on_connection_made)
         self.conbus_protocol.on_telegram_sent.connect(self._on_telegram_sent)
         self.conbus_protocol.on_telegram_received.connect(self._on_telegram_received)
         self.conbus_protocol.on_timeout.connect(self._on_timeout)
         self.conbus_protocol.on_failed.connect(self._on_failed)
+        self._signals_connected = True
 
     def _disconnect_signals(self) -> None:
-        """Disconnect protocol signals from handlers."""
+        """Disconnect protocol signals from handlers (idempotent)."""
+        if not self._signals_connected:
+            return
         self.conbus_protocol.on_connection_made.disconnect(self._on_connection_made)
         self.conbus_protocol.on_telegram_sent.disconnect(self._on_telegram_sent)
         self.conbus_protocol.on_telegram_received.disconnect(self._on_telegram_received)
         self.conbus_protocol.on_timeout.disconnect(self._on_timeout)
         self.conbus_protocol.on_failed.disconnect(self._on_failed)
+        self._signals_connected = False
 
     def __enter__(self) -> "ActionTableDownloadService":
         """Enter context manager - reset state and reconnect signals.
@@ -432,6 +462,7 @@ class ActionTableDownloadService(StateMachine):
         # Reset state for singleton reuse
         self.actiontable_data = []
         self._phase = Phase.INIT
+        self._error_retry_count = 0
         # Reset state machine to idle
         self._reset_state()
         # Reconnect signals (in case previously disconnected)
