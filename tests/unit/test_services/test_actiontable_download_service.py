@@ -7,6 +7,7 @@ import pytest
 from xp.models.actiontable.actiontable import ActionTable
 from xp.services.conbus.actiontable.actiontable_download_service import (
     ActionTableDownloadService,
+    Phase,
 )
 
 
@@ -118,7 +119,9 @@ class TestActionTableDownloadServiceStateMachine:
         service.do_connect()
         service.do_timeout()  # -> resetting -> waiting_ok
         assert service.waiting_ok.is_active
+        assert service._phase == Phase.INIT
         service.no_error_status_received()
+        # Guard is_init_phase=True -> requesting
         # on_enter_requesting calls send_download -> waiting_data
         assert service.waiting_data.is_active
 
@@ -134,8 +137,8 @@ class TestActionTableDownloadServiceStateMachine:
         # on_enter_receiving_chunk calls send_ack -> waiting_data
         assert service.waiting_data.is_active
 
-    def test_receive_eof_transitions_to_processing_eof(self, service):
-        """Test receive_eof event transitions to processing_eof."""
+    def test_receive_eof_transitions_to_processing_eof_then_receiving(self, service):
+        """Test receive_eof event transitions to processing_eof then receiving (CLEANUP)."""
         # Get to waiting_data state
         service.do_connect()
         service.do_timeout()
@@ -143,27 +146,30 @@ class TestActionTableDownloadServiceStateMachine:
         assert service.waiting_data.is_active
 
         service.receive_eof()
-        # on_enter_processing_eof calls do_finish -> receiving2
-        assert service.receiving2.is_active
+        # on_enter_processing_eof sets phase=CLEANUP, calls do_finish -> receiving
+        assert service.receiving.is_active
+        assert service._phase == Phase.CLEANUP
 
-    def test_no_error_status_received2_transitions_to_completed(self, service):
-        """Test no_error_status_received2 in phase 3 goes to completed."""
-        # Get to waiting_ok2 after download
+    def test_no_error_status_received_in_cleanup_phase_goes_to_completed(self, service):
+        """Test no_error_status_received in CLEANUP phase goes to completed via guard."""
+        # Get to waiting_ok in CLEANUP phase
         service.do_connect()
         service.do_timeout()
         service.no_error_status_received()  # -> requesting -> waiting_data
-        service.receive_eof()  # -> processing_eof -> receiving2
-        service.do_timeout2()  # -> resetting2 -> waiting_ok2
-        assert service.waiting_ok2.is_active
+        service.receive_eof()  # -> processing_eof -> receiving (phase=CLEANUP)
+        assert service._phase == Phase.CLEANUP
+        service.do_timeout()  # -> resetting -> waiting_ok
+        assert service.waiting_ok.is_active
 
-        # no_error_status_received2 goes to completed
-        service.no_error_status_received2()
+        # no_error_status_received with is_cleanup_phase guard -> completed
+        service.no_error_status_received()
         assert service.completed.is_active
 
     def test_full_download_flow(self, service):
         """Test complete download flow through all states."""
         # Start in idle
         assert service.idle.is_active
+        assert service._phase == Phase.INIT
 
         # Phase 1: Connection & Reset Handshake
         service.do_connect()  # idle -> receiving
@@ -174,6 +180,7 @@ class TestActionTableDownloadServiceStateMachine:
 
         service.no_error_status_received()  # waiting_ok -> requesting -> waiting_data
         assert service.waiting_data.is_active
+        assert service._phase == Phase.DOWNLOAD
 
         # Phase 2: Download chunks
         service.receive_chunk()  # waiting_data -> receiving_chunk -> waiting_data
@@ -182,14 +189,15 @@ class TestActionTableDownloadServiceStateMachine:
         service.receive_chunk()  # Another chunk
         assert service.waiting_data.is_active
 
-        # Phase 3: EOF and Finalization
-        service.receive_eof()  # waiting_data -> processing_eof -> receiving2
-        assert service.receiving2.is_active
+        # Phase 3: EOF and Finalization (reuses receiving/resetting/waiting_ok)
+        service.receive_eof()  # waiting_data -> processing_eof -> receiving
+        assert service.receiving.is_active
+        assert service._phase == Phase.CLEANUP
 
-        service.do_timeout2()  # receiving2 -> resetting2 -> waiting_ok2
-        assert service.waiting_ok2.is_active
+        service.do_timeout()  # receiving -> resetting -> waiting_ok
+        assert service.waiting_ok.is_active
 
-        service.no_error_status_received2()  # waiting_ok2 -> completed
+        service.no_error_status_received()  # waiting_ok -> completed (guard: is_cleanup_phase)
         assert service.completed.is_active
 
     def test_cannot_transition_from_completed(self, service):
@@ -197,14 +205,24 @@ class TestActionTableDownloadServiceStateMachine:
         service.do_connect()
         service.do_timeout()
         service.no_error_status_received()  # -> requesting -> waiting_data
-        service.receive_eof()  # -> processing_eof -> receiving2
-        service.do_timeout2()  # -> resetting2 -> waiting_ok2
-        service.no_error_status_received2()  # -> completed
+        service.receive_eof()  # -> processing_eof -> receiving (CLEANUP)
+        service.do_timeout()  # -> resetting -> waiting_ok
+        service.no_error_status_received()  # -> completed
         assert service.completed.is_active
 
         # In final state, events are silently ignored with allow_event_without_transition=True
         service.do_connect()
         assert service.completed.is_active  # Still in completed
+
+    def test_guard_is_init_phase(self, service):
+        """Test is_init_phase guard returns correct value."""
+        assert service._phase == Phase.INIT
+        assert service.is_init_phase() is True
+        assert service.is_cleanup_phase() is False
+
+        service._phase = Phase.CLEANUP
+        assert service.is_init_phase() is False
+        assert service.is_cleanup_phase() is True
 
 
 class TestActionTableDownloadServiceProtocolIntegration:
@@ -368,9 +386,9 @@ class TestActionTableDownloadServiceContextManager:
         service.do_connect()
         service.do_timeout()
         service.no_error_status_received()  # -> requesting -> waiting_data
-        service.receive_eof()  # -> processing_eof -> receiving2
-        service.do_timeout2()  # -> resetting2 -> waiting_ok2
-        service.no_error_status_received2()  # -> completed
+        service.receive_eof()  # -> processing_eof -> receiving (CLEANUP)
+        service.do_timeout()  # -> resetting -> waiting_ok
+        service.no_error_status_received()  # -> completed
         assert service.completed.is_active
 
         # Enter context manager should reset
@@ -384,12 +402,12 @@ class TestActionTableDownloadServiceContextManager:
         with service:
             assert service.actiontable_data == []
 
-    def test_enter_clears_download_complete_flag(self, service):
-        """Test __enter__ clears _download_complete flag."""
-        service._download_complete = True
+    def test_enter_resets_phase_to_init(self, service):
+        """Test __enter__ resets _phase to INIT."""
+        service._phase = Phase.CLEANUP
 
         with service:
-            assert service._download_complete is False
+            assert service._phase == Phase.INIT
 
     def test_exit_disconnects_signals(self, service, mock_conbus_protocol):
         """Test __exit__ disconnects protocol signals."""

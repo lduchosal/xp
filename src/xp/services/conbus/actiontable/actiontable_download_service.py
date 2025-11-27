@@ -2,7 +2,8 @@
 
 import logging
 from dataclasses import asdict
-from typing import Any, Dict, Optional
+from enum import Enum
+from typing import Any, Optional
 
 from psygnal import SignalInstance
 from statemachine import State, StateMachine
@@ -17,88 +18,102 @@ from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
+# Constants
+NO_ERROR_CODE = "00"
 
-class ActionTableDownloadService(StateMachine):
-    """TCP client service for downloading action tables from Conbus modules.
 
-    Inherits from StateMachine - the service IS the state machine.
+class Phase(Enum):
+    """Download workflow phases.
 
-    Manages TCP socket connections, handles telegram generation and transmission,
-    and processes server responses for action table downloads.
-
-    Attributes:
-        on_progress: Signal emitted with telegram frame when progress is made.
-        on_error: Signal emitted with error message string when an error occurs.
-        on_actiontable_received: Signal emitted with (ActionTable, Dict[str, Any], list[str]).
-        on_finish: Signal emitted when cleanup complete.
-        idle: Initial state, waiting for connection.
-        receiving: Listening for telegrams, filtering relevant responses.
-        resetting: Timeout occurred, preparing error status query.
-        waiting_ok: Sent error status query, awaiting ACK/NAK.
-        requesting: Ready to send download request.
-        waiting_data: Awaiting actiontable chunk or EOF.
-        receiving_chunk: Processing received actiontable data.
-        processing_eof: Received EOF, deserializing actiontable.
-        completed: Download finished successfully.
-        do_connect: Transition from idle to receiving.
-        do_timeout: Transition from receiving to resetting.
-        send_error_status: Transition from resetting to waiting_ok.
-        error_status_received: Transition from waiting_ok to receiving (retry).
-        no_error_status_received: Transition from waiting_ok to requesting or completed.
-        send_download: Transition from requesting to waiting_data.
-        receive_chunk: Transition from waiting_data to receiving_chunk.
-        send_ack: Transition from receiving_chunk to waiting_data.
-        receive_eof: Transition from waiting_data to processing_eof.
-        do_finish: Transition from processing_eof to receiving.
-        receiving2: Second receiving state after EOF processing.
-        resetting2: Second resetting state for finalization phase.
-        waiting_ok2: Second waiting_ok state for finalization phase.
-        filter_telegram: Self-transition for filtering telegrams in receiving state.
-        filter_telegram2: Self-transition for filtering telegrams in receiving2 state.
-        do_timeout2: Timeout transition for finalization phase.
-        send_error_status2: Error status query transition for finalization phase.
-        error_status_received2: Error received transition for finalization phase.
-        no_error_status_received2: No error received transition to completed state.
+    The download workflow consists of three sequential phases:
+    - INIT: Drain pending telegrams, query error status → proceed to DOWNLOAD
+    - DOWNLOAD: Request actiontable, receive chunks with ACK, until EOF
+    - CLEANUP: Drain pending telegrams, query error status → proceed to COMPLETED
     """
 
-    # States (9 states as per spec)
+    INIT = "init"
+    DOWNLOAD = "download"
+    CLEANUP = "cleanup"
+
+
+class ActionTableDownloadService(StateMachine):
+    """Service for downloading action tables from Conbus modules via TCP.
+
+    Inherits from StateMachine - the service IS the state machine. Uses guard
+    conditions to share states between INIT and CLEANUP phases.
+    see: Download-ActionTable-Workflow.dot
+
+    States (9 total):
+        idle -> receiving -> resetting -> waiting_ok -> requesting
+             -> waiting_data <-> receiving_chunk -> processing_eof -> completed
+
+    Phases - INIT and CLEANUP share the same states (receiving, resetting, waiting_ok):
+
+    INIT phase (drain → reset → wait_ok):
+        idle -> receiving -> resetting -> waiting_ok --(guard: is_init_phase)--> requesting
+
+    DOWNLOAD phase (request → receive chunks → EOF):
+        requesting -> waiting_data <-> receiving_chunk -> processing_eof
+
+    CLEANUP phase (drain → reset → wait_ok):
+        processing_eof -> receiving -> resetting -> waiting_ok --(guard: is_cleanup_phase)--> completed
+
+    The drain/reset/wait_ok cycle:
+    1. Drain pending telegrams (receiving state discards telegram without reading them).
+       There may be a lot of telegram. We are listening and receiving until no more
+       telegram arrive and timeout occurs.
+    2. Timeout triggers error status query (resetting)
+    3. Wait for response (waiting_ok)
+    4. On no error: guard determines target (requesting or completed)
+       On error: retry from drain step
+
+    Attributes:
+        on_progress: Signal emitted with "." for each chunk received.
+        on_error: Signal emitted with error message string.
+        on_actiontable_received: Signal emitted with (ActionTable, dict, list).
+        on_finish: Signal emitted when download and cleanup completed.
+
+    Example:
+        >>> with download_service as service:
+        ...     service.configure(serial_number="12345678")
+        ...     service.on_actiontable_received.connect(handle_result)
+        ...     service.start_reactor()
+    """
+
+    # States - unified for INIT and CLEANUP phases using guards
     idle = State(initial=True)
-    receiving = State()
-    resetting = State()
-    waiting_ok = State()
+    receiving = State()  # Drain telegrams (INIT or CLEANUP phase)
+    resetting = State()  # Query error status
+    waiting_ok = State()  # Await error status response
 
-    requesting = State()
-    waiting_data = State()
-    receiving_chunk = State()
-    processing_eof = State()
-
-    receiving2 = State()
-    resetting2 = State()
-    waiting_ok2 = State()
+    requesting = State()  # DOWNLOAD phase: send download request
+    waiting_data = State()  # DOWNLOAD phase: await chunks
+    receiving_chunk = State()  # DOWNLOAD phase: process chunk
+    processing_eof = State()  # DOWNLOAD phase: deserialize result
 
     completed = State(final=True)
 
-    # Phase 1: Connection & Initialization
+    # Phase transitions - shared states with guards for phase-dependent routing
     do_connect = idle.to(receiving)
-    filter_telegram = receiving.to(receiving)  # Self-transition for filtering
+    filter_telegram = receiving.to(receiving)  # Self-transition: drain to /dev/null
     do_timeout = receiving.to(resetting) | waiting_ok.to(receiving)
     send_error_status = resetting.to(waiting_ok)
-    error_status_received = waiting_ok.to(receiving)
-    no_error_status_received = waiting_ok.to(requesting)
+    error_status_received = waiting_ok.to(receiving)  # Retry on error
 
-    # Phase 2: Download
+    # Conditional transitions based on phase
+    no_error_status_received = (
+        waiting_ok.to(requesting, cond="is_init_phase")
+        | waiting_ok.to(completed, cond="is_cleanup_phase")
+    )
+
+    # DOWNLOAD phase transitions
     send_download = requesting.to(waiting_data)
     receive_chunk = waiting_data.to(receiving_chunk)
     send_ack = receiving_chunk.to(waiting_data)
     receive_eof = waiting_data.to(processing_eof)
 
-    # Phase 3: Finalization
-    do_finish = processing_eof.to(receiving2)
-    filter_telegram2 = receiving2.to(receiving2)  # Self-transition for filtering
-    do_timeout2 = receiving2.to(resetting2) | waiting_ok2.to(receiving2)
-    send_error_status2 = resetting2.to(waiting_ok2)
-    error_status_received2 = waiting_ok2.to(receiving2)
-    no_error_status_received2 = waiting_ok2.to(completed)
+    # Return to drain/reset cycle for CLEANUP phase
+    do_finish = processing_eof.to(receiving)
 
     def __init__(
         self,
@@ -119,42 +134,45 @@ class ActionTableDownloadService(StateMachine):
         self.serial_number: str = ""
         self.actiontable_data: list[str] = []
         self.logger = logging.getLogger(__name__)
+        self._phase: Phase = Phase.INIT
 
         # Signals (instance attributes to avoid conflict with statemachine)
         self.on_progress: SignalInstance = SignalInstance((str,))
         self.on_error: SignalInstance = SignalInstance((str,))
         self.on_finish: SignalInstance = SignalInstance()
         self.on_actiontable_received: SignalInstance = SignalInstance(
-            (ActionTable, Dict[str, Any], list[str])
+            (ActionTable, dict[str, Any], list[str])
         )
 
-        # Connect protocol signals
-        self.conbus_protocol.on_connection_made.connect(self._on_connection_made)
-        self.conbus_protocol.on_telegram_sent.connect(self._on_telegram_sent)
-        self.conbus_protocol.on_telegram_received.connect(self._on_telegram_received)
-        self.conbus_protocol.on_timeout.connect(self._on_timeout)
-        self.conbus_protocol.on_failed.connect(self._on_failed)
-
-        # Initialize state machine
+        # Initialize state machine first (before connecting signals)
         super().__init__(allow_event_without_transition=True)
 
+        # Connect protocol signals
+        self._connect_signals()
+
+    # Guard conditions for phase-dependent transitions
+
+    def is_init_phase(self) -> bool:
+        """Guard: check if currently in INIT phase."""
+        return self._phase == Phase.INIT
+
+    def is_cleanup_phase(self) -> bool:
+        """Guard: check if currently in CLEANUP phase."""
+        return self._phase == Phase.CLEANUP
+
     # State machine lifecycle hooks
+    # Note: receiving state is used to drain pending telegrams from the connection
+    # pipe. Any telegram received in this state is intentionally discarded (sent
+    # to /dev/null) to ensure a clean state before processing.
 
     def on_enter_receiving(self) -> None:
-        """Enter receiving state - listening for telegrams."""
-        self.logger.debug("Entering RECEIVING state - waiting for telegrams")
-        self.conbus_protocol.wait()
-
-    def on_enter_receiving2(self) -> None:
-        """Enter receiving state - listening for telegrams."""
-        self.logger.debug("Entering RECEIVING2 state - waiting for telegrams")
+        """Enter receiving state - drain pending telegrams."""
+        self.logger.debug(f"Entering RECEIVING state (phase={self._phase.value})")
         self.conbus_protocol.wait()
 
     def on_enter_resetting(self) -> None:
         """Enter resetting state - query error status."""
-        self.logger.debug("Entering RESETTING state - querying error status")
-
-        # query_datapoint_module_error_code
+        self.logger.debug(f"Entering RESETTING state (phase={self._phase.value})")
         self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
@@ -163,37 +181,20 @@ class ActionTableDownloadService(StateMachine):
         )
         self.send_error_status()
 
-    def on_enter_resetting2(self) -> None:
-        """Enter resetting state - query error status."""
-        self.logger.debug("Entering RESETTING2 state - querying error status")
-
-        # query_datapoint_module_error_code
-        self.conbus_protocol.send_telegram(
-            telegram_type=TelegramType.SYSTEM,
-            serial_number=self.serial_number,
-            system_function=SystemFunction.READ_DATAPOINT,
-            data_value=DataPointType.MODULE_ERROR_CODE.value,
-        )
-        self.send_error_status2()
-
     def on_enter_waiting_ok(self) -> None:
-        """Enter waiting_ok state - awaiting ERROR/NO_ERROR."""
-        self.logger.debug("Entering WAITING_OK state - awaiting ERROR/NO_ERROR")
-        self.conbus_protocol.wait()
-
-    def on_enter_waiting_ok2(self) -> None:
-        """Enter waiting_ok state - awaiting ERROR/NO_ERROR."""
-        self.logger.debug("Entering WAITING_OK state - awaiting ERROR/NO_ERROR")
+        """Enter waiting_ok state - awaiting error status response."""
+        self.logger.debug(f"Entering WAITING_OK state (phase={self._phase.value})")
         self.conbus_protocol.wait()
 
     def on_enter_requesting(self) -> None:
         """Enter requesting state - send download request."""
+        self._phase = Phase.DOWNLOAD
         self.logger.debug("Entering REQUESTING state - sending download request")
         self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
             system_function=SystemFunction.DOWNLOAD_ACTIONTABLE,
-            data_value="00",
+            data_value=NO_ERROR_CODE,
         )
         self.send_download()
 
@@ -209,12 +210,12 @@ class ActionTableDownloadService(StateMachine):
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
             system_function=SystemFunction.ACK,
-            data_value="00",
+            data_value=NO_ERROR_CODE,
         )
         self.send_ack()
 
     def on_enter_processing_eof(self) -> None:
-        """Enter processing_eof state - deserialize and emit result."""
+        """Enter processing_eof state - deserialize and emit result, then cleanup."""
         self.logger.debug("Entering PROCESSING_EOF state - deserializing")
         all_data = "".join(self.actiontable_data)
         actiontable = self.serializer.from_encoded_string(all_data)
@@ -223,6 +224,8 @@ class ActionTableDownloadService(StateMachine):
         self.on_actiontable_received.emit(
             actiontable, actiontable_dict, actiontable_short
         )
+        # Switch to CLEANUP phase before returning to receiving state
+        self._phase = Phase.CLEANUP
         self.do_finish()
 
     def on_enter_completed(self) -> None:
@@ -260,19 +263,14 @@ class ActionTableDownloadService(StateMachine):
             )
             return
 
-        if reply_telegram.data_value == "00":
-            if self.waiting_ok.is_active:
-                self.no_error_status_received()
-        else:
-            if self.waiting_ok.is_active:
-                self.error_status_received()
+        if not self.waiting_ok.is_active:
+            return
 
-        if reply_telegram.data_value == "00":
-            if self.waiting_ok2.is_active:
-                self.no_error_status_received2()
+        is_no_error = reply_telegram.data_value == NO_ERROR_CODE
+        if is_no_error:
+            self.no_error_status_received()  # Guards determine target state
         else:
-            if self.waiting_ok2.is_active:
-                self.error_status_received2()
+            self.error_status_received()
 
     def _on_actiontable_chunk_received(self, reply_telegram: ReplyTelegram) -> None:
         """Handle actiontable chunk telegram received.
@@ -303,12 +301,11 @@ class ActionTableDownloadService(StateMachine):
         Args:
             telegram_received: The telegram received event.
         """
-        self.logger.debug(f"Received{telegram_received} in {self.current_state}")
-        if self.receiving.is_active:
-            self.filter_telegram()
-            return
+        self.logger.debug(f"Received {telegram_received} in {self.current_state}")
 
-        if self.receiving2.is_active:
+        # In receiving state, drain pending telegrams from pipe (discard to /dev/null).
+        # This ensures clean state before processing by clearing any stale messages.
+        if self.receiving.is_active:
             self.filter_telegram()
             return
 
@@ -355,15 +352,11 @@ class ActionTableDownloadService(StateMachine):
 
     def _on_timeout(self) -> None:
         """Handle timeout event."""
-        self.logger.debug("Timeout occurred")
+        self.logger.debug(f"Timeout occurred (phase={self._phase.value})")
         if self.receiving.is_active:
             self.do_timeout()  # receiving -> resetting
         elif self.waiting_ok.is_active:
-            self.do_timeout()  # waiting_ok -> receiving
-        elif self.receiving2.is_active:
-            self.do_timeout2()  # receiving2 -> resetting2
-        elif self.waiting_ok2.is_active:
-            self.do_timeout2()  # waiting_ok2 -> receiving2
+            self.do_timeout()  # waiting_ok -> receiving (retry)
         else:
             self.logger.debug("Timeout in non-recoverable state")
             self.on_error.emit("Timeout")
@@ -379,18 +372,21 @@ class ActionTableDownloadService(StateMachine):
 
     # Public API
 
-    def start(
+    def configure(
         self,
         serial_number: str,
         timeout_seconds: Optional[float] = 2.0,
     ) -> None:
-        """Run reactor in dedicated thread with its own event loop.
+        """Configure download parameters before starting.
+
+        Sets the target module serial number and timeout. Call this before
+        start_reactor() to configure the download target.
 
         Args:
-            serial_number: Module serial number.
-            timeout_seconds: Optional timeout in seconds.
+            serial_number: Module serial number to download from.
+            timeout_seconds: Timeout in seconds for each operation (default 2.0).
         """
-        self.logger.info("Starting actiontable download")
+        self.logger.info("Configuring actiontable download")
         self.serial_number = serial_number
         if timeout_seconds:
             self.conbus_protocol.timeout_seconds = timeout_seconds
@@ -411,16 +407,35 @@ class ActionTableDownloadService(StateMachine):
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
+    def _connect_signals(self) -> None:
+        """Connect protocol signals to handlers."""
+        self.conbus_protocol.on_connection_made.connect(self._on_connection_made)
+        self.conbus_protocol.on_telegram_sent.connect(self._on_telegram_sent)
+        self.conbus_protocol.on_telegram_received.connect(self._on_telegram_received)
+        self.conbus_protocol.on_timeout.connect(self._on_timeout)
+        self.conbus_protocol.on_failed.connect(self._on_failed)
+
+    def _disconnect_signals(self) -> None:
+        """Disconnect protocol signals from handlers."""
+        self.conbus_protocol.on_connection_made.disconnect(self._on_connection_made)
+        self.conbus_protocol.on_telegram_sent.disconnect(self._on_telegram_sent)
+        self.conbus_protocol.on_telegram_received.disconnect(self._on_telegram_received)
+        self.conbus_protocol.on_timeout.disconnect(self._on_timeout)
+        self.conbus_protocol.on_failed.disconnect(self._on_failed)
+
     def __enter__(self) -> "ActionTableDownloadService":
-        """Enter context manager - reset state for singleton reuse.
+        """Enter context manager - reset state and reconnect signals.
 
         Returns:
             Self for context manager protocol.
         """
         # Reset state for singleton reuse
         self.actiontable_data = []
+        self._phase = Phase.INIT
         # Reset state machine to idle
         self._reset_state()
+        # Reconnect signals (in case previously disconnected)
+        self._connect_signals()
         return self
 
     def _reset_state(self) -> None:
@@ -433,12 +448,7 @@ class ActionTableDownloadService(StateMachine):
         self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
     ) -> None:
         """Exit context manager and disconnect signals."""
-        # Disconnect protocol signals
-        self.conbus_protocol.on_connection_made.disconnect(self._on_connection_made)
-        self.conbus_protocol.on_telegram_sent.disconnect(self._on_telegram_sent)
-        self.conbus_protocol.on_telegram_received.disconnect(self._on_telegram_received)
-        self.conbus_protocol.on_timeout.disconnect(self._on_timeout)
-        self.conbus_protocol.on_failed.disconnect(self._on_failed)
+        self._disconnect_signals()
         # Disconnect service signals
         self.on_progress.disconnect()
         self.on_error.disconnect()
