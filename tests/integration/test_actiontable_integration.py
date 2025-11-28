@@ -165,7 +165,7 @@ class TestActionTableIntegration:
             # Do nothing in test
             pass
 
-        mock_service.start.side_effect = mock_start
+        mock_service.configure.side_effect = mock_start
         mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Setup mock container
@@ -191,7 +191,7 @@ class TestActionTableIntegration:
         assert "actiontable" in result.output
 
         # Verify service.start was called
-        assert mock_service.start.called
+        assert mock_service.configure.called
 
     def test_bcd_encoding_decoding(self):
         """Test BCD encoding/decoding functionality."""

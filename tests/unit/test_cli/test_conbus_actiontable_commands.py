@@ -150,7 +150,7 @@ class TestConbusActionTableCommands:
 
         # Verify success
         assert result.exit_code == 0
-        mock_service.start.assert_called_once()
+        mock_service.configure.assert_called_once()
 
         # Verify output contains expected data
         assert "0000012345" in result.output
