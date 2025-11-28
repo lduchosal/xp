@@ -1,5 +1,6 @@
 """Unit tests for ActionTableDownloadService state machine."""
 
+from typing import List
 from unittest.mock import Mock
 
 import pytest
@@ -426,3 +427,170 @@ class TestActionTableDownloadServiceContextManager:
             pass
 
         mock_conbus_protocol.stop_reactor.assert_called_once()
+
+
+class TestActionTableDownloadServiceErrorHandling:
+    """Test error handling and edge cases."""
+
+    @pytest.fixture
+    def mock_conbus_protocol(self):
+        """Create mock ConbusEventProtocol."""
+        protocol = Mock()
+        protocol.on_connection_made = Mock()
+        protocol.on_connection_made.connect = Mock()
+        protocol.on_connection_made.disconnect = Mock()
+        protocol.on_telegram_sent = Mock()
+        protocol.on_telegram_sent.connect = Mock()
+        protocol.on_telegram_sent.disconnect = Mock()
+        protocol.on_telegram_received = Mock()
+        protocol.on_telegram_received.connect = Mock()
+        protocol.on_telegram_received.disconnect = Mock()
+        protocol.on_timeout = Mock()
+        protocol.on_timeout.connect = Mock()
+        protocol.on_timeout.disconnect = Mock()
+        protocol.on_failed = Mock()
+        protocol.on_failed.connect = Mock()
+        protocol.on_failed.disconnect = Mock()
+        protocol.send_telegram = Mock()
+        protocol.start_reactor = Mock()
+        protocol.stop_reactor = Mock()
+        protocol.timeout_seconds = 5.0
+        protocol.wait = Mock()
+        return protocol
+
+    @pytest.fixture
+    def mock_serializer(self):
+        """Create mock ActionTableSerializer."""
+        serializer = Mock()
+        serializer.from_encoded_string = Mock(return_value=ActionTable(entries=[]))
+        serializer.format_decoded_output = Mock(return_value=[])
+        return serializer
+
+    @pytest.fixture
+    def mock_telegram_service(self):
+        """Create mock TelegramService."""
+        return Mock()
+
+    @pytest.fixture
+    def service(
+        self,
+        mock_conbus_protocol,
+        mock_serializer,
+        mock_telegram_service,
+    ):
+        """Create service instance for testing."""
+        return ActionTableDownloadService(
+            conbus_protocol=mock_conbus_protocol,
+            actiontable_serializer=mock_serializer,
+            telegram_service=mock_telegram_service,
+        )
+
+    def test_failed_handler_emits_error(self, service):
+        """Test _on_failed emits error signal."""
+        error_received: List[str] = []
+        service.on_error.connect(error_received.append)
+
+        service._on_failed("Connection refused")
+
+        assert len(error_received) == 1
+        assert error_received[0] == "Connection refused"
+
+    def test_timeout_in_waiting_data_emits_error(self, service):
+        """Test timeout in waiting_data state emits error."""
+        # Get to waiting_data
+        service.do_connect()
+        service.do_timeout()
+        service.no_error_status_received()
+        assert service.waiting_data.is_active
+
+        error_received: List[str] = []
+        service.on_error.connect(error_received.append)
+
+        service._on_timeout()
+
+        assert len(error_received) == 1
+        assert "Timeout waiting for actiontable data" in error_received[0]
+
+    def test_timeout_in_other_state_emits_error(self, service):
+        """Test timeout in non-recoverable state emits error."""
+        # Stay in idle (non-recoverable for timeout)
+        assert service.idle.is_active
+
+        error_received: List[str] = []
+        service.on_error.connect(error_received.append)
+
+        service._on_timeout()
+
+        assert len(error_received) == 1
+        assert error_received[0] == "Timeout"
+
+    def test_can_retry_guard_limits_retries(self, service):
+        """Test can_retry guard blocks after MAX_ERROR_RETRIES."""
+        from xp.services.conbus.actiontable.actiontable_download_service import (
+            MAX_ERROR_RETRIES,
+        )
+
+        # Test can_retry guard directly
+        assert service.can_retry() is True
+
+        # Set retry count to max
+        service._error_retry_count = MAX_ERROR_RETRIES
+        assert service.can_retry() is False
+
+        # Reset and verify
+        service._error_retry_count = MAX_ERROR_RETRIES - 1
+        assert service.can_retry() is True
+
+    def test_configure_sets_serial_number(self, service):
+        """Test configure sets serial_number."""
+        service.configure(serial_number="12345678")
+        assert service.serial_number == "12345678"
+
+    def test_configure_sets_timeout(self, service, mock_conbus_protocol):
+        """Test configure sets timeout."""
+        service.configure(serial_number="12345678", timeout_seconds=10.0)
+        assert mock_conbus_protocol.timeout_seconds == 10.0
+
+    def test_configure_raises_when_not_idle(self, service):
+        """Test configure raises when not in idle state."""
+        service.do_connect()
+        assert service.receiving.is_active
+
+        with pytest.raises(RuntimeError, match="Cannot configure while download"):
+            service.configure(serial_number="12345678")
+
+    def test_set_timeout(self, service, mock_conbus_protocol):
+        """Test set_timeout updates protocol timeout."""
+        service.set_timeout(15.0)
+        assert mock_conbus_protocol.timeout_seconds == 15.0
+
+    def test_start_reactor_delegates(self, service, mock_conbus_protocol):
+        """Test start_reactor calls protocol."""
+        service.start_reactor()
+        mock_conbus_protocol.start_reactor.assert_called_once()
+
+    def test_stop_reactor_delegates(self, service, mock_conbus_protocol):
+        """Test stop_reactor calls protocol."""
+        service.stop_reactor()
+        mock_conbus_protocol.stop_reactor.assert_called_once()
+
+    def test_connection_made_ignored_when_not_idle(self, service):
+        """Test _on_connection_made is ignored when not in idle state."""
+        service.do_connect()
+        assert service.receiving.is_active
+
+        # Should not error or change state
+        service._on_connection_made()
+        assert service.receiving.is_active
+
+    def test_telegram_sent_handler(self, service):
+        """Test _on_telegram_sent logs without error."""
+        # Should not raise
+        service._on_telegram_sent("some telegram")
+
+    def test_enter_resets_error_retry_count(self, service):
+        """Test __enter__ resets error retry count."""
+        service._error_retry_count = 5
+
+        with service:
+            assert service._error_retry_count == 0

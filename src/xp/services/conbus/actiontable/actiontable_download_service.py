@@ -31,6 +31,11 @@ class Phase(Enum):
     - INIT: Drain pending telegrams, query error status → proceed to DOWNLOAD
     - DOWNLOAD: Request actiontable, receive chunks with ACK, until EOF
     - CLEANUP: Drain pending telegrams, query error status → proceed to COMPLETED
+
+    Attributes:
+        INIT: Initial phase - drain pending telegrams and query error status.
+        DOWNLOAD: Download phase - request actiontable and receive chunks.
+        CLEANUP: Cleanup phase - drain remaining telegrams and verify status.
     """
 
     INIT = "init"
@@ -74,6 +79,26 @@ class ActionTableDownloadService(StateMachine):
         on_error: Signal emitted with error message string.
         on_actiontable_received: Signal emitted with (ActionTable, dict, list).
         on_finish: Signal emitted when download and cleanup completed.
+        idle: Initial state - waiting for connection.
+        receiving: Drain telegrams state (INIT or CLEANUP phase).
+        resetting: Query error status state.
+        waiting_ok: Await error status response state.
+        requesting: DOWNLOAD phase - send download request state.
+        waiting_data: DOWNLOAD phase - await chunks state.
+        receiving_chunk: DOWNLOAD phase - process chunk state.
+        processing_eof: DOWNLOAD phase - deserialize result state.
+        completed: Final state - download finished.
+        do_connect: Transition from idle to receiving.
+        filter_telegram: Self-transition in receiving to drain telegrams.
+        do_timeout: Transition on timeout events.
+        send_error_status: Transition from resetting to waiting_ok.
+        error_status_received: Transition when error status is received.
+        no_error_status_received: Transition when no error status received.
+        send_download: Transition from requesting to waiting_data.
+        receive_chunk: Transition from waiting_data to receiving_chunk.
+        send_ack: Transition from receiving_chunk to waiting_data.
+        receive_eof: Transition from waiting_data to processing_eof.
+        do_finish: Transition from processing_eof to receiving (cleanup).
 
     Example:
         >>> with download_service as service:
@@ -100,15 +125,14 @@ class ActionTableDownloadService(StateMachine):
     filter_telegram = receiving.to(receiving)  # Self-transition: drain to /dev/null
     do_timeout = receiving.to(resetting) | waiting_ok.to(receiving)
     send_error_status = resetting.to(waiting_ok)
-    error_status_received = (
-        waiting_ok.to(receiving, cond="can_retry")  # Retry if under limit
-    )
+    error_status_received = waiting_ok.to(
+        receiving, cond="can_retry"
+    )  # Retry if under limit
 
     # Conditional transitions based on phase
-    no_error_status_received = (
-        waiting_ok.to(requesting, cond="is_init_phase")
-        | waiting_ok.to(completed, cond="is_cleanup_phase")
-    )
+    no_error_status_received = waiting_ok.to(
+        requesting, cond="is_init_phase"
+    ) | waiting_ok.to(completed, cond="is_cleanup_phase")
 
     # DOWNLOAD phase transitions
     send_download = requesting.to(waiting_data)
@@ -159,15 +183,27 @@ class ActionTableDownloadService(StateMachine):
     # Guard conditions for phase-dependent transitions
 
     def is_init_phase(self) -> bool:
-        """Guard: check if currently in INIT phase."""
+        """Guard: check if currently in INIT phase.
+
+        Returns:
+            True if in INIT phase, False otherwise.
+        """
         return self._phase == Phase.INIT
 
     def is_cleanup_phase(self) -> bool:
-        """Guard: check if currently in CLEANUP phase."""
+        """Guard: check if currently in CLEANUP phase.
+
+        Returns:
+            True if in CLEANUP phase, False otherwise.
+        """
         return self._phase == Phase.CLEANUP
 
     def can_retry(self) -> bool:
-        """Guard: check if retry is allowed (under max limit)."""
+        """Guard: check if retry is allowed (under max limit).
+
+        Returns:
+            True if retry count is below MAX_ERROR_RETRIES, False otherwise.
+        """
         return self._error_retry_count < MAX_ERROR_RETRIES
 
     # State machine lifecycle hooks
