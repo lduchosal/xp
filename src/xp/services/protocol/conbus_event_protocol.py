@@ -21,10 +21,13 @@ from xp.models import ConbusClientConfig, ModuleTypeCode
 from xp.models.protocol.conbus_protocol import (
     TelegramReceivedEvent,
 )
+from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.utils import calculate_checksum
 
+# Constants
+NO_ERROR_CODE = "00"
 
 class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
     """Twisted protocol for XP telegram communication.
@@ -242,6 +245,34 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         """
         self.telegram_queue.put_nowait(payload.encode())
         self.call_later(0.0, self.start_queue_manager)
+
+
+    def send_error_status_query(self, serial_number:str) -> None:
+        """Send error status query telegram."""
+        self.send_telegram(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number=serial_number,
+            system_function=SystemFunction.READ_DATAPOINT,
+            data_value=DataPointType.MODULE_ERROR_CODE.value,
+        )
+
+    def send_download_request(self, serial_number:str) -> None:
+        """Send download request telegram."""
+        self.send_telegram(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number=serial_number,
+            system_function=SystemFunction.DOWNLOAD_ACTIONTABLE,
+            data_value=NO_ERROR_CODE,
+        )
+
+    def send_ack(self, serial_number:str) -> None:
+        """Send ACK telegram."""
+        self.send_telegram(
+            telegram_type=TelegramType.SYSTEM,
+            serial_number=serial_number,
+            system_function=SystemFunction.ACK,
+            data_value=NO_ERROR_CODE,
+        )
 
     def call_later(
         self,

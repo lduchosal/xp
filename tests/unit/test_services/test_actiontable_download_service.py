@@ -8,6 +8,9 @@ import pytest
 from xp.models.actiontable.actiontable import ActionTable
 from xp.services.conbus.actiontable.actiontable_download_service import (
     ActionTableDownloadService,
+)
+from xp.services.conbus.actiontable.actiontable_download_state_machine import (
+    MAX_ERROR_RETRIES,
     Phase,
 )
 
@@ -526,10 +529,6 @@ class TestActionTableDownloadServiceErrorHandling:
 
     def test_can_retry_guard_limits_retries(self, service):
         """Test can_retry guard blocks after MAX_ERROR_RETRIES."""
-        from xp.services.conbus.actiontable.actiontable_download_service import (
-            MAX_ERROR_RETRIES,
-        )
-
         # Test can_retry guard directly
         assert service.can_retry() is True
 
