@@ -22,12 +22,16 @@ from xp.models.protocol.conbus_protocol import (
     TelegramReceivedEvent,
 )
 from xp.models.telegram.datapoint_type import DataPointType
+from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
+from xp.services import TelegramService
 from xp.utils import calculate_checksum
 
 # Constants
 NO_ERROR_CODE = "00"
+CHUNK_HEADER_LENGTH = 2  # data_value format: 2-char counter + actiontable chunk
+
 
 class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
     """Twisted protocol for XP telegram communication.
@@ -50,6 +54,10 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         on_telegram_sent: Signal emitted when a telegram is sent.
         on_data_received: Signal emitted when data is received.
         on_telegram_received: Signal emitted when a telegram is received.
+        on_invalid_telegram_received: Signal emitted when invalid telegram received.
+        on_read_datapoint_received: Signal emitted when read datapoint reply received.
+        on_actiontable_chunk_received: Signal emitted when actiontable chunk received.
+        on_eof_received: Signal emitted when EOF telegram received.
         on_timeout: Signal emitted when timeout occurs.
         on_failed: Signal emitted when operation fails.
         on_start_reactor: Signal emitted when reactor starts.
@@ -71,6 +79,11 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
     on_telegram_sent: Signal = Signal(bytes)
     on_data_received: Signal = Signal(bytes)
     on_telegram_received: Signal = Signal(TelegramReceivedEvent)
+    on_invalid_telegram_received: Signal = Signal(TelegramReceivedEvent)
+    on_read_datapoint_received: Signal = Signal(ReplyTelegram)
+    on_actiontable_chunk_received: Signal = Signal(ReplyTelegram, str)
+    on_eof_received: Signal = Signal(ReplyTelegram)
+
     on_timeout: Signal = Signal()
     on_failed: Signal = Signal(str)
     on_start_reactor: Signal = Signal()
@@ -80,12 +93,14 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self,
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
+        telegram_service: TelegramService,
     ) -> None:
         """Initialize ConbusProtocol.
 
         Args:
             cli_config: Configuration for Conbus client connection.
             reactor: Twisted reactor for event handling.
+            telegram_service: Telegram service for parsing telegrams.
         """
         self.buffer = b""
         self.logger = logging.getLogger(__name__)
@@ -93,6 +108,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self._reactor = reactor
         self.timeout_seconds = self.cli_config.timeout
         self.timeout_call: Optional[DelayedCall] = None
+        self.telegram_service = telegram_service
 
     def connectionMade(self) -> None:
         """Handle connection established event.
@@ -174,7 +190,46 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
                 checksum=checksum,
                 checksum_valid=checksum_valid,
             )
-            self.on_telegram_received.emit(telegram_received)
+            self.emit_telegram_received(telegram_received)
+
+    def emit_telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
+        """Handle telegram received event.
+
+        Args:
+            telegram_received: The telegram received event.
+        """
+        self.logger.debug(f"Received {telegram_received}")
+        self.on_telegram_received.emit(telegram_received)
+
+        # Filter invalid telegrams
+        if not telegram_received.checksum_valid:
+            self.logger.debug("Filtered: invalid checksum")
+            self.on_invalid_telegram_received.emit(telegram_received)
+            return
+
+        if telegram_received.telegram_type != TelegramType.REPLY.value:
+            self.logger.debug(
+                f"Filtered: not a reply (got {telegram_received.telegram_type})"
+            )
+            self.on_invalid_telegram_received.emit(telegram_received)
+            return
+
+        reply_telegram = self.telegram_service.parse_reply_telegram(
+            telegram_received.frame
+        )
+
+        if reply_telegram.system_function == SystemFunction.READ_DATAPOINT:
+            self.on_read_datapoint_received.emit(reply_telegram)
+            return
+
+        if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
+            actiontable_chunk = reply_telegram.data_value[CHUNK_HEADER_LENGTH:]
+            self.on_actiontable_chunk_received.emit(reply_telegram, actiontable_chunk)
+            return
+
+        if reply_telegram.system_function == SystemFunction.EOF:
+            self.on_eof_received.emit(reply_telegram)
+            return
 
     def sendFrame(self, data: bytes) -> None:
         """Send telegram frame.
@@ -246,9 +301,12 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.telegram_queue.put_nowait(payload.encode())
         self.call_later(0.0, self.start_queue_manager)
 
+    def send_error_status_query(self, serial_number: str) -> None:
+        """Send error status query telegram.
 
-    def send_error_status_query(self, serial_number:str) -> None:
-        """Send error status query telegram."""
+        Args:
+            serial_number: Device serial number.
+        """
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=serial_number,
@@ -256,8 +314,12 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             data_value=DataPointType.MODULE_ERROR_CODE.value,
         )
 
-    def send_download_request(self, serial_number:str) -> None:
-        """Send download request telegram."""
+    def send_download_request(self, serial_number: str) -> None:
+        """Send download request telegram.
+
+        Args:
+            serial_number: Device serial number.
+        """
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=serial_number,
@@ -265,8 +327,12 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             data_value=NO_ERROR_CODE,
         )
 
-    def send_ack(self, serial_number:str) -> None:
-        """Send ACK telegram."""
+    def send_ack(self, serial_number: str) -> None:
+        """Send ACK telegram.
+
+        Args:
+            serial_number: Device serial number.
+        """
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=serial_number,

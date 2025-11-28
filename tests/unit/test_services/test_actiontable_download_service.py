@@ -53,22 +53,15 @@ class TestActionTableDownloadServiceStateMachine:
         return serializer
 
     @pytest.fixture
-    def mock_telegram_service(self):
-        """Create mock TelegramService."""
-        return Mock()
-
-    @pytest.fixture
     def service(
         self,
         mock_conbus_protocol,
         mock_serializer,
-        mock_telegram_service,
     ):
         """Create service instance for testing."""
         return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
-            telegram_service=mock_telegram_service,
         )
 
     def test_initial_state_is_idle(self, service):
@@ -267,22 +260,15 @@ class TestActionTableDownloadServiceProtocolIntegration:
         return serializer
 
     @pytest.fixture
-    def mock_telegram_service(self):
-        """Create mock TelegramService."""
-        return Mock()
-
-    @pytest.fixture
     def service(
         self,
         mock_conbus_protocol,
         mock_serializer,
-        mock_telegram_service,
     ):
         """Create service instance for testing."""
         return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
-            telegram_service=mock_telegram_service,
         )
 
     def test_connection_made_triggers_connect(self, service):
@@ -313,16 +299,13 @@ class TestActionTableDownloadServiceProtocolIntegration:
     def test_signals_connected_on_init(self, mock_conbus_protocol):
         """Test that protocol signals are connected on initialization."""
         mock_serializer = Mock()
-        mock_telegram_service = Mock()
 
         ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
-            telegram_service=mock_telegram_service,
         )
 
         mock_conbus_protocol.on_connection_made.connect.assert_called_once()
-        mock_conbus_protocol.on_telegram_sent.connect.assert_called_once()
         mock_conbus_protocol.on_telegram_received.connect.assert_called_once()
         mock_conbus_protocol.on_timeout.connect.assert_called_once()
         mock_conbus_protocol.on_failed.connect.assert_called_once()
@@ -366,22 +349,15 @@ class TestActionTableDownloadServiceContextManager:
         return serializer
 
     @pytest.fixture
-    def mock_telegram_service(self):
-        """Create mock TelegramService."""
-        return Mock()
-
-    @pytest.fixture
     def service(
         self,
         mock_conbus_protocol,
         mock_serializer,
-        mock_telegram_service,
     ):
         """Create service instance for testing."""
         return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
-            telegram_service=mock_telegram_service,
         )
 
     def test_enter_resets_state_to_idle(self, service):
@@ -419,7 +395,6 @@ class TestActionTableDownloadServiceContextManager:
             pass
 
         mock_conbus_protocol.on_connection_made.disconnect.assert_called_once()
-        mock_conbus_protocol.on_telegram_sent.disconnect.assert_called_once()
         mock_conbus_protocol.on_telegram_received.disconnect.assert_called_once()
         mock_conbus_protocol.on_timeout.disconnect.assert_called_once()
         mock_conbus_protocol.on_failed.disconnect.assert_called_once()
@@ -470,22 +445,15 @@ class TestActionTableDownloadServiceErrorHandling:
         return serializer
 
     @pytest.fixture
-    def mock_telegram_service(self):
-        """Create mock TelegramService."""
-        return Mock()
-
-    @pytest.fixture
     def service(
         self,
         mock_conbus_protocol,
         mock_serializer,
-        mock_telegram_service,
     ):
         """Create service instance for testing."""
         return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
-            telegram_service=mock_telegram_service,
         )
 
     def test_failed_handler_emits_error(self, service):
@@ -581,11 +549,6 @@ class TestActionTableDownloadServiceErrorHandling:
         # Should not error or change state
         service._on_connection_made()
         assert service.receiving.is_active
-
-    def test_telegram_sent_handler(self, service):
-        """Test _on_telegram_sent logs without error."""
-        # Should not raise
-        service._on_telegram_sent("some telegram")
 
     def test_enter_resets_error_retry_count(self, service):
         """Test __enter__ resets error retry count."""

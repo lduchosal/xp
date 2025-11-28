@@ -59,6 +59,26 @@ class ActionTableDownloadStateMachine(StateMachine):
     Attributes:
         phase: Current workflow phase (INIT, DOWNLOAD, CLEANUP).
         error_retry_count: Current error retry count.
+        idle: Initial state before connection.
+        receiving: Drain pending telegrams state (INIT or CLEANUP phase).
+        resetting: Query error status state.
+        waiting_ok: Await error status response state.
+        requesting: DOWNLOAD phase state - send download request.
+        waiting_data: DOWNLOAD phase state - await chunks.
+        receiving_chunk: DOWNLOAD phase state - process chunk.
+        processing_eof: DOWNLOAD phase state - deserialize result.
+        completed: Final state - download finished.
+        do_connect: Transition from idle to receiving.
+        filter_telegram: Self-transition in receiving state for draining.
+        do_timeout: Timeout transitions from receiving/waiting_ok.
+        send_error_status: Transition from resetting to waiting_ok.
+        error_status_received: Transition from waiting_ok to receiving on error.
+        no_error_status_received: Conditional transition based on phase.
+        send_download: Transition from requesting to waiting_data.
+        receive_chunk: Transition from waiting_data to receiving_chunk.
+        send_ack: Transition from receiving_chunk to waiting_data.
+        receive_eof: Transition from waiting_data to processing_eof.
+        do_finish: Transition from processing_eof to receiving.
     """
 
     # States - unified for INIT and CLEANUP phases using guards
@@ -113,7 +133,11 @@ class ActionTableDownloadStateMachine(StateMachine):
 
     @phase.setter
     def phase(self, value: Phase) -> None:
-        """Set current phase."""
+        """Set current phase.
+
+        Args:
+            value: The phase value to set.
+        """
         self._phase = value
 
     @property
@@ -123,21 +147,37 @@ class ActionTableDownloadStateMachine(StateMachine):
 
     @error_retry_count.setter
     def error_retry_count(self, value: int) -> None:
-        """Set error retry count."""
+        """Set error retry count.
+
+        Args:
+            value: The error retry count value to set.
+        """
         self._error_retry_count = value
 
     # Guard conditions for phase-dependent transitions
 
     def is_init_phase(self) -> bool:
-        """Guard: check if currently in INIT phase."""
+        """Guard: check if currently in INIT phase.
+
+        Returns:
+            True if in INIT phase, False otherwise.
+        """
         return self._phase == Phase.INIT
 
     def is_cleanup_phase(self) -> bool:
-        """Guard: check if currently in CLEANUP phase."""
+        """Guard: check if currently in CLEANUP phase.
+
+        Returns:
+            True if in CLEANUP phase, False otherwise.
+        """
         return self._phase == Phase.CLEANUP
 
     def can_retry(self) -> bool:
-        """Guard: check if retry is allowed (under max limit)."""
+        """Guard: check if retry is allowed (under max limit).
+
+        Returns:
+            True if retry count is under MAX_ERROR_RETRIES, False otherwise.
+        """
         return self._error_retry_count < MAX_ERROR_RETRIES
 
     # State entry hooks - subclasses can override these

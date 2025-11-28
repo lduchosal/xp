@@ -10,18 +10,15 @@ from xp.models.actiontable.actiontable import ActionTable
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.reply_telegram import ReplyTelegram
-from xp.models.telegram.system_function import SystemFunction
-from xp.models.telegram.telegram_type import TelegramType
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 from xp.services.conbus.actiontable.actiontable_download_state_machine import (
     MAX_ERROR_RETRIES,
     ActionTableDownloadStateMachine,
 )
-from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol, NO_ERROR_CODE
-from xp.services.telegram.telegram_service import TelegramService
-
-# Constants
-CHUNK_HEADER_LENGTH = 2  # data_value format: 2-char counter + actiontable chunk
+from xp.services.protocol.conbus_event_protocol import (
+    NO_ERROR_CODE,
+    ConbusEventProtocol,
+)
 
 
 class ActionTableDownloadService(ActionTableDownloadStateMachine):
@@ -58,18 +55,15 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
         self,
         conbus_protocol: ConbusEventProtocol,
         actiontable_serializer: ActionTableSerializer,
-        telegram_service: TelegramService,
     ) -> None:
         """Initialize the action table download service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
             actiontable_serializer: Action table serializer.
-            telegram_service: Telegram service for parsing.
         """
         self.conbus_protocol = conbus_protocol
         self.serializer = actiontable_serializer
-        self.telegram_service = telegram_service
         self.serial_number: str = ""
         self.actiontable_data: list[str] = []
         self._signals_connected: bool = False
@@ -101,9 +95,7 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
     def on_enter_resetting(self) -> None:
         """Enter resetting state - send error status query."""
         self.logger.debug(f"Entering RESETTING state (phase={self.phase.value})")
-        self.conbus_protocol.send_error_status_query(
-            serial_number=self.serial_number
-        )
+        self.conbus_protocol.send_error_status_query(serial_number=self.serial_number)
         self.send_error_status()
 
     def on_enter_waiting_ok(self) -> None:
@@ -114,9 +106,7 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
     def on_enter_requesting(self) -> None:
         """Enter requesting state - send download request."""
         self.enter_download_phase()  # Sets phase to DOWNLOAD
-        self.conbus_protocol.send_download_request(
-            serial_number=self.serial_number
-        )
+        self.conbus_protocol.send_download_request(serial_number=self.serial_number)
         self.send_download()
 
     def on_enter_waiting_data(self) -> None:
@@ -127,9 +117,7 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
     def on_enter_receiving_chunk(self) -> None:
         """Enter receiving_chunk state - send ACK."""
         self.logger.debug("Entering RECEIVING_CHUNK state - sending ACK")
-        self.conbus_protocol.send_ack(
-            serial_number=self.serial_number
-        )
+        self.conbus_protocol.send_ack(serial_number=self.serial_number)
         self.send_ack()
 
     def on_enter_processing_eof(self) -> None:
@@ -170,11 +158,10 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
             reply_telegram: The parsed reply telegram.
         """
         self.logger.debug(f"Received READ_DATAPOINT in {self.current_state}")
+        if reply_telegram.serial_number != self.serial_number:
+            return
 
         if reply_telegram.datapoint_type != DataPointType.MODULE_ERROR_CODE:
-            self.logger.debug(
-                f"Filtered: not a MODULE_ERROR_CODE (got {reply_telegram.datapoint_type})"
-            )
             return
 
         if not self.waiting_ok.is_active:
@@ -186,26 +173,34 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
         else:
             self.handle_error_received()
 
-    def _on_actiontable_chunk_received(self, reply_telegram: ReplyTelegram) -> None:
+    def _on_actiontable_chunk_received(
+        self, reply_telegram: ReplyTelegram, actiontable_chunk: str
+    ) -> None:
         """Handle actiontable chunk telegram received.
 
         Args:
             reply_telegram: The parsed reply telegram containing chunk data.
+            actiontable_chunk: The chunk data.
         """
         self.logger.debug(f"Received actiontable chunk in {self.current_state}")
+        if reply_telegram.serial_number != self.serial_number:
+            return
+
         if self.waiting_data.is_active:
-            data_part = reply_telegram.data_value[CHUNK_HEADER_LENGTH:]
-            self.actiontable_data.append(data_part)
+            self.actiontable_data.append(actiontable_chunk)
             self.on_progress.emit(".")
             self.receive_chunk()
 
-    def _on_eof_received(self, _reply_telegram: ReplyTelegram) -> None:
+    def _on_eof_received(self, reply_telegram: ReplyTelegram) -> None:
         """Handle EOF telegram received.
 
         Args:
-            _reply_telegram: The parsed reply telegram (unused).
+            reply_telegram: The parsed reply telegram (unused).
         """
         self.logger.debug(f"Received EOF in {self.current_state}")
+        if reply_telegram.serial_number != self.serial_number:
+            return
+
         if self.waiting_data.is_active:
             self.receive_eof()
 
@@ -221,39 +216,6 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
         # This ensures clean state before processing by clearing any stale messages.
         if self.receiving.is_active:
             self.filter_telegram()
-            return
-
-        # Filter invalid telegrams
-        if not telegram_received.checksum_valid:
-            self.logger.debug("Filtered: invalid checksum")
-            return
-
-        if telegram_received.telegram_type != TelegramType.REPLY.value:
-            self.logger.debug(
-                f"Filtered: not a reply (got {telegram_received.telegram_type})"
-            )
-            return
-
-        if telegram_received.serial_number != self.serial_number:
-            self.logger.debug(
-                f"Filtered: wrong serial {telegram_received.serial_number} != {self.serial_number}"
-            )
-            return
-
-        reply_telegram = self.telegram_service.parse_reply_telegram(
-            telegram_received.frame
-        )
-
-        if reply_telegram.system_function == SystemFunction.READ_DATAPOINT:
-            self._on_read_datapoint_received(reply_telegram)
-            return
-
-        if reply_telegram.system_function == SystemFunction.ACTIONTABLE:
-            self._on_actiontable_chunk_received(reply_telegram)
-            return
-
-        if reply_telegram.system_function == SystemFunction.EOF:
-            self._on_eof_received(reply_telegram)
             return
 
     def _on_timeout(self) -> None:
@@ -327,6 +289,13 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
             return
         self.conbus_protocol.on_connection_made.connect(self._on_connection_made)
         self.conbus_protocol.on_telegram_received.connect(self._on_telegram_received)
+        self.conbus_protocol.on_read_datapoint_received.connect(
+            self._on_read_datapoint_received
+        )
+        self.conbus_protocol.on_actiontable_chunk_received.connect(
+            self._on_actiontable_chunk_received
+        )
+        self.conbus_protocol.on_eof_received.connect(self._on_eof_received)
         self.conbus_protocol.on_timeout.connect(self._on_timeout)
         self.conbus_protocol.on_failed.connect(self._on_failed)
         self._signals_connected = True
@@ -337,6 +306,13 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
             return
         self.conbus_protocol.on_connection_made.disconnect(self._on_connection_made)
         self.conbus_protocol.on_telegram_received.disconnect(self._on_telegram_received)
+        self.conbus_protocol.on_read_datapoint_received.disconnect(
+            self._on_read_datapoint_received
+        )
+        self.conbus_protocol.on_actiontable_chunk_received.disconnect(
+            self._on_actiontable_chunk_received
+        )
+        self.conbus_protocol.on_eof_received.disconnect(self._on_eof_received)
         self.conbus_protocol.on_timeout.disconnect(self._on_timeout)
         self.conbus_protocol.on_failed.disconnect(self._on_failed)
         self._signals_connected = False

@@ -31,9 +31,18 @@ class TestConbusEventProtocol:
         return config
 
     @pytest.fixture
-    def protocol(self, mock_cli_config, mock_reactor):
+    def mock_telegram_service(self):
+        """Create a mock telegram service."""
+        return Mock()
+
+    @pytest.fixture
+    def protocol(self, mock_cli_config, mock_reactor, mock_telegram_service):
         """Create protocol instance with mocks."""
-        return ConbusEventProtocol(cli_config=mock_cli_config, reactor=mock_reactor)
+        return ConbusEventProtocol(
+            cli_config=mock_cli_config,
+            reactor=mock_reactor,
+            telegram_service=mock_telegram_service,
+        )
 
     def test_protocol_initialization(self, protocol, mock_cli_config, mock_reactor):
         """Test protocol can be initialized with required dependencies."""

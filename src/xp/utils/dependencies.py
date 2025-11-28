@@ -207,6 +207,7 @@ class ServiceContainer:
             factory=lambda: ConbusEventProtocol(
                 cli_config=self.container.resolve(ConbusClientConfig),
                 reactor=self.container.resolve(PosixReactorBase),
+                telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,
         )
@@ -326,7 +327,6 @@ class ServiceContainer:
             factory=lambda: ActionTableDownloadService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
-                telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,
         )
