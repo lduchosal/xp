@@ -4,14 +4,14 @@ import logging
 from dataclasses import asdict
 from typing import Any, Optional
 
-from psygnal import SignalInstance
+from psygnal import Signal
 
 from xp.models.actiontable.actiontable import ActionTable
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
-from xp.services.conbus.actiontable.actiontable_download_state_machine import (
+from xp.services.actiontable.actiontable_download_state_machine import (
     MAX_ERROR_RETRIES,
     ActionTableDownloadStateMachine,
 )
@@ -51,6 +51,14 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
         ...     service.start_reactor()
     """
 
+    # Service signals
+    on_progress: Signal = Signal(str)
+    on_error: Signal = Signal(str)
+    on_finish: Signal = Signal()
+    on_actiontable_received: Signal = Signal(
+        ActionTable, dict[str, Any], list[str]
+    )
+
     def __init__(
         self,
         conbus_protocol: ConbusEventProtocol,
@@ -67,14 +75,6 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
         self.serial_number: str = ""
         self.actiontable_data: list[str] = []
         self._signals_connected: bool = False
-
-        # Service signals
-        self.on_progress: SignalInstance = SignalInstance((str,))
-        self.on_error: SignalInstance = SignalInstance((str,))
-        self.on_finish: SignalInstance = SignalInstance()
-        self.on_actiontable_received: SignalInstance = SignalInstance(
-            (ActionTable, dict[str, Any], list[str])
-        )
 
         # Initialize state machine (must be last - triggers introspection)
         super().__init__()

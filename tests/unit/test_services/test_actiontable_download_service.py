@@ -9,7 +9,7 @@ from xp.models.actiontable.actiontable import ActionTable
 from xp.services.conbus.actiontable.actiontable_download_service import (
     ActionTableDownloadService,
 )
-from xp.services.conbus.actiontable.actiontable_download_state_machine import (
+from xp.services.actiontable.actiontable_download_state_machine import (
     MAX_ERROR_RETRIES,
     Phase,
 )
