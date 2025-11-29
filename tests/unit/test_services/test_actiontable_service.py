@@ -139,9 +139,7 @@ class TestActionTableService:
         """Test receiving EOF telegram deserializes and calls finish_callback."""
         from dataclasses import asdict
 
-        from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
         from xp.models.telegram.system_function import SystemFunction
-        from xp.models.telegram.telegram_type import TelegramType
 
         service.serial_number = "0123450001"
         service.actiontable_data = ["AAAAACAAAABAAAAC"]
@@ -161,18 +159,6 @@ class TestActionTableService:
         service.do_timeout()
         service.no_error_status_received()
         assert service.waiting_data.is_active
-
-        # Create mock telegram received event
-        telegram_event = TelegramReceivedEvent.model_construct(
-            protocol=service.conbus_protocol,
-            frame="<R0123450001F16DEO>",
-            telegram="R0123450001F16DEO",
-            payload="R0123450001F16D",
-            telegram_type=TelegramType.REPLY.value,
-            serial_number="0123450001",
-            checksum="EO",
-            checksum_valid=True,
-        )
 
         # Create mock reply telegram
         mock_reply = Mock()

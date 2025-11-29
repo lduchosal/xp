@@ -1,9 +1,22 @@
 """State machine for ActionTable download workflow."""
 
 import logging
+from abc import ABCMeta, abstractmethod
 from enum import Enum
 
 from statemachine import State, StateMachine
+from statemachine.factory import StateMachineMetaclass
+
+
+class AbstractStateMachineMeta(StateMachineMetaclass, ABCMeta):
+    """Combined metaclass for abstract state machines.
+
+    Combines StateMachineMetaclass (for state machine introspection) with
+    ABCMeta (for abstract method enforcement).
+    """
+
+    pass
+
 
 # Constants
 MAX_ERROR_RETRIES = 3  # Max retries for error_status_received before giving up
@@ -28,7 +41,7 @@ class Phase(Enum):
     CLEANUP = "cleanup"
 
 
-class ActionTableDownloadStateMachine(StateMachine):
+class ActionTableDownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
     """State machine for ActionTable download workflow.
 
     Pure state machine with states, transitions, and guards. Subclasses can
@@ -180,51 +193,58 @@ class ActionTableDownloadStateMachine(StateMachine):
         """
         return self._error_retry_count < MAX_ERROR_RETRIES
 
-    # State entry hooks - subclasses can override these
+    # State entry hooks - subclasses MUST implement these
 
+    @abstractmethod
     def on_enter_receiving(self) -> None:
         """Enter receiving state - drain pending telegrams."""
-        self.logger.debug(f"Entering RECEIVING state (phase={self._phase.value})")
+        ...
 
+    @abstractmethod
     def on_enter_resetting(self) -> None:
         """Enter resetting state - query error status."""
-        self.logger.debug(f"Entering RESETTING state (phase={self._phase.value})")
+        ...
 
+    @abstractmethod
     def on_enter_waiting_ok(self) -> None:
         """Enter waiting_ok state - awaiting error status response."""
-        self.logger.debug(f"Entering WAITING_OK state (phase={self._phase.value})")
+        ...
 
+    @abstractmethod
     def on_enter_requesting(self) -> None:
         """Enter requesting state - send download request."""
-        self.logger.debug("Entering REQUESTING state - sending download request")
+        ...
+
+    @abstractmethod
+    def on_enter_waiting_data(self) -> None:
+        """Enter waiting_data state - wait for actiontable chunks."""
+        ...
+
+    @abstractmethod
+    def on_enter_receiving_chunk(self) -> None:
+        """Enter receiving_chunk state - send ACK."""
+        ...
+
+    @abstractmethod
+    def on_enter_processing_eof(self) -> None:
+        """Enter processing_eof state - deserialize and emit result."""
+        ...
+
+    @abstractmethod
+    def on_enter_completed(self) -> None:
+        """Enter completed state - download finished."""
+        ...
+
+    @abstractmethod
+    def on_max_retries_exceeded(self) -> None:
+        """Called when max error retries exceeded."""
+        ...
+
+    # Public methods for state machine control
 
     def enter_download_phase(self) -> None:
         """Enter requesting state - send download request."""
         self._phase = Phase.DOWNLOAD
-
-    def on_enter_waiting_data(self) -> None:
-        """Enter waiting_data state - wait for actiontable chunks."""
-        self.logger.debug("Entering WAITING_DATA state - awaiting chunks")
-
-    def on_enter_receiving_chunk(self) -> None:
-        """Enter receiving_chunk state - send ACK."""
-        self.logger.debug("Entering RECEIVING_CHUNK state - sending ACK")
-
-    def on_enter_processing_eof(self) -> None:
-        """Enter processing_eof state - deserialize and emit result."""
-        self.logger.debug("Entering PROCESSING_EOF state - deserializing")
-
-    def on_enter_completed(self) -> None:
-        """Enter completed state - download finished."""
-        self.logger.debug("Entering COMPLETED state - download finished")
-
-    # Callback for max retries exceeded - subclasses can override
-
-    def on_max_retries_exceeded(self) -> None:
-        """Called when max error retries exceeded. Override in subclass."""
-        self.logger.error(f"Max error retries ({MAX_ERROR_RETRIES}) exceeded")
-
-    # Public methods for state machine control
 
     def handle_no_error_received(self) -> None:
         """Handle successful error status check (no error)."""
