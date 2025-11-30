@@ -34,7 +34,7 @@ class TestXp20ActionTableIntegration:
         serialized = Xp20MsActionTableSerializer.to_data(action_table)
 
         # Deserialize from data
-        result = Xp20MsActionTableSerializer.from_data(serialized)
+        result = Xp20MsActionTableSerializer.from_encoded_string(serialized)
 
         # Verify the round-trip worked
         assert result.input1.invert == action_table.input1.invert
@@ -100,7 +100,7 @@ class TestXp20ActionTableIntegration:
 
         # Serialize and deserialize
         serialized = Xp20MsActionTableSerializer.to_data(action_table)
-        deserialized = Xp20MsActionTableSerializer.from_data(serialized)
+        deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
 
         # Verify all configurations are preserved
         for i in range(1, 9):
@@ -129,7 +129,7 @@ class TestXp20ActionTableIntegration:
         # Test all flags off
         action_table_off = Xp20MsActionTable()
         serialized_off = Xp20MsActionTableSerializer.to_data(action_table_off)
-        deserialized_off = Xp20MsActionTableSerializer.from_data(serialized_off)
+        deserialized_off = Xp20MsActionTableSerializer.from_encoded_string(serialized_off)
 
         for i in range(1, 9):
             channel = getattr(deserialized_off, f"input{i}")
@@ -152,7 +152,7 @@ class TestXp20ActionTableIntegration:
             channel.and_functions = [True] * 8
 
         serialized_on = Xp20MsActionTableSerializer.to_data(action_table_on)
-        deserialized_on = Xp20MsActionTableSerializer.from_data(serialized_on)
+        deserialized_on = Xp20MsActionTableSerializer.from_encoded_string(serialized_on)
 
         for i in range(1, 9):
             channel = getattr(deserialized_on, f"input{i}")
@@ -170,7 +170,7 @@ class TestXp20ActionTableIntegration:
         )
 
         # Should decode without errors
-        result = Xp20MsActionTableSerializer.from_data(spec_example)
+        result = Xp20MsActionTableSerializer.from_encoded_string(spec_example)
 
         # Verify it's a valid table
         assert isinstance(result, Xp20MsActionTable)
@@ -180,7 +180,7 @@ class TestXp20ActionTableIntegration:
         assert len(re_encoded) == 68
 
         # Round-trip should work
-        final_result = Xp20MsActionTableSerializer.from_data(re_encoded)
+        final_result = Xp20MsActionTableSerializer.from_encoded_string(re_encoded)
         assert isinstance(final_result, Xp20MsActionTable)
 
     def test_data_layout_compliance(self):
@@ -219,7 +219,7 @@ class TestXp20ActionTableIntegration:
         serialized = Xp20MsActionTableSerializer.to_data(action_table)
 
         # Verify the data can be decoded back correctly
-        deserialized = Xp20MsActionTableSerializer.from_data(serialized)
+        deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
 
         assert deserialized.input1.short_long is True
         assert deserialized.input3.group_on_off is True
@@ -251,21 +251,21 @@ class TestXp20ActionTableIntegration:
         """Test error handling across the integration."""
         # Test invalid data length
         with pytest.raises(ValueError):
-            Xp20MsActionTableSerializer.from_data("INVALID")
+            Xp20MsActionTableSerializer.from_encoded_string("INVALID")
 
         # Test with wrong length telegram
         with pytest.raises(ValueError):
-            Xp20MsActionTableSerializer.from_data("A" * 63)  # Too short
+            Xp20MsActionTableSerializer.from_encoded_string("A" * 63)  # Too short
 
         with pytest.raises(ValueError):
-            Xp20MsActionTableSerializer.from_data("A" * 65)  # Too long
+            Xp20MsActionTableSerializer.from_encoded_string("A" * 65)  # Too long
 
     def test_model_serializer_consistency(self):
         """Test that model defaults work correctly with serializer."""
         # Default model should serialize and deserialize consistently
         default_table = Xp20MsActionTable()
         serialized = Xp20MsActionTableSerializer.to_data(default_table)
-        deserialized = Xp20MsActionTableSerializer.from_data(serialized)
+        deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
 
         # Should be equivalent to original
         assert default_table == deserialized

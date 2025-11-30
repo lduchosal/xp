@@ -11,24 +11,58 @@ AND_FUNCTIONS_INDEX: int = 3  # starts at 3, uses indices 3-10
 SA_FUNCTION_INDEX: int = 11
 TA_FUNCTION_INDEX: int = 12
 
-
-class Xp20MsActionTableSerializer:
+class Xp20MsActionTableSerializer():
     """Handles serialization/deserialization of XP20 action tables to/from telegrams."""
 
+
     @staticmethod
-    def format_decoded_output(action_table: Xp20MsActionTable) -> list[str]:
-        """Serialize XP20 action table to humane compact readable format.
+    def from_encoded_string(encoded_data: str) -> Xp20MsActionTable:
+        """Deserialize telegram data to XP20 action table.
 
         Args:
-            action_table: XP20 action table to serialize
+            msactiontable_rawdata: 64-character hex string with A-P encoding
 
         Returns:
-            Human-readable string describing XP20 action table
+            Decoded XP20 action table
+
+        Raises:
+            ValueError: If input length is not 64 characters
         """
-        return action_table.to_short_format()
+        raw_length = len(encoded_data)
+        if raw_length < 68:  # Minimum: 4 char prefix + 64 chars data
+            raise ValueError(
+                f"XP20 action table data must be 68 characters long, got {len(encoded_data)}"
+            )
+
+        # Remove action table count prefix (first 4 characters: AAAA, AAAB, etc.)
+        data = encoded_data[4:]
+
+        # Take first 64 chars (32 bytes) as per pseudocode
+        hex_data = data[:64]
+        raw_bytes = de_nibbles(hex_data)
+
+        # Decode input channels
+        input_channels = []
+        for input_index in range(8):
+            input_channel = Xp20MsActionTableSerializer._decode_input_channel(
+                raw_bytes, input_index
+            )
+            input_channels.append(input_channel)
+
+        # Create and return XP20 action table
+        return Xp20MsActionTable(
+            input1=input_channels[0],
+            input2=input_channels[1],
+            input3=input_channels[2],
+            input4=input_channels[3],
+            input5=input_channels[4],
+            input6=input_channels[5],
+            input7=input_channels[6],
+            input8=input_channels[7],
+        )
 
     @staticmethod
-    def to_data(action_table: Xp20MsActionTable) -> str:
+    def to_encoded_string(action_table: Xp20MsActionTable) -> str:
         """Serialize XP20 action table to telegram hex string format.
 
         Args:
@@ -63,55 +97,32 @@ class Xp20MsActionTableSerializer:
         return "AAAA" + encoded_data
 
     @staticmethod
-    def from_data(msactiontable_rawdata: str) -> Xp20MsActionTable:
-        """Deserialize telegram data to XP20 action table.
+    def to_short_string(action_table: Xp20MsActionTable) -> list[str]:
+        """Serialize XP20 action table to humane compact readable format.
 
         Args:
-            msactiontable_rawdata: 64-character hex string with A-P encoding
+            action_table: XP20 action table to serialize
 
         Returns:
-            Decoded XP20 action table
-
-        Raises:
-            ValueError: If input length is not 64 characters
+            Human-readable string describing XP20 action table
         """
-        raw_length = len(msactiontable_rawdata)
-        if raw_length < 68:  # Minimum: 4 char prefix + 64 chars data
-            raise ValueError(
-                f"XP20 action table data must be 68 characters long, got {len(msactiontable_rawdata)}"
-            )
+        return action_table.to_short_format()
 
-        # Remove action table count prefix (first 4 characters: AAAA, AAAB, etc.)
-        data = msactiontable_rawdata[4:]
-
-        # Take first 64 chars (32 bytes) as per pseudocode
-        hex_data = data[:64]
-
-        # Convert hex string to bytes using deNibble (A-P encoding)
-        raw_bytes = de_nibbles(hex_data)
-
-        # Decode input channels
-        input_channels = []
-        for input_index in range(8):
-            input_channel = Xp20MsActionTableSerializer._decode_input_channel(
-                raw_bytes, input_index
-            )
-            input_channels.append(input_channel)
-
-        # Create and return XP20 action table
-        return Xp20MsActionTable(
-            input1=input_channels[0],
-            input2=input_channels[1],
-            input3=input_channels[2],
-            input4=input_channels[3],
-            input5=input_channels[4],
-            input6=input_channels[5],
-            input7=input_channels[6],
-            input8=input_channels[7],
-        )
 
     @staticmethod
-    def _decode_input_channel(raw_bytes: bytearray, input_index: int) -> InputChannel:
+    def from_short_string(action_strings: list[str]) -> Xp20MsActionTable:
+        """Serialize XP20 action table to humane compact readable format.
+
+        Args:
+            action_table: XP20 action table to serialize
+
+        Returns:
+            Human-readable string describing XP20 action table
+        """
+        return Xp20MsActionTable.from_short_format(action_strings)
+
+    @staticmethod
+    def _decode_input_channel(raw_bytes: bytes, input_index: int) -> InputChannel:
         """Extract input channel configuration from raw bytes.
 
         Args:

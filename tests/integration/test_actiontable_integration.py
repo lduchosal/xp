@@ -86,7 +86,7 @@ class TestActionTableIntegration:
         serializer = ActionTableSerializer()
 
         # Test decoded output format
-        decoded = serializer.format_decoded_output(sample_actiontable)
+        decoded = serializer.to_short_string(sample_actiontable)
         expected_lines = ["CP20 0 0 > 1 OFF;", "CP20 0 1 > 2 ~ON;"]
         assert decoded == expected_lines
 
@@ -148,7 +148,7 @@ class TestActionTableIntegration:
             """
             # Generate dict and short format like the service does
             actiontable_dict = asdict(sample_actiontable)
-            actiontable_short = ActionTableSerializer.format_decoded_output(
+            actiontable_short = ActionTableSerializer.to_short_string(
                 sample_actiontable
             )
             # Call the on_actiontable_received callback with data

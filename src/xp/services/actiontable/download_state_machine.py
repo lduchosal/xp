@@ -41,7 +41,7 @@ class Phase(Enum):
     CLEANUP = "cleanup"
 
 
-class ActionTableDownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
+class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
     """State machine for ActionTable download workflow.
 
     Pure state machine with states, transitions, and guards. Subclasses can

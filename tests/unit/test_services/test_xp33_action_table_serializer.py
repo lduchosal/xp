@@ -78,10 +78,10 @@ class TestXp33MsActionTableSerializer:
     def test_serialization_round_trip(self, sample_action_table):
         """Test that serialization and deserialization produce the same data."""
         # Serialize to telegram format
-        serialized = Xp33MsActionTableSerializer.to_data(sample_action_table)
+        serialized = Xp33MsActionTableSerializer.to_encoded_string(sample_action_table)
 
         # Deserialize back
-        deserialized = Xp33MsActionTableSerializer.from_data(serialized)
+        deserialized = Xp33MsActionTableSerializer.from_encoded_string(serialized)
 
         # Check outputs
         assert deserialized.output1.min_level == sample_action_table.output1.min_level
@@ -188,7 +188,7 @@ class TestXp33MsActionTableSerializer:
 
     def test_from_data_basic(self, sample_telegram_data):
         """Test basic telegram parsing."""
-        action_table = Xp33MsActionTableSerializer.from_data(sample_telegram_data)
+        action_table = Xp33MsActionTableSerializer.from_encoded_string(sample_telegram_data)
 
         # Verify it's a valid Xp33MsActionTable
         assert isinstance(action_table, Xp33MsActionTable)
@@ -208,10 +208,10 @@ class TestXp33MsActionTableSerializer:
         """Test that invalid telegram length raises ValueError."""
         # Too short
         with pytest.raises(ValueError, match="is too short"):
-            Xp33MsActionTableSerializer.from_data("AAAA")
+            Xp33MsActionTableSerializer.from_encoded_string("AAAA")
 
         with pytest.raises(ValueError, match="is too short"):
-            Xp33MsActionTableSerializer.from_data("AAA")  # Even shorter
+            Xp33MsActionTableSerializer.from_encoded_string("AAA")  # Even shorter
 
     def test_boundary_values(self):
         """Test boundary value handling."""
@@ -247,8 +247,8 @@ class TestXp33MsActionTableSerializer:
         )
 
         # Test round trip
-        serialized = Xp33MsActionTableSerializer.to_data(action_table)
-        deserialized = Xp33MsActionTableSerializer.from_data(serialized)
+        serialized = Xp33MsActionTableSerializer.to_encoded_string(action_table)
+        deserialized = Xp33MsActionTableSerializer.from_encoded_string(serialized)
 
         # Verify boundary values are preserved
         assert deserialized.output1.min_level == 0
@@ -274,8 +274,8 @@ class TestXp33MsActionTableSerializer:
         )
 
         # Test round trip
-        serialized = Xp33MsActionTableSerializer.to_data(action_table)
-        deserialized = Xp33MsActionTableSerializer.from_data(serialized)
+        serialized = Xp33MsActionTableSerializer.to_encoded_string(action_table)
+        deserialized = Xp33MsActionTableSerializer.from_encoded_string(serialized)
 
         # Verify flags are preserved
         assert deserialized.output1.scene_outputs
@@ -300,8 +300,8 @@ class TestXp33MsActionTableSerializer:
         )
 
         # Test round trip
-        serialized = Xp33MsActionTableSerializer.to_data(action_table)
-        deserialized = Xp33MsActionTableSerializer.from_data(serialized)
+        serialized = Xp33MsActionTableSerializer.to_encoded_string(action_table)
+        deserialized = Xp33MsActionTableSerializer.from_encoded_string(serialized)
 
         # Verify time parameters are preserved
         assert deserialized.scene1.time == TimeParam.NONE
@@ -401,8 +401,8 @@ class TestXp33MsActionTableSerializer:
         action_table = Xp33MsActionTable()
 
         # Test serialization with defaults
-        serialized = Xp33MsActionTableSerializer.to_data(action_table)
-        deserialized = Xp33MsActionTableSerializer.from_data(serialized)
+        serialized = Xp33MsActionTableSerializer.to_encoded_string(action_table)
+        deserialized = Xp33MsActionTableSerializer.from_encoded_string(serialized)
 
         # Verify defaults are preserved
         assert deserialized.output1.min_level == 0
@@ -423,7 +423,7 @@ class TestXp33MsActionTableSerializer:
 
         # Test serialization with defaults
         serialized_table = telegram[16:84]
-        deserialized = Xp33MsActionTableSerializer.from_data(serialized_table)
-        serialized = Xp33MsActionTableSerializer.to_data(deserialized)
+        deserialized = Xp33MsActionTableSerializer.from_encoded_string(serialized_table)
+        serialized = Xp33MsActionTableSerializer.to_encoded_string(deserialized)
 
         assert serialized_table == serialized

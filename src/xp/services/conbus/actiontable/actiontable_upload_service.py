@@ -187,7 +187,7 @@ class ActionTableUploadService:
         # Parse action table strings to ActionTable object
         try:
             module_action_table = module.action_table or []
-            action_table = self.serializer.parse_action_table(module_action_table)
+            action_table = self.serializer.from_short_string(module_action_table)
         except ValueError as e:
             self.logger.error(f"Invalid action table format: {e}")
             self.failed(f"Invalid action table format: {e}")

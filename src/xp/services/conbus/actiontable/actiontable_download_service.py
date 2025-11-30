@@ -2,7 +2,7 @@
 
 import logging
 from dataclasses import asdict
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from psygnal import Signal
 
@@ -11,17 +11,20 @@ from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
-from xp.services.actiontable.actiontable_download_state_machine import (
+from xp.services.actiontable.download_state_machine import (
     MAX_ERROR_RETRIES,
-    ActionTableDownloadStateMachine,
+    DownloadStateMachine,
 )
+from xp.services.actiontable.msactiontable_xp20_serializer import Xp20MsActionTableSerializer
+from xp.services.actiontable.msactiontable_xp24_serializer import Xp24MsActionTableSerializer
+from xp.services.actiontable.msactiontable_xp33_serializer import Xp33MsActionTableSerializer
 from xp.services.protocol.conbus_event_protocol import (
     NO_ERROR_CODE,
     ConbusEventProtocol,
 )
 
 
-class ActionTableDownloadService(ActionTableDownloadStateMachine):
+class DownloadService(DownloadStateMachine):
     """Service for downloading action tables from Conbus modules via TCP.
 
     Inherits from ActionTableDownloadStateMachine and overrides on_enter_*
@@ -63,6 +66,9 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
         self,
         conbus_protocol: ConbusEventProtocol,
         actiontable_serializer: ActionTableSerializer,
+        msactiontable_serializer_xp20: Xp20MsActionTableSerializer,
+        msactiontable_serializer_xp24: Xp24MsActionTableSerializer,
+        msactiontable_serializer_xp33: Xp33MsActionTableSerializer,
     ) -> None:
         """Initialize the action table download service.
 
@@ -71,7 +77,17 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
             actiontable_serializer: Action table serializer.
         """
         self.conbus_protocol = conbus_protocol
-        self.serializer = actiontable_serializer
+        self.actiontable_serializer = actiontable_serializer
+        self.msactiontable_serializer_xp20 = msactiontable_serializer_xp20
+        self.msactiontable_serializer_xp24 = msactiontable_serializer_xp24
+        self.msactiontable_serializer_xp33 = msactiontable_serializer_xp33
+        self.serializer: Union[
+            ActionTableSerializer,
+            Xp20MsActionTableSerializer,
+            Xp24MsActionTableSerializer,
+            Xp33MsActionTableSerializer,
+        ] = actiontable_serializer
+
         self.serial_number: str = ""
         self.actiontable_data: list[str] = []
         self._signals_connected: bool = False
@@ -125,10 +141,9 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
         self.logger.debug("Entering PROCESSING_EOF state - deserializing")
         all_data = "".join(self.actiontable_data)
         actiontable = self.serializer.from_encoded_string(all_data)
-        actiontable_dict = asdict(actiontable)
-        actiontable_short = self.serializer.format_decoded_output(actiontable)
+        actiontable_short = self.serializer.to_short_string(actiontable)
         self.on_actiontable_received.emit(
-            actiontable, actiontable_dict, actiontable_short
+            actiontable, actiontable_short
         )
         # Switch to CLEANUP phase
         self.start_cleanup_phase()
@@ -246,6 +261,7 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
     def configure(
         self,
         serial_number: str,
+        actiontable_type: str,
         timeout_seconds: Optional[float] = 2.0,
     ) -> None:
         """Configure download parameters before starting.
@@ -264,6 +280,14 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
             raise RuntimeError("Cannot configure while download in progress")
         self.logger.info("Configuring actiontable download")
         self.serial_number = serial_number
+        if actiontable_type == "actiontable":
+            self.serializer = self.actiontable_serializer
+        if actiontable_type == "msactiontable_xp20":
+            self.serializer = self.msactiontable_serializer_xp20
+        if actiontable_type == "msactiontable_xp24":
+            self.serializer = self.msactiontable_serializer_xp24
+        if actiontable_type == "msactiontable_xp33":
+            self.serializer = self.msactiontable_serializer_xp33
         if timeout_seconds:
             self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -317,7 +341,7 @@ class ActionTableDownloadService(ActionTableDownloadStateMachine):
         self.conbus_protocol.on_failed.disconnect(self._on_failed)
         self._signals_connected = False
 
-    def __enter__(self) -> "ActionTableDownloadService":
+    def __enter__(self) -> "DownloadService":
         """Enter context manager - reset state and reconnect signals.
 
         Returns:

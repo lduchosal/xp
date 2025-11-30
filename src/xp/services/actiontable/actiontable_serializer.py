@@ -29,7 +29,7 @@ class ActionTableSerializer:
     MAX_ENTRIES = 96  # ActionTable must always contain exactly 96 entries
 
     @staticmethod
-    def from_data(data: bytes) -> ActionTable:
+    def from_encoded_string(encoded_data: str) -> ActionTable:
         """Deserialize telegram data to ActionTable.
 
         Args:
@@ -38,6 +38,7 @@ class ActionTableSerializer:
         Returns:
             Decoded ActionTable
         """
+        data = de_nibbles(encoded_data)
         entries = []
 
         # Process data in 5-byte chunks
@@ -92,14 +93,14 @@ class ActionTableSerializer:
         return ActionTable(entries=entries)
 
     @staticmethod
-    def to_data(action_table: ActionTable) -> bytes:
-        """Serialize ActionTable to telegram byte data.
+    def to_encoded_string(action_table: ActionTable) -> str:
+        """Convert ActionTable to base64-encoded string format.
 
         Args:
-            action_table: ActionTable to serialize
+            action_table: ActionTable to encode
 
         Returns:
-            Raw byte data for telegram (always 480 bytes for 96 entries)
+            Base64-encoded string representation
         """
         data = bytearray()
 
@@ -128,36 +129,10 @@ class ActionTableSerializer:
             for _ in range(ActionTableSerializer.MAX_ENTRIES - current_entries):
                 data.extend(padding_bytes)
 
-        return bytes(data)
-
-    @staticmethod
-    def to_encoded_string(action_table: ActionTable) -> str:
-        """Convert ActionTable to base64-encoded string format.
-
-        Args:
-            action_table: ActionTable to encode
-
-        Returns:
-            Base64-encoded string representation
-        """
-        data = ActionTableSerializer.to_data(action_table)
         return nibbles(data)
 
     @staticmethod
-    def from_encoded_string(encoded_data: str) -> ActionTable:
-        """Convert base64-encoded string to ActionTable.
-
-        Args:
-            encoded_data: Base64-encoded string
-
-        Returns:
-            Decoded ActionTable
-        """
-        data = de_nibbles(encoded_data)
-        return ActionTableSerializer.from_data(data)
-
-    @staticmethod
-    def format_decoded_output(action_table: ActionTable) -> list[str]:
+    def to_short_string(action_table: ActionTable) -> list[str]:
         """Format ActionTable as human-readable decoded output.
 
         Args:
@@ -194,7 +169,7 @@ class ActionTableSerializer:
         return lines
 
     @staticmethod
-    def parse_action_string(action_str: str) -> ActionTableEntry:
+    def _parse_action_string(action_str: str) -> ActionTableEntry:
         """Parse action table entry from string format.
 
         Args:
@@ -257,8 +232,8 @@ class ActionTableSerializer:
         )
 
     @staticmethod
-    def parse_action_table(action_strings: list[str]) -> ActionTable:
-        """Parse action table from list of string entries.
+    def from_short_string(action_strings: list[str]) -> ActionTable:
+        """Parse action table from short string representation.
 
         Args:
             action_strings: List of action strings from conson.yml
@@ -267,7 +242,7 @@ class ActionTableSerializer:
             Parsed ActionTable
         """
         entries = [
-            ActionTableSerializer.parse_action_string(action_str)
+            ActionTableSerializer._parse_action_string(action_str)
             for action_str in action_strings
         ]
         return ActionTable(entries=entries)

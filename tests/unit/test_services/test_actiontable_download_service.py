@@ -7,9 +7,9 @@ import pytest
 
 from xp.models.actiontable.actiontable import ActionTable
 from xp.services.conbus.actiontable.actiontable_download_service import (
-    ActionTableDownloadService,
+    DownloadService,
 )
-from xp.services.actiontable.actiontable_download_state_machine import (
+from xp.services.actiontable.download_state_machine import (
     MAX_ERROR_RETRIES,
     Phase,
 )
@@ -59,7 +59,7 @@ class TestActionTableDownloadServiceStateMachine:
         mock_serializer,
     ):
         """Create service instance for testing."""
-        return ActionTableDownloadService(
+        return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
         )
@@ -266,7 +266,7 @@ class TestActionTableDownloadServiceProtocolIntegration:
         mock_serializer,
     ):
         """Create service instance for testing."""
-        return ActionTableDownloadService(
+        return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
         )
@@ -300,7 +300,7 @@ class TestActionTableDownloadServiceProtocolIntegration:
         """Test that protocol signals are connected on initialization."""
         mock_serializer = Mock()
 
-        ActionTableDownloadService(
+        DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
         )
@@ -355,7 +355,7 @@ class TestActionTableDownloadServiceContextManager:
         mock_serializer,
     ):
         """Create service instance for testing."""
-        return ActionTableDownloadService(
+        return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
         )
@@ -451,7 +451,7 @@ class TestActionTableDownloadServiceErrorHandling:
         mock_serializer,
     ):
         """Create service instance for testing."""
-        return ActionTableDownloadService(
+        return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
         )

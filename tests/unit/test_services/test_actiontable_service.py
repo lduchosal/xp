@@ -9,7 +9,7 @@ from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.conbus.actiontable.actiontable_download_service import (
-    ActionTableDownloadService,
+    DownloadService,
 )
 
 
@@ -45,7 +45,7 @@ class TestActionTableService:
     @pytest.fixture
     def service(self, mock_conbus_protocol, mock_serializer):
         """Create service instance for testing."""
-        return ActionTableDownloadService(
+        return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
         )
@@ -77,13 +77,13 @@ class TestActionTableService:
 
     def test_service_initialization(self, mock_conbus_protocol, mock_serializer):
         """Test service can be initialized with required dependencies."""
-        service = ActionTableDownloadService(
+        service = DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
         )
 
         assert service.conbus_protocol == mock_conbus_protocol
-        assert service.serializer == mock_serializer
+        assert service.actiontable_serializer == mock_serializer
         assert service.serial_number == ""
         assert hasattr(service, "on_progress")
         assert hasattr(service, "on_error")
@@ -148,8 +148,8 @@ class TestActionTableService:
         service.on_actiontable_received.connect(mock_actiontable_received)
 
         # Mock serializer to return sample actiontable
-        service.serializer.from_encoded_string.return_value = sample_actiontable
-        service.serializer.format_decoded_output.return_value = [
+        service.actiontable_serializer.from_encoded_string.return_value = sample_actiontable
+        service.actiontable_serializer.to_short_string.return_value = [
             "CP20 0 0 > 1 OFF;",
             "CP20 0 1 > 1 ~ON;",
         ]
@@ -169,7 +169,7 @@ class TestActionTableService:
         service._on_eof_received(mock_reply)
 
         # Should deserialize all collected data
-        service.serializer.from_encoded_string.assert_called_once_with(
+        service.actiontable_serializer.from_encoded_string.assert_called_once_with(
             "AAAAACAAAABAAAAC"
         )
 

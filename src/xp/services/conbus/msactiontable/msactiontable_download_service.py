@@ -163,8 +163,8 @@ class MsActionTableDownloadService:
             self.logger.debug("Received EOF")
             all_data = "".join(self.msactiontable_data)
             # Deserialize from received data
-            msactiontable = self.serializer.from_data(all_data)
-            msactiontable_short = self.serializer.format_decoded_output(msactiontable)  # type: ignore[arg-type]
+            msactiontable = self.serializer.from_encoded_string(all_data)
+            msactiontable_short = self.serializer.to_short_string(msactiontable)  # type: ignore[arg-type]
             self.succeed(msactiontable, msactiontable_short)
             return
 

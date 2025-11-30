@@ -26,7 +26,7 @@ class TestActionTableSerializerFormatDecoded:
             ]
         )
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         assert isinstance(result, list)
         assert len(result) == 1
@@ -48,7 +48,7 @@ class TestActionTableSerializerFormatDecoded:
             ]
         )
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         assert len(result) == 1
         assert result[0] == "CP20 0 2 > 1 ON 2;"
@@ -69,7 +69,7 @@ class TestActionTableSerializerFormatDecoded:
             ]
         )
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         assert len(result) == 1
         assert result[0] == "CP20 0 0 > 1 ON;"
@@ -91,7 +91,7 @@ class TestActionTableSerializerFormatDecoded:
             ]
         )
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         assert len(result) == 1
         assert result[0] == "CP20 0 1 > 1 ~ON;"
@@ -112,7 +112,7 @@ class TestActionTableSerializerFormatDecoded:
             ]
         )
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         assert len(result) == 1
         assert result[0] == "CP20 1 2 > 3 ~ON 4;"
@@ -121,7 +121,7 @@ class TestActionTableSerializerFormatDecoded:
         """Test formatting empty action table."""
         action_table = ActionTable(entries=[])
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         assert isinstance(result, list)
         assert len(result) == 0
@@ -169,7 +169,7 @@ class TestActionTableSerializerFormatDecoded:
             ]
         )
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         assert len(result) == 4
         assert result[0] == "CP20 0 0 > 1 OFF;"
@@ -202,7 +202,7 @@ class TestActionTableSerializerFormatDecoded:
             ]
         )
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         assert all(line.endswith(";") for line in result)
 
@@ -222,7 +222,7 @@ class TestActionTableSerializerFormatDecoded:
             ]
         )
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         assert isinstance(result, list)
 
@@ -269,7 +269,7 @@ class TestActionTableSerializerFormatDecoded:
             ]
         )
 
-        result = ActionTableSerializer.format_decoded_output(action_table)
+        result = ActionTableSerializer.to_short_string(action_table)
 
         expected = [
             "CP20 0 0 > 1 OFF;",

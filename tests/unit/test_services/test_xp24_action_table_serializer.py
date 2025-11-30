@@ -54,7 +54,7 @@ class TestXp24MsActionTableSerializer:
             "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
-        msactiontable = Xp24MsActionTableSerializer.from_data(valid_telegram)
+        msactiontable = Xp24MsActionTableSerializer.from_encoded_string(valid_telegram)
         assert msactiontable.input1_action.type == InputActionType.TOGGLE
         assert msactiontable.input2_action.type == InputActionType.TOGGLE
         assert msactiontable.input3_action.type == InputActionType.TOGGLE
@@ -78,7 +78,7 @@ class TestXp24MsActionTableSerializer:
             "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
-        msactiontable = Xp24MsActionTableSerializer.from_data(valid_msactiontable)
+        msactiontable = Xp24MsActionTableSerializer.from_encoded_string(valid_msactiontable)
         msactiontable_data = Xp24MsActionTableSerializer.to_data(msactiontable)
         assert valid_msactiontable == msactiontable_data
 
@@ -90,7 +90,7 @@ class TestXp24MsActionTableSerializer:
             "AAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
-        msactiontable = Xp24MsActionTableSerializer.from_data(valid_telegram)
+        msactiontable = Xp24MsActionTableSerializer.from_encoded_string(valid_telegram)
         assert msactiontable.input1_action.type == InputActionType.ON
         assert msactiontable.input2_action.type == InputActionType.TOGGLE
         assert msactiontable.input3_action.type == InputActionType.TOGGLE

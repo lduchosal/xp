@@ -273,7 +273,7 @@ class MsActionTableUploadService:
             return
 
         # Serialize to telegram data (68 characters: AAAA + 64 data chars)
-        self.upload_data = self.serializer.to_data(msactiontable)  # type: ignore[arg-type]
+        self.upload_data = self.serializer.to_encoded_string(msactiontable)  # type: ignore[arg-type]
 
         self.logger.debug(
             f"Upload data encoded: {len(self.upload_data)} chars (single chunk)"

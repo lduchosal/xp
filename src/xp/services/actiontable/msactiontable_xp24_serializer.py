@@ -9,20 +9,59 @@ from xp.utils.serialization import de_nibbles, nibbles
 class Xp24MsActionTableSerializer:
     """Handles serialization/deserialization of XP24 action tables to/from telegrams."""
 
+
     @staticmethod
-    def format_decoded_output(action_table: Xp24MsActionTable) -> list[str]:
-        """Serialize XP24 action table to humane compact readable format.
+    def from_encoded_string(encoded_data: str) -> Xp24MsActionTable:
+        """Deserialize action table from raw data parts.
 
         Args:
-            action_table: XP24 action table to serialize
+            encoded_data: Raw action table data string.
 
         Returns:
-            Human-readable string describing XP24 action table
+            Deserialized XP24 MS action table.
+
+        Raises:
+            ValueError: If data length is not 68 bytes.
         """
-        return action_table.to_short_format()
+        raw_length = len(encoded_data)
+        if raw_length != 68:
+            raise ValueError(
+                f"Msactiontable is not 68 bytes long ({raw_length}): {encoded_data}"
+            )
+
+        # Remove action table count AAAA, AAAB .
+        stripped_data = encoded_data[4:]
+
+        # Take first 64 chars (32 bytes) as per pseudocode
+        hex_data = stripped_data[:64]
+
+        # Convert hex string to bytes using deNibble (A-P encoding)
+        data = de_nibbles(hex_data)
+
+        # Decode input actions from positions 0-3 (2 bytes each)
+        input_actions = []
+        for pos in range(4):
+            input_action = Xp24MsActionTableSerializer._decode_input_action(
+                data, pos
+            )
+            input_actions.append(input_action)
+
+        action_table = Xp24MsActionTable(
+            input1_action=input_actions[0],
+            input2_action=input_actions[1],
+            input3_action=input_actions[2],
+            input4_action=input_actions[3],
+            mutex12=data[8] != 0,  # With A-P encoding: AA=0 (False), AB=1 (True)
+            mutex34=data[9] != 0,
+            mutual_deadtime=data[10],
+            curtain12=data[11] != 0,
+            curtain34=data[12] != 0,
+        )
+        return action_table
+
 
     @staticmethod
-    def to_data(action_table: Xp24MsActionTable) -> str:
+    def to_encoded_string(action_table: Xp24MsActionTable) -> str:
         """Serialize action table to telegram format.
 
         Args:
@@ -56,63 +95,38 @@ class Xp24MsActionTableSerializer:
         # Add padding to reach 32 bytes (19 more bytes needed)
         raw_bytes.extend([0x00] * 19)
 
-        # Encode to A-P nibbles (32 bytes -> 64 chars)
-        encoded_data = nibbles(bytes(raw_bytes))
-
+        # Build byte array for the action table (32 bytes total)
         # Prepend action table count "AAAA" (4 chars) -> total 68 chars
-        return "AAAA" + encoded_data
+        return "AAAA" + nibbles(raw_bytes)
+
 
     @staticmethod
-    def from_data(msactiontable_rawdata: str) -> Xp24MsActionTable:
-        """Deserialize action table from raw data parts.
+    def to_short_string(action_table: Xp24MsActionTable) -> list[str]:
+        """Serialize XP24 action table to humane compact readable format.
 
         Args:
-            msactiontable_rawdata: Raw action table data string.
+            action_table: XP24 action table to serialize
 
         Returns:
-            Deserialized XP24 MS action table.
-
-        Raises:
-            ValueError: If data length is not 68 bytes.
+            Human-readable string describing XP24 action table
         """
-        raw_length = len(msactiontable_rawdata)
-        if raw_length != 68:
-            raise ValueError(
-                f"Msactiontable is not 68 bytes long ({raw_length}): {msactiontable_rawdata}"
-            )
+        return action_table.to_short_format()
 
-        # Remove action table count AAAA, AAAB .
-        data = msactiontable_rawdata[4:]
-
-        # Take first 64 chars (32 bytes) as per pseudocode
-        hex_data = data[:64]
-
-        # Convert hex string to bytes using deNibble (A-P encoding)
-        raw_bytes = de_nibbles(hex_data)
-
-        # Decode input actions from positions 0-3 (2 bytes each)
-        input_actions = []
-        for pos in range(4):
-            input_action = Xp24MsActionTableSerializer._decode_input_action(
-                raw_bytes, pos
-            )
-            input_actions.append(input_action)
-
-        action_table = Xp24MsActionTable(
-            input1_action=input_actions[0],
-            input2_action=input_actions[1],
-            input3_action=input_actions[2],
-            input4_action=input_actions[3],
-            mutex12=raw_bytes[8] != 0,  # With A-P encoding: AA=0 (False), AB=1 (True)
-            mutex34=raw_bytes[9] != 0,
-            mutual_deadtime=raw_bytes[10],
-            curtain12=raw_bytes[11] != 0,
-            curtain34=raw_bytes[12] != 0,
-        )
-        return action_table
 
     @staticmethod
-    def _decode_input_action(raw_bytes: bytearray, pos: int) -> InputAction:
+    def from_short_string(action_string: list[str]) -> Xp24MsActionTable:
+        """Serialize XP24 action table to humane compact readable format.
+
+        Args:
+            action_string: XP24 action table to serialize
+
+        Returns:
+            Human-readable string describing XP24 action table
+        """
+        return Xp24MsActionTable.from_short_format(action_string)
+
+    @staticmethod
+    def _decode_input_action(raw_bytes: bytes, pos: int) -> InputAction:
         """Decode input action from raw bytes.
 
         Args:

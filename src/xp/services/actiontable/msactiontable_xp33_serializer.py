@@ -13,7 +13,7 @@ class Xp33MsActionTableSerializer:
     """Handles serialization/deserialization of XP33 action tables to/from telegrams."""
 
     @staticmethod
-    def format_decoded_output(action_table: Xp33MsActionTable) -> list[str]:
+    def to_short_string(action_table: Xp33MsActionTable) -> list[str]:
         """Serialize XP33 action table to humane compact readable format.
 
         Args:
@@ -23,6 +23,19 @@ class Xp33MsActionTableSerializer:
             Human-readable string describing XP33 action table
         """
         return action_table.to_short_format()
+
+
+    @staticmethod
+    def from_short_string(action_string: list[str]) -> Xp33MsActionTable:
+        """Serialize XP33 action table to humane compact readable format.
+
+        Args:
+            action_string: XP33 action table to serialize
+
+        Returns:
+            Human-readable string describing XP33 action table
+        """
+        return Xp33MsActionTable.from_short_format(action_string)
 
     @staticmethod
     def _percentage_to_byte(percentage: int) -> int:
@@ -48,7 +61,7 @@ class Xp33MsActionTableSerializer:
             return TimeParam.NONE
 
     @staticmethod
-    def to_data(action_table: Xp33MsActionTable) -> str:
+    def to_encoded_string(action_table: Xp33MsActionTable) -> str:
         """Serialize action table to telegram format.
 
         Args:
@@ -115,7 +128,7 @@ class Xp33MsActionTableSerializer:
         return "AAAA" + encoded_data
 
     @staticmethod
-    def from_data(msactiontable_rawdata: str) -> Xp33MsActionTable:
+    def from_encoded_string(msactiontable_rawdata: str) -> Xp33MsActionTable:
         """Deserialize action table from raw data parts.
 
         Args:

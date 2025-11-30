@@ -56,7 +56,7 @@ class ConbusEventListService:
             for action in module.action_table:
                 try:
                     # Use existing ActionTableSerializer to parse action
-                    entry = ActionTableSerializer.parse_action_string(action)
+                    entry = ActionTableSerializer._parse_action_string(action)
 
                     # Extract event data from parsed entry
                     module_type_name = entry.module_type.name

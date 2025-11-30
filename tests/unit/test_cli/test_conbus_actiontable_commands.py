@@ -115,7 +115,7 @@ class TestConbusActionTableCommands:
                 if actiontable:
                     # Generate dict and short format like the service does
                     actiontable_dict = asdict(actiontable)
-                    actiontable_short = ActionTableSerializer.format_decoded_output(
+                    actiontable_short = ActionTableSerializer.to_short_string(
                         actiontable
                     )
                     # Emit on_actiontable_received with data

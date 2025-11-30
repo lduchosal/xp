@@ -214,8 +214,8 @@ class TestMsActionTableService:
         service.on_finish.connect(mock_finish)
 
         # Mock serializer to return sample msactiontable
-        service.serializer.from_data.return_value = sample_xp24_msactiontable
-        service.serializer.format_decoded_output.return_value = (
+        service.serializer.from_encoded_string.return_value = sample_xp24_msactiontable
+        service.serializer.to_short_string.return_value = (
             "XP24 T:0 ON:4 LS:12 SS:11"
         )
 
@@ -239,7 +239,7 @@ class TestMsActionTableService:
         service.telegram_received(telegram_event)
 
         # Should deserialize all collected data
-        service.serializer.from_data.assert_called_once_with("AAAAACAAAABAAAAC")
+        service.serializer.from_encoded_string.assert_called_once_with("AAAAACAAAABAAAAC")
 
         # Should emit finish signal with msactiontable and short format
         # The second argument should be the short format string

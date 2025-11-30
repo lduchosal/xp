@@ -77,10 +77,11 @@ class DeviceServiceFactory:
 - Simplify error handling
 
 **Before**:
+
 ```python
 if module_type == "XP20":
     self.device_services[serial_number] = XP20ServerService(
-        serial_number, "XP20", self.xp20ms_serializer
+        serial_number, "XP20", self.msactiontable_serializer_xp20
     )
 ```
 

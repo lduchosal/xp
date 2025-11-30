@@ -99,11 +99,11 @@ def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
 
     # Handle F18D - CONTINUE (after ACK or data)
     if (request.system_function == SystemFunction.ACK and
-        self.msactiontable_download_state):
+            self.msactiontable_download_state):
 
         if self.msactiontable_download_state == "ack_sent":
             # Send MsActionTable data
-            encoded_data = self.msactiontable_serializer.to_data(self.msactiontable)
+            encoded_data = self.msactiontable_serializer.to_encoded_string(self.msactiontable)
             data_telegram = self._build_response_telegram(
                 f"R{self.serial_number}F17D{encoded_data}"
             )

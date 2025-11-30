@@ -23,7 +23,7 @@ from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
 from xp.services.conbus.actiontable.actiontable_download_service import (
-    ActionTableDownloadService,
+    DownloadService,
 )
 from xp.services.conbus.actiontable.actiontable_list_service import (
     ActionTableListService,
@@ -323,8 +323,8 @@ class ServiceContainer:
         )
 
         self.container.register(
-            ActionTableDownloadService,
-            factory=lambda: ActionTableDownloadService(
+            DownloadService,
+            factory=lambda: DownloadService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
             ),

@@ -47,7 +47,7 @@ def test_upload_generates_correct_telegram_sequence(self):
     mock_conson_config.find_module.return_value = mock_module
 
     # Setup: Mock serializer
-    serializer.parse_action_table.return_value = action_table
+    serializer.from_short_string.return_value = action_table
     serializer.to_encoded_string.return_value = "AAA...AAA"  # 960 chars
 
     # Setup: Capture all send_telegram calls
