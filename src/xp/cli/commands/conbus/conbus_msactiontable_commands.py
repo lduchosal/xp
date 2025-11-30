@@ -16,14 +16,14 @@ from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 from xp.models.config.conson_module_config import ConsonModuleConfig
-from xp.services.conbus.msactiontable.msactiontable_download_service import (
-    MsActionTableDownloadService,
+from xp.services.conbus.actiontable.actiontable_download_service import (
+    ActionTableDownloadService,
 )
-from xp.services.conbus.msactiontable.msactiontable_list_service import (
-    MsActionTableListService,
+from xp.services.conbus.actiontable.actiontable_list_service import (
+    ActionTableListService,
 )
-from xp.services.conbus.msactiontable.msactiontable_show_service import (
-    MsActionTableShowService,
+from xp.services.conbus.actiontable.actiontable_show_service import (
+    ActionTableShowService,
 )
 from xp.services.conbus.msactiontable.msactiontable_upload_service import (
     MsActionTableUploadService,
@@ -46,8 +46,8 @@ def conbus_download_msactiontable(
         serial_number: 10-digit module serial number.
         xpmoduletype: XP module type.
     """
-    service: MsActionTableDownloadService = (
-        ctx.obj.get("container").get_container().resolve(MsActionTableDownloadService)
+    service: ActionTableDownloadService = (
+        ctx.obj.get("container").get_container().resolve(ActionTableDownloadService)
     )
 
     def on_progress(progress: str) -> None:
@@ -120,8 +120,8 @@ def conbus_list_msactiontable(ctx: Context) -> None:
     Args:
         ctx: Click context object.
     """
-    service: MsActionTableListService = (
-        ctx.obj.get("container").get_container().resolve(MsActionTableListService)
+    service: ActionTableListService = (
+        ctx.obj.get("container").get_container().resolve(ActionTableListService)
     )
 
     def on_finish(module_list: dict) -> None:
@@ -159,8 +159,8 @@ def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
     """
-    service: MsActionTableShowService = (
-        ctx.obj.get("container").get_container().resolve(MsActionTableShowService)
+    service: ActionTableShowService = (
+        ctx.obj.get("container").get_container().resolve(ActionTableShowService)
     )
 
     def on_finish(module: ConsonModuleConfig) -> None:

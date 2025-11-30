@@ -38,17 +38,17 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
         return action_table.to_short_format()
 
     @staticmethod
-    def from_short_string(action_string: list[str]) -> Xp33MsActionTable:
+    def from_short_string(action_strings: list[str]) -> Xp33MsActionTable:
         """
         Serialize XP33 action table to humane compact readable format.
 
         Args:
-            action_string: XP33 action table to serialize
+            action_strings: XP33 action table to serialize
 
         Returns:
             Human-readable string describing XP33 action table
         """
-        return Xp33MsActionTable.from_short_format(action_string)
+        return Xp33MsActionTable.from_short_format(action_strings)
 
     @staticmethod
     def _percentage_to_byte(percentage: int) -> int:

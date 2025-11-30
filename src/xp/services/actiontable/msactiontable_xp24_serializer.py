@@ -123,17 +123,17 @@ class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
         return action_table.to_short_format()
 
     @staticmethod
-    def from_short_string(action_string: list[str]) -> Xp24MsActionTable:
+    def from_short_string(action_strings: list[str]) -> Xp24MsActionTable:
         """
         Serialize XP24 action table to humane compact readable format.
 
         Args:
-            action_string: XP24 action table to serialize
+            action_strings: XP24 action table to serialize
 
         Returns:
             Human-readable string describing XP24 action table
         """
-        return Xp24MsActionTable.from_short_format(action_string)
+        return Xp24MsActionTable.from_short_format(action_strings)
 
     @staticmethod
     def _decode_input_action(raw_bytes: bytes, pos: int) -> InputAction:

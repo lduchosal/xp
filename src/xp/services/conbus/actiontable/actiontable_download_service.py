@@ -5,7 +5,6 @@ from typing import Any, Optional
 
 from psygnal import Signal
 
-from xp.models.actiontable.actiontable import ActionTable
 from xp.models.actiontable.actiontable_type import ActionTableType
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
@@ -31,7 +30,7 @@ from xp.services.protocol.conbus_event_protocol import (
 )
 
 
-class DownloadService(DownloadStateMachine):
+class ActionTableDownloadService(DownloadStateMachine):
     """
     Service for downloading action tables from Conbus modules via TCP.
 
@@ -66,7 +65,7 @@ class DownloadService(DownloadStateMachine):
     on_progress: Signal = Signal(str)
     on_error: Signal = Signal(str)
     on_finish: Signal = Signal()
-    on_actiontable_received: Signal = Signal(ActionTable, dict[str, Any], list[str])
+    on_actiontable_received: Signal = Signal(Any, dict[str, Any], list[str])
 
     def __init__(
         self,
@@ -352,7 +351,7 @@ class DownloadService(DownloadStateMachine):
         self.conbus_protocol.on_failed.disconnect(self._on_failed)
         self._signals_connected = False
 
-    def __enter__(self) -> "DownloadService":
+    def __enter__(self) -> "ActionTableDownloadService":
         """Enter context manager - reset state and reconnect signals.
 
         Returns:

@@ -50,12 +50,12 @@ class ActionTableSerializerProtocol(Protocol):
         ...
 
     @staticmethod
-    def from_short_string(short_strings: list[str]) -> Any:
+    def from_short_string(action_strings: list[str]) -> Any:
         """
         Deserialize human-readable short format to action table model.
 
         Args:
-            short_strings: List of short format strings.
+            action_strings: List of short format strings.
 
         Returns:
             Deserialized action table model.

@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from xp.cli.commands.conbus.conbus_actiontable_commands import ActionTableError
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.models.actiontable.msactiontable_xp24 import InputAction as Xp24InputAction
 from xp.models.actiontable.msactiontable_xp24 import (
@@ -12,9 +13,8 @@ from xp.models.actiontable.msactiontable_xp24 import (
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
-from xp.services.conbus.msactiontable.msactiontable_download_service import (
-    MsActionTableDownloadService,
-    MsActionTableError,
+from xp.services.conbus.actiontable.actiontable_download_service import (
+    ActionTableDownloadService,
 )
 
 
@@ -40,6 +40,11 @@ class TestMsActionTableService:
         return mock
 
     @pytest.fixture
+    def mock_actiontable_serializer(self):
+        """Create mock serializer."""
+        return Mock()
+
+    @pytest.fixture
     def mock_xp20_serializer(self):
         """Create mock XP20 serializer."""
         return Mock()
@@ -55,26 +60,21 @@ class TestMsActionTableService:
         return Mock()
 
     @pytest.fixture
-    def mock_telegram_service(self):
-        """Create mock TelegramService."""
-        return Mock()
-
-    @pytest.fixture
     def service(
         self,
         mock_conbus_protocol,
+        mock_actiontable_serializer,
         mock_xp20_serializer,
         mock_xp24_serializer,
         mock_xp33_serializer,
-        mock_telegram_service,
     ):
         """Create service instance for testing."""
-        return MsActionTableDownloadService(
+        return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
-            xp20ms_serializer=mock_xp20_serializer,
-            xp24ms_serializer=mock_xp24_serializer,
-            xp33ms_serializer=mock_xp33_serializer,
-            telegram_service=mock_telegram_service,
+            actiontable_serializer=mock_actiontable_serializer,
+            msactiontable_serializer_xp20=mock_xp20_serializer,
+            msactiontable_serializer_xp24=mock_xp24_serializer,
+            msactiontable_serializer_xp33=mock_xp33_serializer,
         )
 
     @pytest.fixture
@@ -113,25 +113,24 @@ class TestMsActionTableService:
     def test_service_initialization(
         self,
         mock_conbus_protocol,
+        mock_actiontable_serializer,
         mock_xp20_serializer,
         mock_xp24_serializer,
         mock_xp33_serializer,
-        mock_telegram_service,
     ):
         """Test service can be initialized with required dependencies."""
-        service = MsActionTableDownloadService(
+        service = ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
-            xp20ms_serializer=mock_xp20_serializer,
-            xp24ms_serializer=mock_xp24_serializer,
-            xp33ms_serializer=mock_xp33_serializer,
-            telegram_service=mock_telegram_service,
+            actiontable_serializer=mock_actiontable_serializer,
+            msactiontable_serializer_xp20=mock_xp20_serializer,
+            msactiontable_serializer_xp24=mock_xp24_serializer,
+            msactiontable_serializer_xp33=mock_xp33_serializer,
         )
 
         assert service.conbus_protocol == mock_conbus_protocol
         assert service.xp20ms_serializer == mock_xp20_serializer
         assert service.xp24ms_serializer == mock_xp24_serializer
         assert service.xp33ms_serializer == mock_xp33_serializer
-        assert service.telegram_service == mock_telegram_service
         assert service.serial_number == ""
         assert service.xpmoduletype == ""
         assert service.msactiontable_data == []
@@ -341,7 +340,7 @@ class TestMsActionTableService:
 
     def test_start_method_invalid_module_type(self, service):
         """Test start method with invalid module type raises error."""
-        with pytest.raises(MsActionTableError, match="Unsupported module type: xp99"):
+        with pytest.raises(ActionTableError, match="Unsupported module type: xp99"):
             service.start(
                 serial_number="0123450001",
                 xpmoduletype="xp99",

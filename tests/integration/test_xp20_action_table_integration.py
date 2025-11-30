@@ -3,9 +3,11 @@
 import pytest
 
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
-from xp.services.conbus.msactiontable.msactiontable_download_service import (
-    MsActionTableDownloadService,
+from xp.services.actiontable.msactiontable_xp20_serializer import (
     Xp20MsActionTableSerializer,
+)
+from xp.services.conbus.actiontable.actiontable_download_service import (
+    ActionTableDownloadService,
 )
 
 
@@ -59,17 +61,17 @@ class TestXp20ActionTableIntegration:
         mock_conbus_protocol.on_timeout.connect = Mock()
         mock_conbus_protocol.on_failed = Mock()
         mock_conbus_protocol.on_failed.connect = Mock()
+        mock_actiontable_serializer = Mock()
         mock_xp20_serializer = Mock()
         mock_xp24_serializer = Mock()
         mock_xp33_serializer = Mock()
-        mock_telegram = Mock()
 
-        service = MsActionTableDownloadService(
+        service = ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
-            xp20ms_serializer=mock_xp20_serializer,
-            xp24ms_serializer=mock_xp24_serializer,
-            xp33ms_serializer=mock_xp33_serializer,
-            telegram_service=mock_telegram,
+            actiontable_serializer=mock_actiontable_serializer,
+            msactiontable_serializer_xp20=mock_xp20_serializer,
+            msactiontable_serializer_xp24=mock_xp24_serializer,
+            msactiontable_serializer_xp33=mock_xp33_serializer,
         )
 
         # The service should have the xp20 serializer available
@@ -78,8 +80,7 @@ class TestXp20ActionTableIntegration:
 
         # Check that the service can be instantiated
         assert service is not None
-        assert service.xp20ms_serializer is not None
-        assert service.telegram_service is not None
+        assert service.msactiontable_serializer_xp20 is not None
 
     def test_complex_configuration_round_trip(self):
         """Test complex configuration through full serialization cycle."""

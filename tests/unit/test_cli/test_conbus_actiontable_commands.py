@@ -1,6 +1,5 @@
 """Unit tests for conbus actiontable CLI commands."""
 
-from dataclasses import asdict
 from unittest.mock import Mock
 
 import pytest
@@ -119,7 +118,7 @@ class TestConbusActionTableCommands:
             else:
                 if actiontable:
                     # Generate dict and short format like the service does
-                    actiontable_dict = asdict(actiontable)
+                    actiontable_dict = actiontable.model_dump()
                     actiontable_short = ActionTableSerializer.to_short_string(
                         actiontable
                     )

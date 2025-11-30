@@ -20,7 +20,7 @@ from xp.models.config.conson_module_config import (
     ConsonModuleListConfig,
 )
 from xp.services.conbus.actiontable.actiontable_download_service import (
-    DownloadService,
+    ActionTableDownloadService,
 )
 from xp.services.conbus.actiontable.actiontable_list_service import (
     ActionTableListService,
@@ -51,8 +51,8 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
     """
-    service: DownloadService = (
-        ctx.obj.get("container").get_container().resolve(DownloadService)
+    service: ActionTableDownloadService = (
+        ctx.obj.get("container").get_container().resolve(ActionTableDownloadService)
     )
 
     def on_progress(progress: str) -> None:

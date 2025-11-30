@@ -22,15 +22,6 @@ from xp.services.actiontable.msactiontable_xp24_serializer import (
 from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
-from xp.services.conbus.actiontable.actiontable_download_service import (
-    DownloadService,
-)
-from xp.services.conbus.actiontable.actiontable_list_service import (
-    ActionTableListService,
-)
-from xp.services.conbus.actiontable.actiontable_show_service import (
-    ActionTableShowService,
-)
 from xp.services.conbus.actiontable.actiontable_upload_service import (
     ActionTableUploadService,
 )
@@ -51,14 +42,14 @@ from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_raw_service import ConbusRawService
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
-from xp.services.conbus.msactiontable.msactiontable_download_service import (
-    MsActionTableDownloadService,
+from xp.services.conbus.actiontable.actiontable_download_service import (
+    ActionTableDownloadService,
 )
-from xp.services.conbus.msactiontable.msactiontable_list_service import (
-    MsActionTableListService,
+from xp.services.conbus.actiontable.actiontable_list_service import (
+    ActionTableListService,
 )
-from xp.services.conbus.msactiontable.msactiontable_show_service import (
-    MsActionTableShowService,
+from xp.services.conbus.actiontable.actiontable_show_service import (
+    ActionTableShowService,
 )
 from xp.services.conbus.msactiontable.msactiontable_upload_service import (
     MsActionTableUploadService,
@@ -323,8 +314,8 @@ class ServiceContainer:
         )
 
         self.container.register(
-            DownloadService,
-            factory=lambda: DownloadService(
+            ActionTableDownloadService,
+            factory=lambda: ActionTableDownloadService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
                 msactiontable_serializer_xp20=self.container.resolve(
@@ -382,13 +373,13 @@ class ServiceContainer:
         )
 
         self.container.register(
-            MsActionTableDownloadService,
-            factory=lambda: MsActionTableDownloadService(
+            ActionTableDownloadService,
+            factory=lambda: ActionTableDownloadService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
-                xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
-                xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
-                xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
-                telegram_service=self.container.resolve(TelegramService),
+                actiontable_serializer=self.container.resolve(ActionTableSerializer),
+                msactiontable_serializer_xp20=self.container.resolve(Xp20MsActionTableSerializer),
+                msactiontable_serializer_xp24=self.container.resolve(Xp24MsActionTableSerializer),
+                msactiontable_serializer_xp33=self.container.resolve(Xp33MsActionTableSerializer),
             ),
             scope=punq.Scope.singleton,
         )
@@ -500,18 +491,6 @@ class ServiceContainer:
                 xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
                 ms_serializer=self.container.resolve(MsActionTableSerializer),
             ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            MsActionTableListService,
-            factory=MsActionTableListService,
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            MsActionTableShowService,
-            factory=MsActionTableShowService,
             scope=punq.Scope.singleton,
         )
 
