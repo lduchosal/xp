@@ -326,17 +326,18 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             data_value=DataPointType.MODULE_ERROR_CODE.value,
         )
 
-    def send_download_request(self, serial_number: str) -> None:
+    def send_download_request(self, serial_number: str, actiontable_type: SystemFunction) -> None:
         """
         Send download request telegram.
 
         Args:
             serial_number: Device serial number.
+            actiontable_type: DOWNLOAD_ACTIONTABLE or DOWNLOAD_MSACTIONTABLE.
         """
         self.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=serial_number,
-            system_function=SystemFunction.DOWNLOAD_ACTIONTABLE,
+            system_function=actiontable_type,
             data_value=NO_ERROR_CODE,
         )
 

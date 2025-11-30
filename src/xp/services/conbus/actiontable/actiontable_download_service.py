@@ -51,7 +51,7 @@ class ActionTableDownloadService(DownloadStateMachine):
     Attributes:
         on_progress: Signal emitted with "." for each chunk received.
         on_error: Signal emitted with error message string.
-        on_actiontable_received: Signal emitted with (ActionTable, dict, list).
+        on_actiontable_received: Signal emitted with (ActionTable, list).
         on_finish: Signal emitted when download and cleanup completed.
 
     Example:
@@ -65,7 +65,7 @@ class ActionTableDownloadService(DownloadStateMachine):
     on_progress: Signal = Signal(str)
     on_error: Signal = Signal(str)
     on_finish: Signal = Signal()
-    on_actiontable_received: Signal = Signal(Any, dict[str, Any], list[str])
+    on_actiontable_received: Signal = Signal(Any, list[str])
 
     def __init__(
         self,
@@ -126,7 +126,7 @@ class ActionTableDownloadService(DownloadStateMachine):
     def on_enter_requesting(self) -> None:
         """Enter requesting state - send download request."""
         self.enter_download_phase()  # Sets phase to DOWNLOAD
-        self.conbus_protocol.send_download_request(serial_number=self.serial_number)
+        self.conbus_protocol.send_download_request(serial_number=self.serial_number, actiontable_type=self.serializer.download_type())
         self.send_download()
 
     def on_enter_waiting_data(self) -> None:

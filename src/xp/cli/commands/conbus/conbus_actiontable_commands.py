@@ -66,7 +66,6 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
 
     def on_actiontable_received(
         _actiontable: ActionTable,
-        actiontable_dict: Dict[str, Any],
         actiontable_short: list[str],
     ) -> None:
         """
@@ -74,13 +73,11 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
 
         Args:
             _actiontable: a list of ActionTableEntries.
-            actiontable_dict: action table in a dictionary.
             actiontable_short: short representation of action table.
         """
         output = {
             "serial_number": serial_number,
-            "actiontable_short": actiontable_short,
-            "actiontable": actiontable_dict,
+            "actiontable_short": actiontable_short
         }
         click.echo(json.dumps(output, indent=2, default=str))
 

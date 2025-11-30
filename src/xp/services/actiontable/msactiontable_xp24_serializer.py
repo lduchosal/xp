@@ -36,19 +36,13 @@ class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
             ValueError: If data length is not 68 bytes.
         """
         raw_length = len(encoded_data)
-        if raw_length != 68:
+        if raw_length != 64:
             raise ValueError(
-                f"Msactiontable is not 68 bytes long ({raw_length}): {encoded_data}"
+                f"Msactiontable is not 64 bytes long ({raw_length}): {encoded_data}"
             )
 
-        # Remove action table count AAAA, AAAB .
-        stripped_data = encoded_data[4:]
-
-        # Take first 64 chars (32 bytes) as per pseudocode
-        hex_data = stripped_data[:64]
-
         # Convert hex string to bytes using deNibble (A-P encoding)
-        data = de_nibbles(hex_data)
+        data = de_nibbles(encoded_data)
 
         # Decode input actions from positions 0-3 (2 bytes each)
         input_actions = []
