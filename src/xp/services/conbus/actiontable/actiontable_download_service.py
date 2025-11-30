@@ -1,12 +1,12 @@
 """Service for downloading ActionTable via Conbus protocol."""
 
 import logging
-from dataclasses import asdict
 from typing import Any, Optional, Union
 
 from psygnal import Signal
 
 from xp.models.actiontable.actiontable import ActionTable
+from xp.models.actiontable.actiontable_type import ActionTableType
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.reply_telegram import ReplyTelegram
@@ -18,6 +18,7 @@ from xp.services.actiontable.download_state_machine import (
 from xp.services.actiontable.msactiontable_xp20_serializer import Xp20MsActionTableSerializer
 from xp.services.actiontable.msactiontable_xp24_serializer import Xp24MsActionTableSerializer
 from xp.services.actiontable.msactiontable_xp33_serializer import Xp33MsActionTableSerializer
+from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.services.protocol.conbus_event_protocol import (
     NO_ERROR_CODE,
     ConbusEventProtocol,
@@ -75,18 +76,16 @@ class DownloadService(DownloadStateMachine):
         Args:
             conbus_protocol: ConbusEventProtocol instance.
             actiontable_serializer: Action table serializer.
+            msactiontable_serializer_xp20: XP20 master station action table serializer.
+            msactiontable_serializer_xp24: XP24 master station action table serializer.
+            msactiontable_serializer_xp33: XP33 master station action table serializer.
         """
         self.conbus_protocol = conbus_protocol
         self.actiontable_serializer = actiontable_serializer
         self.msactiontable_serializer_xp20 = msactiontable_serializer_xp20
         self.msactiontable_serializer_xp24 = msactiontable_serializer_xp24
         self.msactiontable_serializer_xp33 = msactiontable_serializer_xp33
-        self.serializer: Union[
-            ActionTableSerializer,
-            Xp20MsActionTableSerializer,
-            Xp24MsActionTableSerializer,
-            Xp33MsActionTableSerializer,
-        ] = actiontable_serializer
+        self.serializer: ActionTableSerializerProtocol = actiontable_serializer
 
         self.serial_number: str = ""
         self.actiontable_data: list[str] = []
@@ -261,7 +260,7 @@ class DownloadService(DownloadStateMachine):
     def configure(
         self,
         serial_number: str,
-        actiontable_type: str,
+        actiontable_type: ActionTableType,
         timeout_seconds: Optional[float] = 2.0,
     ) -> None:
         """Configure download parameters before starting.
@@ -271,6 +270,7 @@ class DownloadService(DownloadStateMachine):
 
         Args:
             serial_number: Module serial number to download from.
+            actiontable_type: Type of action table to download.
             timeout_seconds: Timeout in seconds for each operation (default 2.0).
 
         Raises:
@@ -280,13 +280,13 @@ class DownloadService(DownloadStateMachine):
             raise RuntimeError("Cannot configure while download in progress")
         self.logger.info("Configuring actiontable download")
         self.serial_number = serial_number
-        if actiontable_type == "actiontable":
+        if actiontable_type == ActionTableType.ACTIONTABLE:
             self.serializer = self.actiontable_serializer
-        if actiontable_type == "msactiontable_xp20":
+        elif actiontable_type == ActionTableType.MSACTIONTABLE_XP20:
             self.serializer = self.msactiontable_serializer_xp20
-        if actiontable_type == "msactiontable_xp24":
+        elif actiontable_type == ActionTableType.MSACTIONTABLE_XP24:
             self.serializer = self.msactiontable_serializer_xp24
-        if actiontable_type == "msactiontable_xp33":
+        elif actiontable_type == ActionTableType.MSACTIONTABLE_XP33:
             self.serializer = self.msactiontable_serializer_xp33
         if timeout_seconds:
             self.conbus_protocol.timeout_seconds = timeout_seconds

@@ -56,6 +56,7 @@ dev = [
     "absolufy-imports>=0.3.1",
     "pytest-asyncio>=1.2.0",
     "types-docutils>=0.22.2.20251006",
+    "docformatter>=1.7.7",
 ]
 
 [tool.pytest.ini_options]
@@ -164,9 +165,10 @@ interrogate = "interrogate -vv src/"
 vulture = "vulture src/ tests/"
 refurb = "refurb src/ tests/"
 isort = "isort src/ tests/"
+docformatter = "docformatter --in-place --recursive --pre-summary-newline --wrap-summaries 88 --wrap-descriptions 88 src/ tests/"
 absolufy = {shell = "find src tests -name '*.py' -type f -exec absolufy-imports --application-directories=src:tests {} +"}
 update-readme = {shell = "xp help > /tmp/xp-help.txt && sed -i '' -e '/<!-- BEGIN CLI HELP -->/,/<!-- END CLI HELP -->/{//!d;}' -e '/<!-- BEGIN CLI HELP -->/r /tmp/xp-help.txt' README.md && rm /tmp/xp-help.txt"}
-check = {composite = ["clean", "lint", "format", "typecheck", "flake8", "interrogate", "vulture", "refurb", "isort", "absolufy", "test-quick", "test-cov", "update-readme"] }
+check = {composite = ["clean", "lint", "format", "docformatter", "typecheck", "flake8", "interrogate", "vulture", "refurb", "isort", "absolufy", "test-quick", "test-cov", "update-readme"] }
 bump-version = "pdm bump -v minor"
 env = "echo ${PATH}"
 install = "pdm install"

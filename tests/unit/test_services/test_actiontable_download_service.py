@@ -6,6 +6,7 @@ from unittest.mock import Mock
 import pytest
 
 from xp.models.actiontable.actiontable import ActionTable
+from xp.models.actiontable.actiontable_type import ActionTableType
 from xp.services.conbus.actiontable.actiontable_download_service import (
     DownloadService,
 )
@@ -62,6 +63,9 @@ class TestActionTableDownloadServiceStateMachine:
         return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            msactiontable_serializer_xp20=Mock(),
+            msactiontable_serializer_xp24=Mock(),
+            msactiontable_serializer_xp33=Mock(),
         )
 
     def test_initial_state_is_idle(self, service):
@@ -269,6 +273,9 @@ class TestActionTableDownloadServiceProtocolIntegration:
         return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            msactiontable_serializer_xp20=Mock(),
+            msactiontable_serializer_xp24=Mock(),
+            msactiontable_serializer_xp33=Mock(),
         )
 
     def test_connection_made_triggers_connect(self, service):
@@ -303,6 +310,9 @@ class TestActionTableDownloadServiceProtocolIntegration:
         DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            msactiontable_serializer_xp20=Mock(),
+            msactiontable_serializer_xp24=Mock(),
+            msactiontable_serializer_xp33=Mock(),
         )
 
         mock_conbus_protocol.on_connection_made.connect.assert_called_once()
@@ -358,6 +368,9 @@ class TestActionTableDownloadServiceContextManager:
         return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            msactiontable_serializer_xp20=Mock(),
+            msactiontable_serializer_xp24=Mock(),
+            msactiontable_serializer_xp33=Mock(),
         )
 
     def test_enter_resets_state_to_idle(self, service):
@@ -454,6 +467,9 @@ class TestActionTableDownloadServiceErrorHandling:
         return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            msactiontable_serializer_xp20=Mock(),
+            msactiontable_serializer_xp24=Mock(),
+            msactiontable_serializer_xp33=Mock(),
         )
 
     def test_failed_handler_emits_error(self, service):
@@ -510,12 +526,19 @@ class TestActionTableDownloadServiceErrorHandling:
 
     def test_configure_sets_serial_number(self, service):
         """Test configure sets serial_number."""
-        service.configure(serial_number="12345678")
+        service.configure(
+            serial_number="12345678",
+            actiontable_type=ActionTableType.ACTIONTABLE,
+        )
         assert service.serial_number == "12345678"
 
     def test_configure_sets_timeout(self, service, mock_conbus_protocol):
         """Test configure sets timeout."""
-        service.configure(serial_number="12345678", timeout_seconds=10.0)
+        service.configure(
+            serial_number="12345678",
+            actiontable_type=ActionTableType.ACTIONTABLE,
+            timeout_seconds=10.0,
+        )
         assert mock_conbus_protocol.timeout_seconds == 10.0
 
     def test_configure_raises_when_not_idle(self, service):
@@ -524,7 +547,10 @@ class TestActionTableDownloadServiceErrorHandling:
         assert service.receiving.is_active
 
         with pytest.raises(RuntimeError, match="Cannot configure while download"):
-            service.configure(serial_number="12345678")
+            service.configure(
+                serial_number="12345678",
+                actiontable_type=ActionTableType.ACTIONTABLE,
+            )
 
     def test_set_timeout(self, service, mock_conbus_protocol):
         """Test set_timeout updates protocol timeout."""

@@ -3,10 +3,11 @@
 from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
+from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.utils.serialization import de_nibbles, nibbles
 
 
-class Xp24MsActionTableSerializer:
+class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
     """Handles serialization/deserialization of XP24 action tables to/from telegrams."""
 
 

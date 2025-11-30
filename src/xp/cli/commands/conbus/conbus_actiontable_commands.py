@@ -14,6 +14,7 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.actiontable.actiontable import ActionTable
+from xp.models.actiontable.actiontable_type import ActionTableType
 from xp.models.config.conson_module_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
@@ -98,7 +99,10 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         service.on_finish.connect(on_finish)
         service.on_actiontable_received.connect(on_actiontable_received)
         service.on_error.connect(on_error)
-        service.configure(serial_number=serial_number)
+        service.configure(
+            serial_number=serial_number,
+            actiontable_type=ActionTableType.ACTIONTABLE,
+        )
         service.start_reactor()
 
 

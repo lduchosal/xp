@@ -6,6 +6,7 @@ from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
+from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.utils.serialization import (
     byte_to_unsigned,
     de_bcd,
@@ -19,7 +20,7 @@ from xp.utils.serialization import (
 )
 
 
-class ActionTableSerializer:
+class ActionTableSerializer(ActionTableSerializerProtocol):
     """Handles serialization/deserialization of ActionTable to/from telegrams.
 
     Attributes:

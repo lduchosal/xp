@@ -6,10 +6,11 @@ from xp.models.actiontable.msactiontable_xp33 import (
     Xp33Scene,
 )
 from xp.models.telegram.timeparam_type import TimeParam
+from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.utils.serialization import bits_to_byte, byte_to_bits, de_nibbles, nibbles
 
 
-class Xp33MsActionTableSerializer:
+class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
     """Handles serialization/deserialization of XP33 action tables to/from telegrams."""
 
     @staticmethod

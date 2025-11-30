@@ -34,9 +34,9 @@ done
 
 # Set total steps based on mode
 if [ "$QUALITY_ONLY" = true ]; then
-    STEPS=16
+    STEPS=17
 else
-    STEPS=23
+    STEPS=24
 fi
 STEP=0
 
@@ -104,6 +104,18 @@ run_command "pdm outdated" "Outdated Dependencies"
 print_step "Updating Dependencies (pdm update)"
 run_command "pdm update" "Dependencies update"
 
+print_step "Converting to Absolute Imports (absolufy-imports)"
+run_command "pdm run absolufy" "Import conversion"
+
+print_step "Sorting Imports (isort)"
+run_command "pdm run isort" "Import sorting"
+
+print_step "Code Formatting (black)"
+run_command "pdm run format" "Code formatting"
+
+print_step "Docstring Formatting (docformatter)"
+run_command "pdm run docformatter" "Docstring formatting"
+
 print_step "Type Checking (typecheck)"
 run_command "pdm run typecheck" "Type checking"
 
@@ -118,15 +130,6 @@ run_command "pdm run refurb" "Code quality check"
 
 print_step "Linting (ruff)"
 run_command "pdm run lint" "Linting"
-
-print_step "Converting to Absolute Imports (absolufy-imports)"
-run_command "pdm run absolufy" "Import conversion"
-
-print_step "Sorting Imports (isort)"
-run_command "pdm run isort" "Import sorting"
-
-print_step "Code Formatting (black)"
-run_command "pdm run format" "Code formatting"
 
 print_step "Dead code check (vulture)"
 run_command "pdm run vulture" "Dead code check"

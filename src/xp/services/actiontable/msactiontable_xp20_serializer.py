@@ -1,6 +1,7 @@
 """Serializer for XP20 Action Table telegram encoding/decoding."""
 
 from xp.models.actiontable.msactiontable_xp20 import InputChannel, Xp20MsActionTable
+from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.utils.serialization import byte_to_bits, de_nibbles, nibbles
 
 # Index constants for clarity in implementation
@@ -11,7 +12,7 @@ AND_FUNCTIONS_INDEX: int = 3  # starts at 3, uses indices 3-10
 SA_FUNCTION_INDEX: int = 11
 TA_FUNCTION_INDEX: int = 12
 
-class Xp20MsActionTableSerializer():
+class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
     """Handles serialization/deserialization of XP20 action tables to/from telegrams."""
 
 

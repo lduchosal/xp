@@ -6,6 +6,7 @@ import pytest
 
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
+from xp.models.actiontable.actiontable_type import ActionTableType
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.conbus.actiontable.actiontable_download_service import (
@@ -48,6 +49,9 @@ class TestActionTableService:
         return DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            msactiontable_serializer_xp20=Mock(),
+            msactiontable_serializer_xp24=Mock(),
+            msactiontable_serializer_xp33=Mock(),
         )
 
     @pytest.fixture
@@ -80,6 +84,9 @@ class TestActionTableService:
         service = DownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            msactiontable_serializer_xp20=Mock(),
+            msactiontable_serializer_xp24=Mock(),
+            msactiontable_serializer_xp33=Mock(),
         )
 
         assert service.conbus_protocol == mock_conbus_protocol
@@ -253,6 +260,7 @@ class TestActionTableService:
         """Test start method sets up serial number and timeout."""
         service.configure(
             serial_number="0123450001",
+            actiontable_type=ActionTableType.ACTIONTABLE,
             timeout_seconds=10.0,
         )
 
