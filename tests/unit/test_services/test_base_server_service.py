@@ -12,7 +12,8 @@ class ConcreteServerService(BaseServerService):
     """Concrete implementation for testing."""
 
     def __init__(self, serial_number: str):
-        """Initialize the concrete server service for testing.
+        """
+        Initialize the concrete server service for testing.
 
         Args:
             serial_number: Serial number of the device.

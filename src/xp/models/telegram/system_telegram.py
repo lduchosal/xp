@@ -1,7 +1,8 @@
-"""System telegram model for console bus communication.
+"""
+System telegram model for console bus communication.
 
-System telegrams are used for system-related information like updating firmware
-and reading temperature from modules.
+System telegrams are used for system-related information like updating firmware and
+reading temperature from modules.
 """
 
 from dataclasses import dataclass
@@ -16,7 +17,8 @@ from xp.models.telegram.telegram_type import TelegramType
 
 @dataclass
 class SystemTelegram(Telegram):
-    """Represents a parsed system telegram from the console bus.
+    """
+    Represents a parsed system telegram from the console bus.
 
     Format: <S{serial_number}F{function_code}D{datapoint_type}{checksum}>
     Examples: <S0020012521F02D18FN>
@@ -40,7 +42,8 @@ class SystemTelegram(Telegram):
         self.telegram_type = TelegramType.SYSTEM
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the system telegram.
@@ -77,7 +80,8 @@ class SystemTelegram(Telegram):
         }
 
     def __str__(self) -> str:
-        """Human-readable string representation.
+        """
+        Human-readable string representation.
 
         Returns:
             Formatted string representation.

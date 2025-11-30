@@ -1,7 +1,8 @@
-"""Conbus Discover Service for TCP communication with Conbus servers.
+"""
+Conbus Discover Service for TCP communication with Conbus servers.
 
-This service implements a TCP client that connects to Conbus servers and sends
-discover telegrams to find modules on the network.
+This service implements a TCP client that connects to Conbus servers and sends discover
+telegrams to find modules on the network.
 """
 
 import asyncio
@@ -40,7 +41,8 @@ class ConbusDiscoverService:
     on_device_discovered: Signal = Signal(ConbusDiscoverResponse)
 
     def __init__(self, conbus_protocol: ConbusEventProtocol) -> None:
-        """Initialize the Conbus discover service.
+        """
+        Initialize the Conbus discover service.
 
         Args:
             conbus_protocol: ConbusProtocol.
@@ -68,7 +70,8 @@ class ConbusDiscoverService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -77,7 +80,8 @@ class ConbusDiscoverService:
         self.discovered_device_result.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -121,7 +125,8 @@ class ConbusDiscoverService:
             self.logger.debug("Not a discover or module type response")
 
     def handle_discovered_device(self, serial_number: str) -> None:
-        """Handle discovered device event.
+        """
+        Handle discovered device event.
 
         Args:
             serial_number: Serial number of the discovered device.
@@ -153,7 +158,8 @@ class ConbusDiscoverService:
     def handle_module_type_code_response(
         self, serial_number: str, module_type_code: str
     ) -> None:
-        """Handle module type code response and update discovered device.
+        """
+        Handle module type code response and update discovered device.
 
         Args:
             serial_number: Serial number of the device.
@@ -214,7 +220,8 @@ class ConbusDiscoverService:
         self.succeed()
 
     def handle_module_type_response(self, serial_number: str, module_type: str) -> None:
-        """Handle module type response and update discovered device.
+        """
+        Handle module type response and update discovered device.
 
         Args:
             serial_number: Serial number of the device.
@@ -249,7 +256,8 @@ class ConbusDiscoverService:
         self.on_finish.emit(self.discovered_device_result)
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -267,7 +275,8 @@ class ConbusDiscoverService:
         self.on_finish.emit(self.discovered_device_result)
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Setup callbacks and timeout for receiving telegrams.
+        """
+        Setup callbacks and timeout for receiving telegrams.
 
         Args:
             timeout_seconds: Optional timeout in seconds.
@@ -279,7 +288,8 @@ class ConbusDiscoverService:
         self,
         event_loop: asyncio.AbstractEventLoop,
     ) -> None:
-        """Setup callbacks and timeout for receiving telegrams.
+        """
+        Setup callbacks and timeout for receiving telegrams.
 
         Args:
             event_loop: Optional event loop to use for async operations.
@@ -296,7 +306,8 @@ class ConbusDiscoverService:
         self.conbus_protocol.stop_reactor()
 
     def __enter__(self) -> "ConbusDiscoverService":
-        """Enter context manager.
+        """
+        Enter context manager.
 
         Returns:
             Self for context manager protocol.

@@ -1,4 +1,5 @@
-"""Conbus Custom Service for sending custom telegrams to modules.
+"""
+Conbus Custom Service for sending custom telegrams to modules.
 
 This service handles custom telegram operations for modules through Conbus telegrams.
 """
@@ -19,7 +20,8 @@ from xp.services.telegram.telegram_service import TelegramService
 
 
 class ConbusCustomService:
-    """Service for sending custom telegrams to Conbus modules.
+    """
+    Service for sending custom telegrams to Conbus modules.
 
     Uses ConbusEventProtocol to provide custom telegram functionality
     for sending arbitrary function codes and data to modules.
@@ -37,7 +39,8 @@ class ConbusCustomService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the Conbus custom service.
+        """
+        Initialize the Conbus custom service.
 
         Args:
             conbus_protocol: Protocol instance for Conbus communication.
@@ -82,7 +85,8 @@ class ConbusCustomService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -90,7 +94,8 @@ class ConbusCustomService:
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -131,7 +136,8 @@ class ConbusCustomService:
         self.failed("Timeout")
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -151,7 +157,8 @@ class ConbusCustomService:
         data: str,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Send a custom telegram to a module.
+        """
+        Send a custom telegram to a module.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -167,7 +174,8 @@ class ConbusCustomService:
             self.set_timeout(timeout_seconds)
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

@@ -384,10 +384,11 @@ class TestReplyTelegramParsing:
         assert "Checksum: IL" in summary
 
     def test_parse_actiontable_reply_telegram(self):
-        """Test parsing an actiontable reply telegram (F17).
+        """
+        Test parsing an actiontable reply telegram (F17).
 
-        This tests a real actiontable telegram received from a module.
-        The F17 function code indicates ACTIONTABLE data response.
+        This tests a real actiontable telegram received from a module. The F17 function
+        code indicates ACTIONTABLE data response.
         """
         raw = "<R0020042796F17DAAAADDBAAABAAADDBAAABBAADDBAAABCAADDBAAIAIAADDBAAIAJAA>"
         result = self.service.parse_reply_telegram(raw)

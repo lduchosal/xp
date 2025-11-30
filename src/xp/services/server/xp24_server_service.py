@@ -1,7 +1,8 @@
-"""XP24 Server Service for device emulation.
+"""
+XP24 Server Service for device emulation.
 
-This service provides XP24-specific device emulation functionality,
-including response generation and device configuration handling.
+This service provides XP24-specific device emulation functionality, including response
+generation and device configuration handling.
 """
 
 from typing import Dict, Optional
@@ -26,7 +27,8 @@ class XP24ServerError(Exception):
 
 
 class XP24Output:
-    """Represents an XP24 output state.
+    """
+    Represents an XP24 output state.
 
     Attributes:
         state: Current state of the output (True=on, False=off).
@@ -39,8 +41,8 @@ class XP24ServerService(BaseServerService):
     """
     XP24 device emulation service.
 
-    Generates XP24-specific responses, handles XP24 device configuration,
-    and implements XP24 telegram format.
+    Generates XP24-specific responses, handles XP24 device configuration, and implements
+    XP24 telegram format.
     """
 
     def __init__(
@@ -49,7 +51,8 @@ class XP24ServerService(BaseServerService):
         _variant: str = "",
         msactiontable_serializer: Optional[Xp24MsActionTableSerializer] = None,
     ):
-        """Initialize XP24 server service.
+        """
+        Initialize XP24 server service.
 
         Args:
             serial_number: The device serial number.
@@ -108,7 +111,8 @@ class XP24ServerService(BaseServerService):
         return telegrams
 
     def _build_ack_nak_response_telegram(self, ack_or_nak: bool) -> str:
-        """Build a complete ACK or NAK response telegram with checksum.
+        """
+        Build a complete ACK or NAK response telegram with checksum.
 
         Args:
             ack_or_nak: true: ACK telegram response, false: NAK telegram response.
@@ -125,7 +129,8 @@ class XP24ServerService(BaseServerService):
     def _build_make_break_response_telegram(
         self, make_or_break: bool, output_number: int
     ) -> str:
-        """Build a complete ACK or NAK response telegram with checksum.
+        """
+        Build a complete ACK or NAK response telegram with checksum.
 
         Args:
             make_or_break: true: MAKE event response, false: BREAK event response.
@@ -192,7 +197,8 @@ class XP24ServerService(BaseServerService):
         )
 
     def _get_msactiontable_serializer(self) -> Optional[Xp24MsActionTableSerializer]:
-        """Get the MsActionTable serializer for XP24.
+        """
+        Get the MsActionTable serializer for XP24.
 
         Returns:
             The XP24 MsActionTable serializer instance.
@@ -200,7 +206,8 @@ class XP24ServerService(BaseServerService):
         return self.msactiontable_serializer
 
     def _get_msactiontable(self) -> Optional[Xp24MsActionTable]:
-        """Get the MsActionTable for XP24.
+        """
+        Get the MsActionTable for XP24.
 
         Returns:
             The XP24 MsActionTable instance.
@@ -208,7 +215,8 @@ class XP24ServerService(BaseServerService):
         return self.msactiontable
 
     def _get_default_msactiontable(self) -> Xp24MsActionTable:
-        """Generate default MsActionTable configuration.
+        """
+        Generate default MsActionTable configuration.
 
         Returns:
             Default XP24 MsActionTable with all inputs set to VOID.
@@ -226,7 +234,8 @@ class XP24ServerService(BaseServerService):
         )
 
     def get_device_info(self) -> Dict:
-        """Get XP24 device information.
+        """
+        Get XP24 device information.
 
         Returns:
             Dictionary containing device information.

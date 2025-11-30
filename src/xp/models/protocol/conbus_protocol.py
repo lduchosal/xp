@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 
 class ConnectionMadeEvent(BaseEvent):
-    """Event dispatched when TCP connection is established.
+    """
+    Event dispatched when TCP connection is established.
 
     Attributes:
         protocol: Reference to the TelegramProtocol instance.
@@ -30,7 +31,8 @@ class ConnectionMadeEvent(BaseEvent):
 
 
 class ConnectionFailedEvent(BaseEvent):
-    """Event dispatched when TCP connection fails.
+    """
+    Event dispatched when TCP connection fails.
 
     Attributes:
         reason: Failure reason.
@@ -40,7 +42,8 @@ class ConnectionFailedEvent(BaseEvent):
 
 
 class SendWriteConfigEvent(BaseEvent):
-    """Event for sending write config commands.
+    """
+    Event for sending write config commands.
 
     Attributes:
         serial_number: Serial number.
@@ -56,7 +59,8 @@ class SendWriteConfigEvent(BaseEvent):
 
 
 class SendActionEvent(BaseEvent):
-    """Event for sending action commands.
+    """
+    Event for sending action commands.
 
     Attributes:
         serial_number: Serial number of the light bulb set.
@@ -74,7 +78,8 @@ class SendActionEvent(BaseEvent):
 
 
 class DatapointEvent(BaseEvent):
-    """Base event for datapoint operations.
+    """
+    Base event for datapoint operations.
 
     Attributes:
         serial_number: Serial number of the light bulb set.
@@ -86,7 +91,8 @@ class DatapointEvent(BaseEvent):
 
 
 class OutputStateReceivedEvent(DatapointEvent):
-    """Event when output state is received.
+    """
+    Event when output state is received.
 
     Attributes:
         data_value: Data value.
@@ -96,7 +102,8 @@ class OutputStateReceivedEvent(DatapointEvent):
 
 
 class LightLevelReceivedEvent(DatapointEvent):
-    """Event when light level is received.
+    """
+    Event when light level is received.
 
     Attributes:
         data_value: Data value.
@@ -106,7 +113,8 @@ class LightLevelReceivedEvent(DatapointEvent):
 
 
 class ReadDatapointEvent(DatapointEvent):
-    """Event to read datapoint.
+    """
+    Event to read datapoint.
 
     Attributes:
         refresh_cache: If True, force cache invalidation and fresh protocol query.
@@ -125,7 +133,8 @@ class ReadDatapointFromProtocolEvent(DatapointEvent):
 
 
 class ModuleEvent(BaseEvent):
-    """Event dispatched when light bulb set is on.
+    """
+    Event dispatched when light bulb set is on.
 
     Attributes:
         serial_number: Serial number of the light bulb set.
@@ -145,7 +154,8 @@ class ModuleEvent(BaseEvent):
 
 
 class LightBulbSetOnEvent(ModuleEvent):
-    """Event dispatched when light bulb set is on.
+    """
+    Event dispatched when light bulb set is on.
 
     Attributes:
         value: On or Off the light bulb set.
@@ -161,7 +171,8 @@ class LightBulbGetOnEvent(ModuleEvent, BaseEvent[bool]):
 
 
 class OutletSetOnEvent(ModuleEvent):
-    """Event dispatched when outlet set is on.
+    """
+    Event dispatched when outlet set is on.
 
     Attributes:
         value: On or Off the light bulb set.
@@ -183,7 +194,8 @@ class OutletGetInUseEvent(ModuleEvent):
 
 
 class OutletSetInUseEvent(ModuleEvent, BaseEvent[bool]):
-    """Event dispatched when outlet set is on.
+    """
+    Event dispatched when outlet set is on.
 
     Attributes:
         value: On or Off the light bulb set.
@@ -193,7 +205,8 @@ class OutletSetInUseEvent(ModuleEvent, BaseEvent[bool]):
 
 
 class DimmingLightSetOnEvent(ModuleEvent):
-    """Event dispatched when dimming light set is on.
+    """
+    Event dispatched when dimming light set is on.
 
     Attributes:
         value: On or Off the light bulb set.
@@ -211,7 +224,8 @@ class DimmingLightGetOnEvent(ModuleEvent):
 
 
 class DimmingLightSetBrightnessEvent(ModuleEvent):
-    """Event dispatched when dimming light set is on.
+    """
+    Event dispatched when dimming light set is on.
 
     Attributes:
         brightness: Level of brightness of the dimming light.
@@ -227,7 +241,8 @@ class DimmingLightGetBrightnessEvent(ModuleEvent):
 
 
 class ConnectionLostEvent(BaseEvent):
-    """Event dispatched when TCP connection is lost.
+    """
+    Event dispatched when TCP connection is lost.
 
     Attributes:
         reason: Disconnection reason.
@@ -237,7 +252,8 @@ class ConnectionLostEvent(BaseEvent):
 
 
 class TelegramEvent(BaseEvent):
-    """Event for telegram operations.
+    """
+    Event for telegram operations.
 
     Attributes:
         protocol: TelegramProtocol instance.
@@ -265,7 +281,8 @@ class TelegramEvent(BaseEvent):
 
 
 class ModuleStateChangedEvent(BaseEvent):
-    """Event dispatched when a module's state changes (from event telegram).
+    """
+    Event dispatched when a module's state changes (from event telegram).
 
     Attributes:
         module_type_code: Module type code from event telegram.
@@ -299,7 +316,8 @@ class TelegramReceivedEvent(TelegramEvent):
 
 
 class InvalidTelegramReceivedEvent(BaseEvent):
-    """Event dispatched when an invalid telegram frame is received.
+    """
+    Event dispatched when an invalid telegram frame is received.
 
     Attributes:
         protocol: TelegramProtocol instance.

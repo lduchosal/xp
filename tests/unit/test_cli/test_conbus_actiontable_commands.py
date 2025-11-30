@@ -44,7 +44,8 @@ class TestConbusActionTableCommands:
         return ActionTable(entries=entries)
 
     def _create_mock_service(self, actiontable=None, error=None):
-        """Create mock service with signal pattern.
+        """
+        Create mock service with signal pattern.
 
         Args:
             actiontable: Optional ActionTable to return on success.
@@ -70,7 +71,8 @@ class TestConbusActionTableCommands:
         error_callbacks = []
 
         def connect_progress(callback):
-            """Mock connect for progress signal.
+            """
+            Mock connect for progress signal.
 
             Args:
                 callback: Callback function to connect.
@@ -78,7 +80,8 @@ class TestConbusActionTableCommands:
             progress_callbacks.append(callback)
 
         def connect_finish(callback):
-            """Mock connect for finish signal.
+            """
+            Mock connect for finish signal.
 
             Args:
                 callback: Callback function to connect.
@@ -86,7 +89,8 @@ class TestConbusActionTableCommands:
             finish_callbacks.append(callback)
 
         def connect_actiontable_received(callback):
-            """Mock connect for actiontable_received signal.
+            """
+            Mock connect for actiontable_received signal.
 
             Args:
                 callback: Callback function to connect.
@@ -94,7 +98,8 @@ class TestConbusActionTableCommands:
             actiontable_received_callbacks.append(callback)
 
         def connect_error(callback):
-            """Mock connect for error signal.
+            """
+            Mock connect for error signal.
 
             Args:
                 callback: Callback function to connect.
@@ -339,7 +344,8 @@ class TestConbusActionTableCommands:
         assert "CP20 0 0 > 1 OFF;" in result.output
 
     def test_download_actiontable_backward_compatible(self, runner, sample_actiontable):
-        """Test that JSON actiontable field is still present for backward compatibility."""
+        """Test that JSON actiontable field is still present for backward
+        compatibility."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
 
@@ -452,7 +458,8 @@ class TestConbusActionTableCommands:
         error_callbacks = []
 
         def connect_finish(callback):
-            """Mock connect for finish signal.
+            """
+            Mock connect for finish signal.
 
             Args:
                 callback: Callback function to connect.
@@ -460,7 +467,8 @@ class TestConbusActionTableCommands:
             finish_callbacks.append(callback)
 
         def connect_error(callback):
-            """Mock connect for error signal.
+            """
+            Mock connect for error signal.
 
             Args:
                 callback: Callback function to connect.
@@ -519,7 +527,8 @@ class TestConbusActionTableCommands:
         error_callbacks = []
 
         def connect_finish(callback):
-            """Mock connect for finish signal.
+            """
+            Mock connect for finish signal.
 
             Args:
                 callback: Callback function to connect.
@@ -527,7 +536,8 @@ class TestConbusActionTableCommands:
             finish_callbacks.append(callback)
 
         def connect_error(callback):
-            """Mock connect for error signal.
+            """
+            Mock connect for error signal.
 
             Args:
                 callback: Callback function to connect.
@@ -578,7 +588,8 @@ class TestConbusActionTableCommands:
         error_callbacks = []
 
         def connect_finish(callback):
-            """Mock connect for finish signal.
+            """
+            Mock connect for finish signal.
 
             Args:
                 callback: Callback function to connect.
@@ -586,7 +597,8 @@ class TestConbusActionTableCommands:
             finish_callbacks.append(callback)
 
         def connect_error(callback):
-            """Mock connect for error signal.
+            """
+            Mock connect for error signal.
 
             Args:
                 callback: Callback function to connect.
@@ -627,7 +639,8 @@ class TestConbusActionTableCommands:
         mock_service.__exit__ = Mock(return_value=None)
 
         def mock_start(serial_number, finish_callback, error_callback):
-            """Execute mock start operation.
+            """
+            Execute mock start operation.
 
             Args:
                 serial_number: Module serial number.
@@ -682,7 +695,8 @@ class TestConbusActionTableCommands:
         mock_service.__exit__ = Mock(return_value=None)
 
         def mock_start(serial_number, finish_callback, error_callback):
-            """Execute mock start operation.
+            """
+            Execute mock start operation.
 
             Args:
                 serial_number: Module serial number.
@@ -717,7 +731,8 @@ class TestConbusActionTableCommands:
         mock_service.__exit__ = Mock(return_value=None)
 
         def mock_start(serial_number, finish_callback, error_callback):
-            """Execute mock start operation.
+            """
+            Execute mock start operation.
 
             Args:
                 serial_number: Module serial number.

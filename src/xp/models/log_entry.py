@@ -11,7 +11,8 @@ from xp.models.telegram.system_telegram import SystemTelegram
 
 @dataclass
 class LogEntry:
-    """Represents a single entry in a console bus log file.
+    """
+    Represents a single entry in a console bus log file.
 
     Format: HH:MM:SS,mmm [TX/RX] <telegram>
     Examples: 22:44:20,352 [TX] <S0012345008F27D00AAFN>
@@ -41,7 +42,8 @@ class LogEntry:
 
     @property
     def is_transmitted(self) -> bool:
-        """True if this is a transmitted telegram.
+        """
+        True if this is a transmitted telegram.
 
         Returns:
             True if direction is TX, False otherwise.
@@ -50,7 +52,8 @@ class LogEntry:
 
     @property
     def is_received(self) -> bool:
-        """True if this is a received telegram.
+        """
+        True if this is a received telegram.
 
         Returns:
             True if direction is RX, False otherwise.
@@ -59,7 +62,8 @@ class LogEntry:
 
     @property
     def telegram_type(self) -> str:
-        """Get the telegram type (event, system, reply, unknown).
+        """
+        Get the telegram type (event, system, reply, unknown).
 
         Returns:
             Telegram type string.
@@ -71,7 +75,8 @@ class LogEntry:
 
     @property
     def is_valid_parse(self) -> bool:
-        """True if the telegram was successfully parsed.
+        """
+        True if the telegram was successfully parsed.
 
         Returns:
             True if parsed without errors, False otherwise.
@@ -80,7 +85,8 @@ class LogEntry:
 
     @property
     def checksum_validated(self) -> Optional[bool]:
-        """Get checksum validation status if available.
+        """
+        Get checksum validation status if available.
 
         Returns:
             Checksum validation status or None if not available.
@@ -90,7 +96,8 @@ class LogEntry:
         return None
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the log entry.
@@ -115,7 +122,8 @@ class LogEntry:
         return result
 
     def __str__(self) -> str:
-        """Human-readable string representation.
+        """
+        Human-readable string representation.
 
         Returns:
             Formatted string representation of the log entry.

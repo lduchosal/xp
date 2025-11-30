@@ -2,15 +2,16 @@
 
 
 class TelegramDatapointService:
-    """Service for processing Telegram protocol datapoint values.
+    """
+    Service for processing Telegram protocol datapoint values.
 
-    Provides methods to parse and extract values from different types of
-    Telegram datapoints including autoreport status, light level outputs,
-    and link number values.
+    Provides methods to parse and extract values from different types of Telegram
+    datapoints including autoreport status, light level outputs, and link number values.
     """
 
     def get_autoreport_status(self, data_value: str) -> bool:
-        """Get the autoreport status value.
+        """
+        Get the autoreport status value.
 
         Args:
             data_value: The raw autoreport status data value (PP or AA).
@@ -22,7 +23,8 @@ class TelegramDatapointService:
         return status_value
 
     def get_autoreport_status_data_value(self, status_value: bool) -> str:
-        """Get the autoreport status data_value.
+        """
+        Get the autoreport status data_value.
 
         Args:
             status_value: Enable (True) or disable (False).
@@ -34,7 +36,8 @@ class TelegramDatapointService:
         return data_value
 
     def get_lightlevel(self, data_value: str, output_number: int) -> int:
-        """Extract the light level for a specific output number.
+        """
+        Extract the light level for a specific output number.
 
         Parses comma-separated output data in the format "output:level[%]"
         and returns the level for the requested output number.
@@ -58,7 +61,8 @@ class TelegramDatapointService:
         return level
 
     def get_linknumber(self, data_value: str) -> int:
-        """Parse and return the link number value.
+        """
+        Parse and return the link number value.
 
         Args:
             data_value: The raw link number data value as a string.
@@ -70,7 +74,8 @@ class TelegramDatapointService:
         return link_number_value
 
     def get_modulenumber(self, data_value: str) -> int:
-        """Parse and return the module number value.
+        """
+        Parse and return the module number value.
 
         Args:
             data_value: The raw module number data value as a string.

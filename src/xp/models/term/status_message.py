@@ -7,7 +7,8 @@ class StatusMessageChanged(Message):
     """Message posted when status message changes."""
 
     def __init__(self, message: str) -> None:
-        """Initialize the message.
+        """
+        Initialize the message.
 
         Args:
             message: The status message to display.

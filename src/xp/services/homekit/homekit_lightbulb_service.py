@@ -1,4 +1,5 @@
-"""HomeKit Light Bulb Service.
+"""
+HomeKit Light Bulb Service.
 
 This module provides service implementation for light bulb accessories.
 """
@@ -17,7 +18,8 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 
 class HomeKitLightbulbService:
-    """Lightbulb service for HomeKit.
+    """
+    Lightbulb service for HomeKit.
 
     Attributes:
         event_bus: Event bus for inter-service communication.
@@ -27,7 +29,8 @@ class HomeKitLightbulbService:
     event_bus: EventBus
 
     def __init__(self, event_bus: EventBus):
-        """Initialize the lightbulb service.
+        """
+        Initialize the lightbulb service.
 
         Args:
             event_bus: Event bus instance.
@@ -40,7 +43,8 @@ class HomeKitLightbulbService:
         self.event_bus.on(LightBulbSetOnEvent, self.handle_lightbulb_set_on)
 
     def handle_lightbulb_get_on(self, event: LightBulbGetOnEvent) -> None:
-        """Handle lightbulb get on event.
+        """
+        Handle lightbulb get on event.
 
         Args:
             event: Lightbulb get on event.
@@ -60,7 +64,8 @@ class HomeKitLightbulbService:
         self.logger.debug(f"Dispatched ReadDatapointEvent for {event.serial_number}")
 
     def handle_lightbulb_set_on(self, event: LightBulbSetOnEvent) -> None:
-        """Handle lightbulb set on event.
+        """
+        Handle lightbulb set on event.
 
         Args:
             event: Lightbulb set on event.

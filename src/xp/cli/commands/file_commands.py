@@ -36,7 +36,8 @@ def decode_log_file(
     time_range: str,
     summary: bool,
 ) -> None:
-    r"""Decode and parse console bus log file.
+    r"""
+    Decode and parse console bus log file.
 
     Args:
         ctx: Click context object.
@@ -114,7 +115,8 @@ def decode_log_file(
 @click.pass_context
 @handle_service_errors(Exception)
 def analyze_log_file(ctx: Context, log_file_path: str) -> None:
-    r"""Analyze console bus log file for patterns and statistics.
+    r"""
+    Analyze console bus log file for patterns and statistics.
 
     Args:
         ctx: Click context object.
@@ -148,7 +150,8 @@ def analyze_log_file(ctx: Context, log_file_path: str) -> None:
 @click.pass_context
 @handle_service_errors(Exception)
 def validate_log_file(ctx: Context, log_file_path: str) -> None:
-    r"""Validate console bus log file format and telegram checksums.
+    r"""
+    Validate console bus log file format and telegram checksums.
 
     Args:
         ctx: Click context object.

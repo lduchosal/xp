@@ -11,7 +11,8 @@ from xp.term.widgets.status_footer import StatusFooterWidget
 
 
 class StateMonitorApp(App[None]):
-    """Textual app for module state monitoring.
+    """
+    Textual app for module state monitoring.
 
     Displays module states from Conson configuration in an interactive
     terminal interface with real-time updates.
@@ -35,7 +36,8 @@ class StateMonitorApp(App[None]):
     ]
 
     def __init__(self, state_service: StateMonitorService) -> None:
-        """Initialize the State Monitor app.
+        """
+        Initialize the State Monitor app.
 
         Args:
             state_service: StateMonitorService for module state operations.
@@ -46,7 +48,8 @@ class StateMonitorApp(App[None]):
         self.footer_widget: Optional[StatusFooterWidget] = None
 
     def compose(self) -> ComposeResult:
-        """Compose the app layout with widgets.
+        """
+        Compose the app layout with widgets.
 
         Yields:
             ModulesListWidget and StatusFooterWidget.
@@ -62,10 +65,11 @@ class StateMonitorApp(App[None]):
         yield self.footer_widget
 
     async def on_mount(self) -> None:
-        """Initialize app after UI is mounted.
+        """
+        Initialize app after UI is mounted.
 
-        Delays connection by 0.5s to let UI render first.
-        Sets up automatic screen refresh every second to update elapsed times.
+        Delays connection by 0.5s to let UI render first. Sets up automatic screen
+        refresh every second to update elapsed times.
         """
         import asyncio
 
@@ -82,7 +86,8 @@ class StateMonitorApp(App[None]):
             self.modules_widget.refresh_last_update_times()
 
     def action_toggle_connection(self) -> None:
-        """Toggle connection on 'c' key press.
+        """
+        Toggle connection on 'c' key press.
 
         Connects if disconnected/failed, disconnects if connected/connecting.
         """

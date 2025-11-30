@@ -261,7 +261,8 @@ class TestListFormatter:
         items = [{"name": "item1"}, {"name": "item2"}]
 
         def item_formatter(x: Any) -> str:
-            """Format item for display.
+            """
+            Format item for display.
 
             Args:
                 x: Item dictionary to format.

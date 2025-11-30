@@ -9,7 +9,8 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 # noinspection DuplicatedCode
 class DatapointTypeChoice(click.ParamType):
-    """Click parameter type for validating DataPointType enum values.
+    """
+    Click parameter type for validating DataPointType enum values.
 
     Attributes:
         name: The parameter type name.
@@ -25,7 +26,8 @@ class DatapointTypeChoice(click.ParamType):
     def convert(
         self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]
     ) -> Any:
-        """Convert and validate input to DataPointType enum.
+        """
+        Convert and validate input to DataPointType enum.
 
         Args:
             value: The input value to convert.

@@ -23,7 +23,8 @@ class TestHomekitConfigValidator:
 
     @staticmethod
     def create_test_homekit_config(accessories=None, rooms=None):
-        """Create test HomeKit configuration.
+        """
+        Create test HomeKit configuration.
 
         Args:
             accessories: Optional list of accessory configurations.
@@ -242,7 +243,8 @@ class TestHomekitConfigValidator:
         assert "Accessory 'orphaned_light' is not assigned to any room" in errors[0]
 
     def test_validate_no_duplicate_accessory_assignments_success(self):
-        """Test validation passes when accessories are not assigned to multiple rooms."""
+        """Test validation passes when accessories are not assigned to multiple
+        rooms."""
         accessories = [
             HomekitAccessoryConfig(
                 name="light1",
@@ -306,7 +308,8 @@ class TestCrossReferenceValidator:
 
     @staticmethod
     def create_test_validators():
-        """Create test validators with compatible configurations.
+        """
+        Create test validators with compatible configurations.
 
         Returns:
             tuple: A tuple of (HomeKit validator, Conson validator) for testing.
@@ -370,7 +373,8 @@ class TestCrossReferenceValidator:
         return conson_validator, homekit_validator
 
     def test_validate_serial_number_references_success(self):
-        """Test validation passes when all accessory serial numbers exist in conson config."""
+        """Test validation passes when all accessory serial numbers exist in conson
+        config."""
         conson_validator, homekit_validator = self.create_test_validators()
         errors = CrossReferenceValidator(
             conson_validator, homekit_validator
@@ -378,7 +382,8 @@ class TestCrossReferenceValidator:
         assert errors == []
 
     def test_validate_serial_number_references_failure(self):
-        """Test validation fails when accessory references non-existent serial number."""
+        """Test validation fails when accessory references non-existent serial
+        number."""
         conson_validator, homekit_validator = self.create_test_validators()
 
         # Add accessory with non-existent serial number

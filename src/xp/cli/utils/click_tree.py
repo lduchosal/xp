@@ -6,7 +6,8 @@ import click
 
 
 def add_tree_command(cli_group: click.Group, command_name: str = "help") -> Any:
-    """Add a tree command to any Click group.
+    """
+    Add a tree command to any Click group.
 
     Args:
         cli_group: The Click group to add the tree command to.
@@ -17,7 +18,8 @@ def add_tree_command(cli_group: click.Group, command_name: str = "help") -> Any:
     """
 
     def print_command_tree(group: click.Group, ctx: click.Context, suffix: str) -> None:
-        """Print command tree recursively.
+        """
+        Print command tree recursively.
 
         Args:
             group: The Click group to print.
@@ -39,7 +41,8 @@ def add_tree_command(cli_group: click.Group, command_name: str = "help") -> Any:
     @cli_group.command(command_name)
     @click.pass_context
     def tree_command(ctx: click.Context) -> None:
-        """Show complete command tree.
+        """
+        Show complete command tree.
 
         Args:
             ctx: The Click context.

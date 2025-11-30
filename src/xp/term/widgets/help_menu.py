@@ -11,7 +11,8 @@ if TYPE_CHECKING:
 
 
 class HelpMenuWidget(Vertical):
-    """Help menu widget displaying keyboard shortcuts and protocol keys.
+    """
+    Help menu widget displaying keyboard shortcuts and protocol keys.
 
     Displays a table of available keyboard shortcuts mapped to their
     corresponding protocol commands.
@@ -27,7 +28,8 @@ class HelpMenuWidget(Vertical):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """Initialize the Help Menu widget.
+        """
+        Initialize the Help Menu widget.
 
         Args:
             service: ProtocolMonitorService instance.
@@ -42,7 +44,8 @@ class HelpMenuWidget(Vertical):
         self.border_title = "Help menu"
 
     def compose(self) -> ComposeResult:
-        """Compose the help menu layout.
+        """
+        Compose the help menu layout.
 
         Yields:
             DataTable widget with key mappings.

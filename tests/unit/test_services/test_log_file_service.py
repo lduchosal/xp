@@ -281,7 +281,8 @@ class TestLogFileService:
 
         # Create a simple object with only module_type
         class EventTelegramMock:
-            """Mock event telegram for testing.
+            """
+            Mock event telegram for testing.
 
             Attributes:
                 module_type: The module type identifier.
@@ -302,7 +303,8 @@ class TestLogFileService:
 
         # Create a simple object with only serial_number
         class SystemTelegramMock:
-            """Mock system telegram for testing.
+            """
+            Mock system telegram for testing.
 
             Attributes:
                 serial_number: The device serial number.

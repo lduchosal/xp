@@ -17,7 +17,8 @@ from xp.services.telegram.telegram_service import TelegramParsingError, Telegram
 @click.argument("telegram_string")
 @handle_service_errors(TelegramParsingError)
 def parse_any_telegram(telegram_string: str) -> None:
-    r"""Auto-detect and parse any type of telegram (event, system, reply, or discover).
+    r"""
+    Auto-detect and parse any type of telegram (event, system, reply, or discover).
 
     Args:
         telegram_string: Telegram string to parse.
@@ -47,7 +48,8 @@ def parse_any_telegram(telegram_string: str) -> None:
 @click.argument("telegram_string")
 @handle_service_errors(TelegramParsingError)
 def validate_telegram(telegram_string: str) -> None:
-    r"""Validate the format of an event telegram.
+    r"""
+    Validate the format of an event telegram.
 
     Args:
         telegram_string: Telegram string to validate.

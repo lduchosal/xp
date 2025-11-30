@@ -5,7 +5,8 @@ from typing import Optional
 
 
 class SystemFunction(str, Enum):
-    """System function codes for system telegrams.
+    """
+    System function codes for system telegrams.
 
     Attributes:
         NONE: Undefined function.
@@ -76,7 +77,8 @@ class SystemFunction(str, Enum):
     ACTION = "27"  # F27D Action function
 
     def get_description(self) -> str:
-        """Get the description of the SystemFunction.
+        """
+        Get the description of the SystemFunction.
 
         Returns:
             Human-readable description of the function.
@@ -102,7 +104,8 @@ class SystemFunction(str, Enum):
 
     @classmethod
     def from_code(cls, code: str) -> Optional["SystemFunction"]:
-        """Get SystemFunction from code string.
+        """
+        Get SystemFunction from code string.
 
         Args:
             code: Function code string.

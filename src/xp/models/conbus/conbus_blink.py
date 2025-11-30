@@ -12,7 +12,8 @@ from xp.models.telegram.system_telegram import SystemTelegram
 
 @dataclass
 class ConbusBlinkResponse:
-    """Represents a response from Conbus send operation.
+    """
+    Represents a response from Conbus send operation.
 
     Attributes:
         success: Whether the operation was successful.
@@ -46,7 +47,8 @@ class ConbusBlinkResponse:
             self.received_telegrams = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the response.

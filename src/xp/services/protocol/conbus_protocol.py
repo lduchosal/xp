@@ -1,4 +1,5 @@
-"""Conbus Protocol for XP telegram communication.
+"""
+Conbus Protocol for XP telegram communication.
 
 This module implements the Twisted protocol for Conbus communication.
 """
@@ -22,7 +23,8 @@ from xp.utils import calculate_checksum
 
 
 class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
-    """Twisted protocol for XP telegram communication.
+    """
+    Twisted protocol for XP telegram communication.
 
     Attributes:
         buffer: Buffer for incoming telegram data.
@@ -40,7 +42,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         cli_config: ConbusClientConfig,
         reactor: PosixReactorBase,
     ) -> None:
-        """Initialize ConbusProtocol.
+        """
+        Initialize ConbusProtocol.
 
         Args:
             cli_config: Configuration for Conbus client connection.
@@ -54,10 +57,11 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.timeout_call: Optional[DelayedCall] = None
 
     def connectionMade(self) -> None:
-        """Handle connection established event.
+        """
+        Handle connection established event.
 
-        Called when TCP connection is successfully established.
-        Starts inactivity timeout monitoring.
+        Called when TCP connection is successfully established. Starts inactivity
+        timeout monitoring.
         """
         self.logger.debug("connectionMade")
         self.connection_established()
@@ -65,7 +69,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self._reset_timeout()
 
     def dataReceived(self, data: bytes) -> None:
-        """Handle received data from TCP connection.
+        """
+        Handle received data from TCP connection.
 
         Parses incoming telegram frames and dispatches events.
 
@@ -124,7 +129,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
             self.telegram_received(telegram_received)
 
     def sendFrame(self, data: bytes) -> None:
-        """Send telegram frame.
+        """
+        Send telegram frame.
 
         Args:
             data: Raw telegram payload (without checksum/framing).
@@ -153,7 +159,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         system_function: SystemFunction,
         data_value: str,
     ) -> None:
-        """Send telegram with specified parameters.
+        """
+        Send telegram with specified parameters.
 
         Args:
             telegram_type: Type of telegram to send.
@@ -170,7 +177,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.sendFrame(payload.encode())
 
     def buildProtocol(self, addr: IAddress) -> protocol.Protocol:
-        """Build protocol instance for connection.
+        """
+        Build protocol instance for connection.
 
         Args:
             addr: Address of the connection.
@@ -182,7 +190,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         return self
 
     def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
-        """Handle client connection failure.
+        """
+        Handle client connection failure.
 
         Args:
             connector: Connection connector instance.
@@ -194,7 +203,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self._stop_reactor()
 
     def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
-        """Handle client connection lost event.
+        """
+        Handle client connection lost event.
 
         Args:
             connector: Connection connector instance.
@@ -206,7 +216,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self._stop_reactor()
 
     def timeout(self) -> bool:
-        """Handle timeout event.
+        """
+        Handle timeout event.
 
         Returns:
             True to continue waiting for next timeout, False to stop.
@@ -216,7 +227,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         return False
 
     def connection_failed(self, reason: Failure) -> None:
-        """Handle connection failure.
+        """
+        Handle connection failure.
 
         Args:
             reason: Failure reason details.
@@ -262,7 +274,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         self.reactor.run()
 
     def __enter__(self) -> "ConbusProtocol":
-        """Enter context manager.
+        """
+        Enter context manager.
 
         Returns:
             Self for context management.
@@ -282,7 +295,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
     """Override methods."""
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Override callback when telegram has been sent.
+        """
+        Override callback when telegram has been sent.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -290,7 +304,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         pass
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Override callback when telegram is received.
+        """
+        Override callback when telegram is received.
 
         Args:
             telegram_received: Event containing received telegram details.
@@ -302,7 +317,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         pass
 
     def connection_lost(self, reason: Failure) -> None:
-        """Override callback when connection is lost.
+        """
+        Override callback when connection is lost.
 
         Args:
             reason: Reason for connection loss.
@@ -310,7 +326,8 @@ class ConbusProtocol(protocol.Protocol, protocol.ClientFactory):
         pass
 
     def failed(self, message: str) -> None:
-        """Override callback when connection failed.
+        """
+        Override callback when connection failed.
 
         Args:
             message: Error message describing the failure.

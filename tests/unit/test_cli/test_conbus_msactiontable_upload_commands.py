@@ -19,7 +19,8 @@ class TestConbusMsActionTableUploadCommand:
         return CliRunner()
 
     def _create_mock_service(self, success=True, error=None):
-        """Create mock upload service with signal pattern.
+        """
+        Create mock upload service with signal pattern.
 
         Args:
             success: Whether upload should succeed.
@@ -43,7 +44,8 @@ class TestConbusMsActionTableUploadCommand:
         error_callbacks = []
 
         def connect_progress(callback):
-            """Mock connect for progress signal.
+            """
+            Mock connect for progress signal.
 
             Args:
                 callback: Callback function to connect.
@@ -51,7 +53,8 @@ class TestConbusMsActionTableUploadCommand:
             progress_callbacks.append(callback)
 
         def connect_finish(callback):
-            """Mock connect for finish signal.
+            """
+            Mock connect for finish signal.
 
             Args:
                 callback: Callback function to connect.
@@ -59,7 +62,8 @@ class TestConbusMsActionTableUploadCommand:
             finish_callbacks.append(callback)
 
         def connect_error(callback):
-            """Mock connect for error signal.
+            """
+            Mock connect for error signal.
 
             Args:
                 callback: Callback function to connect.

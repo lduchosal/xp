@@ -6,7 +6,8 @@ from typing import Literal, Optional
 
 @dataclass
 class TelegramDisplayEvent:
-    """Event containing telegram data for display in TUI.
+    """
+    Event containing telegram data for display in TUI.
 
     Attributes:
         direction: Direction of telegram ("RX" for received, "TX" for transmitted).

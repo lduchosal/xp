@@ -7,7 +7,8 @@ from typing import Any, Dict, Optional
 
 @dataclass
 class ConbusEventListResponse:
-    """Represents a response from Conbus event list operation.
+    """
+    Represents a response from Conbus event list operation.
 
     Attributes:
         events: Dict mapping event keys to list of module names.
@@ -23,7 +24,8 @@ class ConbusEventListResponse:
             self.timestamp = datetime.now()
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the response.

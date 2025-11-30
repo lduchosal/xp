@@ -11,7 +11,8 @@ class LoggerService:
     """Service for managing logging configuration and setup."""
 
     def __init__(self, logger_config: ConbusLoggerConfig):
-        """Initialize LoggerService with configuration.
+        """
+        Initialize LoggerService with configuration.
 
         Args:
             logger_config: Logger configuration object.
@@ -44,7 +45,8 @@ class LoggerService:
             logging.getLogger(module).setLevel(self.logging_config.levels[module])
 
     def setup_console_logging(self, log_format: str, date_format: str) -> None:
-        """Setup console logging with specified format.
+        """
+        Setup console logging with specified format.
 
         Args:
             log_format: Log message format string.
@@ -68,7 +70,8 @@ class LoggerService:
             root_logger.addHandler(handler)
 
     def setup_file_logging(self, log_format: str, date_format: str) -> None:
-        """Setup file logging with rotation for term application.
+        """
+        Setup file logging with rotation for term application.
 
         Args:
             log_format: Log message format string.

@@ -8,7 +8,8 @@ from pydantic import BaseModel, Field
 
 
 class ClientConfig(BaseModel):
-    """Client connection configuration.
+    """
+    Client connection configuration.
 
     Attributes:
         ip: IP address of the Conbus server.
@@ -22,7 +23,8 @@ class ClientConfig(BaseModel):
 
 
 class ConbusClientConfig(BaseModel):
-    """Configuration for Conbus client connection.
+    """
+    Configuration for Conbus client connection.
 
     Attributes:
         conbus: Client configuration settings.
@@ -32,7 +34,8 @@ class ConbusClientConfig(BaseModel):
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "ConbusClientConfig":
-        """Load configuration from YAML file.
+        """
+        Load configuration from YAML file.
 
         Args:
             file_path: Path to the YAML configuration file.

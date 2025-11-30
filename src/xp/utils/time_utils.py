@@ -79,7 +79,8 @@ def format_log_timestamp(dt: datetime) -> str:
 def parse_time_range(
     time_range_str: str, base_date: Optional[datetime] = None
 ) -> tuple[datetime, datetime]:
-    """Parse time range string like "22:44:20,352-22:44:25,500".
+    """
+    Parse time range string like "22:44:20,352-22:44:25,500".
 
     Args:
         time_range_str: Time range string
@@ -105,7 +106,8 @@ def parse_time_range(
 
 
 def calculate_duration_ms(start_time: datetime, end_time: datetime) -> int:
-    """Calculate duration between two timestamps in milliseconds.
+    """
+    Calculate duration between two timestamps in milliseconds.
 
     Args:
         start_time: Start timestamp
@@ -119,7 +121,8 @@ def calculate_duration_ms(start_time: datetime, end_time: datetime) -> int:
 
 
 def is_valid_log_timestamp(timestamp_str: str) -> bool:
-    """Check if timestamp string is valid console bus log format.
+    """
+    Check if timestamp string is valid console bus log format.
 
     Args:
         timestamp_str: Timestamp string to validate

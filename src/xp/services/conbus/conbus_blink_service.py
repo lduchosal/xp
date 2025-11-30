@@ -1,4 +1,5 @@
-"""Conbus Blink Service for TCP communication with Conbus servers.
+"""
+Conbus Blink Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
 blink/unblink telegrams to control module LED indicators.
@@ -36,7 +37,8 @@ class ConbusBlinkService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the Conbus blink service.
+        """
+        Initialize the Conbus blink service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance for communication.
@@ -81,7 +83,8 @@ class ConbusBlinkService:
         self.service_response.operation = self.on_or_off
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -90,7 +93,8 @@ class ConbusBlinkService:
         self.service_response.sent_telegram = system_telegram
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -131,7 +135,8 @@ class ConbusBlinkService:
         self.on_finish.emit(self.service_response)
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -148,7 +153,8 @@ class ConbusBlinkService:
         on_or_off: str,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        r"""Send blink command to start blinking module LED.
+        r"""
+        Send blink command to start blinking module LED.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -168,7 +174,8 @@ class ConbusBlinkService:
         # Caller invokes start_reactor()
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

@@ -38,7 +38,8 @@ class LogFileService:
     )
 
     def __init__(self, telegram_service: TelegramService):
-        """Initialize the log file service.
+        """
+        Initialize the log file service.
 
         Args:
             telegram_service: Telegram service for parsing telegrams.
@@ -48,7 +49,8 @@ class LogFileService:
     def parse_log_file(
         self, file_path: str, base_date: Optional[datetime] = None
     ) -> List[LogEntry]:
-        """Parse a console bus log file into LogEntry objects.
+        """
+        Parse a console bus log file into LogEntry objects.
 
         Args:
             file_path: Path to the log file.
@@ -79,7 +81,8 @@ class LogFileService:
     def parse_log_lines(
         self, lines: List[str], base_date: Optional[datetime] = None
     ) -> List[LogEntry]:
-        """Parse log lines into LogEntry objects.
+        """
+        Parse log lines into LogEntry objects.
 
         Args:
             lines: List of log lines to parse.
@@ -115,7 +118,8 @@ class LogFileService:
     def _parse_log_line(
         self, line: str, line_number: int, base_date: Optional[datetime] = None
     ) -> Optional[LogEntry]:
-        """Parse a single log line into a LogEntry.
+        """
+        Parse a single log line into a LogEntry.
 
         Args:
             line: Log line to parse.
@@ -157,7 +161,8 @@ class LogFileService:
         return entry
 
     def validate_log_format(self, file_path: str) -> bool:
-        """Validate that a file follows the expected log format.
+        """
+        Validate that a file follows the expected log format.
 
         Args:
             file_path: Path to the log file.
@@ -174,7 +179,8 @@ class LogFileService:
             return False
 
     def extract_telegrams(self, file_path: str) -> List[str]:
-        """Extract all telegram strings from a log file.
+        """
+        Extract all telegram strings from a log file.
 
         Args:
             file_path: Path to the log file.
@@ -187,7 +193,8 @@ class LogFileService:
 
     @staticmethod
     def get_file_statistics(entries: List[LogEntry]) -> Dict[str, Any]:
-        """Generate statistics for a list of log entries.
+        """
+        Generate statistics for a list of log entries.
 
         Args:
             entries: List of LogEntry objects.
@@ -280,7 +287,8 @@ class LogFileService:
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
     ) -> List[LogEntry]:
-        """Filter log entries based on criteria.
+        """
+        Filter log entries based on criteria.
 
         Args:
             entries: List of LogEntry objects to filter.

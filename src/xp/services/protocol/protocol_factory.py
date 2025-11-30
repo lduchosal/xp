@@ -1,4 +1,5 @@
-"""Protocol Factory for Twisted protocol creation.
+"""
+Protocol Factory for Twisted protocol creation.
 
 This module provides factory classes for protocol instantiation.
 """
@@ -18,7 +19,8 @@ from xp.services.protocol import TelegramProtocol
 
 
 class TelegramFactory(protocol.ClientFactory):
-    """Factory for creating Telegram protocol instances.
+    """
+    Factory for creating Telegram protocol instances.
 
     Attributes:
         event_bus: Event bus for dispatching protocol events.
@@ -33,7 +35,8 @@ class TelegramFactory(protocol.ClientFactory):
         telegram_protocol: TelegramProtocol,
         connector: IConnector,
     ) -> None:
-        """Initialize TelegramFactory.
+        """
+        Initialize TelegramFactory.
 
         Args:
             event_bus: Event bus for protocol events.
@@ -46,7 +49,8 @@ class TelegramFactory(protocol.ClientFactory):
         self.logger = logging.getLogger(__name__)
 
     def buildProtocol(self, addr: IAddress) -> TelegramProtocol:
-        """Build protocol instance for connection.
+        """
+        Build protocol instance for connection.
 
         Args:
             addr: Address of the connection.
@@ -58,7 +62,8 @@ class TelegramFactory(protocol.ClientFactory):
         return self.telegram_protocol
 
     def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
-        """Handle connection failure event.
+        """
+        Handle connection failure event.
 
         Args:
             connector: Connection connector instance.
@@ -68,7 +73,8 @@ class TelegramFactory(protocol.ClientFactory):
         self.connector.stop()
 
     def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
-        """Handle connection lost event.
+        """
+        Handle connection lost event.
 
         Args:
             connector: Connection connector instance.

@@ -1,7 +1,8 @@
-"""XP230 Server Service for device emulation.
+"""
+XP230 Server Service for device emulation.
 
-This service provides XP230-specific device emulation functionality,
-including response generation and device configuration handling.
+This service provides XP230-specific device emulation functionality, including response
+generation and device configuration handling.
 """
 
 from typing import Dict, Optional
@@ -21,8 +22,8 @@ class XP230ServerService(BaseServerService):
     """
     XP230 device emulation service.
 
-    Generates XP230-specific responses, handles XP230 device configuration,
-    and implements XP230 telegram format.
+    Generates XP230-specific responses, handles XP230 device configuration, and
+    implements XP230 telegram format.
     """
 
     def __init__(
@@ -31,7 +32,8 @@ class XP230ServerService(BaseServerService):
         _variant: str = "",
         _msactiontable_serializer: Optional[MsActionTableSerializer] = None,
     ):
-        """Initialize XP230 server service.
+        """
+        Initialize XP230 server service.
 
         Args:
             serial_number: The device serial number.
@@ -44,7 +46,8 @@ class XP230ServerService(BaseServerService):
         self.firmware_version = "XP230_V1.00.04"
 
     def get_device_info(self) -> Dict:
-        """Get XP230 device information.
+        """
+        Get XP230 device information.
 
         Returns:
             Dictionary containing device information.

@@ -11,7 +11,8 @@ from xp.models.telegram.system_function import SystemFunction
 
 @dataclass
 class ConbusDatapointResponse:
-    """Represents a response from Conbus send operation.
+    """
+    Represents a response from Conbus send operation.
 
     Attributes:
         success: Whether the operation was successful.
@@ -49,7 +50,8 @@ class ConbusDatapointResponse:
             self.datapoints = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the response.

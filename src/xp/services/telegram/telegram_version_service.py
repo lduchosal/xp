@@ -1,7 +1,8 @@
-"""Version service for handling version information parsing and validation.
+"""
+Version service for handling version information parsing and validation.
 
-This service provides business logic for version operations,
-following the layered architecture pattern.
+This service provides business logic for version operations, following the layered
+architecture pattern.
 """
 
 import re
@@ -29,7 +30,8 @@ class VersionService:
 
     @staticmethod
     def parse_version_string(version_string: str) -> Response:
-        """Parse a version string into its components.
+        """
+        Parse a version string into its components.
 
         Args:
             version_string: Version string in format 'XP230_V1.00.04'
@@ -90,7 +92,8 @@ class VersionService:
 
     @staticmethod
     def generate_version_request_telegram(serial_number: str) -> Response:
-        """Generate a system telegram to request version information.
+        """
+        Generate a system telegram to request version information.
 
         Args:
             serial_number: 10-digit serial number of the device
@@ -138,7 +141,8 @@ class VersionService:
 
     @staticmethod
     def validate_version_telegram(telegram: SystemTelegram) -> Response:
-        """Validate if a system telegram is a valid version request.
+        """
+        Validate if a system telegram is a valid version request.
 
         Args:
             telegram: Parsed system telegram
@@ -190,7 +194,8 @@ class VersionService:
 
     @staticmethod
     def parse_version_reply(telegram: ReplyTelegram) -> Response:
-        """Parse version information from a reply telegram.
+        """
+        Parse version information from a reply telegram.
 
         Args:
             telegram: Parsed reply telegram containing version data
@@ -246,7 +251,8 @@ class VersionService:
 
     @staticmethod
     def format_version_summary(version_data: dict) -> str:
-        """Format version information for human-readable output.
+        """
+        Format version information for human-readable output.
 
         Args:
             version_data: Version information dictionary

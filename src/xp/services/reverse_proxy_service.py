@@ -1,7 +1,8 @@
-"""Conbus Reverse Proxy Service for TCP relay with telegram monitoring.
+"""
+Conbus Reverse Proxy Service for TCP relay with telegram monitoring.
 
-This service implements a TCP reverse proxy that listens on port 10001 and forwards
-all telegrams to the configured Conbus server while printing bidirectional traffic.
+This service implements a TCP reverse proxy that listens on port 10001 and forwards all
+telegrams to the configured Conbus server while printing bidirectional traffic.
 """
 
 import logging
@@ -46,7 +47,8 @@ class ReverseProxyService:
         cli_config: ConbusClientConfig,
         listen_port: int,
     ):
-        """Initialize the Conbus reverse proxy service.
+        """
+        Initialize the Conbus reverse proxy service.
 
         Args:
             cli_config: Conbus client configuration.
@@ -66,7 +68,8 @@ class ReverseProxyService:
 
     @property
     def target_ip(self) -> str:
-        """Get target server IP.
+        """
+        Get target server IP.
 
         Returns:
             Target server IP address.
@@ -75,7 +78,8 @@ class ReverseProxyService:
 
     @property
     def target_port(self) -> int:
-        """Get target server port.
+        """
+        Get target server port.
 
         Returns:
             Target server port number.
@@ -83,7 +87,8 @@ class ReverseProxyService:
         return self.cli_config.conbus.port
 
     def start_proxy(self) -> Response:
-        """Start the reverse proxy server.
+        """
+        Start the reverse proxy server.
 
         Returns:
             Response object with success status and proxy details.
@@ -139,7 +144,8 @@ class ReverseProxyService:
             )
 
     def stop_proxy(self) -> Response:
-        """Stop the reverse proxy server.
+        """
+        Stop the reverse proxy server.
 
         Returns:
             Response object with success status.
@@ -171,7 +177,8 @@ class ReverseProxyService:
         )
 
     def get_status(self) -> Response:
-        """Get current proxy status and active connections.
+        """
+        Get current proxy status and active connections.
 
         Returns:
             Response object with proxy status and connection details.
@@ -230,7 +237,8 @@ class ReverseProxyService:
     def _handle_client(
         self, client_socket: socket.socket, client_address: tuple, conn_id: str
     ) -> None:
-        """Handle individual client connection with server relay.
+        """
+        Handle individual client connection with server relay.
 
         Args:
             client_socket: Client socket connection.
@@ -314,7 +322,8 @@ class ReverseProxyService:
         dest_label: str,
         conn_id: str,
     ) -> None:
-        """Relay data between sockets with telegram monitoring.
+        """
+        Relay data between sockets with telegram monitoring.
 
         Args:
             source_socket: Source socket to receive from.
@@ -366,7 +375,8 @@ class ReverseProxyService:
                 self.logger.error(f"Error in data relay: {e} [{conn_id}]")
 
     def _close_connection_pair(self, conn_id: str) -> None:
-        """Close both client and server sockets for a connection.
+        """
+        Close both client and server sockets for a connection.
 
         Args:
             conn_id: Connection identifier.
@@ -409,7 +419,8 @@ class ReverseProxyService:
 
     @staticmethod
     def timestamp() -> str:
-        """Generate timestamp string for logging.
+        """
+        Generate timestamp string for logging.
 
         Returns:
             Timestamp string in HH:MM:SS,mmm format.
@@ -417,7 +428,8 @@ class ReverseProxyService:
         return datetime.now().strftime("%H:%M:%S,%f")[:-3]
 
     def run_blocking(self) -> None:
-        """Run the proxy in blocking mode (for CLI usage).
+        """
+        Run the proxy in blocking mode (for CLI usage).
 
         Raises:
             ReverseProxyError: If proxy fails to start.

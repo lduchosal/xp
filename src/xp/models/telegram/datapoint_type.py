@@ -5,7 +5,8 @@ from typing import Optional
 
 
 class DataPointType(str, Enum):
-    """Data point types for system telegrams.
+    """
+    Data point types for system telegrams.
 
     Attributes:
         MODULE_TYPE: Module type (XP24, XP33, etc).
@@ -98,7 +99,8 @@ class DataPointType(str, Enum):
 
     @classmethod
     def from_code(cls, code: str) -> Optional["DataPointType"]:
-        """Get DataPointType from code string.
+        """
+        Get DataPointType from code string.
 
         Args:
             code: Datapoint type code string.

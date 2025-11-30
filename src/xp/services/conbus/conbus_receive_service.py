@@ -1,7 +1,8 @@
-"""Conbus Receive Service for receiving telegrams from Conbus servers.
+"""
+Conbus Receive Service for receiving telegrams from Conbus servers.
 
-This service uses ConbusEventProtocol to provide receive-only functionality,
-allowing clients to receive waiting event telegrams using empty telegram sends.
+This service uses ConbusEventProtocol to provide receive-only functionality, allowing
+clients to receive waiting event telegrams using empty telegram sends.
 """
 
 import asyncio
@@ -33,7 +34,8 @@ class ConbusReceiveService:
     on_finish: Signal = Signal(ConbusReceiveResponse)
 
     def __init__(self, conbus_protocol: ConbusEventProtocol) -> None:
-        """Initialize the Conbus receive service.
+        """
+        Initialize the Conbus receive service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
@@ -57,7 +59,8 @@ class ConbusReceiveService:
         self.logger.debug("Connection established, waiting for telegrams.")
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -65,7 +68,8 @@ class ConbusReceiveService:
         pass
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -85,7 +89,8 @@ class ConbusReceiveService:
         self.on_finish.emit(self.receive_response)
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -96,7 +101,8 @@ class ConbusReceiveService:
         self.on_finish.emit(self.receive_response)
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Setup callbacks and timeout for receiving telegrams.
+        """
+        Setup callbacks and timeout for receiving telegrams.
 
         Args:
             timeout_seconds: Optional timeout in seconds.
@@ -108,7 +114,8 @@ class ConbusReceiveService:
         self,
         event_loop: asyncio.AbstractEventLoop,
     ) -> None:
-        """Setup callbacks and timeout for receiving telegrams.
+        """
+        Setup callbacks and timeout for receiving telegrams.
 
         Args:
             event_loop: Optional event loop to use for async operations.
@@ -125,7 +132,8 @@ class ConbusReceiveService:
         self.conbus_protocol.stop_reactor()
 
     def __enter__(self) -> "ConbusReceiveService":
-        """Enter context manager.
+        """
+        Enter context manager.
 
         Returns:
             Self for context manager protocol.

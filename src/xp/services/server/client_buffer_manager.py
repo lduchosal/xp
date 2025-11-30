@@ -1,7 +1,8 @@
-"""Client buffer manager for broadcasting telegrams to connected clients.
+"""
+Client buffer manager for broadcasting telegrams to connected clients.
 
-This module provides thread-safe management of per-client telegram queues,
-enabling broadcast of telegrams from device services to all connected clients.
+This module provides thread-safe management of per-client telegram queues, enabling
+broadcast of telegrams from device services to all connected clients.
 """
 
 import queue
@@ -24,7 +25,8 @@ class ClientBufferManager:
         self._lock = threading.Lock()
 
     def register_client(self, client_socket: socket.socket) -> queue.Queue[str]:
-        """Register a new client and create its telegram queue.
+        """
+        Register a new client and create its telegram queue.
 
         Args:
             client_socket: The socket of the connecting client.
@@ -38,7 +40,8 @@ class ClientBufferManager:
             return client_queue
 
     def unregister_client(self, client_socket: socket.socket) -> None:
-        """Unregister a client and remove its telegram queue.
+        """
+        Unregister a client and remove its telegram queue.
 
         Args:
             client_socket: The socket of the disconnecting client.
@@ -47,7 +50,8 @@ class ClientBufferManager:
             self._buffers.pop(client_socket, None)
 
     def broadcast(self, telegram: str) -> None:
-        """Broadcast a telegram to all connected clients.
+        """
+        Broadcast a telegram to all connected clients.
 
         Args:
             telegram: The telegram string to broadcast.
@@ -57,7 +61,8 @@ class ClientBufferManager:
                 client_queue.put(telegram)
 
     def get_queue(self, client_socket: socket.socket) -> Optional[queue.Queue[str]]:
-        """Retrieve the queue for a specific client.
+        """
+        Retrieve the queue for a specific client.
 
         Args:
             client_socket: The socket of the client.

@@ -23,7 +23,8 @@ from xp.services.telegram.telegram_service import TelegramService
 
 
 class ConbusExportService:
-    """Service for exporting Conbus device configurations.
+    """
+    Service for exporting Conbus device configurations.
 
     Discovers all devices on the Conbus network and queries their configuration
     datapoints to generate a structured export file compatible with conson.yml format.
@@ -57,7 +58,8 @@ class ConbusExportService:
     ]
 
     def __init__(self, conbus_protocol: ConbusEventProtocol) -> None:
-        """Initialize the Conbus export service.
+        """
+        Initialize the Conbus export service.
 
         Args:
             conbus_protocol: Protocol for Conbus communication.
@@ -93,7 +95,8 @@ class ConbusExportService:
         )
 
     def telegram_sent(self, telegram: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram: Telegram that was sent.
@@ -101,7 +104,8 @@ class ConbusExportService:
         self.export_result.sent_telegrams.append(telegram)
 
     def telegram_received(self, event: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             event: Telegram received event.
@@ -133,7 +137,8 @@ class ConbusExportService:
                 )
 
     def _handle_discovery_response(self, serial_number: str) -> None:
-        """Handle discovery response and query all datapoints.
+        """
+        Handle discovery response and query all datapoints.
 
         Args:
             serial_number: Serial number of discovered device.
@@ -175,7 +180,8 @@ class ConbusExportService:
     def _handle_datapoint_response(
         self, serial_number: str, datapoint_code: str, value: str
     ) -> None:
-        """Handle datapoint response and store value.
+        """
+        Handle datapoint response and store value.
 
         Args:
             serial_number: Serial number of device.
@@ -201,7 +207,8 @@ class ConbusExportService:
     def _store_datapoint_value(
         self, serial_number: str, datapoint: DataPointType, value: str
     ) -> None:
-        """Store datapoint value in device config.
+        """
+        Store datapoint value in device config.
 
         Args:
             serial_number: Serial number of device.
@@ -231,7 +238,8 @@ class ConbusExportService:
             self.logger.warning(f"Invalid value '{value}' for {datapoint.name}: {e}")
 
     def _is_device_complete(self, serial_number: str) -> bool:
-        """Check if a device has all required datapoints.
+        """
+        Check if a device has all required datapoints.
 
         Args:
             serial_number: Serial number of device.
@@ -253,7 +261,8 @@ class ConbusExportService:
         )
 
     def _check_device_complete(self, serial_number: str) -> None:
-        """Check if device has all datapoints and emit completion signal.
+        """
+        Check if device has all datapoints and emit completion signal.
 
         Args:
             serial_number: Serial number of device.
@@ -313,7 +322,8 @@ class ConbusExportService:
             self.on_finish.emit(self.export_result)
 
     def _write_export_file(self, path: str) -> None:
-        """Write export to YAML file.
+        """
+        Write export to YAML file.
 
         Args:
             path: Output file path.
@@ -385,7 +395,8 @@ class ConbusExportService:
         self._finalize_export()
 
     def failed(self, message: str) -> None:
-        """Handle connection failure event.
+        """
+        Handle connection failure event.
 
         Args:
             message: Failure message.
@@ -398,7 +409,8 @@ class ConbusExportService:
         self.on_finish.emit(self.export_result)
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set timeout for export operation.
+        """
+        Set timeout for export operation.
 
         Args:
             timeout_seconds: Timeout in seconds.
@@ -407,7 +419,8 @@ class ConbusExportService:
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
     def set_event_loop(self, event_loop: asyncio.AbstractEventLoop) -> None:
-        """Set event loop for async operations.
+        """
+        Set event loop for async operations.
 
         Args:
             event_loop: Event loop to use.
@@ -424,7 +437,8 @@ class ConbusExportService:
         self.conbus_protocol.stop_reactor()
 
     def __enter__(self) -> "ConbusExportService":
-        """Enter context manager.
+        """
+        Enter context manager.
 
         Returns:
             Self for context manager protocol.

@@ -15,7 +15,8 @@ from xp.services.conbus.conbus_event_raw_service import ConbusEventRawService
 @conbus_event.command("list")
 @click.pass_context
 def list_events(ctx: click.Context) -> None:
-    r"""List configured event telegrams from module action tables.
+    r"""
+    List configured event telegrams from module action tables.
 
     Reads conson.yml configuration, parses action tables, and groups
     modules by their event keys to show which modules are assigned to
@@ -50,7 +51,8 @@ def send_event_raw(
     input_number: int,
     time_ms: int,
 ) -> None:
-    r"""Send raw event telegrams to simulate button presses.
+    r"""
+    Send raw event telegrams to simulate button presses.
 
     Args:
         ctx: Click context object.
@@ -66,7 +68,8 @@ def send_event_raw(
     """
 
     def on_finish(response: ConbusEventRawResponse) -> None:
-        """Handle successful completion of event raw operation.
+        """
+        Handle successful completion of event raw operation.
 
         Args:
             response: Event raw response with sent and received telegrams.
@@ -74,7 +77,8 @@ def send_event_raw(
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     def on_progress(telegram: str) -> None:
-        """Handle progress updates during event operation.
+        """
+        Handle progress updates during event operation.
 
         Args:
             telegram: Received telegram.

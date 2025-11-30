@@ -1,7 +1,8 @@
-"""Unit tests for SystemTelegram model.
+"""
+Unit tests for SystemTelegram model.
 
-Tests the system telegram model functionality including parsing,
-validation, and data structure integrity.
+Tests the system telegram model functionality including parsing, validation, and data
+structure integrity.
 """
 
 from datetime import datetime

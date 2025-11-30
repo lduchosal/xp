@@ -110,7 +110,8 @@ class TestActionTableIntegration:
         }
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -118,7 +119,8 @@ class TestActionTableIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
-            """Mock on_progress event connection.
+            """
+            Mock on_progress event connection.
 
             Args:
                 callback: Callback function to store.
@@ -126,7 +128,8 @@ class TestActionTableIntegration:
             callbacks["on_progress"] = callback
 
         def mock_on_actiontable_received_connect(callback):
-            """Mock on_actiontable_received event connection.
+            """
+            Mock on_actiontable_received event connection.
 
             Args:
                 callback: Callback function to store.
@@ -141,7 +144,8 @@ class TestActionTableIntegration:
 
         # Mock the start method to call callbacks immediately
         def mock_start(serial_number):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 serial_number: Serial number of the module.

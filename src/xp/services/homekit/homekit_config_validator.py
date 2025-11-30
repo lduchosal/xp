@@ -1,4 +1,5 @@
-"""HomeKit Configuration Validator.
+"""
+HomeKit Configuration Validator.
 
 This module validates HomeKit configuration files for correctness and consistency.
 """
@@ -14,7 +15,8 @@ class HomekitConfigValidator:
     """Validates homekit.yml configuration file for HomeKit integration."""
 
     def __init__(self, config: HomekitConfig):
-        """Initialize the HomeKit config validator.
+        """
+        Initialize the HomeKit config validator.
 
         Args:
             config: HomeKit configuration to validate.
@@ -22,7 +24,8 @@ class HomekitConfigValidator:
         self.config = config
 
     def validate_unique_accessory_names(self) -> List[str]:
-        """Validate that all accessory names are unique.
+        """
+        Validate that all accessory names are unique.
 
         Returns:
             List of validation error messages.
@@ -38,7 +41,8 @@ class HomekitConfigValidator:
         return errors
 
     def validate_service_types(self) -> List[str]:
-        """Validate that service types are valid.
+        """
+        Validate that service types are valid.
 
         Returns:
             List of validation error messages.
@@ -58,7 +62,8 @@ class HomekitConfigValidator:
         return errors
 
     def validate_output_numbers(self) -> List[str]:
-        """Validate that output numbers are positive integers.
+        """
+        Validate that output numbers are positive integers.
 
         Returns:
             List of validation error messages.
@@ -72,7 +77,8 @@ class HomekitConfigValidator:
         return errors
 
     def validate_unique_room_names(self) -> List[str]:
-        """Validate that all room names are unique.
+        """
+        Validate that all room names are unique.
 
         Returns:
             List of validation error messages.
@@ -88,7 +94,8 @@ class HomekitConfigValidator:
         return errors
 
     def validate_room_accessory_references(self) -> List[str]:
-        """Validate that all room accessories exist in accessories section.
+        """
+        Validate that all room accessories exist in accessories section.
 
         Returns:
             List of validation error messages.
@@ -106,7 +113,8 @@ class HomekitConfigValidator:
         return errors
 
     def validate_no_orphaned_accessories(self) -> List[str]:
-        """Validate that all accessories are assigned to at least one room.
+        """
+        Validate that all accessories are assigned to at least one room.
 
         Returns:
             List of validation error messages.
@@ -124,7 +132,8 @@ class HomekitConfigValidator:
         return errors
 
     def validate_no_duplicate_accessory_assignments(self) -> List[str]:
-        """Validate that accessories are not assigned to multiple rooms.
+        """
+        Validate that accessories are not assigned to multiple rooms.
 
         Returns:
             List of validation error messages.
@@ -143,7 +152,8 @@ class HomekitConfigValidator:
         return errors
 
     def validate_all(self) -> List[str]:
-        """Run all validations and return combined errors.
+        """
+        Run all validations and return combined errors.
 
         Returns:
             List of all validation error messages.
@@ -167,7 +177,8 @@ class CrossReferenceValidator:
         conson_validator: ConsonConfigValidator,
         homekit_validator: HomekitConfigValidator,
     ):
-        """Initialize the cross-reference validator.
+        """
+        Initialize the cross-reference validator.
 
         Args:
             conson_validator: Conson configuration validator.
@@ -177,7 +188,8 @@ class CrossReferenceValidator:
         self.homekit_validator = homekit_validator
 
     def validate_serial_number_references(self) -> List[str]:
-        """Validate that all accessory serial numbers exist in conson configuration.
+        """
+        Validate that all accessory serial numbers exist in conson configuration.
 
         Returns:
             List of validation error messages.
@@ -192,7 +204,8 @@ class CrossReferenceValidator:
         return errors
 
     def validate_output_capabilities(self) -> List[str]:
-        """Validate that output numbers are within module capabilities.
+        """
+        Validate that output numbers are within module capabilities.
 
         Returns:
             List of validation error messages.
@@ -232,7 +245,8 @@ class CrossReferenceValidator:
         return errors
 
     def validate_all(self) -> List[str]:
-        """Run all cross-reference validations and return combined errors.
+        """
+        Run all cross-reference validations and return combined errors.
 
         Returns:
             List of all cross-reference validation error messages.
@@ -247,7 +261,8 @@ class ConfigValidationService:
     """Main service for validating HomeKit configuration coherence."""
 
     def __init__(self, conson_config_path: str, homekit_config_path: str):
-        """Initialize the config validation service.
+        """
+        Initialize the config validation service.
 
         Args:
             conson_config_path: Path to conson.yml configuration file.
@@ -266,7 +281,8 @@ class ConfigValidationService:
         )
 
     def validate_all(self) -> dict:
-        """Run all validations and return organized results.
+        """
+        Run all validations and return organized results.
 
         Returns:
             Dictionary containing validation results and error counts.
@@ -287,7 +303,8 @@ class ConfigValidationService:
         }
 
     def print_config_summary(self) -> str:
-        """Generate a summary of the configuration.
+        """
+        Generate a summary of the configuration.
 
         Returns:
             String containing configuration summary.

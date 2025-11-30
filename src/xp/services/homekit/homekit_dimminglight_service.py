@@ -1,4 +1,5 @@
-"""HomeKit Dimming Light Service.
+"""
+HomeKit Dimming Light Service.
 
 This module provides service implementation for dimming light accessories.
 """
@@ -19,7 +20,8 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 
 class HomeKitDimmingLightService:
-    """Dimming light service for HomeKit.
+    """
+    Dimming light service for HomeKit.
 
     Attributes:
         event_bus: Event bus for inter-service communication.
@@ -29,7 +31,8 @@ class HomeKitDimmingLightService:
     event_bus: EventBus
 
     def __init__(self, event_bus: EventBus) -> None:
-        """Initialize the dimming light service.
+        """
+        Initialize the dimming light service.
 
         Args:
             event_bus: Event bus instance.
@@ -48,7 +51,8 @@ class HomeKitDimmingLightService:
         )
 
     def handle_dimminglight_get_on(self, event: DimmingLightGetOnEvent) -> None:
-        """Handle dimming light get on event.
+        """
+        Handle dimming light get on event.
 
         Args:
             event: Dimming light get on event.
@@ -67,7 +71,8 @@ class HomeKitDimmingLightService:
         self.logger.debug(f"Dispatched ReadDatapointEvent for {event.serial_number}")
 
     def handle_dimminglight_set_on(self, event: DimmingLightSetOnEvent) -> None:
-        """Handle dimming light set on event.
+        """
+        Handle dimming light set on event.
 
         Args:
             event: Dimming light set on event.
@@ -98,7 +103,8 @@ class HomeKitDimmingLightService:
     def handle_dimminglight_set_brightness(
         self, event: DimmingLightSetBrightnessEvent
     ) -> None:
-        """Handle dimming light set brightness event.
+        """
+        Handle dimming light set brightness event.
 
         Args:
             event: Dimming light set brightness event.
@@ -126,7 +132,8 @@ class HomeKitDimmingLightService:
     def handle_dimminglight_get_brightness(
         self, event: DimmingLightGetBrightnessEvent
     ) -> None:
-        """Handle dimming light get brightness event.
+        """
+        Handle dimming light get brightness event.
 
         Args:
             event: Dimming light get brightness event.

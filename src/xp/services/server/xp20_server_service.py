@@ -1,7 +1,8 @@
-"""XP20 Server Service for device emulation.
+"""
+XP20 Server Service for device emulation.
 
-This service provides XP20-specific device emulation functionality,
-including response generation and device configuration handling.
+This service provides XP20-specific device emulation functionality, including response
+generation and device configuration handling.
 """
 
 from typing import Dict, Optional
@@ -24,8 +25,8 @@ class XP20ServerService(BaseServerService):
     """
     XP20 device emulation service.
 
-    Generates XP20-specific responses, handles XP20 device configuration,
-    and implements XP20 telegram format.
+    Generates XP20-specific responses, handles XP20 device configuration, and implements
+    XP20 telegram format.
     """
 
     def __init__(
@@ -34,7 +35,8 @@ class XP20ServerService(BaseServerService):
         _variant: str = "",
         msactiontable_serializer: Optional[Xp20MsActionTableSerializer] = None,
     ):
-        """Initialize XP20 server service.
+        """
+        Initialize XP20 server service.
 
         Args:
             serial_number: The device serial number.
@@ -53,7 +55,8 @@ class XP20ServerService(BaseServerService):
         self.msactiontable = self._get_default_msactiontable()
 
     def _get_msactiontable_serializer(self) -> Optional[Xp20MsActionTableSerializer]:
-        """Get the MsActionTable serializer for XP20.
+        """
+        Get the MsActionTable serializer for XP20.
 
         Returns:
             The XP20 MsActionTable serializer instance.
@@ -61,7 +64,8 @@ class XP20ServerService(BaseServerService):
         return self.msactiontable_serializer
 
     def _get_msactiontable(self) -> Optional[Xp20MsActionTable]:
-        """Get the MsActionTable for XP20.
+        """
+        Get the MsActionTable for XP20.
 
         Returns:
             The XP20 MsActionTable instance.
@@ -69,7 +73,8 @@ class XP20ServerService(BaseServerService):
         return self.msactiontable
 
     def _get_default_msactiontable(self) -> Xp20MsActionTable:
-        """Generate default MsActionTable configuration.
+        """
+        Generate default MsActionTable configuration.
 
         Returns:
             Default XP20 MsActionTable with all inputs unconfigured.
@@ -78,7 +83,8 @@ class XP20ServerService(BaseServerService):
         return Xp20MsActionTable()
 
     def get_device_info(self) -> Dict:
-        """Get XP20 device information.
+        """
+        Get XP20 device information.
 
         Returns:
             Dictionary containing device information.

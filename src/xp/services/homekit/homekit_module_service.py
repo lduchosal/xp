@@ -1,4 +1,5 @@
-"""HomeKit Module Service.
+"""
+HomeKit Module Service.
 
 This module provides service implementation for HomeKit module management.
 """
@@ -13,7 +14,8 @@ from xp.models.config.conson_module_config import (
 
 
 class HomekitModuleService:
-    """Service for managing HomeKit module configurations.
+    """
+    Service for managing HomeKit module configurations.
 
     Attributes:
         logger: Logger instance.
@@ -24,7 +26,8 @@ class HomekitModuleService:
         self,
         conson_modules_config: ConsonModuleListConfig,
     ):
-        """Initialize the HomeKit module service.
+        """
+        Initialize the HomeKit module service.
 
         Args:
             conson_modules_config: Conson module list configuration.
@@ -34,7 +37,8 @@ class HomekitModuleService:
         self.conson_modules_config = conson_modules_config
 
     def get_module_by_serial(self, serial_number: str) -> Optional[ConsonModuleConfig]:
-        """Get a module by its serial number.
+        """
+        Get a module by its serial number.
 
         Args:
             serial_number: Serial number of the module to find.

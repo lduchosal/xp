@@ -38,7 +38,8 @@ from xp.services.conbus.msactiontable.msactiontable_upload_service import (
 def conbus_download_msactiontable(
     ctx: Context, serial_number: str, xpmoduletype: str
 ) -> None:
-    """Download MS action table from XP24 module.
+    """
+    Download MS action table from XP24 module.
 
     Args:
         ctx: Click context object.
@@ -50,7 +51,8 @@ def conbus_download_msactiontable(
     )
 
     def on_progress(progress: str) -> None:
-        """Handle progress updates during MS action table download.
+        """
+        Handle progress updates during MS action table download.
 
         Args:
             progress: Progress message string.
@@ -61,7 +63,8 @@ def conbus_download_msactiontable(
         msaction_table: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable],
         msaction_table_short: list[str],
     ) -> None:
-        """Handle successful completion of XP24 MS action table download.
+        """
+        Handle successful completion of XP24 MS action table download.
 
         Args:
             msaction_table: Downloaded XP MS action table object.
@@ -87,7 +90,8 @@ def conbus_download_msactiontable(
         click.echo(json.dumps(output, indent=2, default=str))
 
     def on_error(error: str) -> None:
-        """Handle errors during MS action table download.
+        """
+        Handle errors during MS action table download.
 
         Args:
             error: Error message string.
@@ -110,7 +114,8 @@ def conbus_download_msactiontable(
 @conbus_msactiontable.command("list", short_help="List modules with MsActionTable")
 @click.pass_context
 def conbus_list_msactiontable(ctx: Context) -> None:
-    """List all modules with action table configurations from conson.yml.
+    """
+    List all modules with action table configurations from conson.yml.
 
     Args:
         ctx: Click context object.
@@ -120,7 +125,8 @@ def conbus_list_msactiontable(ctx: Context) -> None:
     )
 
     def on_finish(module_list: dict) -> None:
-        """Handle successful completion of action table list.
+        """
+        Handle successful completion of action table list.
 
         Args:
             module_list: Dictionary containing modules and total count.
@@ -128,7 +134,8 @@ def conbus_list_msactiontable(ctx: Context) -> None:
         click.echo(json.dumps(module_list, indent=2, default=str))
 
     def on_error(error: str) -> None:
-        """Handle errors during action table list.
+        """
+        Handle errors during action table list.
 
         Args:
             error: Error message string.
@@ -145,7 +152,8 @@ def conbus_list_msactiontable(ctx: Context) -> None:
 @click.argument("serial_number", type=SERIAL)
 @click.pass_context
 def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
-    """Show ms action table configuration for a specific module from conson.yml.
+    """
+    Show ms action table configuration for a specific module from conson.yml.
 
     Args:
         ctx: Click context object.
@@ -156,7 +164,8 @@ def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
     )
 
     def on_finish(module: ConsonModuleConfig) -> None:
-        """Handle successful completion of action table show.
+        """
+        Handle successful completion of action table show.
 
         Args:
             module: Dictionary containing module configuration.
@@ -194,7 +203,8 @@ def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
             click.echo(_format_yaml(yaml_dict, indent=2))
 
     def error_callback(error: str) -> None:
-        """Handle errors during action table show.
+        """
+        Handle errors during action table show.
 
         Args:
             error: Error message string.
@@ -217,7 +227,8 @@ def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
 def conbus_upload_msactiontable(
     ctx: Context, serial_number: str, xpmoduletype: str
 ) -> None:
-    """Upload MS action table from conson.yml to XP module.
+    """
+    Upload MS action table from conson.yml to XP module.
 
     Args:
         ctx: Click context object.
@@ -229,7 +240,8 @@ def conbus_upload_msactiontable(
     )
 
     def on_progress(progress: str) -> None:
-        """Handle progress updates during MS action table upload.
+        """
+        Handle progress updates during MS action table upload.
 
         Args:
             progress: Progress message string.
@@ -237,7 +249,8 @@ def conbus_upload_msactiontable(
         click.echo(progress, nl=False)
 
     def on_finish(success: bool) -> None:
-        """Handle successful completion of MS action table upload.
+        """
+        Handle successful completion of MS action table upload.
 
         Args:
             success: Whether upload was successful.
@@ -247,7 +260,8 @@ def conbus_upload_msactiontable(
             click.echo("\nMsactiontable uploaded successfully")
 
     def on_error(error: str) -> None:
-        """Handle errors during MS action table upload.
+        """
+        Handle errors during MS action table upload.
 
         Args:
             error: Error message string.
@@ -269,7 +283,8 @@ def conbus_upload_msactiontable(
 
 
 def _format_yaml(data: dict, indent: int = 0) -> str:
-    """Format a dictionary as YAML-like output.
+    """
+    Format a dictionary as YAML-like output.
 
     Args:
         data: Dictionary to format.

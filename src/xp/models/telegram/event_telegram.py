@@ -13,7 +13,8 @@ from xp.models.telegram.telegram_type import TelegramType
 
 @dataclass
 class EventTelegram(Telegram):
-    r"""Represent a parsed event telegram from the console bus.
+    r"""
+    Represent a parsed event telegram from the console bus.
 
     Format: <[EO]{module_type}L{link_number}I{input_number}{event_type}{checksum}>
 
@@ -46,7 +47,8 @@ class EventTelegram(Telegram):
 
     @property
     def module_info(self) -> Optional[ModuleType]:
-        """Get module type information for this telegram.
+        """
+        Get module type information for this telegram.
 
         Returns:
             ModuleType instance if found, None otherwise.
@@ -55,7 +57,8 @@ class EventTelegram(Telegram):
 
     @property
     def input_type(self) -> InputType:
-        """Determines the input type based on input number.
+        """
+        Determines the input type based on input number.
 
         Returns:
             InputType enum value.
@@ -71,7 +74,8 @@ class EventTelegram(Telegram):
 
     @property
     def is_button_press(self) -> bool:
-        """True if this is a button press event.
+        """
+        True if this is a button press event.
 
         Returns:
             True if event is a button press, False otherwise.
@@ -80,7 +84,8 @@ class EventTelegram(Telegram):
 
     @property
     def is_button_release(self) -> bool:
-        """True if this is a button release event.
+        """
+        True if this is a button release event.
 
         Returns:
             True if event is a button release, False otherwise.
@@ -88,7 +93,8 @@ class EventTelegram(Telegram):
         return self.event_type == EventType.BUTTON_RELEASE
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the event telegram.
@@ -122,7 +128,8 @@ class EventTelegram(Telegram):
         return result
 
     def __str__(self) -> str:
-        """Human-readable string representation.
+        """
+        Human-readable string representation.
 
         Returns:
             Formatted string representation.

@@ -1,7 +1,8 @@
-"""Base Server Service with shared functionality.
+"""
+Base Server Service with shared functionality.
 
-This module provides a base class for all XP device server services,
-containing common functionality like module type response generation.
+This module provides a base class for all XP device server services, containing common
+functionality like module type response generation.
 """
 
 import logging
@@ -20,12 +21,13 @@ class BaseServerService(ABC):
     """
     Base class for all XP device server services.
 
-    Provides common functionality that is shared across all device types,
-    such as module type response generation.
+    Provides common functionality that is shared across all device types, such as module
+    type response generation.
     """
 
     def __init__(self, serial_number: str):
-        """Initialize base server service.
+        """
+        Initialize base server service.
 
         Args:
             serial_number: The device serial number.
@@ -52,7 +54,8 @@ class BaseServerService(ABC):
     def generate_datapoint_type_response(
         self, datapoint_type: DataPointType
     ) -> Optional[str]:
-        """Generate datapoint_type response telegram.
+        """
+        Generate datapoint_type response telegram.
 
         Args:
             datapoint_type: The type of datapoint to query.
@@ -81,7 +84,8 @@ class BaseServerService(ABC):
         return telegram
 
     def _check_request_for_device(self, request: SystemTelegram) -> bool:
-        """Check if request is for this device (including broadcast).
+        """
+        Check if request is for this device (including broadcast).
 
         Args:
             request: The system telegram request to check.
@@ -93,7 +97,8 @@ class BaseServerService(ABC):
 
     @staticmethod
     def _build_response_telegram(data_part: str) -> str:
-        """Build a complete response telegram with checksum.
+        """
+        Build a complete response telegram with checksum.
 
         Args:
             data_part: The data part of the telegram without checksum.
@@ -105,7 +110,8 @@ class BaseServerService(ABC):
         return f"<{data_part}{checksum}>"
 
     def _log_response(self, response_type: str, telegram: str) -> None:
-        """Log response generation.
+        """
+        Log response generation.
 
         Args:
             response_type: The type of response being generated.
@@ -116,7 +122,8 @@ class BaseServerService(ABC):
         )
 
     def generate_discover_response(self) -> str:
-        """Generate discover response telegram.
+        """
+        Generate discover response telegram.
 
         Returns:
             The discover response telegram string.
@@ -129,7 +136,8 @@ class BaseServerService(ABC):
     def set_link_number(
         self, request: SystemTelegram, new_link_number: int
     ) -> Optional[str]:
-        """Set link number and generate ACK response.
+        """
+        Set link number and generate ACK response.
 
         Args:
             request: The system telegram request.
@@ -155,7 +163,8 @@ class BaseServerService(ABC):
         return None
 
     def _get_msactiontable_serializer(self) -> Optional[Any]:
-        """Get the MsActionTable serializer for this device.
+        """
+        Get the MsActionTable serializer for this device.
 
         Subclasses should override this to return their specific serializer.
 
@@ -165,7 +174,8 @@ class BaseServerService(ABC):
         return None
 
     def _get_msactiontable(self) -> Optional[Any]:
-        """Get the MsActionTable for this device.
+        """
+        Get the MsActionTable for this device.
 
         Subclasses should override this to return their msactiontable instance.
 
@@ -208,7 +218,8 @@ class BaseServerService(ABC):
     def _handle_download_msactiontable_ack_request(
         self, _request: SystemTelegram
     ) -> Optional[str]:
-        """Handle MsActionTable download ACK protocol.
+        """
+        Handle MsActionTable download ACK protocol.
 
         Args:
             _request: The system telegram request (unused, kept for signature consistency).
@@ -225,7 +236,8 @@ class BaseServerService(ABC):
         return self._build_response_telegram(f"R{self.serial_number}F19D")  # NAK
 
     def process_system_telegram(self, request: SystemTelegram) -> Optional[str]:
-        """Template method for processing system telegrams.
+        """
+        Template method for processing system telegrams.
 
         Args:
             request: The system telegram request to process.
@@ -287,7 +299,8 @@ class BaseServerService(ABC):
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Override in subclasses for device-specific data requests.
+        """
+        Override in subclasses for device-specific data requests.
 
         Args:
             request: The system telegram request.
@@ -298,7 +311,8 @@ class BaseServerService(ABC):
         return None
 
     def _handle_write_config_request(self, request: SystemTelegram) -> Optional[str]:
-        """Handle WRITE_CONFIG requests.
+        """
+        Handle WRITE_CONFIG requests.
 
         Args:
             request: The system telegram request.
@@ -312,7 +326,8 @@ class BaseServerService(ABC):
         return self._handle_device_specific_config_request()
 
     def _handle_action_request(self, request: SystemTelegram) -> Optional[str]:
-        """Handle ACTION requests.
+        """
+        Handle ACTION requests.
 
         Args:
             request: The system telegram request.
@@ -325,7 +340,8 @@ class BaseServerService(ABC):
     def _handle_device_specific_action_request(
         self, request: SystemTelegram
     ) -> Optional[str]:
-        """Override in subclasses for device-specific data requests.
+        """
+        Override in subclasses for device-specific data requests.
 
         Args:
             request: The system telegram request.
@@ -337,7 +353,8 @@ class BaseServerService(ABC):
 
     @staticmethod
     def _handle_device_specific_config_request() -> Optional[str]:
-        """Override in subclasses for device-specific config requests.
+        """
+        Override in subclasses for device-specific config requests.
 
         Returns:
             The response telegram string, or None if request cannot be handled.
@@ -345,7 +362,8 @@ class BaseServerService(ABC):
         return None
 
     def add_telegram_buffer(self, telegram: str) -> None:
-        """Add telegram to the buffer.
+        """
+        Add telegram to the buffer.
 
         Args:
             telegram: The telegram string to add to the buffer.
@@ -355,7 +373,8 @@ class BaseServerService(ABC):
             self.telegram_buffer.append(telegram)
 
     def collect_telegram_buffer(self) -> list[str]:
-        """Collecting telegrams from the buffer.
+        """
+        Collecting telegrams from the buffer.
 
         Returns:
             List of telegram strings from the buffer. The buffer is cleared after collection.

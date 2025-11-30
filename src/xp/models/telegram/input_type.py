@@ -4,7 +4,8 @@ from enum import Enum
 
 
 class InputType(Enum):
-    """Input types based on input number ranges.
+    """
+    Input types based on input number ranges.
 
     Attributes:
         PUSH_BUTTON: Push button input (range 00-09).

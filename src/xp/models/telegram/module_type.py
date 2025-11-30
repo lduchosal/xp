@@ -8,7 +8,8 @@ from xp.models.telegram.module_type_code import MODULE_TYPE_REGISTRY
 
 @dataclass
 class ModuleType:
-    """Represents a module type in the XP system.
+    """
+    Represents a module type in the XP system.
 
     Contains the module code, name, and description.
 
@@ -30,7 +31,8 @@ class ModuleType:
 
     @classmethod
     def from_code(cls, code: int) -> Optional["ModuleType"]:
-        """Create ModuleType from a numeric code.
+        """
+        Create ModuleType from a numeric code.
 
         Args:
             code: The numeric module type code.
@@ -45,7 +47,8 @@ class ModuleType:
 
     @classmethod
     def from_name(cls, name: str) -> Optional["ModuleType"]:
-        """Create ModuleType from a module name.
+        """
+        Create ModuleType from a module name.
 
         Args:
             name: The module name (case-insensitive).
@@ -61,7 +64,8 @@ class ModuleType:
 
     @property
     def is_reserved(self) -> bool:
-        """Check if this module type is reserved.
+        """
+        Check if this module type is reserved.
 
         Returns:
             True if module type is reserved, False otherwise.
@@ -70,7 +74,8 @@ class ModuleType:
 
     @property
     def is_push_button_panel(self) -> bool:
-        """Check if this module type is a push button panel.
+        """
+        Check if this module type is a push button panel.
 
         Returns:
             True if module is a push button panel, False otherwise.
@@ -87,7 +92,8 @@ class ModuleType:
 
     @property
     def is_ir_capable(self) -> bool:
-        """Check if this module type has IR capabilities.
+        """
+        Check if this module type has IR capabilities.
 
         Returns:
             True if module has IR capabilities, False otherwise.
@@ -106,7 +112,8 @@ class ModuleType:
 
     @property
     def category(self) -> str:
-        """Get the module category based on its type.
+        """
+        Get the module category based on its type.
 
         Returns:
             Module category string.
@@ -122,7 +129,8 @@ class ModuleType:
         return "Unknown"
 
     def to_dict(self) -> Dict:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the module type.
@@ -138,7 +146,8 @@ class ModuleType:
         }
 
     def __str__(self) -> str:
-        """Return human-readable string representation.
+        """
+        Return human-readable string representation.
 
         Returns:
             Formatted string representation.
@@ -147,7 +156,8 @@ class ModuleType:
 
 
 def get_all_module_types() -> List[ModuleType]:
-    """Get all available module types.
+    """
+    Get all available module types.
 
     Returns:
         List of all ModuleType instances.
@@ -162,7 +172,8 @@ def get_all_module_types() -> List[ModuleType]:
 
 
 def get_module_types_by_category() -> Dict[str, List[ModuleType]]:
-    """Get module types grouped by category.
+    """
+    Get module types grouped by category.
 
     Returns:
         Dictionary mapping category names to lists of ModuleType instances.
@@ -177,7 +188,8 @@ def get_module_types_by_category() -> Dict[str, List[ModuleType]]:
 
 
 def is_valid_module_code(code: int) -> bool:
-    """Check if a module code is valid.
+    """
+    Check if a module code is valid.
 
     Args:
         code: Module code to validate.

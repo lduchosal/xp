@@ -8,7 +8,8 @@ from xp.models.telegram.module_type_code import ModuleTypeCode
 
 
 class ModuleTypeChoice(click.ParamType):
-    """Click parameter type for validating ModuleTypeCode enum values.
+    """
+    Click parameter type for validating ModuleTypeCode enum values.
 
     Attributes:
         name: The parameter type name.
@@ -24,7 +25,8 @@ class ModuleTypeChoice(click.ParamType):
     def convert(
         self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]
     ) -> int:
-        """Convert and validate input to ModuleTypeCode value.
+        """
+        Convert and validate input to ModuleTypeCode value.
 
         Args:
             value: The input value to convert.

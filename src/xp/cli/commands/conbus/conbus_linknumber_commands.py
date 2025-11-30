@@ -25,7 +25,8 @@ from xp.services.telegram.telegram_datapoint_service import TelegramDatapointSer
 def set_linknumber_command(
     ctx: click.Context, serial_number: str, link_number: int
 ) -> None:
-    r"""Set the link number for a specific module.
+    r"""
+    Set the link number for a specific module.
 
     Args:
         ctx: Click context object.
@@ -41,7 +42,8 @@ def set_linknumber_command(
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """Handle successful completion of light level on command.
+        """
+        Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.
@@ -66,7 +68,8 @@ def set_linknumber_command(
 @click.pass_context
 @connection_command()
 def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
-    r"""Get the current link number for a specific module.
+    r"""
+    Get the current link number for a specific module.
 
     Args:
         ctx: Click context object.
@@ -84,7 +87,8 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
     )
 
     def on_finish(service_response: ConbusDatapointResponse) -> None:
-        """Handle successful completion of link number get command.
+        """
+        Handle successful completion of link number get command.
 
         Args:
             service_response: Link number response object.

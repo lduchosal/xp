@@ -458,7 +458,8 @@ class TestActionTableUploadFullSequence:
         mock_conson_config,
         nomod_96_actiontable,
     ):
-        """Test that full 96-entry ActionTable upload generates correct telegram sequence.
+        """
+        Test that full 96-entry ActionTable upload generates correct telegram sequence.
 
         Verifies:
         - Exactly 16 telegrams sent (1 UPLOAD_ACTIONTABLE + 15 ACTIONTABLE)
@@ -484,7 +485,8 @@ class TestActionTableUploadFullSequence:
         sent_telegrams = []
 
         def capture_telegram(**kwargs):
-            """Capture telegram send calls for verification.
+            """
+            Capture telegram send calls for verification.
 
             Args:
                 kwargs: Telegram parameters to capture.

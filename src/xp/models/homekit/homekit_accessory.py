@@ -8,7 +8,8 @@ from pyhap.const import CATEGORY_SENSOR
 
 
 class TemperatureSensor(Accessory):
-    """Fake Temperature sensor, measuring every 3 seconds.
+    """
+    Fake Temperature sensor, measuring every 3 seconds.
 
     Attributes:
         category: HomeKit category for sensor.
@@ -18,7 +19,8 @@ class TemperatureSensor(Accessory):
     category = CATEGORY_SENSOR
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Initialize temperature sensor accessory.
+        """
+        Initialize temperature sensor accessory.
 
         Args:
             args: Positional arguments passed to parent Accessory.

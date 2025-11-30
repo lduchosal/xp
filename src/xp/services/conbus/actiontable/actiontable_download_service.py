@@ -15,9 +15,15 @@ from xp.services.actiontable.download_state_machine import (
     MAX_ERROR_RETRIES,
     DownloadStateMachine,
 )
-from xp.services.actiontable.msactiontable_xp20_serializer import Xp20MsActionTableSerializer
-from xp.services.actiontable.msactiontable_xp24_serializer import Xp24MsActionTableSerializer
-from xp.services.actiontable.msactiontable_xp33_serializer import Xp33MsActionTableSerializer
+from xp.services.actiontable.msactiontable_xp20_serializer import (
+    Xp20MsActionTableSerializer,
+)
+from xp.services.actiontable.msactiontable_xp24_serializer import (
+    Xp24MsActionTableSerializer,
+)
+from xp.services.actiontable.msactiontable_xp33_serializer import (
+    Xp33MsActionTableSerializer,
+)
 from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.services.protocol.conbus_event_protocol import (
     NO_ERROR_CODE,
@@ -26,7 +32,8 @@ from xp.services.protocol.conbus_event_protocol import (
 
 
 class DownloadService(DownloadStateMachine):
-    """Service for downloading action tables from Conbus modules via TCP.
+    """
+    Service for downloading action tables from Conbus modules via TCP.
 
     Inherits from ActionTableDownloadStateMachine and overrides on_enter_*
     methods to add protocol-specific behavior.
@@ -59,9 +66,7 @@ class DownloadService(DownloadStateMachine):
     on_progress: Signal = Signal(str)
     on_error: Signal = Signal(str)
     on_finish: Signal = Signal()
-    on_actiontable_received: Signal = Signal(
-        ActionTable, dict[str, Any], list[str]
-    )
+    on_actiontable_received: Signal = Signal(ActionTable, dict[str, Any], list[str])
 
     def __init__(
         self,
@@ -71,7 +76,8 @@ class DownloadService(DownloadStateMachine):
         msactiontable_serializer_xp24: Xp24MsActionTableSerializer,
         msactiontable_serializer_xp33: Xp33MsActionTableSerializer,
     ) -> None:
-        """Initialize the action table download service.
+        """
+        Initialize the action table download service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
@@ -141,9 +147,7 @@ class DownloadService(DownloadStateMachine):
         all_data = "".join(self.actiontable_data)
         actiontable = self.serializer.from_encoded_string(all_data)
         actiontable_short = self.serializer.to_short_string(actiontable)
-        self.on_actiontable_received.emit(
-            actiontable, actiontable_short
-        )
+        self.on_actiontable_received.emit(actiontable, actiontable_short)
         # Switch to CLEANUP phase
         self.start_cleanup_phase()
 
@@ -166,7 +170,8 @@ class DownloadService(DownloadStateMachine):
             self.do_connect()
 
     def _on_read_datapoint_received(self, reply_telegram: ReplyTelegram) -> None:
-        """Handle READ_DATAPOINT response for error status check.
+        """
+        Handle READ_DATAPOINT response for error status check.
 
         Args:
             reply_telegram: The parsed reply telegram.
@@ -190,7 +195,8 @@ class DownloadService(DownloadStateMachine):
     def _on_actiontable_chunk_received(
         self, reply_telegram: ReplyTelegram, actiontable_chunk: str
     ) -> None:
-        """Handle actiontable chunk telegram received.
+        """
+        Handle actiontable chunk telegram received.
 
         Args:
             reply_telegram: The parsed reply telegram containing chunk data.
@@ -206,7 +212,8 @@ class DownloadService(DownloadStateMachine):
             self.receive_chunk()
 
     def _on_eof_received(self, reply_telegram: ReplyTelegram) -> None:
-        """Handle EOF telegram received.
+        """
+        Handle EOF telegram received.
 
         Args:
             reply_telegram: The parsed reply telegram (unused).
@@ -219,7 +226,8 @@ class DownloadService(DownloadStateMachine):
             self.receive_eof()
 
     def _on_telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -247,7 +255,8 @@ class DownloadService(DownloadStateMachine):
             self.on_error.emit("Timeout")
 
     def _on_failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -263,7 +272,8 @@ class DownloadService(DownloadStateMachine):
         actiontable_type: ActionTableType,
         timeout_seconds: Optional[float] = 2.0,
     ) -> None:
-        """Configure download parameters before starting.
+        """
+        Configure download parameters before starting.
 
         Sets the target module serial number and timeout. Call this before
         start_reactor() to configure the download target.
@@ -292,7 +302,8 @@ class DownloadService(DownloadStateMachine):
             self.conbus_protocol.timeout_seconds = timeout_seconds
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

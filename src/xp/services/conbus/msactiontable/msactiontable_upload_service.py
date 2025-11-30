@@ -29,7 +29,8 @@ class MsActionTableUploadError(Exception):
 
 
 class MsActionTableUploadService:
-    """TCP client service for uploading MS action tables to Conbus modules.
+    """
+    TCP client service for uploading MS action tables to Conbus modules.
 
     Manages TCP socket connections, handles telegram generation and transmission,
     and processes server responses for MS action table uploads.
@@ -53,7 +54,8 @@ class MsActionTableUploadService:
         telegram_service: TelegramService,
         conson_config: ConsonModuleListConfig,
     ) -> None:
-        """Initialize the MS action table upload service.
+        """
+        Initialize the MS action table upload service.
 
         Args:
             conbus_protocol: ConbusEventProtocol for communication.
@@ -104,7 +106,8 @@ class MsActionTableUploadService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -112,7 +115,8 @@ class MsActionTableUploadService:
         self.logger.debug(f"Telegram sent: {telegram_sent}")
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -133,7 +137,8 @@ class MsActionTableUploadService:
         self._handle_upload_response(reply_telegram)
 
     def _handle_upload_response(self, reply_telegram: Any) -> None:
-        """Handle telegram responses during upload.
+        """
+        Handle telegram responses during upload.
 
         Args:
             reply_telegram: Parsed reply telegram.
@@ -174,7 +179,8 @@ class MsActionTableUploadService:
         self.failed("Upload timeout")
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -188,7 +194,8 @@ class MsActionTableUploadService:
         xpmoduletype: str,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Upload MS action table to module.
+        """
+        Upload MS action table to module.
 
         Uploads the MS action table configuration to the specified module.
 
@@ -280,7 +287,8 @@ class MsActionTableUploadService:
         )
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

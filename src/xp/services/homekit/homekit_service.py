@@ -1,4 +1,5 @@
-"""HomeKit Service for Apple HomeKit integration.
+"""
+HomeKit Service for Apple HomeKit integration.
 
 This module provides the main service for HomeKit integration.
 """
@@ -34,7 +35,8 @@ from xp.services.protocol.protocol_factory import TelegramFactory
 
 
 class HomeKitService:
-    """Main HomeKit service for Apple HomeKit integration.
+    """
+    Main HomeKit service for Apple HomeKit integration.
 
     Attributes:
         cli_config: Conbus client configuration.
@@ -66,7 +68,8 @@ class HomeKitService:
         module_factory: HomekitHapService,
         telegram_service: TelegramService,
     ):
-        """Initialize the HomeKit service.
+        """
+        Initialize the HomeKit service.
 
         Args:
             cli_config: Conbus client configuration.
@@ -142,7 +145,8 @@ class HomeKitService:
         self.reactor.run()
 
     def _start_module_factory(self) -> None:
-        """Start module factory after reactor starts.
+        """
+        Start module factory after reactor starts.
 
         Creates and schedules an async task to start the HAP service.
         """
@@ -181,7 +185,8 @@ class HomeKitService:
         event.protocol.sendFrame(b"S0000000000F01D00")
 
     def handle_connection_failed(self, event: ConnectionFailedEvent) -> None:
-        """Handle connection failed.
+        """
+        Handle connection failed.
 
         Args:
             event: Connection failed event.
@@ -189,7 +194,8 @@ class HomeKitService:
         self.logger.error(f"Connection failed: {event.reason}")
 
     def handle_connection_lost(self, event: ConnectionLostEvent) -> None:
-        """Handle connection lost.
+        """
+        Handle connection lost.
 
         Args:
             event: Connection lost event.
@@ -199,7 +205,8 @@ class HomeKitService:
         )
 
     def handle_telegram_received(self, event: TelegramReceivedEvent) -> str:
-        """Handle received telegram events.
+        """
+        Handle received telegram events.
 
         Args:
             event: Telegram received event.
@@ -236,7 +243,8 @@ class HomeKitService:
         return event.frame
 
     def dispatch_light_level_event(self, event: TelegramReceivedEvent) -> None:
-        """Dispatch light level received event.
+        """
+        Dispatch light level received event.
 
         Args:
             event: Telegram received event.
@@ -260,7 +268,8 @@ class HomeKitService:
         self.logger.debug("LightLevelReceivedEvent dispatched successfully")
 
     def dispatch_output_state_event(self, event: TelegramReceivedEvent) -> None:
-        """Dispatch output state received event.
+        """
+        Dispatch output state received event.
 
         Args:
             event: Telegram received event.
@@ -286,7 +295,8 @@ class HomeKitService:
     def dispatch_event_telegram_received_event(
         self, event: TelegramReceivedEvent
     ) -> None:
-        """Dispatch event telegram received event.
+        """
+        Dispatch event telegram received event.
 
         Args:
             event: Telegram received event.
@@ -319,7 +329,8 @@ class HomeKitService:
         self.logger.debug("ModuleStateChangedEvent dispatched successfully")
 
     def dispatch_module_discovered_event(self, event: TelegramReceivedEvent) -> None:
-        """Dispatch module discovered event.
+        """
+        Dispatch module discovered event.
 
         Args:
             event: Telegram received event.
@@ -339,7 +350,8 @@ class HomeKitService:
         self.logger.debug("ModuleDiscoveredEvent dispatched successfully")
 
     def handle_module_discovered(self, event: ModuleDiscoveredEvent) -> str:
-        """Handle module discovered event.
+        """
+        Handle module discovered event.
 
         Args:
             event: Module discovered event.

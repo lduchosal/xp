@@ -1,7 +1,8 @@
-"""Service for blink/unblink telegram operations.
+"""
+Service for blink/unblink telegram operations.
 
-This service handles generation and parsing of blink/unblink system telegrams
-used for controlling module LED status.
+This service handles generation and parsing of blink/unblink system telegrams used for
+controlling module LED status.
 """
 
 from xp.models.telegram.reply_telegram import ReplyTelegram
@@ -31,7 +32,8 @@ class TelegramBlinkService:
 
     @staticmethod
     def generate_blink_telegram(serial_number: str, on_or_off: str) -> str:
-        """Generate a telegram to start blinking a module's LED.
+        """
+        Generate a telegram to start blinking a module's LED.
 
         Args:
             serial_number: The 10-digit module serial number.
@@ -66,7 +68,8 @@ class TelegramBlinkService:
         return telegram
 
     def create_blink_telegram_object(self, serial_number: str) -> SystemTelegram:
-        """Create a SystemTelegram object for blinking LED.
+        """
+        Create a SystemTelegram object for blinking LED.
 
         Args:
             serial_number: The 10-digit module serial number.
@@ -90,7 +93,8 @@ class TelegramBlinkService:
         return telegram
 
     def create_unblink_telegram_object(self, serial_number: str) -> SystemTelegram:
-        """Create a SystemTelegram object for unblink LED.
+        """
+        Create a SystemTelegram object for unblink LED.
 
         Args:
             serial_number: The 10-digit module serial number.
@@ -115,7 +119,8 @@ class TelegramBlinkService:
 
     @staticmethod
     def is_ack_response(reply_telegram: ReplyTelegram) -> bool:
-        """Check if a reply telegram is an ACK response.
+        """
+        Check if a reply telegram is an ACK response.
 
         Args:
             reply_telegram: Reply telegram to check.
@@ -127,7 +132,8 @@ class TelegramBlinkService:
 
     @staticmethod
     def is_nak_response(reply_telegram: ReplyTelegram) -> bool:
-        """Check if a reply telegram is a NAK response.
+        """
+        Check if a reply telegram is a NAK response.
 
         Args:
             reply_telegram: Reply telegram to check.

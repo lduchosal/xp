@@ -6,7 +6,8 @@ import click
 
 
 class XpModuleTypeChoice(click.ParamType):
-    """Click parameter type for validating XP module types.
+    """
+    Click parameter type for validating XP module types.
 
     Attributes:
         name: The parameter type name.
@@ -22,7 +23,8 @@ class XpModuleTypeChoice(click.ParamType):
     def convert(
         self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]
     ) -> Any:
-        """Convert and validate XP module type input.
+        """
+        Convert and validate XP module type input.
 
         Args:
             value: The input value to convert.

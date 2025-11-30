@@ -1,7 +1,8 @@
-"""Service for link number telegram operations.
+"""
+Service for link number telegram operations.
 
-This service handles generation and parsing of link number system telegrams
-used for setting and reading module link numbers.
+This service handles generation and parsing of link number system telegrams used for
+setting and reading module link numbers.
 """
 
 from contextlib import suppress
@@ -34,7 +35,8 @@ class LinkNumberService:
 
     @staticmethod
     def generate_set_link_number_telegram(serial_number: str, link_number: int) -> str:
-        """Generate a telegram to set a module's link number.
+        """
+        Generate a telegram to set a module's link number.
 
         Args:
             serial_number: The 10-digit module serial number.
@@ -79,7 +81,8 @@ class LinkNumberService:
 
     @staticmethod
     def generate_read_link_number_telegram(serial_number: str) -> str:
-        """Generate a telegram to read a module's current link number.
+        """
+        Generate a telegram to read a module's current link number.
 
         Args:
             serial_number: The 10-digit module serial number.
@@ -115,7 +118,8 @@ class LinkNumberService:
     def create_set_link_number_telegram_object(
         self, serial_number: str, link_number: int
     ) -> SystemTelegram:
-        """Create a SystemTelegram object for setting link number.
+        """
+        Create a SystemTelegram object for setting link number.
 
         Args:
             serial_number: The 10-digit module serial number.
@@ -144,7 +148,8 @@ class LinkNumberService:
     def create_read_link_number_telegram_object(
         self, serial_number: str
     ) -> SystemTelegram:
-        """Create a SystemTelegram object for reading link number.
+        """
+        Create a SystemTelegram object for reading link number.
 
         Args:
             serial_number: The 10-digit module serial number.
@@ -169,7 +174,8 @@ class LinkNumberService:
 
     @staticmethod
     def parse_link_number_from_reply(reply_telegram: ReplyTelegram) -> Optional[int]:
-        """Parse the link number value from a reply telegram.
+        """
+        Parse the link number value from a reply telegram.
 
         Args:
             reply_telegram: Reply telegram containing link number data.
@@ -193,7 +199,8 @@ class LinkNumberService:
 
     @staticmethod
     def is_ack_response(reply_telegram: ReplyTelegram) -> bool:
-        """Check if a reply telegram is an ACK response.
+        """
+        Check if a reply telegram is an ACK response.
 
         Args:
             reply_telegram: Reply telegram to check.
@@ -205,7 +212,8 @@ class LinkNumberService:
 
     @staticmethod
     def is_nak_response(reply_telegram: ReplyTelegram) -> bool:
-        """Check if a reply telegram is a NAK response.
+        """
+        Check if a reply telegram is a NAK response.
 
         Args:
             reply_telegram: Reply telegram to check.

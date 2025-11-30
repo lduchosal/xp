@@ -23,7 +23,8 @@ from xp.services.conbus.conbus_custom_service import ConbusCustomService
 def send_custom_telegram(
     ctx: Context, serial_number: str, function_code: str, datapoint_code: str
 ) -> None:
-    r"""Send custom telegram with specified function and data point codes.
+    r"""
+    Send custom telegram with specified function and data point codes.
 
     Args:
         ctx: Click context object.
@@ -41,7 +42,8 @@ def send_custom_telegram(
     )
 
     def on_finish(response: ConbusCustomResponse) -> None:
-        """Handle successful completion of custom telegram.
+        """
+        Handle successful completion of custom telegram.
 
         Args:
             response: Custom response object.

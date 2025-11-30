@@ -1,4 +1,5 @@
-"""Conbus DataPoint Query All Service.
+"""
+Conbus DataPoint Query All Service.
 
 This module provides service for querying all datapoint types from a module.
 """
@@ -20,7 +21,8 @@ from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 
 
 class ConbusDatapointQueryAllService:
-    """Utility service for querying all datapoints from a module.
+    """
+    Utility service for querying all datapoints from a module.
 
     This service orchestrates multiple ConbusDatapointService calls to query
     all available datapoint types sequentially.
@@ -40,7 +42,8 @@ class ConbusDatapointQueryAllService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the query all service.
+        """
+        Initialize the query all service.
 
         Args:
             conbus_protocol: ConbusEventProtocol for protocol communication.
@@ -73,7 +76,8 @@ class ConbusDatapointQueryAllService:
         self.next_datapoint()
 
     def next_datapoint(self) -> bool:
-        """Query the next datapoint type.
+        """
+        Query the next datapoint type.
 
         Returns:
             True if there are more datapoints to query, False otherwise.
@@ -111,7 +115,8 @@ class ConbusDatapointQueryAllService:
             self.on_finish.emit(self.service_response)
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -119,7 +124,8 @@ class ConbusDatapointQueryAllService:
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -152,7 +158,8 @@ class ConbusDatapointQueryAllService:
         self.on_progress.emit(datapoint_telegram)
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -170,7 +177,8 @@ class ConbusDatapointQueryAllService:
         serial_number: str,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Query all datapoints from a module.
+        """
+        Query all datapoints from a module.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -182,7 +190,8 @@ class ConbusDatapointQueryAllService:
         self.serial_number = serial_number
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

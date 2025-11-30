@@ -1,7 +1,8 @@
-"""Reply telegram model for console bus communication.
+"""
+Reply telegram model for console bus communication.
 
-Reply telegrams are responses to system telegrams, containing the requested data
-like temperature readings, status information, etc.
+Reply telegrams are responses to system telegrams, containing the requested data like
+temperature readings, status information, etc.
 """
 
 from dataclasses import dataclass
@@ -16,7 +17,8 @@ from xp.models.telegram.telegram_type import TelegramType
 
 @dataclass
 class ReplyTelegram(Telegram):
-    """Represents a parsed reply telegram from the console bus.
+    """
+    Represents a parsed reply telegram from the console bus.
 
     Format: <R{serial_number}F{function_code}D{data}{checksum}>
     Format: <R{serial_number}F{function_code}D{datapoint_type}{data_value}{checksum}>
@@ -54,7 +56,8 @@ class ReplyTelegram(Telegram):
 
     @property
     def parse_datapoint_value(self) -> dict[str, Any]:
-        """Parse the data value based on data point type.
+        """
+        Parse the data value based on data point type.
 
         Returns:
             Dictionary containing parsed value and metadata.
@@ -74,7 +77,8 @@ class ReplyTelegram(Telegram):
         return {"raw_value": self.data_value, "parsed": False}
 
     def _parse_temperature_value(self) -> dict:
-        """Parse temperature value like '+26,0§C'.
+        """
+        Parse temperature value like '+26,0§C'.
 
         Returns:
             Dictionary containing parsed temperature value and metadata.
@@ -101,7 +105,8 @@ class ReplyTelegram(Telegram):
             }
 
     def _parse_humidity_value(self) -> dict:
-        """Parse humidity value like '+65,5§H'.
+        """
+        Parse humidity value like '+65,5§H'.
 
         Returns:
             Dictionary containing parsed humidity value and metadata.
@@ -128,7 +133,8 @@ class ReplyTelegram(Telegram):
             }
 
     def _parse_voltage_value(self) -> dict:
-        """Parse voltage value like '+12,5§V'.
+        """
+        Parse voltage value like '+12,5§V'.
 
         Returns:
             Dictionary containing parsed voltage value and metadata.
@@ -155,7 +161,8 @@ class ReplyTelegram(Telegram):
             }
 
     def _parse_current_value(self) -> dict:
-        """Parse current value like '+0,25§A'.
+        """
+        Parse current value like '+0,25§A'.
 
         Returns:
             Dictionary containing parsed current value and metadata.
@@ -182,7 +189,8 @@ class ReplyTelegram(Telegram):
             }
 
     def _parse_module_type_value(self) -> dict:
-        """Parse status value.
+        """
+        Parse status value.
 
         Returns:
             Dictionary containing parsed module type value.
@@ -195,7 +203,8 @@ class ReplyTelegram(Telegram):
         }
 
     def _parse_sw_version_value(self) -> dict:
-        """Parse version value like 'XP230_V1.00.04'.
+        """
+        Parse version value like 'XP230_V1.00.04'.
 
         Returns:
             Dictionary containing parsed version information.
@@ -235,7 +244,8 @@ class ReplyTelegram(Telegram):
             }
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the reply telegram.
@@ -275,7 +285,8 @@ class ReplyTelegram(Telegram):
         }
 
     def __str__(self) -> str:
-        """Human-readable string representation.
+        """
+        Human-readable string representation.
 
         Returns:
             Formatted string representation.

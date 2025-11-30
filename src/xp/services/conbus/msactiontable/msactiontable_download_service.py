@@ -56,7 +56,8 @@ class MsActionTableDownloadService:
         xp33ms_serializer: Xp33MsActionTableSerializer,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the MS action table service.
+        """
+        Initialize the MS action table service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
@@ -101,7 +102,8 @@ class MsActionTableDownloadService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -109,7 +111,8 @@ class MsActionTableDownloadService:
         self.logger.debug(f"Telegram sent: {telegram_sent}")
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -176,7 +179,8 @@ class MsActionTableDownloadService:
         self.failed("Timeout")
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -189,7 +193,8 @@ class MsActionTableDownloadService:
         msactiontable: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable],
         msactiontable_short: list[str],
     ) -> None:
-        """Handle succeed connection event.
+        """
+        Handle succeed connection event.
 
         Args:
             msactiontable: result.
@@ -204,7 +209,8 @@ class MsActionTableDownloadService:
         xpmoduletype: str,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Setup download parameters.
+        """
+        Setup download parameters.
 
         Args:
             serial_number: Module serial number.
@@ -230,7 +236,8 @@ class MsActionTableDownloadService:
             self.conbus_protocol.timeout_seconds = timeout_seconds
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
@@ -246,7 +253,8 @@ class MsActionTableDownloadService:
         self.conbus_protocol.stop_reactor()
 
     def __enter__(self) -> "MsActionTableDownloadService":
-        """Enter context manager.
+        """
+        Enter context manager.
 
         Returns:
             Self for context manager protocol.

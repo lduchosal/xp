@@ -7,7 +7,8 @@ from typing import Any, Dict, Optional
 
 @dataclass
 class ConbusLightlevelResponse:
-    """Represents a response from Conbus lightlevel operation.
+    """
+    Represents a response from Conbus lightlevel operation.
 
     Attributes:
         success: Whether the operation was successful.
@@ -35,7 +36,8 @@ class ConbusLightlevelResponse:
             self.received_telegrams = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the response.

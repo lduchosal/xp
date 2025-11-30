@@ -19,7 +19,8 @@ from xp.services.conbus.conbus_discover_service import (
 @click.pass_context
 @connection_command()
 def send_discover_telegram(ctx: click.Context) -> None:
-    r"""Send discover telegram to Conbus server.
+    r"""
+    Send discover telegram to Conbus server.
 
     Args:
         ctx: Click context object.
@@ -30,7 +31,8 @@ def send_discover_telegram(ctx: click.Context) -> None:
     """
 
     def on_finish(discovered_devices: ConbusDiscoverResponse) -> None:
-        """Handle successful completion of device discovery.
+        """
+        Handle successful completion of device discovery.
 
         Args:
             discovered_devices: Discover response with all found devices.
@@ -39,7 +41,8 @@ def send_discover_telegram(ctx: click.Context) -> None:
         service.stop_reactor()
 
     def on_device_discovered(discovered_device: DiscoveredDevice) -> None:
-        """Handle discovery of sa single module.
+        """
+        Handle discovery of sa single module.
 
         Args:
             discovered_device: Discover device.
@@ -47,7 +50,8 @@ def send_discover_telegram(ctx: click.Context) -> None:
         click.echo(json.dumps(discovered_device, indent=2))
 
     def progress(_serial_number: str) -> None:
-        """Handle progress updates during device discovery.
+        """
+        Handle progress updates during device discovery.
 
         Args:
             _serial_number: Serial number of discovered device (unused).

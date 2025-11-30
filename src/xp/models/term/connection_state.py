@@ -6,7 +6,8 @@ from xp.utils.state_machine import StateMachine
 
 
 class ConnectionState(str, Enum):
-    """Connection state enumeration.
+    """
+    Connection state enumeration.
 
     Attributes:
         DISCONNECTING: Disconnecting to server.
@@ -24,7 +25,8 @@ class ConnectionState(str, Enum):
 
     @staticmethod
     def create_state_machine() -> StateMachine:
-        """Create and configure state machine for connection management.
+        """
+        Create and configure state machine for connection management.
 
         Returns:
             Configured StateMachine with connection state transitions.

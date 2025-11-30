@@ -1,4 +1,5 @@
-"""HomeKit Conbus Service for protocol communication.
+"""
+HomeKit Conbus Service for protocol communication.
 
 This module bridges HomeKit events with the Conbus protocol for device control.
 """
@@ -18,7 +19,8 @@ from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 
 class HomeKitConbusService:
-    """Service for bridging HomeKit events with Conbus protocol.
+    """
+    Service for bridging HomeKit events with Conbus protocol.
 
     Attributes:
         event_bus: Event bus for inter-service communication.
@@ -29,7 +31,8 @@ class HomeKitConbusService:
     event_bus: EventBus
 
     def __init__(self, event_bus: EventBus, telegram_protocol: TelegramProtocol):
-        """Initialize the HomeKit Conbus service.
+        """
+        Initialize the HomeKit Conbus service.
 
         Args:
             event_bus: Event bus instance.
@@ -49,7 +52,8 @@ class HomeKitConbusService:
     def handle_read_datapoint_request(
         self, event: ReadDatapointFromProtocolEvent
     ) -> None:
-        """Handle request to read datapoint from protocol.
+        """
+        Handle request to read datapoint from protocol.
 
         Args:
             event: Read datapoint event with serial number and datapoint type.
@@ -62,7 +66,8 @@ class HomeKitConbusService:
         self.telegram_protocol.sendFrame(telegram.encode())
 
     def handle_send_write_config_event(self, event: SendWriteConfigEvent) -> None:
-        """Handle send write config event.
+        """
+        Handle send write config event.
 
         Args:
             event: Write config event with configuration data.
@@ -79,7 +84,8 @@ class HomeKitConbusService:
         self.telegram_protocol.sendFrame(telegram.encode())
 
     def handle_send_action_event(self, event: SendActionEvent) -> None:
-        """Handle send action event.
+        """
+        Handle send action event.
 
         Args:
             event: Send action event with action data.

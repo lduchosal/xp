@@ -1,7 +1,8 @@
-"""Integration tests for conbus raw CLI commands.
+"""
+Integration tests for conbus raw CLI commands.
 
-Tests the complete flow from CLI input to output,
-ensuring proper integration between all layers.
+Tests the complete flow from CLI input to output, ensuring proper integration between
+all layers.
 """
 
 from unittest.mock import MagicMock
@@ -37,7 +38,8 @@ class TestConbusRawIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -45,7 +47,8 @@ class TestConbusRawIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
-            """Mock on_progress event connection.
+            """
+            Mock on_progress event connection.
 
             Args:
                 callback: Callback function to store.
@@ -57,7 +60,8 @@ class TestConbusRawIntegration:
 
         # Make the mock service call the callback immediately
         def mock_send_raw_telegram(raw_input, timeout_seconds=None):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 raw_input: Raw telegram input.
@@ -112,7 +116,8 @@ class TestConbusRawIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -120,7 +125,8 @@ class TestConbusRawIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
-            """Mock on_progress event connection.
+            """
+            Mock on_progress event connection.
 
             Args:
                 callback: Callback function to store.
@@ -132,7 +138,8 @@ class TestConbusRawIntegration:
 
         # Make the mock service call the callback immediately
         def mock_send_raw_telegram(raw_input, timeout_seconds=None):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 raw_input: Raw telegram input.
@@ -184,7 +191,8 @@ class TestConbusRawIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -192,7 +200,8 @@ class TestConbusRawIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
-            """Mock on_progress event connection.
+            """
+            Mock on_progress event connection.
 
             Args:
                 callback: Callback function to store.
@@ -204,7 +213,8 @@ class TestConbusRawIntegration:
 
         # Make the mock service call the callback immediately
         def mock_send_raw_telegram(raw_input, timeout_seconds=None):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 raw_input: Raw telegram input.
@@ -254,7 +264,8 @@ class TestConbusRawIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -262,7 +273,8 @@ class TestConbusRawIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
-            """Mock on_progress event connection.
+            """
+            Mock on_progress event connection.
 
             Args:
                 callback: Callback function to store.
@@ -274,7 +286,8 @@ class TestConbusRawIntegration:
 
         # Make the mock service call the callback immediately
         def mock_send_raw_telegram(raw_input, timeout_seconds=None):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 raw_input: Raw telegram input.

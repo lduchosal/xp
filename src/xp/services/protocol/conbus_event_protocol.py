@@ -1,4 +1,5 @@
-"""Conbus Event Protocol for XP telegram communication.
+"""
+Conbus Event Protocol for XP telegram communication.
 
 This module implements the Twisted protocol for Conbus communication.
 """
@@ -34,7 +35,8 @@ CHUNK_HEADER_LENGTH = 2  # data_value format: 2-char counter + actiontable chunk
 
 
 class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
-    """Twisted protocol for XP telegram communication.
+    """
+    Twisted protocol for XP telegram communication.
 
     Attributes:
         buffer: Buffer for incoming telegram data.
@@ -95,7 +97,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         reactor: PosixReactorBase,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize ConbusProtocol.
+        """
+        Initialize ConbusProtocol.
 
         Args:
             cli_config: Configuration for Conbus client connection.
@@ -111,10 +114,11 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.telegram_service = telegram_service
 
     def connectionMade(self) -> None:
-        """Handle connection established event.
+        """
+        Handle connection established event.
 
-        Called when TCP connection is successfully established.
-        Starts inactivity timeout monitoring.
+        Called when TCP connection is successfully established. Starts inactivity
+        timeout monitoring.
         """
         self.logger.debug("connectionMade")
         self.on_connection_made.emit()
@@ -123,7 +127,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self._reset_timeout()
 
     def wait(self, wait_timeout: Optional[float] = None) -> None:
-        """Wait for incoming telegrams with optional timeout override.
+        """
+        Wait for incoming telegrams with optional timeout override.
 
         Args:
             wait_timeout: Optional timeout in seconds to override default.
@@ -133,7 +138,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self._reset_timeout()
 
     def dataReceived(self, data: bytes) -> None:
-        """Handle received data from TCP connection.
+        """
+        Handle received data from TCP connection.
 
         Parses incoming telegram frames and dispatches events.
 
@@ -193,7 +199,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             self.emit_telegram_received(telegram_received)
 
     def emit_telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -232,7 +239,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             return
 
     def sendFrame(self, data: bytes) -> None:
-        """Send telegram frame.
+        """
+        Send telegram frame.
 
         Args:
             data: Raw telegram payload (without checksum/framing).
@@ -261,7 +269,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         system_function: SystemFunction,
         data_value: str,
     ) -> None:
-        """Send telegram with specified parameters.
+        """
+        Send telegram with specified parameters.
 
         Args:
             telegram_type: Type of telegram to send.
@@ -280,7 +289,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
     def send_event_telegram(
         self, module_type_code: ModuleTypeCode, link_number: int, input_number: int
     ) -> None:
-        """Send telegram with specified parameters.
+        """
+        Send telegram with specified parameters.
 
         Args:
             module_type_code: Type code of module.
@@ -293,7 +303,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.send_raw_telegram(payload)
 
     def send_raw_telegram(self, payload: str) -> None:
-        """Send telegram with specified parameters.
+        """
+        Send telegram with specified parameters.
 
         Args:
             payload: Telegram to send.
@@ -302,7 +313,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.call_later(0.0, self.start_queue_manager)
 
     def send_error_status_query(self, serial_number: str) -> None:
-        """Send error status query telegram.
+        """
+        Send error status query telegram.
 
         Args:
             serial_number: Device serial number.
@@ -315,7 +327,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         )
 
     def send_download_request(self, serial_number: str) -> None:
-        """Send download request telegram.
+        """
+        Send download request telegram.
 
         Args:
             serial_number: Device serial number.
@@ -328,7 +341,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         )
 
     def send_ack(self, serial_number: str) -> None:
-        """Send ACK telegram.
+        """
+        Send ACK telegram.
 
         Args:
             serial_number: Device serial number.
@@ -347,7 +361,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         *args: object,
         **kw: object,
     ) -> DelayedCall:
-        """Schedule a callable to be called later.
+        """
+        Schedule a callable to be called later.
 
         Args:
             delay: Delay in seconds before calling.
@@ -361,7 +376,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         return self._reactor.callLater(delay, callable_action, *args, **kw)
 
     def buildProtocol(self, addr: IAddress) -> protocol.Protocol:
-        """Build protocol instance for connection.
+        """
+        Build protocol instance for connection.
 
         Args:
             addr: Address of the connection.
@@ -373,7 +389,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         return self
 
     def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
-        """Handle client connection failure.
+        """
+        Handle client connection failure.
 
         Args:
             connector: Connection connector instance.
@@ -385,7 +402,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self._cancel_timeout()
 
     def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
-        """Handle client connection lost event.
+        """
+        Handle client connection lost event.
 
         Args:
             connector: Connection connector instance.
@@ -401,7 +419,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.on_timeout.emit()
 
     def connection_failed(self, reason: Failure) -> None:
-        """Handle connection failure.
+        """
+        Handle connection failure.
 
         Args:
             reason: Failure reason details.
@@ -436,7 +455,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             self.logger.debug(f"Reactor stop failed (likely already stopped): {e}")
 
     def connect(self) -> None:
-        """Connect to TCP server.
+        """
+        Connect to TCP server.
 
         Automatically detects and integrates with running asyncio event loop if present.
         """
@@ -494,7 +514,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.call_later(later, self.process_telegram_queue)
 
     def set_event_loop(self, event_loop: asyncio.AbstractEventLoop) -> None:
-        """Change the event loop.
+        """
+        Change the event loop.
 
         Args:
             event_loop: the event loop instance.
@@ -511,7 +532,8 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             self.logger.info("Set reactor to running state")
 
     def __enter__(self) -> "ConbusEventProtocol":
-        """Enter context manager.
+        """
+        Enter context manager.
 
         Returns:
             Self for context management.

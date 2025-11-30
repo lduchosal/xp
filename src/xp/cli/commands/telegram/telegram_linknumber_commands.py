@@ -20,7 +20,8 @@ from xp.services.telegram.telegram_link_number_service import (
 @click.argument("link_number", type=int)
 @handle_service_errors(LinkNumberError)
 def generate_set_link_number(serial_number: str, link_number: int) -> None:
-    r"""Generate a telegram to set module link number.
+    r"""
+    Generate a telegram to set module link number.
 
     Args:
         serial_number: 10-digit module serial number.
@@ -57,7 +58,8 @@ def generate_set_link_number(serial_number: str, link_number: int) -> None:
 @click.argument("serial_number", type=SERIAL)
 @handle_service_errors(LinkNumberError)
 def generate_read_link_number(serial_number: str) -> None:
-    r"""Generate a telegram to read module link number.
+    r"""
+    Generate a telegram to read module link number.
 
     Args:
         serial_number: 10-digit module serial number.

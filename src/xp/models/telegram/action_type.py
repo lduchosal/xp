@@ -5,7 +5,8 @@ from typing import Optional
 
 
 class ActionType(Enum):
-    """Action types for XP24 telegrams.
+    """
+    Action types for XP24 telegrams.
 
     Attributes:
         OFF_PRESS: Make action (activate relay).
@@ -17,7 +18,8 @@ class ActionType(Enum):
 
     @classmethod
     def from_code(cls, code: str) -> Optional["ActionType"]:
-        """Get ActionType from code string.
+        """
+        Get ActionType from code string.
 
         Args:
             code: Action code string.

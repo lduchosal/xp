@@ -9,7 +9,8 @@ from xp.models.telegram.timeparam_type import TimeParam
 
 
 class InputAction(BaseModel):
-    """Represents an input action with type and parameter.
+    """
+    Represents an input action with type and parameter.
 
     Attributes:
         model_config: Pydantic configuration to preserve enum objects.
@@ -27,7 +28,8 @@ class InputAction(BaseModel):
     def validate_action_type(
         cls, v: Union[str, int, InputActionType]
     ) -> InputActionType:
-        """Convert string or int to InputActionType enum.
+        """
+        Convert string or int to InputActionType enum.
 
         Args:
             v: Input value (can be string name, int value, or enum).
@@ -55,7 +57,8 @@ class InputAction(BaseModel):
     @field_validator("param", mode="before")
     @classmethod
     def validate_time_param(cls, v: Union[str, int, TimeParam]) -> TimeParam:
-        """Convert string or int to TimeParam enum.
+        """
+        Convert string or int to TimeParam enum.
 
         Args:
             v: Input value (can be string name, int value, or enum).
@@ -82,7 +85,8 @@ class InputAction(BaseModel):
 
 
 class Xp24MsActionTable(BaseModel):
-    """XP24 Action Table for managing input actions and settings.
+    """
+    XP24 Action Table for managing input actions and settings.
 
     Each input has an action type (TOGGLE, ON, LEVELSET, etc.)
     with an optional parameter string.
@@ -159,7 +163,8 @@ class Xp24MsActionTable(BaseModel):
     mutual_deadtime: int = MS300  # Master timing (MS300=12 or MS500=20)
 
     def to_short_format(self) -> list[str]:
-        """Convert action table to short format string.
+        """
+        Convert action table to short format string.
 
         Returns:
             Short format string with settings (e.g., "XP24 T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12").
@@ -194,7 +199,8 @@ class Xp24MsActionTable(BaseModel):
 
     @classmethod
     def from_short_format(cls, short_str: list[str]) -> "Xp24MsActionTable":
-        """Parse short format string into action table.
+        """
+        Parse short format string into action table.
 
         Args:
             short_str: Short format string.

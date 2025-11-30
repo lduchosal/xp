@@ -1,4 +1,5 @@
-"""HomeKit Outlet Accessory.
+"""
+HomeKit Outlet Accessory.
 
 This module provides an outlet accessory for HomeKit integration.
 """
@@ -21,7 +22,8 @@ from xp.models.protocol.conbus_protocol import (
 
 
 class Outlet(Accessory):
-    """HomeKit outlet accessory.
+    """
+    HomeKit outlet accessory.
 
     Attributes:
         category: HomeKit category (CATEGORY_OUTLET).
@@ -46,7 +48,8 @@ class Outlet(Accessory):
         accessory: HomekitAccessoryConfig,
         event_bus: EventBus,
     ):
-        """Initialize the outlet accessory.
+        """
+        Initialize the outlet accessory.
 
         Args:
             driver: HAP accessory driver.
@@ -88,7 +91,8 @@ class Outlet(Accessory):
         )
 
     def set_outlet_in_use(self, value: bool) -> None:
-        """Set the in-use state of the outlet.
+        """
+        Set the in-use state of the outlet.
 
         Args:
             value: True if in use, False otherwise.
@@ -108,7 +112,8 @@ class Outlet(Accessory):
         self.logger.debug(f"set_outlet_in_use {value} end")
 
     def get_outlet_in_use(self) -> bool:
-        """Get the in-use state of the outlet.
+        """
+        Get the in-use state of the outlet.
 
         Returns:
             True if in use, False otherwise.
@@ -128,7 +133,8 @@ class Outlet(Accessory):
         return self.is_in_use
 
     def set_on(self, value: bool) -> None:
-        """Set the on/off state of the outlet.
+        """
+        Set the on/off state of the outlet.
 
         Args:
             value: True to turn on, False to turn off.
@@ -148,7 +154,8 @@ class Outlet(Accessory):
         )
 
     def get_on(self) -> bool:
-        """Get the on/off state of the outlet.
+        """
+        Get the on/off state of the outlet.
 
         Returns:
             True if on, False if off.

@@ -1,7 +1,8 @@
-"""Unit tests for ChecksumService.
+"""
+Unit tests for ChecksumService.
 
-Tests the checksum service business logic layer,
-following the architecture pattern for service testing.
+Tests the checksum service business logic layer, following the architecture pattern for
+service testing.
 """
 
 import pytest

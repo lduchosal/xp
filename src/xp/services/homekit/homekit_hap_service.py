@@ -1,4 +1,5 @@
-"""HomeKit HAP Service for Apple HomeKit integration.
+"""
+HomeKit HAP Service for Apple HomeKit integration.
 
 This module provides the main HAP (HomeKit Accessory Protocol) service.
 """
@@ -35,7 +36,8 @@ from xp.services.homekit.homekit_outlet import Outlet
 
 
 class HomekitHapService:
-    """HomeKit HAP service.
+    """
+    HomeKit HAP service.
 
     Manages HAP accessory protocol, handles bridge and accessory setup,
     and processes HomeKit events for device state synchronization.
@@ -59,7 +61,8 @@ class HomekitHapService:
         module_service: HomekitModuleService,
         event_bus: EventBus,
     ):
-        """Initialize the HomeKit HAP service.
+        """
+        Initialize the HomeKit HAP service.
 
         Args:
             homekit_config: HomeKit configuration.
@@ -122,7 +125,8 @@ class HomekitHapService:
             self.logger.error(f"HAP-python driver error: {e}", exc_info=True)
 
     def handle_output_state_received(self, event: OutputStateReceivedEvent) -> str:
-        """Handle output state received event.
+        """
+        Handle output state received event.
 
         Args:
             event: Output state received event.
@@ -152,7 +156,8 @@ class HomekitHapService:
         return event.data_value
 
     def handle_light_level_received(self, event: LightLevelReceivedEvent) -> str:
-        """Handle light level received event.
+        """
+        Handle light level received event.
 
         Args:
             event: Light level received event.
@@ -206,7 +211,8 @@ class HomekitHapService:
         self.driver.add_accessory(accessory=bridge)
 
     def add_room(self, bridge: Bridge, room: RoomConfig) -> None:
-        """Add a room with its accessories to the bridge.
+        """
+        Add a room with its accessories to the bridge.
 
         Args:
             bridge: HAP bridge instance.
@@ -239,7 +245,8 @@ class HomekitHapService:
     def get_accessory(
         self, homekit_accessory: HomekitAccessoryConfig
     ) -> Union[LightBulb, Outlet, DimmingLight, None]:
-        """Get an accessory instance from configuration.
+        """
+        Get an accessory instance from configuration.
 
         Args:
             homekit_accessory: HomeKit accessory configuration.
@@ -282,7 +289,8 @@ class HomekitHapService:
         return None
 
     def get_accessory_by_name(self, name: str) -> Optional[HomekitAccessoryConfig]:
-        """Get an accessory configuration by name.
+        """
+        Get an accessory configuration by name.
 
         Args:
             name: Name of the accessory to find.
@@ -295,7 +303,8 @@ class HomekitHapService:
         )
 
     def handle_module_state_changed(self, event: ModuleStateChangedEvent) -> None:
-        """Handle module state change by refreshing affected accessories.
+        """
+        Handle module state change by refreshing affected accessories.
 
         Args:
             event: Module state changed event.

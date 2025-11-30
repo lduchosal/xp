@@ -1,4 +1,5 @@
-"""Conson Configuration Validator for HomeKit.
+"""
+Conson Configuration Validator for HomeKit.
 
 This module validates conson.yml configuration files for HomeKit integration.
 """
@@ -15,7 +16,8 @@ class ConsonConfigValidator:
     """Validates conson.yml configuration file for HomeKit integration."""
 
     def __init__(self, config: ConsonModuleListConfig):
-        """Initialize the Conson config validator.
+        """
+        Initialize the Conson config validator.
 
         Args:
             config: Conson module list configuration to validate.
@@ -23,7 +25,8 @@ class ConsonConfigValidator:
         self.config = config
 
     def validate_unique_names(self) -> List[str]:
-        """Validate that all module names are unique.
+        """
+        Validate that all module names are unique.
 
         Returns:
             List of validation error messages.
@@ -39,7 +42,8 @@ class ConsonConfigValidator:
         return errors
 
     def validate_unique_serial_numbers(self) -> List[str]:
-        """Validate that all serial numbers are unique.
+        """
+        Validate that all serial numbers are unique.
 
         Returns:
             List of validation error messages.
@@ -55,7 +59,8 @@ class ConsonConfigValidator:
         return errors
 
     def validate_module_type_codes(self) -> List[str]:
-        """Validate module type code ranges.
+        """
+        Validate module type code ranges.
 
         Returns:
             List of validation error messages.
@@ -69,7 +74,8 @@ class ConsonConfigValidator:
         return errors
 
     def validate_network_config(self) -> List[str]:
-        """Validate IP/port configuration.
+        """
+        Validate IP/port configuration.
 
         Returns:
             List of validation error messages.
@@ -83,7 +89,8 @@ class ConsonConfigValidator:
         return errors
 
     def validate_all(self) -> List[str]:
-        """Run all validations and return combined errors.
+        """
+        Run all validations and return combined errors.
 
         Returns:
             List of all validation error messages.
@@ -96,7 +103,8 @@ class ConsonConfigValidator:
         return all_errors
 
     def get_module_by_serial(self, serial_number: str) -> ConsonModuleConfig:
-        """Get module configuration by serial number.
+        """
+        Get module configuration by serial number.
 
         Args:
             serial_number: Serial number of the module to find.
@@ -113,7 +121,8 @@ class ConsonConfigValidator:
         raise ValueError(f"Module with serial number {serial_number} not found")
 
     def get_all_serial_numbers(self) -> Set[str]:
-        """Get all serial numbers from the configuration.
+        """
+        Get all serial numbers from the configuration.
 
         Returns:
             Set of all serial numbers in the configuration.

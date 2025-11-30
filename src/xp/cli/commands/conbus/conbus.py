@@ -19,7 +19,8 @@ def conbus() -> None:
     help_options_color="green",
 )
 def conbus_blink() -> None:
-    """Perform Conbus client operations for sending blink telegrams to remote servers."""
+    """Perform Conbus client operations for sending blink telegrams to remote
+    servers."""
     pass
 
 

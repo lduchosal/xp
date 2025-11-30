@@ -1,7 +1,8 @@
-"""Service for device discover telegram operations.
+"""
+Service for device discover telegram operations.
 
-This service handles generation and parsing of device discover system telegrams
-used for enumerating all connected devices on the console bus.
+This service handles generation and parsing of device discover system telegrams used for
+enumerating all connected devices on the console bus.
 """
 
 from typing import List, Set
@@ -24,7 +25,8 @@ class DeviceInfo:
     def __init__(
         self, serial_number: str, checksum_valid: bool = True, raw_telegram: str = ""
     ):
-        """Initialize device info.
+        """
+        Initialize device info.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -36,7 +38,8 @@ class DeviceInfo:
         self.raw_telegram = raw_telegram
 
     def __str__(self) -> str:
-        """Return string representation of device.
+        """
+        Return string representation of device.
 
         Returns:
             String with serial number and checksum status.
@@ -45,7 +48,8 @@ class DeviceInfo:
         return f"Device {self.serial_number} ({status})"
 
     def __repr__(self) -> str:
-        """Return repr representation of device.
+        """
+        Return repr representation of device.
 
         Returns:
             DeviceInfo constructor representation.
@@ -53,7 +57,8 @@ class DeviceInfo:
         return f"DeviceInfo(serial='{self.serial_number}', checksum_valid={self.checksum_valid})"
 
     def to_dict(self) -> dict:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary with device information.
@@ -99,7 +104,8 @@ class TelegramDiscoverService:
         return telegram
 
     def create_discover_telegram_object(self) -> SystemTelegram:
-        """Create a SystemTelegram object for discover broadcast.
+        """
+        Create a SystemTelegram object for discover broadcast.
 
         Returns:
             SystemTelegram object representing the discover command.
@@ -121,7 +127,8 @@ class TelegramDiscoverService:
 
     @staticmethod
     def is_discover_response(reply_telegram: ReplyTelegram) -> bool:
-        """Check if a reply telegram is a discover response.
+        """
+        Check if a reply telegram is a discover response.
 
         Args:
             reply_telegram: Reply telegram to check.
@@ -133,7 +140,8 @@ class TelegramDiscoverService:
 
     @staticmethod
     def _generate_discover_response(serial_number: str) -> str:
-        """Generate discover response telegram for a device.
+        """
+        Generate discover response telegram for a device.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -149,7 +157,8 @@ class TelegramDiscoverService:
 
     @staticmethod
     def get_unique_devices(devices: List[DeviceInfo]) -> List[DeviceInfo]:
-        """Filter out duplicate devices based on serial number.
+        """
+        Filter out duplicate devices based on serial number.
 
         Args:
             devices: List of discovered devices.
@@ -169,7 +178,8 @@ class TelegramDiscoverService:
 
     @staticmethod
     def validate_discover_response_format(raw_telegram: str) -> bool:
-        """Validate if a raw telegram matches discover response format.
+        """
+        Validate if a raw telegram matches discover response format.
 
         Args:
             raw_telegram: Raw telegram string to validate.
@@ -187,7 +197,8 @@ class TelegramDiscoverService:
         return match is not None
 
     def generate_discover_summary(self, devices: List[DeviceInfo]) -> dict:
-        """Generate a summary of a discover results.
+        """
+        Generate a summary of a discover results.
 
         Args:
             devices: List of discovered devices.
@@ -223,7 +234,8 @@ class TelegramDiscoverService:
         }
 
     def format_discover_results(self, devices: List[DeviceInfo]) -> str:
-        """Format discover results for human-readable output.
+        """
+        Format discover results for human-readable output.
 
         Args:
             devices: List of discovered devices.
@@ -263,7 +275,8 @@ class TelegramDiscoverService:
 
     @staticmethod
     def is_discover_request(telegram: SystemTelegram) -> bool:
-        """Check if telegram is a discover request.
+        """
+        Check if telegram is a discover request.
 
         Args:
             telegram: System telegram to check.

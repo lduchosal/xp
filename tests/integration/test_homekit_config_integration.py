@@ -16,7 +16,8 @@ class TestHomekitConfigIntegration:
 
     @staticmethod
     def create_temp_conson_config(modules_data):
-        """Create a temporary conson.yml file with the given module's data.
+        """
+        Create a temporary conson.yml file with the given module's data.
 
         Args:
             modules_data: Module data to write to the file.
@@ -31,7 +32,8 @@ class TestHomekitConfigIntegration:
 
     @staticmethod
     def create_temp_homekit_config(config_data):
-        """Create a temporary homekit.yml file with the given config data.
+        """
+        Create a temporary homekit.yml file with the given config data.
 
         Args:
             config_data: Configuration data to write to the file.
@@ -46,7 +48,8 @@ class TestHomekitConfigIntegration:
 
     @staticmethod
     def cleanup_temp_files(*file_paths):
-        """Clean up temporary files.
+        """
+        Clean up temporary files.
 
         Args:
             file_paths: Variable number of file paths to clean up.

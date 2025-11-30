@@ -8,10 +8,11 @@ from xp.models.config.conson_module_config import ConsonModuleConfig
 
 
 class MsActionTableShowService:
-    """Service for showing action table configuration for a specific module.
+    """
+    Service for showing action table configuration for a specific module.
 
-    Reads conson.yml and returns the action table configuration for the specified
-    module serial number.
+    Reads conson.yml and returns the action table configuration for the specified module
+    serial number.
     """
 
     def __init__(self) -> None:
@@ -21,7 +22,8 @@ class MsActionTableShowService:
         self.error_callback: Optional[Callable[[str], None]] = None
 
     def __enter__(self) -> "MsActionTableShowService":
-        """Context manager entry.
+        """
+        Context manager entry.
 
         Returns:
             Self for context manager use.
@@ -39,7 +41,8 @@ class MsActionTableShowService:
         error_callback: Callable[[str], None],
         config_path: Optional[Path] = None,
     ) -> None:
-        """Show ms action table configuration for a specific module.
+        """
+        Show ms action table configuration for a specific module.
 
         Args:
             serial_number: Module serial number.
@@ -80,7 +83,8 @@ class MsActionTableShowService:
             self.finish_callback(module)
 
     def _handle_error(self, message: str) -> None:
-        """Handle error and invoke error callback.
+        """
+        Handle error and invoke error callback.
 
         Args:
             message: Error message.

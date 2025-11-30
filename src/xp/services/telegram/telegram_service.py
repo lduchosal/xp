@@ -1,6 +1,8 @@
-"""Telegram Service for parsing XP telegrams.
+"""
+Telegram Service for parsing XP telegrams.
 
-This module provides telegram parsing functionality for event, system, and reply telegrams.
+This module provides telegram parsing functionality for event, system, and reply
+telegrams.
 """
 
 import logging
@@ -25,7 +27,8 @@ class TelegramParsingError(Exception):
 
 
 class TelegramService:
-    """Service for parsing event telegrams from the console bus.
+    """
+    Service for parsing event telegrams from the console bus.
 
     Handles parsing of telegrams in the format:
     <[EO]{module_type}L{link_number}I{output_number}{event_type}{checksum}>
@@ -53,7 +56,8 @@ class TelegramService:
         self.logger = logging.getLogger(__name__)
 
     def parse_event_telegram(self, raw_telegram: str) -> EventTelegram:
-        """Parse a raw telegram string into an EventTelegram object.
+        """
+        Parse a raw telegram string into an EventTelegram object.
 
         Args:
             raw_telegram: The raw telegram string (e.g., "<E14L00I02MAK>").
@@ -124,7 +128,8 @@ class TelegramService:
     def validate_checksum(
         telegram: Union[EventTelegram, ReplyTelegram, SystemTelegram, OutputTelegram],
     ) -> bool:
-        """Validate the checksum of a parsed telegram.
+        """
+        Validate the checksum of a parsed telegram.
 
         Args:
             telegram: The parsed telegram.
@@ -150,7 +155,8 @@ class TelegramService:
 
     @staticmethod
     def format_event_telegram_summary(telegram: EventTelegram) -> str:
-        """Format a telegram for human-readable output.
+        """
+        Format a telegram for human-readable output.
 
         Args:
             telegram: The parsed telegram.
@@ -171,7 +177,8 @@ class TelegramService:
         )
 
     def parse_system_telegram(self, raw_telegram: str) -> SystemTelegram:
-        """Parse a raw system telegram string into a SystemTelegram object.
+        """
+        Parse a raw system telegram string into a SystemTelegram object.
 
         Args:
             raw_telegram: The raw telegram string (e.g., "<S0020012521F02D18FN>").
@@ -229,7 +236,8 @@ class TelegramService:
             raise TelegramParsingError(f"Invalid values in system telegram: {e}")
 
     def parse_reply_telegram(self, raw_telegram: str) -> ReplyTelegram:
-        """Parse a raw reply telegram string into a ReplyTelegram object.
+        """
+        Parse a raw reply telegram string into a ReplyTelegram object.
 
         Args:
             raw_telegram: The raw telegram string (e.g., "<R0020012521F02D18+26,0§CIL>").
@@ -297,7 +305,8 @@ class TelegramService:
     def parse_telegram(
         self, raw_telegram: str
     ) -> Union[EventTelegram, SystemTelegram, ReplyTelegram]:
-        """Auto-detect and parse any type of telegram.
+        """
+        Auto-detect and parse any type of telegram.
 
         Args:
             raw_telegram: The raw telegram string.
@@ -329,7 +338,8 @@ class TelegramService:
 
     @staticmethod
     def format_system_telegram_summary(telegram: SystemTelegram) -> str:
-        """Format a system telegram for human-readable output.
+        """
+        Format a system telegram for human-readable output.
 
         Args:
             telegram: The parsed system telegram.
@@ -351,7 +361,8 @@ class TelegramService:
 
     @staticmethod
     def format_reply_telegram_summary(telegram: ReplyTelegram) -> str:
-        """Format a reply telegram for human-readable output.
+        """
+        Format a reply telegram for human-readable output.
 
         Args:
             telegram: The parsed reply telegram.

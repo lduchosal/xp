@@ -1,7 +1,8 @@
-"""CP20 Server Service for device emulation.
+"""
+CP20 Server Service for device emulation.
 
-This service provides CP20-specific device emulation functionality,
-including response generation and device configuration handling.
+This service provides CP20-specific device emulation functionality, including response
+generation and device configuration handling.
 """
 
 from typing import Dict, Optional
@@ -22,8 +23,8 @@ class CP20ServerService(BaseServerService):
     """
     CP20 device emulation service.
 
-    Generates CP20-specific responses, handles CP20 device configuration,
-    and implements CP20 telegram format.
+    Generates CP20-specific responses, handles CP20 device configuration, and implements
+    CP20 telegram format.
     """
 
     def __init__(
@@ -32,7 +33,8 @@ class CP20ServerService(BaseServerService):
         _variant: str = "",
         _msactiontable_serializer: Optional[MsActionTableSerializer] = None,
     ):
-        """Initialize CP20 server service.
+        """
+        Initialize CP20 server service.
 
         Args:
             serial_number: The device serial number.
@@ -51,7 +53,8 @@ class CP20ServerService(BaseServerService):
         return None
 
     def get_device_info(self) -> Dict:
-        """Get CP20 device information.
+        """
+        Get CP20 device information.
 
         Returns:
             Dictionary containing device information.

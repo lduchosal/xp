@@ -20,7 +20,8 @@ from xp.services.telegram.telegram_service import TelegramService
 
 
 class StateMonitorService:
-    """Service for module state monitoring in terminal interface.
+    """
+    Service for module state monitoring in terminal interface.
 
     Wraps ConbusEventProtocol and ConsonModuleListConfig to provide
     high-level module state tracking for the TUI.
@@ -48,7 +49,8 @@ class StateMonitorService:
         conson_config: ConsonModuleListConfig,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the State Monitor service.
+        """
+        Initialize the State Monitor service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
@@ -109,7 +111,8 @@ class StateMonitorService:
 
     @property
     def connection_state(self) -> ConnectionState:
-        """Get current connection state.
+        """
+        Get current connection state.
 
         Returns:
             Current connection state.
@@ -118,7 +121,8 @@ class StateMonitorService:
 
     @property
     def server_info(self) -> str:
-        """Get server connection info (IP:port).
+        """
+        Get server connection info (IP:port).
 
         Returns:
             Server address in format "IP:port".
@@ -127,7 +131,8 @@ class StateMonitorService:
 
     @property
     def module_states(self) -> List[ModuleState]:
-        """Get all module states.
+        """
+        Get all module states.
 
         Returns:
             List of all module states.
@@ -172,10 +177,11 @@ class StateMonitorService:
             self.on_status_message.emit("Disconnected")
 
     def toggle_connection(self) -> None:
-        """Toggle connection state between connected and disconnected.
+        """
+        Toggle connection state between connected and disconnected.
 
-        Disconnects if currently connected or connecting.
-        Connects if currently disconnected or failed.
+        Disconnects if currently connected or connecting. Connects if currently
+        disconnected or failed.
         """
         if self._connection_state in (
             ConnectionState.CONNECTED,
@@ -186,10 +192,12 @@ class StateMonitorService:
             self.connect()
 
     def refresh_all(self) -> None:
-        """Refresh all module states.
+        """
+        Refresh all module states.
 
-        Queries module_output_state datapoint for eligible modules (XP24, XP33LR, XP33LED).
-        Updates outputs column and last_update timestamp for each queried module.
+        Queries module_output_state datapoint for eligible modules (XP24, XP33LR,
+        XP33LED). Updates outputs column and last_update timestamp for each queried
+        module.
         """
         self.on_status_message.emit("Refreshing module states...")
 
@@ -205,7 +213,8 @@ class StateMonitorService:
                 )
 
     def _query_module_output_state(self, serial_number: str) -> None:
-        """Query module output state datapoint.
+        """
+        Query module output state datapoint.
 
         Args:
             serial_number: Module serial number to query.
@@ -228,7 +237,8 @@ class StateMonitorService:
             self.on_module_list_updated.emit(self.module_states)
 
     def _on_connection_failed(self, failure: Exception) -> None:
-        """Handle connection failed event.
+        """
+        Handle connection failed event.
 
         Args:
             failure: Exception that caused the failure.
@@ -239,7 +249,8 @@ class StateMonitorService:
             self.on_status_message.emit(f"Connection failed: {failure}")
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Routes telegrams to appropriate handlers based on type.
         Processes reply telegrams for datapoint queries and event telegrams for state changes.
@@ -254,7 +265,8 @@ class StateMonitorService:
             self._handle_event_telegram(event)
 
     def _handle_reply_telegram(self, event: TelegramReceivedEvent) -> None:
-        """Handle reply telegram for datapoint queries.
+        """
+        Handle reply telegram for datapoint queries.
 
         Args:
             event: Telegram received event.
@@ -290,7 +302,8 @@ class StateMonitorService:
         self.on_status_message.emit("Connection timeout")
 
     def _on_failed(self, failure: Exception) -> None:
-        """Handle protocol failure event.
+        """
+        Handle protocol failure event.
 
         Args:
             failure: Exception that caused the failure.
@@ -301,7 +314,8 @@ class StateMonitorService:
             self.on_status_message.emit(f"Protocol error: {failure}")
 
     def _find_module_by_link(self, link_number: int) -> Optional[ModuleState]:
-        """Find module state by link number.
+        """
+        Find module state by link number.
 
         Args:
             link_number: Link number to search for.
@@ -317,7 +331,8 @@ class StateMonitorService:
     def _update_output_bit(
         self, module_state: ModuleState, output_number: int, output_state: bool
     ) -> None:
-        """Update a single output bit in module state.
+        """
+        Update a single output bit in module state.
 
         Args:
             module_state: Module state to update.
@@ -338,7 +353,8 @@ class StateMonitorService:
         module_state.outputs = " ".join(outputs)
 
     def _handle_event_telegram(self, event: TelegramReceivedEvent) -> None:
-        """Handle event telegram for output state changes.
+        """
+        Handle event telegram for output state changes.
 
         Processes XP24 and XP33 output event telegrams to update module state in real-time.
         - XP24 output events use input_number 80-83 to represent outputs 0-3.
@@ -415,7 +431,8 @@ class StateMonitorService:
         self.logger.debug("StateMonitorService cleaned up")
 
     def __enter__(self) -> "StateMonitorService":
-        """Context manager entry.
+        """
+        Context manager entry.
 
         Returns:
             Self for context manager.
@@ -423,7 +440,8 @@ class StateMonitorService:
         return self
 
     def __exit__(self, _exc_type: object, _exc_val: object, _exc_tb: object) -> None:
-        """Context manager exit.
+        """
+        Context manager exit.
 
         Args:
             _exc_type: Exception type.

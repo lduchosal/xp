@@ -202,7 +202,8 @@ class TestLoggerService:
         mock_root_logger.handlers = [MagicMock()]
 
         def get_logger_side_effect(name=None):
-            """Return appropriate mock logger based on name.
+            """
+            Return appropriate mock logger based on name.
 
             Args:
                 name: Logger name to retrieve.

@@ -6,11 +6,11 @@ from xp.models.telegram.system_function import SystemFunction
 
 
 class ActionTableSerializerProtocol(Protocol):
-    """Protocol defining the interface for action table serializers.
+    """
+    Protocol defining the interface for action table serializers.
 
-    All action table serializers (ActionTableSerializer,
-    Xp20MsActionTableSerializer, Xp24MsActionTableSerializer,
-    Xp33MsActionTableSerializer) implement this protocol.
+    All action table serializers (ActionTableSerializer, Xp20MsActionTableSerializer,
+    Xp24MsActionTableSerializer, Xp33MsActionTableSerializer) implement this protocol.
     """
 
     @staticmethod
@@ -23,7 +23,8 @@ class ActionTableSerializerProtocol(Protocol):
 
     @staticmethod
     def from_encoded_string(encoded_data: str) -> Any:
-        """Deserialize encoded telegram data to action table model.
+        """
+        Deserialize encoded telegram data to action table model.
 
         Args:
             encoded_data: Encoded string from telegram (A-P nibble encoding).
@@ -35,7 +36,8 @@ class ActionTableSerializerProtocol(Protocol):
 
     @staticmethod
     def to_encoded_string(action_table: Any) -> str:
-        """Serialize action table model to encoded telegram format.
+        """
+        Serialize action table model to encoded telegram format.
 
         Args:
             action_table: Action table model to serialize.
@@ -47,7 +49,8 @@ class ActionTableSerializerProtocol(Protocol):
 
     @staticmethod
     def from_short_string(short_strings: list[str]) -> Any:
-        """Deserialize human-readable short format to action table model.
+        """
+        Deserialize human-readable short format to action table model.
 
         Args:
             short_strings: List of short format strings.
@@ -59,7 +62,8 @@ class ActionTableSerializerProtocol(Protocol):
 
     @staticmethod
     def to_short_string(action_table: Any) -> list[str]:
-        """Serialize action table model to human-readable short format.
+        """
+        Serialize action table model to human-readable short format.
 
         Args:
             action_table: Action table model to serialize.

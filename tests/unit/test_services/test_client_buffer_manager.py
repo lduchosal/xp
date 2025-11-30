@@ -192,7 +192,8 @@ class TestClientBufferManagerThreadSafety:
         threads = []
 
         def register_client(sock):
-            """Register a client socket.
+            """
+            Register a client socket.
 
             Args:
                 sock: Socket to register.
@@ -217,7 +218,8 @@ class TestClientBufferManagerThreadSafety:
         threads = []
 
         def broadcast_telegram(msg):
-            """Broadcast a telegram message.
+            """
+            Broadcast a telegram message.
 
             Args:
                 msg: Message to broadcast.
@@ -240,7 +242,8 @@ class TestClientBufferManagerThreadSafety:
         results = []
 
         def register_and_receive(_sock_id):
-            """Register client and receive messages.
+            """
+            Register client and receive messages.
 
             Args:
                 _sock_id: Socket identifier (unused).

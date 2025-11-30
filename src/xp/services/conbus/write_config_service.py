@@ -1,4 +1,5 @@
-"""Conbus Link Number Service for setting module link numbers.
+"""
+Conbus Link Number Service for setting module link numbers.
 
 This service handles setting link numbers for modules through Conbus telegrams.
 """
@@ -19,7 +20,8 @@ from xp.services.telegram.telegram_service import TelegramService
 
 
 class WriteConfigService:
-    """Service for writing module settings via Conbus telegrams.
+    """
+    Service for writing module settings via Conbus telegrams.
 
     Handles setting assignment by sending F04DXX telegrams and processing
     ACK/NAK responses from modules.
@@ -37,7 +39,8 @@ class WriteConfigService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the Conbus link number set service.
+        """
+        Initialize the Conbus link number set service.
 
         Args:
             conbus_protocol: Protocol for Conbus communication.
@@ -94,7 +97,8 @@ class WriteConfigService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -102,7 +106,8 @@ class WriteConfigService:
         self.write_config_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -146,7 +151,8 @@ class WriteConfigService:
         self.finished(succeed_or_failed=False, message="Timeout")
 
     def failed(self, message: str) -> None:
-        """Handle telegram failed event.
+        """
+        Handle telegram failed event.
 
         Args:
             message: The error message.
@@ -160,7 +166,8 @@ class WriteConfigService:
         message: Optional[str] = None,
         system_function: Optional[SystemFunction] = None,
     ) -> None:
-        """Handle successful link number set operation.
+        """
+        Handle successful link number set operation.
 
         Args:
             succeed_or_failed: succeed true, failed false.
@@ -186,7 +193,8 @@ class WriteConfigService:
         data_value: str,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Write config to a specific module.
+        """
+        Write config to a specific module.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -202,7 +210,8 @@ class WriteConfigService:
         self.data_value = data_value
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

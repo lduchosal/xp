@@ -32,7 +32,8 @@ def server() -> None:
 @click.pass_context
 @handle_service_errors(ServerError)
 def start_server(ctx: Context, port: int, config: str) -> None:
-    r"""Start the Conbus emulator server.
+    r"""
+    Start the Conbus emulator server.
 
     Args:
         ctx: Click context object.
@@ -80,7 +81,8 @@ def start_server(ctx: Context, port: int, config: str) -> None:
 @server.command("stop")
 @handle_service_errors(ServerError)
 def stop_server() -> None:
-    r"""Stop the running Conbus emulator server.
+    r"""
+    Stop the running Conbus emulator server.
 
     Examples:
         \b
@@ -104,7 +106,8 @@ def stop_server() -> None:
 @server.command("status")
 @handle_service_errors(Exception)
 def server_status() -> None:
-    r"""Get status of the Conbus emulator server.
+    r"""
+    Get status of the Conbus emulator server.
 
     Examples:
         \b

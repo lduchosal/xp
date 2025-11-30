@@ -4,7 +4,8 @@ from enum import Enum
 
 
 class EventType(Enum):
-    """Event types for telegraph events.
+    """
+    Event types for telegraph events.
 
     Attributes:
         BUTTON_PRESS: Button make (press) event.

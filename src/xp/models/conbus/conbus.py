@@ -7,7 +7,8 @@ from typing import Any, Dict, Optional
 
 @dataclass
 class ConbusRequest:
-    """Represents a Conbus send request.
+    """
+    Represents a Conbus send request.
 
     Attributes:
         serial_number: Serial number of the target device.
@@ -29,7 +30,8 @@ class ConbusRequest:
             self.timestamp = datetime.now()
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the request.
@@ -44,7 +46,8 @@ class ConbusRequest:
 
 @dataclass
 class ConbusResponse:
-    """Represents a response from Conbus send operation.
+    """
+    Represents a response from Conbus send operation.
 
     Attributes:
         success: Whether the operation was successful.
@@ -71,7 +74,8 @@ class ConbusResponse:
         self.received_telegrams = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the response.

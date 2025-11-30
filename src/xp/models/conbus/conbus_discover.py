@@ -6,7 +6,8 @@ from typing import Any, Dict, Optional, TypedDict
 
 
 class DiscoveredDevice(TypedDict):
-    """Discovered device information.
+    """
+    Discovered device information.
 
     Attributes:
         serial_number: Serial number of the device.
@@ -23,7 +24,8 @@ class DiscoveredDevice(TypedDict):
 
 @dataclass
 class ConbusDiscoverResponse:
-    """Represents a response from Conbus send operation.
+    """
+    Represents a response from Conbus send operation.
 
     Attributes:
         success: Whether the operation was successful.
@@ -49,7 +51,8 @@ class ConbusDiscoverResponse:
             self.received_telegrams = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the response.

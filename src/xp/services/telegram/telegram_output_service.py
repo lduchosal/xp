@@ -18,7 +18,8 @@ class XPOutputError(Exception):
 
 
 class TelegramOutputService:
-    """Service for XP action operations.
+    """
+    Service for XP action operations.
 
     Handles parsing and validation of XP24 action telegrams,
     status queries, and action command generation.
@@ -37,7 +38,8 @@ class TelegramOutputService:
     XP_ACK_NAK_PATTERN = re.compile(r"^<R(\d{10})F(1[89])D([A-Z0-9]{2})>$")
 
     def __init__(self, telegram_service: TelegramService) -> None:
-        """Initialize the XP output service.
+        """
+        Initialize the XP output service.
 
         Args:
             telegram_service: TelegramService instance for parsing operations.
@@ -45,7 +47,8 @@ class TelegramOutputService:
         self.telegram_service = telegram_service
 
     def validate_output_number(self, output_number: int) -> None:
-        """Validate XP24 output number according to architecture constraints.
+        """
+        Validate XP24 output number according to architecture constraints.
 
         Args:
             output_number: Output number to validate (0-3).
@@ -66,7 +69,8 @@ class TelegramOutputService:
 
     @staticmethod
     def validate_serial_number(serial_number: str) -> None:
-        """Validate serial number format.
+        """
+        Validate serial number format.
 
         Args:
             serial_number: Serial number to validate.
@@ -88,7 +92,8 @@ class TelegramOutputService:
     def generate_system_action_telegram(
         self, serial_number: str, output_number: int, action: ActionType
     ) -> str:
-        """Generate XP24 action telegram string.
+        """
+        Generate XP24 action telegram string.
 
         Args:
             serial_number: Target module serial number.
@@ -121,7 +126,8 @@ class TelegramOutputService:
         return f"<{data_part}{checksum}>"
 
     def generate_system_status_telegram(self, serial_number: str) -> str:
-        """Generate XP output status query telegram.
+        """
+        Generate XP output status query telegram.
 
         Args:
             serial_number: Target module serial number.
@@ -144,7 +150,8 @@ class TelegramOutputService:
         return f"<{data_part}{checksum}>"
 
     def parse_reply_telegram(self, raw_telegram: str) -> OutputTelegram:
-        """Parse a raw XP output response telegram string.
+        """
+        Parse a raw XP output response telegram string.
 
         Args:
             raw_telegram: The raw telegram string (e.g., "<R0012345003F18DFF>").
@@ -194,7 +201,8 @@ class TelegramOutputService:
             raise XPOutputError(f"Invalid values in XP24 action telegram: {e}")
 
     def parse_system_telegram(self, raw_telegram: str) -> OutputTelegram:
-        """Parse a raw XP output telegram string.
+        """
+        Parse a raw XP output telegram string.
 
         Args:
             raw_telegram: The raw telegram string (e.g., "<S0012345008F27D00AAFN>").
@@ -247,7 +255,8 @@ class TelegramOutputService:
             raise XPOutputError(f"Invalid values in XP24 action telegram: {e}")
 
     def parse_status_response(self, raw_telegram: str) -> list[bool]:
-        """Parse XP24 status response telegram to extract output states.
+        """
+        Parse XP24 status response telegram to extract output states.
 
         Args:
             raw_telegram: Raw reply telegram (e.g., "<R0012345008F02D12xxxx1110FJ>").
@@ -284,7 +293,8 @@ class TelegramOutputService:
 
     @staticmethod
     def format_status_summary(status: Dict[int, bool]) -> str:
-        """Format status dictionary into human-readable summary.
+        """
+        Format status dictionary into human-readable summary.
 
         Args:
             status: Dictionary mapping output numbers to states.
@@ -301,7 +311,8 @@ class TelegramOutputService:
 
     @staticmethod
     def format_action_summary(telegram: OutputTelegram) -> str:
-        """Format XP24 action telegram for human-readable output.
+        """
+        Format XP24 action telegram for human-readable output.
 
         Args:
             telegram: The parsed action telegram.
@@ -323,7 +334,8 @@ class TelegramOutputService:
 
     @staticmethod
     def format_output_state(data_value: str) -> str:
-        """Format module output state data value for display.
+        """
+        Format module output state data value for display.
 
         Algorithm:
         1. Remove 'x' characters

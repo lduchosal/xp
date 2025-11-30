@@ -1,7 +1,8 @@
-"""Conbus Server Service for emulating device discover responses.
+"""
+Conbus Server Service for emulating device discover responses.
 
-This service implements a TCP server that listens on port 10001 and responds to
-Discover Request telegrams with configurable device information.
+This service implements a TCP server that listens on port 10001 and responds to Discover
+Request telegrams with configurable device information.
 """
 
 import logging
@@ -32,8 +33,8 @@ class ServerService:
     """
     Main TCP server implementation for Conbus device emulation.
 
-    Manages TCP socket lifecycle, handles client connections,
-    parses Discover Request telegrams, and coordinates device responses.
+    Manages TCP socket lifecycle, handles client connections, parses Discover Request
+    telegrams, and coordinates device responses.
     """
 
     def __init__(
@@ -44,7 +45,8 @@ class ServerService:
         config_path: str = "server.yml",
         port: int = 10001,
     ):
-        """Initialize the Conbus server service.
+        """
+        Initialize the Conbus server service.
 
         Args:
             telegram_service: Service for parsing system telegrams.
@@ -121,7 +123,8 @@ class ServerService:
                 )
 
     def start_server(self) -> None:
-        """Start the TCP server on port 10001.
+        """
+        Start the TCP server on port 10001.
 
         Raises:
             ServerError: If server is already running or fails to start.
@@ -255,7 +258,8 @@ class ServerService:
                 self.logger.error(f"Error closing client socket: {e}")
 
     def _process_request(self, message: str) -> List[str]:
-        """Process incoming request and generate responses.
+        """
+        Process incoming request and generate responses.
 
         Args:
             message: Message potentially containing multiple telegrams in format <TELEGRAM><TELEGRAM2>...
@@ -284,7 +288,8 @@ class ServerService:
         return responses
 
     def _split_telegrams(self, message: str) -> List[str]:
-        """Split message into individual telegrams.
+        """
+        Split message into individual telegrams.
 
         Args:
             message: Raw message containing one or more telegrams in format <TELEGRAM><TELEGRAM2>...
@@ -319,7 +324,8 @@ class ServerService:
         return telegrams
 
     def _process_single_telegram(self, telegram: str) -> List[str]:
-        """Process a single telegram and generate responses.
+        """
+        Process a single telegram and generate responses.
 
         Args:
             telegram: A single telegram string.
@@ -376,7 +382,8 @@ class ServerService:
         return responses
 
     def get_server_status(self) -> dict:
-        """Get current server status.
+        """
+        Get current server status.
 
         Returns:
             Dictionary containing server status information.

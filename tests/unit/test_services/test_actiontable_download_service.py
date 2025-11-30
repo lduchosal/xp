@@ -7,12 +7,12 @@ import pytest
 
 from xp.models.actiontable.actiontable import ActionTable
 from xp.models.actiontable.actiontable_type import ActionTableType
-from xp.services.conbus.actiontable.actiontable_download_service import (
-    DownloadService,
-)
 from xp.services.actiontable.download_state_machine import (
     MAX_ERROR_RETRIES,
     Phase,
+)
+from xp.services.conbus.actiontable.actiontable_download_service import (
+    DownloadService,
 )
 
 
@@ -139,7 +139,8 @@ class TestActionTableDownloadServiceStateMachine:
         assert service.waiting_data.is_active
 
     def test_receive_eof_transitions_to_processing_eof_then_receiving(self, service):
-        """Test receive_eof event transitions to processing_eof then receiving (CLEANUP)."""
+        """Test receive_eof event transitions to processing_eof then receiving
+        (CLEANUP)."""
         # Get to waiting_data state
         service.do_connect()
         service.do_timeout()
@@ -152,7 +153,8 @@ class TestActionTableDownloadServiceStateMachine:
         assert service._phase == Phase.CLEANUP
 
     def test_no_error_status_received_in_cleanup_phase_goes_to_completed(self, service):
-        """Test no_error_status_received in CLEANUP phase goes to completed via guard."""
+        """Test no_error_status_received in CLEANUP phase goes to completed via
+        guard."""
         # Get to waiting_ok in CLEANUP phase
         service.do_connect()
         service.do_timeout()

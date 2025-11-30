@@ -49,7 +49,8 @@ class TestConbusDatapointIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -57,7 +58,8 @@ class TestConbusDatapointIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
-            """Mock on_progress event connection.
+            """
+            Mock on_progress event connection.
 
             Args:
                 callback: Callback function to store.
@@ -69,7 +71,8 @@ class TestConbusDatapointIntegration:
 
         # Make the mock service call the callback immediately
         def mock_query_all_datapoints(serial_number):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
@@ -157,7 +160,8 @@ class TestConbusDatapointIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -165,7 +169,8 @@ class TestConbusDatapointIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
-            """Mock on_progress event connection.
+            """
+            Mock on_progress event connection.
 
             Args:
                 callback: Callback function to store.
@@ -177,7 +182,8 @@ class TestConbusDatapointIntegration:
 
         # Make the mock service call the callback immediately
         def mock_query_all_datapoints(serial_number):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
@@ -230,7 +236,8 @@ class TestConbusDatapointIntegration:
         callbacks = {"on_finish": None, "on_progress": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -238,7 +245,8 @@ class TestConbusDatapointIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_progress_connect(callback):
-            """Mock on_progress event connection.
+            """
+            Mock on_progress event connection.
 
             Args:
                 callback: Callback function to store.
@@ -250,7 +258,8 @@ class TestConbusDatapointIntegration:
 
         # Make the mock service call the callback immediately
         def mock_query_all_datapoints(serial_number):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 serial_number: Serial number of the module.

@@ -23,7 +23,8 @@ from xp.services.telegram.telegram_datapoint_service import TelegramDatapointSer
 @connection_command()
 @click.pass_context
 def get_autoreport_command(ctx: Context, serial_number: str) -> None:
-    r"""Get the current auto report status for a specific module.
+    r"""
+    Get the current auto report status for a specific module.
 
     Args:
         ctx: Click context object.
@@ -42,7 +43,8 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
     )
 
     def on_finish(service_response: ConbusDatapointResponse) -> None:
-        """Handle successful completion of auto report status retrieval.
+        """
+        Handle successful completion of auto report status retrieval.
 
         Args:
             service_response: Auto report response object.
@@ -70,7 +72,8 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
 @connection_command()
 @click.pass_context
 def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> None:
-    r"""Set the auto report status for a specific module.
+    r"""
+    Set the auto report status for a specific module.
 
     Args:
         ctx: Click context object.
@@ -90,7 +93,8 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """Handle successful completion of light level on command.
+        """
+        Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.

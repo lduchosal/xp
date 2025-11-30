@@ -1,8 +1,9 @@
-"""XP130 Server Service for device emulation.
+"""
+XP130 Server Service for device emulation.
 
-This service provides XP130-specific device emulation functionality,
-including response generation and device configuration handling.
-XP130 is an Ethernet/TCPIP interface module.
+This service provides XP130-specific device emulation functionality, including response
+generation and device configuration handling. XP130 is an Ethernet/TCPIP interface
+module.
 """
 
 from typing import Dict, Optional
@@ -22,8 +23,8 @@ class XP130ServerService(BaseServerService):
     """
     XP130 device emulation service.
 
-    Generates XP130-specific responses, handles XP130 device configuration,
-    and implements XP130 telegram format for Ethernet/TCPIP interface module.
+    Generates XP130-specific responses, handles XP130 device configuration, and
+    implements XP130 telegram format for Ethernet/TCPIP interface module.
     """
 
     def __init__(
@@ -32,7 +33,8 @@ class XP130ServerService(BaseServerService):
         _variant: str = "",
         _msactiontable_serializer: Optional[MsActionTableSerializer] = None,
     ):
-        """Initialize XP130 server service.
+        """
+        Initialize XP130 server service.
 
         Args:
             serial_number: The device serial number.
@@ -50,7 +52,8 @@ class XP130ServerService(BaseServerService):
         self.gateway = "192.168.1.1"
 
     def get_device_info(self) -> Dict:
-        """Get XP130 device information.
+        """
+        Get XP130 device information.
 
         Returns:
             Dictionary containing device information.

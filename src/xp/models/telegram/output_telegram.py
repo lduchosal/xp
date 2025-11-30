@@ -1,9 +1,10 @@
-"""XP output telegram model for console bus communication.
+"""
+XP output telegram model for console bus communication.
 
-XP output telegrams are used for controlling relay inputs on XP modules.
-Each XP24 module has 4 inputs (0-3) that can be pressed or released.
-Each XP33 module has 3 inputs (0-2) that can be pressed or released.
-Each XP31 module has 1 inputs (0-0) that can be pressed or released.
+XP output telegrams are used for controlling relay inputs on XP modules. Each XP24
+module has 4 inputs (0-3) that can be pressed or released. Each XP33 module has 3 inputs
+(0-2) that can be pressed or released. Each XP31 module has 1 inputs (0-0) that can be
+pressed or released.
 """
 
 from dataclasses import dataclass
@@ -17,7 +18,8 @@ from xp.models.telegram.telegram import Telegram
 
 @dataclass
 class OutputTelegram(Telegram):
-    """Represent a parsed XP output telegram from the console bus.
+    """
+    Represent a parsed XP output telegram from the console bus.
 
     Format: <S{serial_number}F27D{input:02d}{action}{checksum}>
     Examples: <S0012345008F27D00AAFN>
@@ -45,7 +47,8 @@ class OutputTelegram(Telegram):
 
     @property
     def action_description(self) -> str:
-        """Get human-readable action description.
+        """
+        Get human-readable action description.
 
         Returns:
             Human-readable description of the action.
@@ -62,7 +65,8 @@ class OutputTelegram(Telegram):
 
     @property
     def input_description(self) -> str:
-        """Get human-readable input description.
+        """
+        Get human-readable input description.
 
         Returns:
             Description of the input/output number.
@@ -70,7 +74,8 @@ class OutputTelegram(Telegram):
         return f"Input {self.output_number}"
 
     def to_dict(self) -> dict:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the output telegram.
@@ -91,7 +96,8 @@ class OutputTelegram(Telegram):
         }
 
     def __str__(self) -> str:
-        """Return human-readable string representation.
+        """
+        Return human-readable string representation.
 
         Returns:
             Formatted string representation.

@@ -9,7 +9,8 @@ from xp.models.telegram.system_function import SystemFunction
 
 # noinspection DuplicatedCode
 class SystemFunctionChoice(click.ParamType):
-    """Click parameter type for validating SystemFunction enum values.
+    """
+    Click parameter type for validating SystemFunction enum values.
 
     Attributes:
         name: The parameter type name.
@@ -25,7 +26,8 @@ class SystemFunctionChoice(click.ParamType):
     def convert(
         self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]
     ) -> Any:
-        """Convert and validate input to SystemFunction enum.
+        """
+        Convert and validate input to SystemFunction enum.
 
         Args:
             value: The input value to convert.

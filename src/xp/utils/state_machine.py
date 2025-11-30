@@ -1,7 +1,8 @@
-"""Lightweight state machine utilities.
+"""
+Lightweight state machine utilities.
 
-Provides simple, zero-dependency state machine implementation for
-managing state transitions with validation.
+Provides simple, zero-dependency state machine implementation for managing state
+transitions with validation.
 """
 
 from enum import Enum
@@ -9,7 +10,8 @@ from typing import Set
 
 
 class StateMachine:
-    """Lightweight state machine for managing state transitions.
+    """
+    Lightweight state machine for managing state transitions.
 
     Enforces valid state transitions and prevents invalid operations.
     Zero dependencies, suitable for any state-based logic.
@@ -28,7 +30,8 @@ class StateMachine:
     """
 
     def __init__(self, initial: Enum):
-        """Initialize state machine.
+        """
+        Initialize state machine.
 
         Args:
             initial: Initial state (any Enum value).
@@ -37,7 +40,8 @@ class StateMachine:
         self._valid_transitions: dict[str, Set[Enum]] = {}
 
     def define_transition(self, action: str, valid_sources: Set[Enum]) -> None:
-        """Define valid source states for an action.
+        """
+        Define valid source states for an action.
 
         Args:
             action: Action name (e.g., "connect", "disconnect").
@@ -46,7 +50,8 @@ class StateMachine:
         self._valid_transitions[action] = valid_sources
 
     def can_transition(self, action: str) -> bool:
-        """Check if action is valid from current state.
+        """
+        Check if action is valid from current state.
 
         Args:
             action: Action to check (e.g., "connect", "disconnect").
@@ -58,7 +63,8 @@ class StateMachine:
         return self.state in valid_sources
 
     def transition(self, action: str, new_state: Enum) -> bool:
-        """Attempt state transition.
+        """
+        Attempt state transition.
 
         Args:
             action: Action triggering the transition.
@@ -73,7 +79,8 @@ class StateMachine:
         return False
 
     def get_state(self) -> Enum:
-        """Get current state.
+        """
+        Get current state.
 
         Returns:
             Current state as Enum value.

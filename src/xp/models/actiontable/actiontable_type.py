@@ -4,7 +4,8 @@ from enum import Enum
 
 
 class ActionTableType(str, Enum):
-    """ActionTable types for download/upload operations.
+    """
+    ActionTable types for download/upload operations.
 
     Attributes:
         ACTIONTABLE: Standard action table.

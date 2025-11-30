@@ -4,7 +4,8 @@ from pydantic import BaseModel, Field
 
 
 class InputChannel(BaseModel):
-    """Configuration for a single input channel in XP20 action table.
+    """
+    Configuration for a single input channel in XP20 action table.
 
     Attributes:
         invert: Input inversion flag
@@ -24,7 +25,8 @@ class InputChannel(BaseModel):
 
 
 class Xp20MsActionTable(BaseModel):
-    """XP20 Action Table for managing 8 input channels.
+    """
+    XP20 Action Table for managing 8 input channels.
 
     Contains configuration for 8 input channels (input1 through input8),
     each with flags for inversion, short/long press detection, group functions,
@@ -51,7 +53,8 @@ class Xp20MsActionTable(BaseModel):
     input8: InputChannel = Field(default_factory=InputChannel)
 
     def to_short_format(self) -> list[str]:
-        """Convert action table to short format string.
+        """
+        Convert action table to short format string.
 
         Returns:
             Short format string with each channel on a separate line.
@@ -79,7 +82,8 @@ class Xp20MsActionTable(BaseModel):
 
     @classmethod
     def from_short_format(cls, short_str: list[str]) -> "Xp20MsActionTable":
-        """Parse short format string into action table.
+        """
+        Parse short format string into action table.
 
         Args:
             short_str: Short format string with 8 channel lines.

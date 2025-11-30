@@ -137,7 +137,8 @@ def create_test_telegram(
     event_type=EventType.BUTTON_PRESS,
     checksum="AK",
 ):
-    """Create a test EventTelegram object with specified parameters.
+    """
+    Create a test EventTelegram object with specified parameters.
 
     Args:
         module_type: The module type code.

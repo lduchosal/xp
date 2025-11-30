@@ -44,7 +44,8 @@ class ActionTableError(Exception):
 @click.pass_context
 @connection_command()
 def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
-    """Download action table from XP module.
+    """
+    Download action table from XP module.
 
     Args:
         ctx: Click context object.
@@ -55,7 +56,8 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
     )
 
     def on_progress(progress: str) -> None:
-        """Handle progress updates during action table download.
+        """
+        Handle progress updates during action table download.
 
         Args:
             progress: Progress message string.
@@ -67,7 +69,8 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         actiontable_dict: Dict[str, Any],
         actiontable_short: list[str],
     ) -> None:
-        """Handle successful completion of action table download.
+        """
+        Handle successful completion of action table download.
 
         Args:
             _actiontable: a list of ActionTableEntries.
@@ -86,7 +89,8 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         service.stop_reactor()
 
     def on_error(error: str) -> None:
-        """Handle errors during action table download.
+        """
+        Handle errors during action table download.
 
         Args:
             error: Error message string.
@@ -111,7 +115,8 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
 @click.pass_context
 @connection_command()
 def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
-    """Upload action table from conson.yml to XP module.
+    """
+    Upload action table from conson.yml to XP module.
 
     Args:
         ctx: Click context object.
@@ -127,7 +132,8 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
     entries_count = 0
 
     def progress_callback(progress: str) -> None:
-        """Handle progress updates during action table upload.
+        """
+        Handle progress updates during action table upload.
 
         Args:
             progress: Progress message string.
@@ -135,7 +141,8 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
         click.echo(progress, nl=False)
 
     def on_finish(success: bool) -> None:
-        """Handle completion of action table upload.
+        """
+        Handle completion of action table upload.
 
         Args:
             success: True if upload succeeded.
@@ -147,7 +154,8 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
         service.stop_reactor()
 
     def on_error(error: str) -> None:
-        """Handle errors during action table upload.
+        """
+        Handle errors during action table upload.
 
         Args:
             error: Error message string.
@@ -178,7 +186,8 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
 @conbus_actiontable.command("list", short_help="List modules with ActionTable")
 @click.pass_context
 def conbus_list_actiontable(ctx: Context) -> None:
-    """List all modules with action table configurations from conson.yml.
+    """
+    List all modules with action table configurations from conson.yml.
 
     Args:
         ctx: Click context object.
@@ -188,7 +197,8 @@ def conbus_list_actiontable(ctx: Context) -> None:
     )
 
     def on_finish(module_list: dict) -> None:
-        """Handle successful completion of action table list.
+        """
+        Handle successful completion of action table list.
 
         Args:
             module_list: Dictionary containing modules and total count.
@@ -196,7 +206,8 @@ def conbus_list_actiontable(ctx: Context) -> None:
         click.echo(json.dumps(module_list, indent=2, default=str))
 
     def on_error(error: str) -> None:
-        """Handle errors during action table list.
+        """
+        Handle errors during action table list.
 
         Args:
             error: Error message string.
@@ -213,7 +224,8 @@ def conbus_list_actiontable(ctx: Context) -> None:
 @click.argument("serial_number", type=SERIAL)
 @click.pass_context
 def conbus_show_actiontable(ctx: Context, serial_number: str) -> None:
-    """Show action table configuration for a specific module from conson.yml.
+    """
+    Show action table configuration for a specific module from conson.yml.
 
     Args:
         ctx: Click context object.
@@ -224,7 +236,8 @@ def conbus_show_actiontable(ctx: Context, serial_number: str) -> None:
     )
 
     def on_finish(module: ConsonModuleConfig) -> None:
-        """Handle successful completion of action table show.
+        """
+        Handle successful completion of action table show.
 
         Args:
             module: Dictionary containing module configuration.
@@ -234,7 +247,8 @@ def conbus_show_actiontable(ctx: Context, serial_number: str) -> None:
         click.echo(json.dumps(module_data, indent=2, default=str))
 
     def error_callback(error: str) -> None:
-        """Handle errors during action table show.
+        """
+        Handle errors during action table show.
 
         Args:
             error: Error message string.

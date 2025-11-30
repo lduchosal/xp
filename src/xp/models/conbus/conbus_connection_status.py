@@ -7,7 +7,8 @@ from typing import Any, Dict, Optional
 
 @dataclass
 class ConbusConnectionStatus:
-    """Represents the current connection status.
+    """
+    Represents the current connection status.
 
     Attributes:
         connected: Whether currently connected.
@@ -24,7 +25,8 @@ class ConbusConnectionStatus:
     error: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the connection status.

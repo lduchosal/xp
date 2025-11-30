@@ -1,7 +1,8 @@
-"""Conbus Event List Service for listing configured event telegrams.
+"""
+Conbus Event List Service for listing configured event telegrams.
 
-This service parses action tables from conson.yml and groups events
-by button configuration to show which modules are assigned to each event.
+This service parses action tables from conson.yml and groups events by button
+configuration to show which modules are assigned to each event.
 """
 
 import logging
@@ -14,7 +15,8 @@ from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
 
 
 class ConbusEventListService:
-    """Service for listing configured event telegrams from action tables.
+    """
+    Service for listing configured event telegrams from action tables.
 
     Parses action tables from conson.yml configuration and groups modules
     by their event keys to identify common button configurations.
@@ -25,7 +27,8 @@ class ConbusEventListService:
     """
 
     def __init__(self, conson_config: ConsonModuleListConfig) -> None:
-        """Initialize the Conbus event list service.
+        """
+        Initialize the Conbus event list service.
 
         Args:
             conson_config: ConsonModuleListConfig instance with module action tables.
@@ -34,7 +37,8 @@ class ConbusEventListService:
         self.logger = logging.getLogger(__name__)
 
     def list_events(self) -> ConbusEventListResponse:
-        """List all configured events from module action tables.
+        """
+        List all configured events from module action tables.
 
         Parses action tables, extracts event information (module_type, link, input),
         groups modules by event key, and sorts by usage count.

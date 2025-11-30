@@ -11,7 +11,8 @@ from xp.cli.utils.formatters import OutputFormatter
 def handle_service_errors(
     *service_exceptions: Type[Exception],
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Handle common service exceptions with consistent JSON error formatting.
+    """
+    Handle common service exceptions with consistent JSON error formatting.
 
     Args:
         service_exceptions: Tuple of exception types to catch and handle.
@@ -21,7 +22,8 @@ def handle_service_errors(
     """
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        """Apply error handling to the decorated function.
+        """
+        Apply error handling to the decorated function.
 
         Args:
             func: The function to decorate.
@@ -32,7 +34,8 @@ def handle_service_errors(
 
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            """Execute function with error handling.
+            """
+            Execute function with error handling.
 
             Args:
                 args: Positional arguments passed to the decorated function.
@@ -64,7 +67,8 @@ def handle_service_errors(
 
 
 def common_options(func: Callable[..., Any]) -> Callable[..., Any]:
-    """Add validation option to command.
+    """
+    Add validation option to command.
 
     Args:
         func: The function to decorate.
@@ -78,7 +82,8 @@ def common_options(func: Callable[..., Any]) -> Callable[..., Any]:
 def telegram_parser_command(
     service_exceptions: Tuple[Type[Exception], ...] = (),
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Apply telegram parsing commands with standard error handling.
+    """
+    Apply telegram parsing commands with standard error handling.
 
     Args:
         service_exceptions: Additional service exceptions to handle.
@@ -88,7 +93,8 @@ def telegram_parser_command(
     """
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        """Apply telegram parser decorators.
+        """
+        Apply telegram parser decorators.
 
         Args:
             func: The function to decorate.
@@ -113,7 +119,8 @@ def telegram_parser_command(
 def service_command(
     *service_exceptions: Type[Exception],
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Apply service-based commands with error handling and JSON output.
+    """
+    Apply service-based commands with error handling and JSON output.
 
     Args:
         service_exceptions: Service exception types to handle.
@@ -123,7 +130,8 @@ def service_command(
     """
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        """Apply service command decorators.
+        """
+        Apply service command decorators.
 
         Args:
             func: The function to decorate.
@@ -140,7 +148,8 @@ def service_command(
 def list_command(
     *service_exceptions: Type[Exception],
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Apply list/search commands with common options.
+    """
+    Apply list/search commands with common options.
 
     Args:
         service_exceptions: Service exception types to handle.
@@ -150,7 +159,8 @@ def list_command(
     """
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        """Apply list command decorators.
+        """
+        Apply list command decorators.
 
         Args:
             func: The function to decorate.
@@ -165,14 +175,16 @@ def list_command(
 
 
 def file_operation_command() -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Apply file operation commands with common filters.
+    """
+    Apply file operation commands with common filters.
 
     Returns:
         Decorator function for file operation commands.
     """
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        """Apply file operation decorators.
+        """
+        Apply file operation decorators.
 
         Args:
             func: The function to decorate.
@@ -201,7 +213,8 @@ def file_operation_command() -> Callable[[Callable[..., Any]], Callable[..., Any
 def with_formatter(
     formatter_class: Any = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Inject a formatter instance into the command.
+    """
+    Inject a formatter instance into the command.
 
     Args:
         formatter_class: Custom formatter class to use.
@@ -211,7 +224,8 @@ def with_formatter(
     """
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        """Apply formatter injection.
+        """
+        Apply formatter injection.
 
         Args:
             func: The function to decorate.
@@ -222,7 +236,8 @@ def with_formatter(
 
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            """Execute function with injected formatter.
+            """
+            Execute function with injected formatter.
 
             Args:
                 args: Positional arguments passed to the decorated function.
@@ -244,7 +259,8 @@ def with_formatter(
 def require_arguments(
     *required_args: str,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Validate required arguments are present.
+    """
+    Validate required arguments are present.
 
     Args:
         required_args: Names of required arguments.
@@ -254,7 +270,8 @@ def require_arguments(
     """
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        """Apply argument validation.
+        """
+        Apply argument validation.
 
         Args:
             func: The function to decorate.
@@ -265,7 +282,8 @@ def require_arguments(
 
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            """Execute function with argument validation.
+            """
+            Execute function with argument validation.
 
             Args:
                 args: Positional arguments passed to the decorated function.
@@ -300,14 +318,16 @@ def require_arguments(
 
 
 def connection_command() -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Apply commands that connect to remote services.
+    """
+    Apply commands that connect to remote services.
 
     Returns:
         Decorator function for connection commands.
     """
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        """Apply connection command decorators.
+        """
+        Apply connection command decorators.
 
         Args:
             func: The function to decorate.
@@ -318,7 +338,8 @@ def connection_command() -> Callable[[Callable[..., Any]], Callable[..., Any]]:
 
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            """Execute function with connection error handling.
+            """
+            Execute function with connection error handling.
 
             Args:
                 args: Positional arguments passed to the decorated function.

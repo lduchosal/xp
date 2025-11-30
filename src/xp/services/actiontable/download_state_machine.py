@@ -9,10 +9,11 @@ from statemachine.factory import StateMachineMetaclass
 
 
 class AbstractStateMachineMeta(StateMachineMetaclass, ABCMeta):
-    """Combined metaclass for abstract state machines.
+    """
+    Combined metaclass for abstract state machines.
 
-    Combines StateMachineMetaclass (for state machine introspection) with
-    ABCMeta (for abstract method enforcement).
+    Combines StateMachineMetaclass (for state machine introspection) with ABCMeta (for
+    abstract method enforcement).
     """
 
     pass
@@ -23,7 +24,8 @@ MAX_ERROR_RETRIES = 3  # Max retries for error_status_received before giving up
 
 
 class Phase(Enum):
-    """Download workflow phases.
+    """
+    Download workflow phases.
 
     The download workflow consists of three sequential phases:
     - INIT: Drain pending telegrams, query error status → proceed to DOWNLOAD
@@ -42,7 +44,8 @@ class Phase(Enum):
 
 
 class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
-    """State machine for ActionTable download workflow.
+    """
+    State machine for ActionTable download workflow.
 
     Pure state machine with states, transitions, and guards. Subclasses can
     override on_enter_* methods to add protocol-specific behavior.
@@ -146,7 +149,8 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
 
     @phase.setter
     def phase(self, value: Phase) -> None:
-        """Set current phase.
+        """
+        Set current phase.
 
         Args:
             value: The phase value to set.
@@ -160,7 +164,8 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
 
     @error_retry_count.setter
     def error_retry_count(self, value: int) -> None:
-        """Set error retry count.
+        """
+        Set error retry count.
 
         Args:
             value: The error retry count value to set.

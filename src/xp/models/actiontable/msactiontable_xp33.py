@@ -8,7 +8,8 @@ from xp.models.telegram.timeparam_type import TimeParam
 
 
 class Xp33Output(BaseModel):
-    """Represents an XP33 output configuration.
+    """
+    Represents an XP33 output configuration.
 
     Attributes:
         min_level: Minimum output level (0-100).
@@ -26,7 +27,8 @@ class Xp33Output(BaseModel):
 
 
 class Xp33Scene(BaseModel):
-    """Represents a scene configuration.
+    """
+    Represents a scene configuration.
 
     Attributes:
         output1_level: Output level for output 1 (0-100).
@@ -43,7 +45,8 @@ class Xp33Scene(BaseModel):
     @field_validator("time", mode="before")
     @classmethod
     def validate_time_param(cls, v: Union[str, int, TimeParam]) -> TimeParam:
-        """Convert string or int to TimeParam enum.
+        """
+        Convert string or int to TimeParam enum.
 
         Args:
             v: Input value (can be string name, int value, or enum).
@@ -70,7 +73,8 @@ class Xp33Scene(BaseModel):
 
 
 class Xp33MsActionTable(BaseModel):
-    """XP33 Action Table for managing outputs and scenes.
+    """
+    XP33 Action Table for managing outputs and scenes.
 
     Attributes:
         output1: Configuration for output 1.
@@ -92,7 +96,8 @@ class Xp33MsActionTable(BaseModel):
     scene4: Xp33Scene = Field(default_factory=Xp33Scene)
 
     def to_short_format(self) -> list[str]:
-        """Convert action table to short format string.
+        """
+        Convert action table to short format string.
 
         Returns:
             Short format string (multi-line format with OUT and SCENE lines).
@@ -122,7 +127,8 @@ class Xp33MsActionTable(BaseModel):
 
     @classmethod
     def from_short_format(cls, short_str: list[str]) -> "Xp33MsActionTable":
-        """Parse short format string into action table.
+        """
+        Parse short format string into action table.
 
         Args:
             short_str: Short format string (list of lines).
@@ -205,7 +211,8 @@ class Xp33MsActionTable(BaseModel):
 
     @staticmethod
     def _format_output(output: Xp33Output) -> str:
-        """Format output configuration to short string.
+        """
+        Format output configuration to short string.
 
         Args:
             output: Xp33Output instance.
@@ -223,7 +230,8 @@ class Xp33MsActionTable(BaseModel):
 
     @staticmethod
     def _parse_output(output_str: str) -> Xp33Output:
-        """Parse output configuration from short string.
+        """
+        Parse output configuration from short string.
 
         Args:
             output_str: Short string like "MIN:10 MAX:90 SO:1 SF:0 LE:1".
@@ -277,7 +285,8 @@ class Xp33MsActionTable(BaseModel):
 
     @staticmethod
     def _format_scene(scene: Xp33Scene) -> str:
-        """Format scene configuration to short string.
+        """
+        Format scene configuration to short string.
 
         Args:
             scene: Xp33Scene instance.
@@ -295,7 +304,8 @@ class Xp33MsActionTable(BaseModel):
 
     @staticmethod
     def _parse_scene(scene_str: str) -> Xp33Scene:
-        """Parse scene configuration from short string.
+        """
+        Parse scene configuration from short string.
 
         Args:
             scene_str: Short string like "OUT1:50 OUT2:60 OUT3:70 T:T5SEC".

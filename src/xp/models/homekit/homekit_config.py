@@ -10,7 +10,8 @@ from pydantic import BaseModel, Field, IPvAnyAddress
 
 
 class NetworkConfig(BaseModel):
-    """Network configuration settings.
+    """
+    Network configuration settings.
 
     Attributes:
         ip: IP address for the network connection.
@@ -22,7 +23,8 @@ class NetworkConfig(BaseModel):
 
 
 class RoomConfig(BaseModel):
-    """Room configuration settings.
+    """
+    Room configuration settings.
 
     Attributes:
         name: Name of the room.
@@ -34,7 +36,8 @@ class RoomConfig(BaseModel):
 
 
 class BridgeConfig(BaseModel):
-    """HomeKit bridge settings.
+    """
+    HomeKit bridge settings.
 
     Attributes:
         name: Name of the HomeKit bridge.
@@ -46,7 +49,8 @@ class BridgeConfig(BaseModel):
 
 
 class HomekitAccessoryConfig(BaseModel):
-    """HomeKit accessory configuration.
+    """
+    HomeKit accessory configuration.
 
     Attributes:
         name: Name of the accessory.
@@ -72,7 +76,8 @@ class HomekitAccessoryConfig(BaseModel):
 
 
 class HomekitConfig(BaseModel):
-    """HomeKit bridge configuration.
+    """
+    HomeKit bridge configuration.
 
     Attributes:
         homekit: Network configuration for HomeKit.
@@ -88,7 +93,8 @@ class HomekitConfig(BaseModel):
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "HomekitConfig":
-        """Load configuration from YAML file.
+        """
+        Load configuration from YAML file.
 
         Args:
             file_path: Path to the YAML configuration file.

@@ -188,7 +188,9 @@ class TestXp33MsActionTableSerializer:
 
     def test_from_data_basic(self, sample_telegram_data):
         """Test basic telegram parsing."""
-        action_table = Xp33MsActionTableSerializer.from_encoded_string(sample_telegram_data)
+        action_table = Xp33MsActionTableSerializer.from_encoded_string(
+            sample_telegram_data
+        )
 
         # Verify it's a valid Xp33MsActionTable
         assert isinstance(action_table, Xp33MsActionTable)

@@ -8,7 +8,8 @@ from pydantic import BaseModel, IPvAnyAddress
 
 
 class ConsonModuleConfig(BaseModel):
-    """Configuration for a Conson module.
+    """
+    Configuration for a Conson module.
 
     Attributes:
         name: Name of the module.
@@ -48,7 +49,8 @@ class ConsonModuleConfig(BaseModel):
 
 
 class ConsonModuleListConfig(BaseModel):
-    """Configuration list for Conson modules.
+    """
+    Configuration list for Conson modules.
 
     Attributes:
         root: List of Conson module configurations.
@@ -58,7 +60,8 @@ class ConsonModuleListConfig(BaseModel):
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "ConsonModuleListConfig":
-        """Load configuration from YAML file.
+        """
+        Load configuration from YAML file.
 
         Args:
             file_path: Path to the YAML configuration file.
@@ -78,7 +81,8 @@ class ConsonModuleListConfig(BaseModel):
         return cls(root=data)
 
     def find_module(self, serial_number: str) -> Optional[ConsonModuleConfig]:
-        """Find a module by serial number.
+        """
+        Find a module by serial number.
 
         Args:
             serial_number: Module serial number to search for.

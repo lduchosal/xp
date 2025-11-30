@@ -41,7 +41,8 @@ def reverse_proxy() -> None:
 @handle_service_errors(ReverseProxyError)
 @click.pass_context
 def start_proxy(ctx: Context, port: int, config: str) -> None:
-    r"""Start the Conbus reverse proxy server.
+    r"""
+    Start the Conbus reverse proxy server.
 
     The proxy listens on the specified port and forwards all telegrams
     to the target server configured in cli.yml. All traffic is monitored
@@ -80,7 +81,8 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
 
         # Handle graceful shutdown on SIGINT
         def signal_handler(signum: int, frame: Optional[FrameType]) -> None:
-            """Handle shutdown signals for graceful proxy termination.
+            """
+            Handle shutdown signals for graceful proxy termination.
 
             Args:
                 signum: Signal number received.
@@ -116,7 +118,8 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
 @reverse_proxy.command("stop")
 @handle_service_errors(ReverseProxyError)
 def stop_proxy() -> None:
-    r"""Stop the running Conbus reverse proxy server.
+    r"""
+    Stop the running Conbus reverse proxy server.
 
     Examples:
         \b
@@ -146,7 +149,8 @@ def stop_proxy() -> None:
 @reverse_proxy.command("status")
 @handle_service_errors(Exception)
 def proxy_status() -> None:
-    r"""Get status of the Conbus reverse proxy server.
+    r"""
+    Get status of the Conbus reverse proxy server.
 
     Shows current running state, listen port, target server,
     and active connection details.

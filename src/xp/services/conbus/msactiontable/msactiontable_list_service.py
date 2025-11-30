@@ -8,7 +8,8 @@ from psygnal import Signal
 
 
 class MsActionTableListService:
-    """Service for listing modules with action table configurations.
+    """
+    Service for listing modules with action table configurations.
 
     Reads conson.yml and returns a list of all modules that have action table
     configurations defined.
@@ -26,7 +27,8 @@ class MsActionTableListService:
         self.logger = logging.getLogger(__name__)
 
     def __enter__(self) -> "MsActionTableListService":
-        """Context manager entry.
+        """
+        Context manager entry.
 
         Returns:
             Self for context manager use.
@@ -43,7 +45,8 @@ class MsActionTableListService:
         self,
         config_path: Optional[Path] = None,
     ) -> None:
-        """List all modules with action table configurations.
+        """
+        List all modules with action table configurations.
 
         Args:
             config_path: Optional path to conson.yml. Defaults to current directory.
@@ -92,7 +95,8 @@ class MsActionTableListService:
         self.on_finish.emit(result)
 
     def _handle_error(self, message: str) -> None:
-        """Handle error and emit error signal.
+        """
+        Handle error and emit error signal.
 
         Args:
             message: Error message.

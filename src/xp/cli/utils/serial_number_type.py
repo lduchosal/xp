@@ -6,7 +6,8 @@ import click
 
 
 class SerialNumberParamType(click.ParamType):
-    """Click parameter type for validating and formatting serial numbers.
+    """
+    Click parameter type for validating and formatting serial numbers.
 
     Attributes:
         name: The parameter type name.
@@ -17,7 +18,8 @@ class SerialNumberParamType(click.ParamType):
     def convert(
         self, value: Any, param: Optional[click.Parameter], ctx: Optional[click.Context]
     ) -> Optional[str]:
-        """Convert and validate serial number input.
+        """
+        Convert and validate serial number input.
 
         Args:
             value: The input value to convert.

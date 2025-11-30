@@ -1,4 +1,5 @@
-"""Integration tests for system and reply telegram CLI commands.
+"""
+Integration tests for system and reply telegram CLI commands.
 
 Tests the complete flow from CLI input to output for system and reply telegrams,
 ensuring proper integration between all layers.

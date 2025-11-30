@@ -15,7 +15,8 @@ from xp.services.telegram.telegram_service import TelegramService
 
 
 class ActionTableUploadService:
-    """TCP client service for uploading action tables to Conbus modules.
+    """
+    TCP client service for uploading action tables to Conbus modules.
 
     Manages TCP socket connections, handles telegram generation and transmission,
     and processes server responses for action table uploads.
@@ -37,7 +38,8 @@ class ActionTableUploadService:
         telegram_service: TelegramService,
         conson_config: ConsonModuleListConfig,
     ) -> None:
-        """Initialize the action table upload service.
+        """
+        Initialize the action table upload service.
 
         Args:
             conbus_protocol: ConbusEventProtocol for communication.
@@ -76,7 +78,8 @@ class ActionTableUploadService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -84,7 +87,8 @@ class ActionTableUploadService:
         self.logger.debug(f"Telegram sent: {telegram_sent}")
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -105,7 +109,8 @@ class ActionTableUploadService:
         self._handle_upload_response(reply_telegram)
 
     def _handle_upload_response(self, reply_telegram: Any) -> None:
-        """Handle telegram responses during upload.
+        """
+        Handle telegram responses during upload.
 
         Args:
             reply_telegram: Parsed reply telegram.
@@ -152,7 +157,8 @@ class ActionTableUploadService:
         self.failed("Upload timeout")
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -165,7 +171,8 @@ class ActionTableUploadService:
         serial_number: str,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Upload action table to module.
+        """
+        Upload action table to module.
 
         Uploads the action table configuration to the specified module.
 
@@ -210,7 +217,8 @@ class ActionTableUploadService:
         )
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

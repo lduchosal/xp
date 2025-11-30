@@ -21,7 +21,8 @@ from xp.services.conbus.conbus_output_service import ConbusOutputService
 @click.pass_context
 @connection_command()
 def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> None:
-    r"""Send ON command for output_number XP module serial_number.
+    r"""
+    Send ON command for output_number XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -37,7 +38,8 @@ def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> 
     )
 
     def on_finish(response: ConbusOutputResponse) -> None:
-        """Handle successful completion of output on command.
+        """
+        Handle successful completion of output on command.
 
         Args:
             response: Output response object.
@@ -61,7 +63,8 @@ def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> 
 @click.pass_context
 @connection_command()
 def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) -> None:
-    r"""Send OFF command for output_number XP module serial_number.
+    r"""
+    Send OFF command for output_number XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -77,7 +80,8 @@ def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) ->
     )
 
     def on_finish(response: ConbusOutputResponse) -> None:
-        """Handle successful completion of output off command.
+        """
+        Handle successful completion of output off command.
 
         Args:
             response: Output response object.
@@ -100,7 +104,8 @@ def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) ->
 @click.pass_context
 @connection_command()
 def xp_output_status(ctx: click.Context, serial_number: str) -> None:
-    r"""Query output state command to XP module serial_number.
+    r"""
+    Query output state command to XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -115,7 +120,8 @@ def xp_output_status(ctx: click.Context, serial_number: str) -> None:
     )
 
     def on_finish(response: ConbusDatapointResponse) -> None:
-        """Handle successful completion of output status query.
+        """
+        Handle successful completion of output status query.
 
         Args:
             response: Datapoint response object.
@@ -137,7 +143,8 @@ def xp_output_status(ctx: click.Context, serial_number: str) -> None:
 @click.pass_context
 @connection_command()
 def xp_module_state(ctx: click.Context, serial_number: str) -> None:
-    r"""Query module state of the XP module serial_number.
+    r"""
+    Query module state of the XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -152,7 +159,8 @@ def xp_module_state(ctx: click.Context, serial_number: str) -> None:
     )
 
     def on_finish(response: ConbusDatapointResponse) -> None:
-        """Handle successful completion of module state query.
+        """
+        Handle successful completion of module state query.
 
         Args:
             response: Datapoint response object.

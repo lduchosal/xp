@@ -10,7 +10,8 @@ from xp.models.telegram.system_function import SystemFunction
 
 @dataclass
 class ConbusWriteConfigResponse:
-    """Represents a response from Conbus write config operations (set/get).
+    """
+    Represents a response from Conbus write config operations (set/get).
 
     Attributes:
         success: Whether the operation was successful.
@@ -42,7 +43,8 @@ class ConbusWriteConfigResponse:
             self.received_telegrams = []
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization.
+        """
+        Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the response.

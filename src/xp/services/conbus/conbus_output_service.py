@@ -1,7 +1,8 @@
-"""Conbus Output Service for sending action telegrams to Conbus modules.
+"""
+Conbus Output Service for sending action telegrams to Conbus modules.
 
-This service handles sending action telegrams (ON/OFF) to module outputs
-and processing ACK/NAK responses.
+This service handles sending action telegrams (ON/OFF) to module outputs and processing
+ACK/NAK responses.
 """
 
 import logging
@@ -49,7 +50,8 @@ class ConbusOutputService:
         conbus_protocol: ConbusEventProtocol,
         telegram_output_service: TelegramOutputService,
     ):
-        """Initialize the Conbus output service.
+        """
+        Initialize the Conbus output service.
 
         Args:
             conbus_protocol: ConbusEventProtocol for communication.
@@ -105,7 +107,8 @@ class ConbusOutputService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -113,7 +116,8 @@ class ConbusOutputService:
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -149,7 +153,8 @@ class ConbusOutputService:
             )
 
     def succeed(self, output_telegram: OutputTelegram) -> None:
-        """Handle successful output action.
+        """
+        Handle successful output action.
 
         Args:
             output_telegram: The output telegram received as response.
@@ -169,7 +174,8 @@ class ConbusOutputService:
         self.failed("Timeout")
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -190,7 +196,8 @@ class ConbusOutputService:
         action_type: ActionType,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Send an action telegram to a module output.
+        """
+        Send an action telegram to a module output.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -206,7 +213,8 @@ class ConbusOutputService:
         self.action_type = action_type
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

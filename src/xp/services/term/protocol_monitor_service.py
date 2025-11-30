@@ -14,7 +14,8 @@ from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 
 
 class ProtocolMonitorService:
-    """Service for protocol monitoring in terminal interface.
+    """
+    Service for protocol monitoring in terminal interface.
 
     Wraps ConbusEventProtocol and provides high-level operations
     for the TUI without exposing protocol implementation details.
@@ -38,7 +39,8 @@ class ProtocolMonitorService:
         conbus_protocol: ConbusEventProtocol,
         protocol_keys: ProtocolKeysConfig,
     ) -> None:
-        """Initialize the Protocol Monitor service.
+        """
+        Initialize the Protocol Monitor service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
@@ -77,7 +79,8 @@ class ProtocolMonitorService:
 
     @property
     def connection_state(self) -> ConnectionState:
-        """Get current connection state.
+        """
+        Get current connection state.
 
         Returns:
             Current connection state.
@@ -86,7 +89,8 @@ class ProtocolMonitorService:
 
     @property
     def server_info(self) -> str:
-        """Get server connection info (IP:port).
+        """
+        Get server connection info (IP:port).
 
         Returns:
             Server address in format "IP:port".
@@ -131,10 +135,11 @@ class ProtocolMonitorService:
             self.on_status_message.emit("Disconnected")
 
     def toggle_connection(self) -> None:
-        """Toggle connection state between connected and disconnected.
+        """
+        Toggle connection state between connected and disconnected.
 
-        Disconnects if currently connected or connecting.
-        Connects if currently disconnected or failed.
+        Disconnects if currently connected or connecting. Connects if currently
+        disconnected or failed.
         """
         if self._connection_state in (
             ConnectionState.CONNECTED,
@@ -145,7 +150,8 @@ class ProtocolMonitorService:
             self.connect()
 
     def _send_telegram(self, name: str, telegram: str) -> None:
-        """Send a raw telegram.
+        """
+        Send a raw telegram.
 
         Args:
             name: Display name for the telegram.
@@ -159,7 +165,8 @@ class ProtocolMonitorService:
             self.on_status_message.emit(f"Failed: {e}")
 
     def handle_key_press(self, key: str) -> bool:
-        """Handle protocol key press.
+        """
+        Handle protocol key press.
 
         Args:
             key: Key that was pressed.
@@ -184,7 +191,8 @@ class ProtocolMonitorService:
             self.on_status_message.emit(f"Connected to {self.server_info}")
 
     def _on_connection_failed(self, failure: Failure) -> None:
-        """Handle connection failed.
+        """
+        Handle connection failed.
 
         Args:
             failure: Twisted failure object with error details.
@@ -195,7 +203,8 @@ class ProtocolMonitorService:
             self.on_status_message.emit(failure.getErrorMessage())
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
-        """Handle telegram received.
+        """
+        Handle telegram received.
 
         Args:
             event: Telegram received event with frame data.
@@ -204,7 +213,8 @@ class ProtocolMonitorService:
         self.on_telegram_display.emit(display_event)
 
     def _on_telegram_sent(self, telegram: str) -> None:
-        """Handle telegram sent.
+        """
+        Handle telegram sent.
 
         Args:
             telegram: Sent telegram string.
@@ -217,7 +227,8 @@ class ProtocolMonitorService:
         self.logger.debug("Timeout occurred (continuous monitoring)")
 
     def _on_failed(self, error: str) -> None:
-        """Handle connection failed.
+        """
+        Handle connection failed.
 
         Args:
             error: Error message describing the failure.
@@ -234,7 +245,8 @@ class ProtocolMonitorService:
             self.disconnect()
 
     def get_keys(self) -> ItemsView[str, ProtocolKeyConfig]:
-        """Get protocol key mappings.
+        """
+        Get protocol key mappings.
 
         Returns:
             Dictionary items view of key to ProtocolKeyConfig mappings.
@@ -242,7 +254,8 @@ class ProtocolMonitorService:
         return self._protocol_keys.protocol.items()
 
     def __enter__(self) -> "ProtocolMonitorService":
-        """Enter context manager.
+        """
+        Enter context manager.
 
         Returns:
             Self for context management.
@@ -255,7 +268,8 @@ class ProtocolMonitorService:
         _exc_val: Optional[BaseException],
         _exc_tb: Optional[Any],
     ) -> None:
-        """Exit context manager and clean up resources.
+        """
+        Exit context manager and clean up resources.
 
         Args:
             _exc_type: Exception type if any.

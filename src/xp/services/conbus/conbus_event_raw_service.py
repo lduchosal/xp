@@ -1,7 +1,8 @@
-"""Conbus Event Raw Service for sending raw event telegrams.
+"""
+Conbus Event Raw Service for sending raw event telegrams.
 
-This service implements a TCP client that connects to Conbus servers and sends
-raw event telegrams to simulate button presses on Conbus modules.
+This service implements a TCP client that connects to Conbus servers and sends raw event
+telegrams to simulate button presses on Conbus modules.
 """
 
 import logging
@@ -15,7 +16,8 @@ from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 
 
 class ConbusEventRawService:
-    """Service for sending raw event telegrams to Conbus servers.
+    """
+    Service for sending raw event telegrams to Conbus servers.
 
     Uses ConbusEventProtocol to send MAKE/BREAK event sequences to
     simulate button presses on Conbus modules.
@@ -27,7 +29,8 @@ class ConbusEventRawService:
     conbus_protocol: ConbusEventProtocol
 
     def __init__(self, conbus_protocol: ConbusEventProtocol) -> None:
-        """Initialize the Conbus event raw service.
+        """
+        Initialize the Conbus event raw service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
@@ -79,7 +82,8 @@ class ConbusEventRawService:
         self.conbus_protocol.call_later(0.0, self.conbus_protocol.start_queue_manager)
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -90,7 +94,8 @@ class ConbusEventRawService:
         self.event_result.sent_telegrams.append(telegram_sent)
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -105,7 +110,8 @@ class ConbusEventRawService:
             self.progress_callback(telegram_received.frame)
 
     def timeout(self) -> None:
-        """Handle timeout event.
+        """
+        Handle timeout event.
 
         Timeout is the normal/expected way to finish this service.
         """
@@ -119,7 +125,8 @@ class ConbusEventRawService:
         self.stop_reactor()
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -155,7 +162,8 @@ class ConbusEventRawService:
         finish_callback: Callable[[ConbusEventRawResponse], None],
         timeout_seconds: int = 5,
     ) -> None:
-        """Run reactor in dedicated thread with its own event loop.
+        """
+        Run reactor in dedicated thread with its own event loop.
 
         Args:
             module_type_code: Module type code (numeric, e.g., 2 for CP20, 33 for XP33).

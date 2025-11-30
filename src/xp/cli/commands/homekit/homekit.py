@@ -35,7 +35,8 @@ def config() -> None:
 )
 @service_command()
 def validate(conson_config: str, homekit_config: str) -> None:
-    """Validate homekit.yml and conson.yml coherence.
+    """
+    Validate homekit.yml and conson.yml coherence.
 
     Args:
         conson_config: Path to conson.yml configuration file.
@@ -98,7 +99,8 @@ def validate(conson_config: str, homekit_config: str) -> None:
 )
 @service_command()
 def show_config(conson_config: str, homekit_config: str) -> None:
-    """Display parsed configuration summary.
+    """
+    Display parsed configuration summary.
 
     Args:
         conson_config: Path to conson.yml configuration file.

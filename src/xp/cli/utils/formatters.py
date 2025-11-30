@@ -8,7 +8,8 @@ class OutputFormatter:
     """Handles standardized output formatting for CLI commands."""
 
     def __init__(self, json_output: bool = False):
-        """Initialize the output formatter.
+        """
+        Initialize the output formatter.
 
         Args:
             json_output: Whether to format output as JSON (default: False).
@@ -16,7 +17,8 @@ class OutputFormatter:
         self.json_output = json_output
 
     def success_response(self, data: Dict[str, Any]) -> str:
-        """Format a successful response.
+        """
+        Format a successful response.
 
         Args:
             data: Response data to format.
@@ -31,7 +33,8 @@ class OutputFormatter:
     def error_response(
         self, error: str, extra_data: Optional[Dict[str, Any]] = None
     ) -> str:
-        """Format an error response.
+        """
+        Format an error response.
 
         Args:
             error: Error message.
@@ -49,7 +52,8 @@ class OutputFormatter:
         return f"Error: {error}"
 
     def validation_response(self, is_valid: bool, data: Dict[str, Any]) -> str:
-        """Format a validation response.
+        """
+        Format a validation response.
 
         Args:
             is_valid: Whether validation passed.
@@ -66,7 +70,8 @@ class OutputFormatter:
         return f"Status: {status}"
 
     def checksum_status(self, is_valid: bool) -> str:
-        """Format checksum validation status.
+        """
+        Format checksum validation status.
 
         Args:
             is_valid: Whether checksum is valid.
@@ -81,7 +86,8 @@ class OutputFormatter:
 
     @staticmethod
     def _format_text_response(data: Dict[str, Any]) -> str:
-        """Format data for human-readable text output.
+        """
+        Format data for human-readable text output.
 
         Args:
             data: Data dictionary to format.
@@ -119,7 +125,8 @@ class TelegramFormatter(OutputFormatter):
     def format_telegram_summary(
         self, telegram_data: Dict[str, Any], service_formatter_method: Any = None
     ) -> str:
-        """Format telegram summary using service method when available.
+        """
+        Format telegram summary using service method when available.
 
         Args:
             telegram_data: Telegram data to format.
@@ -148,7 +155,8 @@ class TelegramFormatter(OutputFormatter):
     def format_validation_result(
         self, parsed_telegram: Any, checksum_valid: Optional[bool], service_summary: str
     ) -> str:
-        """Format telegram validation results.
+        """
+        Format telegram validation results.
 
         Args:
             parsed_telegram: Parsed telegram object.
@@ -177,7 +185,8 @@ class ListFormatter(OutputFormatter):
     def format_list_response(
         self, items: list, title: str, item_formatter: Any = None
     ) -> str:
-        """Format a list of items with optional custom formatter.
+        """
+        Format a list of items with optional custom formatter.
 
         Args:
             items: List of items to format.
@@ -212,7 +221,8 @@ class ListFormatter(OutputFormatter):
         return "\n".join(lines)
 
     def format_search_results(self, matches: list, query: str) -> str:
-        """Format search results.
+        """
+        Format search results.
 
         Args:
             matches: List of matching items.
@@ -257,7 +267,8 @@ class StatisticsFormatter(OutputFormatter):
     def format_file_statistics(
         self, file_path: str, stats: Dict[str, Any], entry_count: int
     ) -> str:
-        """Format file analysis statistics.
+        """
+        Format file analysis statistics.
 
         Args:
             file_path: Path to the analyzed file.

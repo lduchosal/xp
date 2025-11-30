@@ -9,7 +9,8 @@ from xp.models.telegram.telegram_type import TelegramType
 
 @dataclass
 class Telegram:
-    """Represents an abstract telegram from the console bus.
+    """
+    Represents an abstract telegram from the console bus.
 
     Can be an EventTelegram, SystemTelegram or ReplyTelegram.
 

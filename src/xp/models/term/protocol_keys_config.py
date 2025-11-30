@@ -8,7 +8,8 @@ from pydantic import BaseModel, Field
 
 
 class ProtocolKeyConfig(BaseModel):
-    """Configuration for a single protocol key.
+    """
+    Configuration for a single protocol key.
 
     Attributes:
         name: Human-readable command name.
@@ -20,7 +21,8 @@ class ProtocolKeyConfig(BaseModel):
 
 
 class ProtocolKeysConfig(BaseModel):
-    """Protocol keys configuration.
+    """
+    Protocol keys configuration.
 
     Attributes:
         protocol: Dictionary mapping key to protocol configuration.
@@ -32,7 +34,8 @@ class ProtocolKeysConfig(BaseModel):
 
     @classmethod
     def from_yaml(cls, config_path: Path) -> "ProtocolKeysConfig":
-        """Load protocol keys from YAML file.
+        """
+        Load protocol keys from YAML file.
 
         Args:
             config_path: Path to YAML configuration file.

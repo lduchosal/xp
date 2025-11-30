@@ -5,7 +5,8 @@ from typing import Dict
 
 
 class ModuleTypeCode(Enum):
-    """Enum representing all XP system module type codes.
+    """
+    Enum representing all XP system module type codes.
 
     Attributes:
         NOMOD: No module (code 0).

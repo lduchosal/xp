@@ -246,7 +246,8 @@ class TestHomeKitDimmingLightService:
         assert dispatched_event.datapoint_type == DataPointType.MODULE_OUTPUT_STATE
 
     def test_handle_dimminglight_set_on_true(self, mock_module, mock_accessory):
-        """Test handle_dimminglight_set_on with value=True sets brightness to the provided brightness."""
+        """Test handle_dimminglight_set_on with value=True sets brightness to the
+        provided brightness."""
         event = DimmingLightSetOnEvent(
             serial_number="1234567890",
             output_number=2,
@@ -465,7 +466,8 @@ class TestHomeKitService:
         self.service.handle_connection_lost(event)
 
     def test_handle_telegram_received_discovery(self, mock_module, mock_accessory):
-        """Test handle_telegram_received dispatches ModuleDiscoveredEvent for discovery reply."""
+        """Test handle_telegram_received dispatches ModuleDiscoveredEvent for discovery
+        reply."""
         protocol = Mock(spec=TelegramProtocol)
         event = TelegramReceivedEvent(
             protocol=protocol,
@@ -585,7 +587,8 @@ class TestHomekitHapServiceModuleRegistry:
         self.event_bus.dispatch.assert_not_called()
 
     def test_handle_module_state_changed_with_lightbulb(self):
-        """Test handle_module_state_changed dispatches ReadDatapointEvent for lightbulb."""
+        """Test handle_module_state_changed dispatches ReadDatapointEvent for
+        lightbulb."""
         from xp.services.homekit.homekit_lightbulb import LightBulb
 
         # Create mock lightbulb accessory
@@ -621,7 +624,8 @@ class TestHomekitHapServiceModuleRegistry:
         assert dispatched_event.refresh_cache is True
 
     def test_handle_module_state_changed_with_dimminglight(self):
-        """Test handle_module_state_changed dispatches both OUTPUT_STATE and LIGHT_LEVEL for dimming light."""
+        """Test handle_module_state_changed dispatches both OUTPUT_STATE and LIGHT_LEVEL
+        for dimming light."""
         from xp.services.homekit.homekit_dimminglight import DimmingLight
 
         # Create mock dimming light accessory
@@ -712,7 +716,8 @@ class TestHomekitHapServiceModuleRegistry:
             assert dispatched_event.refresh_cache is True
 
     def test_module_registry_key_format(self):
-        """Test that module_registry uses (module_type_code, link_number) tuple as key."""
+        """Test that module_registry uses (module_type_code, link_number) tuple as
+        key."""
         from xp.services.homekit.homekit_lightbulb import LightBulb
 
         # Create mock accessory

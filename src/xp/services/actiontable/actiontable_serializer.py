@@ -21,7 +21,8 @@ from xp.utils.serialization import (
 
 
 class ActionTableSerializer(ActionTableSerializerProtocol):
-    """Handles serialization/deserialization of ActionTable to/from telegrams.
+    """
+    Handles serialization/deserialization of ActionTable to/from telegrams.
 
     Attributes:
         MAX_ENTRIES: Maximum number of entries in an ActionTable (96).
@@ -31,7 +32,8 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def from_encoded_string(encoded_data: str) -> ActionTable:
-        """Deserialize telegram data to ActionTable.
+        """
+        Deserialize telegram data to ActionTable.
 
         Args:
             data: Raw byte data from telegram
@@ -95,7 +97,8 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_encoded_string(action_table: ActionTable) -> str:
-        """Convert ActionTable to base64-encoded string format.
+        """
+        Convert ActionTable to base64-encoded string format.
 
         Args:
             action_table: ActionTable to encode
@@ -134,7 +137,8 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_short_string(action_table: ActionTable) -> list[str]:
-        """Format ActionTable as human-readable decoded output.
+        """
+        Format ActionTable as human-readable decoded output.
 
         Args:
             action_table: ActionTable to format
@@ -171,7 +175,8 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def _parse_action_string(action_str: str) -> ActionTableEntry:
-        """Parse action table entry from string format.
+        """
+        Parse action table entry from string format.
 
         Args:
             action_str: String in format "CP20 0 0 > 1 OFF" or "CP20 0 1 > 1 ~ON"
@@ -234,7 +239,8 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def from_short_string(action_strings: list[str]) -> ActionTable:
-        """Parse action table from short string representation.
+        """
+        Parse action table from short string representation.
 
         Args:
             action_strings: List of action strings from conson.yml

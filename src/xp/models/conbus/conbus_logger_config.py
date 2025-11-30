@@ -9,7 +9,8 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class LoggingConfig(BaseModel):
-    """Logging configuration.
+    """
+    Logging configuration.
 
     Attributes:
         path: log folder.
@@ -38,7 +39,8 @@ class LoggingConfig(BaseModel):
     @field_validator("levels", mode="before")
     @classmethod
     def convert_level_names(cls, v: Dict[str, Union[str, int]]) -> Dict[str, int]:
-        """Convert string level names to numeric values.
+        """
+        Convert string level names to numeric values.
 
         Args:
             v: Dictionary with string or int log levels.
@@ -73,7 +75,8 @@ class LoggingConfig(BaseModel):
 
 
 class ConbusLoggerConfig(BaseModel):
-    """Logging configuration.
+    """
+    Logging configuration.
 
     Attributes:
         log: LoggingConfig instance for logging settings.
@@ -83,7 +86,8 @@ class ConbusLoggerConfig(BaseModel):
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "ConbusLoggerConfig":
-        """Load configuration from YAML file.
+        """
+        Load configuration from YAML file.
 
         Args:
             file_path: Path to the YAML configuration file.

@@ -155,7 +155,9 @@ class TestActionTableService:
         service.on_actiontable_received.connect(mock_actiontable_received)
 
         # Mock serializer to return sample actiontable
-        service.actiontable_serializer.from_encoded_string.return_value = sample_actiontable
+        service.actiontable_serializer.from_encoded_string.return_value = (
+            sample_actiontable
+        )
         service.actiontable_serializer.to_short_string.return_value = [
             "CP20 0 0 > 1 OFF;",
             "CP20 0 1 > 1 ~ON;",

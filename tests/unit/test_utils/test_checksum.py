@@ -1,7 +1,7 @@
-"""Unit tests for checksum utility functions.
+"""
+Unit tests for checksum utility functions.
 
-Tests the checksum calculation functions to ensure they match
-the expected behavior.
+Tests the checksum calculation functions to ensure they match the expected behavior.
 """
 
 import pytest

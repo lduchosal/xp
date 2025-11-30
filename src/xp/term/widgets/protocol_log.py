@@ -11,7 +11,8 @@ from xp.services.term.protocol_monitor_service import ProtocolMonitorService
 
 
 class ProtocolLogWidget(Widget):
-    """Widget for displaying protocol telegram stream.
+    """
+    Widget for displaying protocol telegram stream.
 
     Displays live RX/TX telegram stream with color-coded direction markers
     via ProtocolMonitorService.
@@ -23,7 +24,8 @@ class ProtocolLogWidget(Widget):
     """
 
     def __init__(self, service: ProtocolMonitorService) -> None:
-        """Initialize the Protocol Log widget.
+        """
+        Initialize the Protocol Log widget.
 
         Args:
             service: ProtocolMonitorService instance for protocol operations.
@@ -35,7 +37,8 @@ class ProtocolLogWidget(Widget):
         self.log_widget: Optional[RichLog] = None
 
     def compose(self) -> Any:
-        """Compose the widget layout.
+        """
+        Compose the widget layout.
 
         Yields:
             RichLog widget for message display.
@@ -44,7 +47,8 @@ class ProtocolLogWidget(Widget):
         yield self.log_widget
 
     def on_mount(self) -> None:
-        """Initialize widget when mounted.
+        """
+        Initialize widget when mounted.
 
         Connects to service signals for telegram display.
         """
@@ -52,7 +56,8 @@ class ProtocolLogWidget(Widget):
         self.service.on_telegram_display.connect(self._on_telegram_display)
 
     def _on_telegram_display(self, event: TelegramDisplayEvent) -> None:
-        """Handle telegram display event from service.
+        """
+        Handle telegram display event from service.
 
         Args:
             event: Telegram display event with direction and telegram data.
@@ -69,7 +74,8 @@ class ProtocolLogWidget(Widget):
             self.log_widget.clear()
 
     def on_unmount(self) -> None:
-        """Clean up when widget unmounts.
+        """
+        Clean up when widget unmounts.
 
         Disconnects signals from service.
         """

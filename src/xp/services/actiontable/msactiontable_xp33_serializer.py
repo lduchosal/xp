@@ -5,6 +5,7 @@ from xp.models.actiontable.msactiontable_xp33 import (
     Xp33Output,
     Xp33Scene,
 )
+from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.utils.serialization import bits_to_byte, byte_to_bits, de_nibbles, nibbles
@@ -14,8 +15,18 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
     """Handles serialization/deserialization of XP33 action tables to/from telegrams."""
 
     @staticmethod
+    def download_type() -> SystemFunction:
+        """
+
+        :return:
+            The downlaod system function : DOWNLOAD_MSACTIONTABLE
+        """
+        return SystemFunction.DOWNLOAD_MSACTIONTABLE
+
+    @staticmethod
     def to_short_string(action_table: Xp33MsActionTable) -> list[str]:
-        """Serialize XP33 action table to humane compact readable format.
+        """
+        Serialize XP33 action table to humane compact readable format.
 
         Args:
             action_table: XP33 action table to serialize
@@ -25,10 +36,10 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
         """
         return action_table.to_short_format()
 
-
     @staticmethod
     def from_short_string(action_string: list[str]) -> Xp33MsActionTable:
-        """Serialize XP33 action table to humane compact readable format.
+        """
+        Serialize XP33 action table to humane compact readable format.
 
         Args:
             action_string: XP33 action table to serialize
@@ -63,7 +74,8 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_encoded_string(action_table: Xp33MsActionTable) -> str:
-        """Serialize action table to telegram format.
+        """
+        Serialize action table to telegram format.
 
         Args:
             action_table: XP33 MS action table to serialize.
@@ -130,7 +142,8 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def from_encoded_string(msactiontable_rawdata: str) -> Xp33MsActionTable:
-        """Deserialize action table from raw data parts.
+        """
+        Deserialize action table from raw data parts.
 
         Args:
             msactiontable_rawdata: Raw action table data string.
@@ -179,7 +192,8 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def _decode_output(raw_bytes: bytearray, output_index: int) -> Xp33Output:
-        """Extract output configuration from raw bytes.
+        """
+        Extract output configuration from raw bytes.
 
         Args:
             raw_bytes: Raw byte array containing output data.
@@ -233,7 +247,8 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def _decode_scene(raw_bytes: bytearray, scene_index: int) -> Xp33Scene:
-        """Extract scene configuration from raw bytes.
+        """
+        Extract scene configuration from raw bytes.
 
         Args:
             raw_bytes: Raw byte array containing scene data.

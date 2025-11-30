@@ -1,8 +1,8 @@
-"""XP33 Server Service for device emulation.
+"""
+XP33 Server Service for device emulation.
 
-This service provides XP33-specific device emulation functionality,
-including response generation and device configuration handling for
-3-channel light dimmer modules.
+This service provides XP33-specific device emulation functionality, including response
+generation and device configuration handling for 3-channel light dimmer modules.
 """
 
 import socket
@@ -30,8 +30,8 @@ class XP33ServerService(BaseServerService):
     """
     XP33 device emulation service.
 
-    Generates XP33-specific responses, handles XP33 device configuration,
-    and implements XP33 telegram format for 3-channel dimmer modules.
+    Generates XP33-specific responses, handles XP33 device configuration, and implements
+    XP33 telegram format for 3-channel dimmer modules.
     """
 
     def __init__(
@@ -40,7 +40,8 @@ class XP33ServerService(BaseServerService):
         variant: str = "XP33LR",
         msactiontable_serializer: Optional[Xp33MsActionTableSerializer] = None,
     ):
-        """Initialize XP33 server service.
+        """
+        Initialize XP33 server service.
 
         Args:
             serial_number: The device serial number.
@@ -110,7 +111,8 @@ class XP33ServerService(BaseServerService):
         return telegrams
 
     def _handle_action_channel_dimming(self, data_value: str) -> str:
-        """Handle XP33-specific channel dimming action.
+        """
+        Handle XP33-specific channel dimming action.
 
         Args:
             data_value: Action data in format channel_number:dimming_level.
@@ -151,7 +153,8 @@ class XP33ServerService(BaseServerService):
         return telegrams
 
     def _build_ack_nak_response_telegram(self, ack_or_nak: bool) -> str:
-        """Build a complete ACK or NAK response telegram with checksum.
+        """
+        Build a complete ACK or NAK response telegram with checksum.
 
         Args:
             ack_or_nak: true: ACK telegram response, false: NAK telegram response.
@@ -168,7 +171,8 @@ class XP33ServerService(BaseServerService):
     def _build_dimming_event_telegram(
         self, dimming_level: int, channel_number: int
     ) -> str:
-        """Build a complete dimming event telegram with checksum.
+        """
+        Build a complete dimming event telegram with checksum.
 
         Args:
             dimming_level: Dimming level 0-100%.
@@ -239,7 +243,8 @@ class XP33ServerService(BaseServerService):
         return telegram
 
     def _handle_read_module_output_state(self) -> str:
-        """Handle XP33-specific module output state.
+        """
+        Handle XP33-specific module output state.
 
         Returns:
             String representation of the output state for 3 channels.
@@ -252,7 +257,8 @@ class XP33ServerService(BaseServerService):
         )
 
     def _handle_read_module_state(self) -> str:
-        """Handle XP33-specific module state.
+        """
+        Handle XP33-specific module state.
 
         Returns:
             'ON' if any channel is active, 'OFF' otherwise.
@@ -262,7 +268,8 @@ class XP33ServerService(BaseServerService):
         return "OFF"
 
     def _handle_read_module_operating_hours(self) -> str:
-        """Handle XP33-specific module operating hours.
+        """
+        Handle XP33-specific module operating hours.
 
         Returns:
             Operating hours for all 3 channels.
@@ -270,7 +277,8 @@ class XP33ServerService(BaseServerService):
         return "00:000[H],01:000[H],02:000[H]"
 
     def _handle_read_light_level(self) -> str:
-        """Handle XP33-specific light level reading.
+        """
+        Handle XP33-specific light level reading.
 
         Returns:
             Light levels for all channels in format "00:000[%],01:000[%],02:000[%]".
@@ -281,7 +289,8 @@ class XP33ServerService(BaseServerService):
         return ",".join(levels)
 
     def _trigger_storm_mode(self) -> Optional[str]:
-        """Trigger storm mode via D99 query.
+        """
+        Trigger storm mode via D99 query.
 
         Starts a background thread that sends 2 packets per second.
         If storm is already active, this is a no-op.
@@ -322,7 +331,8 @@ class XP33ServerService(BaseServerService):
         return None  # No response when entering storm mode
 
     def _exit_storm_mode(self) -> str:
-        """Exit storm mode and return error code FE.
+        """
+        Exit storm mode and return error code FE.
 
         Stops the background storm thread and returns error code.
 
@@ -350,7 +360,8 @@ class XP33ServerService(BaseServerService):
         return self._build_error_code_response("FE")
 
     def _storm_sender_thread(self) -> None:
-        """Background thread that sends storm telegrams continuously.
+        """
+        Background thread that sends storm telegrams continuously.
 
         Sends 2 packets per second (500ms delay) until:
         - 200 packets have been sent, or
@@ -412,7 +423,8 @@ class XP33ServerService(BaseServerService):
             self.storm_mode = False
 
     def _build_error_code_response(self, error_code: str) -> str:
-        """Build MODULE_ERROR_CODE response telegram.
+        """
+        Build MODULE_ERROR_CODE response telegram.
 
         Args:
             error_code: Error code (00 = normal, FE = buffer overflow).
@@ -432,7 +444,8 @@ class XP33ServerService(BaseServerService):
         return telegram
 
     def set_channel_dimming(self, channel: int, level: int) -> bool:
-        """Set individual channel dimming level.
+        """
+        Set individual channel dimming level.
 
         Args:
             channel: Channel number (1-3).
@@ -448,7 +461,8 @@ class XP33ServerService(BaseServerService):
         return False
 
     def activate_scene(self, scene: int) -> bool:
-        """Activate a pre-programmed scene.
+        """
+        Activate a pre-programmed scene.
 
         Args:
             scene: Scene number (1-4).
@@ -463,7 +477,8 @@ class XP33ServerService(BaseServerService):
         return False
 
     def _get_msactiontable_serializer(self) -> Optional[Xp33MsActionTableSerializer]:
-        """Get the MsActionTable serializer for XP33.
+        """
+        Get the MsActionTable serializer for XP33.
 
         Returns:
             The XP33 MsActionTable serializer instance.
@@ -471,7 +486,8 @@ class XP33ServerService(BaseServerService):
         return self.msactiontable_serializer
 
     def _get_msactiontable(self) -> Optional[Xp33MsActionTable]:
-        """Get the MsActionTable for XP33.
+        """
+        Get the MsActionTable for XP33.
 
         Returns:
             The XP33 MsActionTable instance.
@@ -479,7 +495,8 @@ class XP33ServerService(BaseServerService):
         return self.msactiontable
 
     def _get_default_msactiontable(self) -> Xp33MsActionTable:
-        """Generate default MsActionTable configuration.
+        """
+        Generate default MsActionTable configuration.
 
         Returns:
             Default XP33 MsActionTable with all outputs at 0-100% range, no scenes configured.
@@ -488,7 +505,8 @@ class XP33ServerService(BaseServerService):
         return Xp33MsActionTable()
 
     def get_device_info(self) -> Dict:
-        """Get XP33 device information.
+        """
+        Get XP33 device information.
 
         Returns:
             Dictionary containing device information.
@@ -508,7 +526,8 @@ class XP33ServerService(BaseServerService):
         }
 
     def get_technical_specs(self) -> Dict:
-        """Get technical specifications.
+        """
+        Get technical specifications.
 
         Returns:
             Dictionary containing technical specifications.

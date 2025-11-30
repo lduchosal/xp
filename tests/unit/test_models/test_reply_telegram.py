@@ -1,7 +1,8 @@
-"""Unit tests for ReplyTelegram model.
+"""
+Unit tests for ReplyTelegram model.
 
-Tests the reply telegram model functionality including parsing,
-value interpretation, and data structure integrity.
+Tests the reply telegram model functionality including parsing, value interpretation,
+and data structure integrity.
 """
 
 from datetime import datetime

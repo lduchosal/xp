@@ -1,6 +1,7 @@
 """Serializer for XP20 Action Table telegram encoding/decoding."""
 
 from xp.models.actiontable.msactiontable_xp20 import InputChannel, Xp20MsActionTable
+from xp.models.telegram.system_function import SystemFunction
 from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.utils.serialization import byte_to_bits, de_nibbles, nibbles
 
@@ -12,13 +13,23 @@ AND_FUNCTIONS_INDEX: int = 3  # starts at 3, uses indices 3-10
 SA_FUNCTION_INDEX: int = 11
 TA_FUNCTION_INDEX: int = 12
 
+
 class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
     """Handles serialization/deserialization of XP20 action tables to/from telegrams."""
 
+    @staticmethod
+    def download_type() -> SystemFunction:
+        """
+
+        :return:
+            The downlaod system function : DOWNLOAD_MSACTIONTABLE
+        """
+        return SystemFunction.DOWNLOAD_MSACTIONTABLE
 
     @staticmethod
     def from_encoded_string(encoded_data: str) -> Xp20MsActionTable:
-        """Deserialize telegram data to XP20 action table.
+        """
+        Deserialize telegram data to XP20 action table.
 
         Args:
             msactiontable_rawdata: 64-character hex string with A-P encoding
@@ -64,7 +75,8 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_encoded_string(action_table: Xp20MsActionTable) -> str:
-        """Serialize XP20 action table to telegram hex string format.
+        """
+        Serialize XP20 action table to telegram hex string format.
 
         Args:
             action_table: XP20 action table to serialize
@@ -99,7 +111,8 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_short_string(action_table: Xp20MsActionTable) -> list[str]:
-        """Serialize XP20 action table to humane compact readable format.
+        """
+        Serialize XP20 action table to humane compact readable format.
 
         Args:
             action_table: XP20 action table to serialize
@@ -109,10 +122,10 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
         """
         return action_table.to_short_format()
 
-
     @staticmethod
     def from_short_string(action_strings: list[str]) -> Xp20MsActionTable:
-        """Serialize XP20 action table to humane compact readable format.
+        """
+        Serialize XP20 action table to humane compact readable format.
 
         Args:
             action_table: XP20 action table to serialize
@@ -124,7 +137,8 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def _decode_input_channel(raw_bytes: bytes, input_index: int) -> InputChannel:
-        """Extract input channel configuration from raw bytes.
+        """
+        Extract input channel configuration from raw bytes.
 
         Args:
             raw_bytes: Raw byte array from telegram
@@ -158,7 +172,8 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
     def _encode_input_channel(
         input_channel: InputChannel, input_index: int, raw_bytes: bytearray
     ) -> None:
-        """Encode input channel configuration into raw bytes.
+        """
+        Encode input channel configuration into raw bytes.
 
         Args:
             input_channel: Input channel configuration to encode

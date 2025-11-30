@@ -1,4 +1,5 @@
-"""Telegram Protocol for XP telegram communication.
+"""
+Telegram Protocol for XP telegram communication.
 
 This module provides the protocol implementation for telegram-based communication.
 """
@@ -20,7 +21,8 @@ from xp.utils import calculate_checksum
 
 
 class TelegramProtocol(protocol.Protocol):
-    """Twisted protocol for XP telegram communication with built-in debouncing.
+    """
+    Twisted protocol for XP telegram communication with built-in debouncing.
 
     Automatically deduplicates identical telegram frames sent within a
     configurable time window (default 50ms).
@@ -38,7 +40,8 @@ class TelegramProtocol(protocol.Protocol):
     event_bus: EventBus
 
     def __init__(self, event_bus: EventBus, debounce_ms: int = 50) -> None:
-        """Initialize TelegramProtocol.
+        """
+        Initialize TelegramProtocol.
 
         Args:
             event_bus: Event bus for dispatching protocol events.
@@ -64,7 +67,8 @@ class TelegramProtocol(protocol.Protocol):
             self.logger.error(f"Error scheduling async handler: {e}", exc_info=True)
 
     def _on_task_done(self, task: asyncio.Task) -> None:
-        """Handle async task completion.
+        """
+        Handle async task completion.
 
         Args:
             task: Completed async task.
@@ -92,7 +96,8 @@ class TelegramProtocol(protocol.Protocol):
             )
 
     def dataReceived(self, data: bytes) -> None:
-        """Handle received data from Twisted.
+        """
+        Handle received data from Twisted.
 
         Args:
             data: Raw bytes received from connection.
@@ -164,7 +169,8 @@ class TelegramProtocol(protocol.Protocol):
             )
 
     def sendFrame(self, data: bytes) -> None:
-        """Send telegram frame.
+        """
+        Send telegram frame.
 
         Args:
             data: Raw telegram payload (without checksum/framing).

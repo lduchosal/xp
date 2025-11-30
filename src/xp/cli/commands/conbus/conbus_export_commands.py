@@ -15,7 +15,8 @@ from xp.services.conbus.conbus_export_service import ConbusExportService
 @click.pass_context
 @connection_command()
 def export_conbus_config(ctx: click.Context) -> None:
-    r"""Export Conbus device metadata to YAML file.
+    r"""
+    Export Conbus device metadata to YAML file.
 
     Discovers all devices on the Conbus network and queries their configuration
     datapoints to generate a complete export.yml file in conson.yml format.
@@ -31,7 +32,8 @@ def export_conbus_config(ctx: click.Context) -> None:
     """
 
     def on_progress(serial_number: str, current: int, total: int) -> None:
-        """Handle progress updates during export.
+        """
+        Handle progress updates during export.
 
         Args:
             serial_number: Serial number of discovered device.
@@ -41,7 +43,8 @@ def export_conbus_config(ctx: click.Context) -> None:
         click.echo(f"Querying device {current}/{total}: {serial_number}...")
 
     def on_device_exported(module: ConsonModuleConfig) -> None:
-        """Handle device export completion.
+        """
+        Handle device export completion.
 
         Args:
             module: Exported module configuration.
@@ -58,7 +61,8 @@ def export_conbus_config(ctx: click.Context) -> None:
             click.echo(f"  ✓ Software version: {module.sw_version}")
 
     def on_finish(result: ConbusExportResponse) -> None:
-        """Handle export completion.
+        """
+        Handle export completion.
 
         Args:
             result: Export result.

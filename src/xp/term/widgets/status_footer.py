@@ -12,7 +12,8 @@ from xp.services.term.state_monitor_service import StateMonitorService
 
 
 class StatusFooterWidget(Horizontal):
-    """Footer widget with connection status indicator.
+    """
+    Footer widget with connection status indicator.
 
     Combines the Textual Footer with a status indicator dot that shows
     the current connection state. Subscribes directly to service signals.
@@ -29,7 +30,8 @@ class StatusFooterWidget(Horizontal):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """Initialize the Status Footer widget.
+        """
+        Initialize the Status Footer widget.
 
         Args:
             service: Optional ProtocolMonitorService or StateMonitorService for signal subscriptions.
@@ -42,7 +44,8 @@ class StatusFooterWidget(Horizontal):
         self.status_widget: Static = Static("○", id="status-line")
 
     def compose(self) -> ComposeResult:
-        """Compose the footer layout.
+        """
+        Compose the footer layout.
 
         Yields:
             Footer and status indicator widgets.
@@ -64,7 +67,8 @@ class StatusFooterWidget(Horizontal):
             self.service.on_status_message.disconnect(self.update_message)
 
     def update_status(self, state: ConnectionState) -> None:
-        """Update status indicator with connection state.
+        """
+        Update status indicator with connection state.
 
         Args:
             state: Current connection state (ConnectionState enum).
@@ -80,7 +84,8 @@ class StatusFooterWidget(Horizontal):
         self.status_widget.update(dot)
 
     def update_message(self, message: str) -> None:
-        """Update status text with message.
+        """
+        Update status text with message.
 
         Args:
             message: Status message to display.

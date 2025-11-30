@@ -1,4 +1,5 @@
-"""Conbus Blink All Service for TCP communication with Conbus servers.
+"""
+Conbus Blink All Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
 blink/unblink telegrams to all discovered modules on the network.
@@ -38,7 +39,8 @@ class ConbusBlinkAllService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the Conbus blink all service.
+        """
+        Initialize the Conbus blink all service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance for communication.
@@ -77,7 +79,8 @@ class ConbusBlinkAllService:
         self.on_progress.emit(".")
 
     def send_blink(self, serial_number: str) -> None:
-        """Send blink or unblink telegram to a discovered module.
+        """
+        Send blink or unblink telegram to a discovered module.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -101,7 +104,8 @@ class ConbusBlinkAllService:
         self.on_progress.emit(".")
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -110,7 +114,8 @@ class ConbusBlinkAllService:
         self.service_response.sent_telegram = system_telegram
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -157,7 +162,8 @@ class ConbusBlinkAllService:
         self.on_finish.emit(self.service_response)
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -173,7 +179,8 @@ class ConbusBlinkAllService:
         on_or_off: str,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Send blink command to all discovered modules.
+        """
+        Send blink command to all discovered modules.
 
         Args:
             on_or_off: "on" to blink or "off" to unblink all devices.
@@ -186,7 +193,8 @@ class ConbusBlinkAllService:
         # Caller invokes start_reactor()
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

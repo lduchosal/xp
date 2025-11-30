@@ -100,8 +100,8 @@ class ServiceContainer:
     """
     Service container that manages dependency injection for all XP services.
 
-    Uses the service dependency graph from Dependencies.dot to properly
-    wire up all services with their dependencies.
+    Uses the service dependency graph from Dependencies.dot to properly wire up all
+    services with their dependencies.
     """
 
     def __init__(
@@ -629,7 +629,8 @@ class ServiceContainer:
         )
 
     def _load_protocol_keys(self) -> "ProtocolKeysConfig":
-        """Load protocol keys from YAML config file.
+        """
+        Load protocol keys from YAML config file.
 
         Returns:
             ProtocolKeysConfig instance loaded from configuration path.

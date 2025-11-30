@@ -26,7 +26,8 @@ from xp.services.telegram.telegram_datapoint_service import TelegramDatapointSer
 def xp_lightlevel_set(
     ctx: click.Context, serial_number: str, output_number: int, level: int
 ) -> None:
-    r"""Set light level for output_number on XP module serial_number.
+    r"""
+    Set light level for output_number on XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -44,7 +45,8 @@ def xp_lightlevel_set(
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """Handle successful completion of light level on command.
+        """
+        Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.
@@ -73,7 +75,8 @@ def xp_lightlevel_set(
 def xp_lightlevel_off(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    r"""Turn off light for output_number on XP module serial_number (set level to 0).
+    r"""
+    Turn off light for output_number on XP module serial_number (set level to 0).
 
     Args:
         ctx: Click context object.
@@ -90,7 +93,8 @@ def xp_lightlevel_off(
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """Handle successful completion of light level on command.
+        """
+        Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.
@@ -120,7 +124,8 @@ def xp_lightlevel_off(
 def xp_lightlevel_on(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    r"""Turn on light for output_number on XP module serial_number (set level to 80%).
+    r"""
+    Turn on light for output_number on XP module serial_number (set level to 80%).
 
     Args:
         ctx: Click context object.
@@ -137,7 +142,8 @@ def xp_lightlevel_on(
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """Handle successful completion of light level on command.
+        """
+        Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.
@@ -167,7 +173,8 @@ def xp_lightlevel_on(
 def xp_lightlevel_get(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    r"""Get current light level for output_number on XP module serial_number.
+    r"""
+    Get current light level for output_number on XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -188,7 +195,8 @@ def xp_lightlevel_get(
     )
 
     def on_finish(service_response: "ConbusDatapointResponse") -> None:
-        """Handle successful completion of light level get command.
+        """
+        Handle successful completion of light level get command.
 
         Args:
             service_response: Light level response object.

@@ -1,4 +1,5 @@
-"""XP CLI tool for remote console bus operations.
+"""
+XP CLI tool for remote console bus operations.
 
 conson-xp package.
 """

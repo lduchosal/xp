@@ -13,7 +13,8 @@ from xp.term.widgets.status_footer import StatusFooterWidget
 
 
 class ProtocolMonitorApp(App[None]):
-    """Textual app for real-time protocol monitoring.
+    """
+    Textual app for real-time protocol monitoring.
 
     Displays live RX/TX telegram stream from Conbus server in an interactive
     terminal interface with keyboard shortcuts for control.
@@ -38,7 +39,8 @@ class ProtocolMonitorApp(App[None]):
     ]
 
     def __init__(self, protocol_service: ProtocolMonitorService) -> None:
-        """Initialize the Protocol Monitor app.
+        """
+        Initialize the Protocol Monitor app.
 
         Args:
             protocol_service: ProtocolMonitorService for protocol operations.
@@ -50,7 +52,8 @@ class ProtocolMonitorApp(App[None]):
         self.footer_widget: Optional[StatusFooterWidget] = None
 
     def compose(self) -> ComposeResult:
-        """Compose the app layout with widgets.
+        """
+        Compose the app layout with widgets.
 
         Yields:
             ProtocolLogWidget and Footer widgets.
@@ -71,7 +74,8 @@ class ProtocolMonitorApp(App[None]):
         yield self.footer_widget
 
     async def on_mount(self) -> None:
-        """Initialize app after UI is mounted.
+        """
+        Initialize app after UI is mounted.
 
         Delays connection by 0.5s to let UI render first.
         """
@@ -82,7 +86,8 @@ class ProtocolMonitorApp(App[None]):
         self.protocol_service.connect()
 
     def action_toggle_connection(self) -> None:
-        """Toggle connection on 'c' key press.
+        """
+        Toggle connection on 'c' key press.
 
         Connects if disconnected/failed, disconnects if connected/connecting.
         """
@@ -94,7 +99,8 @@ class ProtocolMonitorApp(App[None]):
             self.protocol_widget.clear_log()
 
     def on_key(self, event: Any) -> None:
-        """Handle key press events for protocol keys.
+        """
+        Handle key press events for protocol keys.
 
         Args:
             event: Key press event from Textual.

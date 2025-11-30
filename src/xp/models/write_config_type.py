@@ -5,7 +5,8 @@ from typing import Optional
 
 
 class WriteConfigType(str, Enum):
-    """Write Config types for system telegrams.
+    """
+    Write Config types for system telegrams.
 
     Attributes:
         LINK_NUMBER: Link number configuration (code 04).
@@ -19,7 +20,8 @@ class WriteConfigType(str, Enum):
 
     @classmethod
     def from_code(cls, code: str) -> Optional["WriteConfigType"]:
-        """Get WriteConfigType from code string.
+        """
+        Get WriteConfigType from code string.
 
         Args:
             code: Configuration type code string.

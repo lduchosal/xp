@@ -67,7 +67,9 @@ class TestXp20MsActionTableSerializer:
 
     def test_from_data_deserialization(self, sample_telegram_data):
         """Test deserialization from telegram data."""
-        action_table = Xp20MsActionTableSerializer.from_encoded_string(sample_telegram_data)
+        action_table = Xp20MsActionTableSerializer.from_encoded_string(
+            sample_telegram_data
+        )
 
         # Verify it's a valid Xp20MsActionTable
         assert isinstance(action_table, Xp20MsActionTable)
@@ -262,7 +264,9 @@ class TestXp20MsActionTableSerializer:
         )
 
         # Deserialize from data
-        msactiontable = Xp20MsActionTableSerializer.from_encoded_string(valid_msactiontable)
+        msactiontable = Xp20MsActionTableSerializer.from_encoded_string(
+            valid_msactiontable
+        )
 
         # Verify it's a valid Xp20MsActionTable with default values
         assert isinstance(msactiontable, Xp20MsActionTable)

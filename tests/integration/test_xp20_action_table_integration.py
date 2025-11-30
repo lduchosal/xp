@@ -129,7 +129,9 @@ class TestXp20ActionTableIntegration:
         # Test all flags off
         action_table_off = Xp20MsActionTable()
         serialized_off = Xp20MsActionTableSerializer.to_data(action_table_off)
-        deserialized_off = Xp20MsActionTableSerializer.from_encoded_string(serialized_off)
+        deserialized_off = Xp20MsActionTableSerializer.from_encoded_string(
+            serialized_off
+        )
 
         for i in range(1, 9):
             channel = getattr(deserialized_off, f"input{i}")

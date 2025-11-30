@@ -1,4 +1,5 @@
-"""HomeKit Dimming Light Accessory.
+"""
+HomeKit Dimming Light Accessory.
 
 This module provides a dimming light accessory for HomeKit integration.
 """
@@ -21,7 +22,8 @@ from xp.models.protocol.conbus_protocol import (
 
 
 class DimmingLight(Accessory):
-    """HomeKit dimming light accessory.
+    """
+    HomeKit dimming light accessory.
 
     Attributes:
         category: HomeKit category (CATEGORY_LIGHTBULB).
@@ -46,7 +48,8 @@ class DimmingLight(Accessory):
         accessory: HomekitAccessoryConfig,
         event_bus: EventBus,
     ):
-        """Initialize the dimming light accessory.
+        """
+        Initialize the dimming light accessory.
 
         Args:
             driver: HAP accessory driver.
@@ -102,7 +105,8 @@ class DimmingLight(Accessory):
         )
 
     def set_on(self, value: bool) -> None:
-        """Set the on/off state of the dimming light.
+        """
+        Set the on/off state of the dimming light.
 
         Args:
             value: True to turn on, False to turn off.
@@ -124,7 +128,8 @@ class DimmingLight(Accessory):
             )
 
     def get_on(self) -> bool:
-        """Get the on/off state of the dimming light.
+        """
+        Get the on/off state of the dimming light.
 
         Returns:
             True if on, False if off.
@@ -144,7 +149,8 @@ class DimmingLight(Accessory):
         return self.is_on
 
     def set_brightness(self, value: int) -> None:
-        """Set the brightness level of the dimming light.
+        """
+        Set the brightness level of the dimming light.
 
         Args:
             value: Brightness level (0-100).
@@ -163,7 +169,8 @@ class DimmingLight(Accessory):
         )
 
     def get_brightness(self) -> int:
-        """Get the brightness level of the dimming light.
+        """
+        Get the brightness level of the dimming light.
 
         Returns:
             Current brightness level (0-100).

@@ -1,7 +1,8 @@
-"""Device Service Factory for creating device instances.
+"""
+Device Service Factory for creating device instances.
 
-This module provides a factory for creating device service instances
-with proper dependency injection of serializers.
+This module provides a factory for creating device service instances with proper
+dependency injection of serializers.
 """
 
 from xp.services.actiontable.msactiontable_serializer import MsActionTableSerializer
@@ -24,10 +25,11 @@ from xp.services.server.xp230_server_service import XP230ServerService
 
 
 class DeviceServiceFactory:
-    """Factory for creating device service instances.
+    """
+    Factory for creating device service instances.
 
-    Encapsulates device creation logic and handles serializer injection
-    for different device types.
+    Encapsulates device creation logic and handles serializer injection for different
+    device types.
     """
 
     def __init__(
@@ -37,7 +39,8 @@ class DeviceServiceFactory:
         xp33ms_serializer: Xp33MsActionTableSerializer,
         ms_serializer: MsActionTableSerializer,
     ):
-        """Initialize device service factory.
+        """
+        Initialize device service factory.
 
         Args:
             xp20ms_serializer: XP20 MsActionTable serializer (injected via DI).
@@ -51,7 +54,8 @@ class DeviceServiceFactory:
         self.ms_serializer = ms_serializer
 
     def create_device(self, module_type: str, serial_number: str) -> BaseServerService:
-        """Create device instance for given module type.
+        """
+        Create device instance for given module type.
 
         Args:
             module_type: Module type code (e.g., "XP20", "XP33LR").

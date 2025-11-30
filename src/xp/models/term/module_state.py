@@ -7,7 +7,8 @@ from typing import Optional
 
 @dataclass
 class ModuleState:
-    """State of a Conson module for TUI display.
+    """
+    State of a Conson module for TUI display.
 
     Attributes:
         name: Module name/identifier (e.g., A01, A02).

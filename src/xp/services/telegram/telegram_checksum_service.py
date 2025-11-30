@@ -1,7 +1,8 @@
-"""Checksum service for telegram protocol validation and generation.
+"""
+Checksum service for telegram protocol validation and generation.
 
-This service provides business logic for checksum operations,
-following the layered architecture pattern.
+This service provides business logic for checksum operations, following the layered
+architecture pattern.
 """
 
 from typing import Union
@@ -19,7 +20,8 @@ class TelegramChecksumService:
 
     @staticmethod
     def calculate_simple_checksum(data: str) -> Response:
-        """Calculate simple XOR checksum for string data.
+        """
+        Calculate simple XOR checksum for string data.
 
         Args:
             data: String data to calculate checksum for.
@@ -42,7 +44,8 @@ class TelegramChecksumService:
 
     @staticmethod
     def calculate_crc32_checksum(data: Union[str, bytes]) -> Response:
-        """Calculate CRC32 checksum for data.
+        """
+        Calculate CRC32 checksum for data.
 
         Args:
             data: String or bytes data to calculate checksum for.
@@ -79,7 +82,8 @@ class TelegramChecksumService:
 
     @staticmethod
     def validate_checksum(data: str, expected_checksum: str) -> Response:
-        """Validate data against expected simple checksum.
+        """
+        Validate data against expected simple checksum.
 
         Args:
             data: Original data.
@@ -111,7 +115,8 @@ class TelegramChecksumService:
     def validate_crc32_checksum(
         data: Union[str, bytes], expected_checksum: str
     ) -> Response:
-        """Validate data against expected CRC32 checksum.
+        """
+        Validate data against expected CRC32 checksum.
 
         Args:
             data: Original data (string or bytes).

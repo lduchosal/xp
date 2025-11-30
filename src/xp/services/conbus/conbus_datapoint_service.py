@@ -1,4 +1,5 @@
-"""Conbus Datapoint Service for querying module datapoints.
+"""
+Conbus Datapoint Service for querying module datapoints.
 
 This service handles datapoint query operations for modules through Conbus telegrams.
 """
@@ -20,7 +21,8 @@ from xp.services.telegram.telegram_service import TelegramService
 
 
 class ConbusDatapointService:
-    """Service for querying datapoints from Conbus modules.
+    """
+    Service for querying datapoints from Conbus modules.
 
     Uses ConbusEventProtocol to provide datapoint query functionality
     for reading sensor data and module information.
@@ -38,7 +40,8 @@ class ConbusDatapointService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """Initialize the Conbus datapoint service.
+        """
+        Initialize the Conbus datapoint service.
 
         Args:
             conbus_protocol: Protocol instance for Conbus communication.
@@ -81,7 +84,8 @@ class ConbusDatapointService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -89,7 +93,8 @@ class ConbusDatapointService:
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -124,7 +129,8 @@ class ConbusDatapointService:
         self.succeed(datapoint_telegram)
 
     def succeed(self, datapoint_telegram: ReplyTelegram) -> None:
-        """Handle successful datapoint query.
+        """
+        Handle successful datapoint query.
 
         Args:
             datapoint_telegram: The parsed datapoint telegram.
@@ -147,7 +153,8 @@ class ConbusDatapointService:
         self.failed("Timeout")
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -167,7 +174,8 @@ class ConbusDatapointService:
         datapoint_type: DataPointType,
         timeout_seconds: float = 1.0,
     ) -> None:
-        """Query a specific datapoint from a module.
+        """
+        Query a specific datapoint from a module.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -181,7 +189,8 @@ class ConbusDatapointService:
         self.datapoint_type = datapoint_type
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

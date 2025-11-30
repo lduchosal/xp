@@ -1,4 +1,5 @@
-"""Conbus Raw Service for sending raw telegram sequences.
+"""
+Conbus Raw Service for sending raw telegram sequences.
 
 This service handles sending raw telegram strings without prior validation.
 """
@@ -35,7 +36,8 @@ class ConbusRawService:
         self,
         conbus_protocol: ConbusEventProtocol,
     ) -> None:
-        """Initialize the Conbus raw service.
+        """
+        Initialize the Conbus raw service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
@@ -62,7 +64,8 @@ class ConbusRawService:
         self.conbus_protocol.send_raw_telegram(self.raw_input)
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -73,7 +76,8 @@ class ConbusRawService:
         self.service_response.received_telegrams = []
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -92,7 +96,8 @@ class ConbusRawService:
         self.on_finish.emit(self.service_response)
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -108,7 +113,8 @@ class ConbusRawService:
         raw_input: str,
         timeout_seconds: Optional[float] = None,
     ) -> None:
-        """Send a raw telegram string to the Conbus server.
+        """
+        Send a raw telegram string to the Conbus server.
 
         Args:
             raw_input: Raw telegram string to send.
@@ -120,7 +126,8 @@ class ConbusRawService:
         self.raw_input = raw_input
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
@@ -136,7 +143,8 @@ class ConbusRawService:
         self.conbus_protocol.stop_reactor()
 
     def __enter__(self) -> "ConbusRawService":
-        """Enter context manager.
+        """
+        Enter context manager.
 
         Returns:
             Self for context manager protocol.

@@ -1,7 +1,8 @@
-"""Binary serialization utility functions.
+"""
+Binary serialization utility functions.
 
-This module provides common binary manipulation functions used across
-the XP protocol serializers for consistent data encoding/decoding.
+This module provides common binary manipulation functions used across the XP protocol
+serializers for consistent data encoding/decoding.
 """
 
 from typing import List
@@ -14,7 +15,8 @@ UPPER5 = 248  # 0xF8
 
 
 def de_bcd(byte_val: int) -> int:
-    """Convert BCD byte to decimal.
+    """
+    Convert BCD byte to decimal.
 
     Args:
         byte_val: BCD encoded byte
@@ -26,7 +28,8 @@ def de_bcd(byte_val: int) -> int:
 
 
 def to_bcd(decimal_val: int) -> int:
-    """Convert decimal to BCD byte.
+    """
+    Convert decimal to BCD byte.
 
     Args:
         decimal_val: Decimal value to convert
@@ -40,7 +43,8 @@ def to_bcd(decimal_val: int) -> int:
 
 
 def lower3(byte_val: int) -> int:
-    """Extract lower 3 bits from byte.
+    """
+    Extract lower 3 bits from byte.
 
     Args:
         byte_val: Input byte
@@ -52,7 +56,8 @@ def lower3(byte_val: int) -> int:
 
 
 def upper5(byte_val: int) -> int:
-    """Extract upper 5 bits from byte.
+    """
+    Extract upper 5 bits from byte.
 
     Args:
         byte_val: Input byte
@@ -64,7 +69,8 @@ def upper5(byte_val: int) -> int:
 
 
 def byte_to_bits(byte_value: int) -> List[bool]:
-    """Convert a byte value to 8-bit boolean array.
+    """
+    Convert a byte value to 8-bit boolean array.
 
     Args:
         byte_value: Byte value to convert
@@ -76,7 +82,8 @@ def byte_to_bits(byte_value: int) -> List[bool]:
 
 
 def bits_to_byte(bits: List[bool]) -> int:
-    """Convert boolean array to byte value.
+    """
+    Convert boolean array to byte value.
 
     Args:
         bits: List of boolean values representing bits
@@ -92,7 +99,8 @@ def bits_to_byte(bits: List[bool]) -> int:
 
 
 def highest_bit_set(value: int) -> int:
-    """Remove the high bit (0x80) from a byte value.
+    """
+    Remove the high bit (0x80) from a byte value.
 
     Args:
         value: Byte value to process
@@ -104,7 +112,8 @@ def highest_bit_set(value: int) -> int:
 
 
 def remove_highest_bit(value: int) -> int:
-    """Remove the high bit (0x80) from a byte value.
+    """
+    Remove the high bit (0x80) from a byte value.
 
     Args:
         value: Byte value to process
@@ -116,7 +125,8 @@ def remove_highest_bit(value: int) -> int:
 
 
 def byte_to_unsigned(byte_val: int) -> int:
-    """Convert signed byte to unsigned integer.
+    """
+    Convert signed byte to unsigned integer.
 
     Args:
         byte_val: Byte value (can be negative)
@@ -130,7 +140,8 @@ def byte_to_unsigned(byte_val: int) -> int:
 
 
 def nibble(byte_val: int) -> str:
-    """Convert byte value to two-character nibble representation.
+    """
+    Convert byte value to two-character nibble representation.
 
     Args:
         byte_val: Byte value (0-255)
@@ -144,7 +155,8 @@ def nibble(byte_val: int) -> str:
 
 
 def de_nibble(nibble_str: str) -> int:
-    """Convert two-character nibble string to byte value.
+    """
+    Convert two-character nibble string to byte value.
 
     Based on pseudocode: A=0, B=1, C=2, ..., P=15
 
@@ -171,7 +183,8 @@ def de_nibble(nibble_str: str) -> int:
 
 
 def de_nibbles(str_val: str) -> bytearray:
-    """Convert hex string with A-P encoding to list of integers.
+    """
+    Convert hex string with A-P encoding to list of integers.
 
     Based on pseudocode: A=0, B=1, C=2, ..., P=15
 
@@ -194,7 +207,8 @@ def de_nibbles(str_val: str) -> bytearray:
 
 
 def nibbles(data: bytes) -> str:
-    """Convert bytes data to nibble string representation.
+    """
+    Convert bytes data to nibble string representation.
 
     Args:
         data: Bytes data to convert

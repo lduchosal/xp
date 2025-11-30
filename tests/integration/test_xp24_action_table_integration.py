@@ -54,7 +54,8 @@ class TestXp24ActionTableIntegration:
         callbacks = {"on_finish": None, "on_error": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -62,7 +63,8 @@ class TestXp24ActionTableIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_error_connect(callback):
-            """Mock on_error event connection.
+            """
+            Mock on_error event connection.
 
             Args:
                 callback: Callback function to store.
@@ -74,7 +76,8 @@ class TestXp24ActionTableIntegration:
 
         # Mock the start method to call finish_callback immediately
         def mock_start(serial_number, xpmoduletype):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
@@ -147,7 +150,8 @@ class TestXp24ActionTableIntegration:
         callbacks = {"on_finish": None, "on_error": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -155,7 +159,8 @@ class TestXp24ActionTableIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_error_connect(callback):
-            """Mock on_error event connection.
+            """
+            Mock on_error event connection.
 
             Args:
                 callback: Callback function to store.
@@ -167,7 +172,8 @@ class TestXp24ActionTableIntegration:
 
         # Mock the start method to call error_callback
         def mock_start(serial_number, xpmoduletype):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
@@ -222,7 +228,8 @@ class TestXp24ActionTableIntegration:
         callbacks = {"on_finish": None, "on_error": None}
 
         def mock_on_finish_connect(callback):
-            """Mock on_finish event connection.
+            """
+            Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
@@ -230,7 +237,8 @@ class TestXp24ActionTableIntegration:
             callbacks["on_finish"] = callback
 
         def mock_on_error_connect(callback):
-            """Mock on_error event connection.
+            """
+            Mock on_error event connection.
 
             Args:
                 callback: Callback function to store.
@@ -242,7 +250,8 @@ class TestXp24ActionTableIntegration:
 
         # Mock the start method to call error_callback
         def mock_start(serial_number, xpmoduletype):
-            """Test helper function.
+            """
+            Test helper function.
 
             Args:
                 serial_number: Serial number of the module.

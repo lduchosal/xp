@@ -1,7 +1,8 @@
-"""Conbus Scan Service for TCP communication with Conbus servers.
+"""
+Conbus Scan Service for TCP communication with Conbus servers.
 
-This service implements a TCP client that scans Conbus servers and sends
-telegrams to scan modules for all datapoints by function code.
+This service implements a TCP client that scans Conbus servers and sends telegrams to
+scan modules for all datapoints by function code.
 """
 
 import logging
@@ -35,7 +36,8 @@ class ConbusScanService:
         self,
         conbus_protocol: ConbusEventProtocol,
     ) -> None:
-        """Initialize the Conbus scan service.
+        """
+        Initialize the Conbus scan service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
@@ -66,7 +68,8 @@ class ConbusScanService:
         self.scan_next_datacode()
 
     def scan_next_datacode(self) -> bool:
-        """Scan the next data code.
+        """
+        Scan the next data code.
 
         Returns:
             True if scanning should continue, False if complete.
@@ -83,7 +86,8 @@ class ConbusScanService:
         return True
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """Handle telegram sent event.
+        """
+        Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
@@ -92,7 +96,8 @@ class ConbusScanService:
         self.service_response.sent_telegrams.append(telegram_sent)
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """Handle telegram received event.
+        """
+        Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
@@ -111,7 +116,8 @@ class ConbusScanService:
         self.scan_next_datacode()
 
     def failed(self, message: str) -> None:
-        """Handle failed connection event.
+        """
+        Handle failed connection event.
 
         Args:
             message: Failure message.
@@ -128,7 +134,8 @@ class ConbusScanService:
         function_code: str,
         timeout_seconds: float = 0.25,
     ) -> None:
-        """Scan a module for all datapoints by function code.
+        """
+        Scan a module for all datapoints by function code.
 
         Args:
             serial_number: 10-digit module serial number.
@@ -143,7 +150,8 @@ class ConbusScanService:
         self.function_code = function_code
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set operation timeout.
+        """
+        Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.

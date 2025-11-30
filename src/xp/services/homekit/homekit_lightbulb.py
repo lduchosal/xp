@@ -1,4 +1,5 @@
-"""HomeKit Light Bulb Accessory.
+"""
+HomeKit Light Bulb Accessory.
 
 This module provides a light bulb accessory for HomeKit integration.
 """
@@ -19,7 +20,8 @@ from xp.models.protocol.conbus_protocol import (
 
 
 class LightBulb(Accessory):
-    """HomeKit light bulb accessory.
+    """
+    HomeKit light bulb accessory.
 
     Attributes:
         category: HomeKit category (CATEGORY_LIGHTBULB).
@@ -42,7 +44,8 @@ class LightBulb(Accessory):
         accessory: HomekitAccessoryConfig,
         event_bus: EventBus,
     ):
-        """Initialize the light bulb accessory.
+        """
+        Initialize the light bulb accessory.
 
         Args:
             driver: HAP accessory driver.
@@ -80,7 +83,8 @@ class LightBulb(Accessory):
         )
 
     def set_on(self, value: bool) -> None:
-        """Set the on/off state of the light bulb.
+        """
+        Set the on/off state of the light bulb.
 
         Args:
             value: True to turn on, False to turn off.
@@ -100,7 +104,8 @@ class LightBulb(Accessory):
             )
 
     def get_on(self) -> bool:
-        """Get the on/off state of the light bulb.
+        """
+        Get the on/off state of the light bulb.
 
         Returns:
             True if on, False if off.

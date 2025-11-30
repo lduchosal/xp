@@ -1,4 +1,5 @@
-"""HomeKit Outlet Service.
+"""
+HomeKit Outlet Service.
 
 This module provides service implementation for outlet accessories.
 """
@@ -18,7 +19,8 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 
 class HomeKitOutletService:
-    """Outlet service for HomeKit.
+    """
+    Outlet service for HomeKit.
 
     Attributes:
         event_bus: Event bus for inter-service communication.
@@ -28,7 +30,8 @@ class HomeKitOutletService:
     event_bus: EventBus
 
     def __init__(self, event_bus: EventBus):
-        """Initialize the outlet service.
+        """
+        Initialize the outlet service.
 
         Args:
             event_bus: Event bus instance.
@@ -42,7 +45,8 @@ class HomeKitOutletService:
         self.event_bus.on(OutletGetInUseEvent, self.handle_outlet_get_in_use)
 
     def handle_outlet_get_on(self, event: OutletGetOnEvent) -> bool:
-        """Handle outlet get on event.
+        """
+        Handle outlet get on event.
 
         Args:
             event: Outlet get on event.
@@ -65,7 +69,8 @@ class HomeKitOutletService:
         return True
 
     def handle_outlet_set_on(self, event: OutletSetOnEvent) -> bool:
-        """Handle outlet set on event.
+        """
+        Handle outlet set on event.
 
         Args:
             event: Outlet set on event.
@@ -97,7 +102,8 @@ class HomeKitOutletService:
         return True
 
     def handle_outlet_get_in_use(self, event: OutletGetInUseEvent) -> bool:
-        """Handle outlet get in-use event.
+        """
+        Handle outlet get in-use event.
 
         Args:
             event: Outlet get in-use event.

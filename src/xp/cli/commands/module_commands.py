@@ -26,7 +26,8 @@ def module() -> None:
 @click.pass_context
 @list_command(ModuleTypeNotFoundError)
 def module_info(ctx: Context, identifier: str) -> None:
-    r"""Get information about a module type by code or name.
+    r"""
+    Get information about a module type by code or name.
 
     Args:
         ctx: Click context object.
@@ -65,7 +66,8 @@ def module_info(ctx: Context, identifier: str) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
-    r"""List module types, optionally filtered by category.
+    r"""
+    List module types, optionally filtered by category.
 
     Args:
         ctx: Click context object.
@@ -122,7 +124,8 @@ def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_search(ctx: Context, query: str, field: tuple) -> None:
-    r"""Search for module types by name or description.
+    r"""
+    Search for module types by name or description.
 
     Args:
         ctx: Click context object.
@@ -159,7 +162,8 @@ def module_search(ctx: Context, query: str, field: tuple) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_categories(ctx: Context) -> None:
-    r"""List all available module categories.
+    r"""
+    List all available module categories.
 
     Args:
         ctx: Click context object.

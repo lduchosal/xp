@@ -12,7 +12,8 @@ from xp.services.term.state_monitor_service import StateMonitorService
 
 
 class ModulesListWidget(Static):
-    """Widget displaying module states in a data table.
+    """
+    Widget displaying module states in a data table.
 
     Shows module information with real-time updates from StateMonitorService.
     Table displays: name, serial_number, module_type, link_number, outputs, report, status, last_update.
@@ -28,7 +29,8 @@ class ModulesListWidget(Static):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """Initialize the Modules List widget.
+        """
+        Initialize the Modules List widget.
 
         Args:
             service: Optional StateMonitorService for signal subscriptions.
@@ -41,7 +43,8 @@ class ModulesListWidget(Static):
         self._row_keys: dict[str, Any] = {}  # Map serial_number to row key
 
     def compose(self) -> ComposeResult:
-        """Compose the widget layout.
+        """
+        Compose the widget layout.
 
         Yields:
             DataTable widget.
@@ -76,7 +79,8 @@ class ModulesListWidget(Static):
             self.service.on_module_state_changed.disconnect(self.update_module_state)
 
     def update_module_list(self, module_states: List[ModuleState]) -> None:
-        """Update entire module list from service.
+        """
+        Update entire module list from service.
 
         Clears existing table and repopulates with all modules.
 
@@ -95,7 +99,8 @@ class ModulesListWidget(Static):
             self._add_module_row(module_state)
 
     def update_module_state(self, module_state: ModuleState) -> None:
-        """Update individual module state in table.
+        """
+        Update individual module state in table.
 
         Updates existing row if module exists, otherwise adds new row.
 
@@ -133,7 +138,8 @@ class ModulesListWidget(Static):
             self._add_module_row(module_state)
 
     def _add_module_row(self, module_state: ModuleState) -> None:
-        """Add a module row to the table.
+        """
+        Add a module row to the table.
 
         Args:
             module_state: Module state to add.
@@ -154,7 +160,8 @@ class ModulesListWidget(Static):
         self._row_keys[module_state.serial_number] = row_key
 
     def _format_outputs(self, outputs: str) -> str:
-        """Format outputs for display.
+        """
+        Format outputs for display.
 
         Args:
             outputs: Raw output string.
@@ -165,7 +172,8 @@ class ModulesListWidget(Static):
         return outputs
 
     def _format_report(self, auto_report: bool) -> str:
-        """Format auto-report status for display.
+        """
+        Format auto-report status for display.
 
         Args:
             auto_report: Auto-report boolean value.
@@ -176,7 +184,8 @@ class ModulesListWidget(Static):
         return "Y" if auto_report else "N"
 
     def _format_last_update(self, last_update: Optional[datetime]) -> str:
-        """Format last update timestamp for display.
+        """
+        Format last update timestamp for display.
 
         Shows elapsed time in HH:MM:SS format or "--:--:--" if never updated.
 
@@ -200,7 +209,8 @@ class ModulesListWidget(Static):
         return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
     def refresh_last_update_times(self) -> None:
-        """Refresh only the last_update column for all modules.
+        """
+        Refresh only the last_update column for all modules.
 
         Updates the elapsed time display without querying the service.
         """

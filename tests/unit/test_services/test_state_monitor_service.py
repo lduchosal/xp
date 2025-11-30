@@ -20,7 +20,8 @@ class TestStateMonitorService:
     def _make_event(
         self, mock_protocol: Mock, frame: str, telegram_type: str
     ) -> TelegramReceivedEvent:
-        """Create TelegramReceivedEvent helper.
+        """
+        Create TelegramReceivedEvent helper.
 
         Args:
             mock_protocol: Mock protocol fixture.

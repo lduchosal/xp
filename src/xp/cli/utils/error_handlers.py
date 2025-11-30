@@ -16,7 +16,8 @@ class CLIErrorHandler:
         raw_input: str,
         context: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """Handle telegram parsing errors with JSON formatting.
+        """
+        Handle telegram parsing errors with JSON formatting.
 
         Args:
             error: The parsing error that occurred.
@@ -40,7 +41,8 @@ class CLIErrorHandler:
     def handle_connection_error(
         error: Exception, config: Optional[Dict[str, Any]] = None
     ) -> None:
-        """Handle connection/network errors with JSON formatting.
+        """
+        Handle connection/network errors with JSON formatting.
 
         Args:
             error: The connection error that occurred.
@@ -76,7 +78,8 @@ class CLIErrorHandler:
     def handle_service_error(
         error: Exception, operation: str, context: Optional[Dict[str, Any]] = None
     ) -> None:
-        """Handle general service errors with JSON formatting.
+        """
+        Handle general service errors with JSON formatting.
 
         Args:
             error: The service error that occurred.
@@ -98,7 +101,8 @@ class CLIErrorHandler:
 
     @staticmethod
     def handle_validation_error(error: Exception, input_data: str) -> None:
-        """Handle validation errors with JSON formatting.
+        """
+        Handle validation errors with JSON formatting.
 
         Args:
             error: The validation error that occurred.
@@ -120,7 +124,8 @@ class CLIErrorHandler:
         file_path: str,
         operation: str = "processing",
     ) -> None:
-        """Handle file operation errors with JSON formatting.
+        """
+        Handle file operation errors with JSON formatting.
 
         Args:
             error: The file error that occurred.
@@ -141,7 +146,8 @@ class CLIErrorHandler:
     def handle_not_found_error(
         error: Exception, item_type: str, identifier: str
     ) -> None:
-        """Handle 'not found' errors with JSON formatting.
+        """
+        Handle 'not found' errors with JSON formatting.
 
         Args:
             error: The not found error that occurred.
@@ -166,7 +172,8 @@ class ServerErrorHandler(CLIErrorHandler):
     def handle_server_startup_error(
         error: Exception, port: int, config_path: str
     ) -> None:
-        """Handle server startup errors with JSON formatting.
+        """
+        Handle server startup errors with JSON formatting.
 
         Args:
             error: The server startup error that occurred.
@@ -189,7 +196,8 @@ class ServerErrorHandler(CLIErrorHandler):
 
     @staticmethod
     def handle_server_not_running_error() -> None:
-        """Handle errors when server is not running with JSON formatting.
+        """
+        Handle errors when server is not running with JSON formatting.
 
         Raises:
             SystemExit: Always exits with code 1 after displaying error.

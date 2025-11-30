@@ -4,7 +4,8 @@ from enum import IntEnum
 
 
 class TimeParam(IntEnum):
-    """Time parameter values for action timing.
+    """
+    Time parameter values for action timing.
 
     Attributes:
         NONE: No time parameter.

@@ -1,6 +1,8 @@
-"""Module Type Service for XP module management.
+"""
+Module Type Service for XP module management.
 
-This module provides lookup, validation, and search functionality for XP system module types.
+This module provides lookup, validation, and search functionality for XP system module
+types.
 """
 
 from typing import Dict, List, Optional, Union
@@ -199,7 +201,8 @@ class ModuleTypeService:
 
     @staticmethod
     def _format_module_summary(module_type: ModuleType) -> str:
-        """Format a single module type for display.
+        """
+        Format a single module type for display.
 
         Args:
             module_type: The module type to format.
@@ -226,7 +229,8 @@ class ModuleTypeService:
 
     @staticmethod
     def _format_all_modules() -> str:
-        """Format all modules in a simple list.
+        """
+        Format all modules in a simple list.
 
         Returns:
             Formatted string with all modules.
@@ -241,7 +245,8 @@ class ModuleTypeService:
 
     @staticmethod
     def _format_modules_by_category() -> str:
-        """Format modules grouped by category.
+        """
+        Format modules grouped by category.
 
         Returns:
             Formatted string with modules grouped by category.

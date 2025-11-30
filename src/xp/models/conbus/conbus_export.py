@@ -8,7 +8,8 @@ from xp.models.config.conson_module_config import ConsonModuleListConfig
 
 @dataclass
 class ConbusExportResponse:
-    """Response from Conbus export operation.
+    """
+    Response from Conbus export operation.
 
     Attributes:
         success: Whether the operation was successful.

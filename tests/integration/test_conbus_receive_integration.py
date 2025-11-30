@@ -1,7 +1,8 @@
-"""Integration tests for conbus receive CLI commands.
+"""
+Integration tests for conbus receive CLI commands.
 
-Tests the complete flow from CLI input to output,
-ensuring proper integration between all layers.
+Tests the complete flow from CLI input to output, ensuring proper integration between
+all layers.
 """
 
 from unittest.mock import MagicMock

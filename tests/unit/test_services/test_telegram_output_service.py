@@ -69,7 +69,8 @@ class TestFormatOutputState:
         assert result == "3 5 0 0"
 
     def test_format_real_telegram_1235xxxxx000(self):
-        """Test format_output_state with real telegram data '1235xxxxx000'.
+        """
+        Test format_output_state with real telegram data '1235xxxxx000'.
 
         From telegram: <R0020045057F02D1235xxxxx000BO>
         Data value: 1235xxxxx000
