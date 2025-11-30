@@ -53,15 +53,39 @@ class TestXp24ActionTableIntegration:
         error_callbacks = []
 
         def connect_progress(callback):
+            """
+            Connect progress callback.
+
+            Args:
+                callback: Callback function to connect.
+            """
             progress_callbacks.append(callback)
 
         def connect_finish(callback):
+            """
+            Connect finish callback.
+
+            Args:
+                callback: Callback function to connect.
+            """
             finish_callbacks.append(callback)
 
         def connect_actiontable_received(callback):
+            """
+            Connect actiontable_received callback.
+
+            Args:
+                callback: Callback function to connect.
+            """
             actiontable_received_callbacks.append(callback)
 
         def connect_error(callback):
+            """
+            Connect error callback.
+
+            Args:
+                callback: Callback function to connect.
+            """
             error_callbacks.append(callback)
 
         mock_service.on_progress.connect = connect_progress
@@ -70,6 +94,7 @@ class TestXp24ActionTableIntegration:
         mock_service.on_error.connect = connect_error
 
         def mock_start_reactor():
+            """Mock start_reactor that triggers callbacks."""
             if error:
                 for callback in error_callbacks:
                     callback(error)

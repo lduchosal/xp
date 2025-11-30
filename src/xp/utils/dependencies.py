@@ -22,6 +22,15 @@ from xp.services.actiontable.msactiontable_xp24_serializer import (
 from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
+from xp.services.conbus.actiontable.actiontable_download_service import (
+    ActionTableDownloadService,
+)
+from xp.services.conbus.actiontable.actiontable_list_service import (
+    ActionTableListService,
+)
+from xp.services.conbus.actiontable.actiontable_show_service import (
+    ActionTableShowService,
+)
 from xp.services.conbus.actiontable.actiontable_upload_service import (
     ActionTableUploadService,
 )
@@ -42,15 +51,6 @@ from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_raw_service import ConbusRawService
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
-from xp.services.conbus.actiontable.actiontable_download_service import (
-    ActionTableDownloadService,
-)
-from xp.services.conbus.actiontable.actiontable_list_service import (
-    ActionTableListService,
-)
-from xp.services.conbus.actiontable.actiontable_show_service import (
-    ActionTableShowService,
-)
 from xp.services.conbus.msactiontable.msactiontable_upload_service import (
     MsActionTableUploadService,
 )
@@ -377,9 +377,15 @@ class ServiceContainer:
             factory=lambda: ActionTableDownloadService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
-                msactiontable_serializer_xp20=self.container.resolve(Xp20MsActionTableSerializer),
-                msactiontable_serializer_xp24=self.container.resolve(Xp24MsActionTableSerializer),
-                msactiontable_serializer_xp33=self.container.resolve(Xp33MsActionTableSerializer),
+                msactiontable_serializer_xp20=self.container.resolve(
+                    Xp20MsActionTableSerializer
+                ),
+                msactiontable_serializer_xp24=self.container.resolve(
+                    Xp24MsActionTableSerializer
+                ),
+                msactiontable_serializer_xp33=self.container.resolve(
+                    Xp33MsActionTableSerializer
+                ),
             ),
             scope=punq.Scope.singleton,
         )

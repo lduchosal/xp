@@ -39,7 +39,7 @@ def _get_actiontable_type(xpmoduletype: str) -> ActionTableType:
         Corresponding ActionTableType enum value.
 
     Raises:
-        click.ClickException: If module type is not supported.
+        ClickException: If module type is not supported.
     """
     type_map = {
         "xp20": ActionTableType.MSACTIONTABLE_XP20,
