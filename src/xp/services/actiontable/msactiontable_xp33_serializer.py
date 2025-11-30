@@ -156,19 +156,13 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
             ValueError: If data length is less than 68 characters.
         """
         raw_length = len(msactiontable_rawdata)
-        if raw_length < 68:  # Minimum: 4 char prefix + 64 chars data
+        if raw_length < 64:  # Minimum: 4 char prefix + 64 chars data
             raise ValueError(
                 f"Msactiontable is too short ({raw_length}), minimum 68 characters required"
             )
 
-        # Remove action table count prefix (first 4 characters: AAAA, AAAB, etc.)
-        data = msactiontable_rawdata[4:]
-
-        # Take first 64 chars (32 bytes) as per pseudocode
-        hex_data = data[:64]
-
         # Convert hex string to bytes using deNibble (A-P encoding)
-        raw_bytes = de_nibbles(hex_data)
+        raw_bytes = de_nibbles(msactiontable_rawdata)
 
         # Decode outputs
         output1 = Xp33MsActionTableSerializer._decode_output(raw_bytes, 0)

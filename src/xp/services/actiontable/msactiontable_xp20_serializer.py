@@ -42,17 +42,12 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
             ValueError: If input length is not 64 characters
         """
         raw_length = len(encoded_data)
-        if raw_length < 68:  # Minimum: 4 char prefix + 64 chars data
+        if raw_length < 64:  # Minimum: 4 char prefix + 64 chars data
             raise ValueError(
-                f"XP20 action table data must be 68 characters long, got {len(encoded_data)}"
+                f"XP20 action table data must be 64 characters long, got {len(encoded_data)}"
             )
 
-        # Remove action table count prefix (first 4 characters: AAAA, AAAB, etc.)
-        data = encoded_data[4:]
-
-        # Take first 64 chars (32 bytes) as per pseudocode
-        hex_data = data[:64]
-        raw_bytes = de_nibbles(hex_data)
+        raw_bytes = de_nibbles(encoded_data)
 
         # Decode input channels
         input_channels = []
