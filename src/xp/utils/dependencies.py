@@ -327,6 +327,15 @@ class ServiceContainer:
             factory=lambda: DownloadService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
+                msactiontable_serializer_xp20=self.container.resolve(
+                    Xp20MsActionTableSerializer
+                ),
+                msactiontable_serializer_xp24=self.container.resolve(
+                    Xp24MsActionTableSerializer
+                ),
+                msactiontable_serializer_xp33=self.container.resolve(
+                    Xp33MsActionTableSerializer
+                ),
             ),
             scope=punq.Scope.singleton,
         )

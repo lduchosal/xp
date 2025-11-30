@@ -50,7 +50,7 @@ class TestActionTableIntegration:
         serializer = ActionTableSerializer()
 
         # Serialize to bytes
-        encoded_string = serializer.from_encoded_string(sample_actiontable)
+        encoded_string = serializer.to_encoded_string(sample_actiontable)
         data = de_nibbles(encoded_string)
         assert isinstance(data, bytes)
         assert len(data) > 0
@@ -230,7 +230,7 @@ class TestActionTableIntegration:
         serializer = ActionTableSerializer()
 
         # Empty table should be padded to 96 entries (480 bytes) during serialization
-        encoded_string = serializer.from_encoded_string(empty_table)
+        encoded_string = serializer.to_encoded_string(empty_table)
         data = de_nibbles(encoded_string)
 
         assert isinstance(data, bytes)
