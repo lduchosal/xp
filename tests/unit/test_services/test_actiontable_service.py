@@ -144,8 +144,6 @@ class TestActionTableService:
 
     def test_telegram_received_eof(self, service, sample_actiontable):
         """Test receiving EOF telegram deserializes and calls finish_callback."""
-        from dataclasses import asdict
-
         from xp.models.telegram.system_function import SystemFunction
 
         service.serial_number = "0123450001"
@@ -182,11 +180,10 @@ class TestActionTableService:
             "AAAAACAAAABAAAAC"
         )
 
-        # Should call on_actiontable_received with actiontable, dict, and short format
-        expected_dict = asdict(sample_actiontable)
+        # Should call on_actiontable_received with actiontable and short format
         expected_short = ["CP20 0 0 > 1 OFF;", "CP20 0 1 > 1 ~ON;"]
         mock_actiontable_received.assert_called_once_with(
-            sample_actiontable, expected_dict, expected_short
+            sample_actiontable, expected_short
         )
 
     def test_telegram_received_invalid_checksum(self, service):

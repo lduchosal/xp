@@ -1,6 +1,5 @@
 """Integration tests for ActionTable functionality."""
 
-from dataclasses import asdict
 from unittest.mock import Mock
 
 import pytest
@@ -52,7 +51,7 @@ class TestActionTableIntegration:
         # Serialize to bytes
         encoded_string = serializer.to_encoded_string(sample_actiontable)
         data = de_nibbles(encoded_string)
-        assert isinstance(data, bytes)
+        assert isinstance(data, (bytes, bytearray))
         assert len(data) > 0
 
         # Deserialize back
@@ -144,16 +143,23 @@ class TestActionTableIntegration:
             mock_on_actiontable_received_connect
         )
 
-        # Mock the start method to call callbacks immediately
-        def mock_start(serial_number):
+        # Mock the configure method
+        def mock_configure(serial_number, actiontable_type):
             """
             Test helper function.
 
             Args:
                 serial_number: Serial number of the module.
+                actiontable_type: Type of action table to download.
             """
+            # Configure stores the serial number (nothing to do here for test)
+            pass
+
+        # Mock the start_reactor to trigger callbacks
+        def mock_start_reactor_impl():
+            """Mock reactor start method that triggers callbacks."""
             # Generate dict and short format like the service does
-            actiontable_dict = asdict(sample_actiontable)
+            actiontable_dict = sample_actiontable.model_dump()
             actiontable_short = ActionTableSerializer.to_short_string(
                 sample_actiontable
             )
@@ -166,13 +172,8 @@ class TestActionTableIntegration:
             if callbacks["on_finish"]:
                 callbacks["on_finish"]()
 
-        def mock_start_reactor() -> None:
-            """Mock reactor start method."""
-            # Do nothing in test
-            pass
-
-        mock_service.configure.side_effect = mock_start
-        mock_service.start_reactor.side_effect = mock_start_reactor
+        mock_service.configure.side_effect = mock_configure
+        mock_service.start_reactor.side_effect = mock_start_reactor_impl
 
         # Setup mock container
         mock_container = Mock()
@@ -233,9 +234,9 @@ class TestActionTableIntegration:
         encoded_string = serializer.to_encoded_string(empty_table)
         data = de_nibbles(encoded_string)
 
-        assert isinstance(data, bytes)
+        assert isinstance(data, (bytes, bytearray))
         assert len(data) == 480  # 96 entries × 5 bytes
-        assert data == b"\x00" * 480  # All padding (NOMOD entries)
+        assert bytes(data) == b"\x00" * 480  # All padding (NOMOD entries)
 
         # Restore table - padding (NOMOD entries) is stripped during deserialization
         restored = serializer.from_encoded_string(encoded_string)

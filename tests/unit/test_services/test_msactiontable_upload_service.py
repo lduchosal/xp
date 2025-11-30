@@ -158,9 +158,9 @@ class TestMsActionTableUploadService:
         ]
         mock_conson_config.find_module.return_value = module
 
-        # Setup serializer
+        # Setup serializer - mock to_encoded_string to return 68-char string
         mock_msactiontable = Mock(spec=Xp24MsActionTable)
-        mock_xp24_serializer.to_data.return_value = "AAAA" + "A" * 64  # 68 chars total
+        mock_xp24_serializer.to_encoded_string.return_value = "AAAA" + "A" * 64
 
         # Mock from_short_format
         with patch(
@@ -189,9 +189,9 @@ class TestMsActionTableUploadService:
         ]
         mock_conson_config.find_module.return_value = module
 
-        # Setup serializer
+        # Setup serializer - mock to_encoded_string to return 68-char string
         mock_msactiontable = Mock(spec=Xp20MsActionTable)
-        mock_xp20_serializer.to_data.return_value = "AAAA" + "A" * 64
+        mock_xp20_serializer.to_encoded_string.return_value = "AAAA" + "A" * 64
 
         # Mock from_short_format
         with patch(
@@ -218,9 +218,9 @@ class TestMsActionTableUploadService:
         ]
         mock_conson_config.find_module.return_value = module
 
-        # Setup serializer
+        # Setup serializer - mock to_encoded_string to return 68-char string
         mock_msactiontable = Mock(spec=Xp33MsActionTable)
-        mock_xp33_serializer.to_data.return_value = "AAAA" + "A" * 64
+        mock_xp33_serializer.to_encoded_string.return_value = "AAAA" + "A" * 64
 
         # Mock from_short_format
         with patch(

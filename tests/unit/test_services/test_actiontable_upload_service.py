@@ -601,7 +601,7 @@ class TestActionTableUploadFullSequence:
         mock_conson_config.find_module.return_value = mock_module
 
         # Setup: Serializer raises ValueError for invalid format
-        mock_serializer.parse_action_table.side_effect = ValueError(
+        mock_serializer.from_short_string.side_effect = ValueError(
             "Invalid action table format"
         )
 

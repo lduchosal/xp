@@ -1,7 +1,7 @@
 """XP24 Action Table CLI commands."""
 
 import json
-from typing import Union
+from typing import Any, Union
 
 import click
 from click import Context
@@ -12,9 +12,7 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.cli.utils.xp_module_type import XP_MODULE_TYPE
-from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
-from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
-from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
+from xp.models.actiontable.actiontable_type import ActionTableType
 from xp.models.config.conson_module_config import ConsonModuleConfig
 from xp.services.conbus.actiontable.actiontable_download_service import (
     ActionTableDownloadService,
@@ -28,6 +26,29 @@ from xp.services.conbus.actiontable.actiontable_show_service import (
 from xp.services.conbus.msactiontable.msactiontable_upload_service import (
     MsActionTableUploadService,
 )
+
+
+def _get_actiontable_type(xpmoduletype: str) -> ActionTableType:
+    """
+    Map xpmoduletype string to ActionTableType enum.
+
+    Args:
+        xpmoduletype: XP module type string (xp20, xp24, xp33).
+
+    Returns:
+        Corresponding ActionTableType enum value.
+
+    Raises:
+        click.ClickException: If module type is not supported.
+    """
+    type_map = {
+        "xp20": ActionTableType.MSACTIONTABLE_XP20,
+        "xp24": ActionTableType.MSACTIONTABLE_XP24,
+        "xp33": ActionTableType.MSACTIONTABLE_XP33,
+    }
+    if xpmoduletype not in type_map:
+        raise click.ClickException(f"Unsupported module type: {xpmoduletype}")
+    return type_map[xpmoduletype]
 
 
 @conbus_msactiontable.command("download", short_help="Download MSActionTable")
@@ -59,8 +80,8 @@ def conbus_download_msactiontable(
         """
         click.echo(progress, nl=False)
 
-    def on_finish(
-        msaction_table: Union[Xp20MsActionTable, Xp24MsActionTable, Xp33MsActionTable],
+    def on_actiontable_received(
+        msaction_table: Any,
         msaction_table_short: list[str],
     ) -> None:
         """
@@ -70,8 +91,6 @@ def conbus_download_msactiontable(
             msaction_table: Downloaded XP MS action table object.
             msaction_table_short: Short version of XP24 MS action table.
         """
-        service.stop_reactor()
-
         # Format short representation based on module type
         short_field_name = f"{xpmoduletype}_msaction_table"
         # XP24 returns single-element list, XP20/XP33 return multi-line lists
@@ -89,6 +108,10 @@ def conbus_download_msactiontable(
         }
         click.echo(json.dumps(output, indent=2, default=str))
 
+    def on_finish() -> None:
+        """Handle download completion."""
+        service.stop_reactor()
+
     def on_error(error: str) -> None:
         """
         Handle errors during MS action table download.
@@ -97,16 +120,16 @@ def conbus_download_msactiontable(
             error: Error message string.
         """
         click.echo(f"Error: {error}")
+        service.stop_reactor()
 
     with service:
         service.on_progress.connect(on_progress)
-        service.on_error.connect(on_error)
-
-        # Connect to the appropriate signal based on module type
+        service.on_actiontable_received.connect(on_actiontable_received)
         service.on_finish.connect(on_finish)
-        service.start(
+        service.on_error.connect(on_error)
+        service.configure(
             serial_number=serial_number,
-            xpmoduletype=xpmoduletype,
+            actiontable_type=_get_actiontable_type(xpmoduletype),
         )
         service.start_reactor()
 

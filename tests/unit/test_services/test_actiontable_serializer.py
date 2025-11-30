@@ -302,8 +302,8 @@ class TestActionTableSerializerPadding:
 
         result = ActionTableSerializer.to_encoded_string(action_table)
 
-        # Should be exactly 96 entries × 5 bytes = 480 bytes
-        assert len(result) == 480
+        # Should be exactly 960 characters (96 entries × 5 bytes × 2 nibbles)
+        assert len(result) == 960
 
     def test_to_data_padding_with_multiple_entries(self):
         """Test padding with 8 entries (typical configuration)."""
@@ -372,8 +372,8 @@ class TestActionTableSerializerPadding:
 
         result = ActionTableSerializer.to_encoded_string(action_table)
 
-        # Should be exactly 480 bytes, no more
-        assert len(result) == 480
+        # Should be exactly 960 characters (480 bytes nibble-encoded)
+        assert len(result) == 960
 
     def test_to_data_padding_preserves_actual_entries(self):
         """Test that padding doesn't corrupt actual entry data."""
