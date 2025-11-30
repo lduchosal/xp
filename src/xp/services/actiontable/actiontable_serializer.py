@@ -34,9 +34,10 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
     @staticmethod
     def download_type() -> SystemFunction:
         """
+        Get the download system function type.
 
-        :return:
-            The downlaod system function : DOWNLOAD_MSACTIONTABLE
+        Returns:
+            The download system function: DOWNLOAD_ACTIONTABLE
         """
         return SystemFunction.DOWNLOAD_ACTIONTABLE
 

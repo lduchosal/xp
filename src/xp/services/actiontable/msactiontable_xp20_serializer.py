@@ -20,9 +20,10 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
     @staticmethod
     def download_type() -> SystemFunction:
         """
+        Get the download system function type.
 
-        :return:
-            The downlaod system function : DOWNLOAD_MSACTIONTABLE
+        Returns:
+            The download system function: DOWNLOAD_MSACTIONTABLE
         """
         return SystemFunction.DOWNLOAD_MSACTIONTABLE
 
@@ -32,7 +33,7 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
         Deserialize telegram data to XP20 action table.
 
         Args:
-            msactiontable_rawdata: 64-character hex string with A-P encoding
+            encoded_data: 64-character hex string with A-P encoding
 
         Returns:
             Decoded XP20 action table
@@ -125,13 +126,13 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
     @staticmethod
     def from_short_string(action_strings: list[str]) -> Xp20MsActionTable:
         """
-        Serialize XP20 action table to humane compact readable format.
+        Parse XP20 action table from short string format.
 
         Args:
-            action_table: XP20 action table to serialize
+            action_strings: List of short format strings to parse
 
         Returns:
-            Human-readable string describing XP20 action table
+            Parsed XP20 action table
         """
         return Xp20MsActionTable.from_short_format(action_strings)
 

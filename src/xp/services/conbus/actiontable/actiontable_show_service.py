@@ -42,7 +42,7 @@ class ActionTableShowService:
         config_path: Optional[Path] = None,
     ) -> None:
         """
-        Show action table configuration for a specific module.
+        Show action and msaction table configuration for a specific module.
 
         Args:
             serial_number: Module serial number.

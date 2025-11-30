@@ -16,10 +16,12 @@ class ActionTableSerializerProtocol(Protocol):
     @staticmethod
     def download_type() -> SystemFunction:
         """
+        Get the download system function type.
 
-        :return:
-            The downlaod system function : DOWNLOAD_MSACTIONTABLE or DOWNLOAD_ACTIONTABLE
+        Returns:
+            The download system function: DOWNLOAD_MSACTIONTABLE or DOWNLOAD_ACTIONTABLE
         """
+        ...
 
     @staticmethod
     def from_encoded_string(encoded_data: str) -> Any:
