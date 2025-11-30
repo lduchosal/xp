@@ -48,7 +48,8 @@ class TestXp24MsActionTableSerializer:
 
     def test_from_telegrams_invalid_hex_data(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal
-        characters."""
+        characters.
+        """
         # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>'
         valid_telegram = (
@@ -73,7 +74,8 @@ class TestXp24MsActionTableSerializer:
 
     def test_from_telegrams_from_data(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal
-        characters."""
+        characters.
+        """
         # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>'
         valid_msactiontable = (
@@ -83,12 +85,15 @@ class TestXp24MsActionTableSerializer:
         msactiontable = Xp24MsActionTableSerializer.from_encoded_string(
             valid_msactiontable
         )
-        msactiontable_data = Xp24MsActionTableSerializer.to_encoded_string(msactiontable)
+        msactiontable_data = Xp24MsActionTableSerializer.to_encoded_string(
+            msactiontable
+        )
         assert valid_msactiontable == msactiontable_data
 
     def test_from_telegrams_invalid_hex_data2(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal
-        characters."""
+        characters.
+        """
         # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044964F17DAAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFD>'
         valid_telegram = (
@@ -113,7 +118,8 @@ class TestXp24MsActionTableSerializer:
 
     def test_from_telegrams_de_nibble_0(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal
-        characters."""
+        characters.
+        """
         nibble = "AA"
 
         result = de_nibbles(nibble)
@@ -121,7 +127,8 @@ class TestXp24MsActionTableSerializer:
 
     def test_from_telegrams_de_nibble_1(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal
-        characters."""
+        characters.
+        """
         nibble = "AB"
 
         result = de_nibbles(nibble)
@@ -129,7 +136,8 @@ class TestXp24MsActionTableSerializer:
 
     def test_from_telegrams_de_nibble_01(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal
-        characters."""
+        characters.
+        """
         nibble = "AAAB"
 
         result = de_nibbles(nibble)
@@ -137,7 +145,8 @@ class TestXp24MsActionTableSerializer:
 
     def test_from_telegrams_de_nibble_big(self):
         """Test that invalid hex data raises ValueError with non-hexadecimal
-        characters."""
+        characters.
+        """
         nibble = "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
         result = de_nibbles(nibble)

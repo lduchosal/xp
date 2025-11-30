@@ -165,7 +165,7 @@ interrogate = "interrogate -vv src/"
 vulture = "vulture src/ tests/"
 refurb = "refurb src/ tests/"
 isort = "isort src/ tests/"
-docformatter = "docformatter --in-place --recursive --pre-summary-newline --wrap-summaries 88 --wrap-descriptions 88 src/ tests/"
+docformatter = "docformatter src/ tests/"
 absolufy = {shell = "find src tests -name '*.py' -type f -exec absolufy-imports --application-directories=src:tests {} +"}
 update-readme = {shell = "xp help > /tmp/xp-help.txt && sed -i '' -e '/<!-- BEGIN CLI HELP -->/,/<!-- END CLI HELP -->/{//!d;}' -e '/<!-- BEGIN CLI HELP -->/r /tmp/xp-help.txt' README.md && rm /tmp/xp-help.txt"}
 check = {composite = ["clean", "lint", "format", "docformatter", "typecheck", "flake8", "interrogate", "vulture", "refurb", "isort", "absolufy", "test-quick", "test-cov", "update-readme"] }
@@ -208,3 +208,11 @@ whitelist-regex = []
 color = true
 generate-badge = "."
 badge-format = "svg"
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 88
+wrap-descriptions = 88
+close-quotes-on-newline = true
+pre-summary-newline = true
+in-place = true

@@ -140,7 +140,8 @@ class TestActionTableDownloadServiceStateMachine:
 
     def test_receive_eof_transitions_to_processing_eof_then_receiving(self, service):
         """Test receive_eof event transitions to processing_eof then receiving
-        (CLEANUP)."""
+        (CLEANUP).
+        """
         # Get to waiting_data state
         service.do_connect()
         service.do_timeout()
@@ -154,7 +155,8 @@ class TestActionTableDownloadServiceStateMachine:
 
     def test_no_error_status_received_in_cleanup_phase_goes_to_completed(self, service):
         """Test no_error_status_received in CLEANUP phase goes to completed via
-        guard."""
+        guard.
+        """
         # Get to waiting_ok in CLEANUP phase
         service.do_connect()
         service.do_timeout()

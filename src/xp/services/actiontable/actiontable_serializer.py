@@ -46,7 +46,7 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
         Deserialize telegram data to ActionTable.
 
         Args:
-            data: Raw byte data from telegram
+            encoded_data: Raw byte data from telegram
 
         Returns:
             Decoded ActionTable

@@ -1,7 +1,7 @@
 """Service for downloading ActionTable via Conbus protocol."""
 
 import logging
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from psygnal import Signal
 

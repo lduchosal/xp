@@ -345,7 +345,8 @@ class TestConbusActionTableCommands:
 
     def test_download_actiontable_backward_compatible(self, runner, sample_actiontable):
         """Test that JSON actiontable field is still present for backward
-        compatibility."""
+        compatibility.
+        """
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
 

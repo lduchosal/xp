@@ -280,7 +280,9 @@ class TestXp20MsActionTableSerializer:
             assert channel.ta_function is False
 
         # Re-serialize back to data
-        msactiontable_data = Xp20MsActionTableSerializer.to_encoded_string(msactiontable)
+        msactiontable_data = Xp20MsActionTableSerializer.to_encoded_string(
+            msactiontable
+        )
 
         # Verify round-trip preserves the original data
         assert valid_msactiontable == msactiontable_data

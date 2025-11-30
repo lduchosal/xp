@@ -244,7 +244,8 @@ class TestHomekitConfigValidator:
 
     def test_validate_no_duplicate_accessory_assignments_success(self):
         """Test validation passes when accessories are not assigned to multiple
-        rooms."""
+        rooms.
+        """
         accessories = [
             HomekitAccessoryConfig(
                 name="light1",
@@ -374,7 +375,8 @@ class TestCrossReferenceValidator:
 
     def test_validate_serial_number_references_success(self):
         """Test validation passes when all accessory serial numbers exist in conson
-        config."""
+        config.
+        """
         conson_validator, homekit_validator = self.create_test_validators()
         errors = CrossReferenceValidator(
             conson_validator, homekit_validator
@@ -383,7 +385,8 @@ class TestCrossReferenceValidator:
 
     def test_validate_serial_number_references_failure(self):
         """Test validation fails when accessory references non-existent serial
-        number."""
+        number.
+        """
         conson_validator, homekit_validator = self.create_test_validators()
 
         # Add accessory with non-existent serial number
