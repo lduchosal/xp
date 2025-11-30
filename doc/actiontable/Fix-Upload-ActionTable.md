@@ -82,7 +82,7 @@ The prefix consists of:
 ### Fix 1: Pad to 96 Entries
 
 **Approach:**
-Modify `ActionTableSerializer.to_data()` to always pad to 96 entries.
+Modify `ActionTableSerializer.to_encoded_string()` to always pad to 96 entries.
 
 **Pseudocode:**
 ```python

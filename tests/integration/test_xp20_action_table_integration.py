@@ -31,7 +31,7 @@ class TestXp20ActionTableIntegration:
         ]
 
         # Serialize it
-        serialized = Xp20MsActionTableSerializer.to_data(action_table)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(action_table)
 
         # Deserialize from data
         result = Xp20MsActionTableSerializer.from_encoded_string(serialized)
@@ -99,7 +99,7 @@ class TestXp20ActionTableIntegration:
             channel.and_functions = [(j + i) % 2 == 0 for j in range(8)]
 
         # Serialize and deserialize
-        serialized = Xp20MsActionTableSerializer.to_data(action_table)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(action_table)
         deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
 
         # Verify all configurations are preserved
@@ -128,7 +128,7 @@ class TestXp20ActionTableIntegration:
         """Test boundary conditions and edge cases."""
         # Test all flags off
         action_table_off = Xp20MsActionTable()
-        serialized_off = Xp20MsActionTableSerializer.to_data(action_table_off)
+        serialized_off = Xp20MsActionTableSerializer.to_encoded_string(action_table_off)
         deserialized_off = Xp20MsActionTableSerializer.from_encoded_string(
             serialized_off
         )
@@ -153,7 +153,7 @@ class TestXp20ActionTableIntegration:
             channel.ta_function = True
             channel.and_functions = [True] * 8
 
-        serialized_on = Xp20MsActionTableSerializer.to_data(action_table_on)
+        serialized_on = Xp20MsActionTableSerializer.to_encoded_string(action_table_on)
         deserialized_on = Xp20MsActionTableSerializer.from_encoded_string(serialized_on)
 
         for i in range(1, 9):
@@ -178,7 +178,7 @@ class TestXp20ActionTableIntegration:
         assert isinstance(result, Xp20MsActionTable)
 
         # Test that we can re-encode it
-        re_encoded = Xp20MsActionTableSerializer.to_data(result)
+        re_encoded = Xp20MsActionTableSerializer.to_encoded_string(result)
         assert len(re_encoded) == 68
 
         # Round-trip should work
@@ -218,7 +218,7 @@ class TestXp20ActionTableIntegration:
             True,
         ]  # 0xAA
 
-        serialized = Xp20MsActionTableSerializer.to_data(action_table)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(action_table)
 
         # Verify the data can be decoded back correctly
         deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
@@ -266,7 +266,7 @@ class TestXp20ActionTableIntegration:
         """Test that model defaults work correctly with serializer."""
         # Default model should serialize and deserialize consistently
         default_table = Xp20MsActionTable()
-        serialized = Xp20MsActionTableSerializer.to_data(default_table)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(default_table)
         deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
 
         # Should be equivalent to original

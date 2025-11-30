@@ -59,7 +59,7 @@ class TestXp20MsActionTableSerializer:
 
     def test_to_data_serialization(self, sample_action_table):
         """Test serialization to telegram format."""
-        result = Xp20MsActionTableSerializer.to_data(sample_action_table)
+        result = Xp20MsActionTableSerializer.to_encoded_string(sample_action_table)
 
         # Should return 64-character hex string
         assert len(result) == 68
@@ -87,7 +87,7 @@ class TestXp20MsActionTableSerializer:
     def test_round_trip_serialization(self, sample_action_table):
         """Test that serialization followed by deserialization preserves data."""
         # Serialize to data
-        serialized = Xp20MsActionTableSerializer.to_data(sample_action_table)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(sample_action_table)
 
         # Deserialize back
         deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
@@ -167,7 +167,7 @@ class TestXp20MsActionTableSerializer:
             False,
         ]
 
-        serialized = Xp20MsActionTableSerializer.to_data(action_table)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(action_table)
         deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
 
         assert deserialized.input1.and_functions == [
@@ -193,7 +193,7 @@ class TestXp20MsActionTableSerializer:
             channel.sa_function = True
             channel.ta_function = True
 
-        serialized = Xp20MsActionTableSerializer.to_data(action_table)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(action_table)
         deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
 
         # Verify all flags are preserved
@@ -219,7 +219,7 @@ class TestXp20MsActionTableSerializer:
         action_table.input8.group_on_off = True
         action_table.input8.ta_function = True
 
-        serialized = Xp20MsActionTableSerializer.to_data(action_table)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(action_table)
         # Skip the 4-character "AAAA" prefix when de-nibbling
         raw_bytes = de_nibbles(serialized[4:])
 
@@ -241,7 +241,7 @@ class TestXp20MsActionTableSerializer:
         assert isinstance(result, Xp20MsActionTable)
 
         # Test round-trip
-        re_encoded = Xp20MsActionTableSerializer.to_data(result)
+        re_encoded = Xp20MsActionTableSerializer.to_encoded_string(result)
         re_decoded = Xp20MsActionTableSerializer.from_encoded_string(re_encoded)
 
         # Should be identical
@@ -280,7 +280,7 @@ class TestXp20MsActionTableSerializer:
             assert channel.ta_function is False
 
         # Re-serialize back to data
-        msactiontable_data = Xp20MsActionTableSerializer.to_data(msactiontable)
+        msactiontable_data = Xp20MsActionTableSerializer.to_encoded_string(msactiontable)
 
         # Verify round-trip preserves the original data
         assert valid_msactiontable == msactiontable_data
@@ -307,7 +307,7 @@ class TestXp20MsActionTableSerializer:
             assert isinstance(channel, InputChannel)
 
         # Test round-trip: serialize and deserialize should preserve data
-        serialized = Xp20MsActionTableSerializer.to_data(action_table)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(action_table)
         deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized)
 
         # Verify round-trip preserves all values
@@ -329,7 +329,7 @@ class TestXp20MsActionTableSerializer:
         # Test serialization with defaults
         serialized_table = telegram[16:84]
         deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized_table)
-        serialized = Xp20MsActionTableSerializer.to_data(deserialized)
+        serialized = Xp20MsActionTableSerializer.to_encoded_string(deserialized)
 
         assert serialized_table == serialized
 

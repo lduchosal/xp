@@ -83,7 +83,7 @@ class TestXp24MsActionTableSerializer:
         msactiontable = Xp24MsActionTableSerializer.from_encoded_string(
             valid_msactiontable
         )
-        msactiontable_data = Xp24MsActionTableSerializer.to_data(msactiontable)
+        msactiontable_data = Xp24MsActionTableSerializer.to_encoded_string(msactiontable)
         assert valid_msactiontable == msactiontable_data
 
     def test_from_telegrams_invalid_hex_data2(self):

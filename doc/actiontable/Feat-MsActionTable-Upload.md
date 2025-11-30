@@ -78,7 +78,7 @@ MsActionTable is short enough to send in a single chunk (68 characters: AAAA fix
 - [ ] Read msactiontable from conson.yml via `ConsonModuleListConfig` (injected via DI)
 - [ ] Extract first element from config list field (e.g., `module.xp24_msaction_table[0]`)
 - [ ] Parse short format string to model using `XpXXMsActionTable.from_short_format()`
-- [ ] Serialize model to telegram data using `XpXXMsActionTableSerializer.to_data()`
+- [ ] Serialize model to telegram data using `XpXXMsActionTableSerializer.to_encoded_string()`
 - [ ] Store single 68-character data chunk (no chunking needed)
 - [ ] Track upload state: send data chunk after first ACK, then EOF
 - [ ] Reset state in `__enter__()` for singleton reuse
@@ -115,9 +115,9 @@ def conbus_upload_msactiontable(serial_number: str, xpmoduletype: str) -> None:
 
 ### Serializer Integration
 
-- [ ] Use `Xp20MsActionTableSerializer.to_data()` for encoding
-- [ ] Use `Xp24MsActionTableSerializer.to_data()` for encoding
-- [ ] Use `Xp33MsActionTableSerializer.to_data()` for encoding
+- [ ] Use `Xp20MsActionTableSerializer.to_encoded_string()` for encoding
+- [ ] Use `Xp24MsActionTableSerializer.to_encoded_string()` for encoding
+- [ ] Use `Xp33MsActionTableSerializer.to_encoded_string()` for encoding
 - [ ] Use `XpXXMsActionTable.from_short_format()` for parsing
 - [ ] 68-character telegram data format (AAAA + 64 chars)
 

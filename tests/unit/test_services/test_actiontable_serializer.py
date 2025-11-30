@@ -5,6 +5,7 @@ from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
+from xp.utils.serialization import de_nibbles
 
 
 class TestActionTableSerializerFormatDecoded:
@@ -299,7 +300,7 @@ class TestActionTableSerializerPadding:
             ]
         )
 
-        result = ActionTableSerializer.to_data(action_table)
+        result = ActionTableSerializer.to_encoded_string(action_table)
 
         # Should be exactly 96 entries × 5 bytes = 480 bytes
         assert len(result) == 480
@@ -320,7 +321,8 @@ class TestActionTableSerializerPadding:
         ]
         action_table = ActionTable(entries=entries)
 
-        result = ActionTableSerializer.to_data(action_table)
+        encoded_string = ActionTableSerializer.to_encoded_string(action_table)
+        result = de_nibbles(encoded_string)
 
         # Should still be exactly 480 bytes
         assert len(result) == 480
@@ -345,7 +347,8 @@ class TestActionTableSerializerPadding:
             ]
         )
 
-        result = ActionTableSerializer.to_data(action_table)
+        encoded_string = ActionTableSerializer.to_encoded_string(action_table)
+        result = de_nibbles(encoded_string)
 
         # First 5 bytes are the actual entry
         # Remaining bytes (5 to 480) should all be zeros
@@ -367,7 +370,7 @@ class TestActionTableSerializerPadding:
         ]
         action_table = ActionTable(entries=entries)
 
-        result = ActionTableSerializer.to_data(action_table)
+        result = ActionTableSerializer.to_encoded_string(action_table)
 
         # Should be exactly 480 bytes, no more
         assert len(result) == 480
@@ -388,7 +391,8 @@ class TestActionTableSerializerPadding:
             ]
         )
 
-        result = ActionTableSerializer.to_data(action_table)
+        encoded_string = ActionTableSerializer.to_encoded_string(action_table)
+        result = de_nibbles(encoded_string)
 
         # Check first entry is correct (5 bytes)
         assert result[0] == 0x02  # CP20 (value=2) in BCD
@@ -404,7 +408,8 @@ class TestActionTableSerializerPadding:
         """Test that empty action table is padded to 96 entries."""
         action_table = ActionTable(entries=[])
 
-        result = ActionTableSerializer.to_data(action_table)
+        encoded_string = ActionTableSerializer.to_encoded_string(action_table)
+        result = de_nibbles(encoded_string)
 
         # Should still be 480 bytes, all zeros
         assert len(result) == 480

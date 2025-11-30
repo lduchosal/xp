@@ -14,6 +14,7 @@ from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
+from xp.utils.serialization import de_nibbles
 
 
 class TestActionTableIntegration:
@@ -49,12 +50,13 @@ class TestActionTableIntegration:
         serializer = ActionTableSerializer()
 
         # Serialize to bytes
-        data = serializer.to_data(sample_actiontable)
+        encoded_string = serializer.from_encoded_string(sample_actiontable)
+        data = de_nibbles(encoded_string)
         assert isinstance(data, bytes)
         assert len(data) > 0
 
         # Deserialize back
-        restored_table = serializer.from_data(data)
+        restored_table = serializer.from_encoded_string(encoded_string)
         assert isinstance(restored_table, ActionTable)
         assert len(restored_table.entries) == len(sample_actiontable.entries)
 
@@ -228,13 +230,15 @@ class TestActionTableIntegration:
         serializer = ActionTableSerializer()
 
         # Empty table should be padded to 96 entries (480 bytes) during serialization
-        data = serializer.to_data(empty_table)
+        encoded_string = serializer.from_encoded_string(empty_table)
+        data = de_nibbles(encoded_string)
+
         assert isinstance(data, bytes)
         assert len(data) == 480  # 96 entries × 5 bytes
         assert data == b"\x00" * 480  # All padding (NOMOD entries)
 
         # Restore table - padding (NOMOD entries) is stripped during deserialization
-        restored = serializer.from_data(data)
+        restored = serializer.from_encoded_string(encoded_string)
         assert len(restored.entries) == 0  # Padding removed
 
     def test_actiontable_edge_cases(self):
@@ -253,8 +257,8 @@ class TestActionTableIntegration:
         serializer = ActionTableSerializer()
 
         # Should handle edge values
-        data = serializer.to_data(edge_table)
-        restored = serializer.from_data(data)
+        data = serializer.to_encoded_string(edge_table)
+        restored = serializer.from_encoded_string(data)
 
         assert len(restored.entries) == 1
         restored_entry = restored.entries[0]
