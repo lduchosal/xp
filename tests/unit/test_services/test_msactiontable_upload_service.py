@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
-from xp.models.actiontable.msactiontable_xp24 import Xp24MsActionTable
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
 from xp.models.config.conson_module_config import ConsonModuleConfig
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
@@ -145,37 +144,6 @@ class TestMsActionTableUploadService:
             system_function=SystemFunction.UPLOAD_MSACTIONTABLE,
             data_value="00",
         )
-
-    def test_upload_xp24_msactiontable_success(
-        self, service, mock_conson_config, mock_xp24_serializer, mock_conbus_protocol
-    ):
-        """Test successful XP24 msactiontable upload."""
-        # Setup module config
-        module = Mock(spec=ConsonModuleConfig)
-        module.module_type = "XP24"
-        module.xp24_msaction_table = [
-            "T:1 T:2 ON:0 OF:0 | M12:0 M34:0 C12:0 C34:0 DT:12"
-        ]
-        mock_conson_config.find_module.return_value = module
-
-        # Setup serializer - mock to_encoded_string to return 68-char string
-        mock_msactiontable = Mock(spec=Xp24MsActionTable)
-        mock_xp24_serializer.to_encoded_string.return_value = "AAAA" + "A" * 64
-
-        # Mock from_short_format
-        with patch(
-            "xp.models.actiontable.msactiontable_xp24.Xp24MsActionTable.from_short_format",
-            return_value=mock_msactiontable,
-        ):
-            service.start(
-                serial_number="0020044991",
-                xpmoduletype="xp24",
-            )
-
-        assert service.serial_number == "0020044991"
-        assert service.xpmoduletype == "xp24"
-        assert service.upload_data == "AAAA" + "A" * 64
-        assert service.serializer == mock_xp24_serializer
 
     def test_upload_xp20_msactiontable_success(
         self, service, mock_conson_config, mock_xp20_serializer

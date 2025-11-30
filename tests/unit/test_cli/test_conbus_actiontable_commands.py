@@ -118,7 +118,6 @@ class TestConbusActionTableCommands:
             else:
                 if actiontable:
                     # Generate dict and short format like the service does
-                    actiontable_dict = actiontable.model_dump()
                     actiontable_short = ActionTableSerializer.to_short_string(
                         actiontable
                     )
