@@ -169,7 +169,7 @@ class TestXp20ActionTableIntegration:
     def test_specification_compliance(self):
         """Test compliance with the specification example."""
         spec_example = (
-            "AAAAAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         # Should decode without errors
@@ -180,7 +180,7 @@ class TestXp20ActionTableIntegration:
 
         # Test that we can re-encode it
         re_encoded = Xp20MsActionTableSerializer.to_encoded_string(result)
-        assert len(re_encoded) == 68
+        assert len(re_encoded) == 64
 
         # Round-trip should work
         final_result = Xp20MsActionTableSerializer.from_encoded_string(re_encoded)

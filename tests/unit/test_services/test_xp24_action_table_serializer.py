@@ -53,7 +53,7 @@ class TestXp24MsActionTableSerializer:
         # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>'
         valid_telegram = (
-            "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "ADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         msactiontable = Xp24MsActionTableSerializer.from_encoded_string(valid_telegram)
@@ -79,7 +79,7 @@ class TestXp24MsActionTableSerializer:
         # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044989F17DAAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFA>'
         valid_msactiontable = (
-            "AAAAADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "ADAAADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         msactiontable = Xp24MsActionTableSerializer.from_encoded_string(
@@ -97,7 +97,7 @@ class TestXp24MsActionTableSerializer:
         # This telegram contains non-hex characters that cause from_hex() to fail
         # Based on the debug log: '<R0020044964F17DAAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFD>'
         valid_telegram = (
-            "AAAAABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "ABAGADAAADAAADAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         msactiontable = Xp24MsActionTableSerializer.from_encoded_string(valid_telegram)

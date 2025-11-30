@@ -139,7 +139,7 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
         encoded_data = nibbles(raw_bytes)
 
         # Convert raw bytes to hex string with A-P encoding
-        return "AAAA" + encoded_data
+        return encoded_data
 
     @staticmethod
     def from_encoded_string(msactiontable_rawdata: str) -> Xp33MsActionTable:
@@ -153,12 +153,12 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
             Deserialized XP33 MS action table.
 
         Raises:
-            ValueError: If data length is less than 68 characters.
+            ValueError: If data length is less than 64 characters.
         """
         raw_length = len(msactiontable_rawdata)
         if raw_length < 64:  # Minimum: 4 char prefix + 64 chars data
             raise ValueError(
-                f"Msactiontable is too short ({raw_length}), minimum 68 characters required"
+                f"Msactiontable is too short ({raw_length}), minimum 64 characters required"
             )
 
         # Convert hex string to bytes using deNibble (A-P encoding)

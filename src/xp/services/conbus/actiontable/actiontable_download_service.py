@@ -126,7 +126,10 @@ class ActionTableDownloadService(DownloadStateMachine):
     def on_enter_requesting(self) -> None:
         """Enter requesting state - send download request."""
         self.enter_download_phase()  # Sets phase to DOWNLOAD
-        self.conbus_protocol.send_download_request(serial_number=self.serial_number, actiontable_type=self.serializer.download_type())
+        self.conbus_protocol.send_download_request(
+            serial_number=self.serial_number,
+            actiontable_type=self.serializer.download_type(),
+        )
         self.send_download()
 
     def on_enter_waiting_data(self) -> None:

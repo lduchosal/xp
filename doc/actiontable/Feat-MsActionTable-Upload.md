@@ -34,7 +34,7 @@ Msactiontable uploaded successfully
 
 ## Upload Protocol
 
-MsActionTable is short enough to send in a single chunk (68 characters: AAAA fixed header + 64 data chars).
+MsActionTable is short enough to send in a single chunk (64 characters: AAAA fixed header + 64 data chars).
 
 ```
 1. [TX] <S{serial}F12D00{checksum}>         # Client: UPLOAD_MSACTIONTABLE

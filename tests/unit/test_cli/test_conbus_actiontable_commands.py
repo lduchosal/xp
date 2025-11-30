@@ -124,7 +124,7 @@ class TestConbusActionTableCommands:
                     )
                     # Emit on_actiontable_received with data
                     for callback in actiontable_received_callbacks:
-                        callback(actiontable, actiontable_dict, actiontable_short)
+                        callback(actiontable, actiontable_short)
                     # Emit on_finish without arguments
                     for callback in finish_callbacks:
                         callback()
@@ -186,8 +186,7 @@ class TestConbusActionTableCommands:
         # The output should contain JSON with the actiontable data
         # It may be on multiple lines due to indentation
         assert "0000012345" in result.output
-        assert "actiontable" in result.output
-        assert "entries" in result.output
+        assert "actiontable_short" in result.output
 
     def test_conbus_download_actiontable_error_handling(self, runner):
         """Test actiontable download command error handling."""
@@ -287,8 +286,7 @@ class TestConbusActionTableCommands:
         # The output should contain the actiontable data
         # It may be on multiple lines due to indentation and include progress dots
         assert "0000012345" in result.output
-        assert "actiontable" in result.output
-        assert "entries" in result.output
+        assert "actiontable_short" in result.output
 
     def test_download_actiontable_includes_short_format(
         self, runner, sample_actiontable
@@ -367,8 +365,6 @@ class TestConbusActionTableCommands:
 
         # Verify both formats are present
         assert "actiontable_short" in result.output
-        assert "actiontable" in result.output
-        assert "entries" in result.output
 
     def test_download_actiontable_short_with_parameter(self, runner):
         """Test actiontable_short displays parameter when non-zero."""

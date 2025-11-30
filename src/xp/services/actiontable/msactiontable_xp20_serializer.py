@@ -103,7 +103,7 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
 
         encoded_data = nibbles(raw_bytes)
         # Convert raw bytes to hex string with A-P encoding
-        return "AAAA" + encoded_data
+        return encoded_data
 
     @staticmethod
     def to_short_string(action_table: Xp20MsActionTable) -> list[str]:

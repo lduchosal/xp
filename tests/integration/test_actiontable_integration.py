@@ -159,14 +159,13 @@ class TestActionTableIntegration:
         def mock_start_reactor_impl():
             """Mock reactor start method that triggers callbacks."""
             # Generate dict and short format like the service does
-            actiontable_dict = sample_actiontable.model_dump()
             actiontable_short = ActionTableSerializer.to_short_string(
                 sample_actiontable
             )
             # Call the on_actiontable_received callback with data
             if callbacks["on_actiontable_received"]:
                 callbacks["on_actiontable_received"](
-                    sample_actiontable, actiontable_dict, actiontable_short
+                    sample_actiontable, actiontable_short
                 )
             # Call the on_finish callback without arguments
             if callbacks["on_finish"]:

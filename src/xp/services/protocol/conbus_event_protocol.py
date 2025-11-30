@@ -326,7 +326,9 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             data_value=DataPointType.MODULE_ERROR_CODE.value,
         )
 
-    def send_download_request(self, serial_number: str, actiontable_type: SystemFunction) -> None:
+    def send_download_request(
+        self, serial_number: str, actiontable_type: SystemFunction
+    ) -> None:
         """
         Send download request telegram.
 

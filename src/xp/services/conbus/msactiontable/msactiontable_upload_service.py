@@ -279,7 +279,7 @@ class MsActionTableUploadService:
             self.failed(f"Invalid msactiontable format: {e}")
             return
 
-        # Serialize to telegram data (68 characters: AAAA + 64 data chars)
+        # Serialize to telegram data (64 characters: AAAA + 64 data chars)
         self.upload_data = self.serializer.to_encoded_string(msactiontable)  # type: ignore[arg-type]
 
         self.logger.debug(

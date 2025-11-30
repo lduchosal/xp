@@ -424,7 +424,7 @@ class TestXp33MsActionTableSerializer:
         # Create action table with default values
 
         # Test serialization with defaults
-        serialized_table = telegram[16:84]
+        serialized_table = telegram[20:84]
         deserialized = Xp33MsActionTableSerializer.from_encoded_string(serialized_table)
         serialized = Xp33MsActionTableSerializer.to_encoded_string(deserialized)
 

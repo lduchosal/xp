@@ -3,7 +3,6 @@
 import json
 from contextlib import suppress
 from pathlib import Path
-from typing import Any, Dict
 
 import click
 from click import Context
@@ -77,7 +76,7 @@ def conbus_download_actiontable(ctx: Context, serial_number: str) -> None:
         """
         output = {
             "serial_number": serial_number,
-            "actiontable_short": actiontable_short
+            "actiontable_short": actiontable_short,
         }
         click.echo(json.dumps(output, indent=2, default=str))
 

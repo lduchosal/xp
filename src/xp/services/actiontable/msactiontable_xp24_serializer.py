@@ -72,7 +72,7 @@ class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
             action_table: XP24 MS action table to serialize.
 
         Returns:
-            Serialized action table data string (68 characters).
+            Serialized action table data string (64 characters).
         """
         # Build byte array for the action table (32 bytes total)
         raw_bytes = bytearray()
@@ -101,7 +101,7 @@ class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
 
         # Build byte array for the action table (32 bytes total)
         # Prepend action table count "AAAA" (4 chars) -> total 68 chars
-        return "AAAA" + nibbles(raw_bytes)
+        return nibbles(raw_bytes)
 
     @staticmethod
     def to_short_string(action_table: Xp24MsActionTable) -> list[str]:

@@ -55,14 +55,14 @@ class TestXp20MsActionTableSerializer:
     @pytest.fixture
     def sample_telegram_data(self):
         """Sample telegram data based on specification example (68 chars)."""
-        return "AAAAAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        return "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
     def test_to_data_serialization(self, sample_action_table):
         """Test serialization to telegram format."""
         result = Xp20MsActionTableSerializer.to_encoded_string(sample_action_table)
 
         # Should return 64-character hex string
-        assert len(result) == 68
+        assert len(result) == 64
         assert all(c in "ABCDEFGHIJKLMNOP" for c in result)
 
     def test_from_data_deserialization(self, sample_telegram_data):
@@ -119,7 +119,7 @@ class TestXp20MsActionTableSerializer:
 
     def test_invalid_data_length(self):
         """Test that invalid data length raises ValueError."""
-        with pytest.raises(ValueError, match="must be 68 characters long"):
+        with pytest.raises(ValueError, match="must be 64 characters long"):
             Xp20MsActionTableSerializer.from_encoded_string("INVALID")
 
     def test_byte_to_bits_conversion(self):
@@ -220,8 +220,7 @@ class TestXp20MsActionTableSerializer:
         action_table.input8.ta_function = True
 
         serialized = Xp20MsActionTableSerializer.to_encoded_string(action_table)
-        # Skip the 4-character "AAAA" prefix when de-nibbling
-        raw_bytes = de_nibbles(serialized[4:])
+        raw_bytes = de_nibbles(serialized)
 
         # Check bit positions
         assert raw_bytes[SHORT_LONG_INDEX] & 1 != 0  # input1 bit 0
@@ -233,7 +232,7 @@ class TestXp20MsActionTableSerializer:
     def test_specification_example(self):
         """Test with the example telegram from specification."""
         example_data = (
-            "AAAAAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         # This should decode without errors
@@ -260,7 +259,7 @@ class TestXp20MsActionTableSerializer:
         """Test round-trip serialization with default/empty action table data."""
         # 64 characters - all A's represent a completely empty/default action table
         valid_msactiontable = (
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         )
 
         # Deserialize from data
@@ -293,8 +292,8 @@ class TestXp20MsActionTableSerializer:
         telegram = "<R0020041824F17DAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFP>"
 
         # Extract data portion (skip header at 0-15, skip count at 16-19, take 64 chars at 20-83)
-        data = telegram[16:84]
-        assert len(data) == 68
+        data = telegram[20:84]
+        assert len(data) == 64
 
         # Deserialize the action table
         action_table = Xp20MsActionTableSerializer.from_encoded_string(data)
@@ -329,7 +328,7 @@ class TestXp20MsActionTableSerializer:
         telegram = "<R0020037487F17DAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFL>"
 
         # Test serialization with defaults
-        serialized_table = telegram[16:84]
+        serialized_table = telegram[20:84]
         deserialized = Xp20MsActionTableSerializer.from_encoded_string(serialized_table)
         serialized = Xp20MsActionTableSerializer.to_encoded_string(deserialized)
 
