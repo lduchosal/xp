@@ -1,0 +1,44 @@
+digraph ActionTableDownloadStateMachine {
+    rankdir=TB;
+    node [shape=rectangle, style=filled, fillcolor=lightblue, margin="0.15,0.1"];
+    edge [fontsize=12];
+
+    // States
+    IDLE [label="IDLE", fillcolor=lightgreen];
+    RECEIVING [label="RECEIVING", fillcolor=lightpink];
+    RESETTING [label="RESETTING", fillcolor=lightpink];
+    WAITING_OK [label="WAITING_OK", fillcolor=lightpink];
+    REQUESTING [label="REQUESTING"];
+    WAITING_ACK [label="WAITING\nACK"];
+    SENDING_CHUNK [label="SENDING\nCHUNK"];
+    WAITING_EOF_ACK [label="WAITING\nEOF_ACK"];
+
+    RECEIVING2 [label="RECEIVING2", fillcolor=lightpink];
+    RESETTING2 [label="RESETTING2", fillcolor=lightpink];
+    WAITING_OK2 [label="WAITING_OK2", fillcolor=lightpink];
+
+    COMPLETED [label="COMPLETED", fillcolor=black];
+
+    // Initial state
+    IDLE [shape=point, width=0.3];
+    COMPLETED [shape=point, width=0.3];
+
+    // State transitions with events
+    IDLE -> RECEIVING [label="   on_connection_made   "];
+    RECEIVING -> RESETTING [label="   on_timeout   "];
+    RECEIVING -> RECEIVING [label="   on_telegram_received   "];
+    RESETTING -> WAITING_OK [label="   query_datapoint_module_error_code   "];
+    WAITING_OK -> RECEIVING [label="   error_state    \n    on_timeout   "];
+    WAITING_OK -> REQUESTING [label="   no error_state   "];
+    REQUESTING -> WAITING_ACK [label="   send_upload_actiontable   "];
+    WAITING_ACK -> SENDING_CHUNK [label="  ack_received   "];
+    SENDING_CHUNK -> WAITING_ACK [label="  send_chunk   "];
+    SENDING_CHUNK -> WAITING_EOF_ACK [label="  send_eof   "];
+    WAITING_EOF_ACK -> RECEIVING2 [label="  ack_received   \n   on_timeout   "];
+    RECEIVING2 -> RECEIVING2 [label="  on_telegram_received   "];
+    RECEIVING2 -> RESETTING2 [label="  on_timeout   "];
+    RESETTING2 -> WAITING_OK2 [label="  query_datapoint_module_error_code   "];
+    WAITING_OK2 -> RECEIVING2 [label="  nak_received    \n   on_timeout   "];
+    WAITING_OK2 -> COMPLETED [label="  ack_received   "];
+
+}
