@@ -13,7 +13,6 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 if TYPE_CHECKING:
     from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
-    from xp.services.protocol.conbus_protocol import ConbusProtocol
     from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 
@@ -266,7 +265,7 @@ class TelegramEvent(BaseEvent):
         checksum_valid: Checksum valid true or false.
     """
 
-    protocol: Union[TelegramProtocol, ConbusProtocol, ConbusEventProtocol] = Field(
+    protocol: Union[TelegramProtocol, ConbusEventProtocol] = Field(
         description="TelegramProtocol instance"
     )
     frame: str = Field(description="Frame <S0123450001F02D12FK>")

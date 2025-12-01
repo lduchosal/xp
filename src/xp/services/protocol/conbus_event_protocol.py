@@ -98,7 +98,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         telegram_service: TelegramService,
     ) -> None:
         """
-        Initialize ConbusProtocol.
+        Initialize ConbusEventProtocol.
 
         Args:
             cli_config: Configuration for Conbus client connection.

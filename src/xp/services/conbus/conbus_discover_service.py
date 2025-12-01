@@ -25,7 +25,7 @@ class ConbusDiscoverService:
     """
     Service for discovering modules on Conbus servers.
 
-    Uses ConbusProtocol to provide discovery functionality for finding
+    Uses ConbusEventProtocol to provide discovery functionality for finding
     modules connected to the Conbus network.
 
     Attributes:
@@ -45,7 +45,7 @@ class ConbusDiscoverService:
         Initialize the Conbus discover service.
 
         Args:
-            conbus_protocol: ConbusProtocol.
+            conbus_protocol: ConbusEventProtocol instance for communication.
         """
         self.conbus_protocol: ConbusEventProtocol = conbus_protocol
         self.conbus_protocol.on_connection_made.connect(self.connection_made)
