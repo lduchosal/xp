@@ -51,9 +51,6 @@ from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.conbus.conbus_raw_service import ConbusRawService
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
-from xp.services.conbus.msactiontable.msactiontable_upload_service import (
-    MsActionTableUploadService,
-)
 from xp.services.conbus.write_config_service import WriteConfigService
 from xp.services.homekit.homekit_cache_service import HomeKitCacheService
 from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
@@ -336,6 +333,9 @@ class ServiceContainer:
             factory=lambda: ActionTableUploadService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
                 actiontable_serializer=self.container.resolve(ActionTableSerializer),
+                xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
+                xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
+                xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
                 telegram_service=self.container.resolve(TelegramService),
                 conson_config=self.container.resolve(ConsonModuleListConfig),
             ),
@@ -369,37 +369,6 @@ class ServiceContainer:
         self.container.register(
             Xp33MsActionTableSerializer,
             factory=lambda: Xp33MsActionTableSerializer,
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            ActionTableDownloadService,
-            factory=lambda: ActionTableDownloadService(
-                conbus_protocol=self.container.resolve(ConbusEventProtocol),
-                actiontable_serializer=self.container.resolve(ActionTableSerializer),
-                msactiontable_serializer_xp20=self.container.resolve(
-                    Xp20MsActionTableSerializer
-                ),
-                msactiontable_serializer_xp24=self.container.resolve(
-                    Xp24MsActionTableSerializer
-                ),
-                msactiontable_serializer_xp33=self.container.resolve(
-                    Xp33MsActionTableSerializer
-                ),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            MsActionTableUploadService,
-            factory=lambda: MsActionTableUploadService(
-                conbus_protocol=self.container.resolve(ConbusEventProtocol),
-                xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
-                xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
-                xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
-                telegram_service=self.container.resolve(TelegramService),
-                conson_config=self.container.resolve(ConsonModuleListConfig),
-            ),
             scope=punq.Scope.singleton,
         )
 

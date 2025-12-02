@@ -13,7 +13,7 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models.actiontable.actiontable import ActionTable
-from xp.models.actiontable.actiontable_type import ActionTableType
+from xp.models.actiontable.actiontable_type import ActionTableType, ActionTableType2
 from xp.models.config.conson_module_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
@@ -164,18 +164,12 @@ def conbus_upload_actiontable(ctx: Context, serial_number: str) -> None:
 
     with service:
         # Load config to get entry count for success message
-        config_path = Path.cwd() / "conson.yml"
-        if config_path.exists():
-            with suppress(Exception):
-                config = ConsonModuleListConfig.from_yaml(str(config_path))
-                module = config.find_module(serial_number)
-                if module and module.action_table:
-                    entries_count = len(module.action_table)
-
         service.on_progress.connect(progress_callback)
         service.on_finish.connect(on_finish)
         service.on_error.connect(on_error)
-        service.start(serial_number=serial_number)
+        service.start(
+            serial_number=serial_number, actiontable_type=ActionTableType2.ACTIONTABLE
+        )
         service.start_reactor()
 
 

@@ -8,6 +8,7 @@ from click.testing import CliRunner
 from xp.cli.commands.conbus.conbus_msactiontable_commands import (
     conbus_upload_msactiontable,
 )
+from xp.models.actiontable.actiontable_type import ActionTableType2
 
 
 class TestConbusMsActionTableUploadCommand:
@@ -92,8 +93,8 @@ class TestConbusMsActionTableUploadCommand:
         mock_service.stop_reactor = Mock()
         return mock_service
 
-    def test_upload_msactiontable_success_xp24(self, runner):
-        """Test successful msactiontable upload command for XP24."""
+    def test_upload_msactiontable_success(self, runner):
+        """Test successful msactiontable upload command."""
         # Setup mock service
         mock_service = self._create_mock_service(success=True)
 
@@ -106,7 +107,7 @@ class TestConbusMsActionTableUploadCommand:
         # Execute command
         result = runner.invoke(
             conbus_upload_msactiontable,
-            ["0020044991", "xp24"],
+            ["0020044991"],
             obj={"container": mock_service_container},
         )
 
@@ -114,62 +115,10 @@ class TestConbusMsActionTableUploadCommand:
         assert result.exit_code == 0
         mock_service.start.assert_called_once_with(
             serial_number="0020044991",
-            xpmoduletype="xp24",
+            actiontable_type=ActionTableType2.MSACTIONTABLE,
         )
         assert "Uploading msactiontable to 0020044991" in result.output
         assert "Msactiontable uploaded successfully" in result.output
-
-    def test_upload_msactiontable_success_xp20(self, runner):
-        """Test successful msactiontable upload command for XP20."""
-        # Setup mock service
-        mock_service = self._create_mock_service(success=True)
-
-        # Setup mock container
-        mock_container = Mock()
-        mock_container.resolve.return_value = mock_service
-        mock_service_container = Mock()
-        mock_service_container.get_container.return_value = mock_container
-
-        # Execute command
-        result = runner.invoke(
-            conbus_upload_msactiontable,
-            ["0020044991", "xp20"],
-            obj={"container": mock_service_container},
-        )
-
-        # Verify success
-        assert result.exit_code == 0
-        mock_service.start.assert_called_once_with(
-            serial_number="0020044991",
-            xpmoduletype="xp20",
-        )
-        assert "uploaded successfully" in result.output
-
-    def test_upload_msactiontable_success_xp33(self, runner):
-        """Test successful msactiontable upload command for XP33."""
-        # Setup mock service
-        mock_service = self._create_mock_service(success=True)
-
-        # Setup mock container
-        mock_container = Mock()
-        mock_container.resolve.return_value = mock_service
-        mock_service_container = Mock()
-        mock_service_container.get_container.return_value = mock_container
-
-        # Execute command
-        result = runner.invoke(
-            conbus_upload_msactiontable,
-            ["0020044991", "xp33"],
-            obj={"container": mock_service_container},
-        )
-
-        # Verify success
-        assert result.exit_code == 0
-        mock_service.start.assert_called_once_with(
-            serial_number="0020044991",
-            xpmoduletype="xp33",
-        )
-        assert "uploaded successfully" in result.output
 
     def test_upload_msactiontable_progress_display(self, runner):
         """Test that progress dots are displayed during upload."""
@@ -185,7 +134,7 @@ class TestConbusMsActionTableUploadCommand:
         # Execute command
         result = runner.invoke(
             conbus_upload_msactiontable,
-            ["0020044991", "xp24"],
+            ["0020044991"],
             obj={"container": mock_service_container},
         )
 
@@ -208,7 +157,7 @@ class TestConbusMsActionTableUploadCommand:
         # Execute command
         result = runner.invoke(
             conbus_upload_msactiontable,
-            ["0020044991", "xp24"],
+            ["0020044991"],
             obj={"container": mock_service_container},
         )
 
@@ -216,35 +165,11 @@ class TestConbusMsActionTableUploadCommand:
         assert "Error: Module 0020044991 not found in conson.yml" in result.output
         mock_service.stop_reactor.assert_called()
 
-    def test_upload_msactiontable_module_type_mismatch_error(self, runner):
-        """Test error handling when module type doesn't match."""
-        # Setup mock service with error
-        mock_service = self._create_mock_service(
-            error="Module type mismatch: module has type XP20, but xp24 was specified"
-        )
-
-        # Setup mock container
-        mock_container = Mock()
-        mock_container.resolve.return_value = mock_service
-        mock_service_container = Mock()
-        mock_service_container.get_container.return_value = mock_container
-
-        # Execute command
-        result = runner.invoke(
-            conbus_upload_msactiontable,
-            ["0020044991", "xp24"],
-            obj={"container": mock_service_container},
-        )
-
-        # Verify error message
-        assert "Error:" in result.output
-        assert "Module type mismatch" in result.output
-
     def test_upload_msactiontable_missing_config_error(self, runner):
         """Test error handling when msactiontable config is missing."""
         # Setup mock service with error
         mock_service = self._create_mock_service(
-            error="Module 0020044991 does not have xp24_msaction_table configured in conson.yml"
+            error="Module 0020044991 does not have msaction_table configured"
         )
 
         # Setup mock container
@@ -256,19 +181,19 @@ class TestConbusMsActionTableUploadCommand:
         # Execute command
         result = runner.invoke(
             conbus_upload_msactiontable,
-            ["0020044991", "xp24"],
+            ["0020044991"],
             obj={"container": mock_service_container},
         )
 
         # Verify error message
         assert "Error:" in result.output
-        assert "xp24_msaction_table configured" in result.output
+        assert "msaction_table configured" in result.output
 
     def test_upload_msactiontable_empty_list_error(self, runner):
         """Test error handling when msactiontable list is empty."""
         # Setup mock service with error
         mock_service = self._create_mock_service(
-            error="Module 0020044991 has empty xp24_msaction_table list in conson.yml"
+            error="Module 0020044991 has empty msaction_table list in conson.yml"
         )
 
         # Setup mock container
@@ -280,13 +205,13 @@ class TestConbusMsActionTableUploadCommand:
         # Execute command
         result = runner.invoke(
             conbus_upload_msactiontable,
-            ["0020044991", "xp24"],
+            ["0020044991"],
             obj={"container": mock_service_container},
         )
 
         # Verify error message
         assert "Error:" in result.output
-        assert "empty xp24_msaction_table list" in result.output
+        assert "empty msaction_table list" in result.output
 
     def test_upload_msactiontable_invalid_format_error(self, runner):
         """Test error handling when short format is invalid."""
@@ -304,7 +229,7 @@ class TestConbusMsActionTableUploadCommand:
         # Execute command
         result = runner.invoke(
             conbus_upload_msactiontable,
-            ["0020044991", "xp24"],
+            ["0020044991"],
             obj={"container": mock_service_container},
         )
 
@@ -326,7 +251,7 @@ class TestConbusMsActionTableUploadCommand:
         # Execute command
         result = runner.invoke(
             conbus_upload_msactiontable,
-            ["0020044991", "xp24"],
+            ["0020044991"],
             obj={"container": mock_service_container},
         )
 
@@ -347,7 +272,7 @@ class TestConbusMsActionTableUploadCommand:
         # Execute command
         result = runner.invoke(
             conbus_upload_msactiontable,
-            ["0020044991", "xp24"],
+            ["0020044991"],
             obj={"container": mock_service_container},
         )
 
@@ -360,21 +285,9 @@ class TestConbusMsActionTableUploadCommand:
         # Execute command with invalid serial (too short)
         result = runner.invoke(
             conbus_upload_msactiontable,
-            ["123", "xp24"],
+            ["123"],
             obj={"container": Mock()},
         )
 
         # Click should reject invalid serial before service is called
-        assert result.exit_code != 0
-
-    def test_upload_msactiontable_invalid_module_type(self, runner):
-        """Test error handling for invalid module type."""
-        # Execute command with invalid module type
-        result = runner.invoke(
-            conbus_upload_msactiontable,
-            ["0020044991", "xp99"],
-            obj={"container": Mock()},
-        )
-
-        # Click should reject invalid module type before service is called
         assert result.exit_code != 0

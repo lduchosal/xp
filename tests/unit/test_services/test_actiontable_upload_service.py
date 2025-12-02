@@ -6,6 +6,7 @@ import pytest
 
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
+from xp.models.actiontable.actiontable_type import ActionTableType2
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.conbus.actiontable.actiontable_upload_service import (
@@ -47,6 +48,21 @@ class TestActionTableUploadService:
         return Mock()
 
     @pytest.fixture
+    def mock_xp20ms_serializer(self):
+        """Create mock Xp20MsActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_xp24ms_serializer(self):
+        """Create mock Xp24MsActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_xp33ms_serializer(self):
+        """Create mock Xp33MsActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
     def mock_telegram_service(self):
         """Create mock TelegramService."""
         return Mock()
@@ -61,6 +77,9 @@ class TestActionTableUploadService:
         self,
         mock_conbus_protocol,
         mock_serializer,
+        mock_xp20ms_serializer,
+        mock_xp24ms_serializer,
+        mock_xp33ms_serializer,
         mock_telegram_service,
         mock_conson_config,
     ):
@@ -68,6 +87,9 @@ class TestActionTableUploadService:
         return ActionTableUploadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            xp20ms_serializer=mock_xp20ms_serializer,
+            xp24ms_serializer=mock_xp24ms_serializer,
+            xp33ms_serializer=mock_xp33ms_serializer,
             telegram_service=mock_telegram_service,
             conson_config=mock_conson_config,
         )
@@ -101,6 +123,9 @@ class TestActionTableUploadService:
         self,
         mock_conbus_protocol,
         mock_serializer,
+        mock_xp20ms_serializer,
+        mock_xp24ms_serializer,
+        mock_xp33ms_serializer,
         mock_telegram_service,
         mock_conson_config,
     ):
@@ -108,12 +133,14 @@ class TestActionTableUploadService:
         service = ActionTableUploadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            xp20ms_serializer=mock_xp20ms_serializer,
+            xp24ms_serializer=mock_xp24ms_serializer,
+            xp33ms_serializer=mock_xp33ms_serializer,
             telegram_service=mock_telegram_service,
             conson_config=mock_conson_config,
         )
 
         assert service.conbus_protocol == mock_conbus_protocol
-        assert service.serializer == mock_serializer
         assert service.telegram_service == mock_telegram_service
         assert service.conson_config == mock_conson_config
         assert service.serial_number == ""
@@ -181,6 +208,21 @@ class TestActionTableUploadChunkPrefix:
         return Mock()
 
     @pytest.fixture
+    def mock_xp20ms_serializer(self):
+        """Create mock Xp20MsActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_xp24ms_serializer(self):
+        """Create mock Xp24MsActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_xp33ms_serializer(self):
+        """Create mock Xp33MsActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
     def mock_telegram_service(self):
         """Create mock TelegramService."""
         return Mock()
@@ -195,6 +237,9 @@ class TestActionTableUploadChunkPrefix:
         self,
         mock_conbus_protocol,
         mock_serializer,
+        mock_xp20ms_serializer,
+        mock_xp24ms_serializer,
+        mock_xp33ms_serializer,
         mock_telegram_service,
         mock_conson_config,
     ):
@@ -202,6 +247,9 @@ class TestActionTableUploadChunkPrefix:
         return ActionTableUploadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            xp20ms_serializer=mock_xp20ms_serializer,
+            xp24ms_serializer=mock_xp24ms_serializer,
+            xp33ms_serializer=mock_xp33ms_serializer,
             telegram_service=mock_telegram_service,
             conson_config=mock_conson_config,
         )
@@ -408,6 +456,21 @@ class TestActionTableUploadFullSequence:
         return Mock()
 
     @pytest.fixture
+    def mock_xp20ms_serializer(self):
+        """Create mock Xp20MsActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_xp24ms_serializer(self):
+        """Create mock Xp24MsActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
+    def mock_xp33ms_serializer(self):
+        """Create mock Xp33MsActionTableSerializer."""
+        return Mock()
+
+    @pytest.fixture
     def mock_telegram_service(self):
         """Create mock TelegramService."""
         return Mock()
@@ -422,6 +485,9 @@ class TestActionTableUploadFullSequence:
         self,
         mock_conbus_protocol,
         mock_serializer,
+        mock_xp20ms_serializer,
+        mock_xp24ms_serializer,
+        mock_xp33ms_serializer,
         mock_telegram_service,
         mock_conson_config,
     ):
@@ -429,6 +495,9 @@ class TestActionTableUploadFullSequence:
         return ActionTableUploadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
+            xp20ms_serializer=mock_xp20ms_serializer,
+            xp24ms_serializer=mock_xp24ms_serializer,
+            xp33ms_serializer=mock_xp33ms_serializer,
             telegram_service=mock_telegram_service,
             conson_config=mock_conson_config,
         )
@@ -504,7 +573,9 @@ class TestActionTableUploadFullSequence:
         service.on_finish.connect(mock_finish)
 
         # Start upload
-        service.start(serial_number="0020044974")
+        service.start(
+            serial_number="0020044974", actiontable_type=ActionTableType2.ACTIONTABLE
+        )
 
         # Simulate connection made
         service.connection_made()
@@ -585,7 +656,9 @@ class TestActionTableUploadFullSequence:
         mock_error = Mock()
         service.on_error.connect(mock_error)
 
-        service.start(serial_number="9999999999")
+        service.start(
+            serial_number="9999999999", actiontable_type=ActionTableType2.ACTIONTABLE
+        )
 
         # Verify error signal was called with appropriate message
         mock_error.assert_called_once()
@@ -608,7 +681,9 @@ class TestActionTableUploadFullSequence:
         mock_error = Mock()
         service.on_error.connect(mock_error)
 
-        service.start(serial_number="0020044974")
+        service.start(
+            serial_number="0020044974", actiontable_type=ActionTableType2.ACTIONTABLE
+        )
 
         # Verify error signal was called
         mock_error.assert_called_once()

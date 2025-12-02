@@ -1,7 +1,7 @@
 """XP24 Action Table CLI commands."""
 
 import json
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import click
 from click import Context
@@ -11,8 +11,7 @@ from xp.cli.utils.decorators import (
     connection_command,
 )
 from xp.cli.utils.serial_number_type import SERIAL
-from xp.cli.utils.xp_module_type import XP_MODULE_TYPE
-from xp.models.actiontable.actiontable_type import ActionTableType
+from xp.models.actiontable.actiontable_type import ActionTableType, ActionTableType2
 from xp.models.config.conson_module_config import ConsonModuleConfig
 from xp.services.conbus.actiontable.actiontable_download_service import (
     ActionTableDownloadService,
@@ -23,9 +22,41 @@ from xp.services.conbus.actiontable.actiontable_list_service import (
 from xp.services.conbus.actiontable.actiontable_show_service import (
     ActionTableShowService,
 )
-from xp.services.conbus.msactiontable.msactiontable_upload_service import (
-    MsActionTableUploadService,
+from xp.services.conbus.actiontable.actiontable_upload_service import (
+    ActionTableUploadService,
 )
+
+
+class XpModuleTypeChoice(click.ParamType):
+    """Click parameter type for validating XP module types."""
+
+    name = "xpmoduletype"
+
+    def __init__(self) -> None:
+        """Initialize the XpModuleTypeChoice parameter type."""
+        self.choices = ["xp20", "xp24", "xp31", "xp33"]
+
+    def convert(
+        self,
+        value: Any,
+        param: Optional[click.Parameter],
+        ctx: Optional[click.Context],
+    ) -> Any:
+        """Convert and validate XP module type input."""
+        if value is None:
+            return value
+        normalized_value = value.lower()
+        if normalized_value in self.choices:
+            return normalized_value
+        choices_list = "\n".join(f" - {choice}" for choice in sorted(self.choices))
+        self.fail(
+            f"{value!r} is not a valid choice. Choose from:\n{choices_list}",
+            param,
+            ctx,
+        )
+
+
+XP_MODULE_TYPE = XpModuleTypeChoice()
 
 
 def _get_actiontable_type(xpmoduletype: str) -> ActionTableType:
@@ -244,22 +275,18 @@ def conbus_show_msactiontable(ctx: Context, serial_number: str) -> None:
 
 @conbus_msactiontable.command("upload", short_help="Upload MSActionTable")
 @click.argument("serial_number", type=SERIAL)
-@click.argument("xpmoduletype", type=XP_MODULE_TYPE)
 @click.pass_context
 @connection_command()
-def conbus_upload_msactiontable(
-    ctx: Context, serial_number: str, xpmoduletype: str
-) -> None:
+def conbus_upload_msactiontable(ctx: Context, serial_number: str) -> None:
     """
     Upload MS action table from conson.yml to XP module.
 
     Args:
         ctx: Click context object.
         serial_number: 10-digit module serial number.
-        xpmoduletype: XP module type.
     """
-    service: MsActionTableUploadService = (
-        ctx.obj.get("container").get_container().resolve(MsActionTableUploadService)
+    service: ActionTableUploadService = (
+        ctx.obj.get("container").get_container().resolve(ActionTableUploadService)
     )
 
     def on_progress(progress: str) -> None:
@@ -300,7 +327,7 @@ def conbus_upload_msactiontable(
         service.on_finish.connect(on_finish)
         service.start(
             serial_number=serial_number,
-            xpmoduletype=xpmoduletype,
+            actiontable_type=ActionTableType2.MSACTIONTABLE,
         )
         service.start_reactor()
 
