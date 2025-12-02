@@ -1,11 +1,11 @@
 """Service for uploading ActionTable via Conbus protocol."""
 
 import logging
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from psygnal import Signal
 
-from xp.models.actiontable.actiontable_type import ActionTableType2, ActionTableType
+from xp.models.actiontable.actiontable_type import ActionTableType2
 from xp.models.config.conson_module_config import (
     ConsonModuleConfig,
     ConsonModuleListConfig,
@@ -92,15 +92,15 @@ class ActionTableUploadService:
         self.conbus_protocol.on_timeout.connect(self.timeout)
         self.conbus_protocol.on_failed.connect(self.failed)
 
-
-
     def connection_made(self) -> None:
         """Handle connection established event."""
         self.logger.debug("Connection established, sending upload actiontable telegram")
 
-        system_function = SystemFunction.UPLOAD_ACTIONTABLE \
-            if self.actiontable_type == ActionTableType2.ACTIONTABLE \
+        system_function = (
+            SystemFunction.UPLOAD_ACTIONTABLE
+            if self.actiontable_type == ActionTableType2.ACTIONTABLE
             else SystemFunction.UPLOAD_MSACTIONTABLE
+        )
 
         self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
@@ -159,9 +159,11 @@ class ActionTableUploadService:
                 # Second character: 'A' + chunk_index (sequential counter A-O for 15 chunks)
                 prefix_hex = f"AAA{ord('A') + self.current_chunk_index:c}"
 
-                system_function = SystemFunction.ACTIONTABLE \
-                    if self.actiontable_type == ActionTableType2.ACTIONTABLE \
+                system_function = (
+                    SystemFunction.ACTIONTABLE
+                    if self.actiontable_type == ActionTableType2.ACTIONTABLE
                     else SystemFunction.MSACTIONTABLE
+                )
 
                 self.conbus_protocol.send_telegram(
                     telegram_type=TelegramType.SYSTEM,
@@ -238,7 +240,7 @@ class ActionTableUploadService:
             # Chunk the data into 64 byte chunks
             chunk_size = 64
             self.upload_data_chunks = [
-                encoded_data[i: i + chunk_size]
+                encoded_data[i : i + chunk_size]
                 for i in range(0, len(encoded_data), chunk_size)
             ]
             self.current_chunk_index = 0
@@ -248,17 +250,16 @@ class ActionTableUploadService:
             self.failed(f"Invalid action table format: {e}")
             return
 
-
         self.logger.debug(
             f"Upload data encoded: {len(encoded_data)} chars, "
             f"{len(self.upload_data_chunks)} chunks"
         )
 
-    def get_encoded_action_table(
-        self, module: ConsonModuleConfig
-    ) -> str:
+    def get_encoded_action_table(self, module: ConsonModuleConfig) -> str:
 
-        msactiontable = True if self.actiontable_type == ActionTableType2.MSACTIONTABLE else False
+        msactiontable = (
+            True if self.actiontable_type == ActionTableType2.MSACTIONTABLE else False
+        )
         # Parse MS action table from short format (first element)
         if msactiontable and module.module_type.lower() == "xp20":
             xp20_short_table = module.xp20_msaction_table or []

@@ -1,8 +1,6 @@
 """ActionTable CLI commands."""
 
 import json
-from contextlib import suppress
-from pathlib import Path
 
 import click
 from click import Context
@@ -16,7 +14,6 @@ from xp.models.actiontable.actiontable import ActionTable
 from xp.models.actiontable.actiontable_type import ActionTableType, ActionTableType2
 from xp.models.config.conson_module_config import (
     ConsonModuleConfig,
-    ConsonModuleListConfig,
 )
 from xp.services.conbus.actiontable.actiontable_download_service import (
     ActionTableDownloadService,
