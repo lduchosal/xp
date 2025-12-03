@@ -256,7 +256,15 @@ class ActionTableUploadService:
         )
 
     def get_encoded_action_table(self, module: ConsonModuleConfig) -> str:
+        """
+        Get encoded action table string for upload.
 
+        Args:
+            module: Module configuration containing action table data.
+
+        Returns:
+            Hex-encoded action table string ready for transmission.
+        """
         msactiontable = (
             True if self.actiontable_type == ActionTableType2.MSACTIONTABLE else False
         )
