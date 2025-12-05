@@ -292,6 +292,8 @@ class ActionTableDownloadService(DownloadStateMachine):
             raise RuntimeError("Cannot configure while download in progress")
         self.logger.info("Configuring actiontable download")
         self.serial_number = serial_number
+        self.actiontable_data = []
+
         if actiontable_type == ActionTableType.ACTIONTABLE:
             self.serializer = self.actiontable_serializer
         elif actiontable_type == ActionTableType.MSACTIONTABLE_XP20:
