@@ -1,6 +1,6 @@
 digraph ActionTableDownloadStateMachine {
     rankdir=TB;
-    node [shape=rectangle, style=filled, fillcolor=lightblue, margin="0.15,0.1"];
+    node [shape=rectangle, style=filled, fillcolor=lightblue, margin="0.15, 0.1"];
     edge [fontsize=12];
 
     // States
@@ -24,21 +24,22 @@ digraph ActionTableDownloadStateMachine {
     COMPLETED [shape=point, width=0.3];
 
     // State transitions with events
-    IDLE -> RECEIVING [label="  on_connection_made  "];
-    RECEIVING -> RESETTING [label="  on_timeout  "];
-    RECEIVING -> RECEIVING [label="  on_telegram_received  "];
-    RESETTING -> WAITING_OK [label="  query_datapoint_module_error_code  "];
-    WAITING_OK -> RECEIVING [label="  error_state\non_timeout  "];
-    WAITING_OK -> REQUESTING [label="  no error_state  "];
-    REQUESTING -> WAITING_DATA [label="  send_download_actiontable  "];
-    WAITING_DATA -> RECEIVING_CHUNK [label="  actiontable_received  "];
-    RECEIVING_CHUNK -> WAITING_DATA [label="  send_ack  "];
-    WAITING_DATA -> PROCESSING_EOF [label="  eof_received  "];
-    PROCESSING_EOF -> RECEIVING2 [label="  on_finish  "];
-    RECEIVING2 -> RECEIVING2 [label="  on_telegram_received  "];
-    RECEIVING2 -> RESETTING2 [label="  on_timeout  "];
-    RESETTING2 -> WAITING_OK2 [label="  query_datapoint_module_error_code  "];
-    WAITING_OK2 -> RECEIVING2 [label="  nak_received\non_timeout  "];
-    WAITING_OK2 -> COMPLETED [label="  ack_received  "];
+    IDLE -> RECEIVING [label="   on_connection_made    "];
+    RECEIVING -> RESETTING [label="   on_timeout    "];
+    RECEIVING -> RECEIVING [label="   on_telegram_received    "];
+    RESETTING -> WAITING_OK [label="   query_datapoint_module_error_code   "];
+    WAITING_OK -> RECEIVING [label="   error_state\non_timeout   "];
+    WAITING_OK -> REQUESTING [label="   no error_state   "];
+    REQUESTING -> WAITING_DATA [label="   send_download_actiontable   "];
+    WAITING_DATA -> RECEIVING_CHUNK [label="   actiontable_received   "];
+    RECEIVING_CHUNK -> WAITING_DATA [label="   send_ack   "];
+    WAITING_DATA -> PROCESSING_EOF [label="   eof_received   "];
+    PROCESSING_EOF -> RECEIVING2 [label="   on_finish   "];
+    RECEIVING2 -> RECEIVING2 [label="   on_telegram_received   "];
+    RECEIVING2 -> RESETTING2 [label="   on_timeout   "];
+    RESETTING2 -> WAITING_OK2 [label="   query_datapoint_module_error_code   "];
+    WAITING_OK2 -> RECEIVING2 [label="    nak_received   \n   on_timeout   "];
+    WAITING_OK2 -> COMPLETED [label="   ack_received   "];
+    WAITING_OK2 -> RECEIVING [label="   next_module   "];
 
 }

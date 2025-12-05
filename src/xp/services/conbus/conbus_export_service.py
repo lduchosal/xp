@@ -57,16 +57,19 @@ class ConbusExportService:
         DataPointType.AUTO_REPORT_STATUS,
     ]
 
-    def __init__(self, conbus_protocol: ConbusEventProtocol) -> None:
+    def __init__(
+        self, conbus_protocol: ConbusEventProtocol, telegram_service: TelegramService
+    ) -> None:
         """
         Initialize the Conbus export service.
 
         Args:
             conbus_protocol: Protocol for Conbus communication.
+            telegram_service: TelegramService for telegram parsing.
         """
         self.logger = logging.getLogger(__name__)
         self.conbus_protocol = conbus_protocol
-        self.telegram_service = TelegramService()
+        self.telegram_service = telegram_service
 
         # State management
         self.discovered_devices: list[str] = []
