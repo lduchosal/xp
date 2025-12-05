@@ -299,6 +299,7 @@ xp conbus event raw
 
 
 xp conbus export
+xp conbus export actiontable
 xp conbus export config
 
 

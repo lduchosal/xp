@@ -6,13 +6,9 @@ import click
 
 from xp.cli.commands.conbus.conbus import conbus_export
 from xp.cli.utils.decorators import connection_command
-from xp.models.actiontable.actiontable import ActionTable
 from xp.models.actiontable.actiontable_type import ActionTableType
 from xp.models.conbus.conbus_export import ConbusExportResponse
 from xp.models.config.conson_module_config import ConsonModuleConfig
-from xp.services.conbus.actiontable.actiontable_download_service import (
-    ActionTableDownloadService,
-)
 from xp.services.conbus.conbus_export_actiontable_service import (
     ConbusActiontableExportService,
 )
@@ -142,8 +138,10 @@ def export_conbus_actiontable(ctx: click.Context) -> None:
 
         Args:
             module: Exported module configuration.
+            actiontable_type: Type of action table exported.
+            actiontable_short: Short representation of the action table.
         """
-        serial_number = module.serial_number if module.serial_number else "UNKNOWN"
+        serial_number = module.serial_number or "UNKNOWN"
         click.echo(f"  ✓ Module: {serial_number})")
         click.echo(f"  ✓ Action type: {actiontable_type}")
         click.echo(f"  ✓ Action table: {actiontable_short}")

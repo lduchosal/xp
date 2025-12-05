@@ -10,17 +10,33 @@ NC='\033[0m' # No Color
 
 # Parse command line arguments
 QUALITY_ONLY=false
+BUMP_TYPE="patch"
 for arg in "$@"; do
     case $arg in
         --quality)
             QUALITY_ONLY=true
             shift
             ;;
+        --major)
+            BUMP_TYPE="major"
+            shift
+            ;;
+        --minor)
+            BUMP_TYPE="minor"
+            shift
+            ;;
+        --patch)
+            BUMP_TYPE="patch"
+            shift
+            ;;
         -h|--help)
-            echo "Usage: $0 [--quality] [--help]"
+            echo "Usage: $0 [--quality] [--major|--minor|--patch] [--help]"
             echo ""
             echo "Options:"
             echo "  --quality       Run only quality checks without publishing"
+            echo "  --major         Bump major version (x.0.0)"
+            echo "  --minor         Bump minor version (0.x.0)"
+            echo "  --patch         Bump patch version (0.0.x) [default]"
             echo "  --help          Show this help message"
             exit 0
             ;;
@@ -147,8 +163,8 @@ if [ "$QUALITY_ONLY" = true ]; then
     exit 0
 fi
 
-print_step "Bumping Version (pdm-bump)"
-run_command "pdm run bump-version" "Version bump"
+print_step "Bumping Version (pdm bump ${BUMP_TYPE})"
+run_command "pdm bump -v ${BUMP_TYPE}" "Version bump"
 
 # Extract version after bump
 VERSION=$(python -c "import sys; sys.path.insert(0, 'src'); import xp; print(xp.__version__)")

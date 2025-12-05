@@ -87,7 +87,13 @@ class ConbusActiontableExportService:
     def on_module_actiontable_received(
         self, actiontable: Any, short_actiontable: list[str]
     ) -> None:
+        """
+        Handle actiontable received event.
 
+        Args:
+            actiontable: Full actiontable data.
+            short_actiontable: Short representation of the actiontable.
+        """
         if not self.curent_actiontable_type:
             self._fail("Invalid state (curent_actiontable_type)")
             return
@@ -110,12 +116,14 @@ class ConbusActiontableExportService:
         )
 
     def on_module_finish(self) -> None:
+        """Handle module export completion."""
         self._save_action_table()
         has_next_module = self.configure()
         if not has_next_module:
             self._succeed()
 
     def on_module_progress(self) -> None:
+        """Handle module progress event and emit progress signal."""
         serial_number = (
             self.current_module.serial_number if self.current_module else "UNKNOWN"
         )
@@ -125,7 +133,13 @@ class ConbusActiontableExportService:
         self.on_progress.emit(serial_number, current_index, total_modules)
 
     def on_module_error(self, error_message: str) -> None:
-        self.on_finish.emit(self.export_result)
+        """
+        Handle module error event.
+
+        Args:
+            error_message: Error message from module.
+        """
+        self._fail(error_message)
 
     def _save_action_table(self) -> None:
         """Write export to YAML file."""
@@ -182,13 +196,18 @@ class ConbusActiontableExportService:
             self._fail(f"Failed to create export: {e}")
 
     def configure(self) -> bool:
-        """Configure export service."""
+        """
+        Configure export service.
+
+        Returns:
+            True if there is a module to export, False otherwise.
+        """
         self.download_service.reset()
         (self.current_module, self.curent_actiontable_type) = (
             self.device_queue.get_nowait()
         )
         if not (self.current_module or self.curent_actiontable_type):
-            self.logger.error(f"No module to export")
+            self.logger.error("No module to export")
             return False
 
         self.download_service.configure(
@@ -209,7 +228,12 @@ class ConbusActiontableExportService:
         self.download_service.set_event_loop(event_loop)
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """Set timeout."""
+        """
+        Set timeout.
+
+        Args:
+            timeout_seconds: Timeout in seconds.
+        """
         self.download_service.set_timeout(timeout_seconds)
 
     def start_reactor(self) -> None:
@@ -241,6 +265,7 @@ class ConbusActiontableExportService:
         self.stop_reactor()
 
     def _connect_signals(self) -> None:
+        """Connect download service signals to handlers."""
         self.download_service.on_actiontable_received.connect(
             self.on_module_actiontable_received
         )
@@ -249,6 +274,7 @@ class ConbusActiontableExportService:
         self.download_service.on_error.connect(self.on_module_error)
 
     def _disconnect_signals(self) -> None:
+        """Disconnect download service signals from handlers."""
         self.download_service.on_actiontable_received.connect(
             self.on_module_actiontable_received
         )
@@ -261,6 +287,12 @@ class ConbusActiontableExportService:
         self.on_finish.disconnect()
 
     def _fail(self, error: str) -> None:
+        """
+        Handle export failure.
+
+        Args:
+            error: Error message.
+        """
         self.logger.error(error)
         self.export_result.success = False
         self.export_result.error = error
@@ -268,6 +300,7 @@ class ConbusActiontableExportService:
         self.on_finish.emit(self.export_result)
 
     def _succeed(self) -> None:
+        """Handle export success."""
         self.logger.info("Export succeed")
         self.export_result.success = True
         self.export_result.error = None
