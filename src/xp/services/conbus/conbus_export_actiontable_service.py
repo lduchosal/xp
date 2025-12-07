@@ -84,7 +84,7 @@ class ConbusActiontableExportService:
         self.logger.info("Export module %s", self.device_queue.qsize())
 
         self.current_module: Optional[ConsonModuleConfig] = None
-        self.curent_actiontable_type: Optional[ActionTableType] = None
+        self.current_actiontable_type: Optional[ActionTableType] = None
         self.export_result = ConbusExportResponse(success=False)
         self.export_status = "OK"
         # Connect protocol signals
@@ -100,7 +100,7 @@ class ConbusActiontableExportService:
             actiontable: Full actiontable data.
             short_actiontable: Short representation of the actiontable.
         """
-        if not self.curent_actiontable_type:
+        if not self.current_actiontable_type:
             self._fail("Invalid state (curent_actiontable_type)")
             return
 
@@ -108,17 +108,17 @@ class ConbusActiontableExportService:
             self._fail("Invalid state (current_module)")
             return
 
-        if self.curent_actiontable_type == ActionTableType.ACTIONTABLE:
+        if self.current_actiontable_type == ActionTableType.ACTIONTABLE:
             self.current_module.action_table = short_actiontable
-        elif self.curent_actiontable_type == ActionTableType.MSACTIONTABLE_XP20:
+        elif self.current_actiontable_type == ActionTableType.MSACTIONTABLE_XP20:
             self.current_module.xp20_msaction_table = short_actiontable
-        elif self.curent_actiontable_type == ActionTableType.MSACTIONTABLE_XP24:
+        elif self.current_actiontable_type == ActionTableType.MSACTIONTABLE_XP24:
             self.current_module.xp24_msaction_table = short_actiontable
-        elif self.curent_actiontable_type == ActionTableType.MSACTIONTABLE_XP33:
+        elif self.current_actiontable_type == ActionTableType.MSACTIONTABLE_XP33:
             self.current_module.xp33_msaction_table = short_actiontable
 
         self.on_device_actiontable_exported.emit(
-            self.current_module, self.curent_actiontable_type, short_actiontable
+            self.current_module, self.current_actiontable_type, short_actiontable
         )
 
     def on_module_finish(self) -> None:
@@ -134,7 +134,7 @@ class ConbusActiontableExportService:
             self.current_module.serial_number if self.current_module else "UNKNOWN"
         )
         current_actiontable_type = (
-            self.curent_actiontable_type if self.curent_actiontable_type else "UNKNOWN"
+            self.current_actiontable_type if self.current_actiontable_type else "UNKNOWN"
         )
         total_modules = len(self._module_list.root)
         current_index = total_modules - self.device_queue.qsize()
@@ -211,18 +211,19 @@ class ConbusActiontableExportService:
             True if there is a module to export, False otherwise.
         """
         self.download_service.reset()
-        (self.current_module, self.curent_actiontable_type) = (
+        (current_serial_number, self.current_actiontable_type) = (
             self.device_queue.get_nowait()
         )
 
-        if not (self.current_module or self.curent_actiontable_type):
+        self.current_module = self._module_dic[current_serial_number]
+        if not (self.current_module or self.current_actiontable_type):
             self.logger.error("No module to export")
             return False
 
-        self.logger.info(f"Downloading {self.current_module.serial_number} / {self.curent_actiontable_type}")
+        self.logger.info(f"Downloading {self.current_module.serial_number} / {self.current_actiontable_type}")
         self.download_service.configure(
             self.current_module.serial_number,
-            self.curent_actiontable_type,
+            self.current_actiontable_type,
         )
         self.download_service.do_connect()
         return True
