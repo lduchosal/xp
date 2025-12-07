@@ -7,6 +7,7 @@
   sw_version: XP20_V0.01.05
   hw_version: XP20
   auto_report_status: AA
+  action_table: []
   xp20_msaction_table:
   - CH1 I:0 S:0 G:0 AND:10000000 SA:0 TA:0
   - CH2 I:0 S:0 G:0 AND:01000000 SA:0 TA:0
@@ -108,6 +109,8 @@
   - CP20 4 9 > 1 OFF;
   - CP20 4 9 > 2 OFF;
   - CP20 4 9 > 3 OFF;
+  xp24_msaction_table:
+  - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
 - name: A5
   serial_number: 0020044974
@@ -159,6 +162,8 @@
   - CP20 5 9 > 1 OFF;
   - CP20 5 9 > 2 OFF;
   - CP20 5 9 > 3 OFF;
+  xp24_msaction_table:
+  - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
 - name: A6
   serial_number: 0020044966
@@ -210,6 +215,8 @@
   - CP20 6 9 > 1 OFF;
   - CP20 6 9 > 2 OFF;
   - CP20 6 9 > 3 OFF;
+  xp24_msaction_table:
+  - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
 - name: A7
   serial_number: 0020044989
@@ -261,6 +268,8 @@
   - CP20 7 9 > 1 OFF;
   - CP20 7 9 > 2 OFF;
   - CP20 7 9 > 3 OFF;
+  xp24_msaction_table:
+  - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
 - name: A8
   serial_number: 0020044964
@@ -312,6 +321,8 @@
   - CP20 8 9 > 1 OFF;
   - CP20 8 9 > 2 OFF;
   - CP20 8 9 > 3 OFF;
+  xp24_msaction_table:
+  - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
 - name: A9
   serial_number: 0020044986
@@ -363,6 +374,8 @@
   - CP20 9 9 > 1 OFF;
   - CP20 9 9 > 2 OFF;
   - CP20 9 9 > 3 OFF;
+  xp24_msaction_table:
+  - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
 - name: A10
   serial_number: 0020041824
@@ -374,16 +387,15 @@
   hw_version: XP20
   auto_report_status: PP
   action_table: []
-
-- name: A11
-  serial_number: 0020030837
-  module_type: XP130
-  module_type_code: 34
-  link_number: 11
-  module_number: 5
-  sw_version: XP230_V1.00.04
-  hw_version: XP130_HW_Rev B
-  auto_report_status: AA
+  xp20_msaction_table:
+  - CH1 I:0 S:0 G:0 AND:10000000 SA:0 TA:0
+  - CH2 I:0 S:0 G:0 AND:01000000 SA:0 TA:0
+  - CH3 I:0 S:0 G:0 AND:00100000 SA:0 TA:0
+  - CH4 I:0 S:0 G:0 AND:00010000 SA:0 TA:0
+  - CH5 I:0 S:0 G:0 AND:00001000 SA:0 TA:0
+  - CH6 I:0 S:0 G:0 AND:00000100 SA:0 TA:0
+  - CH7 I:0 S:0 G:0 AND:00000010 SA:0 TA:0
+  - CH8 I:0 S:0 G:0 AND:00000001 SA:0 TA:0
 
 - name: A12
   serial_number: '0020045056'
@@ -391,16 +403,6 @@
   module_type_code: 35
   link_number: 12
   module_number: 2
-  sw_version: XP33LED_V0.04.01
-  hw_version: XP33LED_HW_VER1
-  auto_report_status: PP
-
-- name: A13
-  serial_number: '0020045057'
-  module_type: XP33LED
-  module_type_code: 35
-  link_number: 13
-  module_number: 0
   sw_version: XP33LED_V0.04.01
   hw_version: XP33LED_HW_VER1
   auto_report_status: PP
@@ -423,18 +425,28 @@
   - CP20 0 8 > 0 ON;
   - CP20 0 8 > 1 ON;
   - CP20 0 8 > 2 ON;
-  - CP20 13 0 > 0 ON;
-  - CP20 13 1 > 1 ON;
-  - CP20 13 2 > 2 ON;
-  - CP20 13 3 > 0 OFF;
-  - CP20 13 4 > 1 OFF;
-  - CP20 13 5 > 2 OFF;
-  - CP20 13 8 > 0 ON;
-  - CP20 13 8 > 1 ON;
-  - CP20 13 8 > 2 ON;
-  - CP20 13 9 > 0 OFF;
-  - CP20 13 9 > 1 OFF;
-  - CP20 13 9 > 2 OFF;
+  - CP20 12 0 > 0 ON;
+  - CP20 12 1 > 1 ON;
+  - CP20 12 2 > 2 ON;
+  - CP20 12 3 > 0 OFF;
+  - CP20 12 4 > 1 OFF;
+  - CP20 12 5 > 2 OFF;
+  - CP20 12 8 > 0 ON;
+  - CP20 12 8 > 1 ON;
+  - CP20 12 8 > 2 ON;
+  - CP20 12 9 > 0 OFF;
+  - CP20 12 9 > 1 OFF;
+  - CP20 12 9 > 2 OFF;
+
+- name: A13
+  serial_number: '0020045057'
+  module_type: XP33LED
+  module_type_code: 35
+  link_number: 13
+  module_number: 0
+  sw_version: XP33LED_V0.04.01
+  hw_version: XP33LED_HW_VER1
+  auto_report_status: PP
 
 - name: A14
   serial_number: '0020041013'

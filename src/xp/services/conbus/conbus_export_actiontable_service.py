@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from pathlib import Path
-from queue import SimpleQueue
+from queue import Empty, SimpleQueue
 from typing import Any, Optional, Tuple
 
 import yaml
@@ -74,11 +74,17 @@ class ConbusActiontableExportService:
         for module in self._module_list.root:
             self.logger.info("Export module %s", module)
             if module.module_type.lower() == "xp20":
-                self.device_queue.put((module.serial_number, ActionTableType.MSACTIONTABLE_XP20))
+                self.device_queue.put(
+                    (module.serial_number, ActionTableType.MSACTIONTABLE_XP20)
+                )
             if module.module_type.lower() == "xp24":
-                self.device_queue.put((module.serial_number, ActionTableType.MSACTIONTABLE_XP24))
+                self.device_queue.put(
+                    (module.serial_number, ActionTableType.MSACTIONTABLE_XP24)
+                )
             if module.module_type.lower() == "xp33":
-                self.device_queue.put((module.serial_number, ActionTableType.MSACTIONTABLE_XP33))
+                self.device_queue.put(
+                    (module.serial_number, ActionTableType.MSACTIONTABLE_XP33)
+                )
             self.device_queue.put((module.serial_number, ActionTableType.ACTIONTABLE))
 
         self.logger.info("Export module %s", self.device_queue.qsize())
@@ -131,13 +137,13 @@ class ConbusActiontableExportService:
         serial_number = (
             self.current_module.serial_number if self.current_module else "UNKNOWN"
         )
-        current_actiontable_type = (
-            self.current_actiontable_type if self.current_actiontable_type else "UNKNOWN"
-        )
+        current_actiontable_type = self.current_actiontable_type or "UNKNOWN"
         total_modules = len(self._module_list.root)
         current_index = total_modules - self.device_queue.qsize()
 
-        self.on_progress.emit(serial_number, current_actiontable_type, current_index, total_modules)
+        self.on_progress.emit(
+            serial_number, current_actiontable_type, current_index, total_modules
+        )
 
     def on_module_error(self, error_message: str) -> None:
         """
@@ -209,16 +215,21 @@ class ConbusActiontableExportService:
             True if there is a module to export, False otherwise.
         """
         self.download_service.reset()
-        (current_serial_number, self.current_actiontable_type) = (
-            self.device_queue.get_nowait()
-        )
+        try:
+            (current_serial_number, self.current_actiontable_type) = (
+                self.device_queue.get_nowait()
+            )
+        except Empty:
+            return False
 
         self.current_module = self._module_dic[current_serial_number]
         if not (self.current_module or self.current_actiontable_type):
             self.logger.error("No module to export")
             return False
 
-        self.logger.info(f"Downloading {self.current_module.serial_number} / {self.current_actiontable_type}")
+        self.logger.info(
+            f"Downloading {self.current_module.serial_number} / {self.current_actiontable_type}"
+        )
         self.download_service.configure(
             self.current_module.serial_number,
             self.current_actiontable_type,

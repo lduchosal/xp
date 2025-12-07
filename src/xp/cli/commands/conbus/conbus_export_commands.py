@@ -117,16 +117,21 @@ def export_conbus_actiontable(ctx: click.Context) -> None:
         xp conbus export actiontable
     """
 
-    def on_progress(serial_number: str, actiontable_type: str, current: int, total: int) -> None:
+    def on_progress(
+        serial_number: str, actiontable_type: str, current: int, total: int
+    ) -> None:
         """
         Handle progress updates during export.
 
         Args:
             serial_number: Serial number of discovered device.
+            actiontable_type: Type of action table being exported.
             current: Current device number.
             total: Total devices discovered.
         """
-        click.echo(f"Querying device {current}/{total}: {serial_number} / {actiontable_type}.")
+        click.echo(
+            f"Querying device {current}/{total}: {serial_number} / {actiontable_type}."
+        )
 
     def on_device_actiontable_exported(
         module: ConsonModuleConfig,
