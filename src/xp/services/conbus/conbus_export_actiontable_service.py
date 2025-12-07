@@ -87,8 +87,6 @@ class ConbusActiontableExportService:
         self.current_actiontable_type: Optional[ActionTableType] = None
         self.export_result = ConbusExportResponse(success=False)
         self.export_status = "OK"
-        # Connect protocol signals
-        self._connect_signals()
 
     def on_module_actiontable_received(
         self, actiontable: Any, short_actiontable: list[str]
@@ -286,7 +284,7 @@ class ConbusActiontableExportService:
 
     def _disconnect_signals(self) -> None:
         """Disconnect download service signals from handlers."""
-        self.download_service.on_actiontable_received.connect(
+        self.download_service.on_actiontable_received.disconnect(
             self.on_module_actiontable_received
         )
         self.download_service.on_finish.disconnect(self.on_module_finish)
