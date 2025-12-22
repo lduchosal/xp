@@ -2,7 +2,7 @@
 
 use Textualize to build a tui equivalent of HomeKit
 
-## Cli commmand
+## CLI Command
 
 To start the Term app, use the following command
 
@@ -21,7 +21,7 @@ xp term homekit
  │  Salon                                                                                                                  │
  │    - Variateur salon               a        ON     90%     A12       0020045056   XP33LED      OK     1      --:--:--   │
  │    - Variateur salle à manger      b        OFF      -     A12       0020045056   XP33LED      OK     2      --:--:--   │
- │    - Variateur cuisine             c        OFF      -9.     A12       0020045056   XP33LED      OK     3      --:--:--   │
+ │    - Variateur cuisine             c        OFF      -     A12       0020045056   XP33LED      OK     3      --:--:--   │
  │    - Prise salon                   d        ON             A5        0020044974   XP24         OK     2      --:--:--   │
  │    - Prise couloir cuisine         e        OFF            A5        0020044974   XP24         OK     3      --:--:--   │
  │    - Prise couloir cuisine 2       f        OFF            A5        0020044974   XP24         OK     4      --:--:--   │
@@ -60,14 +60,10 @@ xp term homekit
 - Room list
 - Status footer
 
-### Detail
-
-The center top pane has module detail
-
 ### Columns:
 - **Room**: Room name (Salon, Parents, Entrée, Bureau, Chambre)
 - **Accessory**: Accessory name (Variateur salon, Lumière entrée, Prise bureau)
-- **Action**: Action key (a,b,c,d ...) - triggers accessory actions (on_action, off_action, toggle_action, dimup_action, dimdown_action) from HomekitConfig
+- **Action**: Action key (a,b,c,d ...) - press key to toggle accessory on/off (uses toggle_action from HomekitConfig)
 - **State**: Module output state (ON, OFF). Obtained from module status.
 - **Dim**: For dimmable modules (XP33LR, XP33LED): show percentage if ON, show `-` if OFF, show empty if non-dimmable module
 - **Module**: Module name/identifier (e.g., A1, A22)
@@ -82,7 +78,7 @@ The center top pane has module detail
 #### Conson 
 
 - File: conson.yml
-- ConsonConfig
+- ConsonModuleListConfig
 
 ```yml
 - name: A2
@@ -120,6 +116,7 @@ accessories:
     output_number: 0
     on_action: E02L12I00
     off_action: E02L12I03
+    toggle_action: E02L12I02
     description: Salon
     service: dimminglight
 
@@ -174,7 +171,7 @@ Wraps ConbusEventProtocol, ConsonModuleListConfig, HomekitConfig to provide high
 **Events (psygnal Signals):**
 - `on_connection_state_changed: Signal(ConnectionState)` - Connection state changes (connected, disconnected, etc.)
 - `on_room_list_updated: Signal(list[AccessoryState])` - Complete room and accessory list refreshed from HomekitConfig
-- `on_module_state_changed: Signal(ModuleState)` - Individual module state updated (outputs, status, report)
+- `on_module_state_changed: Signal(AccessoryState)` - Individual accessory state updated (outputs, status, report)
 - `on_module_error: Signal(str, str)` - Module error occurred (serial_number, error_code)
 - `on_status_message: Signal(str)` - Status messages for TUI footer
 
@@ -185,14 +182,14 @@ class AccessoryState:
     room_name: str               # Room name (Salon)
     accessory_name: str          # Accessory name (Variateur salon)
     action: str                  # Action on accessory (a: toggle on / off)
-    output_state: str            # Output state (ON / OFF / -) use "-" if unknown
+    output_state: str            # Output state (ON / OFF / ?) use "?" if unknown
     dimming_state: str           # Dimming state of supported modules (XP33LED and XP33LR),
     module_name: str             # Module name (A1, A2, ... A22)
     serial_number: str           # Module serial number (0020045056)
     module_type: str             # Module type (XP130, XP230, XP24, ...)
     error_status: str            # Status: "OK" or error code "E10"
     output: int                  # Module output (1,2,3,4)
-    last_update: datetime        # Last communication timestamp
+    last_update: datetime | None = None  # Last communication timestamp, None if not yet seen
 ```
 
 **Signal Flow:**
@@ -224,10 +221,10 @@ CLI Command → Textual App → Widgets  → Term Service
 
 ### Key Features
 
-1. **Module tree**: Expandable tree with module hierarchy
-2. **Live updates**: Protocol messages update in real-time
+1. **Room/Accessory table**: DataTable displaying all rooms and accessories
+2. **Live updates**: Module states update in real-time via ConbusEventProtocol events
 3. **Keyboard navigation**: Vi-style keybindings (j/k for navigation)
-4. **Action execution**: Select and execute actions from tree
+4. **Action execution**: Press action key (a-z) to toggle accessory on/off
 
 
 ## Implementation Checklist
@@ -249,7 +246,7 @@ Follow ProtocolMonitorApp pattern (src/xp/term/protocol.py) for reference.
 - [ ] Handle TelegramReceivedEvent → update module outputs
 - [ ] Handle OutputStateReceivedEvent → update module outputs
 - [ ] Handle ConnectionMadeEvent → load config, emit on_room_list_updated
-- [ ] Query module status to obtain error codes (OK or E10, etc.)
+- [ ] Query MODULE_ERROR_CODE datapoint periodically and on-demand at refresh to obtain error codes (OK or E10, etc.)
 - [ ] Track last_update timestamp per module
 - [ ] Implement refresh_all() method:
   - [ ] Filter modules by type (XP24, XP33LR, XP33LED)
