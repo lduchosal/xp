@@ -46,11 +46,11 @@ xp term homekit
  │                                                                                                                         │
  │  Bureau                                                                                                                 │
  │    - Variateur bureau              u        ON     20%     A13       0020045057   XP33LED      OK     1      --:--:--   │
- │    - Prise bureau                  v        ON                                                 E10           --:--:--   │
+ │    - Prise bureau                  v        ON             A9        0020044986   XP24         E10    1      --:--:--   │
  │                                                                                                                         │
  │  Chambre                                                                                                                │
  │    - Variateur chambre             w        ON     50%     A13       0020045057   XP33LED      OK     3      --:--:--   │
- │    - Prise chambre                 x        ON                                                 E10           --:--:--   │
+ │    - Prise chambre                 x        ON             A9        0020044986   XP24         E10    3      --:--:--   │
  │                                                                                                                         │
  ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯ 
    ^Q Quit     ^[a-z] Actions                                                  Connected to 127.0.0.1  🟢    
@@ -67,9 +67,9 @@ The center top pane has module detail
 ### Columns:
 - **Room**: Room name (Salon, Parents, Entrée, Bureau, Chambre)
 - **Accessory**: Accessory name (Variateur salon, Lumière entrée, Prise bureau)
-- **Action**: Action key (a,b,c,d ...)
+- **Action**: Action key (a,b,c,d ...) - triggers accessory actions (on_action, off_action, toggle_action, dimup_action, dimdown_action) from HomekitConfig
 - **State**: Module output state (ON, OFF). Obtained from module status.
-- **Dim**: For dimmable module (XP33LR, XP33LED), dimming state (10%, 20% ...). Use "-" if 0
+- **Dim**: For dimmable modules (XP33LR, XP33LED): show percentage if ON, show `-` if OFF, show empty if non-dimmable module
 - **Module**: Module name/identifier (e.g., A1, A22)
 - **serial number**: Module serial number (e.g., 0020041013)
 - **module type**: Module type designation (e.g., XP130, XP230, XP24)
@@ -98,10 +98,10 @@ The center top pane has module detail
 ...
 ```
 
-#### homekit 
+#### homekit
 
 - File: homekit.yml
-- ConsonConfig
+- HomekitConfig
 
 ```yml
 
@@ -213,15 +213,7 @@ The `ProtocolMonitorApp` (src/xp/term/protocol.py) serves as the reference imple
 - Implements connection state management and live updates
 - Provides examples of reactive widget updates from service events
 
-Follow the same architectural patterns when implementing StateMonitorService and the module state TUI.
-
-### Design Principles
-
-1. **Separation of concerns**: Widgets are independent, reusable components
-2. **Reactive state**: Use Textual reactive attributes for state updates
-3. **Service layer**: Business logic stays in services, TUI only for display
-4. **Type safety**: Full type hints, pass mypy strict mode
-5. **No bloat**: Minimal dependencies, focus on core functionality
+Follow the same architectural patterns when implementing HomekitService and the module state TUI.
 
 ### Data Flow
 ```
@@ -248,7 +240,7 @@ Follow ProtocolMonitorApp pattern (src/xp/term/protocol.py) for reference.
 - [ ] Initialize last_update to None for modules not yet seen
 
 ### Service Layer
-- [ ] Create StateMonitorService in src/xp/services/term/state_monitor_service.py
+- [ ] Create HomekitService in src/xp/services/term/homekit_service.py
 - [ ] Implement 5 psygnal Signals: on_connection_state_changed, on_room_list_updated, on_module_state_changed, on_module_error, on_status_message
 - [ ] Load CliConfig from cli.yml on connection
 - [ ] Load ConsonModuleListConfig from conson.yml on connection
@@ -297,7 +289,7 @@ Follow ProtocolMonitorApp pattern (src/xp/term/protocol.py) for reference.
 - [ ] Load cli.yml config
 - [ ] Load conson.yml config
 - [ ] Load homekit.yml config
-- [ ] Initialize and run StateMonitorApp
+- [ ] Initialize and run HomekitApp
 - [ ] Setup Twisted reactor integration
 
 ### Quality
