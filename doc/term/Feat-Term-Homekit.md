@@ -21,7 +21,7 @@ xp term homekit
  │  Salon                                                                                                                  │
  │    - Variateur salon               a        ON     90%     A12       0020045056   XP33LED      OK     1      --:--:--   │
  │    - Variateur salle à manger      b        OFF      -     A12       0020045056   XP33LED      OK     2      --:--:--   │
- │    - Variateur cuisine             c        ON             A12       0020045056   XP33LED      OK     3      --:--:--   │
+ │    - Variateur cuisine             c        OFF      -9.     A12       0020045056   XP33LED      OK     3      --:--:--   │
  │    - Prise salon                   d        ON             A5        0020044974   XP24         OK     2      --:--:--   │
  │    - Prise couloir cuisine         e        OFF            A5        0020044974   XP24         OK     3      --:--:--   │
  │    - Prise couloir cuisine 2       f        OFF            A5        0020044974   XP24         OK     4      --:--:--   │
