@@ -28,7 +28,7 @@ digraph ActionTableDownloadStateMachine {
     RECEIVING -> RESETTING [label="   on_timeout    "];
     RECEIVING -> RECEIVING [label="   on_telegram_received    "];
     RESETTING -> WAITING_OK [label="   query_datapoint_module_error_code   "];
-    WAITING_OK -> RECEIVING [label="   error_state\non_timeout   "];
+    WAITING_OK -> RECEIVING [label="   error_state   \n   on_timeout   "];
     WAITING_OK -> REQUESTING [label="   no error_state   "];
     REQUESTING -> WAITING_DATA [label="   send_download_actiontable   "];
     WAITING_DATA -> RECEIVING_CHUNK [label="   actiontable_received   "];

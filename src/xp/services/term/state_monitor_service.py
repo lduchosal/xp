@@ -299,7 +299,7 @@ class StateMonitorService:
 
     def _on_timeout(self) -> None:
         """Handle timeout event."""
-        self.on_status_message.emit("Connection timeout")
+        self.on_status_message.emit("Waiting for action")
 
     def _on_failed(self, failure: Exception) -> None:
         """
