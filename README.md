@@ -396,6 +396,7 @@ xp telegram version
 
 
 xp term
+xp term homekit
 xp term protocol
 xp term state
 
