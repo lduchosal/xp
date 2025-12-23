@@ -7,6 +7,7 @@ from textual.containers import Horizontal
 from textual.widgets import Footer, Static
 
 from xp.models.term.connection_state import ConnectionState
+from xp.services.term.homekit_service import HomekitService
 from xp.services.term.protocol_monitor_service import ProtocolMonitorService
 from xp.services.term.state_monitor_service import StateMonitorService
 
@@ -19,14 +20,16 @@ class StatusFooterWidget(Horizontal):
     the current connection state. Subscribes directly to service signals.
 
     Attributes:
-        service: ProtocolMonitorService or StateMonitorService for connection state and status updates.
+        service: ProtocolMonitorService, StateMonitorService, or HomekitService for connection state and status updates.
         status_widget: Static widget displaying colored status dot.
         status_text_widget: Static widget displaying status messages.
     """
 
     def __init__(
         self,
-        service: Optional[Union[ProtocolMonitorService, StateMonitorService]] = None,
+        service: Optional[
+            Union[ProtocolMonitorService, StateMonitorService, HomekitService]
+        ] = None,
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -34,7 +37,7 @@ class StatusFooterWidget(Horizontal):
         Initialize the Status Footer widget.
 
         Args:
-            service: Optional ProtocolMonitorService or StateMonitorService for signal subscriptions.
+            service: Optional ProtocolMonitorService, StateMonitorService, or HomekitService for signal subscriptions.
             args: Additional positional arguments for Horizontal.
             kwargs: Additional keyword arguments for Horizontal.
         """

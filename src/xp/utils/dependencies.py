@@ -77,8 +77,10 @@ from xp.services.telegram.telegram_discover_service import TelegramDiscoverServi
 from xp.services.telegram.telegram_link_number_service import LinkNumberService
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
+from xp.services.term.homekit_service import HomekitService
 from xp.services.term.protocol_monitor_service import ProtocolMonitorService
 from xp.services.term.state_monitor_service import StateMonitorService
+from xp.term.homekit import HomekitApp
 from xp.term.protocol import ProtocolMonitorApp
 from xp.term.state import StateMonitorApp
 from xp.utils.logging import LoggerService
@@ -261,6 +263,25 @@ class ServiceContainer:
             StateMonitorApp,
             factory=lambda: StateMonitorApp(
                 state_service=self.container.resolve(StateMonitorService)
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            HomekitService,
+            factory=lambda: HomekitService(
+                conbus_protocol=self.container.resolve(ConbusEventProtocol),
+                homekit_config=self.container.resolve(HomekitConfig),
+                conson_config=self.container.resolve(ConsonModuleListConfig),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
+        self.container.register(
+            HomekitApp,
+            factory=lambda: HomekitApp(
+                homekit_service=self.container.resolve(HomekitService)
             ),
             scope=punq.Scope.singleton,
         )

@@ -48,3 +48,26 @@ def state_monitor(ctx: Context) -> None:
 
     # Resolve StateMonitorApp from container and run
     ctx.obj.get("container").get_container().resolve(StateMonitorApp).run()
+
+
+@term.command("homekit")
+@click.pass_context
+def homekit_monitor(ctx: Context) -> None:
+    r"""
+    Start TUI for HomeKit accessory monitoring.
+
+    Displays HomeKit rooms and accessories with real-time state updates
+    in an interactive terminal interface. Press action keys (a-z) to
+    toggle accessories.
+
+    Args:
+        ctx: Click context object.
+
+    Examples:
+        \b
+        xp term homekit
+    """
+    from xp.term.homekit import HomekitApp
+
+    # Resolve HomekitApp from container and run
+    ctx.obj.get("container").get_container().resolve(HomekitApp).run()

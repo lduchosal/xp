@@ -61,6 +61,7 @@ class HomekitAccessoryConfig(BaseModel):
         service: Service type for the accessory.
         on_action: on code for the accessory.
         off_action: off code for the accessory.
+        toggle_action: Optional toggle action code for the accessory.
         hap_accessory: Optional HAP accessory identifier.
     """
 
@@ -72,6 +73,7 @@ class HomekitAccessoryConfig(BaseModel):
     service: str
     on_action: str
     off_action: str
+    toggle_action: Optional[str] = None
     hap_accessory: Optional[int] = None
 
 

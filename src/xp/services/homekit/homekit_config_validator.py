@@ -221,7 +221,7 @@ class CrossReferenceValidator:
                 # Define output limits by module type
                 output_limits = {
                     "XP130": 0,  # Example limits
-                    "XP20": 0,
+                    "XP20": 8,
                     "XP24": 4,
                     "XP33": 3,
                     "XP33LR": 3,
