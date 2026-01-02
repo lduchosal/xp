@@ -68,14 +68,14 @@ class HomekitApp(App[None]):
         """
         Initialize app after UI is mounted.
 
-        Delays connection by 0.5s to let UI render first. Sets up automatic screen
-        refresh every second to update elapsed times.
+        Delays connection by 0.5s to let UI render first. Starts the AccessoryDriver
+        and sets up automatic screen refresh every second to update elapsed times.
         """
         import asyncio
 
         # Delay connection to let UI render
         await asyncio.sleep(0.5)
-        self.homekit_service.connect()
+        await self.homekit_service.start()
 
         # Set up periodic refresh to update elapsed times
         self.set_interval(1.0, self._refresh_last_update_column)
@@ -111,6 +111,6 @@ class HomekitApp(App[None]):
         """Refresh all module data on 'r' key press."""
         self.homekit_service.refresh_all()
 
-    def on_unmount(self) -> None:
-        """Clean up service when app unmounts."""
-        self.homekit_service.cleanup()
+    async def on_unmount(self) -> None:
+        """Stop AccessoryDriver and clean up service when app unmounts."""
+        await self.homekit_service.stop()

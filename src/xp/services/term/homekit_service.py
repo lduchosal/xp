@@ -18,6 +18,7 @@ from xp.models.term.connection_state import ConnectionState
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
+from xp.services.term.homekit_accessory_driver import HomekitAccessoryDriver
 
 
 class HomekitService:
@@ -50,6 +51,7 @@ class HomekitService:
         homekit_config: HomekitConfig,
         conson_config: ConsonModuleListConfig,
         telegram_service: TelegramService,
+        accessory_driver: HomekitAccessoryDriver,
     ) -> None:
         """
         Initialize the HomeKit service.
@@ -59,12 +61,14 @@ class HomekitService:
             homekit_config: HomekitConfig for accessory configuration.
             conson_config: ConsonModuleListConfig for module configuration.
             telegram_service: TelegramService for parsing telegrams.
+            accessory_driver: HomekitAccessoryDriver for pyhap integration.
         """
         self.logger = logging.getLogger(__name__)
         self._conbus_protocol = conbus_protocol
         self._homekit_config = homekit_config
         self._conson_config = conson_config
         self._telegram_service = telegram_service
+        self._accessory_driver = accessory_driver
         self._connection_state = ConnectionState.DISCONNECTED
         self._state_machine = ConnectionState.create_state_machine()
 
@@ -73,6 +77,9 @@ class HomekitService:
 
         # Action key to accessory ID mapping
         self._action_map: Dict[str, str] = {}
+
+        # Set up HomeKit callback
+        self._accessory_driver.set_callback(self._on_homekit_set)
 
         # Connect to protocol signals
         self._connect_signals()
@@ -149,6 +156,27 @@ class HomekitService:
         """
         for accessory in self._homekit_config.accessories:
             if accessory.name == name:
+                return accessory
+        return None
+
+    def _find_accessory_config_by_output(
+        self, serial_number: str, output: int
+    ) -> Optional[HomekitAccessoryConfig]:
+        """
+        Find accessory config by serial number and output.
+
+        Args:
+            serial_number: Module serial number.
+            output: Output number (1-based).
+
+        Returns:
+            HomekitAccessoryConfig if found, None otherwise.
+        """
+        for accessory in self._homekit_config.accessories:
+            if (
+                accessory.serial_number == serial_number
+                and accessory.output_number == output - 1
+            ):
                 return accessory
         return None
 
@@ -241,6 +269,34 @@ class HomekitService:
             self._connection_state = ConnectionState.DISCONNECTED
             self.on_connection_state_changed.emit(self._connection_state)
             self.on_status_message.emit("Disconnected")
+
+    async def start(self) -> None:
+        """Start the service and AccessoryDriver."""
+        self.connect()
+        await self._accessory_driver.start()
+
+    async def stop(self) -> None:
+        """Stop the AccessoryDriver and cleanup."""
+        await self._accessory_driver.stop()
+        self.cleanup()
+
+    def _on_homekit_set(self, accessory_name: str, is_on: bool) -> None:
+        """
+        Handle HomeKit app toggle request.
+
+        Args:
+            accessory_name: Accessory name from HomeKit.
+            is_on: True for on, False for off.
+        """
+        config = self._find_accessory_config(accessory_name)
+        if config:
+            action = config.on_action if is_on else config.off_action
+            self._conbus_protocol.send_raw_telegram(action)
+            self.on_status_message.emit(
+                f"HomeKit: {accessory_name} {'ON' if is_on else 'OFF'}"
+            )
+        else:
+            self.logger.warning(f"No config found for accessory: {accessory_name}")
 
     def toggle_connection(self) -> None:
         """
@@ -406,6 +462,13 @@ class HomekitService:
                     # Update dimming state for dimmable modules
                     if state.is_dimmable():
                         state.dimming_state = "-" if not is_on else ""
+
+                    # Sync to HomeKit
+                    config = self._find_accessory_config_by_output(
+                        serial_number, state.output
+                    )
+                    if config:
+                        self._accessory_driver.update_state(config.name, is_on)
                 else:
                     state.output_state = "?"
 
@@ -462,6 +525,13 @@ class HomekitService:
                 # Update dimming state for dimmable modules
                 if state.is_dimmable():
                     state.dimming_state = "-" if not is_on else ""
+
+                # Sync to HomeKit
+                config = self._find_accessory_config_by_output(
+                    state.serial_number, state.output
+                )
+                if config:
+                    self._accessory_driver.update_state(config.name, is_on)
 
                 state.last_update = datetime.now()
                 self.on_module_state_changed.emit(state)

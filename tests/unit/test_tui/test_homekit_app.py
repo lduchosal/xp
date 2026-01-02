@@ -1,6 +1,6 @@
 """Unit tests for HomekitApp."""
 
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
@@ -115,10 +115,12 @@ class TestHomekitApp:
 
         mock_service.toggle_accessory.assert_not_called()
 
-    def test_on_unmount_cleanup(self, app, mock_service):
-        """Test on_unmount calls service cleanup."""
-        app.on_unmount()
-        mock_service.cleanup.assert_called_once()
+    @pytest.mark.asyncio
+    async def test_on_unmount_cleanup(self, app, mock_service):
+        """Test on_unmount calls service stop."""
+        mock_service.stop = AsyncMock()
+        await app.on_unmount()
+        mock_service.stop.assert_called_once()
 
     def test_refresh_last_update_column_with_widget(self, app, mock_service):
         """Test _refresh_last_update_column calls widget method."""

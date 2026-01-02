@@ -16,10 +16,14 @@ class NetworkConfig(BaseModel):
     Attributes:
         ip: IP address for the network connection.
         port: Port number for the network connection.
+        pincode: HomeKit pairing code (format: XXX-XX-XXX).
+        accessory_state_file: Path to file for persisting accessory state.
     """
 
     ip: Union[IPvAnyAddress, IPv4Address, IPv6Address, str] = "127.0.0.1"
     port: int = 51826
+    pincode: str = "031-45-154"
+    accessory_state_file: str = "./accessory.state"
 
 
 class RoomConfig(BaseModel):

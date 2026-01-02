@@ -150,8 +150,25 @@ class TestHomekitService:
         return service
 
     @pytest.fixture
+    def mock_accessory_driver(self):
+        """Create mock HomekitAccessoryDriver."""
+        from xp.services.term.homekit_accessory_driver import HomekitAccessoryDriver
+
+        driver = Mock(spec=HomekitAccessoryDriver)
+        driver.set_callback = Mock()
+        driver.start = Mock()
+        driver.stop = Mock()
+        driver.update_state = Mock()
+        return driver
+
+    @pytest.fixture
     def service(
-        self, mock_protocol, homekit_config, conson_config, mock_telegram_service
+        self,
+        mock_protocol,
+        homekit_config,
+        conson_config,
+        mock_telegram_service,
+        mock_accessory_driver,
     ):
         """Create service instance."""
         return HomekitService(
@@ -159,6 +176,7 @@ class TestHomekitService:
             homekit_config=homekit_config,
             conson_config=conson_config,
             telegram_service=mock_telegram_service,
+            accessory_driver=mock_accessory_driver,
         )
 
     def test_initialization(self, service):
@@ -276,7 +294,7 @@ class TestHomekitService:
         mock_protocol.send_raw_telegram.assert_not_called()
 
     def test_toggle_accessory_no_toggle_action(
-        self, mock_protocol, conson_config, mock_telegram_service
+        self, mock_protocol, conson_config, mock_telegram_service, mock_accessory_driver
     ):
         """Test toggle_accessory returns False when no toggle_action."""
         # Create config without toggle_action
@@ -305,6 +323,7 @@ class TestHomekitService:
             homekit_config=homekit_config,
             conson_config=conson_config,
             telegram_service=mock_telegram_service,
+            accessory_driver=mock_accessory_driver,
         ).toggle_accessory("a")
 
         assert result is False
@@ -633,7 +652,7 @@ class TestHomekitService:
         mock_protocol.on_connection_made.disconnect.assert_called_once()
 
     def test_accessory_not_in_config(
-        self, mock_protocol, conson_config, mock_telegram_service
+        self, mock_protocol, conson_config, mock_telegram_service, mock_accessory_driver
     ):
         """Test service handles missing accessory config gracefully."""
         homekit_config = HomekitConfig(
@@ -649,12 +668,15 @@ class TestHomekitService:
             homekit_config=homekit_config,
             conson_config=conson_config,
             telegram_service=mock_telegram_service,
+            accessory_driver=mock_accessory_driver,
         )
 
         # Should handle gracefully with empty states
         assert len(service.accessory_states) == 0
 
-    def test_module_not_in_config(self, mock_protocol, mock_telegram_service):
+    def test_module_not_in_config(
+        self, mock_protocol, mock_telegram_service, mock_accessory_driver
+    ):
         """Test service handles missing module config gracefully."""
         homekit_config = HomekitConfig(
             bridge=BridgeConfig(
@@ -682,6 +704,7 @@ class TestHomekitService:
             homekit_config=homekit_config,
             conson_config=conson_config,
             telegram_service=mock_telegram_service,
+            accessory_driver=mock_accessory_driver,
         )
 
         # Should handle gracefully with empty states
