@@ -68,8 +68,8 @@ class HomekitApp(App[None]):
         """
         Initialize app after UI is mounted.
 
-        Delays connection by 0.5s to let UI render first. Starts the AccessoryDriver
-        and sets up automatic screen refresh every second to update elapsed times.
+        Delays connection by 0.5s to let UI render first. Starts the AccessoryDriver and
+        sets up automatic screen refresh every second to update elapsed times.
         """
         import asyncio
 

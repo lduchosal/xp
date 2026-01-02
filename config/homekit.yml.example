@@ -1,6 +1,7 @@
 homekit:
-  ip: 0.0.0.0
+  ip: 1.2.3.4  # cannot be 0.0.0.0 because of mDNS
   port: 51826
+  pincode: 123-45-678
 
 conson:
   ip: 127.0.0.1

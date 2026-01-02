@@ -62,4 +62,4 @@ class TestConbusResponse:
         assert result["sent_telegrams"] == []  # post_init resets these
         assert result["received_telegrams"] == []  # post_init resets these
         assert result["error"] == "test error"
-        assert "2025" in result["timestamp"]
+        assert "T" in result["timestamp"]  # ISO format check

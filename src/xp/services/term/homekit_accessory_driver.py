@@ -128,7 +128,9 @@ class HomekitAccessoryDriver:
             loop = asyncio.get_running_loop()
             config = self._homekit_config
             pincode = config.homekit.pincode.encode()
-            self.logger.info(f"Starting HAP driver on {config.homekit.ip}:{config.homekit.port} with pincode {config.homekit.pincode}")
+            self.logger.info(
+                f"Starting HAP driver on {config.homekit.ip}:{config.homekit.port} with pincode {config.homekit.pincode}"
+            )
             self._driver = AccessoryDriver(
                 loop=loop,
                 address=str(config.homekit.ip),
