@@ -21,7 +21,6 @@ from xp.services.telegram.telegram_service import TelegramService
 from xp.services.term.homekit_accessory_driver import HomekitAccessoryDriver
 
 
-
 class HomekitService:
     """
     Service for HomeKit accessory monitoring in terminal interface.
@@ -317,8 +316,14 @@ class HomekitService:
             self.logger.warning(f"No config found for accessory: {accessory_name}")
 
     def send_action(self, action: str) -> None:
-        self._conbus_protocol.send_raw_telegram(f'{action}M')
-        self._conbus_protocol.send_raw_telegram(f'{action}B')
+        """
+        Send an action telegram to the conbus protocol.
+
+        Args:
+            action: The action string to send (e.g., "E00L00I00").
+        """
+        self._conbus_protocol.send_raw_telegram(f"{action}M")
+        self._conbus_protocol.send_raw_telegram(f"{action}B")
 
     def toggle_connection(self) -> None:
         """

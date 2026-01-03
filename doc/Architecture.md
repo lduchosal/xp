@@ -11,7 +11,7 @@ XP is a CLI toolkit for CONSON XP Protocol operations with HomeKit integration. 
 
 ## Core Principles
 1. **Dependency Injection**: All services registered in ServiceContainer (punq)
-2. **Event-Driven**: Central EventBus (bubus) for protocol/HomeKit communication
+2. **Signal-Driven**: psygnal Signals for protocol/HomeKit communication
 3. **Type Safety**: Pydantic models, mypy strict mode (no untyped defs)
 4. **Layer Separation**: CLI → Services → Protocol → Connection
 5. **Test Coverage**: Minimum 75% (pytest with strict config)
@@ -37,10 +37,9 @@ XP is a CLI toolkit for CONSON XP Protocol operations with HomeKit integration. 
 
 ### Layer 3: Protocol + Events
 **Location**: `src/xp/services/protocol/`, `src/xp/models/protocol/`
-- **TelegramProtocol**: Twisted Protocol for TCP (asyncio reactor)
-- **TelegramFactory**: Connection lifecycle management
-- **EventBus**: Central dispatcher (bubus), 500 event history
+- **ConbusEventProtocol**: Twisted Protocol for TCP with psygnal Signals
 - **Events**: Protocol events (connection, telegrams), HomeKit events, datapoint events
+- **Signals**: on_connection_made, on_telegram_received, on_timeout, on_failed
 
 ### Layer 4: Connection
 **Location**: Connection pool, socket managers
@@ -54,7 +53,7 @@ XP is a CLI toolkit for CONSON XP Protocol operations with HomeKit integration. 
 - `telegram/`: Event, System, Reply telegram types
 - `conbus/`: Operation requests/responses
 - `homekit/`: Configuration and accessory models
-- `protocol/`: Event definitions (BaseEvent from bubus)
+- `protocol/`: Event definitions (Pydantic BaseModel)
 - `term/`: Term UI models (ConnectionState, ProtocolKeysConfig, TelegramDisplayEvent, etc.)
 
 ### Layer 6: Terminal UI (Term)
@@ -102,16 +101,15 @@ src/xp/
 ├── services/              # Business logic layer
 │   ├── telegram/          # Low-level telegram operations
 │   ├── conbus/            # High-level device operations
-│   ├── homekit/           # HomeKit integration
-│   ├── protocol/          # TelegramProtocol, TelegramFactory, ConbusEventProtocol
-│   ├── term/              # Term service layer (ProtocolMonitorService)
+│   ├── protocol/          # ConbusEventProtocol (psygnal-based)
+│   ├── term/              # Term service layer (ProtocolMonitorService, HomekitService)
 │   └── server/            # XP emulators (XP20, XP24, XP33, etc.)
 ├── models/                # Pydantic data models
 │   ├── telegram/          # Telegram types (Event, System, Reply)
 │   ├── conbus/            # Conbus operation models
 │   ├── homekit/           # HomeKit config and accessories
 │   ├── term/              # Term models (ConnectionState, ProtocolKeysConfig, etc.)
-│   └── protocol/          # Event definitions (bubus BaseEvent)
+│   └── protocol/          # Event definitions (Pydantic BaseModel)
 ├── term/                  # Term TUI application
 │   ├── protocol.py        # ProtocolMonitorApp (Textual app)
 │   ├── protocol.tcss      # CSS stylesheet for Term UI
@@ -149,15 +147,14 @@ service = container.container.resolve(ConbusEventRawService)
 **Scope**: Singleton by default (shared across requests)
 **Pattern**: Constructor injection - dependencies resolved automatically
 
-### 2. EventBus (bubus)
-Event-driven communication between protocol and services:
-- **Protocol Events**: `ConnectionMadeEvent`, `TelegramReceivedEvent`, `ModuleDiscoveredEvent`
-- **HomeKit Events**: `LightBulbSetOnEvent`, `ReadDatapointEvent`, `SendActionEvent`
-- **Pattern**: Services subscribe to events, dispatch new events
+### 2. Signal-Based Communication (psygnal)
+Signal-driven communication between protocol and services:
+- **Protocol Signals**: `on_connection_made`, `on_telegram_received`, `on_timeout`, `on_failed`
+- **Event Models**: `TelegramReceivedEvent`, `ModuleDiscoveredEvent` (Pydantic BaseModel)
+- **Pattern**: Services connect to signals, emit events
 
 ### 3. Protocol Layer
-- **TelegramProtocol**: Twisted Protocol handling TCP I/O
-- **TelegramFactory**: Creates protocol instances, manages connection lifecycle
+- **ConbusEventProtocol**: Twisted Protocol handling TCP I/O with psygnal Signals
 - **TelegramService**: Stateless telegram parsing/generation
 
 ### 4. Telegram Format

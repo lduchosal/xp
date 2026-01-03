@@ -106,11 +106,13 @@ class RoomListWidget(Static):
             if state.room_name != self._current_room:
                 self._current_room = state.room_name
                 # Add layout rows (empty and header) - not selectable
-                self._row_index_to_key.append(self.table.add_row())
-                self._row_index_to_key.append(
-                    self.table.add_row(Text(state.room_name, style="bold"))
+                self._row_index_to_key.extend(
+                    [
+                        self.table.add_row(),
+                        self.table.add_row(Text(state.room_name, style="bold")),
+                        self.table.add_row(),
+                    ]
                 )
-                self._row_index_to_key.append(self.table.add_row())
 
             self._add_accessory_row(state)
 

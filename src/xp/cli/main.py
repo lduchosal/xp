@@ -3,8 +3,6 @@
 import click
 from click_help_colors import HelpColorsGroup
 
-from xp.cli.commands import homekit
-
 # Import all conbus command modules to register their commands
 from xp.cli.commands.conbus import conbus_discover_commands  # noqa: F401
 from xp.cli.commands.conbus import conbus_export_commands  # noqa: F401
@@ -47,7 +45,6 @@ def cli(ctx: click.Context) -> None:
 
 # Register all command groups
 cli.add_command(conbus)
-cli.add_command(homekit)
 cli.add_command(telegram)
 cli.add_command(module)
 cli.add_command(file)

@@ -107,7 +107,11 @@ class TestHomekitApp:
         mock_event.prevent_default.assert_called_once()
 
     def test_on_key_dot_turns_on_selected(self, app, mock_service):
-        """Test . key turns on selected accessory."""
+        """
+        Test .
+
+        key turns on selected accessory.
+        """
         app.selected_accessory_id = "A01_1"
         mock_event = Mock()
         mock_event.key = "."

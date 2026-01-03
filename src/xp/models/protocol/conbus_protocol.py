@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
-from bubus import BaseEvent
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from xp.models.config.conson_module_config import ConsonModuleConfig
 from xp.models.homekit.homekit_config import HomekitAccessoryConfig
@@ -13,23 +12,25 @@ from xp.models.telegram.datapoint_type import DataPointType
 
 if TYPE_CHECKING:
     from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
-    from xp.services.protocol.telegram_protocol import TelegramProtocol
 
 
-class ConnectionMadeEvent(BaseEvent):
+class ConnectionMadeEvent(BaseModel):
     """
     Event dispatched when TCP connection is established.
 
     Attributes:
-        protocol: Reference to the TelegramProtocol instance.
+        model_config: Pydantic model configuration.
+        protocol: Reference to the ConbusEventProtocol instance.
     """
 
-    protocol: TelegramProtocol = Field(
-        description="Reference to the TelegramProtocol instance"
+    model_config = {"arbitrary_types_allowed": True}
+
+    protocol: ConbusEventProtocol = Field(
+        description="Reference to the ConbusEventProtocol instance"
     )
 
 
-class ConnectionFailedEvent(BaseEvent):
+class ConnectionFailedEvent(BaseModel):
     """
     Event dispatched when TCP connection fails.
 
@@ -40,7 +41,7 @@ class ConnectionFailedEvent(BaseEvent):
     reason: str = Field(description="Failure reason")
 
 
-class SendWriteConfigEvent(BaseEvent):
+class SendWriteConfigEvent(BaseModel):
     """
     Event for sending write config commands.
 
@@ -57,7 +58,7 @@ class SendWriteConfigEvent(BaseEvent):
     value: int = Field(description="Set brightness value")
 
 
-class SendActionEvent(BaseEvent):
+class SendActionEvent(BaseModel):
     """
     Event for sending action commands.
 
@@ -76,7 +77,7 @@ class SendActionEvent(BaseEvent):
     off_action: str = Field(description="off action")
 
 
-class DatapointEvent(BaseEvent):
+class DatapointEvent(BaseModel):
     """
     Base event for datapoint operations.
 
@@ -131,7 +132,7 @@ class ReadDatapointFromProtocolEvent(DatapointEvent):
     pass
 
 
-class ModuleEvent(BaseEvent):
+class ModuleEvent(BaseModel):
     """
     Event dispatched when light bulb set is on.
 
@@ -163,7 +164,7 @@ class LightBulbSetOnEvent(ModuleEvent):
     value: bool = Field(description="On or Off the light bulb set")
 
 
-class LightBulbGetOnEvent(ModuleEvent, BaseEvent[bool]):
+class LightBulbGetOnEvent(ModuleEvent):
     """Event dispatched when getting light bulb on state."""
 
     pass
@@ -192,7 +193,7 @@ class OutletGetInUseEvent(ModuleEvent):
     pass
 
 
-class OutletSetInUseEvent(ModuleEvent, BaseEvent[bool]):
+class OutletSetInUseEvent(ModuleEvent):
     """
     Event dispatched when outlet set is on.
 
@@ -239,7 +240,7 @@ class DimmingLightGetBrightnessEvent(ModuleEvent):
     pass
 
 
-class ConnectionLostEvent(BaseEvent):
+class ConnectionLostEvent(BaseModel):
     """
     Event dispatched when TCP connection is lost.
 
@@ -250,12 +251,13 @@ class ConnectionLostEvent(BaseEvent):
     reason: str = Field(description="Disconnection reason")
 
 
-class TelegramEvent(BaseEvent):
+class TelegramEvent(BaseModel):
     """
     Event for telegram operations.
 
     Attributes:
-        protocol: TelegramProtocol instance.
+        model_config: Pydantic model configuration.
+        protocol: ConbusEventProtocol instance.
         frame: Frame <S0123450001F02D12FK>.
         telegram: Telegram S0123450001F02D12FK.
         payload: Payload S0123450001F02D12.
@@ -265,9 +267,9 @@ class TelegramEvent(BaseEvent):
         checksum_valid: Checksum valid true or false.
     """
 
-    protocol: Union[TelegramProtocol, ConbusEventProtocol] = Field(
-        description="TelegramProtocol instance"
-    )
+    model_config = {"arbitrary_types_allowed": True}
+
+    protocol: ConbusEventProtocol = Field(description="ConbusEventProtocol instance")
     frame: str = Field(description="Frame <S0123450001F02D12FK>")
     telegram: str = Field(description="Telegram: S0123450001F02D12FK")
     payload: str = Field(description="Payload: S0123450001F02D12")
@@ -279,7 +281,7 @@ class TelegramEvent(BaseEvent):
     )
 
 
-class ModuleStateChangedEvent(BaseEvent):
+class ModuleStateChangedEvent(BaseModel):
     """
     Event dispatched when a module's state changes (from event telegram).
 
@@ -314,16 +316,19 @@ class TelegramReceivedEvent(TelegramEvent):
     pass
 
 
-class InvalidTelegramReceivedEvent(BaseEvent):
+class InvalidTelegramReceivedEvent(BaseModel):
     """
     Event dispatched when an invalid telegram frame is received.
 
     Attributes:
-        protocol: TelegramProtocol instance.
+        model_config: Pydantic model configuration.
+        protocol: ConbusEventProtocol instance.
         frame: Frame <S0123450001F02D12FK>.
         error: Error with the received telegram.
     """
 
-    protocol: TelegramProtocol = Field(description="TelegramProtocol instance")
+    model_config = {"arbitrary_types_allowed": True}
+
+    protocol: ConbusEventProtocol = Field(description="ConbusEventProtocol instance")
     frame: str = Field(description="Frame <S0123450001F02D12FK>")
     error: str = Field(description="Error with the received telegram")

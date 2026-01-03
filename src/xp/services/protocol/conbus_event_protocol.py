@@ -169,7 +169,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
             payload = telegram[:-2]  # S0123450001F02D12
             checksum = telegram[-2:].decode()  # FK
             serial_number = (
-                telegram[1:11] if telegram_type in ("S", "R") else b""
+                telegram[1:11].decode("latin-1") if telegram_type in ("S", "R") else ""
             )  # 0123450001
             calculated_checksum = calculate_checksum(payload.decode(encoding="latin-1"))
 
@@ -391,12 +391,12 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.logger.debug(f"buildProtocol: {addr}")
         return self
 
-    def clientConnectionFailed(self, connector: IConnector, reason: Failure) -> None:
+    def clientConnectionFailed(self, _connector: IConnector, reason: Failure) -> None:
         """
         Handle client connection failure.
 
         Args:
-            connector: Connection connector instance.
+            _connector: Connection connector instance (unused, required by Twisted).
             reason: Failure reason details.
         """
         self.logger.debug(f"clientConnectionFailed: {reason}")
@@ -404,12 +404,12 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.connection_failed(reason)
         self._cancel_timeout()
 
-    def clientConnectionLost(self, connector: IConnector, reason: Failure) -> None:
+    def clientConnectionLost(self, _connector: IConnector, reason: Failure) -> None:
         """
         Handle client connection lost event.
 
         Args:
-            connector: Connection connector instance.
+            _connector: Connection connector instance (unused, required by Twisted).
             reason: Reason for connection loss.
         """
         self.logger.debug(f"clientConnectionLost: {reason}")

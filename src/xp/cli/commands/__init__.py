@@ -66,8 +66,6 @@ from xp.cli.commands.conbus.conbus_raw_commands import send_raw_telegrams
 from xp.cli.commands.conbus.conbus_receive_commands import receive_telegrams
 from xp.cli.commands.conbus.conbus_scan_commands import scan_module
 from xp.cli.commands.file_commands import file
-from xp.cli.commands.homekit.homekit import homekit
-from xp.cli.commands.homekit.homekit_start_commands import homekit_start
 from xp.cli.commands.module_commands import module
 from xp.cli.commands.reverse_proxy_commands import reverse_proxy
 from xp.cli.commands.server.server_commands import server
@@ -111,8 +109,6 @@ __all__ = [
     "linknumber",
     "blink",
     "checksum",
-    "homekit",
-    "homekit_start",
     "term",
     # Individual command functions
     "protocol_monitor",

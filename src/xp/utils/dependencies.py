@@ -1,9 +1,7 @@
 """Dependency injection container for XP services."""
 
 import punq
-from bubus import EventBus
 from twisted.internet import asyncioreactor
-from twisted.internet.interfaces import IConnector
 from twisted.internet.posixbase import PosixReactorBase
 
 from xp.models import ConbusClientConfig
@@ -55,19 +53,9 @@ from xp.services.conbus.conbus_raw_service import ConbusRawService
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.conbus.conbus_scan_service import ConbusScanService
 from xp.services.conbus.write_config_service import WriteConfigService
-from xp.services.homekit.homekit_cache_service import HomeKitCacheService
-from xp.services.homekit.homekit_conbus_service import HomeKitConbusService
-from xp.services.homekit.homekit_dimminglight_service import HomeKitDimmingLightService
-from xp.services.homekit.homekit_hap_service import HomekitHapService
-from xp.services.homekit.homekit_lightbulb_service import HomeKitLightbulbService
-from xp.services.homekit.homekit_module_service import HomekitModuleService
-from xp.services.homekit.homekit_outlet_service import HomeKitOutletService
-from xp.services.homekit.homekit_service import HomeKitService
 from xp.services.log_file_service import LogFileService
 from xp.services.module_type_service import ModuleTypeService
 from xp.services.protocol import ConbusEventProtocol
-from xp.services.protocol.protocol_factory import TelegramFactory
-from xp.services.protocol.telegram_protocol import TelegramProtocol
 from xp.services.reverse_proxy_service import ReverseProxyService
 from xp.services.server.device_service_factory import DeviceServiceFactory
 from xp.services.server.server_service import ServerService
@@ -169,7 +157,24 @@ class ServiceContainer:
         self.container.register(TelegramDatapointService, scope=punq.Scope.singleton)
         self.container.register(LinkNumberService, scope=punq.Scope.singleton)
 
+        # Reactor
+        self.container.register(
+            PosixReactorBase,
+            factory=lambda: reactor,
+            scope=punq.Scope.singleton,
+        )
+
         # Conbus services layer
+        self.container.register(
+            ConbusEventProtocol,
+            factory=lambda: ConbusEventProtocol(
+                cli_config=self.container.resolve(ConbusClientConfig),
+                reactor=self.container.resolve(PosixReactorBase),
+                telegram_service=self.container.resolve(TelegramService),
+            ),
+            scope=punq.Scope.singleton,
+        )
+
         self.container.register(
             ConbusDatapointService,
             factory=lambda: ConbusDatapointService(
@@ -192,16 +197,6 @@ class ServiceContainer:
             ConbusScanService,
             factory=lambda: ConbusScanService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            ConbusEventProtocol,
-            factory=lambda: ConbusEventProtocol(
-                cli_config=self.container.resolve(ConbusClientConfig),
-                reactor=self.container.resolve(PosixReactorBase),
-                telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,
         )
@@ -265,6 +260,13 @@ class ServiceContainer:
             factory=lambda: StateMonitorApp(
                 state_service=self.container.resolve(StateMonitorService)
             ),
+            scope=punq.Scope.singleton,
+        )
+
+        # HomeKit config
+        self.container.register(
+            HomekitConfig,
+            factory=lambda: HomekitConfig.from_yaml(self._homekit_config_path),
             scope=punq.Scope.singleton,
         )
 
@@ -441,39 +443,6 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
-        # HomeKit services layer
-        self.container.register(
-            HomekitModuleService,
-            factory=lambda: HomekitModuleService(
-                conson_modules_config=self.container.resolve(ConsonModuleListConfig),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        # Create event bus
-        self.container.register(
-            EventBus,
-            factory=lambda: EventBus(max_history_size=500),
-            scope=punq.Scope.singleton,
-        )
-
-        # HomeKit conson config
-        self.container.register(
-            HomekitConfig,
-            factory=lambda: HomekitConfig.from_yaml(self._homekit_config_path),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            HomekitHapService,
-            factory=lambda: HomekitHapService(
-                homekit_config=self.container.resolve(HomekitConfig),
-                module_service=self.container.resolve(HomekitModuleService),
-                event_bus=self.container.resolve(EventBus),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
         # Log file services layer
         self.container.register(
             LogFileService,
@@ -532,105 +501,6 @@ class ServiceContainer:
             factory=lambda: ReverseProxyService(
                 cli_config=self.container.resolve(ConbusClientConfig),
                 listen_port=self._reverse_proxy_port,
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        # Create protocol with built-in debouncing
-        self.container.register(
-            TelegramProtocol,
-            factory=lambda: TelegramProtocol(
-                event_bus=self.container.resolve(EventBus),
-                debounce_ms=50,
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            IConnector,
-            factory=lambda: reactor,
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            TelegramFactory,
-            factory=lambda: TelegramFactory(
-                event_bus=self.container.resolve(EventBus),
-                telegram_protocol=self.container.resolve(TelegramProtocol),
-                connector=self.container.resolve(IConnector),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            PosixReactorBase,
-            factory=lambda: reactor,
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            HomeKitLightbulbService,
-            factory=lambda: HomeKitLightbulbService(
-                event_bus=self.container.resolve(EventBus),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            HomeKitOutletService,
-            factory=lambda: HomeKitOutletService(
-                event_bus=self.container.resolve(EventBus),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            HomeKitDimmingLightService,
-            factory=lambda: HomeKitDimmingLightService(
-                event_bus=self.container.resolve(EventBus),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        # Cache service must be registered BEFORE HomeKitConbusService
-        # so it intercepts ReadDatapointEvent first
-        self.container.register(
-            HomeKitCacheService,
-            factory=lambda: HomeKitCacheService(
-                event_bus=self.container.resolve(EventBus),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            HomeKitConbusService,
-            factory=lambda: HomeKitConbusService(
-                event_bus=self.container.resolve(EventBus),
-                telegram_protocol=self.container.resolve(TelegramProtocol),
-            ),
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            TelegramService,
-            factory=TelegramService,
-            scope=punq.Scope.singleton,
-        )
-
-        self.container.register(
-            HomeKitService,
-            factory=lambda: HomeKitService(
-                cli_config=self.container.resolve(ConbusClientConfig),
-                event_bus=self.container.resolve(EventBus),
-                telegram_factory=self.container.resolve(TelegramFactory),
-                reactor=self.container.resolve(PosixReactorBase),
-                lightbulb_service=self.container.resolve(HomeKitLightbulbService),
-                outlet_service=self.container.resolve(HomeKitOutletService),
-                dimminglight_service=self.container.resolve(HomeKitDimmingLightService),
-                cache_service=self.container.resolve(HomeKitCacheService),
-                conbus_service=self.container.resolve(HomeKitConbusService),
-                module_factory=self.container.resolve(HomekitHapService),
-                telegram_service=self.container.resolve(TelegramService),
             ),
             scope=punq.Scope.singleton,
         )
