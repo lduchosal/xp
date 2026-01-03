@@ -1,230 +1,170 @@
 # HomeKit Action Keys Enhancement
 
-Add explicit on/off control via modifier keys in addition to existing toggle functionality.
+Select accessory by action key, then perform action on selection.
 
-## Reserved Keys
+## Key Bindings
 
-The following keys are reserved for app bindings and excluded from action key assignment:
+### Selection Keys
+| Key      | Action                             |
+|----------|------------------------------------|
+| `a-z0-9` | Select accessory row by action key |
 
-| Key | Binding |
-|-----|---------|
-| `q` | Quit |
-| `c` | Connect/Disconnect |
-| `r` | Refresh |
+### Action Keys (on selected accessory)
+| Key     | Action          | Telegram        |
+|---------|-----------------|-----------------|
+| `Space` | Toggle          | `toggle_action` |
+| `+`     | Turn ON         | `on_action`     |
+| `-`     | Turn OFF        | `off_action`    |
+| `*`     | Increase dimmer | TBD             |
+| `ç`     | Decrease dimmer | TBD             |
 
-**Implementation**: Define `RESERVED_KEYS = {"q", "c", "r"}` in `HomekitService` and skip these when assigning action keys during `_initialize_accessory_states()`.
-
-## Current Behavior
-
-| Key | Action |
-|-----|--------|
-| `a-z0-9` | Toggle accessory (sends `toggle_action`) |
-
-## New Behavior
-
-| Key | Action | Telegram |
-|-----|--------|----------|
-| `a-z0-9` | Toggle accessory | `toggle_action` |
-| `ctrl+a-z0-9` | Turn accessory ON | `on_action` |
-| `ctrl+shift+a-z0-9` | Turn accessory OFF | `off_action` |
-
-## Configuration
-
-Each accessory in `homekit.yml` already defines the required actions:
-
-```yaml
-accessories:
-  - name: variateur_salon
-    on_action: E02L12I00
-    off_action: E02L12I03
-    toggle_action: E02L12I02
-```
+### Reserved Keys
+| Key | Binding            |
+|-----|--------------------|
+| `Q` | Quit               |
+| `C` | Connect/Disconnect |
+| `R` | Refresh            |
 
 ## Implementation
 
 ### HomekitService
 
-Add two new methods in `src/xp/services/term/homekit_service.py`:
+Remove `turn_on_accessory(action_key)` and `turn_off_accessory(action_key)`.
+
+Add methods that operate on accessory ID directly:
 
 ```python
-def turn_on_accessory(self, action_key: str) -> bool:
+def select_accessory(self, action_key: str) -> Optional[str]:
     """
-    Turn on accessory by action key.
-
-    Sends the on_action telegram for the accessory mapped to the given key.
+    Get accessory ID for action key.
 
     Args:
         action_key: Action key (a-z0-9).
 
     Returns:
-        True if on command was sent, False otherwise.
+        Accessory ID if found, None otherwise.
     """
-    accessory_id = self._action_map.get(action_key)
-    if not accessory_id:
-        return False
+    return self._action_map.get(action_key)
 
+def toggle_selected(self, accessory_id: str) -> bool:
+    """Toggle accessory by ID."""
     state = self._accessory_states.get(accessory_id)
-    if not state:
+    if not state or not state.toggle_action:
         return False
+    self.send_action(state.toggle_action)
+    self.on_status_message.emit(f"Toggling {state.accessory_name}")
+    return True
 
+def turn_on_selected(self, accessory_id: str) -> bool:
+    """Turn on accessory by ID."""
     config = self._find_accessory_config_by_id(accessory_id)
-    if not config:
-        self.logger.warning(f"No config for accessory {accessory_id}")
+    state = self._accessory_states.get(accessory_id)
+    if not config or not state:
         return False
-
-    self._conbus_protocol.send_raw_telegram(config.on_action)
+    self.send_action(config.on_action)
     self.on_status_message.emit(f"Turning ON {state.accessory_name}")
     return True
 
-
-def turn_off_accessory(self, action_key: str) -> bool:
-    """
-    Turn off accessory by action key.
-
-    Sends the off_action telegram for the accessory mapped to the given key.
-
-    Args:
-        action_key: Action key (a-z0-9).
-
-    Returns:
-        True if off command was sent, False otherwise.
-    """
-    accessory_id = self._action_map.get(action_key)
-    if not accessory_id:
-        return False
-
-    state = self._accessory_states.get(accessory_id)
-    if not state:
-        return False
-
+def turn_off_selected(self, accessory_id: str) -> bool:
+    """Turn off accessory by ID."""
     config = self._find_accessory_config_by_id(accessory_id)
-    if not config:
-        self.logger.warning(f"No config for accessory {accessory_id}")
+    state = self._accessory_states.get(accessory_id)
+    if not config or not state:
         return False
-
-    self._conbus_protocol.send_raw_telegram(config.off_action)
+    self.send_action(config.off_action)
     self.on_status_message.emit(f"Turning OFF {state.accessory_name}")
     return True
-```
 
-Add helper method to find config by accessory_id:
+def increase_dimmer(self, accessory_id: str) -> bool:
+    """Increase dimmer level for accessory."""
+    # TBD: Implement dimmer control
+    pass
 
-```python
-def _find_accessory_config_by_id(self, accessory_id: str) -> Optional[HomekitAccessoryConfig]:
-    """
-    Find accessory config by accessory ID.
-
-    Args:
-        accessory_id: Accessory ID (e.g., "A12_1").
-
-    Returns:
-        HomekitAccessoryConfig if found, None otherwise.
-    """
-    state = self._accessory_states.get(accessory_id)
-    if not state:
-        return None
-    return self._find_accessory_config_by_output(state.serial_number, state.output)
-```
-
-Add reserved keys constant and update action key assignment:
-
-```python
-# Reserved keys that conflict with app bindings
-RESERVED_KEYS: set[str] = {"q", "c", "r"}
-
-def _initialize_accessory_states(self) -> None:
-    """Initialize accessory states from HomekitConfig and ConsonModuleListConfig."""
-    action_keys = "abcdefghijklmnopqrstuvwxyz0123456789"
-    action_index = 0
-    # ...
-
-    for room in self._homekit_config.bridge.rooms:
-        for accessory_name in room.accessories:
-            # ... existing code ...
-
-            # Skip reserved keys when assigning
-            while (
-                action_index < len(action_keys)
-                and action_keys[action_index] in RESERVED_KEYS
-            ):
-                action_index += 1
-
-            action_key = (
-                action_keys[action_index] if action_index < len(action_keys) else ""
-            )
-            action_index += 1
-            # ... rest of existing code ...
+def decrease_dimmer(self, accessory_id: str) -> bool:
+    """Decrease dimmer level for accessory."""
+    # TBD: Implement dimmer control
+    pass
 ```
 
 ### HomekitApp
 
-Update `on_key` method in `src/xp/term/homekit.py`:
+Track selected accessory and handle action keys:
 
 ```python
-def on_key(self, event: Any) -> None:
-    """
-    Handle key press events for action keys.
+class HomekitApp(App[None]):
+    selected_accessory_id: Optional[str] = None
 
-    Intercepts action keys with modifiers:
-    - a-z0-9: Toggle accessory
-    - ctrl+a-z0-9: Turn accessory ON
-    - ctrl+shift+a-z0-9: Turn accessory OFF
+    def on_key(self, event: Any) -> None:
+        key = event.key
 
-    Args:
-        event: Key press event.
-    """
-    key = event.key
-
-    # Check for ctrl+shift+key (OFF command)
-    if key.startswith("ctrl+shift+"):
-        base_key = key[11:].lower()  # Remove "ctrl+shift+" prefix
-        if len(base_key) == 1 and (("a" <= base_key <= "z") or ("0" <= base_key <= "9")):
-            if self.homekit_service.turn_off_accessory(base_key):
+        # Selection keys (a-z0-9)
+        if len(key) == 1 and (("a" <= key <= "z") or ("0" <= key <= "9")):
+            accessory_id = self.homekit_service.select_accessory(key)
+            if accessory_id:
+                self.selected_accessory_id = accessory_id
+                self._highlight_row(key)
                 event.prevent_default()
             return
 
-    # Check for ctrl+key (ON command)
-    if key.startswith("ctrl+"):
-        base_key = key[5:].lower()  # Remove "ctrl+" prefix
-        if len(base_key) == 1 and (("a" <= base_key <= "z") or ("0" <= base_key <= "9")):
-            if self.homekit_service.turn_on_accessory(base_key):
-                event.prevent_default()
+        # Action keys (require selection)
+        if not self.selected_accessory_id:
             return
 
-    # Plain key (toggle)
-    key_lower = key.lower()
-    if len(key_lower) == 1 and (("a" <= key_lower <= "z") or ("0" <= key_lower <= "9")):
-        if self.homekit_service.toggle_accessory(key_lower):
+        if key == "space":
+            self.homekit_service.toggle_selected(self.selected_accessory_id)
             event.prevent_default()
+        elif key == "plus" or key == "+":
+            self.homekit_service.turn_on_selected(self.selected_accessory_id)
+            event.prevent_default()
+        elif key == "minus" or key == "-":
+            self.homekit_service.turn_off_selected(self.selected_accessory_id)
+            event.prevent_default()
+        elif key == "asterisk" or key == "*":
+            self.homekit_service.increase_dimmer(self.selected_accessory_id)
+            event.prevent_default()
+        elif key == "ç":
+            self.homekit_service.decrease_dimmer(self.selected_accessory_id)
+            event.prevent_default()
+
+    def _highlight_row(self, action_key: str) -> None:
+        """Highlight the row corresponding to action key in RoomListWidget."""
+        if self.room_list_widget:
+            self.room_list_widget.select_by_action_key(action_key)
 ```
 
-## Status Messages
+### RoomListWidget
 
-| Action | Status Message |
-|--------|----------------|
-| Toggle | `Toggling {accessory_name}` |
-| ON | `Turning ON {accessory_name}` |
-| OFF | `Turning OFF {accessory_name}` |
+Add method to select/highlight row by action key:
+
+```python
+def select_by_action_key(self, action_key: str) -> None:
+    """Select and highlight row by action key."""
+    # Find row index for action key and move cursor
+    for row_index, row_key in enumerate(self._row_keys):
+        if row_key == action_key:
+            self.move_cursor(row=row_index)
+            break
+```
 
 ## Checklist
 
 ### Service Layer
-- [ ] Define `RESERVED_KEYS = {"q", "c", "r"}` constant
-- [ ] Update `_initialize_accessory_states()` to skip reserved keys
-- [ ] Add `turn_on_accessory(action_key: str) -> bool` method
-- [ ] Add `turn_off_accessory(action_key: str) -> bool` method
-- [ ] Add `_find_accessory_config_by_id(accessory_id: str)` helper method
-- [ ] Emit status messages for on/off actions
+- [ ] Remove `turn_on_accessory(action_key)` method
+- [ ] Remove `turn_off_accessory(action_key)` method
+- [ ] Add `select_accessory(action_key) -> Optional[str]` method
+- [ ] Add `toggle_selected(accessory_id) -> bool` method
+- [ ] Add `turn_on_selected(accessory_id) -> bool` method
+- [ ] Add `turn_off_selected(accessory_id) -> bool` method
+- [ ] Add `increase_dimmer(accessory_id) -> bool` method (stub)
+- [ ] Add `decrease_dimmer(accessory_id) -> bool` method (stub)
 
 ### TUI Layer
-- [ ] Update `on_key` to detect `ctrl+` prefix for ON command
-- [ ] Update `on_key` to detect `ctrl+shift+` prefix for OFF command
-- [ ] Maintain existing toggle behavior for plain keys
+- [ ] Add `selected_accessory_id` state to HomekitApp
+- [ ] Update `on_key` to handle selection keys (a-z0-9)
+- [ ] Update `on_key` to handle action keys (space, +, -, *, ç)
+- [ ] Add `_highlight_row(action_key)` method
+- [ ] Add `select_by_action_key(action_key)` to RoomListWidget
 
-### Documentation
-- [ ] Update docstrings in `homekit.py`
-- [ ] Update docstrings in `homekit_service.py`
-
-### Quality
-- [ ] Pass mypy strict type checking
-- [ ] Follow existing code patterns
+### Tests
+- [ ] Update tests for new key handling
+- [ ] Add tests for selection + action flow

@@ -90,35 +90,33 @@ class HomekitApp(App[None]):
         Handle key press events for action keys.
 
         Intercepts action keys with modifiers:
-        - a-z0-9: Toggle accessory
-        - ctrl+a-z0-9: Turn accessory ON
-        - ctrl+shift+a-z0-9: Turn accessory OFF
+        - a-z0-9 (lowercase): Toggle accessory
+        - A-Z (uppercase/shift): Turn accessory ON
+        - ctrl+a-z: Turn accessory OFF
 
         Args:
             event: Key press event.
         """
         key = event.key
 
-        # Check for ctrl+shift+key (OFF command)
-        if key.startswith("ctrl+shift+"):
-            base_key = key[11:].lower()  # Remove "ctrl+shift+" prefix
-            if len(base_key) == 1 and (("a" <= base_key <= "z") or ("0" <= base_key <= "9")):
+        # Check for ctrl+key (OFF command)
+        if key.startswith("ctrl+"):
+            base_key = key[5:].lower()  # Remove "ctrl+" prefix
+            if len(base_key) == 1 and ("a" <= base_key <= "z"):
                 if self.homekit_service.turn_off_accessory(base_key):
                     event.prevent_default()
             return
 
-        # Check for ctrl+key (ON command)
-        if key.startswith("ctrl+"):
-            base_key = key[5:].lower()  # Remove "ctrl+" prefix
-            if len(base_key) == 1 and (("a" <= base_key <= "z") or ("0" <= base_key <= "9")):
-                if self.homekit_service.turn_on_accessory(base_key):
-                    event.prevent_default()
+        # Check for uppercase letter (ON command via shift+key)
+        if len(key) == 1 and "A" <= key <= "Z":
+            base_key = key.lower()
+            if self.homekit_service.turn_on_accessory(base_key):
+                event.prevent_default()
             return
 
-        # Plain key (toggle)
-        key_lower = key.lower()
-        if len(key_lower) == 1 and (("a" <= key_lower <= "z") or ("0" <= key_lower <= "9")):
-            if self.homekit_service.toggle_accessory(key_lower):
+        # Plain lowercase key or digit (toggle)
+        if len(key) == 1 and (("a" <= key <= "z") or ("0" <= key <= "9")):
+            if self.homekit_service.toggle_accessory(key):
                 event.prevent_default()
 
     def action_toggle_connection(self) -> None:
