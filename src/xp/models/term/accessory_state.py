@@ -13,7 +13,7 @@ class AccessoryState:
     Attributes:
         room_name: Room containing the accessory (e.g., "Salon").
         accessory_name: Accessory display name (e.g., "Variateur salon").
-        action: Action key (a-z) for toggle control.
+        action: Action key (a-z0-9) for toggle control.
         output_state: Output state ("ON", "OFF", "?").
         dimming_state: Dimming percentage for dimmable modules, "-" if OFF, empty otherwise.
         module_name: Module identifier (e.g., "A12").

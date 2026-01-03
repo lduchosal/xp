@@ -57,7 +57,7 @@ def homekit_monitor(ctx: Context) -> None:
     Start TUI for HomeKit accessory monitoring.
 
     Displays HomeKit rooms and accessories with real-time state updates
-    in an interactive terminal interface. Press action keys (a-z) to
+    in an interactive terminal interface. Press action keys (a-z0-9) to
     toggle accessories.
 
     Args:

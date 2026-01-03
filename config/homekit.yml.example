@@ -110,7 +110,7 @@ accessories:
     id: A6R1
     serial_number: "0012345006"
     output_number: 0
-    description: Dressing
+    description: Lumière Dressing
     service: lightbulb
 
   - name: lumiere_mirroir_douche

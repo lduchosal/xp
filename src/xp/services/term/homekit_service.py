@@ -320,7 +320,7 @@ class HomekitService:
         Sends the toggle_action telegram for the accessory mapped to the given key.
 
         Args:
-            action_key: Action key (a-z).
+            action_key: Action key (a-z0-9).
 
         Returns:
             True if toggle was sent, False otherwise.

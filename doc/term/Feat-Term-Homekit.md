@@ -224,7 +224,7 @@ CLI Command → Textual App → Widgets  → Term Service
 1. **Room/Accessory table**: DataTable displaying all rooms and accessories
 2. **Live updates**: Module states update in real-time via ConbusEventProtocol events
 3. **Keyboard navigation**: Vi-style keybindings (j/k for navigation)
-4. **Action execution**: Press action key (a-z) to toggle accessory on/off
+4. **Action execution**: Press action key (a-z0-9) to toggle accessory on/off
 
 
 ## Implementation Checklist

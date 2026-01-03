@@ -89,13 +89,13 @@ class HomekitApp(App[None]):
         """
         Handle key press events for action keys.
 
-        Intercepts a-z keys to toggle accessories.
+        Intercepts a-z0-9 keys to toggle accessories.
 
         Args:
             event: Key press event.
         """
         key = event.key.lower()
-        if len(key) == 1 and "a" <= key <= "z":
+        if len(key) == 1 and (("a" <= key <= "z") or ("0" <= key <= "9")):
             if self.homekit_service.toggle_accessory(key):
                 event.prevent_default()
 

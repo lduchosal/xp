@@ -18,6 +18,7 @@ class XPAccessory(Accessory):
         self,
         driver: "HomekitAccessoryDriver",
         name: str,
+        display_name: str,
         service_type: str,
         aid: int,
     ) -> None:
@@ -26,11 +27,12 @@ class XPAccessory(Accessory):
 
         Args:
             driver: HomekitAccessoryDriver instance.
-            name: Accessory name (unique identifier and display name).
+            name: Accessory name (unique identifier for internal tracking).
+            display_name: Display name shown in HomeKit (from config description).
             service_type: Service type ('light', 'outlet', 'dimminglight').
             aid: Accessory ID for HomeKit.
         """
-        super().__init__(driver._driver, name, aid=aid)
+        super().__init__(driver._driver, display_name, aid=aid)
         self._hk_driver = driver
         self._accessory_id = name
         self.logger = logging.getLogger(__name__)
@@ -108,6 +110,7 @@ class HomekitAccessoryDriver:
             accessory = XPAccessory(
                 driver=self,
                 name=acc_config.name,
+                display_name=acc_config.description,
                 service_type=acc_config.service,
                 aid=aid,
             )
