@@ -345,15 +345,6 @@ xp file validate
 
 xp help
 
-xp homekit
-
-xp homekit config
-xp homekit config show
-xp homekit config validate
-
-xp homekit start
-
-
 xp module
 xp module categories
 xp module info
