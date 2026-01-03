@@ -89,14 +89,36 @@ class HomekitApp(App[None]):
         """
         Handle key press events for action keys.
 
-        Intercepts a-z0-9 keys to toggle accessories.
+        Intercepts action keys with modifiers:
+        - a-z0-9: Toggle accessory
+        - ctrl+a-z0-9: Turn accessory ON
+        - ctrl+shift+a-z0-9: Turn accessory OFF
 
         Args:
             event: Key press event.
         """
-        key = event.key.lower()
-        if len(key) == 1 and (("a" <= key <= "z") or ("0" <= key <= "9")):
-            if self.homekit_service.toggle_accessory(key):
+        key = event.key
+
+        # Check for ctrl+shift+key (OFF command)
+        if key.startswith("ctrl+shift+"):
+            base_key = key[11:].lower()  # Remove "ctrl+shift+" prefix
+            if len(base_key) == 1 and (("a" <= base_key <= "z") or ("0" <= base_key <= "9")):
+                if self.homekit_service.turn_off_accessory(base_key):
+                    event.prevent_default()
+            return
+
+        # Check for ctrl+key (ON command)
+        if key.startswith("ctrl+"):
+            base_key = key[5:].lower()  # Remove "ctrl+" prefix
+            if len(base_key) == 1 and (("a" <= base_key <= "z") or ("0" <= base_key <= "9")):
+                if self.homekit_service.turn_on_accessory(base_key):
+                    event.prevent_default()
+            return
+
+        # Plain key (toggle)
+        key_lower = key.lower()
+        if len(key_lower) == 1 and (("a" <= key_lower <= "z") or ("0" <= key_lower <= "9")):
+            if self.homekit_service.toggle_accessory(key_lower):
                 event.prevent_default()
 
     def action_toggle_connection(self) -> None:
