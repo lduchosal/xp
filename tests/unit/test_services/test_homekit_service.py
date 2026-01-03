@@ -199,14 +199,12 @@ class TestHomekitService:
         assert light1.toggle_action == "E02L09I00"
 
     def test_initialization_assigns_action_keys(self, service):
-        """Test service assigns sequential action keys to accessories, skipping reserved keys."""
+        """Test service assigns sequential action keys to accessories."""
         states = service.accessory_states
         actions = [s.action for s in states]
         assert "a" in actions
         assert "b" in actions
-        # 'c' is reserved (Connect binding), so 'd' should be next
-        assert "c" not in actions
-        assert "d" in actions
+        assert "c" in actions
 
     def test_initialization_assigns_sort_order(self, service):
         """Test service assigns sort order matching config order."""
@@ -278,27 +276,56 @@ class TestHomekitService:
 
         mock_protocol.disconnect.assert_called_once()
 
-    def test_toggle_accessory_sends_telegram(self, service, mock_protocol):
-        """Test toggle_accessory sends toggle_action telegram."""
+    def test_select_accessory_returns_id(self, service):
+        """Test select_accessory returns accessory ID for valid key."""
+        accessory_id = service.select_accessory("a")
+
+        assert accessory_id is not None
+        assert accessory_id == "A01_1"
+
+    def test_select_accessory_invalid_key(self, service):
+        """Test select_accessory returns None for invalid key."""
+        accessory_id = service.select_accessory("z")  # Not assigned
+
+        assert accessory_id is None
+
+    def test_toggle_selected_sends_telegram(self, service, mock_protocol):
+        """Test toggle_selected sends toggle_action telegram."""
         service.connect()
         service._on_connection_made()
 
-        result = service.toggle_accessory("a")
+        accessory_id = service.select_accessory("a")
+        result = service.toggle_selected(accessory_id)
 
         assert result is True
         mock_protocol.send_raw_telegram.assert_called()
 
-    def test_toggle_accessory_invalid_key(self, service, mock_protocol):
-        """Test toggle_accessory returns False for invalid key."""
-        result = service.toggle_accessory("z")  # Not assigned
+    def test_toggle_selected_invalid_id(self, service, mock_protocol):
+        """Test toggle_selected returns False for invalid ID."""
+        result = service.toggle_selected("invalid_id")
 
         assert result is False
-        mock_protocol.send_raw_telegram.assert_not_called()
 
-    def test_toggle_accessory_no_toggle_action(
+    def test_turn_on_selected_sends_telegram(self, service, mock_protocol):
+        """Test turn_on_selected sends on_action telegram."""
+        accessory_id = service.select_accessory("a")
+        result = service.turn_on_selected(accessory_id)
+
+        assert result is True
+        mock_protocol.send_raw_telegram.assert_called()
+
+    def test_turn_off_selected_sends_telegram(self, service, mock_protocol):
+        """Test turn_off_selected sends off_action telegram."""
+        accessory_id = service.select_accessory("a")
+        result = service.turn_off_selected(accessory_id)
+
+        assert result is True
+        mock_protocol.send_raw_telegram.assert_called()
+
+    def test_toggle_selected_no_toggle_action(
         self, mock_protocol, conson_config, mock_telegram_service, mock_accessory_driver
     ):
-        """Test toggle_accessory returns False when no toggle_action."""
+        """Test toggle_selected returns False when no toggle_action."""
         # Create config without toggle_action
         homekit_config = HomekitConfig(
             bridge=BridgeConfig(
@@ -320,13 +347,16 @@ class TestHomekitService:
             ],
         )
 
-        result = HomekitService(
+        svc = HomekitService(
             conbus_protocol=mock_protocol,
             homekit_config=homekit_config,
             conson_config=conson_config,
             telegram_service=mock_telegram_service,
             accessory_driver=mock_accessory_driver,
-        ).toggle_accessory("a")
+        )
+        accessory_id = svc.select_accessory("a")
+        assert accessory_id is not None
+        result = svc.toggle_selected(accessory_id)
 
         assert result is False
 

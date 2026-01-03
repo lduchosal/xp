@@ -29,7 +29,12 @@ class TestHomekitApp:
         service.connect = Mock()
         service.disconnect = Mock()
         service.toggle_connection = Mock()
-        service.toggle_accessory = Mock(return_value=True)
+        service.select_accessory = Mock(return_value="A01_1")
+        service.toggle_selected = Mock(return_value=True)
+        service.turn_on_selected = Mock(return_value=True)
+        service.turn_off_selected = Mock(return_value=True)
+        service.increase_dimmer = Mock(return_value=True)
+        service.decrease_dimmer = Mock(return_value=True)
         service.refresh_all = Mock()
         service.cleanup = Mock()
         service.connection_state = Mock()
@@ -56,7 +61,7 @@ class TestHomekitApp:
         binding_keys = [b[0] for b in app.BINDINGS]
         assert "Q" in binding_keys
         assert "C" in binding_keys
-        assert "r" in binding_keys
+        assert "R" in binding_keys
 
     def test_action_toggle_connection(self, app, mock_service):
         """Test action_toggle_connection calls service method."""
@@ -68,34 +73,71 @@ class TestHomekitApp:
         app.action_refresh_all()
         mock_service.refresh_all.assert_called_once()
 
-    def test_on_key_action_key(self, app, mock_service):
-        """Test on_key handles action keys a-z."""
+    def test_on_key_selects_accessory(self, app, mock_service):
+        """Test on_key selects accessory with a-z keys."""
         mock_event = Mock()
         mock_event.key = "a"
 
         app.on_key(mock_event)
 
-        mock_service.toggle_accessory.assert_called_once_with("a")
+        mock_service.select_accessory.assert_called_once_with("a")
+        assert app.selected_accessory_id == "A01_1"
         mock_event.prevent_default.assert_called_once()
 
-    def test_on_key_action_key_uppercase(self, app, mock_service):
-        """Test on_key handles uppercase action keys."""
-        mock_event = Mock()
-        mock_event.key = "A"
-
-        app.on_key(mock_event)
-
-        mock_service.toggle_accessory.assert_called_once_with("a")
-
-    def test_on_key_action_key_not_found(self, app, mock_service):
+    def test_on_key_select_not_found(self, app, mock_service):
         """Test on_key does not prevent default when key not found."""
-        mock_service.toggle_accessory.return_value = False
+        mock_service.select_accessory.return_value = None
         mock_event = Mock()
         mock_event.key = "z"
 
         app.on_key(mock_event)
 
+        assert app.selected_accessory_id is None
         mock_event.prevent_default.assert_not_called()
+
+    def test_on_key_space_toggles_selected(self, app, mock_service):
+        """Test space key toggles selected accessory."""
+        # First select an accessory
+        app.selected_accessory_id = "A01_1"
+        mock_event = Mock()
+        mock_event.key = "space"
+
+        app.on_key(mock_event)
+
+        mock_service.toggle_selected.assert_called_once_with("A01_1")
+        mock_event.prevent_default.assert_called_once()
+
+    def test_on_key_plus_turns_on_selected(self, app, mock_service):
+        """Test + key turns on selected accessory."""
+        app.selected_accessory_id = "A01_1"
+        mock_event = Mock()
+        mock_event.key = "+"
+
+        app.on_key(mock_event)
+
+        mock_service.turn_on_selected.assert_called_once_with("A01_1")
+        mock_event.prevent_default.assert_called_once()
+
+    def test_on_key_minus_turns_off_selected(self, app, mock_service):
+        """Test - key turns off selected accessory."""
+        app.selected_accessory_id = "A01_1"
+        mock_event = Mock()
+        mock_event.key = "-"
+
+        app.on_key(mock_event)
+
+        mock_service.turn_off_selected.assert_called_once_with("A01_1")
+        mock_event.prevent_default.assert_called_once()
+
+    def test_on_key_action_requires_selection(self, app, mock_service):
+        """Test action keys require selection first."""
+        app.selected_accessory_id = None
+        mock_event = Mock()
+        mock_event.key = "space"
+
+        app.on_key(mock_event)
+
+        mock_service.toggle_selected.assert_not_called()
 
     def test_on_key_non_action_key(self, app, mock_service):
         """Test on_key ignores non-action keys (symbols, punctuation)."""
@@ -104,7 +146,7 @@ class TestHomekitApp:
 
         app.on_key(mock_event)
 
-        mock_service.toggle_accessory.assert_not_called()
+        mock_service.select_accessory.assert_not_called()
 
     def test_on_key_special_key(self, app, mock_service):
         """Test on_key ignores special keys."""
@@ -113,7 +155,7 @@ class TestHomekitApp:
 
         app.on_key(mock_event)
 
-        mock_service.toggle_accessory.assert_not_called()
+        mock_service.select_accessory.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_on_unmount_cleanup(self, app, mock_service):

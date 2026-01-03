@@ -14,11 +14,12 @@ class HomekitApp(App[None]):
     """
     Textual app for HomeKit accessory monitoring.
 
-    Displays rooms and accessories with real-time state updates
-    and toggle control via action keys.
+    Displays rooms and accessories with real-time state updates.
+    Select accessory with action key, then perform action on selection.
 
     Attributes:
         homekit_service: HomekitService for accessory state operations.
+        selected_accessory_id: Currently selected accessory ID.
         CSS_PATH: Path to CSS stylesheet file.
         BINDINGS: Keyboard bindings for app actions.
         TITLE: Application title displayed in header.
@@ -32,7 +33,7 @@ class HomekitApp(App[None]):
     BINDINGS = [
         ("Q", "quit", "Quit"),
         ("C", "toggle_connection", "Connect"),
-        ("r", "refresh_all", "Refresh"),
+        ("R", "refresh_all", "Refresh"),
     ]
 
     def __init__(self, homekit_service: HomekitService) -> None:
@@ -44,6 +45,7 @@ class HomekitApp(App[None]):
         """
         super().__init__()
         self.homekit_service: HomekitService = homekit_service
+        self.selected_accessory_id: Optional[str] = None
         self.room_list_widget: Optional[RoomListWidget] = None
         self.footer_widget: Optional[StatusFooterWidget] = None
 
@@ -87,37 +89,59 @@ class HomekitApp(App[None]):
 
     def on_key(self, event: Any) -> None:
         """
-        Handle key press events for action keys.
+        Handle key press events for selection and action keys.
 
-        Intercepts action keys with modifiers:
-        - a-z0-9 (lowercase): Toggle accessory
-        - A-Z (uppercase/shift): Turn accessory ON
-        - ctrl+a-z: Turn accessory OFF
+        Selection keys (a-z0-9): Select accessory row.
+        Action keys (on selected accessory):
+        - Space: Toggle
+        - +: Turn ON
+        - -: Turn OFF
+        - *: Increase dimmer
+        - ç: Decrease dimmer
 
         Args:
             event: Key press event.
         """
         key = event.key
 
-        # Check for ctrl+key (OFF command)
-        if key.startswith("ctrl+"):
-            base_key = key[5:].lower()  # Remove "ctrl+" prefix
-            if len(base_key) == 1 and ("a" <= base_key <= "z"):
-                if self.homekit_service.turn_off_accessory(base_key):
-                    event.prevent_default()
-            return
-
-        # Check for uppercase letter (ON command via shift+key)
-        if len(key) == 1 and "A" <= key <= "Z":
-            base_key = key.lower()
-            if self.homekit_service.turn_on_accessory(base_key):
-                event.prevent_default()
-            return
-
-        # Plain lowercase key or digit (toggle)
+        # Selection keys (a-z0-9)
         if len(key) == 1 and (("a" <= key <= "z") or ("0" <= key <= "9")):
-            if self.homekit_service.toggle_accessory(key):
+            accessory_id = self.homekit_service.select_accessory(key)
+            if accessory_id:
+                self.selected_accessory_id = accessory_id
+                self._select_row(key)
                 event.prevent_default()
+            return
+
+        # Action keys (require selection)
+        if not self.selected_accessory_id:
+            return
+
+        if key == "space":
+            self.homekit_service.toggle_selected(self.selected_accessory_id)
+            event.prevent_default()
+        elif key in ("plus", "+"):
+            self.homekit_service.turn_on_selected(self.selected_accessory_id)
+            event.prevent_default()
+        elif key in ("minus", "-"):
+            self.homekit_service.turn_off_selected(self.selected_accessory_id)
+            event.prevent_default()
+        elif key in ("asterisk", "*"):
+            self.homekit_service.increase_dimmer(self.selected_accessory_id)
+            event.prevent_default()
+        elif key == "ç":
+            self.homekit_service.decrease_dimmer(self.selected_accessory_id)
+            event.prevent_default()
+
+    def _select_row(self, action_key: str) -> None:
+        """
+        Select row in RoomListWidget by action key.
+
+        Args:
+            action_key: Action key to select.
+        """
+        if self.room_list_widget:
+            self.room_list_widget.select_by_action_key(action_key)
 
     def action_toggle_connection(self) -> None:
         """

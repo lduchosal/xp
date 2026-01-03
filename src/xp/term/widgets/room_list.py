@@ -41,6 +41,7 @@ class RoomListWidget(Static):
         self.service = service
         self.table: Optional[DataTable] = None
         self._row_keys: dict[str, Any] = {}  # Map accessory_id to row key
+        self._action_to_row: dict[str, Any] = {}  # Map action key to row key
         self._current_room: str = ""
 
     def compose(self) -> ComposeResult:
@@ -93,6 +94,7 @@ class RoomListWidget(Static):
 
         self.table.clear()
         self._row_keys.clear()
+        self._action_to_row.clear()
         self._current_room = ""
 
         for state in accessory_states:
@@ -160,6 +162,8 @@ class RoomListWidget(Static):
             Text(self._format_last_update(state.last_update), justify="center"),
         )
         self._row_keys[accessory_id] = row_key
+        if state.action:
+            self._action_to_row[state.action] = row_key
 
     def _format_dim(self, state: AccessoryState) -> str:
         """
@@ -230,3 +234,20 @@ class RoomListWidget(Static):
                         justify="center",
                     ),
                 )
+
+    def select_by_action_key(self, action_key: str) -> None:
+        """
+        Select and highlight row by action key.
+
+        Moves the table cursor to the row corresponding to the action key.
+
+        Args:
+            action_key: Action key (a-z0-9) to select.
+        """
+        if not self.table:
+            return
+
+        row_key = self._action_to_row.get(action_key)
+        if row_key is not None:
+            row_index = self.table.get_row_index(row_key)
+            self.table.move_cursor(row=row_index)

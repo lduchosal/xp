@@ -20,8 +20,6 @@ from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
 from xp.services.term.homekit_accessory_driver import HomekitAccessoryDriver
 
-# Reserved keys that conflict with app bindings (Q=Quit, C=Connect, r=Refresh)
-RESERVED_KEYS: set[str] = {"q", "c", "r"}
 
 
 class HomekitService:
@@ -118,13 +116,6 @@ class HomekitService:
                 accessory_id = (
                     f"{module_config.name}_{accessory_config.output_number + 1}"
                 )
-
-                # Skip reserved keys when assigning action keys
-                while (
-                    action_index < len(action_keys)
-                    and action_keys[action_index] in RESERVED_KEYS
-                ):
-                    action_index += 1
 
                 # Assign action key
                 action_key = (
@@ -344,22 +335,28 @@ class HomekitService:
         else:
             self.connect()
 
-    def toggle_accessory(self, action_key: str) -> bool:
+    def select_accessory(self, action_key: str) -> Optional[str]:
         """
-        Toggle accessory by action key.
-
-        Sends the toggle_action telegram for the accessory mapped to the given key.
+        Get accessory ID for action key.
 
         Args:
             action_key: Action key (a-z0-9).
 
         Returns:
+            Accessory ID if found, None otherwise.
+        """
+        return self._action_map.get(action_key)
+
+    def toggle_selected(self, accessory_id: str) -> bool:
+        """
+        Toggle accessory by ID.
+
+        Args:
+            accessory_id: Accessory ID (e.g., "A12_1").
+
+        Returns:
             True if toggle was sent, False otherwise.
         """
-        accessory_id = self._action_map.get(action_key)
-        if not accessory_id:
-            return False
-
         state = self._accessory_states.get(accessory_id)
         if not state or not state.toggle_action:
             self.logger.warning(f"No toggle_action for accessory {accessory_id}")
@@ -369,28 +366,19 @@ class HomekitService:
         self.on_status_message.emit(f"Toggling {state.accessory_name}")
         return True
 
-    def turn_on_accessory(self, action_key: str) -> bool:
+    def turn_on_selected(self, accessory_id: str) -> bool:
         """
-        Turn on accessory by action key.
-
-        Sends the on_action telegram for the accessory mapped to the given key.
+        Turn on accessory by ID.
 
         Args:
-            action_key: Action key (a-z0-9).
+            accessory_id: Accessory ID (e.g., "A12_1").
 
         Returns:
             True if on command was sent, False otherwise.
         """
-        accessory_id = self._action_map.get(action_key)
-        if not accessory_id:
-            return False
-
-        state = self._accessory_states.get(accessory_id)
-        if not state:
-            return False
-
         config = self._find_accessory_config_by_id(accessory_id)
-        if not config:
+        state = self._accessory_states.get(accessory_id)
+        if not config or not state:
             self.logger.warning(f"No config for accessory {accessory_id}")
             return False
 
@@ -398,34 +386,59 @@ class HomekitService:
         self.on_status_message.emit(f"Turning ON {state.accessory_name}")
         return True
 
-    def turn_off_accessory(self, action_key: str) -> bool:
+    def turn_off_selected(self, accessory_id: str) -> bool:
         """
-        Turn off accessory by action key.
-
-        Sends the off_action telegram for the accessory mapped to the given key.
+        Turn off accessory by ID.
 
         Args:
-            action_key: Action key (a-z0-9).
+            accessory_id: Accessory ID (e.g., "A12_1").
 
         Returns:
             True if off command was sent, False otherwise.
         """
-        accessory_id = self._action_map.get(action_key)
-        if not accessory_id:
-            return False
-
-        state = self._accessory_states.get(accessory_id)
-        if not state:
-            return False
-
         config = self._find_accessory_config_by_id(accessory_id)
-        if not config:
+        state = self._accessory_states.get(accessory_id)
+        if not config or not state:
             self.logger.warning(f"No config for accessory {accessory_id}")
             return False
 
         self.send_action(config.off_action)
         self.on_status_message.emit(f"Turning OFF {state.accessory_name}")
         return True
+
+    def increase_dimmer(self, accessory_id: str) -> bool:
+        """
+        Increase dimmer level for accessory.
+
+        Args:
+            accessory_id: Accessory ID (e.g., "A12_1").
+
+        Returns:
+            True if command was sent, False otherwise.
+        """
+        state = self._accessory_states.get(accessory_id)
+        if not state:
+            return False
+        # TODO: Implement dimmer control
+        self.on_status_message.emit(f"Dimmer+ {state.accessory_name} (not implemented)")
+        return False
+
+    def decrease_dimmer(self, accessory_id: str) -> bool:
+        """
+        Decrease dimmer level for accessory.
+
+        Args:
+            accessory_id: Accessory ID (e.g., "A12_1").
+
+        Returns:
+            True if command was sent, False otherwise.
+        """
+        state = self._accessory_states.get(accessory_id)
+        if not state:
+            return False
+        # TODO: Implement dimmer control
+        self.on_status_message.emit(f"Dimmer- {state.accessory_name} (not implemented)")
+        return False
 
     def refresh_all(self) -> None:
         """

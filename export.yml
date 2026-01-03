@@ -447,6 +447,37 @@
   sw_version: XP33LED_V0.04.01
   hw_version: XP33LED_HW_VER1
   auto_report_status: PP
+  action_table:
+  - XP20 10 0 > 0 OFF;
+  - XP20 10 0 > 1 OFF;
+  - XP20 10 0 > 2 OFF;
+  - XP20 10 8 > 0 ON;
+  - XP20 10 8 > 1 ON;
+  - XP20 10 8 > 2 ON;
+  - XP20 2 0 > 0 OFF;
+  - XP20 2 0 > 1 OFF;
+  - XP20 2 0 > 2 OFF;
+  - XP20 2 8 > 0 ON;
+  - XP20 2 8 > 1 ON;
+  - XP20 2 8 > 2 ON;
+  - CP20 0 0 > 0 OFF;
+  - CP20 0 0 > 1 OFF;
+  - CP20 0 0 > 2 OFF;
+  - CP20 0 8 > 0 ON;
+  - CP20 0 8 > 1 ON;
+  - CP20 0 8 > 2 ON;
+  - CP20 13 0 > 0 ON;
+  - CP20 13 1 > 1 ON;
+  - CP20 13 2 > 2 ON;
+  - CP20 13 3 > 0 OFF;
+  - CP20 13 4 > 1 OFF;
+  - CP20 13 5 > 2 OFF;
+  - CP20 13 8 > 0 ON;
+  - CP20 13 8 > 1 ON;
+  - CP20 13 8 > 2 ON;
+  - CP20 13 9 > 0 OFF;
+  - CP20 13 9 > 1 OFF;
+  - CP20 13 9 > 2 OFF;
 
 - name: A14
   serial_number: '0020041013'
@@ -455,5 +486,15 @@
   link_number: 14
   module_number: 1
   sw_version: XP130_V0.10.04
+  hw_version: XP130_HW_Rev B
+  auto_report_status: AA
+
+- name: A11
+  serial_number: 0020030837
+  module_type: XP130
+  module_type_code: 34
+  link_number: 11
+  module_number: 5
+  sw_version: XP230_V1.00.04
   hw_version: XP130_HW_Rev B
   auto_report_status: AA
