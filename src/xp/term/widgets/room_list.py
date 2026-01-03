@@ -42,6 +42,7 @@ class RoomListWidget(Static):
         self.table: Optional[DataTable] = None
         self._row_keys: dict[str, Any] = {}  # Map accessory_id to row key
         self._row_to_accessory: dict[Any, str] = {}  # Map row key to accessory_id
+        self._row_index_to_key: list[Any] = []  # Map row index to row key
         self._action_to_row: dict[str, Any] = {}  # Map action key to row key
         self._current_room: str = ""
 
@@ -96,6 +97,7 @@ class RoomListWidget(Static):
         self.table.clear()
         self._row_keys.clear()
         self._row_to_accessory.clear()
+        self._row_index_to_key.clear()
         self._action_to_row.clear()
         self._current_room = ""
 
@@ -103,9 +105,12 @@ class RoomListWidget(Static):
             # Add room header row if new room
             if state.room_name != self._current_room:
                 self._current_room = state.room_name
-                self.table.add_row()
-                self.table.add_row(Text(state.room_name, style="bold"))
-                self.table.add_row()
+                # Add layout rows (empty and header) - not selectable
+                self._row_index_to_key.append(self.table.add_row())
+                self._row_index_to_key.append(
+                    self.table.add_row(Text(state.room_name, style="bold"))
+                )
+                self._row_index_to_key.append(self.table.add_row())
 
             self._add_accessory_row(state)
 
@@ -165,6 +170,7 @@ class RoomListWidget(Static):
         )
         self._row_keys[accessory_id] = row_key
         self._row_to_accessory[row_key] = accessory_id
+        self._row_index_to_key.append(row_key)
         if state.action:
             self._action_to_row[state.action] = row_key
 
@@ -266,3 +272,17 @@ class RoomListWidget(Static):
             Accessory ID if found, None otherwise.
         """
         return self._row_to_accessory.get(row_key)
+
+    def get_row_key_at_index(self, index: int) -> Optional[Any]:
+        """
+        Get row key at a given index.
+
+        Args:
+            index: Row index.
+
+        Returns:
+            Row key if valid index, None otherwise.
+        """
+        if 0 <= index < len(self._row_index_to_key):
+            return self._row_index_to_key[index]
+        return None

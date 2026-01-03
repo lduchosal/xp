@@ -21,6 +21,7 @@ class HomekitApp(App[None]):
     Attributes:
         homekit_service: HomekitService for accessory state operations.
         selected_accessory_id: Currently selected accessory ID.
+        _last_cursor_row: Last cursor row for direction detection.
         CSS_PATH: Path to CSS stylesheet file.
         BINDINGS: Keyboard bindings for app actions.
         TITLE: Application title displayed in header.
@@ -52,6 +53,7 @@ class HomekitApp(App[None]):
         super().__init__()
         self.homekit_service: HomekitService = homekit_service
         self.selected_accessory_id: Optional[str] = None
+        self._last_cursor_row: int = 0
         self.room_list_widget: Optional[RoomListWidget] = None
         self.footer_widget: Optional[StatusFooterWidget] = None
 
@@ -154,14 +156,55 @@ class HomekitApp(App[None]):
         Handle row highlight changes from arrow key navigation.
 
         Updates selected_accessory_id when cursor moves via arrow keys.
+        Skips non-accessory rows (layout rows) automatically.
 
         Args:
             event: Row highlighted event from DataTable.
         """
-        if self.room_list_widget and event.row_key:
-            accessory_id = self.room_list_widget.get_accessory_id_for_row(event.row_key)
-            if accessory_id:
-                self.selected_accessory_id = accessory_id
+        if not self.room_list_widget or not event.row_key:
+            return
+
+        accessory_id = self.room_list_widget.get_accessory_id_for_row(event.row_key)
+        if accessory_id:
+            self.selected_accessory_id = accessory_id
+            self._last_cursor_row = event.cursor_row
+        else:
+            # Non-accessory row (layout), skip to next valid row
+            self._skip_to_accessory_row(event.cursor_row)
+
+    def _skip_to_accessory_row(self, current_row: int) -> None:
+        """
+        Skip cursor to the nearest accessory row.
+
+        Args:
+            current_row: Current cursor row index.
+        """
+        if not self.room_list_widget or not self.room_list_widget.table:
+            return
+
+        table = self.room_list_widget.table
+        row_count = table.row_count
+
+        # Determine direction based on last position
+        direction = 1 if current_row >= self._last_cursor_row else -1
+
+        # Search for next accessory row in direction
+        next_row = current_row + direction
+        while 0 <= next_row < row_count:
+            row_key = self.room_list_widget.get_row_key_at_index(next_row)
+            if row_key and self.room_list_widget.get_accessory_id_for_row(row_key):
+                table.move_cursor(row=next_row)
+                return
+            next_row += direction
+
+        # If not found in direction, try opposite direction
+        next_row = current_row - direction
+        while 0 <= next_row < row_count:
+            row_key = self.room_list_widget.get_row_key_at_index(next_row)
+            if row_key and self.room_list_widget.get_accessory_id_for_row(row_key):
+                table.move_cursor(row=next_row)
+                return
+            next_row -= direction
 
     def action_toggle_connection(self) -> None:
         """
