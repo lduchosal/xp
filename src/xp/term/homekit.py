@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from textual.app import App, ComposeResult
+from textual.widgets import DataTable
 
 from xp.services.term.homekit_service import HomekitService
 from xp.term.widgets.room_list import RoomListWidget
@@ -147,6 +148,20 @@ class HomekitApp(App[None]):
         """
         if self.room_list_widget:
             self.room_list_widget.select_by_action_key(action_key)
+
+    def on_data_table_row_highlighted(self, event: DataTable.RowHighlighted) -> None:
+        """
+        Handle row highlight changes from arrow key navigation.
+
+        Updates selected_accessory_id when cursor moves via arrow keys.
+
+        Args:
+            event: Row highlighted event from DataTable.
+        """
+        if self.room_list_widget and event.row_key:
+            accessory_id = self.room_list_widget.get_accessory_id_for_row(event.row_key)
+            if accessory_id:
+                self.selected_accessory_id = accessory_id
 
     def action_toggle_connection(self) -> None:
         """

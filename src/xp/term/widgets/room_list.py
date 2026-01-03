@@ -41,6 +41,7 @@ class RoomListWidget(Static):
         self.service = service
         self.table: Optional[DataTable] = None
         self._row_keys: dict[str, Any] = {}  # Map accessory_id to row key
+        self._row_to_accessory: dict[Any, str] = {}  # Map row key to accessory_id
         self._action_to_row: dict[str, Any] = {}  # Map action key to row key
         self._current_room: str = ""
 
@@ -94,6 +95,7 @@ class RoomListWidget(Static):
 
         self.table.clear()
         self._row_keys.clear()
+        self._row_to_accessory.clear()
         self._action_to_row.clear()
         self._current_room = ""
 
@@ -162,6 +164,7 @@ class RoomListWidget(Static):
             Text(self._format_last_update(state.last_update), justify="center"),
         )
         self._row_keys[accessory_id] = row_key
+        self._row_to_accessory[row_key] = accessory_id
         if state.action:
             self._action_to_row[state.action] = row_key
 
@@ -251,3 +254,15 @@ class RoomListWidget(Static):
         if row_key is not None:
             row_index = self.table.get_row_index(row_key)
             self.table.move_cursor(row=row_index)
+
+    def get_accessory_id_for_row(self, row_key: Any) -> Optional[str]:
+        """
+        Get accessory ID for a row key.
+
+        Args:
+            row_key: DataTable row key.
+
+        Returns:
+            Accessory ID if found, None otherwise.
+        """
+        return self._row_to_accessory.get(row_key)
