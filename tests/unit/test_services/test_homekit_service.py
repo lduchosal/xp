@@ -199,12 +199,14 @@ class TestHomekitService:
         assert light1.toggle_action == "E02L09I00"
 
     def test_initialization_assigns_action_keys(self, service):
-        """Test service assigns sequential action keys to accessories."""
+        """Test service assigns sequential action keys to accessories, skipping reserved keys."""
         states = service.accessory_states
         actions = [s.action for s in states]
         assert "a" in actions
         assert "b" in actions
-        assert "c" in actions
+        # 'c' is reserved (Connect binding), so 'd' should be next
+        assert "c" not in actions
+        assert "d" in actions
 
     def test_initialization_assigns_sort_order(self, service):
         """Test service assigns sort order matching config order."""

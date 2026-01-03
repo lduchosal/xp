@@ -318,12 +318,16 @@ class HomekitService:
         config = self._find_accessory_config(accessory_name)
         if config:
             action = config.on_action if is_on else config.off_action
-            self._conbus_protocol.send_raw_telegram(action)
+            self.send_action(action)
             self.on_status_message.emit(
                 f"HomeKit: {accessory_name} {'ON' if is_on else 'OFF'}"
             )
         else:
             self.logger.warning(f"No config found for accessory: {accessory_name}")
+
+    def send_action(self, action: str) -> None:
+        self._conbus_protocol.send_raw_telegram(f'{action}M')
+        self._conbus_protocol.send_raw_telegram(f'{action}B')
 
     def toggle_connection(self) -> None:
         """
@@ -361,7 +365,7 @@ class HomekitService:
             self.logger.warning(f"No toggle_action for accessory {accessory_id}")
             return False
 
-        self._conbus_protocol.send_raw_telegram(state.toggle_action)
+        self.send_action(state.toggle_action)
         self.on_status_message.emit(f"Toggling {state.accessory_name}")
         return True
 
@@ -390,7 +394,7 @@ class HomekitService:
             self.logger.warning(f"No config for accessory {accessory_id}")
             return False
 
-        self._conbus_protocol.send_raw_telegram(config.on_action)
+        self.send_action(config.on_action)
         self.on_status_message.emit(f"Turning ON {state.accessory_name}")
         return True
 
@@ -419,7 +423,7 @@ class HomekitService:
             self.logger.warning(f"No config for accessory {accessory_id}")
             return False
 
-        self._conbus_protocol.send_raw_telegram(config.off_action)
+        self.send_action(config.off_action)
         self.on_status_message.emit(f"Turning OFF {state.accessory_name}")
         return True
 

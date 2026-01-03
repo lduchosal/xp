@@ -98,9 +98,9 @@ class TestHomekitApp:
         mock_event.prevent_default.assert_not_called()
 
     def test_on_key_non_action_key(self, app, mock_service):
-        """Test on_key ignores non-action keys."""
+        """Test on_key ignores non-action keys (symbols, punctuation)."""
         mock_event = Mock()
-        mock_event.key = "1"
+        mock_event.key = "@"  # Not an action key (a-z0-9)
 
         app.on_key(mock_event)
 
