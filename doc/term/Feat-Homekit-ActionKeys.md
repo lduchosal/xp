@@ -13,10 +13,10 @@ Select accessory by action key, then perform action on selection.
 | Key     | Action          | Telegram        |
 |---------|-----------------|-----------------|
 | `Space` | Toggle          | `toggle_action` |
-| `+`     | Turn ON         | `on_action`     |
+| `.`     | Turn ON         | `on_action`     |
 | `-`     | Turn OFF        | `off_action`    |
-| `*`     | Increase dimmer | TBD             |
-| `ç`     | Decrease dimmer | TBD             |
+| `+`     | Increase dimmer | TBD             |
+| `"`     | Decrease dimmer | TBD             |
 
 ### Reserved Keys
 | Key | Binding            |

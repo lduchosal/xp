@@ -34,6 +34,11 @@ class HomekitApp(App[None]):
         ("Q", "quit", "Quit"),
         ("C", "toggle_connection", "Connect"),
         ("R", "refresh_all", "Refresh"),
+        ("space", "toggle_selected", "Toggle"),
+        ("full_stop", "turn_on_selected", "On"),
+        ("minus", "turn_off_selected", "Off"),
+        ("plus", "dim_up", "Dim+"),
+        ("quotation_mark", "dim_down", "Dim-"),
     ]
 
     def __init__(self, homekit_service: HomekitService) -> None:
@@ -94,10 +99,10 @@ class HomekitApp(App[None]):
         Selection keys (a-z0-9): Select accessory row.
         Action keys (on selected accessory):
         - Space: Toggle
-        - +: Turn ON
-        - -: Turn OFF
-        - *: Increase dimmer
-        - ç: Decrease dimmer
+        - . : Turn ON
+        - - : Turn OFF
+        - + : Dim up
+        - " : Dim down
 
         Args:
             event: Key press event.
@@ -120,16 +125,16 @@ class HomekitApp(App[None]):
         if key == "space":
             self.homekit_service.toggle_selected(self.selected_accessory_id)
             event.prevent_default()
-        elif key in ("plus", "+"):
+        elif key in ("full_stop", "."):
             self.homekit_service.turn_on_selected(self.selected_accessory_id)
             event.prevent_default()
         elif key in ("minus", "-"):
             self.homekit_service.turn_off_selected(self.selected_accessory_id)
             event.prevent_default()
-        elif key in ("asterisk", "*"):
+        elif key in ("plus", "+"):
             self.homekit_service.increase_dimmer(self.selected_accessory_id)
             event.prevent_default()
-        elif key == "ç":
+        elif key in ("quotation_mark", '"'):
             self.homekit_service.decrease_dimmer(self.selected_accessory_id)
             event.prevent_default()
 
@@ -154,6 +159,31 @@ class HomekitApp(App[None]):
     def action_refresh_all(self) -> None:
         """Refresh all module data on 'r' key press."""
         self.homekit_service.refresh_all()
+
+    def action_toggle_selected(self) -> None:
+        """Toggle selected accessory."""
+        if self.selected_accessory_id:
+            self.homekit_service.toggle_selected(self.selected_accessory_id)
+
+    def action_turn_on_selected(self) -> None:
+        """Turn on selected accessory."""
+        if self.selected_accessory_id:
+            self.homekit_service.turn_on_selected(self.selected_accessory_id)
+
+    def action_turn_off_selected(self) -> None:
+        """Turn off selected accessory."""
+        if self.selected_accessory_id:
+            self.homekit_service.turn_off_selected(self.selected_accessory_id)
+
+    def action_dim_up(self) -> None:
+        """Increase dimmer on selected accessory."""
+        if self.selected_accessory_id:
+            self.homekit_service.increase_dimmer(self.selected_accessory_id)
+
+    def action_dim_down(self) -> None:
+        """Decrease dimmer on selected accessory."""
+        if self.selected_accessory_id:
+            self.homekit_service.decrease_dimmer(self.selected_accessory_id)
 
     async def on_unmount(self) -> None:
         """Stop AccessoryDriver and clean up service when app unmounts."""

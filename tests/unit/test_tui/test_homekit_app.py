@@ -97,7 +97,6 @@ class TestHomekitApp:
 
     def test_on_key_space_toggles_selected(self, app, mock_service):
         """Test space key toggles selected accessory."""
-        # First select an accessory
         app.selected_accessory_id = "A01_1"
         mock_event = Mock()
         mock_event.key = "space"
@@ -107,11 +106,11 @@ class TestHomekitApp:
         mock_service.toggle_selected.assert_called_once_with("A01_1")
         mock_event.prevent_default.assert_called_once()
 
-    def test_on_key_plus_turns_on_selected(self, app, mock_service):
-        """Test + key turns on selected accessory."""
+    def test_on_key_dot_turns_on_selected(self, app, mock_service):
+        """Test . key turns on selected accessory."""
         app.selected_accessory_id = "A01_1"
         mock_event = Mock()
-        mock_event.key = "+"
+        mock_event.key = "."
 
         app.on_key(mock_event)
 
