@@ -81,6 +81,7 @@ class ActionTableUploadService:
         # Upload state
         self.upload_data_chunks: list[str] = []
         self.current_chunk_index: int = 0
+        self._eof_sent: bool = False
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -173,7 +174,7 @@ class ActionTableUploadService:
                 )
                 self.current_chunk_index += 1
                 self.on_progress.emit(".")
-            else:
+            elif not self._eof_sent:
                 # All chunks sent, send EOF
                 self.logger.debug("All chunks sent, sending EOF")
                 self.conbus_protocol.send_telegram(
@@ -182,7 +183,13 @@ class ActionTableUploadService:
                     system_function=SystemFunction.EOF,
                     data_value="00",
                 )
+                self.on_progress.emit("END")
+                self.logger.debug("EOF sent, waiting for last ACK")
+                self._eof_sent = True
+            else:
+                self.logger.debug("Last ACK received, closing connection")
                 self.on_finish.emit(True)
+
         elif reply_telegram.system_function == SystemFunction.NAK:
             self.logger.debug("Received NAK during upload")
             self.failed("Upload failed: NAK received")

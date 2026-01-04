@@ -416,7 +416,8 @@ class TestActionTableSerializerPadding:
         assert result == b"\x00" * 480
 
     def test_to_encoded_string_cp20_link4_input0_output1_on(self):
-        """Test encoding CP20 4 0 > 1 ON produces expected BCD string.
+        """
+        Test encoding CP20 4 0 > 1 ON produces expected BCD string.
 
         ActionTable: CP20 4 0 > 1 ON;
         Serialized BCD (first 8 chars): ACAEAAAI
@@ -443,3 +444,28 @@ class TestActionTableSerializerPadding:
         # AA = 0x00 (module_input=0)
         # AI = 0x08 (output 0-indexed: (1-1) | (ON<<3) = 0 | 8 = 8)
         assert encoded_string[:8] == "ACAEAAAI"
+
+    def test_from_encoded_string_cp20_link4_input0_output1_on(self):
+        """
+        Test decoding BCD string ACAEAAAI produces expected ActionTable.
+
+        Serialized BCD: ACAEAAAI (+ padding)
+        ActionTable: CP20 4 0 > 1 ON;
+        """
+        # Build full 960-char encoded string (96 entries × 5 bytes × 2 nibbles)
+        # First entry: ACAEAAAI, rest is padding (AA = 0x00)
+        encoded_string = "ACAEAAAI" + "AA" * 476
+
+        action_table = ActionTableSerializer.from_encoded_string(encoded_string)
+
+        # Should have exactly 1 entry (padding entries with NOMOD are filtered out)
+        assert len(action_table.entries) == 1
+
+        entry = action_table.entries[0]
+        assert entry.module_type == ModuleTypeCode.CP20
+        assert entry.link_number == 4
+        assert entry.module_input == 0
+        assert entry.module_output == 1  # 0-indexed in wire format, converted to 1
+        assert entry.command == InputActionType.ON
+        assert entry.parameter == TimeParam.NONE
+        assert entry.inverted is False
