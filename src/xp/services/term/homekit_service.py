@@ -454,7 +454,6 @@ class HomekitService:
         self.on_status_message.emit(f"Dim- {state.accessory_name}")
         return True
 
-
     def levelup_selected(self, accessory_id: str) -> bool:
         """
         Increase level for accessory (toggle Make/Break).

@@ -31,33 +31,33 @@
   - XP20 10 0 > 1 OFF;
   - XP20 10 0 > 2 OFF;
   - XP20 10 0 > 3 OFF;
-  - XP20 10 8 > 1 ON;
-  - XP20 10 8 > 2 ON;
-  - XP20 10 8 > 3 ON;
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
   - XP20 2 0 > 3 OFF;
-  - XP20 2 8 > 1 ON;
-  - XP20 2 8 > 2 ON;
-  - XP20 2 8 > 3 ON;
   - CP20 0 0 > 1 OFF;
   - CP20 0 0 > 2 OFF;
   - CP20 0 0 > 3 OFF;
-  - CP20 0 8 > 1 ON;
-  - CP20 0 8 > 2 ON;
-  - CP20 0 8 > 3 ON;
   - CP20 3 0 > 1 ON;
   - CP20 3 1 > 2 ON;
   - CP20 3 2 > 3 ON;
   - CP20 3 3 > 1 OFF;
   - CP20 3 4 > 2 OFF;
   - CP20 3 5 > 3 OFF;
-  - CP20 3 8 > 1 ON;
-  - CP20 3 8 > 2 ON;
-  - CP20 3 8 > 3 ON;
-  - CP20 3 9 > 1 OFF;
-  - CP20 3 9 > 2 OFF;
-  - CP20 3 9 > 3 OFF;
+  - CP20 3 6 > 1 TOGGLE;
+  - CP20 3 7 > 2 TOGGLE;
+  - CP20 3 8 > 3 TOGGLE;
+  - CP20 3 9 > 1 LEVELINC 10;
+  - CP20 3 10 > 2 LEVELINC 10;
+  - CP20 3 11 > 3 LEVELINC 10;
+  - CP20 3 12 > 1 LEVELDEC 10;
+  - CP20 3 13 > 2 LEVELDEC 10;
+  - CP20 3 14 > 3 LEVELDEC 10;
+  - CP20 3 15 > 1 LEVELUP;
+  - CP20 3 16 > 2 LEVELUP;
+  - CP20 3 17 > 3 LEVELUP;
+  - CP20 3 18 > 1 LEVELDOWN;
+  - CP20 3 19 > 2 LEVELDOWN;
+  - CP20 3 20 > 3 LEVELDOWN;
 
 - name: A4
   serial_number: 0020044991
@@ -69,74 +69,58 @@
   hw_version: XP24
   auto_report_status: PP
   action_table:
-  - XP20 10 0 > 0 OFF;
   - XP20 10 0 > 1 OFF;
   - XP20 10 0 > 2 OFF;
   - XP20 10 0 > 3 OFF;
-  - XP20 10 12 > 0 ON;
+  - XP20 10 0 > 4 OFF;
   - XP20 10 12 > 1 ON;
   - XP20 10 12 > 2 ON;
   - XP20 10 12 > 3 ON;
-  - XP20 10 13 > 0 TOGGLE;
+  - XP20 10 12 > 4 ON;
   - XP20 10 13 > 1 TOGGLE;
   - XP20 10 13 > 2 TOGGLE;
   - XP20 10 13 > 3 TOGGLE;
+  - XP20 10 13 > 4 TOGGLE;
 
-  - XP20 2 0 > 0 OFF;
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
   - XP20 2 0 > 3 OFF;
-  - XP20 2 12 > 0 ON;
+  - XP20 2 0 > 4 OFF;
   - XP20 2 12 > 1 ON;
   - XP20 2 12 > 2 ON;
   - XP20 2 12 > 3 ON;
-  - XP20 2 13 > 0 TOGGLE;
+  - XP20 2 12 > 4 ON;
   - XP20 2 13 > 1 TOGGLE;
   - XP20 2 13 > 2 TOGGLE;
   - XP20 2 13 > 3 TOGGLE;
+  - XP20 2 13 > 4 TOGGLE;
 
-  - CP20 0 0 > 0 OFF;
   - CP20 0 0 > 1 OFF;
   - CP20 0 0 > 2 OFF;
   - CP20 0 0 > 3 OFF;
-  - CP20 0 12 > 0 ON;
+  - CP20 0 0 > 4 OFF;
   - CP20 0 12 > 1 ON;
   - CP20 0 12 > 2 ON;
   - CP20 0 12 > 3 ON;
-  - CP20 0 13 > 0 TOGGLE;
+  - CP20 0 12 > 4 ON;
   - CP20 0 13 > 1 TOGGLE;
   - CP20 0 13 > 2 TOGGLE;
   - CP20 0 13 > 3 TOGGLE;
+  - CP20 0 13 > 4 TOGGLE;
 
-  - CP20 4 0 > 0 ON;
-  - CP20 4 1 > 1 ON;
-  - CP20 4 2 > 2 ON;
-  - CP20 4 3 > 3 ON;
+  - CP20 4 0 > 1 ON;
+  - CP20 4 1 > 2 ON;
+  - CP20 4 2 > 3 ON;
+  - CP20 4 3 > 4 ON;
+  - CP20 4 4 > 1 OFF;
+  - CP20 4 5 > 2 OFF;
+  - CP20 4 6 > 3 OFF;
+  - CP20 4 7 > 4 OFF;
+  - CP20 4 8 > 1 TOGGLE;
+  - CP20 4 9 > 2 TOGGLE;
+  - CP20 4 10 > 3 TOGGLE;
+  - CP20 4 11 > 4 TOGGLE;
 
-  - CP20 4 4 > 0 OFF;
-  - CP20 4 5 > 1 OFF;
-  - CP20 4 6 > 2 OFF;
-  - CP20 4 7 > 3 OFF;
-
-  - CP20 4 8 > 0 OFF;
-  - CP20 4 9 > 1 OFF;
-  - CP20 4 10 > 2 OFF;
-  - CP20 4 11 > 3 OFF;
-
-  - CP20 4 12 > 0 ON;
-  - CP20 4 12 > 1 ON;
-  - CP20 4 12 > 2 ON;
-  - CP20 4 12 > 3 ON;
-
-  - CP20 4 13 > 0 OFF;
-  - CP20 4 13 > 1 OFF;
-  - CP20 4 13 > 2 OFF;
-  - CP20 4 13 > 3 OFF;
-
-  - CP20 4 14 > 0 TOGGLE;
-  - CP20 4 14 > 1 TOGGLE;
-  - CP20 4 14 > 2 TOGGLE;
-  - CP20 4 14 > 3 TOGGLE;
 
   xp24_msaction_table:
   - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
@@ -162,34 +146,32 @@
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
   - XP20 2 0 > 3 OFF;
-  - XP20 2 8 > 0 ON;
+  - XP20 2 0 > 4 OFF;
   - XP20 2 8 > 1 ON;
   - XP20 2 8 > 2 ON;
   - XP20 2 8 > 3 ON;
-  - CP20 0 0 > 0 OFF;
+  - XP20 2 8 > 4 ON;
   - CP20 0 0 > 1 OFF;
   - CP20 0 0 > 2 OFF;
   - CP20 0 0 > 3 OFF;
-  - CP20 0 8 > 0 ON;
+  - CP20 0 0 > 4 OFF;
   - CP20 0 8 > 1 ON;
   - CP20 0 8 > 2 ON;
   - CP20 0 8 > 3 ON;
-  - CP20 5 0 > 0 ON;
-  - CP20 5 1 > 1 ON;
-  - CP20 5 2 > 2 ON;
-  - CP20 5 3 > 3 ON;
-  - CP20 5 4 > 0 OFF;
-  - CP20 5 5 > 1 OFF;
-  - CP20 5 6 > 2 OFF;
-  - CP20 5 7 > 3 OFF;
-  - CP20 5 8 > 0 ON;
-  - CP20 5 8 > 1 ON;
-  - CP20 5 8 > 2 ON;
-  - CP20 5 8 > 3 ON;
-  - CP20 5 9 > 0 OFF;
-  - CP20 5 9 > 1 OFF;
-  - CP20 5 9 > 2 OFF;
-  - CP20 5 9 > 3 OFF;
+  - CP20 0 8 > 4 ON;
+  - CP20 5 0 > 1 ON;
+  - CP20 5 1 > 2 ON;
+  - CP20 5 2 > 3 ON;
+  - CP20 5 3 > 4 ON;
+  - CP20 5 4 > 1 OFF;
+  - CP20 5 5 > 2 OFF;
+  - CP20 5 6 > 3 OFF;
+  - CP20 5 7 > 4 OFF;
+  - CP20 5 8 > 1 TOGGLE;
+  - CP20 5 9 > 2 TOGGLE;
+  - CP20 5 10 > 3 TOGGLE;
+  - CP20 5 11 > 4 TOGGLE;
+
   xp24_msaction_table:
   - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
@@ -203,46 +185,46 @@
   hw_version: XP24
   auto_report_status: PP
   action_table:
-  - XP20 10 0 > 0 OFF;
   - XP20 10 0 > 1 OFF;
   - XP20 10 0 > 2 OFF;
   - XP20 10 0 > 3 OFF;
-  - XP20 10 8 > 0 ON;
+  - XP20 10 0 > 4 OFF;
   - XP20 10 8 > 1 ON;
   - XP20 10 8 > 2 ON;
   - XP20 10 8 > 3 ON;
-  - XP20 2 0 > 0 OFF;
+  - XP20 10 8 > 4 ON;
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
   - XP20 2 0 > 3 OFF;
-  - XP20 2 8 > 0 ON;
+  - XP20 2 0 > 4 OFF;
   - XP20 2 8 > 1 ON;
   - XP20 2 8 > 2 ON;
   - XP20 2 8 > 3 ON;
-  - CP20 0 0 > 0 OFF;
+  - XP20 2 8 > 4 ON;
   - CP20 0 0 > 1 OFF;
   - CP20 0 0 > 2 OFF;
   - CP20 0 0 > 3 OFF;
-  - CP20 0 8 > 0 ON;
+  - CP20 0 0 > 4 OFF;
   - CP20 0 8 > 1 ON;
   - CP20 0 8 > 2 ON;
   - CP20 0 8 > 3 ON;
-  - CP20 6 0 > 0 ON;
-  - CP20 6 1 > 1 ON;
-  - CP20 6 2 > 2 ON;
-  - CP20 6 3 > 3 ON;
-  - CP20 6 4 > 0 OFF;
-  - CP20 6 5 > 1 OFF;
-  - CP20 6 6 > 2 OFF;
-  - CP20 6 7 > 3 OFF;
-  - CP20 6 8 > 0 ON;
+  - CP20 0 8 > 4 ON;
+  - CP20 6 0 > 1 ON;
+  - CP20 6 1 > 2 ON;
+  - CP20 6 2 > 3 ON;
+  - CP20 6 3 > 4 ON;
+  - CP20 6 4 > 1 OFF;
+  - CP20 6 5 > 2 OFF;
+  - CP20 6 6 > 3 OFF;
+  - CP20 6 7 > 4 OFF;
   - CP20 6 8 > 1 ON;
   - CP20 6 8 > 2 ON;
   - CP20 6 8 > 3 ON;
-  - CP20 6 9 > 0 OFF;
+  - CP20 6 8 > 4 ON;
   - CP20 6 9 > 1 OFF;
   - CP20 6 9 > 2 OFF;
   - CP20 6 9 > 3 OFF;
+  - CP20 6 9 > 4 OFF;
   xp24_msaction_table:
   - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
@@ -256,46 +238,46 @@
   hw_version: XP24
   auto_report_status: PP
   action_table:
-  - XP20 10 0 > 0 OFF;
   - XP20 10 0 > 1 OFF;
   - XP20 10 0 > 2 OFF;
   - XP20 10 0 > 3 OFF;
-  - XP20 10 8 > 0 ON;
+  - XP20 10 0 > 4 OFF;
   - XP20 10 8 > 1 ON;
   - XP20 10 8 > 2 ON;
   - XP20 10 8 > 3 ON;
-  - XP20 2 0 > 0 OFF;
+  - XP20 10 8 > 4 ON;
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
   - XP20 2 0 > 3 OFF;
-  - XP20 2 8 > 0 ON;
+  - XP20 2 0 > 4 OFF;
   - XP20 2 8 > 1 ON;
   - XP20 2 8 > 2 ON;
   - XP20 2 8 > 3 ON;
-  - CP20 0 0 > 0 OFF;
+  - XP20 2 8 > 4 ON;
   - CP20 0 0 > 1 OFF;
   - CP20 0 0 > 2 OFF;
   - CP20 0 0 > 3 OFF;
-  - CP20 0 8 > 0 ON;
+  - CP20 0 0 > 4 OFF;
   - CP20 0 8 > 1 ON;
   - CP20 0 8 > 2 ON;
   - CP20 0 8 > 3 ON;
-  - CP20 7 0 > 0 ON;
-  - CP20 7 1 > 1 ON;
-  - CP20 7 2 > 2 ON;
-  - CP20 7 3 > 3 ON;
-  - CP20 7 4 > 0 OFF;
-  - CP20 7 5 > 1 OFF;
-  - CP20 7 6 > 2 OFF;
-  - CP20 7 7 > 3 OFF;
-  - CP20 7 8 > 0 ON;
+  - CP20 0 8 > 4 ON;
+  - CP20 7 0 > 1 ON;
+  - CP20 7 1 > 2 ON;
+  - CP20 7 2 > 3 ON;
+  - CP20 7 3 > 4 ON;
+  - CP20 7 4 > 1 OFF;
+  - CP20 7 5 > 2 OFF;
+  - CP20 7 6 > 3 OFF;
+  - CP20 7 7 > 4 OFF;
   - CP20 7 8 > 1 ON;
   - CP20 7 8 > 2 ON;
   - CP20 7 8 > 3 ON;
-  - CP20 7 9 > 0 OFF;
+  - CP20 7 8 > 4 ON;
   - CP20 7 9 > 1 OFF;
   - CP20 7 9 > 2 OFF;
   - CP20 7 9 > 3 OFF;
+  - CP20 7 9 > 4 OFF;
   xp24_msaction_table:
   - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
@@ -309,46 +291,46 @@
   hw_version: XP24
   auto_report_status: PP
   action_table:
-  - XP20 10 0 > 0 OFF;
   - XP20 10 0 > 1 OFF;
   - XP20 10 0 > 2 OFF;
   - XP20 10 0 > 3 OFF;
-  - XP20 10 8 > 0 ON;
+  - XP20 10 0 > 4 OFF;
   - XP20 10 8 > 1 ON;
   - XP20 10 8 > 2 ON;
   - XP20 10 8 > 3 ON;
-  - XP20 2 0 > 0 OFF;
+  - XP20 10 8 > 4 ON;
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
   - XP20 2 0 > 3 OFF;
-  - XP20 2 8 > 0 ON;
+  - XP20 2 0 > 4 OFF;
   - XP20 2 8 > 1 ON;
   - XP20 2 8 > 2 ON;
   - XP20 2 8 > 3 ON;
-  - CP20 0 0 > 0 OFF;
+  - XP20 2 8 > 4 ON;
   - CP20 0 0 > 1 OFF;
   - CP20 0 0 > 2 OFF;
   - CP20 0 0 > 3 OFF;
-  - CP20 0 8 > 0 ON;
+  - CP20 0 0 > 4 OFF;
   - CP20 0 8 > 1 ON;
   - CP20 0 8 > 2 ON;
   - CP20 0 8 > 3 ON;
-  - CP20 8 0 > 0 ON;
-  - CP20 8 1 > 1 ON;
-  - CP20 8 2 > 2 ON;
-  - CP20 8 3 > 3 ON;
-  - CP20 8 4 > 0 OFF;
-  - CP20 8 5 > 1 OFF;
-  - CP20 8 6 > 2 OFF;
-  - CP20 8 7 > 3 OFF;
-  - CP20 8 8 > 0 ON;
+  - CP20 0 8 > 4 ON;
+  - CP20 8 0 > 1 ON;
+  - CP20 8 1 > 2 ON;
+  - CP20 8 2 > 3 ON;
+  - CP20 8 3 > 4 ON;
+  - CP20 8 4 > 1 OFF;
+  - CP20 8 5 > 2 OFF;
+  - CP20 8 6 > 3 OFF;
+  - CP20 8 7 > 4 OFF;
   - CP20 8 8 > 1 ON;
   - CP20 8 8 > 2 ON;
   - CP20 8 8 > 3 ON;
-  - CP20 8 9 > 0 OFF;
+  - CP20 8 8 > 4 ON;
   - CP20 8 9 > 1 OFF;
   - CP20 8 9 > 2 OFF;
   - CP20 8 9 > 3 OFF;
+  - CP20 8 9 > 4 OFF;
   xp24_msaction_table:
   - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
@@ -362,46 +344,46 @@
   hw_version: XP24
   auto_report_status: PP
   action_table:
-  - XP20 10 0 > 0 OFF;
   - XP20 10 0 > 1 OFF;
   - XP20 10 0 > 2 OFF;
   - XP20 10 0 > 3 OFF;
-  - XP20 10 8 > 0 ON;
+  - XP20 10 0 > 4 OFF;
   - XP20 10 8 > 1 ON;
   - XP20 10 8 > 2 ON;
   - XP20 10 8 > 3 ON;
-  - XP20 2 0 > 0 OFF;
+  - XP20 10 8 > 4 ON;
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
   - XP20 2 0 > 3 OFF;
-  - XP20 2 8 > 0 ON;
+  - XP20 2 0 > 4 OFF;
   - XP20 2 8 > 1 ON;
   - XP20 2 8 > 2 ON;
   - XP20 2 8 > 3 ON;
-  - CP20 0 0 > 0 OFF;
+  - XP20 2 8 > 4 ON;
   - CP20 0 0 > 1 OFF;
   - CP20 0 0 > 2 OFF;
   - CP20 0 0 > 3 OFF;
-  - CP20 0 8 > 0 ON;
+  - CP20 0 0 > 4 OFF;
   - CP20 0 8 > 1 ON;
   - CP20 0 8 > 2 ON;
   - CP20 0 8 > 3 ON;
-  - CP20 9 0 > 0 ON;
-  - CP20 9 1 > 1 ON;
-  - CP20 9 2 > 2 ON;
-  - CP20 9 3 > 3 ON;
-  - CP20 9 4 > 0 OFF;
-  - CP20 9 5 > 1 OFF;
-  - CP20 9 6 > 2 OFF;
-  - CP20 9 7 > 3 OFF;
-  - CP20 9 8 > 0 ON;
+  - CP20 0 8 > 4 ON;
+  - CP20 9 0 > 1 ON;
+  - CP20 9 1 > 2 ON;
+  - CP20 9 2 > 3 ON;
+  - CP20 9 3 > 4 ON;
+  - CP20 9 4 > 1 OFF;
+  - CP20 9 5 > 2 OFF;
+  - CP20 9 6 > 3 OFF;
+  - CP20 9 7 > 4 OFF;
   - CP20 9 8 > 1 ON;
   - CP20 9 8 > 2 ON;
   - CP20 9 8 > 3 ON;
-  - CP20 9 9 > 0 OFF;
+  - CP20 9 8 > 4 ON;
   - CP20 9 9 > 1 OFF;
   - CP20 9 9 > 2 OFF;
   - CP20 9 9 > 3 OFF;
+  - CP20 9 9 > 4 OFF;
   xp24_msaction_table:
   - T:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12
 
@@ -435,36 +417,31 @@
   hw_version: XP33LED_HW_VER1
   auto_report_status: PP
   action_table:
-  - XP20 10 0 > 0 OFF;
-  - XP20 10 0 > 1 OFF;
-  - XP20 10 0 > 2 OFF;
-  - XP20 10 8 > 0 ON;
-  - XP20 10 8 > 1 ON;
-  - XP20 10 8 > 2 ON;
-  - XP20 2 0 > 0 OFF;
-  - XP20 2 0 > 1 OFF;
-  - XP20 2 0 > 2 OFF;
-  - XP20 2 8 > 0 ON;
-  - XP20 2 8 > 1 ON;
-  - XP20 2 8 > 2 ON;
-  - CP20 0 0 > 0 OFF;
-  - CP20 0 0 > 1 OFF;
-  - CP20 0 0 > 2 OFF;
-  - CP20 0 8 > 0 ON;
-  - CP20 0 8 > 1 ON;
-  - CP20 0 8 > 2 ON;
-  - CP20 12 0 > 0 ON;
-  - CP20 12 1 > 1 ON;
-  - CP20 12 2 > 2 ON;
-  - CP20 12 3 > 0 OFF;
-  - CP20 12 4 > 1 OFF;
-  - CP20 12 5 > 2 OFF;
-  - CP20 12 8 > 0 ON;
-  - CP20 12 8 > 1 ON;
-  - CP20 12 8 > 2 ON;
-  - CP20 12 9 > 0 OFF;
-  - CP20 12 9 > 1 OFF;
-  - CP20 12 9 > 2 OFF;
+    - XP20 10 0 > 1 OFF;
+    - XP20 10 0 > 2 OFF;
+    - XP20 10 0 > 3 OFF;
+    - XP20 2 0 > 1 OFF;
+    - XP20 2 0 > 2 OFF;
+    - XP20 2 0 > 3 OFF;
+    - CP20 0 0 > 1 OFF;
+    - CP20 0 0 > 2 OFF;
+    - CP20 0 0 > 3 OFF;
+
+    - CP20 12 0 > 1 ON;
+    - CP20 12 1 > 2 ON;
+    - CP20 12 2 > 3 ON;
+    - CP20 12 3 > 1 OFF;
+    - CP20 12 4 > 2 OFF;
+    - CP20 12 5 > 3 OFF;
+    - CP20 12 6 > 1 TOGGLE;
+    - CP20 12 7 > 2 TOGGLE;
+    - CP20 12 8 > 3 TOGGLE;
+    - CP20 12 9 > 1 LEVELINC 10;
+    - CP20 12 10 > 2 LEVELINC 10;
+    - CP20 12 11 > 3 LEVELINC 10;
+    - CP20 12 12 > 1 LEVELDEC 10;
+    - CP20 12 13 > 2 LEVELDEC 10;
+    - CP20 12 14 > 3 LEVELDEC 10;
 
 - name: A13
   serial_number: '0020045057'
@@ -476,36 +453,39 @@
   hw_version: XP33LED_HW_VER1
   auto_report_status: PP
   action_table:
-  - XP20 10 0 > 0 OFF;
   - XP20 10 0 > 1 OFF;
   - XP20 10 0 > 2 OFF;
-  - XP20 10 8 > 0 ON;
-  - XP20 10 8 > 1 ON;
-  - XP20 10 8 > 2 ON;
-  - XP20 2 0 > 0 OFF;
+  - XP20 10 0 > 3 OFF;
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
-  - XP20 2 8 > 0 ON;
-  - XP20 2 8 > 1 ON;
-  - XP20 2 8 > 2 ON;
-  - CP20 0 0 > 0 OFF;
+  - XP20 2 0 > 3 OFF;
   - CP20 0 0 > 1 OFF;
   - CP20 0 0 > 2 OFF;
-  - CP20 0 8 > 0 ON;
-  - CP20 0 8 > 1 ON;
-  - CP20 0 8 > 2 ON;
-  - CP20 13 0 > 0 ON;
-  - CP20 13 1 > 1 ON;
-  - CP20 13 2 > 2 ON;
-  - CP20 13 3 > 0 OFF;
-  - CP20 13 4 > 1 OFF;
-  - CP20 13 5 > 2 OFF;
-  - CP20 13 8 > 0 ON;
-  - CP20 13 8 > 1 ON;
-  - CP20 13 8 > 2 ON;
-  - CP20 13 9 > 0 OFF;
-  - CP20 13 9 > 1 OFF;
-  - CP20 13 9 > 2 OFF;
+  - CP20 0 0 > 3 OFF;
+
+  - CP20 13 0 > 1 ON;
+  - CP20 13 1 > 2 ON;
+  - CP20 13 2 > 3 ON;
+  - CP20 13 3 > 1 OFF;
+  - CP20 13 4 > 2 OFF;
+  - CP20 13 5 > 3 OFF;
+  - CP20 13 6 > 1 TOGGLE;
+  - CP20 13 7 > 2 TOGGLE;
+  - CP20 13 8 > 3 TOGGLE;
+
+  - CP20 13 9 > 1 LEVELINC 10;
+  - CP20 13 10 > 2 LEVELINC 10;
+  - CP20 13 11 > 3 LEVELINC 10;
+  - CP20 13 12 > 1 LEVELDEC 10;
+  - CP20 13 13 > 2 LEVELDEC 10;
+  - CP20 13 14 > 3 LEVELDEC 10;
+
+  - CP20 13 15 > 1 LEVELUP;
+  - CP20 13 16 > 2 LEVELUP;
+  - CP20 13 17 > 3 LEVELUP;
+  - CP20 13 18 > 1 LEVELDOWN;
+  - CP20 13 19 > 2 LEVELDOWN;
+  - CP20 13 20 > 3 LEVELDOWN;
 
 - name: A14
   serial_number: '0020041013'

@@ -256,7 +256,6 @@ class HomekitApp(App[None]):
         if self.selected_accessory_id:
             self.homekit_service.decrease_dimmer(self.selected_accessory_id)
 
-
     def action_level_up(self) -> None:
         """Increase level on selected accessory."""
         if self.selected_accessory_id:

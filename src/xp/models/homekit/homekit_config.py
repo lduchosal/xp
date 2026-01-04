@@ -66,8 +66,10 @@ class HomekitAccessoryConfig(BaseModel):
         on_action: on code for the accessory.
         off_action: off code for the accessory.
         toggle_action: Optional toggle action code for the accessory.
-        dimup_action: Optional dim up action code for the accessory.
-        dimdown_action: Optional dim down action code for the accessory.
+        dimup_action: Optional dim up action code for the dimmable accessory.
+        dimdown_action: Optional dim down action code for the dimmable accessory.
+        levelup_action: Optional level up action code for the dimmable accessory.
+        leveldown_action: Optional level down action code for the dimmable accessory.
         hap_accessory: Optional HAP accessory identifier.
     """
 
