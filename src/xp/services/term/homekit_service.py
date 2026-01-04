@@ -300,23 +300,82 @@ class HomekitService:
         await self._accessory_driver.stop()
         self.cleanup()
 
-    def _on_homekit_set(self, accessory_name: str, is_on: bool) -> None:
+    def _on_homekit_set(
+        self, accessory_name: str, is_on: bool, brightness: Optional[int]
+    ) -> None:
         """
-        Handle HomeKit app toggle request.
+        Handle HomeKit app set request (on/off or brightness).
 
         Args:
             accessory_name: Accessory name from HomeKit.
             is_on: True for on, False for off.
+            brightness: Brightness value 0-100, or None for on/off only.
         """
         config = self._find_accessory_config(accessory_name)
-        if config:
+        if not config:
+            self.logger.warning(f"No config found for accessory: {accessory_name}")
+            return
+
+        if brightness is not None:
+            # Handle brightness change
+            self._handle_brightness_change(accessory_name, config, brightness)
+        else:
+            # Handle on/off toggle
             action = config.on_action if is_on else config.off_action
             self.send_action(action)
             self.on_status_message.emit(
                 f"HomeKit: {accessory_name} {'ON' if is_on else 'OFF'}"
             )
+
+    def _handle_brightness_change(
+        self,
+        accessory_name: str,
+        config: "HomekitAccessoryConfig",
+        target_brightness: int,
+    ) -> None:
+        """
+        Handle brightness change by sending dimup/dimdown actions.
+
+        Calculates delta from current brightness and sends appropriate
+        number of LEVELINC or LEVELDEC commands (step = 10%).
+
+        Args:
+            accessory_name: Accessory name.
+            config: Accessory configuration.
+            target_brightness: Target brightness 0-100.
+        """
+        current = self._accessory_driver.get_brightness(accessory_name)
+        delta = target_brightness - current
+
+        if delta == 0:
+            return
+
+        # Determine action and steps (10% per step)
+        step_size = 10
+        steps = abs(delta) // step_size
+
+        if delta > 0:
+            # Increase brightness
+            if not config.dimup_action:
+                self.logger.warning(f"No dimup_action for {accessory_name}")
+                return
+            action = config.dimup_action
+            direction = "+"
         else:
-            self.logger.warning(f"No config found for accessory: {accessory_name}")
+            # Decrease brightness
+            if not config.dimdown_action:
+                self.logger.warning(f"No dimdown_action for {accessory_name}")
+                return
+            action = config.dimdown_action
+            direction = "-"
+
+        # Send action for each step
+        for _ in range(steps):
+            self.send_action(action)
+
+        self.on_status_message.emit(
+            f"HomeKit: {accessory_name} {current}% → {target_brightness}% ({direction}{steps * step_size}%)"
+        )
 
     def send_action(self, action: str) -> None:
         """

@@ -10,6 +10,9 @@ from pyhap.const import CATEGORY_LIGHTBULB, CATEGORY_OUTLET
 
 from xp.models.homekit.homekit_config import HomekitConfig
 
+# Callback type: (accessory_name, is_on, brightness_or_none)
+OnSetCallback = Callable[[str, bool, Optional[int]], None]
+
 
 class XPAccessory(Accessory):
     """Single accessory wrapping a Conbus output."""
@@ -35,12 +38,19 @@ class XPAccessory(Accessory):
         super().__init__(driver._driver, display_name, aid=aid)
         self._hk_driver = driver
         self._accessory_id = name
+        self._is_dimmable = service_type == "dimminglight"
+        self._char_brightness: Optional[object] = None
+        self._current_brightness: int = 100
         self.logger = logging.getLogger(__name__)
 
-        if service_type == "dimminglight":
+        if self._is_dimmable:
             self.category = CATEGORY_LIGHTBULB
             serv = self.add_preload_service("Lightbulb", chars=["On", "Brightness"])
-            # Note: Brightness setter_callback deferred to future update
+            self._char_brightness = serv.configure_char(
+                "Brightness",
+                setter_callback=self._set_brightness,
+                value=self._current_brightness,
+            )
         elif service_type == "outlet":
             self.category = CATEGORY_OUTLET
             serv = self.add_preload_service("Outlet")
@@ -58,16 +68,36 @@ class XPAccessory(Accessory):
             value: True for on, False for off.
         """
         if self._hk_driver._on_set:
-            self._hk_driver._on_set(self._accessory_id, value)
+            self._hk_driver._on_set(self._accessory_id, value, None)
 
-    def update_state(self, is_on: bool) -> None:
+    def _set_brightness(self, value: int) -> None:
+        """
+        Handle HomeKit set brightness request.
+
+        Args:
+            value: Brightness value 0-100.
+        """
+        if self._hk_driver._on_set:
+            self._hk_driver._on_set(self._accessory_id, True, value)
+        self._current_brightness = value
+
+    def update_state(self, is_on: bool, brightness: Optional[int] = None) -> None:
         """
         Update accessory state from Conbus event.
 
         Args:
             is_on: True if accessory is on, False otherwise.
+            brightness: Optional brightness value 0-100.
         """
         self._char_on.set_value(is_on)
+        if brightness is not None and self._char_brightness:
+            self._char_brightness.set_value(brightness)  # type: ignore[attr-defined]
+            self._current_brightness = brightness
+
+    @property
+    def current_brightness(self) -> int:
+        """Get current brightness value."""
+        return self._current_brightness
 
 
 class HomekitAccessoryDriver:
@@ -84,14 +114,15 @@ class HomekitAccessoryDriver:
         self._homekit_config = homekit_config
         self._driver: Optional[AccessoryDriver] = None
         self._accessories: Dict[str, XPAccessory] = {}
-        self._on_set: Optional[Callable[[str, bool], None]] = None
+        self._on_set: Optional[OnSetCallback] = None
 
-    def set_callback(self, on_set: Callable[[str, bool], None]) -> None:
+    def set_callback(self, on_set: OnSetCallback) -> None:
         """
         Set callback for HomeKit set events.
 
         Args:
-            on_set: Callback(accessory_name, is_on) called when HomeKit app toggles.
+            on_set: Callback(accessory_name, is_on, brightness) called when HomeKit app changes state.
+                    brightness is None for on/off only, or 0-100 for dimming.
         """
         self._on_set = on_set
 
@@ -157,15 +188,34 @@ class HomekitAccessoryDriver:
         except Exception as e:
             self.logger.error(f"Error stopping AccessoryDriver: {e}", exc_info=True)
 
-    def update_state(self, accessory_name: str, is_on: bool) -> None:
+    def update_state(
+        self, accessory_name: str, is_on: bool, brightness: Optional[int] = None
+    ) -> None:
         """
         Update accessory state from Conbus event.
 
         Args:
             accessory_name: Accessory name to update.
             is_on: True if accessory is on, False otherwise.
+            brightness: Optional brightness value 0-100.
         """
-        if acc := self._accessories.get(accessory_name):
-            acc.update_state(is_on)
+        acc = self._accessories.get(accessory_name)
+        if acc:
+            acc.update_state(is_on, brightness)
         else:
             self.logger.warning(f"Unknown accessory name: {accessory_name}")
+
+    def get_brightness(self, accessory_name: str) -> int:
+        """
+        Get current brightness for an accessory.
+
+        Args:
+            accessory_name: Accessory name.
+
+        Returns:
+            Current brightness 0-100, defaults to 100 if not found.
+        """
+        acc = self._accessories.get(accessory_name)
+        if acc:
+            return acc.current_brightness
+        return 100
