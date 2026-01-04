@@ -65,8 +65,8 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
             link_number = de_bcd(data[i + 1])
             module_input = de_bcd(data[i + 2])
 
-            # Extract output and command from byte 3
-            module_output = lower3(data[i + 3])
+            # Extract output (0-indexed in wire format, convert to 1-indexed) and command
+            module_output = lower3(data[i + 3]) + 1
             command_raw = upper5(data[i + 3])
 
             parameter_raw = byte_to_unsigned(data[i + 4])
@@ -125,8 +125,8 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
             link_byte = to_bcd(entry.link_number)
             input_byte = to_bcd(entry.module_input)
 
-            # Combine output (lower 3 bits) and command (upper 5 bits)
-            output_command_byte = (entry.module_output & 0x07) | (
+            # Combine output (lower 3 bits, 0-indexed) and command (upper 5 bits)
+            output_command_byte = ((entry.module_output - 1) & 0x07) | (
                 (entry.command.value & 0x1F) << 3
             )
 

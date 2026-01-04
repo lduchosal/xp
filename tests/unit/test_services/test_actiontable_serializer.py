@@ -398,7 +398,7 @@ class TestActionTableSerializerPadding:
         assert result[0] == 0x02  # CP20 (value=2) in BCD
         assert result[1] == 0x01  # link_number
         assert result[2] == 0x02  # module_input
-        assert result[3] == 0x0B  # output (3) | command (1 << 3)
+        assert result[3] == 0x0A  # output 0-indexed: (3-1) | (ON << 3) = 2 | 8 = 10
         assert result[4] == 0x04  # parameter
 
         # Rest should be padding
@@ -419,7 +419,7 @@ class TestActionTableSerializerPadding:
         """Test encoding CP20 4 0 > 1 ON produces expected BCD string.
 
         ActionTable: CP20 4 0 > 1 ON;
-        Serialized BCD (first 8 chars): ACAEAAAJ
+        Serialized BCD (first 8 chars): ACAEAAAI
         """
         action_table = ActionTable(
             entries=[
@@ -441,5 +441,5 @@ class TestActionTableSerializerPadding:
         # AC = 0x02 (CP20, value=2)
         # AE = 0x04 (link_number=4)
         # AA = 0x00 (module_input=0)
-        # AJ = 0x09 (output=1 | (ON<<3) = 1 | 8 = 9)
-        assert encoded_string[:8] == "ACAEAAAJ"
+        # AI = 0x08 (output 0-indexed: (1-1) | (ON<<3) = 0 | 8 = 8)
+        assert encoded_string[:8] == "ACAEAAAI"
