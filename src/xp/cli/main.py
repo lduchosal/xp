@@ -24,17 +24,36 @@ from xp.utils.logging import LoggerService
     cls=HelpColorsGroup, help_headers_color="yellow", help_options_color="green"
 )
 @click.version_option()
+@click.option(
+    "--cli-config",
+    "-c",
+    default="cli.yml",
+    help="Path to the CLI configuration file (default: cli.yml)",
+    type=click.Path(exists=False),
+)
+@click.option(
+    "--log-config",
+    "-l",
+    default="logger.yml",
+    help="Path to the logger configuration file (default: logger.yml)",
+    type=click.Path(exists=False),
+)
 @click.pass_context
-def cli(ctx: click.Context) -> None:
+def cli(ctx: click.Context, cli_config: str, log_config: str) -> None:
     """
     XP CLI tool for remote console bus operations.
 
     Args:
         ctx: Click context object for passing state between commands.
+        cli_config: Path to the CLI configuration file.
+        log_config: Path to the logger configuration file.
     """
-    container = ServiceContainer()
-    logger_config = container.get_container().resolve(LoggerService)
-    logger_config.setup()
+    container = ServiceContainer(
+        client_config_path=cli_config,
+        logger_config_path=log_config,
+    )
+    logger_service = container.get_container().resolve(LoggerService)
+    logger_service.setup()
 
     # Initialize the service container and store it in the context
     ctx.ensure_object(dict)

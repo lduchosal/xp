@@ -513,7 +513,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         self.logger.debug("Queue manager: event loop")
         telegram = self.telegram_queue.get_nowait()
         self.sendFrame(telegram)
-        later = randint(10, 80) / 100
+        later = randint(5, self.cli_config.queue_delay_max) / 100
         self.call_later(later, self.process_telegram_queue)
 
     def set_event_loop(self, event_loop: asyncio.AbstractEventLoop) -> None:

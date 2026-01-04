@@ -15,11 +15,13 @@ class ClientConfig(BaseModel):
         ip: IP address of the Conbus server.
         port: Port number for the connection.
         timeout: Connection timeout in seconds.
+        queue_delay_max: Max delay between queued telegrams in centiseconds (default 40 = 0.40s).
     """
 
     ip: str = "192.168.1.100"
     port: int = 10001
     timeout: float = 0.1
+    queue_delay_max: int = 40
 
 
 class ConbusClientConfig(BaseModel):
