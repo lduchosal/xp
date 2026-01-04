@@ -469,3 +469,58 @@ class TestActionTableSerializerPadding:
         assert entry.command == InputActionType.ON
         assert entry.parameter == TimeParam.NONE
         assert entry.inverted is False
+
+    def test_to_encoded_string_cp20_link13_input9_output1_levelinc(self):
+        """
+        Test encoding CP20 13 9 > 1 LEVELINC produces expected BCD string.
+
+        ActionTable: CP20 13 9 > 1 LEVELINC;
+        Serialized BCD (first 8 chars): ACBDAJEI
+        """
+        action_table = ActionTable(
+            entries=[
+                ActionTableEntry(
+                    module_type=ModuleTypeCode.CP20,
+                    link_number=13,
+                    module_input=9,
+                    module_output=1,
+                    command=InputActionType.LEVELINC,
+                    parameter=TimeParam.NONE,
+                    inverted=False,
+                )
+            ]
+        )
+
+        encoded_string = ActionTableSerializer.to_encoded_string(action_table)
+
+        # First 8 characters (4 bytes in BCD, high-nibble first):
+        # AC = 0x02 (CP20, value=2)
+        # BD = 0x13 (link_number=13 in BCD)
+        # AJ = 0x09 (module_input=9)
+        # EI = 0x48 (output 0-indexed: (1-1) | (LEVELINC<<3) = 0 | 72 = 0x48)
+        assert encoded_string[:8] == "ACBDAJEI"
+
+    def test_from_encoded_string_cp20_link13_input9_output1_levelinc(self):
+        """
+        Test decoding BCD string ACBDAJEIAA produces expected ActionTable.
+
+        Serialized BCD: ACBDAJEIAA (+ padding)
+        ActionTable: CP20 13 9 > 1 LEVELINC;
+        """
+        # Build full 960-char encoded string (96 entries × 5 bytes × 2 nibbles)
+        # First entry: ACBDAJEIAA, rest is padding (AA = 0x00)
+        encoded_string = "ACBDAJEIAA" + "AA" * 475
+
+        action_table = ActionTableSerializer.from_encoded_string(encoded_string)
+
+        # Should have exactly 1 entry (padding entries with NOMOD are filtered out)
+        assert len(action_table.entries) == 1
+
+        entry = action_table.entries[0]
+        assert entry.module_type == ModuleTypeCode.CP20
+        assert entry.link_number == 13
+        assert entry.module_input == 9
+        assert entry.module_output == 1  # 0-indexed in wire format, converted to 1
+        assert entry.command == InputActionType.LEVELINC
+        assert entry.parameter == TimeParam.NONE
+        assert entry.inverted is False

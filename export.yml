@@ -28,36 +28,36 @@
   hw_version: XP33LR_HW_VER1
   auto_report_status: PP
   action_table:
-  - XP20 10 0 > 0 OFF;
   - XP20 10 0 > 1 OFF;
   - XP20 10 0 > 2 OFF;
-  - XP20 10 8 > 0 ON;
+  - XP20 10 0 > 3 OFF;
   - XP20 10 8 > 1 ON;
   - XP20 10 8 > 2 ON;
-  - XP20 2 0 > 0 OFF;
+  - XP20 10 8 > 3 ON;
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
-  - XP20 2 8 > 0 ON;
+  - XP20 2 0 > 3 OFF;
   - XP20 2 8 > 1 ON;
   - XP20 2 8 > 2 ON;
-  - CP20 0 0 > 0 OFF;
+  - XP20 2 8 > 3 ON;
   - CP20 0 0 > 1 OFF;
   - CP20 0 0 > 2 OFF;
-  - CP20 0 8 > 0 ON;
+  - CP20 0 0 > 3 OFF;
   - CP20 0 8 > 1 ON;
   - CP20 0 8 > 2 ON;
-  - CP20 3 0 > 0 ON;
-  - CP20 3 1 > 1 ON;
-  - CP20 3 2 > 2 ON;
-  - CP20 3 3 > 0 OFF;
-  - CP20 3 4 > 1 OFF;
-  - CP20 3 5 > 2 OFF;
-  - CP20 3 8 > 0 ON;
+  - CP20 0 8 > 3 ON;
+  - CP20 3 0 > 1 ON;
+  - CP20 3 1 > 2 ON;
+  - CP20 3 2 > 3 ON;
+  - CP20 3 3 > 1 OFF;
+  - CP20 3 4 > 2 OFF;
+  - CP20 3 5 > 3 OFF;
   - CP20 3 8 > 1 ON;
   - CP20 3 8 > 2 ON;
-  - CP20 3 9 > 0 OFF;
+  - CP20 3 8 > 3 ON;
   - CP20 3 9 > 1 OFF;
   - CP20 3 9 > 2 OFF;
+  - CP20 3 9 > 3 OFF;
 
 - name: A4
   serial_number: 0020044991
@@ -151,15 +151,14 @@
   hw_version: XP24
   auto_report_status: PP
   action_table:
-  - XP20 10 0 > 0 OFF;
   - XP20 10 0 > 1 OFF;
   - XP20 10 0 > 2 OFF;
   - XP20 10 0 > 3 OFF;
-  - XP20 10 8 > 0 ON;
+  - XP20 10 0 > 4 OFF;
   - XP20 10 8 > 1 ON;
   - XP20 10 8 > 2 ON;
   - XP20 10 8 > 3 ON;
-  - XP20 2 0 > 0 OFF;
+  - XP20 10 8 > 4 ON;
   - XP20 2 0 > 1 OFF;
   - XP20 2 0 > 2 OFF;
   - XP20 2 0 > 3 OFF;

@@ -408,6 +408,7 @@ class TestActionTableUploadChunkPrefix:
         mock_reply = Mock()
         mock_reply.system_function = SystemFunction.ACK
 
+        # First ACK after all chunks sent triggers EOF
         service._handle_upload_response(mock_reply)
 
         # Should send EOF
@@ -417,6 +418,9 @@ class TestActionTableUploadChunkPrefix:
             system_function=SystemFunction.EOF,
             data_value="00",
         )
+
+        # Second ACK (after EOF) triggers finish signal
+        service._handle_upload_response(mock_reply)
 
         # Should call finish signal with True
         mock_finish.assert_called_once_with(True)
@@ -580,11 +584,11 @@ class TestActionTableUploadFullSequence:
         # Simulate connection made
         service.connection_made()
 
-        # Simulate ACK responses for each chunk + final ACK to trigger EOF
+        # Simulate ACK responses for each chunk + ACK to trigger EOF + ACK after EOF
         mock_ack = Mock()
         mock_ack.system_function = SystemFunction.ACK
 
-        for _ in range(16):  # 15 chunks + 1 final ACK to trigger EOF
+        for _ in range(17):  # 15 chunks + 1 ACK to trigger EOF + 1 ACK after EOF
             service._handle_upload_response(mock_ack)
 
         # Verify: Exactly 17 telegrams sent (1 UPLOAD_ACTIONTABLE + 15 ACTIONTABLE + 1 EOF)

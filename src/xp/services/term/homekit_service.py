@@ -421,12 +421,15 @@ class HomekitService:
         Returns:
             True if command was sent, False otherwise.
         """
+        config = self._find_accessory_config_by_id(accessory_id)
         state = self._accessory_states.get(accessory_id)
-        if not state:
+        if not config or not state or not config.dimup_action:
+            self.logger.warning(f"No config for accessory {accessory_id}")
             return False
-        # TODO: Implement dimmer control
-        self.on_status_message.emit(f"Dimmer+ {state.accessory_name} (not implemented)")
-        return False
+
+        self.send_action(config.dimup_action)
+        self.on_status_message.emit(f"Dim+ {state.accessory_name}")
+        return True
 
     def decrease_dimmer(self, accessory_id: str) -> bool:
         """
@@ -438,12 +441,15 @@ class HomekitService:
         Returns:
             True if command was sent, False otherwise.
         """
+        config = self._find_accessory_config_by_id(accessory_id)
         state = self._accessory_states.get(accessory_id)
-        if not state:
+        if not config or not state or not config.dimdown_action:
+            self.logger.warning(f"No config for accessory {accessory_id}")
             return False
-        # TODO: Implement dimmer control
-        self.on_status_message.emit(f"Dimmer- {state.accessory_name} (not implemented)")
-        return False
+
+        self.send_action(config.dimdown_action)
+        self.on_status_message.emit(f"Dim- {state.accessory_name}")
+        return True
 
     def refresh_all(self) -> None:
         """
