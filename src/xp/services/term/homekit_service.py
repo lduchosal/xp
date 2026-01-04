@@ -81,6 +81,9 @@ class HomekitService:
         # Set up HomeKit callback
         self._accessory_driver.set_callback(self._on_homekit_set)
 
+        # Track active level action: (accessory_id, action_type) or None
+        self._active_level_action: Optional[tuple[str, str]] = None
+
         # Connect to protocol signals
         self._connect_signals()
 
@@ -454,7 +457,9 @@ class HomekitService:
 
     def levelup_selected(self, accessory_id: str) -> bool:
         """
-        Increase level for accessory.
+        Increase level for accessory (toggle Make/Break).
+
+        First press sends Make (M), second press sends Break (B).
 
         Args:
             accessory_id: Accessory ID (e.g., "A12_1").
@@ -468,13 +473,15 @@ class HomekitService:
             self.logger.warning(f"No config for accessory {accessory_id}")
             return False
 
-        self.send_action(config.levelup_action)
-        self.on_status_message.emit(f"Level+ {state.accessory_name}")
-        return True
+        return self._send_level_action(
+            accessory_id, "levelup", config.levelup_action, state.accessory_name
+        )
 
     def leveldown_selected(self, accessory_id: str) -> bool:
         """
-        Decrease level for accessory.
+        Decrease level for accessory (toggle Make/Break).
+
+        First press sends Make (M), second press sends Break (B).
 
         Args:
             accessory_id: Accessory ID (e.g., "A12_1").
@@ -488,8 +495,52 @@ class HomekitService:
             self.logger.warning(f"No config for accessory {accessory_id}")
             return False
 
-        self.send_action(config.leveldown_action)
-        self.on_status_message.emit(f"Level- {state.accessory_name}")
+        return self._send_level_action(
+            accessory_id, "leveldown", config.leveldown_action, state.accessory_name
+        )
+
+    def _send_level_action(
+        self, accessory_id: str, action_type: str, action: str, name: str
+    ) -> bool:
+        """
+        Send level action with Make/Break toggle.
+
+        Args:
+            accessory_id: Accessory ID.
+            action_type: "levelup" or "leveldown".
+            action: Action code (e.g., "E02L13I15").
+            name: Accessory name for status message.
+
+        Returns:
+            True if command was sent.
+        """
+        current = self._active_level_action
+
+        # If same action is active, send Break and clear
+        if current and current[0] == accessory_id and current[1] == action_type:
+            self._conbus_protocol.send_raw_telegram(f"{action}B")
+            self._active_level_action = None
+            direction = "+" if action_type == "levelup" else "-"
+            self.on_status_message.emit(f"Level{direction} {name} [B]")
+            return True
+
+        # If different action is active, send Break for it first
+        if current:
+            old_config = self._find_accessory_config_by_id(current[0])
+            if old_config:
+                old_action = (
+                    old_config.levelup_action
+                    if current[1] == "levelup"
+                    else old_config.leveldown_action
+                )
+                if old_action:
+                    self._conbus_protocol.send_raw_telegram(f"{old_action}B")
+
+        # Send Make for new action
+        self._conbus_protocol.send_raw_telegram(f"{action}M")
+        self._active_level_action = (accessory_id, action_type)
+        direction = "+" if action_type == "levelup" else "-"
+        self.on_status_message.emit(f"Level{direction} {name} [M]")
         return True
 
     def refresh_all(self) -> None:
