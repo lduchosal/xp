@@ -414,3 +414,32 @@ class TestActionTableSerializerPadding:
         # Should still be 480 bytes, all zeros
         assert len(result) == 480
         assert result == b"\x00" * 480
+
+    def test_to_encoded_string_cp20_link4_input0_output1_on(self):
+        """Test encoding CP20 4 0 > 1 ON produces expected BCD string.
+
+        ActionTable: CP20 4 0 > 1 ON;
+        Serialized BCD (first 8 chars): ACAEAAAJ
+        """
+        action_table = ActionTable(
+            entries=[
+                ActionTableEntry(
+                    module_type=ModuleTypeCode.CP20,
+                    link_number=4,
+                    module_input=0,
+                    module_output=1,
+                    command=InputActionType.ON,
+                    parameter=TimeParam.NONE,
+                    inverted=False,
+                )
+            ]
+        )
+
+        encoded_string = ActionTableSerializer.to_encoded_string(action_table)
+
+        # First 8 characters (4 bytes in BCD, high-nibble first):
+        # AC = 0x02 (CP20, value=2)
+        # AE = 0x04 (link_number=4)
+        # AA = 0x00 (module_input=0)
+        # AJ = 0x09 (output=1 | (ON<<3) = 1 | 8 = 9)
+        assert encoded_string[:8] == "ACAEAAAJ"
