@@ -82,6 +82,8 @@ class HomekitAccessoryConfig(BaseModel):
     toggle_action: Optional[str] = None
     dimup_action: Optional[str] = None
     dimdown_action: Optional[str] = None
+    levelup_action: Optional[str] = None
+    leveldown_action: Optional[str] = None
     hap_accessory: Optional[int] = None
 
 

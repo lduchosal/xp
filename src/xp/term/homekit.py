@@ -41,6 +41,8 @@ class HomekitApp(App[None]):
         ("minus", "turn_off_selected", "Off"),
         ("plus", "dim_up", "Dim+"),
         ("quotation_mark", "dim_down", "Dim-"),
+        ("asterisk", "level_up", "Level+"),
+        ("ç", "level_down", "Level-"),
     ]
 
     def __init__(self, homekit_service: HomekitService) -> None:
@@ -106,11 +108,16 @@ class HomekitApp(App[None]):
         - - : Turn OFF
         - + : Dim up
         - " : Dim down
+        - * : Level up
+        - ç : Level down
 
         Args:
             event: Key press event.
         """
         key = event.key
+
+        # Debug: show received key
+        self.homekit_service.on_status_message.emit(f"Key: {key}")
 
         # Selection keys (a-z0-9)
         if len(key) == 1 and (("a" <= key <= "z") or ("0" <= key <= "9")):
@@ -139,6 +146,12 @@ class HomekitApp(App[None]):
             event.prevent_default()
         elif key in ("quotation_mark", '"'):
             self.homekit_service.decrease_dimmer(self.selected_accessory_id)
+            event.prevent_default()
+        elif key in ("asterisk", "star", "*"):
+            self.homekit_service.levelup_selected(self.selected_accessory_id)
+            event.prevent_default()
+        elif key in ("cedille", "ç"):
+            self.homekit_service.leveldown_selected(self.selected_accessory_id)
             event.prevent_default()
 
     def _select_row(self, action_key: str) -> None:
@@ -242,6 +255,17 @@ class HomekitApp(App[None]):
         """Decrease dimmer on selected accessory."""
         if self.selected_accessory_id:
             self.homekit_service.decrease_dimmer(self.selected_accessory_id)
+
+
+    def action_level_up(self) -> None:
+        """Increase level on selected accessory."""
+        if self.selected_accessory_id:
+            self.homekit_service.levelup_selected(self.selected_accessory_id)
+
+    def action_level_down(self) -> None:
+        """Decrease level on selected accessory."""
+        if self.selected_accessory_id:
+            self.homekit_service.leveldown_selected(self.selected_accessory_id)
 
     async def on_unmount(self) -> None:
         """Stop AccessoryDriver and clean up service when app unmounts."""

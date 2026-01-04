@@ -451,6 +451,47 @@ class HomekitService:
         self.on_status_message.emit(f"Dim- {state.accessory_name}")
         return True
 
+
+    def levelup_selected(self, accessory_id: str) -> bool:
+        """
+        Increase level for accessory.
+
+        Args:
+            accessory_id: Accessory ID (e.g., "A12_1").
+
+        Returns:
+            True if command was sent, False otherwise.
+        """
+        config = self._find_accessory_config_by_id(accessory_id)
+        state = self._accessory_states.get(accessory_id)
+        if not config or not state or not config.levelup_action:
+            self.logger.warning(f"No config for accessory {accessory_id}")
+            return False
+
+        self.send_action(config.levelup_action)
+        self.on_status_message.emit(f"Level+ {state.accessory_name}")
+        return True
+
+    def leveldown_selected(self, accessory_id: str) -> bool:
+        """
+        Decrease level for accessory.
+
+        Args:
+            accessory_id: Accessory ID (e.g., "A12_1").
+
+        Returns:
+            True if command was sent, False otherwise.
+        """
+        config = self._find_accessory_config_by_id(accessory_id)
+        state = self._accessory_states.get(accessory_id)
+        if not config or not state or not config.leveldown_action:
+            self.logger.warning(f"No config for accessory {accessory_id}")
+            return False
+
+        self.send_action(config.leveldown_action)
+        self.on_status_message.emit(f"Level- {state.accessory_name}")
+        return True
+
     def refresh_all(self) -> None:
         """
         Refresh all module states.
