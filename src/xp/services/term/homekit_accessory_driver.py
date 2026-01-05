@@ -15,7 +15,13 @@ OnSetCallback = Callable[[str, bool, Optional[int]], None]
 
 
 class XPAccessory(Accessory):
-    """Single accessory wrapping a Conbus output."""
+    """
+    Single accessory wrapping a Conbus output.
+
+    Attributes:
+        logger: Logger instance for this accessory.
+        current_brightness: Current brightness value 0-100.
+    """
 
     def __init__(
         self,
