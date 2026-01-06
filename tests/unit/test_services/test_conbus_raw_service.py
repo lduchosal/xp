@@ -37,7 +37,7 @@ class TestConbusRawService:
 
     def test_service_initialization(self, service, mock_conbus_protocol):
         """Test service can be initialized with required dependencies."""
-        assert service.raw_input == ""
+        assert service.telegrams == []
         assert service.service_response.success is False
         # Verify signals were connected
         assert mock_conbus_protocol.on_connection_made.connect.called
@@ -172,7 +172,7 @@ class TestConbusRawService:
     def test_context_manager_enter_resets_state(self, service):
         """Test __enter__ resets state for singleton reuse."""
         # Set some state
-        service.raw_input = "test"
+        service.telegrams = ["test"]
         service.service_response.success = True
 
         # Enter context
@@ -180,7 +180,7 @@ class TestConbusRawService:
 
         # Verify state is reset
         assert result is service
-        assert service.raw_input == ""
+        assert service.telegrams == []
         assert service.service_response.success is False
 
     def test_context_manager_exit_disconnects_signals(
@@ -208,9 +208,9 @@ class TestConbusRawService:
         mock_conbus_protocol.stop_reactor.assert_called_once()
 
     def test_connection_made(self, service, mock_conbus_protocol):
-        """Test connection_made sends raw telegram."""
-        service.raw_input = "<S2113010000F02D12>"
+        """Test connection_made sends raw telegrams."""
+        service.telegrams = ["S2113010000F02D12", "S2113010001F02D12"]
         service.connection_made()
-        mock_conbus_protocol.send_raw_telegram.assert_called_once_with(
-            "<S2113010000F02D12>"
-        )
+        assert mock_conbus_protocol.send_raw_telegram.call_count == 2
+        mock_conbus_protocol.send_raw_telegram.assert_any_call("S2113010000F02D12")
+        mock_conbus_protocol.send_raw_telegram.assert_any_call("S2113010001F02D12")

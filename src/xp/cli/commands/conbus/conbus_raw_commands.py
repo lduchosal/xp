@@ -14,25 +14,24 @@ from xp.services.conbus.conbus_raw_service import ConbusRawService
 
 
 @conbus.command("raw")
-@click.argument("raw_telegrams")
+@click.argument("telegrams", nargs=-1, required=True)
 @click.pass_context
 @connection_command()
-def send_raw_telegrams(ctx: Context, raw_telegrams: str) -> None:
+def send_raw_telegrams(ctx: Context, telegrams: tuple[str, ...]) -> None:
     r"""
     Send raw telegram sequence to Conbus server.
 
-    Accepts a string containing one or more telegrams in format <...>.
-    Multiple telegrams should be concatenated without separators.
+    Accepts one or more telegrams in format S2113010000F02D (without <> nor CHECKSUM) as separate arguments.
 
     Args:
         ctx: Click context object.
-        raw_telegrams: Raw telegram string(s).
+        telegrams: Raw telegram string(s).
 
     Examples:
         \b
-        xp conbus raw '<S2113010000F02D12>'
-        xp conbus raw '<S2113010000F02D12><S2113010001F02D12><S2113010002F02D12>'
-        xp conbus raw '<S0012345003F02D12FM>...<S0012345009F02D12FF>'
+        xp conbus raw 'S2113010000F02D'
+        xp conbus raw 'S2113010000F02D' 'S2113010001F02D'
+        xp conbus raw 'S0012345003F02D12F' 'S0012345009F02D12'
     """
     service: ConbusRawService = (
         ctx.obj.get("container").get_container().resolve(ConbusRawService)
@@ -62,8 +61,8 @@ def send_raw_telegrams(ctx: Context, raw_telegrams: str) -> None:
         service.on_progress.connect(on_progress)
         service.on_finish.connect(on_finish)
         # Setup
-        service.send_raw_telegram(
-            raw_input=raw_telegrams,
+        service.send_raw_telegrams(
+            telegrams=list(telegrams),
             timeout_seconds=5.0,
         )
         # Start (blocks until completion)

@@ -51,7 +51,7 @@ class ConbusRawService:
         self.conbus_protocol.on_timeout.connect(self.timeout)
         self.conbus_protocol.on_failed.connect(self.failed)
 
-        self.raw_input: str = ""
+        self.telegrams: list[str] = []
         self.service_response: ConbusRawResponse = ConbusRawResponse(
             success=False,
         )
@@ -60,8 +60,11 @@ class ConbusRawService:
 
     def connection_made(self) -> None:
         """Handle connection established event."""
-        self.logger.debug(f"Connection established, sending {self.raw_input}")
-        self.conbus_protocol.send_raw_telegram(self.raw_input)
+        self.logger.debug(
+            f"Connection established, sending {len(self.telegrams)} telegrams"
+        )
+        for telegram in self.telegrams:
+            self.conbus_protocol.send_raw_telegram(telegram)
 
     def telegram_sent(self, telegram_sent: str) -> None:
         """
@@ -108,22 +111,22 @@ class ConbusRawService:
         self.service_response.error = message
         self.on_finish.emit(self.service_response)
 
-    def send_raw_telegram(
+    def send_raw_telegrams(
         self,
-        raw_input: str,
+        telegrams: list[str],
         timeout_seconds: Optional[float] = None,
     ) -> None:
         """
-        Send a raw telegram string to the Conbus server.
+        Send raw telegrams to the Conbus server.
 
         Args:
-            raw_input: Raw telegram string to send.
+            telegrams: List of raw telegram strings to send.
             timeout_seconds: Timeout in seconds.
         """
-        self.logger.info("Starting send_raw_telegram")
+        self.logger.info(f"Starting send_raw_telegrams with {len(telegrams)} telegrams")
         if timeout_seconds:
             self.conbus_protocol.timeout_seconds = timeout_seconds
-        self.raw_input = raw_input
+        self.telegrams = telegrams
 
     def set_timeout(self, timeout_seconds: float) -> None:
         """
@@ -151,7 +154,7 @@ class ConbusRawService:
         """
         # Reset state for singleton reuse
         self.service_response = ConbusRawResponse(success=False)
-        self.raw_input = ""
+        self.telegrams = []
         return self
 
     def __exit__(

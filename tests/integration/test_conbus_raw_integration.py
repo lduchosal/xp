@@ -59,12 +59,12 @@ class TestConbusRawIntegration:
         mock_service.on_progress.connect.side_effect = mock_on_progress_connect
 
         # Make the mock service call the callback immediately
-        def mock_send_raw_telegram(raw_input, timeout_seconds=None):
+        def mock_send_raw_telegrams(telegrams, timeout_seconds=None):
             """
             Test helper function.
 
             Args:
-                raw_input: Raw telegram input.
+                telegrams: List of raw telegram inputs.
                 timeout_seconds: Timeout in seconds.
             """
             # Call the on_finish callback that was connected
@@ -76,7 +76,7 @@ class TestConbusRawIntegration:
             # Do nothing in test
             pass
 
-        mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
+        mock_service.send_raw_telegrams.side_effect = mock_send_raw_telegrams
         mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Mock the container
@@ -92,7 +92,7 @@ class TestConbusRawIntegration:
         assert result.exit_code == 0
         assert '"success": true' in result.output
         assert '"received_telegrams": [' in result.output
-        mock_service.send_raw_telegram.assert_called_once()
+        mock_service.send_raw_telegrams.assert_called_once()
 
     def test_conbus_raw_multiple_telegrams(self):
         """Test conbus raw command with multiple telegrams."""
@@ -137,12 +137,12 @@ class TestConbusRawIntegration:
         mock_service.on_progress.connect.side_effect = mock_on_progress_connect
 
         # Make the mock service call the callback immediately
-        def mock_send_raw_telegram(raw_input, timeout_seconds=None):
+        def mock_send_raw_telegrams(telegrams, timeout_seconds=None):
             """
             Test helper function.
 
             Args:
-                raw_input: Raw telegram input.
+                telegrams: List of raw telegram inputs.
                 timeout_seconds: Timeout in seconds.
             """
             # Simulate progress callbacks for each received telegram
@@ -159,23 +159,30 @@ class TestConbusRawIntegration:
             # Do nothing in test
             pass
 
-        mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
+        mock_service.send_raw_telegrams.side_effect = mock_send_raw_telegrams
         mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Mock the container
         mock_container = MagicMock()
         mock_container.get_container().resolve.return_value = mock_service
 
-        raw_input = "<S2113010000F02D12><S2113010001F02D12><S2113010002F02D12>"
         result = self.runner.invoke(
-            cli, ["conbus", "raw", raw_input], obj={"container": mock_container}
+            cli,
+            [
+                "conbus",
+                "raw",
+                "<S2113010000F02D12>",
+                "<S2113010001F02D12>",
+                "<S2113010002F02D12>",
+            ],
+            obj={"container": mock_container},
         )
 
         assert result.exit_code == 0
         assert "<R2113010000F02D12>" in result.output
         assert "<R2113010001F02D12>" in result.output
         assert "<S2113010002F02D12>" in result.output
-        mock_service.send_raw_telegram.assert_called_once()
+        mock_service.send_raw_telegrams.assert_called_once()
 
     def test_conbus_raw_connection_error(self):
         """Test conbus raw command with connection error."""
@@ -212,12 +219,12 @@ class TestConbusRawIntegration:
         mock_service.on_progress.connect.side_effect = mock_on_progress_connect
 
         # Make the mock service call the callback immediately
-        def mock_send_raw_telegram(raw_input, timeout_seconds=None):
+        def mock_send_raw_telegrams(telegrams, timeout_seconds=None):
             """
             Test helper function.
 
             Args:
-                raw_input: Raw telegram input.
+                telegrams: List of raw telegram inputs.
                 timeout_seconds: Timeout in seconds.
             """
             # Call the on_finish callback that was connected
@@ -229,7 +236,7 @@ class TestConbusRawIntegration:
             # Do nothing in test
             pass
 
-        mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
+        mock_service.send_raw_telegrams.side_effect = mock_send_raw_telegrams
         mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Mock the container
@@ -285,12 +292,12 @@ class TestConbusRawIntegration:
         mock_service.on_progress.connect.side_effect = mock_on_progress_connect
 
         # Make the mock service call the callback immediately
-        def mock_send_raw_telegram(raw_input, timeout_seconds=None):
+        def mock_send_raw_telegrams(telegrams, timeout_seconds=None):
             """
             Test helper function.
 
             Args:
-                raw_input: Raw telegram input.
+                telegrams: List of raw telegram inputs.
                 timeout_seconds: Timeout in seconds.
             """
             # Call the on_finish callback that was connected
@@ -302,7 +309,7 @@ class TestConbusRawIntegration:
             # Do nothing in test
             pass
 
-        mock_service.send_raw_telegram.side_effect = mock_send_raw_telegram
+        mock_service.send_raw_telegrams.side_effect = mock_send_raw_telegrams
         mock_service.start_reactor.side_effect = mock_start_reactor
 
         # Mock the container
@@ -331,14 +338,14 @@ class TestConbusRawIntegration:
         output = result.output
 
         assert "Send raw telegram sequence to Conbus server" in output
-        assert "RAW_TELEGRAMS" in output
+        assert "TELEGRAMS" in output
 
     def test_conbus_raw_missing_arguments(self):
         """Test conbus raw command with missing arguments."""
         result = self.runner.invoke(cli, ["conbus", "raw"])
 
         assert result.exit_code != 0
-        assert "Usage: cli conbus raw [OPTIONS] RAW_TELEGRAMS" in result.output
+        assert "Usage: cli conbus raw [OPTIONS] TELEGRAMS" in result.output
 
     def test_conbus_raw_service_exception(self):
         """Test conbus raw command when service raises exception."""
@@ -347,8 +354,8 @@ class TestConbusRawIntegration:
         mock_service.__enter__.return_value = mock_service
         mock_service.__exit__.return_value = None
 
-        # Make the service raise an exception when send_raw_telegram is called
-        mock_service.send_raw_telegram.side_effect = Exception("Service error")
+        # Make the service raise an exception when send_raw_telegrams is called
+        mock_service.send_raw_telegrams.side_effect = Exception("Service error")
 
         # Mock the container
         mock_container = MagicMock()
