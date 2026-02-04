@@ -38,6 +38,9 @@ Comprehensive type safety and robust error handling
 # Install with PIP (recommended)
 pip install conson-xp
 
+# Upgrade package
+pip install --upgrade conson-xp==2.0.5
+
 # Export your Conbus device configuration (recommended first step)
 xp conbus export
 
