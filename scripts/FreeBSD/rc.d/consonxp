@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# PROVIDE: consonxp
+# REQUIRE: LOGIN DAEMON NETWORKING FILESYSTEMS
+# KEYWORD: jail python
+
+. /etc/rc.subr
+
+name="consonxp"
+
+rcvar=${name}_enable
+consonxp_chdir="/usr/local/consonxp"
+
+extra_commands="reload status"
+
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+
+consonxp_start()
+{
+    /usr/sbin/daemon -u consonxp -o ${consonxp_log} -P ${consonxp_pid} -r /usr/local/consonxp/bin/start ${consonxp_listen} ${consonxp_port} ${consonxp_log}
+}
+
+consonxp_stop()
+{
+    kill -TERM `cat ${consonxp_pid}`
+}
+
+: ${consonxp_listen="127.0.0.1"}
+: ${consonxp_port="8080"}
+: ${consonxp_pid="/var/run/consonxp.pid"}
+: ${consonxp_log="/var/log/consonxp/consonxp.log"}
+
+load_rc_config $name
+
+run_rc_command "$1"
+

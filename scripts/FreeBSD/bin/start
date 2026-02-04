@@ -1,0 +1,11 @@
+#!/bin/sh
+
+basedir=/usr/local/consonxp
+protocol="xp --cli-config=cli-xp230.yml term protocol"
+homekit="xp --cli-config=cli-xp130.yml term homekit"
+
+cd ${basedir}
+. ./venv/bin/activate
+
+cd src
+tmux new-session -A -s consonxp -d ${protocol} \; new-window ${homekit}

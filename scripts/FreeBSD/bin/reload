@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/usr/sbin/service consonxp restart 1> /dev/null
