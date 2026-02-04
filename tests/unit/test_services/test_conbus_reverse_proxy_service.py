@@ -23,14 +23,12 @@ class TestReverseProxyService:
         self.temp_config = tempfile.NamedTemporaryFile(
             mode="w", suffix=".yml", delete=False
         )
-        self.temp_config.write(
-            """
+        self.temp_config.write("""
 conbus:
   ip: 192.168.1.100
   port: 10002
   timeout: 5.0
-"""
-        )
+""")
         self.temp_config.close()
 
         cli_config = ConbusClientConfig.from_yaml(self.temp_config.name)
@@ -238,14 +236,12 @@ class TestReverseProxyServiceIntegration:
         self.temp_config = tempfile.NamedTemporaryFile(
             mode="w", suffix=".yml", delete=False
         )
-        self.temp_config.write(
-            f"""
+        self.temp_config.write(f"""
 conbus:
   ip: 127.0.0.1
   port: {self.target_port}
   timeout: 2
-"""
-        )
+""")
         self.temp_config.close()
 
         cli_config = ConbusClientConfig.from_yaml(self.temp_config.name)

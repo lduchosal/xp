@@ -216,7 +216,7 @@ class ConbusActiontableExportService:
         """
         self.download_service.reset()
         try:
-            (current_serial_number, self.current_actiontable_type) = (
+            current_serial_number, self.current_actiontable_type = (
                 self.device_queue.get_nowait()
             )
         except Empty:

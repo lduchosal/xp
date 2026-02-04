@@ -4,7 +4,7 @@ XP CLI tool for remote console bus operations.
 conson-xp package.
 """
 
-__version__ = "2.0.4"
+__version__ = "2.0.5"
 __manufacturer__ = "salchichon"
 __model__ = "xp.cli"
 __serial__ = "2025.09.23.000"

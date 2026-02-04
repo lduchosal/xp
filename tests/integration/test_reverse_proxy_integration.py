@@ -105,14 +105,12 @@ class TestReverseProxyIntegration:
         self.temp_config = tempfile.NamedTemporaryFile(
             mode="w", suffix=".yml", delete=False
         )
-        self.temp_config.write(
-            f"""
+        self.temp_config.write(f"""
 conbus:
   ip: 127.0.0.1
   port: {self.server_port}
   timeout: 2
-"""
-        )
+""")
         self.temp_config.close()
 
         # Create reverse proxy
