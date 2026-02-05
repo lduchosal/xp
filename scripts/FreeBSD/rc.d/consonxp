@@ -9,29 +9,81 @@
 name="consonxp"
 
 rcvar=${name}_enable
-consonxp_chdir="/usr/local/consonxp"
+
+# Default values (before load_rc_config to allow overrides)
+: ${consonxp_enable="NO"}
+: ${consonxp_chdir="/usr/local/consonxp"}
+: ${consonxp_piddir="/var/run/consonxp"}
+: ${consonxp_log="/var/log/consonxp/consonxp.log"}
+: ${consonxp_user="consonxp"}
+
+load_rc_config $name
 
 extra_commands="reload status"
 
 start_cmd="${name}_start"
 stop_cmd="${name}_stop"
+status_cmd="${name}_status"
+reload_cmd="${name}_reload"
 
 consonxp_start()
 {
-    /usr/sbin/daemon -u consonxp -o ${consonxp_log} -P ${consonxp_pid} -r /usr/local/consonxp/bin/start ${consonxp_listen} ${consonxp_port} ${consonxp_log}
+    # Create PID directory with correct ownership
+    mkdir -p "${consonxp_piddir}"
+    chown "${consonxp_user}:${consonxp_user}" "${consonxp_piddir}"
+
+    # Start via daemon
+    /usr/sbin/daemon -u "${consonxp_user}" -o "${consonxp_log}" -r "${consonxp_chdir}/bin/start"
 }
 
 consonxp_stop()
 {
-    kill -TERM `cat ${consonxp_pid}`
+    # Stop protocol if running
+    if [ -f ${consonxp_piddir}/protocol.pid ]; then
+        kill -TERM $(cat ${consonxp_piddir}/protocol.pid) 2>/dev/null
+    fi
+
+    # Stop homekit if running
+    if [ -f ${consonxp_piddir}/homekit.pid ]; then
+        kill -TERM $(cat ${consonxp_piddir}/homekit.pid) 2>/dev/null
+    fi
+
+    # Kill tmux session
+    tmux kill-session -t consonxp 2>/dev/null
 }
 
-: ${consonxp_listen="127.0.0.1"}
-: ${consonxp_port="8080"}
-: ${consonxp_pid="/var/run/consonxp.pid"}
-: ${consonxp_log="/var/log/consonxp/consonxp.log"}
+consonxp_status()
+{
+    echo "Protocol:"
+    if [ -f ${consonxp_piddir}/protocol.pid ]; then
+        pid=$(cat ${consonxp_piddir}/protocol.pid)
+        if ps -p ${pid} > /dev/null 2>&1; then
+            echo "  Running (PID ${pid})"
+        else
+            echo "  Not running (stale PID file)"
+        fi
+    else
+        echo "  Not running"
+    fi
 
-load_rc_config $name
+    echo "Homekit:"
+    if [ -f ${consonxp_piddir}/homekit.pid ]; then
+        pid=$(cat ${consonxp_piddir}/homekit.pid)
+        if ps -p ${pid} > /dev/null 2>&1; then
+            echo "  Running (PID ${pid})"
+        else
+            echo "  Not running (stale PID file)"
+        fi
+    else
+        echo "  Not running"
+    fi
+}
+
+consonxp_reload()
+{
+    consonxp_stop
+    sleep 1
+    consonxp_start
+}
 
 run_rc_command "$1"
-

@@ -54,6 +54,7 @@ def cli(ctx: click.Context, cli_config: str, log_config: str, pid_file: str) -> 
         ctx: Click context object for passing state between commands.
         cli_config: Path to the CLI configuration file.
         log_config: Path to the logger configuration file.
+        pid_file: Path to PID file (written on start, removed on exit).
     """
     container = ServiceContainer(
         client_config_path=cli_config,

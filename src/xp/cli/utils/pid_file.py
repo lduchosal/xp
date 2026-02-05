@@ -1,6 +1,7 @@
 """PID file management utilities."""
 
 import os
+from contextlib import suppress
 from pathlib import Path
 
 
@@ -26,7 +27,5 @@ def remove_pid_file(path: str) -> None:
     Args:
         path: Path to the PID file.
     """
-    try:
+    with suppress(FileNotFoundError):
         Path(path).unlink()
-    except FileNotFoundError:
-        pass

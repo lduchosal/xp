@@ -19,6 +19,9 @@ def protocol_monitor(ctx: Context) -> None:
     Args:
         ctx: Click context object.
 
+    Raises:
+        RuntimeError: If an unexpected runtime error occurs.
+
     Examples:
         \b
         xp term protocol
@@ -50,6 +53,9 @@ def state_monitor(ctx: Context) -> None:
 
     Args:
         ctx: Click context object.
+
+    Raises:
+        RuntimeError: If an unexpected runtime error occurs.
 
     Examples:
         \b
@@ -83,6 +89,9 @@ def homekit_monitor(ctx: Context) -> None:
 
     Args:
         ctx: Click context object.
+
+    Raises:
+        RuntimeError: If an unexpected runtime error occurs.
 
     Examples:
         \b

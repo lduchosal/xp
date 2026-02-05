@@ -54,6 +54,13 @@ def start_server(ctx: Context, port: int, config: str) -> None:
     pid_file: str = ctx.obj.get("pid_file") or "server.pid"
 
     def signal_handler(signum: int, frame: object) -> None:
+        """
+        Handle SIGINT/SIGTERM signals by stopping the server.
+
+        Args:
+            signum: Signal number received.
+            frame: Current stack frame.
+        """
         if _server_instance and _server_instance.is_running:
             _server_instance.stop_server()
 
