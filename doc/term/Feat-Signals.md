@@ -36,6 +36,7 @@ See `src/xp/cli/commands/reverse_proxy_commands.py` lines 82-98 for the existing
 | `src/xp/cli/main.py` | Add `--pid-file` option to root `cli` group, store in `ctx.obj` |
 | `src/xp/cli/utils/pid_file.py` | New file: `write_pid_file()` and `remove_pid_file()` helpers |
 | `src/xp/cli/commands/term/term_commands.py` | Add signal handlers, read `pid_file` from `ctx.obj` |
+| `src/xp/cli/commands/server/server_commands.py` | Add signal handlers and PID file support to `start` command |
 
 ### Out of Scope
 

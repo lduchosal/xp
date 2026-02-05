@@ -1,6 +1,7 @@
 """Conbus emulator server operations CLI commands."""
 
 import json
+import signal
 from typing import Any, Dict, Optional
 
 import click
@@ -10,6 +11,7 @@ from click_help_colors import HelpColorsGroup
 from xp.cli.utils.decorators import handle_service_errors
 from xp.cli.utils.error_handlers import ServerErrorHandler
 from xp.cli.utils.formatters import OutputFormatter
+from xp.cli.utils.pid_file import remove_pid_file, write_pid_file
 from xp.services.server.server_service import ServerError, ServerService
 
 # Global server instance
@@ -49,6 +51,16 @@ def start_server(ctx: Context, port: int, config: str) -> None:
         SystemExit: If server is already running.
     """
     global _server_instance
+    pid_file: str = ctx.obj.get("pid_file") or "server.pid"
+
+    def signal_handler(signum: int, frame: object) -> None:
+        if _server_instance and _server_instance.is_running:
+            _server_instance.stop_server()
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    write_pid_file(pid_file)
 
     try:
         # Check if server is already running
@@ -71,11 +83,13 @@ def start_server(ctx: Context, port: int, config: str) -> None:
         # This will block until server is stopped
         _server_instance.start_server()
 
+        shutdown_response = {"success": True, "message": "Server shutdown"}
+        click.echo(json.dumps(shutdown_response, indent=2))
+
     except ServerError as e:
         ServerErrorHandler.handle_server_startup_error(e, port, config)
-    except KeyboardInterrupt:
-        shutdown_response = {"success": True, "message": "Server shutdown by user"}
-        click.echo(json.dumps(shutdown_response, indent=2))
+    finally:
+        remove_pid_file(pid_file)
 
 
 @server.command("stop")

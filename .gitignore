@@ -27,3 +27,4 @@ __pycache__/
 *$py.class
 /interrogate_badge.svg
 /protocol.yml
+/*.pid

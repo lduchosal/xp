@@ -1,8 +1,5 @@
 """Term protocol CLI command for TUI monitoring."""
 
-import signal
-from typing import Optional
-
 import click
 from click import Context
 
@@ -29,22 +26,17 @@ def protocol_monitor(ctx: Context) -> None:
     from xp.term.protocol import ProtocolMonitorApp
 
     app = ctx.obj.get("container").get_container().resolve(ProtocolMonitorApp)
-    pid_file: Optional[str] = ctx.obj.get("pid_file")
+    pid_file: str = ctx.obj.get("pid_file") or "protocol.pid"
 
-    if pid_file:
-        write_pid_file(pid_file)
-
-    def signal_handler(signum: int, frame: object) -> None:
-        app.exit()
-
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    write_pid_file(pid_file)
 
     try:
         app.run()
+    except RuntimeError as e:
+        if "Event loop stopped before Future completed" not in str(e):
+            raise
     finally:
-        if pid_file:
-            remove_pid_file(pid_file)
+        remove_pid_file(pid_file)
 
 
 @term.command("state")
@@ -66,22 +58,17 @@ def state_monitor(ctx: Context) -> None:
     from xp.term.state import StateMonitorApp
 
     app = ctx.obj.get("container").get_container().resolve(StateMonitorApp)
-    pid_file: Optional[str] = ctx.obj.get("pid_file")
+    pid_file: str = ctx.obj.get("pid_file") or "state.pid"
 
-    if pid_file:
-        write_pid_file(pid_file)
-
-    def signal_handler(signum: int, frame: object) -> None:
-        app.exit()
-
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    write_pid_file(pid_file)
 
     try:
         app.run()
+    except RuntimeError as e:
+        if "Event loop stopped before Future completed" not in str(e):
+            raise
     finally:
-        if pid_file:
-            remove_pid_file(pid_file)
+        remove_pid_file(pid_file)
 
 
 @term.command("homekit")
@@ -104,19 +91,14 @@ def homekit_monitor(ctx: Context) -> None:
     from xp.term.homekit import HomekitApp
 
     app = ctx.obj.get("container").get_container().resolve(HomekitApp)
-    pid_file: Optional[str] = ctx.obj.get("pid_file")
+    pid_file: str = ctx.obj.get("pid_file") or "homekit.pid"
 
-    if pid_file:
-        write_pid_file(pid_file)
-
-    def signal_handler(signum: int, frame: object) -> None:
-        app.exit()
-
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    write_pid_file(pid_file)
 
     try:
         app.run()
+    except RuntimeError as e:
+        if "Event loop stopped before Future completed" not in str(e):
+            raise
     finally:
-        if pid_file:
-            remove_pid_file(pid_file)
+        remove_pid_file(pid_file)
