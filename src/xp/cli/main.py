@@ -38,8 +38,15 @@ from xp.utils.logging import LoggerService
     help="Path to the logger configuration file (default: logger.yml)",
     type=click.Path(exists=False),
 )
+@click.option(
+    "--pid-file",
+    "-p",
+    default=None,
+    help="Path to PID file (written on start, removed on exit)",
+    type=click.Path(),
+)
 @click.pass_context
-def cli(ctx: click.Context, cli_config: str, log_config: str) -> None:
+def cli(ctx: click.Context, cli_config: str, log_config: str, pid_file: str) -> None:
     """
     XP CLI tool for remote console bus operations.
 
@@ -60,6 +67,7 @@ def cli(ctx: click.Context, cli_config: str, log_config: str) -> None:
     # Only create a new container if one wasn't provided (e.g., for testing)
     if "container" not in ctx.obj:
         ctx.obj["container"] = container
+    ctx.obj["pid_file"] = pid_file
 
 
 # Register all command groups

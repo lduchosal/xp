@@ -106,3 +106,7 @@ class ProtocolMonitorApp(App[None]):
             event: Key press event from Textual.
         """
         self.protocol_service.handle_key_press(event.key)
+
+    def on_unmount(self) -> None:
+        """Clean up service when app unmounts."""
+        self.protocol_service.cleanup()

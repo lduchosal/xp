@@ -1,9 +1,13 @@
 """Term protocol CLI command for TUI monitoring."""
 
+import signal
+from typing import Optional
+
 import click
 from click import Context
 
 from xp.cli.commands.term.term import term
+from xp.cli.utils.pid_file import remove_pid_file, write_pid_file
 
 
 @term.command("protocol")
@@ -24,8 +28,23 @@ def protocol_monitor(ctx: Context) -> None:
     """
     from xp.term.protocol import ProtocolMonitorApp
 
-    # Resolve ProtocolMonitorApp from container and run
-    ctx.obj.get("container").get_container().resolve(ProtocolMonitorApp).run()
+    app = ctx.obj.get("container").get_container().resolve(ProtocolMonitorApp)
+    pid_file: Optional[str] = ctx.obj.get("pid_file")
+
+    if pid_file:
+        write_pid_file(pid_file)
+
+    def signal_handler(signum: int, frame: object) -> None:
+        app.exit()
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    try:
+        app.run()
+    finally:
+        if pid_file:
+            remove_pid_file(pid_file)
 
 
 @term.command("state")
@@ -46,8 +65,23 @@ def state_monitor(ctx: Context) -> None:
     """
     from xp.term.state import StateMonitorApp
 
-    # Resolve StateMonitorApp from container and run
-    ctx.obj.get("container").get_container().resolve(StateMonitorApp).run()
+    app = ctx.obj.get("container").get_container().resolve(StateMonitorApp)
+    pid_file: Optional[str] = ctx.obj.get("pid_file")
+
+    if pid_file:
+        write_pid_file(pid_file)
+
+    def signal_handler(signum: int, frame: object) -> None:
+        app.exit()
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    try:
+        app.run()
+    finally:
+        if pid_file:
+            remove_pid_file(pid_file)
 
 
 @term.command("homekit")
@@ -69,5 +103,20 @@ def homekit_monitor(ctx: Context) -> None:
     """
     from xp.term.homekit import HomekitApp
 
-    # Resolve HomekitApp from container and run
-    ctx.obj.get("container").get_container().resolve(HomekitApp).run()
+    app = ctx.obj.get("container").get_container().resolve(HomekitApp)
+    pid_file: Optional[str] = ctx.obj.get("pid_file")
+
+    if pid_file:
+        write_pid_file(pid_file)
+
+    def signal_handler(signum: int, frame: object) -> None:
+        app.exit()
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    try:
+        app.run()
+    finally:
+        if pid_file:
+            remove_pid_file(pid_file)
