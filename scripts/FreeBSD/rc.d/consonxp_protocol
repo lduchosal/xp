@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# PROVIDE: consonxp_protocol
+# REQUIRE: LOGIN DAEMON NETWORKING FILESYSTEMS netif routing defaultroute
+# BEFORE: securelevel
+# KEYWORD: jail python
+
+. /etc/rc.subr
+
+name="consonxp_protocol"
+
+rcvar=${name}_enable
+
+# Default values (before load_rc_config to allow overrides)
+: ${consonxp_protocol_enable="NO"}
+: ${consonxp_protocol_chdir="/usr/local/consonxp"}
+: ${consonxp_protocol_pidfile="/var/run/consonxp/protocol.pid"}
+: ${consonxp_protocol_log="/var/log/consonxp/protocol.log"}
+: ${consonxp_protocol_user="consonxp"}
+: ${consonxp_protocol_config="cli-xp230.yml"}
+
+load_rc_config $name
+
+pidfile="${consonxp_protocol_pidfile}"
+
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+status_cmd="${name}_status"
+
+consonxp_protocol_start()
+{
+    # Create directories with correct ownership
+    mkdir -p "$(dirname ${consonxp_protocol_pidfile})"
+    chown "${consonxp_protocol_user}:${consonxp_protocol_user}" "$(dirname ${consonxp_protocol_pidfile})"
+    mkdir -p "$(dirname ${consonxp_protocol_log})"
+    chown "${consonxp_protocol_user}:${consonxp_protocol_user}" "$(dirname ${consonxp_protocol_log})"
+
+    echo "Starting ${name}."
+    CONSONXP_CHDIR="${consonxp_protocol_chdir}" \
+    CONSONXP_CONFIG="${consonxp_protocol_config}" \
+    CONSONXP_PIDFILE="${consonxp_protocol_pidfile}" \
+    /usr/sbin/daemon -u "${consonxp_protocol_user}" \
+        -o "${consonxp_protocol_log}" \
+        -r \
+        "${consonxp_protocol_chdir}/bin/start_protocol"
+}
+
+consonxp_protocol_stop()
+{
+    if [ -f "${consonxp_protocol_pidfile}" ]; then
+        echo "Stopping ${name}."
+        kill -TERM $(cat "${consonxp_protocol_pidfile}") 2>/dev/null
+        rm -f "${consonxp_protocol_pidfile}"
+    else
+        echo "${name} is not running."
+    fi
+}
+
+consonxp_protocol_status()
+{
+    if [ -f "${consonxp_protocol_pidfile}" ]; then
+        pid=$(cat "${consonxp_protocol_pidfile}")
+        if ps -p ${pid} > /dev/null 2>&1; then
+            echo "${name} is running (PID ${pid})."
+        else
+            echo "${name} is not running (stale PID file)."
+        fi
+    else
+        echo "${name} is not running."
+    fi
+}
+
+run_rc_command "$1"

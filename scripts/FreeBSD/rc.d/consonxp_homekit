@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# PROVIDE: consonxp_homekit
+# REQUIRE: LOGIN DAEMON NETWORKING FILESYSTEMS netif routing defaultroute
+# BEFORE: securelevel
+# KEYWORD: jail python
+
+. /etc/rc.subr
+
+name="consonxp_homekit"
+
+rcvar=${name}_enable
+
+# Default values (before load_rc_config to allow overrides)
+: ${consonxp_homekit_enable="NO"}
+: ${consonxp_homekit_chdir="/usr/local/consonxp"}
+: ${consonxp_homekit_pidfile="/var/run/consonxp/homekit.pid"}
+: ${consonxp_homekit_log="/var/log/consonxp/homekit.log"}
+: ${consonxp_homekit_user="consonxp"}
+: ${consonxp_homekit_config="cli-xp130.yml"}
+
+load_rc_config $name
+
+pidfile="${consonxp_homekit_pidfile}"
+
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+status_cmd="${name}_status"
+
+consonxp_homekit_start()
+{
+    # Create directories with correct ownership
+    mkdir -p "$(dirname ${consonxp_homekit_pidfile})"
+    chown "${consonxp_homekit_user}:${consonxp_homekit_user}" "$(dirname ${consonxp_homekit_pidfile})"
+    mkdir -p "$(dirname ${consonxp_homekit_log})"
+    chown "${consonxp_homekit_user}:${consonxp_homekit_user}" "$(dirname ${consonxp_homekit_log})"
+
+    echo "Starting ${name}."
+    CONSONXP_CHDIR="${consonxp_homekit_chdir}" \
+    CONSONXP_CONFIG="${consonxp_homekit_config}" \
+    CONSONXP_PIDFILE="${consonxp_homekit_pidfile}" \
+    /usr/sbin/daemon -u "${consonxp_homekit_user}" \
+        -o "${consonxp_homekit_log}" \
+        -r \
+        "${consonxp_homekit_chdir}/bin/start_homekit"
+}
+
+consonxp_homekit_stop()
+{
+    if [ -f "${consonxp_homekit_pidfile}" ]; then
+        echo "Stopping ${name}."
+        kill -TERM $(cat "${consonxp_homekit_pidfile}") 2>/dev/null
+        rm -f "${consonxp_homekit_pidfile}"
+    else
+        echo "${name} is not running."
+    fi
+}
+
+consonxp_homekit_status()
+{
+    if [ -f "${consonxp_homekit_pidfile}" ]; then
+        pid=$(cat "${consonxp_homekit_pidfile}")
+        if ps -p ${pid} > /dev/null 2>&1; then
+            echo "${name} is running (PID ${pid})."
+        else
+            echo "${name} is not running (stale PID file)."
+        fi
+    else
+        echo "${name} is not running."
+    fi
+}
+
+run_rc_command "$1"

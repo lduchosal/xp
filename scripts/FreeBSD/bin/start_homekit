@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# ConsonXP HomeKit start script
+# Called by daemon from rc.d/consonxp_homekit
+# Runs inside tmux for easy attach/debug
+
+basedir="${CONSONXP_CHDIR:-/usr/local/consonxp}"
+config="${CONSONXP_CONFIG:-cli-xp130.yml}"
+pidfile="${CONSONXP_PIDFILE:-/var/run/consonxp/homekit.pid}"
+session="consonxp_homekit"
+
+cd "${basedir}" || exit 1
+. ./venv/bin/activate
+cd src || exit 1
+
+# Kill existing session if any
+tmux kill-session -t "${session}" 2>/dev/null
+
+# Start new detached tmux session
+tmux new-session -d -s "${session}" "xp --pid-file=${pidfile} --cli-config=${config} term homekit"
+
+# Wait for tmux session to end (keeps daemon alive)
+while tmux has-session -t "${session}" 2>/dev/null; do
+    sleep 5
+done
+
+# Session ended, exit (daemon -r will restart)
+exit 1

@@ -1,0 +1,20 @@
+# ConsonXP FreeBSD rc.conf configuration
+# Copy to /etc/rc.conf.d/consonxp or add to /etc/rc.conf
+
+# Enable services
+consonxp_protocol_enable="YES"
+consonxp_homekit_enable="YES"
+
+# Protocol service configuration (optional overrides)
+#consonxp_protocol_chdir="/usr/local/consonxp"
+#consonxp_protocol_pidfile="/var/run/consonxp/protocol.pid"
+#consonxp_protocol_log="/var/log/consonxp/protocol.log"
+#consonxp_protocol_user="consonxp"
+#consonxp_protocol_config="cli-xp230.yml"
+
+# Homekit service configuration (optional overrides)
+#consonxp_homekit_chdir="/usr/local/consonxp"
+#consonxp_homekit_pidfile="/var/run/consonxp/homekit.pid"
+#consonxp_homekit_log="/var/log/consonxp/homekit.log"
+#consonxp_homekit_user="consonxp"
+#consonxp_homekit_config="cli-xp130.yml"
