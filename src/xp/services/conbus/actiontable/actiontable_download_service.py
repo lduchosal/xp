@@ -1,5 +1,6 @@
 """Service for downloading ActionTable via Conbus protocol."""
 
+import asyncio
 import logging
 from typing import Any, Optional
 
@@ -304,6 +305,15 @@ class ActionTableDownloadService(DownloadStateMachine):
             self.serializer = self.msactiontable_serializer_xp33
         if timeout_seconds:
             self.conbus_protocol.timeout_seconds = timeout_seconds
+
+    def set_event_loop(self, event_loop: asyncio.AbstractEventLoop) -> None:
+        """
+        Set event loop for async operations.
+
+        Args:
+            event_loop: Event loop to use.
+        """
+        self.conbus_protocol.set_event_loop(event_loop)
 
     def set_timeout(self, timeout_seconds: float) -> None:
         """
