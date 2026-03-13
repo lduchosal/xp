@@ -11,10 +11,15 @@ NC='\033[0m' # No Color
 # Parse command line arguments
 QUALITY_ONLY=false
 BUMP_TYPE="patch"
+CI_MODE=false
 for arg in "$@"; do
     case $arg in
         --quality)
             QUALITY_ONLY=true
+            shift
+            ;;
+        --ci)
+            CI_MODE=true
             shift
             ;;
         --major)
@@ -30,10 +35,11 @@ for arg in "$@"; do
             shift
             ;;
         -h|--help)
-            echo "Usage: $0 [--quality] [--major|--minor|--patch] [--help]"
+            echo "Usage: $0 [--quality] [--ci] [--major|--minor|--patch] [--help]"
             echo ""
             echo "Options:"
             echo "  --quality       Run only quality checks without publishing"
+            echo "  --ci            Use CI-compatible test suite (excludes reverseproxy tests)"
             echo "  --major         Bump major version (x.0.0)"
             echo "  --minor         Bump minor version (0.x.0)"
             echo "  --patch         Bump patch version (0.0.x) [default]"
@@ -151,7 +157,11 @@ print_step "Dead code check (vulture)"
 run_command "pdm run vulture" "Dead code check"
 
 print_step "Running Tests (pytest)"
-run_command "pdm run test-quick" "Tests"
+if [ "$CI_MODE" = true ]; then
+    run_command "pdm run test-ci" "Tests (CI)"
+else
+    run_command "pdm run test-quick" "Tests"
+fi
 
 # Exit here if --no-publish flag is set
 if [ "$QUALITY_ONLY" = true ]; then

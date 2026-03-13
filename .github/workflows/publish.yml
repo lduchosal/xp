@@ -39,7 +39,7 @@ jobs:
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
     - name: Publish
-      run: sh publish.sh --${{ inputs.bump_type }}
+      run: sh publish.sh --ci --${{ inputs.bump_type }}
       env:
         PDM_PUBLISH_USERNAME: __token__
         PDM_PUBLISH_PASSWORD: ${{ secrets.PYPI_TOKEN }}
