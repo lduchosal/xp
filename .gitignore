@@ -16,6 +16,8 @@ logger.yml
 coverage.xml
 log/
 conbus.log*
+/log
+/log.*
 
 # Cache directory
 /.cache/
