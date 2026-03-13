@@ -38,12 +38,8 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
-    - name: Configure PyPI
-      run: pdm config publish.username __token__
-      env:
-        PDM_PUBLISH_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-
     - name: Publish
       run: sh publish.sh --${{ inputs.bump_type }}
       env:
+        PDM_PUBLISH_USERNAME: __token__
         PDM_PUBLISH_PASSWORD: ${{ secrets.PYPI_TOKEN }}
