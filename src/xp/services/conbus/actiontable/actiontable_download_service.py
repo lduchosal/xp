@@ -179,7 +179,7 @@ class ActionTableDownloadService(DownloadStateMachine):
         Args:
             reply_telegram: The parsed reply telegram.
         """
-        self.logger.debug(f"Received READ_DATAPOINT in {self.current_state}")
+        self.logger.debug(f"Received READ_DATAPOINT in {self.configuration}")
         if reply_telegram.serial_number != self.serial_number:
             return
 
@@ -205,7 +205,7 @@ class ActionTableDownloadService(DownloadStateMachine):
             reply_telegram: The parsed reply telegram containing chunk data.
             actiontable_chunk: The chunk data.
         """
-        self.logger.debug(f"Received actiontable chunk in {self.current_state}")
+        self.logger.debug(f"Received actiontable chunk in {self.configuration}")
         if reply_telegram.serial_number != self.serial_number:
             return
 
@@ -221,7 +221,7 @@ class ActionTableDownloadService(DownloadStateMachine):
         Args:
             reply_telegram: The parsed reply telegram (unused).
         """
-        self.logger.debug(f"Received EOF in {self.current_state}")
+        self.logger.debug(f"Received EOF in {self.configuration}")
         if reply_telegram.serial_number != self.serial_number:
             return
 
@@ -235,7 +235,7 @@ class ActionTableDownloadService(DownloadStateMachine):
         Args:
             telegram_received: The telegram received event.
         """
-        self.logger.debug(f"Received {telegram_received} in {self.current_state}")
+        self.logger.debug(f"Received {telegram_received} in {self.configuration}")
 
         # In receiving state, drain pending telegrams from pipe (discard to /dev/null).
         # This ensures clean state before processing by clearing any stale messages.

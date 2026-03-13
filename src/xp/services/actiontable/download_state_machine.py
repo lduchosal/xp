@@ -73,6 +73,7 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
        On error: retry from drain step (limited by MAX_ERROR_RETRIES)
 
     Attributes:
+        allow_event_without_transition: Allow events without matching transitions.
         phase: Current workflow phase (INIT, DOWNLOAD, CLEANUP).
         error_retry_count: Current error retry count.
         idle: Initial state before connection.
@@ -96,6 +97,8 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
         receive_eof: Transition from waiting_data to processing_eof.
         do_finish: Transition from processing_eof to receiving.
     """
+
+    allow_event_without_transition = True
 
     # States - unified for INIT and CLEANUP phases using guards
     idle = State(initial=True)
@@ -140,7 +143,7 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
         self._error_retry_count: int = 0
 
         # Initialize state machine
-        super().__init__(allow_event_without_transition=True)
+        super().__init__()
 
     @property
     def phase(self) -> Phase:
