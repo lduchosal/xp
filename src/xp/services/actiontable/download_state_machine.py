@@ -178,7 +178,8 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
     # Guard conditions for phase-dependent transitions
 
     def is_init_phase(self) -> bool:
-        """Guard: check if currently in INIT phase.
+        """
+        Guard: check if currently in INIT phase.
 
         Returns:
             True if in INIT phase, False otherwise.
@@ -186,7 +187,8 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
         return self._phase == Phase.INIT
 
     def is_cleanup_phase(self) -> bool:
-        """Guard: check if currently in CLEANUP phase.
+        """
+        Guard: check if currently in CLEANUP phase.
 
         Returns:
             True if in CLEANUP phase, False otherwise.
@@ -194,7 +196,8 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
         return self._phase == Phase.CLEANUP
 
     def can_retry(self) -> bool:
-        """Guard: check if retry is allowed (under max limit).
+        """
+        Guard: check if retry is allowed (under max limit).
 
         Returns:
             True if retry count is under MAX_ERROR_RETRIES, False otherwise.

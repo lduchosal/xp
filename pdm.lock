@@ -702,17 +702,16 @@ files = [
 
 [[package]]
 name = "docformatter"
-version = "1.7.7"
-requires_python = "<4.0,>=3.9"
+version = "1.7.8"
+requires_python = "<4.0,>=3.10"
 summary = "Formats docstrings to follow PEP 257"
 groups = ["dev"]
 dependencies = [
     "charset-normalizer<4.0.0,>=3.0.0",
-    "untokenize<0.2.0,>=0.1.1",
 ]
 files = [
-    {file = "docformatter-1.7.7-py3-none-any.whl", hash = "sha256:7af49f8a46346a77858f6651f431b882c503c2f4442c8b4524b920c863277834"},
-    {file = "docformatter-1.7.7.tar.gz", hash = "sha256:ea0e1e8867e5af468dfc3f9e947b92230a55be9ec17cd1609556387bffac7978"},
+    {file = "docformatter-1.7.8-py3-none-any.whl", hash = "sha256:8e518948bacb8d8df5d5f625060e214a200f0a908d8e6797c9ebbdd2cdd17467"},
+    {file = "docformatter-1.7.8.tar.gz", hash = "sha256:6589b62a8f38c62c4c8c84cb1afa296af007c88c959e4c9d25c74c1f933c4dbf"},
 ]
 
 [[package]]
@@ -2364,7 +2363,7 @@ files = [
 
 [[package]]
 name = "textual"
-version = "8.2.4"
+version = "8.2.5"
 requires_python = "<4.0,>=3.9"
 summary = "Modern Text User Interface framework"
 groups = ["default"]
@@ -2377,8 +2376,8 @@ dependencies = [
     "typing-extensions<5.0.0,>=4.4.0",
 ]
 files = [
-    {file = "textual-8.2.4-py3-none-any.whl", hash = "sha256:a83bd3f0cc7125ca203845af753f9d6b6be030025ecd1b05cc75ebe645b9c4ba"},
-    {file = "textual-8.2.4.tar.gz", hash = "sha256:d4e2b2ddd7157191d00b228592b7c739ea080b7d792fd410f23ca75f05ea76c4"},
+    {file = "textual-8.2.5-py3-none-any.whl", hash = "sha256:247d2aa2faf222749c321f88a736247f37ee2c023604079c7490bfacddfcd4b2"},
+    {file = "textual-8.2.5.tar.gz", hash = "sha256:6c894e65a879dadb4f6cf46ddcfedb0173ff7e0cb1fe605ff7b357a597bdbc90"},
 ]
 
 [[package]]
@@ -2518,15 +2517,6 @@ dependencies = [
 files = [
     {file = "unearth-0.18.1-py3-none-any.whl", hash = "sha256:6d2dd6cd65a28cc8e13f08d7de93135bc1976078999c0f8116c42e53be0dc9ad"},
     {file = "unearth-0.18.1.tar.gz", hash = "sha256:e8b132f73bf0dac7556a36419cb43125ced3bd172682bde1383cc5b193ccf73d"},
-]
-
-[[package]]
-name = "untokenize"
-version = "0.1.1"
-summary = "Transforms tokens into original source code (while preserving whitespace)."
-groups = ["dev"]
-files = [
-    {file = "untokenize-0.1.1.tar.gz", hash = "sha256:3865dbbbb8efb4bb5eaa72f1be7f3e0be00ea8b7f125c69cbd1f5fda926f37a2"},
 ]
 
 [[package]]

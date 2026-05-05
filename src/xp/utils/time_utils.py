@@ -14,7 +14,8 @@ class TimeParsingError(Exception):
 def parse_log_timestamp(
     timestamp_str: str, base_date: Optional[datetime] = None
 ) -> datetime:
-    """Parse timestamp from console bus log format: HH:MM:SS,mmm.
+    """
+    Parse timestamp from console bus log format: HH:MM:SS,mmm.
 
     Args:
         timestamp_str: Timestamp string (e.g., "22:44:20,352")
@@ -65,7 +66,8 @@ def parse_log_timestamp(
 
 
 def format_log_timestamp(dt: datetime) -> str:
-    """Format datetime to console bus log timestamp format: HH:MM:SS,mmm.
+    """
+    Format datetime to console bus log timestamp format: HH:MM:SS,mmm.
 
     Args:
         dt: datetime object to format
