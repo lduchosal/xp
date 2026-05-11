@@ -133,7 +133,14 @@ print_step "Sorting Imports (isort)"
 run_command "pdm run isort" "Import sorting"
 
 print_step "Docstring Formatting (docformatter)"
-run_command "pdm run docformatter" "Docstring formatting"
+echo "${YELLOW}→ Running: pdm run docformatter${NC}"
+pdm run docformatter
+rc=$?
+if [ $rc -eq 0 ] || [ $rc -eq 3 ]; then
+    print_success "Docstring formatting completed successfully"
+else
+    print_error "Docstring formatting failed"
+fi
 
 print_step "Code Formatting (black)"
 run_command "pdm run format" "Code formatting"
