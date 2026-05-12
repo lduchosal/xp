@@ -378,7 +378,7 @@ class ConbusEventProtocol(protocol.Protocol, protocol.ClientFactory):
         """
         return self._reactor.callLater(delay, callable_action, *args, **kw)
 
-    def buildProtocol(self, addr: IAddress) -> protocol.Protocol:
+    def buildProtocol(self, addr: Optional[IAddress]) -> protocol.Protocol:
         """
         Build protocol instance for connection.
 
