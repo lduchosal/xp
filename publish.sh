@@ -126,39 +126,14 @@ run_command "pdm outdated" "Outdated Dependencies"
 print_step "Updating Dependencies (pdm update)"
 run_command "pdm update" "Dependencies update"
 
-print_step "Converting to Absolute Imports (absolufy-imports)"
-run_command "pdm run absolufy" "Import conversion"
+print_step "Linting (ruff check --fix, select=ALL)"
+run_command "pdm run lint" "Linting"
 
-print_step "Sorting Imports (isort)"
-run_command "pdm run isort" "Import sorting"
-
-print_step "Docstring Formatting (docformatter)"
-echo "${YELLOW}→ Running: pdm run docformatter${NC}"
-pdm run docformatter
-rc=$?
-if [ $rc -eq 0 ] || [ $rc -eq 3 ]; then
-    print_success "Docstring formatting completed successfully"
-else
-    print_error "Docstring formatting failed"
-fi
-
-print_step "Code Formatting (black)"
+print_step "Code Formatting (ruff format)"
 run_command "pdm run format" "Code formatting"
 
-print_step "Type Checking (typecheck)"
+print_step "Type Checking (mypy strict)"
 run_command "pdm run typecheck" "Type checking"
-
-print_step "Docstring Check (flake8)"
-run_command "pdm run flake8" "Docstring check"
-
-print_step "Docstring Coverage (interrogate)"
-run_command "pdm run interrogate" "Docstring coverage"
-
-print_step "Code Quality Check (refurb)"
-run_command "pdm run refurb" "Code quality check"
-
-print_step "Linting (ruff)"
-run_command "pdm run lint" "Linting"
 
 print_step "Dead code check (vulture)"
 run_command "pdm run vulture" "Dead code check"

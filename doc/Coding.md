@@ -9,11 +9,11 @@
 - [ ] Must pass `pdm typecheck` (mypy strict mode)
 
 ## Code Style
-- [ ] Line length: 88 characters (Black formatter)
-- [ ] Imports: Absolute imports only (use `pdm absolufy`)
-- [ ] Import order: Standard library → Third party → Local (isort)
+- [ ] Line length: 88 characters (ruff format)
+- [ ] Imports: Absolute imports only (ruff TID252)
+- [ ] Import order: Standard library → Third party → Local (ruff I001)
 - [ ] Multi-line imports: Trailing comma, parentheses
-- [ ] Must pass `pdm format` and `pdm lint` (Black, Ruff)
+- [ ] Must pass `pdm format` and `pdm lint` (ruff, `select = ["ALL"]`)
 
 ## Documentation
 - [ ] Module-level docstring at top of file
@@ -84,10 +84,10 @@
 
 ## Dead Code
 - [ ] No commented-out code (remove or explain why)
-- [ ] No unused imports (isort + ruff will catch)
-- [ ] No unused variables (mypy will catch)
+- [ ] No unused imports (ruff will catch)
+- [ ] No unused variables (ruff + mypy will catch)
 - [ ] Must pass `pdm vulture` (dead code detector)
-- [ ] Must pass `pdm refurb` (modernization checker)
+- [ ] Modernization: ruff UP/FURB rules (included in `pdm lint`)
 
 ## Pre-Commit Checklist
 Run before committing:
@@ -98,13 +98,11 @@ pdm check  # Runs all quality checks
 Or individually:
 ```bash
 pdm clean       # Remove coverage/cache
-pdm lint        # Ruff linting
-pdm format      # Black formatting
-pdm typecheck   # Mypy type checking
+pdm lint        # Ruff linting (ALL + preview, auto-fix)
+pdm format      # Ruff formatting
+pdm typecheck   # Mypy strict (src + tests)
 pdm vulture     # Dead code detection
-pdm refurb      # Modernization
-pdm isort       # Import sorting
-pdm absolufy    # Absolute imports
+pdm quality     # All static gates, check-only (CI)
 pdm test-quick  # Fast tests
 pdm test-cov    # Full coverage
 ```
