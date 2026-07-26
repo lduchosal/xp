@@ -36,6 +36,9 @@ jobs:
     - name: Build with pdm
       run: |
         pdm build
+    - name: Quality gates (ruff, format, mypy, vulture)
+      run: |
+        pdm quality
     - name: Test with pytest
       run: |
         pdm test-ci
