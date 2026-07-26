@@ -1,6 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for AccessoryState model."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 
@@ -11,8 +12,13 @@ class TestAccessoryState:
     """Unit tests for AccessoryState dataclass."""
 
     @pytest.fixture
-    def accessory_state(self):
-        """Create a basic AccessoryState for testing."""
+    def accessory_state(self) -> AccessoryState:
+        """Create a basic AccessoryState for testing.
+
+        Returns:
+            A basic AccessoryState for testing.
+
+        """
         return AccessoryState(
             room_name="Living Room",
             accessory_name="Main Light",
@@ -27,13 +33,13 @@ class TestAccessoryState:
             sort=1,
         )
 
-    def test_initialization(self, accessory_state):
+    def test_initialization(self, accessory_state: AccessoryState) -> None:
         """Test AccessoryState initializes with correct values."""
         assert accessory_state.room_name == "Living Room"
         assert accessory_state.accessory_name == "Main Light"
         assert accessory_state.action == "a"
         assert accessory_state.output_state == "ON"
-        assert accessory_state.dimming_state == ""
+        assert not accessory_state.dimming_state
         assert accessory_state.module_name == "A01"
         assert accessory_state.serial_number == "1234567890"
         assert accessory_state.module_type == "XP24"
@@ -43,9 +49,9 @@ class TestAccessoryState:
         assert accessory_state.last_update is None
         assert accessory_state.toggle_action is None
 
-    def test_initialization_with_optional_fields(self):
+    def test_initialization_with_optional_fields(self) -> None:
         """Test AccessoryState with optional fields set."""
-        now = datetime.now()
+        now = datetime.now(UTC)
         state = AccessoryState(
             room_name="Bedroom",
             accessory_name="Dimmer",
@@ -65,7 +71,7 @@ class TestAccessoryState:
         assert state.last_update == now
         assert state.toggle_action == "E02L01I02"
 
-    def test_is_dimmable_xp33lr(self):
+    def test_is_dimmable_xp33lr(self) -> None:
         """Test is_dimmable returns True for XP33LR modules."""
         state = AccessoryState(
             room_name="Room",
@@ -82,7 +88,7 @@ class TestAccessoryState:
         )
         assert state.is_dimmable() is True
 
-    def test_is_dimmable_xp33led(self):
+    def test_is_dimmable_xp33led(self) -> None:
         """Test is_dimmable returns True for XP33LED modules."""
         state = AccessoryState(
             room_name="Room",
@@ -99,7 +105,7 @@ class TestAccessoryState:
         )
         assert state.is_dimmable() is True
 
-    def test_is_dimmable_xp24(self):
+    def test_is_dimmable_xp24(self) -> None:
         """Test is_dimmable returns False for XP24 modules."""
         state = AccessoryState(
             room_name="Room",
@@ -116,7 +122,7 @@ class TestAccessoryState:
         )
         assert state.is_dimmable() is False
 
-    def test_is_dimmable_xp130(self):
+    def test_is_dimmable_xp130(self) -> None:
         """Test is_dimmable returns False for XP130 modules."""
         state = AccessoryState(
             room_name="Room",
@@ -133,7 +139,7 @@ class TestAccessoryState:
         )
         assert state.is_dimmable() is False
 
-    def test_output_states(self):
+    def test_output_states(self) -> None:
         """Test various output state values."""
         for output_state in ("ON", "OFF", "?"):
             state = AccessoryState(
@@ -151,7 +157,7 @@ class TestAccessoryState:
             )
             assert state.output_state == output_state
 
-    def test_error_status_values(self):
+    def test_error_status_values(self) -> None:
         """Test various error status values."""
         for error_status in ("OK", "E10", "E15"):
             state = AccessoryState(

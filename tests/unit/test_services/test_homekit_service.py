@@ -1,5 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for HomekitService."""
 
+from collections.abc import Callable
 from unittest.mock import Mock
 
 import pytest
@@ -21,7 +23,27 @@ from xp.models.telegram.event_type import EventType
 from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.term.connection_state import ConnectionState
+from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
+from xp.services.term.homekit_accessory_driver import HomekitAccessoryDriver
 from xp.services.term.homekit_service import HomekitService
+
+# Number of accessories declared in the homekit_config fixture.
+EXPECTED_ACCESSORY_COUNT = 3
+# XP24 and XP33LED modules are both queried by refresh_all.
+REFRESHABLE_MODULE_COUNT = 2
+# Accessories bound to module serial 1234567890 in the fixtures.
+SHARED_SERIAL_ACCESSORY_COUNT = 2
+
+
+def get_connected_handler(signal_mock: Mock) -> Callable[..., None]:
+    """Return the handler the service connected to the given protocol signal.
+
+    Returns:
+        The handler the service connected to the given protocol signal.
+
+    """
+    handler: Callable[..., None] = signal_mock.connect.call_args.args[0]
+    return handler
 
 
 class TestHomekitService:
@@ -34,7 +56,12 @@ class TestHomekitService:
         telegram_type: str,
         serial_number: str = "",
     ) -> TelegramReceivedEvent:
-        """Create TelegramReceivedEvent helper."""
+        """Create TelegramReceivedEvent helper.
+
+        Returns:
+            TelegramReceivedEvent parsed from the given frame.
+
+        """
         telegram = frame[1:-1]
         checksum = telegram[-2:]
         payload = telegram[:-2]
@@ -50,10 +77,13 @@ class TestHomekitService:
         )
 
     @pytest.fixture
-    def mock_protocol(self):
-        """Create mock ConbusEventProtocol."""
-        from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
+    def mock_protocol(self) -> Mock:
+        """Create mock ConbusEventProtocol.
 
+        Returns:
+            Mock ConbusEventProtocol.
+
+        """
         protocol = Mock(spec=ConbusEventProtocol)
         protocol.cli_config = Mock()
         protocol.cli_config.ip = "192.168.1.100"
@@ -70,8 +100,13 @@ class TestHomekitService:
         return protocol
 
     @pytest.fixture
-    def homekit_config(self):
-        """Create HomekitConfig with test accessories."""
+    def homekit_config(self) -> HomekitConfig:
+        """Create HomekitConfig with test accessories.
+
+        Returns:
+            HomekitConfig with test accessories.
+
+        """
         return HomekitConfig(
             bridge=BridgeConfig(
                 name="Test Bridge",
@@ -118,8 +153,13 @@ class TestHomekitService:
         )
 
     @pytest.fixture
-    def conson_config(self):
-        """Create ConsonModuleListConfig with test modules."""
+    def conson_config(self) -> ConsonModuleListConfig:
+        """Create ConsonModuleListConfig with test modules.
+
+        Returns:
+            ConsonModuleListConfig with test modules.
+
+        """
         return ConsonModuleListConfig(
             root=[
                 ConsonModuleConfig(
@@ -142,18 +182,26 @@ class TestHomekitService:
         )
 
     @pytest.fixture
-    def mock_telegram_service(self):
-        """Create mock TelegramService."""
+    def mock_telegram_service(self) -> Mock:
+        """Create mock TelegramService.
+
+        Returns:
+            Mock TelegramService.
+
+        """
         service = Mock()
         service.parse_event_telegram = Mock()
         service.parse_reply_telegram = Mock()
         return service
 
     @pytest.fixture
-    def mock_accessory_driver(self):
-        """Create mock HomekitAccessoryDriver."""
-        from xp.services.term.homekit_accessory_driver import HomekitAccessoryDriver
+    def mock_accessory_driver(self) -> Mock:
+        """Create mock HomekitAccessoryDriver.
 
+        Returns:
+            Mock HomekitAccessoryDriver.
+
+        """
         driver = Mock(spec=HomekitAccessoryDriver)
         driver.set_callback = Mock()
         driver.start = Mock()
@@ -164,13 +212,18 @@ class TestHomekitService:
     @pytest.fixture
     def service(
         self,
-        mock_protocol,
-        homekit_config,
-        conson_config,
-        mock_telegram_service,
-        mock_accessory_driver,
-    ):
-        """Create service instance."""
+        mock_protocol: Mock,
+        homekit_config: HomekitConfig,
+        conson_config: ConsonModuleListConfig,
+        mock_telegram_service: Mock,
+        mock_accessory_driver: Mock,
+    ) -> HomekitService:
+        """Create service instance.
+
+        Returns:
+            Service instance.
+
+        """
         return HomekitService(
             conbus_protocol=mock_protocol,
             homekit_config=homekit_config,
@@ -179,9 +232,9 @@ class TestHomekitService:
             accessory_driver=mock_accessory_driver,
         )
 
-    def test_initialization(self, service):
+    def test_initialization(self, service: HomekitService) -> None:
         """Test service initializes accessory states from config."""
-        assert len(service.accessory_states) == 3
+        assert len(service.accessory_states) == EXPECTED_ACCESSORY_COUNT
 
         # Check first accessory (XP24)
         light1 = next(
@@ -198,7 +251,7 @@ class TestHomekitService:
         assert light1.error_status == "OK"
         assert light1.toggle_action == "E02L09I00"
 
-    def test_initialization_assigns_action_keys(self, service):
+    def test_initialization_assigns_action_keys(self, service: HomekitService) -> None:
         """Test service assigns sequential action keys to accessories."""
         states = service.accessory_states
         actions = [s.action for s in states]
@@ -206,21 +259,21 @@ class TestHomekitService:
         assert "b" in actions
         assert "c" in actions
 
-    def test_initialization_assigns_sort_order(self, service):
+    def test_initialization_assigns_sort_order(self, service: HomekitService) -> None:
         """Test service assigns sort order matching config order."""
         states = service.accessory_states
         # Should be sorted by sort field
         assert states[0].sort < states[1].sort < states[2].sort
 
-    def test_connection_state_property(self, service):
+    def test_connection_state_property(self, service: HomekitService) -> None:
         """Test connection_state returns current state."""
         assert service.connection_state == ConnectionState.DISCONNECTED
 
-    def test_server_info_property(self, service):
+    def test_server_info_property(self, service: HomekitService) -> None:
         """Test server_info returns IP:port."""
         assert service.server_info == "192.168.1.100:10001"
 
-    def test_connect(self, service, mock_protocol):
+    def test_connect(self, service: HomekitService, mock_protocol: Mock) -> None:
         """Test connect initiates connection."""
         signal_handler = Mock()
         service.on_connection_state_changed.connect(signal_handler)
@@ -231,7 +284,9 @@ class TestHomekitService:
         assert service.connection_state == ConnectionState.CONNECTING
         signal_handler.assert_called_with(ConnectionState.CONNECTING)
 
-    def test_connect_when_already_connecting(self, service, mock_protocol):
+    def test_connect_when_already_connecting(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
         """Test connect does nothing when already connecting."""
         service.connect()  # First connect
         mock_protocol.connect.reset_mock()
@@ -240,11 +295,11 @@ class TestHomekitService:
 
         mock_protocol.connect.assert_not_called()
 
-    def test_disconnect(self, service, mock_protocol):
+    def test_disconnect(self, service: HomekitService, mock_protocol: Mock) -> None:
         """Test disconnect terminates connection."""
         # First connect and establish connection
         service.connect()
-        service._on_connection_made()
+        get_connected_handler(mock_protocol.on_connection_made)()
 
         signal_handler = Mock()
         service.on_connection_state_changed.connect(signal_handler)
@@ -254,77 +309,96 @@ class TestHomekitService:
         mock_protocol.disconnect.assert_called_once()
         assert service.connection_state == ConnectionState.DISCONNECTED
 
-    def test_disconnect_when_disconnected(self, service, mock_protocol):
+    def test_disconnect_when_disconnected(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
         """Test disconnect does nothing when already disconnected."""
         service.disconnect()
 
         mock_protocol.disconnect.assert_not_called()
 
-    def test_toggle_connection_connects_when_disconnected(self, service, mock_protocol):
+    def test_toggle_connection_connects_when_disconnected(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
         """Test toggle_connection connects when disconnected."""
         service.toggle_connection()
 
         mock_protocol.connect.assert_called_once()
         assert service.connection_state == ConnectionState.CONNECTING
 
-    def test_toggle_connection_disconnects_when_connected(self, service, mock_protocol):
+    def test_toggle_connection_disconnects_when_connected(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
         """Test toggle_connection disconnects when connected."""
         service.connect()
-        service._on_connection_made()
+        get_connected_handler(mock_protocol.on_connection_made)()
 
         service.toggle_connection()
 
         mock_protocol.disconnect.assert_called_once()
 
-    def test_select_accessory_returns_id(self, service):
+    def test_select_accessory_returns_id(self, service: HomekitService) -> None:
         """Test select_accessory returns accessory ID for valid key."""
         accessory_id = service.select_accessory("a")
 
         assert accessory_id is not None
         assert accessory_id == "A01_1"
 
-    def test_select_accessory_invalid_key(self, service):
+    def test_select_accessory_invalid_key(self, service: HomekitService) -> None:
         """Test select_accessory returns None for invalid key."""
         accessory_id = service.select_accessory("z")  # Not assigned
 
         assert accessory_id is None
 
-    def test_toggle_selected_sends_telegram(self, service, mock_protocol):
+    def test_toggle_selected_sends_telegram(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
         """Test toggle_selected sends toggle_action telegram."""
         service.connect()
-        service._on_connection_made()
+        get_connected_handler(mock_protocol.on_connection_made)()
 
         accessory_id = service.select_accessory("a")
+        assert accessory_id is not None
         result = service.toggle_selected(accessory_id)
 
         assert result is True
         mock_protocol.send_raw_telegram.assert_called()
 
-    def test_toggle_selected_invalid_id(self, service, mock_protocol):
+    def test_toggle_selected_invalid_id(self, service: HomekitService) -> None:
         """Test toggle_selected returns False for invalid ID."""
         result = service.toggle_selected("invalid_id")
 
         assert result is False
 
-    def test_turn_on_selected_sends_telegram(self, service, mock_protocol):
+    def test_turn_on_selected_sends_telegram(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
         """Test turn_on_selected sends on_action telegram."""
         accessory_id = service.select_accessory("a")
+        assert accessory_id is not None
         result = service.turn_on_selected(accessory_id)
 
         assert result is True
         mock_protocol.send_raw_telegram.assert_called()
 
-    def test_turn_off_selected_sends_telegram(self, service, mock_protocol):
+    def test_turn_off_selected_sends_telegram(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
         """Test turn_off_selected sends off_action telegram."""
         accessory_id = service.select_accessory("a")
+        assert accessory_id is not None
         result = service.turn_off_selected(accessory_id)
 
         assert result is True
         mock_protocol.send_raw_telegram.assert_called()
 
     def test_toggle_selected_no_toggle_action(
-        self, mock_protocol, conson_config, mock_telegram_service, mock_accessory_driver
-    ):
+        self,
+        mock_protocol: Mock,
+        conson_config: ConsonModuleListConfig,
+        mock_telegram_service: Mock,
+        mock_accessory_driver: Mock,
+    ) -> None:
         """Test toggle_selected returns False when no toggle_action."""
         # Create config without toggle_action
         homekit_config = HomekitConfig(
@@ -360,18 +434,22 @@ class TestHomekitService:
 
         assert result is False
 
-    def test_refresh_all_queries_eligible_modules(self, service, mock_protocol):
+    def test_refresh_all_queries_eligible_modules(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
         """Test refresh_all queries XP24/XP33LR/XP33LED modules."""
         service.connect()
-        service._on_connection_made()
+        get_connected_handler(mock_protocol.on_connection_made)()
 
         service.refresh_all()
 
         # Should query both modules (XP24 and XP33LED)
-        assert mock_protocol.send_telegram.call_count == 2
+        assert mock_protocol.send_telegram.call_count == REFRESHABLE_MODULE_COUNT
 
-    def test_on_connection_made_handler(self, service):
-        """Test _on_connection_made updates state and emits signals."""
+    def test_on_connection_made_handler(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
+        """Test connection-made handler updates state and emits signals."""
         service.connect()
 
         signal_handler = Mock()
@@ -380,48 +458,59 @@ class TestHomekitService:
         room_list_handler = Mock()
         service.on_room_list_updated.connect(room_list_handler)
 
-        service._on_connection_made()
+        get_connected_handler(mock_protocol.on_connection_made)()
 
         assert service.connection_state == ConnectionState.CONNECTED
         signal_handler.assert_called_with(ConnectionState.CONNECTED)
         room_list_handler.assert_called_once()
 
-    def test_on_connection_failed_handler(self, service):
-        """Test _on_connection_failed updates state."""
+    def test_on_connection_failed_handler(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
+        """Test connection-failed handler updates state."""
         service.connect()
 
         signal_handler = Mock()
         service.on_connection_state_changed.connect(signal_handler)
 
-        service._on_connection_failed(Exception("Connection error"))
+        get_connected_handler(mock_protocol.on_connection_failed)(
+            Exception("Connection error")
+        )
 
         assert service.connection_state == ConnectionState.FAILED
         signal_handler.assert_called_with(ConnectionState.FAILED)
 
-    def test_on_timeout_handler(self, service):
-        """Test _on_timeout emits status message."""
+    def test_on_timeout_handler(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
+        """Test timeout handler emits status message."""
         status_handler = Mock()
         service.on_status_message.connect(status_handler)
 
-        service._on_timeout()
+        get_connected_handler(mock_protocol.on_timeout)()
 
         status_handler.assert_called_once()
 
-    def test_on_failed_handler(self, service):
-        """Test _on_failed updates state."""
+    def test_on_failed_handler(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
+        """Test failure handler updates state."""
         service.connect()
 
         signal_handler = Mock()
         service.on_connection_state_changed.connect(signal_handler)
 
-        service._on_failed(Exception("Protocol error"))
+        get_connected_handler(mock_protocol.on_failed)(Exception("Protocol error"))
 
         assert service.connection_state == ConnectionState.FAILED
 
     def test_handle_event_telegram_xp24_output_on(
-        self, service, mock_telegram_service, mock_protocol
-    ):
-        """Test _handle_event_telegram processes XP24 output ON event."""
+        self,
+        service: HomekitService,
+        mock_telegram_service: Mock,
+        mock_protocol: Mock,
+    ) -> None:
+        """Test event handling processes XP24 output ON event."""
         event_telegram = EventTelegram(
             raw_telegram="<E07L09I80MAE>",
             checksum="AE",
@@ -438,7 +527,7 @@ class TestHomekitService:
         service.on_module_state_changed.connect(signal_handler)
 
         event = self._make_event(mock_protocol, "<E07L09I80MAE>", "E")
-        service._on_telegram_received(event)
+        get_connected_handler(mock_protocol.on_telegram_received)(event)
 
         # Find the accessory with output=1 for module A01
         light1 = next(
@@ -451,9 +540,12 @@ class TestHomekitService:
         signal_handler.assert_called()
 
     def test_handle_event_telegram_xp24_output_off(
-        self, service, mock_telegram_service, mock_protocol
-    ):
-        """Test _handle_event_telegram processes XP24 output OFF event."""
+        self,
+        service: HomekitService,
+        mock_telegram_service: Mock,
+        mock_protocol: Mock,
+    ) -> None:
+        """Test event handling processes XP24 output OFF event."""
         event_telegram = EventTelegram(
             raw_telegram="<E07L09I80BAE>",
             checksum="AE",
@@ -467,7 +559,7 @@ class TestHomekitService:
         mock_telegram_service.parse_event_telegram.return_value = event_telegram
 
         event = self._make_event(mock_protocol, "<E07L09I80BAE>", "E")
-        service._on_telegram_received(event)
+        get_connected_handler(mock_protocol.on_telegram_received)(event)
 
         light1 = next(
             (a for a in service.accessory_states if a.accessory_name == "Main Light"),
@@ -477,9 +569,12 @@ class TestHomekitService:
         assert light1.output_state == "OFF"
 
     def test_handle_event_telegram_xp33led_channel_on(
-        self, service, mock_telegram_service, mock_protocol
-    ):
-        """Test _handle_event_telegram processes XP33LED channel ON event."""
+        self,
+        service: HomekitService,
+        mock_telegram_service: Mock,
+        mock_protocol: Mock,
+    ) -> None:
+        """Test event handling processes XP33LED channel ON event."""
         event_telegram = EventTelegram(
             raw_telegram="<E35L03I80MAE>",
             checksum="AE",
@@ -493,7 +588,7 @@ class TestHomekitService:
         mock_telegram_service.parse_event_telegram.return_value = event_telegram
 
         event = self._make_event(mock_protocol, "<E35L03I80MAE>", "E")
-        service._on_telegram_received(event)
+        get_connected_handler(mock_protocol.on_telegram_received)(event)
 
         dimmer = next(
             (a for a in service.accessory_states if a.accessory_name == "Dimmer Light"),
@@ -501,12 +596,15 @@ class TestHomekitService:
         )
         assert dimmer is not None
         assert dimmer.output_state == "ON"
-        assert dimmer.dimming_state == ""  # Empty when ON
+        assert not dimmer.dimming_state  # Empty when ON
 
     def test_handle_event_telegram_xp33led_channel_off(
-        self, service, mock_telegram_service, mock_protocol
-    ):
-        """Test _handle_event_telegram processes XP33LED channel OFF event."""
+        self,
+        service: HomekitService,
+        mock_telegram_service: Mock,
+        mock_protocol: Mock,
+    ) -> None:
+        """Test event handling processes XP33LED channel OFF event."""
         event_telegram = EventTelegram(
             raw_telegram="<E35L03I80BAE>",
             checksum="AE",
@@ -520,7 +618,7 @@ class TestHomekitService:
         mock_telegram_service.parse_event_telegram.return_value = event_telegram
 
         event = self._make_event(mock_protocol, "<E35L03I80BAE>", "E")
-        service._on_telegram_received(event)
+        get_connected_handler(mock_protocol.on_telegram_received)(event)
 
         dimmer = next(
             (a for a in service.accessory_states if a.accessory_name == "Dimmer Light"),
@@ -531,9 +629,12 @@ class TestHomekitService:
         assert dimmer.dimming_state == "-"  # Dash when OFF and dimmable
 
     def test_handle_event_telegram_ignores_input_events(
-        self, service, mock_telegram_service, mock_protocol
-    ):
-        """Test _handle_event_telegram ignores input events (I00-I09)."""
+        self,
+        service: HomekitService,
+        mock_telegram_service: Mock,
+        mock_protocol: Mock,
+    ) -> None:
+        """Test event handling ignores input events (I00-I09)."""
         event_telegram = EventTelegram(
             raw_telegram="<E07L09I02MAE>",
             checksum="AE",
@@ -549,26 +650,30 @@ class TestHomekitService:
         service.on_module_state_changed.connect(signal_handler)
 
         event = self._make_event(mock_protocol, "<E07L09I02MAE>", "E")
-        service._on_telegram_received(event)
+        get_connected_handler(mock_protocol.on_telegram_received)(event)
 
         # Signal should not be emitted for input events
         signal_handler.assert_not_called()
 
+    @pytest.mark.usefixtures("service")
     def test_handle_event_telegram_malformed(
-        self, service, mock_telegram_service, mock_protocol
-    ):
-        """Test _handle_event_telegram handles malformed telegram."""
+        self, mock_telegram_service: Mock, mock_protocol: Mock
+    ) -> None:
+        """Test event handling handles malformed telegram."""
         mock_telegram_service.parse_event_telegram.return_value = None
 
         event = self._make_event(mock_protocol, "<INVALID>", "E")
 
         # Should not raise exception
-        service._on_telegram_received(event)
+        get_connected_handler(mock_protocol.on_telegram_received)(event)
 
     def test_handle_reply_telegram_updates_outputs(
-        self, service, mock_telegram_service, mock_protocol
-    ):
-        """Test _handle_reply_telegram updates accessory outputs."""
+        self,
+        service: HomekitService,
+        mock_telegram_service: Mock,
+        mock_protocol: Mock,
+    ) -> None:
+        """Test reply handling updates accessory outputs."""
         reply_telegram = ReplyTelegram(
             raw_telegram="<R1234567890F42D0009AB>",
             checksum="AB",
@@ -594,7 +699,7 @@ class TestHomekitService:
             checksum_valid=True,
         )
 
-        service._on_telegram_received(event)
+        get_connected_handler(mock_protocol.on_telegram_received)(event)
 
         # Both accessories with serial 1234567890 should be updated
         light1 = next(
@@ -612,12 +717,12 @@ class TestHomekitService:
 
         assert light1 is not None
         assert light2 is not None
-        assert signal_handler.call_count == 2  # Called for each accessory
+        # Called for each accessory
+        assert signal_handler.call_count == SHARED_SERIAL_ACCESSORY_COUNT
 
-    def test_handle_reply_telegram_no_serial(
-        self, service, mock_telegram_service, mock_protocol
-    ):
-        """Test _handle_reply_telegram ignores events without serial number."""
+    @pytest.mark.usefixtures("service")
+    def test_handle_reply_telegram_no_serial(self, mock_protocol: Mock) -> None:
+        """Test reply handling ignores events without serial number."""
         event = TelegramReceivedEvent(
             protocol=mock_protocol,
             frame="<RAB>",
@@ -630,12 +735,15 @@ class TestHomekitService:
         )
 
         # Should not raise exception
-        service._on_telegram_received(event)
+        get_connected_handler(mock_protocol.on_telegram_received)(event)
 
     def test_handle_reply_telegram_not_output_state(
-        self, service, mock_telegram_service, mock_protocol
-    ):
-        """Test _handle_reply_telegram ignores non-output-state replies."""
+        self,
+        service: HomekitService,
+        mock_telegram_service: Mock,
+        mock_protocol: Mock,
+    ) -> None:
+        """Test reply handling ignores non-output-state replies."""
         reply_telegram = ReplyTelegram(
             raw_telegram="<R1234567890F01D00AB>",
             checksum="AB",
@@ -661,11 +769,11 @@ class TestHomekitService:
             checksum_valid=True,
         )
 
-        service._on_telegram_received(event)
+        get_connected_handler(mock_protocol.on_telegram_received)(event)
 
         signal_handler.assert_not_called()
 
-    def test_cleanup(self, service, mock_protocol):
+    def test_cleanup(self, service: HomekitService, mock_protocol: Mock) -> None:
         """Test cleanup disconnects signals."""
         service.cleanup()
 
@@ -675,7 +783,9 @@ class TestHomekitService:
         mock_protocol.on_timeout.disconnect.assert_called_once()
         mock_protocol.on_failed.disconnect.assert_called_once()
 
-    def test_context_manager(self, service, mock_protocol):
+    def test_context_manager(
+        self, service: HomekitService, mock_protocol: Mock
+    ) -> None:
         """Test context manager entry and exit."""
         with service as svc:
             assert svc is service
@@ -684,8 +794,12 @@ class TestHomekitService:
         mock_protocol.on_connection_made.disconnect.assert_called_once()
 
     def test_accessory_not_in_config(
-        self, mock_protocol, conson_config, mock_telegram_service, mock_accessory_driver
-    ):
+        self,
+        mock_protocol: Mock,
+        conson_config: ConsonModuleListConfig,
+        mock_telegram_service: Mock,
+        mock_accessory_driver: Mock,
+    ) -> None:
         """Test service handles missing accessory config gracefully."""
         homekit_config = HomekitConfig(
             bridge=BridgeConfig(
@@ -707,8 +821,11 @@ class TestHomekitService:
         assert len(service.accessory_states) == 0
 
     def test_module_not_in_config(
-        self, mock_protocol, mock_telegram_service, mock_accessory_driver
-    ):
+        self,
+        mock_protocol: Mock,
+        mock_telegram_service: Mock,
+        mock_accessory_driver: Mock,
+    ) -> None:
         """Test service handles missing module config gracefully."""
         homekit_config = HomekitConfig(
             bridge=BridgeConfig(

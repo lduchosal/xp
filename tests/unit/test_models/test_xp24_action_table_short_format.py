@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for XP24 Action Table short format."""
 
 import pytest
@@ -10,7 +11,7 @@ from xp.models.telegram.timeparam_type import TimeParam
 class TestXp24ShortFormat:
     """Test cases for XP24 action table short format conversion."""
 
-    def test_to_short_format_basic(self):
+    def test_to_short_format_basic(self) -> None:
         """Test basic conversion to short format."""
         action_table = Xp24MsActionTable(
             input1_action=InputAction(
@@ -31,7 +32,7 @@ class TestXp24ShortFormat:
             "T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12"
         ]
 
-    def test_to_short_format_with_settings(self):
+    def test_to_short_format_with_settings(self) -> None:
         """Test conversion to short format with settings."""
         short = Xp24MsActionTable(
             input1_action=InputAction(
@@ -54,7 +55,7 @@ class TestXp24ShortFormat:
         ).to_short_format()
         assert short == ["T:0 T:0 T:0 T:0 | M12:1 M34:1 C12:0 C34:0 DT:20"]
 
-    def test_to_short_format_mixed_actions(self):
+    def test_to_short_format_mixed_actions(self) -> None:
         """Test conversion with mixed action types."""
         short = Xp24MsActionTable(
             input1_action=InputAction(type=InputActionType.ON, param=TimeParam.T5SEC),
@@ -68,7 +69,7 @@ class TestXp24ShortFormat:
         ).to_short_format()
         assert short == ["ON:4 OF:0 LS:12 SS:11 | M12:0 M34:0 C12:0 C34:0 DT:12"]
 
-    def test_to_short_format_all_void(self):
+    def test_to_short_format_all_void(self) -> None:
         """Test conversion with all VOID actions."""
         short = Xp24MsActionTable(
             input1_action=InputAction(type=InputActionType.VOID, param=TimeParam.NONE),
@@ -78,7 +79,7 @@ class TestXp24ShortFormat:
         ).to_short_format()
         assert short == ["V:0 V:0 V:0 V:0 | M12:0 M34:0 C12:0 C34:0 DT:12"]
 
-    def test_from_short_format_basic(self):
+    def test_from_short_format_basic(self) -> None:
         """Test parsing basic short format."""
         short = "T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12"
         action_table = Xp24MsActionTable.from_short_format([short])
@@ -92,7 +93,7 @@ class TestXp24ShortFormat:
         assert action_table.input4_action.type == InputActionType.TOGGLE
         assert action_table.input4_action.param == TimeParam.NONE
 
-    def test_from_short_format_with_settings(self):
+    def test_from_short_format_with_settings(self) -> None:
         """Test parsing short format with settings."""
         short = "T:0 T:0 T:0 T:0 | M12:1 M34:1 C12:0 C34:0 DT:20"
         action_table = Xp24MsActionTable.from_short_format([short])
@@ -101,9 +102,9 @@ class TestXp24ShortFormat:
         assert action_table.mutex34 is True
         assert action_table.curtain12 is False
         assert action_table.curtain34 is False
-        assert action_table.mutual_deadtime == 20
+        assert action_table.mutual_deadtime == Xp24MsActionTable.MS500
 
-    def test_from_short_format_mixed_actions(self):
+    def test_from_short_format_mixed_actions(self) -> None:
         """Test parsing mixed action types."""
         short = "ON:4 OF:0 LS:12 SS:11 | M12:0 M34:0 C12:0 C34:0 DT:12"
         action_table = Xp24MsActionTable.from_short_format([short])
@@ -117,7 +118,7 @@ class TestXp24ShortFormat:
         assert action_table.input4_action.type == InputActionType.SCENESET
         assert action_table.input4_action.param == TimeParam.T2MIN
 
-    def test_round_trip_conversion(self):
+    def test_round_trip_conversion(self) -> None:
         """Test that converting to short and back preserves data."""
         original = Xp24MsActionTable(
             input1_action=InputAction(
@@ -142,35 +143,35 @@ class TestXp24ShortFormat:
 
         assert restored == original
 
-    def test_from_short_format_invalid_format(self):
+    def test_from_short_format_invalid_format(self) -> None:
         """Test that invalid format raises ValueError."""
         with pytest.raises(ValueError, match="Invalid short format"):
             Xp24MsActionTable.from_short_format(
                 ["INVALID | M12:0 M34:0 C12:0 C34:0 DT:12"]
             )
 
-    def test_from_short_format_invalid_action_code(self):
+    def test_from_short_format_invalid_action_code(self) -> None:
         """Test that invalid action code raises ValueError."""
         with pytest.raises(ValueError, match="Unknown action code"):
             Xp24MsActionTable.from_short_format(
                 ["XX:0 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12"]
             )
 
-    def test_from_short_format_invalid_param(self):
+    def test_from_short_format_invalid_param(self) -> None:
         """Test that invalid param raises ValueError."""
         with pytest.raises(ValueError, match="Invalid time param"):
             Xp24MsActionTable.from_short_format(
                 ["T:999 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12"]
             )
 
-    def test_from_short_format_missing_colon(self):
+    def test_from_short_format_missing_colon(self) -> None:
         """Test that missing colon raises ValueError."""
         with pytest.raises(ValueError, match="Invalid action format"):
             Xp24MsActionTable.from_short_format(
                 ["T1 T:0 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12"]
             )
 
-    def test_all_action_types(self):
+    def test_all_action_types(self) -> None:
         """Test that all action types can be converted."""
         action_types = [
             (InputActionType.VOID, "V"),
@@ -215,7 +216,7 @@ class TestXp24ShortFormat:
             restored = Xp24MsActionTable.from_short_format(short)
             assert restored.input1_action.type == action_type
 
-    def test_all_time_params(self):
+    def test_all_time_params(self) -> None:
         """Test that all time param values can be converted."""
         time_params = [
             TimeParam.NONE,

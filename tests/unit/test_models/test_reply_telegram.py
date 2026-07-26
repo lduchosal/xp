@@ -1,23 +1,24 @@
-"""
-Unit tests for ReplyTelegram model.
+# Copyright (c) 2025 ldvchosal
+"""Unit tests for ReplyTelegram model.
 
 Tests the reply telegram model functionality including parsing, value interpretation,
 and data structure integrity.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
+from xp.utils.time_utils import local_now
 
 
 class TestReplyTelegram:
     """Test ReplyTelegram model."""
 
-    def test_reply_telegram_ack(self):
+    def test_reply_telegram_ack(self) -> None:
         """Test basic reply telegram creation."""
         telegram = ReplyTelegram(
             serial_number="0012345003",
@@ -36,7 +37,7 @@ class TestReplyTelegram:
         assert telegram.timestamp is not None
         assert isinstance(telegram.timestamp, datetime)
 
-    def test_reply_telegram_creation(self):
+    def test_reply_telegram_creation(self) -> None:
         """Test basic reply telegram creation."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -56,9 +57,9 @@ class TestReplyTelegram:
         assert telegram.timestamp is not None
         assert isinstance(telegram.timestamp, datetime)
 
-    def test_reply_telegram_with_timestamp(self):
+    def test_reply_telegram_with_timestamp(self) -> None:
         """Test reply telegram creation with explicit timestamp."""
-        test_time = datetime(2023, 1, 1, 12, 0, 0)
+        test_time = datetime(2023, 1, 1, 12, 0, 0, tzinfo=UTC)
         telegram = ReplyTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
@@ -71,7 +72,7 @@ class TestReplyTelegram:
 
         assert telegram.timestamp == test_time
 
-    def test_function_description(self):
+    def test_function_description(self) -> None:
         """Test function description property."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -92,7 +93,7 @@ class TestReplyTelegram:
         telegram.system_function = SystemFunction.READ_CONFIG
         assert telegram.system_function.name == "READ_CONFIG"
 
-    def test_data_point_description(self):
+    def test_data_point_description(self) -> None:
         """Test data point description property."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -113,7 +114,7 @@ class TestReplyTelegram:
         telegram.datapoint_type = DataPointType.VOLTAGE
         assert telegram.datapoint_type.name == "VOLTAGE"
 
-    def test_parse_temperature_value(self):
+    def test_parse_temperature_value(self) -> None:
         """Test temperature value parsing."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -126,13 +127,14 @@ class TestReplyTelegram:
 
         parsed = telegram.parse_datapoint_value
 
+        expected_temperature = 26.0
         assert parsed["parsed"] is True
-        assert parsed["value"] == 26.0
+        assert parsed["value"] == expected_temperature
         assert parsed["unit"] == "°C"
         assert parsed["formatted"] == "26.0°C"
         assert parsed["raw_value"] == "+26,0§C"
 
-    def test_parse_temperature_negative(self):
+    def test_parse_temperature_negative(self) -> None:
         """Test negative temperature value parsing."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -145,12 +147,13 @@ class TestReplyTelegram:
 
         parsed = telegram.parse_datapoint_value
 
+        expected_temperature = -15.5
         assert parsed["parsed"] is True
-        assert parsed["value"] == -15.5
+        assert parsed["value"] == expected_temperature
         assert parsed["unit"] == "°C"
         assert parsed["formatted"] == "-15.5°C"
 
-    def test_parse_humidity_value(self):
+    def test_parse_humidity_value(self) -> None:
         """Test humidity value parsing."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -163,13 +166,14 @@ class TestReplyTelegram:
 
         parsed = telegram.parse_datapoint_value
 
+        expected_humidity = 65.5
         assert parsed["parsed"] is True
-        assert parsed["value"] == 65.5
+        assert parsed["value"] == expected_humidity
         assert parsed["unit"] == "%RH"
         assert parsed["formatted"] == "65.5%RH"
         assert parsed["raw_value"] == "+65,5§RH"
 
-    def test_parse_voltage_value(self):
+    def test_parse_voltage_value(self) -> None:
         """Test voltage value parsing."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -182,13 +186,14 @@ class TestReplyTelegram:
 
         parsed = telegram.parse_datapoint_value
 
+        expected_voltage = 12.5
         assert parsed["parsed"] is True
-        assert parsed["value"] == 12.5
+        assert parsed["value"] == expected_voltage
         assert parsed["unit"] == "V"
         assert parsed["formatted"] == "12.5V"
         assert parsed["raw_value"] == "+12,5§V"
 
-    def test_parse_current_value(self):
+    def test_parse_current_value(self) -> None:
         """Test current value parsing."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -201,13 +206,14 @@ class TestReplyTelegram:
 
         parsed = telegram.parse_datapoint_value
 
+        expected_current = 0.25
         assert parsed["parsed"] is True
-        assert parsed["value"] == 0.25
+        assert parsed["value"] == expected_current
         assert parsed["unit"] == "A"
         assert parsed["formatted"] == "0.25A"
         assert parsed["raw_value"] == "+0,25§A"
 
-    def test_parse_invalid_temperature(self):
+    def test_parse_invalid_temperature(self) -> None:
         """Test parsing invalid temperature value."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -224,7 +230,7 @@ class TestReplyTelegram:
         assert "error" in parsed
         assert parsed["raw_value"] == "invalid§C"
 
-    def test_parse_malformed_temperature(self):
+    def test_parse_malformed_temperature(self) -> None:
         """Test parsing malformed temperature value."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -240,7 +246,7 @@ class TestReplyTelegram:
         assert parsed["parsed"] is False
         assert parsed["raw_value"] == "nounit"
 
-    def test_to_dict(self):
+    def test_to_dict(self) -> None:
         """Test to_dict method."""
         result = ReplyTelegram(
             serial_number="0020012521",
@@ -258,14 +264,15 @@ class TestReplyTelegram:
         assert result["datapoint_type"]["code"] == "18"
         assert result["datapoint_type"]["description"] == "TEMPERATURE"
         assert result["data_value"]["raw"] == "+26,0§C"
+        expected_temperature = 26.0
         assert result["data_value"]["parsed"]["parsed"] is True
-        assert result["data_value"]["parsed"]["value"] == 26.0
+        assert result["data_value"]["parsed"]["value"] == expected_temperature
         assert result["checksum"] == "IL"
         assert result["raw_telegram"] == "<R0020012521F02D18+26,0§CIL>"
         assert result["telegram_type"] == "R"
         assert "timestamp" in result
 
-    def test_str_representation(self):
+    def test_str_representation(self) -> None:
         """Test string representation."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -284,7 +291,7 @@ class TestReplyTelegram:
         assert "26.0°C" in str_repr
         assert "0020012521" in str_repr
 
-    def test_str_representation_unparsed_value(self):
+    def test_str_representation_unparsed_value(self) -> None:
         """Test string representation with unparsed value."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -301,7 +308,7 @@ class TestReplyTelegram:
         assert "CUSTOM_STATUS" in str_repr
 
     @pytest.mark.parametrize(
-        "data_value,expected_value,expected_unit",
+        ("data_value", "expected_value", "expected_unit"),
         [
             ("+26,0§C", 26.0, "°C"),
             ("-10,5§C", -10.5, "°C"),
@@ -310,8 +317,8 @@ class TestReplyTelegram:
         ],
     )
     def test_temperature_parsing_variations(
-        self, data_value, expected_value, expected_unit
-    ):
+        self, data_value: str, expected_value: float, expected_unit: str
+    ) -> None:
         """Test temperature parsing with various values."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -329,7 +336,7 @@ class TestReplyTelegram:
         assert parsed["unit"] == expected_unit
 
     @pytest.mark.parametrize(
-        "data_value,expected_value",
+        ("data_value", "expected_value"),
         [
             ("+65,5§RH", 65.5),
             ("+0,0§RH", 0.0),
@@ -337,7 +344,9 @@ class TestReplyTelegram:
             ("+50,3§RH", 50.3),
         ],
     )
-    def test_humidity_parsing_variations(self, data_value, expected_value):
+    def test_humidity_parsing_variations(
+        self, data_value: str, expected_value: float
+    ) -> None:
         """Test humidity parsing with various values."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -355,10 +364,12 @@ class TestReplyTelegram:
         assert parsed["unit"] == "%RH"
 
     @pytest.mark.parametrize(
-        "data_value,expected_value",
+        ("data_value", "expected_value"),
         [("+12,5§V", 12.5), ("+0,0§V", 0.0), ("+230,0§V", 230.0), ("+3,3§V", 3.3)],
     )
-    def test_voltage_parsing_variations(self, data_value, expected_value):
+    def test_voltage_parsing_variations(
+        self, data_value: str, expected_value: float
+    ) -> None:
         """Test voltage parsing with various values."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -376,10 +387,12 @@ class TestReplyTelegram:
         assert parsed["unit"] == "V"
 
     @pytest.mark.parametrize(
-        "data_value,expected_value",
+        ("data_value", "expected_value"),
         [("+0,25§A", 0.25), ("+0,00§A", 0.0), ("+1,50§A", 1.5), ("+10,00§A", 10.0)],
     )
-    def test_current_parsing_variations(self, data_value, expected_value):
+    def test_current_parsing_variations(
+        self, data_value: str, expected_value: float
+    ) -> None:
         """Test current parsing with various values."""
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -396,9 +409,9 @@ class TestReplyTelegram:
         assert parsed["value"] == expected_value
         assert parsed["unit"] == "A"
 
-    def test_telegram_equality(self):
+    def test_telegram_equality(self) -> None:
         """Test telegram object equality."""
-        timestamp = datetime.now()
+        timestamp = datetime.now(UTC)
 
         telegram1 = ReplyTelegram(
             serial_number="0020012521",
@@ -423,9 +436,9 @@ class TestReplyTelegram:
         # Dataclass should provide equality
         assert telegram1 == telegram2
 
-    def test_post_init_timestamp_generation(self):
+    def test_post_init_timestamp_generation(self) -> None:
         """Test that __post_init__ sets timestamp if not provided."""
-        before = datetime.now()
+        before = local_now()
 
         telegram = ReplyTelegram(
             serial_number="0020012521",
@@ -436,7 +449,7 @@ class TestReplyTelegram:
             raw_telegram="<R0020012521F02D18+26,0§CIL>",
         )
 
-        after = datetime.now()
+        after = local_now()
 
         assert telegram.timestamp is not None
         assert before <= telegram.timestamp <= after

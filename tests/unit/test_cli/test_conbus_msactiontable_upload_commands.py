@@ -1,5 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for conbus msactiontable upload CLI command."""
 
+from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
 import pytest
@@ -10,18 +12,27 @@ from xp.cli.commands.conbus.conbus_msactiontable_commands import (
 )
 from xp.models.actiontable.actiontable_type import ActionTableType2
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
 
 class TestConbusMsActionTableUploadCommand:
     """Test cases for conbus msactiontable upload CLI command."""
 
     @pytest.fixture
-    def runner(self):
-        """Create CLI test runner."""
+    def runner(self) -> CliRunner:
+        """Create CLI test runner.
+
+        Returns:
+            CLI test runner.
+
+        """
         return CliRunner()
 
-    def _create_mock_service(self, success=True, error=None):
-        """
-        Create mock upload service with signal pattern.
+    def _create_mock_service(
+        self, *, success: bool = True, error: str | None = None
+    ) -> Mock:
+        """Create mock upload service with signal pattern.
 
         Args:
             success: Whether upload should succeed.
@@ -29,6 +40,7 @@ class TestConbusMsActionTableUploadCommand:
 
         Returns:
             Mock service object configured with signals.
+
         """
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -40,42 +52,15 @@ class TestConbusMsActionTableUploadCommand:
         mock_service.on_error = Mock()
 
         # Track connected callbacks
-        progress_callbacks = []
-        finish_callbacks = []
-        error_callbacks = []
+        progress_callbacks: list[Callable[..., None]] = []
+        finish_callbacks: list[Callable[..., None]] = []
+        error_callbacks: list[Callable[..., None]] = []
 
-        def connect_progress(callback):
-            """
-            Mock connect for progress signal.
+        mock_service.on_progress.connect = progress_callbacks.append
+        mock_service.on_finish.connect = finish_callbacks.append
+        mock_service.on_error.connect = error_callbacks.append
 
-            Args:
-                callback: Callback function to connect.
-            """
-            progress_callbacks.append(callback)
-
-        def connect_finish(callback):
-            """
-            Mock connect for finish signal.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            finish_callbacks.append(callback)
-
-        def connect_error(callback):
-            """
-            Mock connect for error signal.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            error_callbacks.append(callback)
-
-        mock_service.on_progress.connect = connect_progress
-        mock_service.on_finish.connect = connect_finish
-        mock_service.on_error.connect = connect_error
-
-        def mock_start_reactor():
+        def mock_start_reactor() -> None:
             """Execute mock start_reactor operation."""
             if error:
                 for callback in error_callbacks:
@@ -93,7 +78,7 @@ class TestConbusMsActionTableUploadCommand:
         mock_service.stop_reactor = Mock()
         return mock_service
 
-    def test_upload_msactiontable_success(self, runner):
+    def test_upload_msactiontable_success(self, runner: CliRunner) -> None:
         """Test successful msactiontable upload command."""
         # Setup mock service
         mock_service = self._create_mock_service(success=True)
@@ -120,7 +105,7 @@ class TestConbusMsActionTableUploadCommand:
         assert "Uploading msactiontable to 0020044991" in result.output
         assert "Msactiontable uploaded successfully" in result.output
 
-    def test_upload_msactiontable_progress_display(self, runner):
+    def test_upload_msactiontable_progress_display(self, runner: CliRunner) -> None:
         """Test that progress dots are displayed during upload."""
         # Setup mock service
         mock_service = self._create_mock_service(success=True)
@@ -141,7 +126,9 @@ class TestConbusMsActionTableUploadCommand:
         # Verify progress indicator
         assert "." in result.output
 
-    def test_upload_msactiontable_module_not_found_error(self, runner):
+    def test_upload_msactiontable_module_not_found_error(
+        self, runner: CliRunner
+    ) -> None:
         """Test error handling when module not found."""
         # Setup mock service with error
         mock_service = self._create_mock_service(
@@ -165,7 +152,7 @@ class TestConbusMsActionTableUploadCommand:
         assert "Error: Module 0020044991 not found in conson.yml" in result.output
         mock_service.stop_reactor.assert_called()
 
-    def test_upload_msactiontable_missing_config_error(self, runner):
+    def test_upload_msactiontable_missing_config_error(self, runner: CliRunner) -> None:
         """Test error handling when msactiontable config is missing."""
         # Setup mock service with error
         mock_service = self._create_mock_service(
@@ -189,7 +176,7 @@ class TestConbusMsActionTableUploadCommand:
         assert "Error:" in result.output
         assert "msaction_table configured" in result.output
 
-    def test_upload_msactiontable_empty_list_error(self, runner):
+    def test_upload_msactiontable_empty_list_error(self, runner: CliRunner) -> None:
         """Test error handling when msactiontable list is empty."""
         # Setup mock service with error
         mock_service = self._create_mock_service(
@@ -213,7 +200,7 @@ class TestConbusMsActionTableUploadCommand:
         assert "Error:" in result.output
         assert "empty msaction_table list" in result.output
 
-    def test_upload_msactiontable_invalid_format_error(self, runner):
+    def test_upload_msactiontable_invalid_format_error(self, runner: CliRunner) -> None:
         """Test error handling when short format is invalid."""
         # Setup mock service with error
         mock_service = self._create_mock_service(
@@ -237,7 +224,7 @@ class TestConbusMsActionTableUploadCommand:
         assert "Error:" in result.output
         assert "Invalid msactiontable format" in result.output
 
-    def test_upload_msactiontable_timeout_error(self, runner):
+    def test_upload_msactiontable_timeout_error(self, runner: CliRunner) -> None:
         """Test error handling for timeout."""
         # Setup mock service with error
         mock_service = self._create_mock_service(error="Upload timeout")
@@ -258,7 +245,7 @@ class TestConbusMsActionTableUploadCommand:
         # Verify error message
         assert "Error: Upload timeout" in result.output
 
-    def test_upload_msactiontable_nak_error(self, runner):
+    def test_upload_msactiontable_nak_error(self, runner: CliRunner) -> None:
         """Test error handling for NAK response."""
         # Setup mock service with error
         mock_service = self._create_mock_service(error="Upload failed: NAK received")
@@ -280,7 +267,9 @@ class TestConbusMsActionTableUploadCommand:
         assert "Error:" in result.output
         assert "NAK received" in result.output
 
-    def test_upload_msactiontable_invalid_serial_number(self, runner):
+    def test_upload_msactiontable_invalid_serial_number(
+        self, runner: CliRunner
+    ) -> None:
         """Test error handling for invalid serial number format."""
         # Execute command with invalid serial (too short)
         result = runner.invoke(

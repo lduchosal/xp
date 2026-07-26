@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for telegram service."""
 
 import pytest
@@ -10,69 +11,78 @@ from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
 from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
+XP2606_MODULE_TYPE = 14
+SINGLE_DIGIT_MODULE_TYPE = 5
+IR_REMOTE_INPUT = 25
+PROXIMITY_SENSOR_INPUT = 90
+
 
 class TestTelegramService:
     """Test cases for TelegramService."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.service = TelegramService()
 
-    def test_parse_valid_button_press_telegram(self):
+    def test_parse_valid_button_press_telegram(self) -> None:
         """Test parsing a valid button press telegram."""
         raw = "<E14L00I02MAK>"
         result = self.service.parse_event_telegram(raw)
 
-        assert result.module_type == 14
-        assert result.link_number == 0
-        assert result.input_number == 2
+        assert (result.module_type, result.link_number, result.input_number) == (
+            XP2606_MODULE_TYPE,
+            0,
+            2,
+        )
         assert result.event_type == EventType.BUTTON_PRESS
         assert result.checksum == "AK"
         assert result.raw_telegram == raw
         assert result.is_button_press is True
         assert result.input_type == InputType.PUSH_BUTTON
 
-    def test_parse_valid_button_release_telegram(self):
+    def test_parse_valid_button_release_telegram(self) -> None:
         """Test parsing a valid button release telegram."""
         raw = "<E14L01I03BB1>"
         result = self.service.parse_event_telegram(raw)
 
-        assert result.module_type == 14
-        assert result.link_number == 1
-        assert result.input_number == 3
+        assert (result.module_type, result.link_number, result.input_number) == (
+            XP2606_MODULE_TYPE,
+            1,
+            3,
+        )
         assert result.event_type == EventType.BUTTON_RELEASE
         assert result.checksum == "B1"
         assert result.is_button_release is True
 
-    def test_parse_event_telegram_with_single_digit_module(self):
+    def test_parse_event_telegram_with_single_digit_module(self) -> None:
         """Test parsing telegram with single digit module type."""
         raw = "<E5L00I02MAK>"
         result = self.service.parse_event_telegram(raw)
 
-        assert result.module_type == 5
+        assert result.module_type == SINGLE_DIGIT_MODULE_TYPE
 
-    def test_parse_event_telegram_ir_remote_input(self):
+    def test_parse_event_telegram_ir_remote_input(self) -> None:
         """Test parsing telegram with IR remote input."""
         raw = "<E14L00I25MXX>"
         result = self.service.parse_event_telegram(raw)
 
-        assert result.input_number == 25
+        assert result.input_number == IR_REMOTE_INPUT
         assert result.input_type == InputType.IR_REMOTE
 
-    def test_parse_event_telegram_proximity_sensor(self):
+    def test_parse_event_telegram_proximity_sensor(self) -> None:
         """Test parsing telegram with proximity sensor input."""
         raw = "<E14L00I90MXX>"
         result = self.service.parse_event_telegram(raw)
 
-        assert result.input_number == 90
+        assert result.input_number == PROXIMITY_SENSOR_INPUT
         assert result.input_type == InputType.PROXIMITY_SENSOR
 
-    def test_parse_empty_telegram_raises_error(self):
+    def test_parse_empty_telegram_raises_error(self) -> None:
         """Test that empty telegram raises TelegramParsingError."""
         with pytest.raises(TelegramParsingError, match="Empty telegram string"):
             self.service.parse_event_telegram("")
 
-    def test_parse_invalid_format_raises_error(self):
+    def test_parse_invalid_format_raises_error(self) -> None:
         """Test that invalid format raises TelegramParsingError."""
         invalid_telegrams = [
             "E14L00I02MAK>",  # Missing opening bracket
@@ -89,7 +99,7 @@ class TestTelegramService:
             with pytest.raises(TelegramParsingError, match="Invalid telegram format"):
                 self.service.parse_event_telegram(invalid)
 
-    def test_parse_out_of_range_values_raises_error(self):
+    def test_parse_out_of_range_values_raises_error(self) -> None:
         """Test that out-of-range values raise TelegramParsingError."""
         # Input number out of range
         with pytest.raises(
@@ -101,12 +111,12 @@ class TestTelegramService:
         with pytest.raises(TelegramParsingError, match="Invalid telegram format"):
             self.service.parse_event_telegram("<E14L100I02MAK>")  # 3-digit link number
 
-    def test_parse_invalid_event_type_raises_error(self):
+    def test_parse_invalid_event_type_raises_error(self) -> None:
         """Test that invalid event type raises TelegramParsingError."""
         with pytest.raises(TelegramParsingError, match="Invalid telegram format"):
             self.service.parse_event_telegram("<E14L00I02XAK>")
 
-    def test_parse_event_telegram_test_event_type_validation(self):
+    def test_parse_event_telegram_test_event_type_validation(self) -> None:
         """Test event type validation logic separately."""
         # The regex pattern only allows M or B, so let's test this more specifically
         # by temporarily modifying the service to test the enum validation
@@ -118,22 +128,22 @@ class TestTelegramService:
         valid_b = service.parse_event_telegram("<E14L00I02BAK>")
         assert valid_b.event_type == EventType.BUTTON_RELEASE
 
-    def test_parse_with_whitespace(self):
+    def test_parse_with_whitespace(self) -> None:
         """Test parsing telegram with surrounding whitespace."""
         raw = "  <E14L00I02MAK>  "
         result = self.service.parse_event_telegram(raw)
 
-        assert result.module_type == 14
+        assert result.module_type == XP2606_MODULE_TYPE
         assert result.raw_telegram == raw
 
-    def test_validate_checksum_valid(self):
+    def test_validate_checksum_valid(self) -> None:
         """Test checksum validation for valid checksum."""
         telegram = self.service.parse_event_telegram("<E14L00I02MAK>")
         result = self.service.validate_checksum(telegram)
 
         assert result is True  # AK is valid (2 alphanumeric chars)
 
-    def test_validate_checksum_invalid_length(self):
+    def test_validate_checksum_invalid_length(self) -> None:
         """Test checksum validation for invalid length."""
         # This would be caught during parsing, but test the validation logic
         telegram = self.service.parse_event_telegram("<E14L00I02MAK>")
@@ -142,7 +152,7 @@ class TestTelegramService:
         result = self.service.validate_checksum(telegram)
         assert result is False
 
-    def test_format_telegram_summary(self):
+    def test_format_telegram_summary(self) -> None:
         """Test formatting telegram for human-readable output."""
         telegram = self.service.parse_event_telegram("<E14L00I02MAK>")
         summary = self.service.format_event_telegram_summary(telegram)
@@ -155,19 +165,21 @@ class TestTelegramService:
         assert "Timestamp:" in summary
         assert "Checksum: AK" in summary
 
-    def test_parse_event_telegram_non_numeric_module_raises_error(self):
+    def test_parse_event_telegram_non_numeric_module_raises_error(self) -> None:
         """Test that non-numeric module type raises error."""
         # This should be caught by regex, but test edge case
         with pytest.raises(TelegramParsingError, match="Invalid telegram format"):
             self.service.parse_event_telegram("<EabL00I02MAK>")
 
-    def test_parse_event_telegram_boundary_values(self):
+    def test_parse_event_telegram_boundary_values(self) -> None:
         """Test parsing telegrams with boundary values."""
         # Test maximum valid values
         telegram = self.service.parse_event_telegram("<E99L99I90M00>")
-        assert telegram.module_type == 99
-        assert telegram.link_number == 99
-        assert telegram.input_number == 90
+        assert (telegram.module_type, telegram.link_number, telegram.input_number) == (
+            99,
+            99,
+            90,
+        )
 
         # Test minimum valid values
         telegram = self.service.parse_event_telegram("<E1L00I00MAK>")
@@ -175,7 +187,7 @@ class TestTelegramService:
         assert telegram.link_number == 0
         assert telegram.input_number == 0
 
-    def test_validate_checksum_invalid_chars(self):
+    def test_validate_checksum_invalid_chars(self) -> None:
         """Test checksum validation with invalid characters."""
         telegram = self.service.parse_event_telegram("<E14L00I02MAK>")
         telegram.checksum = "A!"  # Invalid characters
@@ -186,11 +198,11 @@ class TestTelegramService:
 class TestSystemTelegramParsing:
     """Test cases for system telegram parsing in TelegramService."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.service = TelegramService()
 
-    def test_parse_valid_system_telegram(self):
+    def test_parse_valid_system_telegram(self) -> None:
         """Test parsing a valid system telegram."""
         raw = "<S0020012521F02D18FN>"
         result = self.service.parse_system_telegram(raw)
@@ -203,7 +215,7 @@ class TestSystemTelegramParsing:
         assert result.raw_telegram == raw
         assert result.timestamp is not None
 
-    def test_parse_system_telegram_different_functions(self):
+    def test_parse_system_telegram_different_functions(self) -> None:
         """Test parsing system telegrams with different functions."""
         # Update firmware function
         raw = "<S0020012521F01D18FN>"
@@ -215,7 +227,7 @@ class TestSystemTelegramParsing:
         result = self.service.parse_system_telegram(raw)
         assert result.system_function == SystemFunction.READ_CONFIG
 
-    def test_parse_system_telegram_different_data_points(self):
+    def test_parse_system_telegram_different_data_points(self) -> None:
         """Test parsing system telegrams with different data points."""
         # Humidity data point
         raw = "<S0020012521F02D19FN>"
@@ -232,12 +244,12 @@ class TestSystemTelegramParsing:
         result = self.service.parse_system_telegram(raw)
         assert result.datapoint_type == DataPointType.MODULE_TYPE
 
-    def test_parse_system_telegram_empty_string(self):
+    def test_parse_system_telegram_empty_string(self) -> None:
         """Test parsing empty string raises error."""
         with pytest.raises(TelegramParsingError, match="Empty telegram string"):
             self.service.parse_system_telegram("")
 
-    def test_parse_system_telegram_invalid_format(self):
+    def test_parse_system_telegram_invalid_format(self) -> None:
         """Test parsing invalid format raises error."""
         with pytest.raises(
             TelegramParsingError, match="Invalid system telegram format"
@@ -260,14 +272,14 @@ class TestSystemTelegramParsing:
                 "<S0020012521F02D8FN>"
             )  # Wrong data point format
 
-    def test_parse_system_telegram_unknown_function(self):
+    def test_parse_system_telegram_unknown_function(self) -> None:
         """Test parsing system telegram with unknown function code."""
         with pytest.raises(
             TelegramParsingError, match="Unknown system function code: 99"
         ):
             self.service.parse_system_telegram("<S0020012521F99D18FN>")
 
-    def test_parse_system_telegram_with_whitespace(self):
+    def test_parse_system_telegram_with_whitespace(self) -> None:
         """Test parsing system telegram with surrounding whitespace."""
         raw = "  <S0020012521F02D18FN>  "
         result = self.service.parse_system_telegram(raw)
@@ -275,7 +287,7 @@ class TestSystemTelegramParsing:
         assert result.serial_number == "0020012521"
         assert result.raw_telegram == raw
 
-    def test_format_system_telegram_summary(self):
+    def test_format_system_telegram_summary(self) -> None:
         """Test formatting system telegram for human-readable output."""
         telegram = self.service.parse_system_telegram("<S0020012521F02D18FN>")
         summary = self.service.format_system_telegram_summary(telegram)
@@ -288,11 +300,11 @@ class TestSystemTelegramParsing:
 class TestReplyTelegramParsing:
     """Test cases for reply telegram parsing in TelegramService."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.service = TelegramService()
 
-    def test_parse_valid_reply_telegram(self):
+    def test_parse_valid_reply_telegram(self) -> None:
         """Test parsing a valid reply telegram."""
         raw = "<R0020012521F02D18+26,0§CIL>"
         result = self.service.parse_reply_telegram(raw)
@@ -306,7 +318,7 @@ class TestReplyTelegramParsing:
         assert result.raw_telegram == raw
         assert result.timestamp is not None
 
-    def test_parse_reply_telegram_different_values(self):
+    def test_parse_reply_telegram_different_values(self) -> None:
         """Test parsing reply telegrams with different data values."""
         # Humidity reply
         raw = "<R0020012521F02D19+65,5§HIL>"
@@ -326,7 +338,7 @@ class TestReplyTelegramParsing:
         assert result.datapoint_type == DataPointType.MODULE_TYPE
         assert result.data_value == "OK"
 
-    def test_parse_reply_telegram_complex_data_values(self):
+    def test_parse_reply_telegram_complex_data_values(self) -> None:
         """Test parsing reply telegrams with complex data values."""
         # Negative temperature
         raw = "<R0020012521F02D18-15,2§CIL>"
@@ -338,12 +350,12 @@ class TestReplyTelegramParsing:
         result = self.service.parse_reply_telegram(raw)
         assert result.data_value == "ERROR_123"
 
-    def test_parse_reply_telegram_empty_string(self):
+    def test_parse_reply_telegram_empty_string(self) -> None:
         """Test parsing empty string raises error."""
         with pytest.raises(TelegramParsingError, match="Empty telegram string"):
             self.service.parse_reply_telegram("")
 
-    def test_parse_reply_telegram_invalid_format(self):
+    def test_parse_reply_telegram_invalid_format(self) -> None:
         """Test parsing invalid format raises error."""
         with pytest.raises(TelegramParsingError, match="Invalid reply telegram format"):
             self.service.parse_reply_telegram(
@@ -355,14 +367,14 @@ class TestReplyTelegramParsing:
                 "<R0020012521F2D18+26,0§CIL>"
             )  # Wrong function format
 
-    def test_parse_reply_telegram_unknown_function(self):
+    def test_parse_reply_telegram_unknown_function(self) -> None:
         """Test parsing reply telegram with unknown function code."""
         with pytest.raises(
             TelegramParsingError, match="Unknown system function code: 99"
         ):
             self.service.parse_reply_telegram("<R0020012521F99D18+26,0§CIL>")
 
-    def test_parse_reply_telegram_with_whitespace(self):
+    def test_parse_reply_telegram_with_whitespace(self) -> None:
         """Test parsing reply telegram with surrounding whitespace."""
         raw = "  <R0020012521F02D18+26,0§CIL>  "
         result = self.service.parse_reply_telegram(raw)
@@ -370,7 +382,7 @@ class TestReplyTelegramParsing:
         assert result.serial_number == "0020012521"
         assert result.raw_telegram == raw
 
-    def test_format_reply_telegram_summary(self):
+    def test_format_reply_telegram_summary(self) -> None:
         """Test formatting reply telegram for human-readable output."""
         telegram = self.service.parse_reply_telegram("<R0020012521F02D18+26,0§CIL>")
         summary = self.service.format_reply_telegram_summary(telegram)
@@ -383,9 +395,8 @@ class TestReplyTelegramParsing:
         assert "Timestamp:" in summary
         assert "Checksum: IL" in summary
 
-    def test_parse_actiontable_reply_telegram(self):
-        """
-        Test parsing an actiontable reply telegram (F17).
+    def test_parse_actiontable_reply_telegram(self) -> None:
+        """Test parsing an actiontable reply telegram (F17).
 
         This tests a real actiontable telegram received from a module. The F17 function
         code indicates ACTIONTABLE data response.
@@ -407,20 +418,20 @@ class TestReplyTelegramParsing:
 class TestAutoDetectTelegramParsing:
     """Test cases for auto-detect telegram parsing in TelegramService."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.service = TelegramService()
 
-    def test_parse_telegram_event(self):
+    def test_parse_telegram_event(self) -> None:
         """Test auto-parsing event telegram."""
         raw = "<E14L00I02MAK>"
         result = self.service.parse_telegram(raw)
 
         assert isinstance(result, EventTelegram)
-        assert result.module_type == 14
+        assert result.module_type == XP2606_MODULE_TYPE
         assert hasattr(result, "event_type")
 
-    def test_parse_telegram_system(self):
+    def test_parse_telegram_system(self) -> None:
         """Test auto-parsing system telegram."""
         raw = "<S0020012521F02D18FN>"
         result = self.service.parse_telegram(raw)
@@ -429,7 +440,7 @@ class TestAutoDetectTelegramParsing:
         assert result.serial_number == "0020012521"
         assert not hasattr(result, "data_value")
 
-    def test_parse_telegram_reply(self):
+    def test_parse_telegram_reply(self) -> None:
         """Test auto-parsing reply telegram."""
         raw = "<R0020012521F02D18+26,0§CIL>"
         result = self.service.parse_telegram(raw)
@@ -439,17 +450,17 @@ class TestAutoDetectTelegramParsing:
         assert hasattr(result, "data_value")
         assert result.data_value == "+26,0§C"
 
-    def test_parse_telegram_empty_string(self):
+    def test_parse_telegram_empty_string(self) -> None:
         """Test parsing empty string raises error."""
         with pytest.raises(TelegramParsingError, match="Empty telegram string"):
             self.service.parse_telegram("")
 
-    def test_parse_telegram_unknown_type(self):
+    def test_parse_telegram_unknown_type(self) -> None:
         """Test parsing unknown telegram type raises error."""
         with pytest.raises(TelegramParsingError, match="Unknown telegram type code: X"):
             self.service.parse_telegram("<X0020012521F02D18+26,0§CIL>")
 
-    def test_parse_telegram_invalid_format(self):
+    def test_parse_telegram_invalid_format(self) -> None:
         """Test parsing invalid format raises error for appropriate type."""
         # This should try to parse as system telegram and fail
         with pytest.raises(
@@ -465,20 +476,22 @@ class TestAutoDetectTelegramParsing:
         with pytest.raises(TelegramParsingError, match="Invalid telegram format"):
             self.service.parse_telegram("<E14L100I02MAK>")
 
-    def test_parse_telegram_short_string(self):
+    def test_parse_telegram_short_string(self) -> None:
         """Test parsing very short string raises error."""
         with pytest.raises(TelegramParsingError, match="Unknown telegram type"):
             self.service.parse_telegram("<")
 
     @pytest.mark.parametrize(
-        "raw_telegram,expected_type",
+        ("raw_telegram", "expected_type"),
         [
             ("<E14L00I02MAK>", EventTelegram),
             ("<S0020012521F02D18FN>", SystemTelegram),
             ("<R0020012521F02D18+26,0§CIL>", ReplyTelegram),
         ],
     )
-    def test_parse_telegram_type_detection(self, raw_telegram, expected_type):
+    def test_parse_telegram_type_detection(
+        self, raw_telegram: str, expected_type: type
+    ) -> None:
         """Test that parse_telegram correctly detects telegram types."""
         result = self.service.parse_telegram(raw_telegram)
         assert isinstance(result, expected_type)

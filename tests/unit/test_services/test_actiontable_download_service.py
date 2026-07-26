@@ -1,6 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for ActionTableDownloadService state machine."""
 
-from typing import List
+from collections.abc import Callable
 from unittest.mock import Mock
 
 import pytest
@@ -15,13 +16,32 @@ from xp.services.conbus.actiontable.actiontable_download_service import (
     ActionTableDownloadService,
 )
 
+CONFIGURED_TIMEOUT_SECONDS = 10.0
+UPDATED_TIMEOUT_SECONDS = 15.0
+
+
+def connected_handler(signal: Mock) -> Callable[..., None]:
+    """Return the callback that the service registered on the given signal mock.
+
+    Returns:
+        The callback that the service registered on the given signal mock.
+
+    """
+    handler: Callable[..., None] = signal.connect.call_args[0][0]
+    return handler
+
 
 class TestActionTableDownloadServiceStateMachine:
     """Test state machine behavior of ActionTableDownloadService."""
 
     @pytest.fixture
-    def mock_conbus_protocol(self):
-        """Create mock ConbusEventProtocol."""
+    def mock_conbus_protocol(self) -> Mock:
+        """Create mock ConbusEventProtocol.
+
+        Returns:
+            Mock ConbusEventProtocol.
+
+        """
         protocol = Mock()
         protocol.on_connection_made = Mock()
         protocol.on_connection_made.connect = Mock()
@@ -45,8 +65,13 @@ class TestActionTableDownloadServiceStateMachine:
         return protocol
 
     @pytest.fixture
-    def mock_serializer(self):
-        """Create mock ActionTableSerializer."""
+    def mock_serializer(self) -> Mock:
+        """Create mock ActionTableSerializer.
+
+        Returns:
+            Mock ActionTableSerializer.
+
+        """
         serializer = Mock()
         # Return a real ActionTable to avoid asdict() errors
         serializer.from_encoded_string = Mock(return_value=ActionTable(entries=[]))
@@ -56,10 +81,15 @@ class TestActionTableDownloadServiceStateMachine:
     @pytest.fixture
     def service(
         self,
-        mock_conbus_protocol,
-        mock_serializer,
-    ):
-        """Create service instance for testing."""
+        mock_conbus_protocol: Mock,
+        mock_serializer: Mock,
+    ) -> ActionTableDownloadService:
+        """Create service instance for testing.
+
+        Returns:
+            Service instance for testing.
+
+        """
         return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
@@ -68,11 +98,11 @@ class TestActionTableDownloadServiceStateMachine:
             msactiontable_serializer_xp33=Mock(),
         )
 
-    def test_initial_state_is_idle(self, service):
+    def test_initial_state_is_idle(self, service: ActionTableDownloadService) -> None:
         """Test service starts in idle state."""
         assert service.idle.is_active
 
-    def test_has_9_states(self, service):
+    def test_has_9_states(self, service: ActionTableDownloadService) -> None:
         """Test service has all 9 states defined in spec."""
         assert hasattr(service, "idle")
         assert hasattr(service, "receiving")
@@ -84,20 +114,26 @@ class TestActionTableDownloadServiceStateMachine:
         assert hasattr(service, "processing_eof")
         assert hasattr(service, "completed")
 
-    def test_connect_transitions_idle_to_receiving(self, service):
+    def test_connect_transitions_idle_to_receiving(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test do_connect event transitions from idle to receiving."""
         assert service.idle.is_active
         service.do_connect()
         assert service.receiving.is_active
 
-    def test_filter_telegram_self_transition_in_receiving(self, service):
+    def test_filter_telegram_self_transition_in_receiving(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test filter_telegram stays in receiving state (self-transition)."""
         service.do_connect()
         assert service.receiving.is_active
         service.filter_telegram()
         assert service.receiving.is_active  # Still in receiving
 
-    def test_timeout_transitions_receiving_to_resetting(self, service):
+    def test_timeout_transitions_receiving_to_resetting(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test do_timeout transitions from receiving to resetting."""
         service.do_connect()
         assert service.receiving.is_active
@@ -105,7 +141,9 @@ class TestActionTableDownloadServiceStateMachine:
         # on_enter_resetting calls send_error_status -> waiting_ok
         assert service.waiting_ok.is_active
 
-    def test_error_status_received_transitions_waiting_ok_to_receiving(self, service):
+    def test_error_status_received_transitions_waiting_ok_to_receiving(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test error_status_received transitions from waiting_ok to receiving."""
         service.do_connect()
         service.do_timeout()  # -> resetting -> waiting_ok
@@ -114,19 +152,21 @@ class TestActionTableDownloadServiceStateMachine:
         assert service.receiving.is_active
 
     def test_no_error_status_received_transitions_waiting_ok_to_requesting(
-        self, service
-    ):
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test no_error_status_received transitions from waiting_ok to requesting."""
         service.do_connect()
         service.do_timeout()  # -> resetting -> waiting_ok
         assert service.waiting_ok.is_active
-        assert service._phase == Phase.INIT
+        assert service.phase == Phase.INIT
         service.no_error_status_received()
         # Guard is_init_phase=True -> requesting
         # on_enter_requesting calls send_download -> waiting_data
         assert service.waiting_data.is_active
 
-    def test_receive_chunk_transitions_waiting_data_to_receiving_chunk(self, service):
+    def test_receive_chunk_transitions_waiting_data_to_receiving_chunk(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test receive_chunk event transitions correctly."""
         # Get to waiting_data state
         service.do_connect()
@@ -138,10 +178,10 @@ class TestActionTableDownloadServiceStateMachine:
         # on_enter_receiving_chunk calls send_ack -> waiting_data
         assert service.waiting_data.is_active
 
-    def test_receive_eof_transitions_to_processing_eof_then_receiving(self, service):
-        """Test receive_eof event transitions to processing_eof then receiving
-        (CLEANUP).
-        """
+    def test_receive_eof_transitions_to_processing_eof_then_receiving(
+        self, service: ActionTableDownloadService
+    ) -> None:
+        """Test receive_eof transitions to processing_eof then receiving (CLEANUP)."""
         # Get to waiting_data state
         service.do_connect()
         service.do_timeout()
@@ -151,18 +191,18 @@ class TestActionTableDownloadServiceStateMachine:
         service.receive_eof()
         # on_enter_processing_eof sets phase=CLEANUP, calls do_finish -> receiving
         assert service.receiving.is_active
-        assert service._phase == Phase.CLEANUP
+        assert service.phase == Phase.CLEANUP
 
-    def test_no_error_status_received_in_cleanup_phase_goes_to_completed(self, service):
-        """Test no_error_status_received in CLEANUP phase goes to completed via
-        guard.
-        """
+    def test_no_error_status_received_in_cleanup_phase_goes_to_completed(
+        self, service: ActionTableDownloadService
+    ) -> None:
+        """Test no_error_status_received in CLEANUP phase reaches completed."""
         # Get to waiting_ok in CLEANUP phase
         service.do_connect()
         service.do_timeout()
         service.no_error_status_received()  # -> requesting -> waiting_data
         service.receive_eof()  # -> processing_eof -> receiving (phase=CLEANUP)
-        assert service._phase == Phase.CLEANUP
+        assert service.phase == Phase.CLEANUP
         service.do_timeout()  # -> resetting -> waiting_ok
         assert service.waiting_ok.is_active
 
@@ -170,11 +210,13 @@ class TestActionTableDownloadServiceStateMachine:
         service.no_error_status_received()
         assert service.completed.is_active
 
-    def test_full_download_flow(self, service):
+    def test_full_download_flow(self, service: ActionTableDownloadService) -> None:
         """Test complete download flow through all states."""
-        # Start in idle
+        # Start in idle. La variable locale évite que mypy fige service.phase
+        # sur Literal[Phase.INIT] pour le reste du test.
         assert service.idle.is_active
-        assert service._phase == Phase.INIT
+        initial_phase = service.phase
+        assert initial_phase == Phase.INIT
 
         # Phase 1: Connection & Reset Handshake
         service.do_connect()  # idle -> receiving
@@ -185,7 +227,8 @@ class TestActionTableDownloadServiceStateMachine:
 
         service.no_error_status_received()  # waiting_ok -> requesting -> waiting_data
         assert service.waiting_data.is_active
-        assert service._phase == Phase.DOWNLOAD
+        download_phase = service.phase
+        assert download_phase == Phase.DOWNLOAD
 
         # Phase 2: Download chunks
         service.receive_chunk()  # waiting_data -> receiving_chunk -> waiting_data
@@ -197,15 +240,19 @@ class TestActionTableDownloadServiceStateMachine:
         # Phase 3: EOF and Finalization (reuses receiving/resetting/waiting_ok)
         service.receive_eof()  # waiting_data -> processing_eof -> receiving
         assert service.receiving.is_active
-        assert service._phase == Phase.CLEANUP
+        cleanup_phase = service.phase
+        assert cleanup_phase == Phase.CLEANUP
 
         service.do_timeout()  # receiving -> resetting -> waiting_ok
         assert service.waiting_ok.is_active
 
-        service.no_error_status_received()  # waiting_ok -> completed (guard: is_cleanup_phase)
+        # waiting_ok -> completed (guard: is_cleanup_phase)
+        service.no_error_status_received()
         assert service.completed.is_active
 
-    def test_cannot_transition_from_completed(self, service):
+    def test_cannot_transition_from_completed(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test that completed is a final state."""
         service.do_connect()
         service.do_timeout()
@@ -215,17 +262,18 @@ class TestActionTableDownloadServiceStateMachine:
         service.no_error_status_received()  # -> completed
         assert service.completed.is_active
 
-        # In final state, events are silently ignored with allow_event_without_transition=True
+        # In final state, events are silently ignored because the state
+        # machine allows events without transition.
         service.do_connect()
         assert service.completed.is_active  # Still in completed
 
-    def test_guard_is_init_phase(self, service):
+    def test_guard_is_init_phase(self, service: ActionTableDownloadService) -> None:
         """Test is_init_phase guard returns correct value."""
-        assert service._phase == Phase.INIT
+        assert service.phase == Phase.INIT
         assert service.is_init_phase() is True
         assert service.is_cleanup_phase() is False
 
-        service._phase = Phase.CLEANUP
+        service.phase = Phase.CLEANUP
         assert service.is_init_phase() is False
         assert service.is_cleanup_phase() is True
 
@@ -234,8 +282,13 @@ class TestActionTableDownloadServiceProtocolIntegration:
     """Test protocol signal integration with state machine."""
 
     @pytest.fixture
-    def mock_conbus_protocol(self):
-        """Create mock ConbusEventProtocol."""
+    def mock_conbus_protocol(self) -> Mock:
+        """Create mock ConbusEventProtocol.
+
+        Returns:
+            Mock ConbusEventProtocol.
+
+        """
         protocol = Mock()
         protocol.on_connection_made = Mock()
         protocol.on_connection_made.connect = Mock()
@@ -259,8 +312,13 @@ class TestActionTableDownloadServiceProtocolIntegration:
         return protocol
 
     @pytest.fixture
-    def mock_serializer(self):
-        """Create mock ActionTableSerializer."""
+    def mock_serializer(self) -> Mock:
+        """Create mock ActionTableSerializer.
+
+        Returns:
+            Mock ActionTableSerializer.
+
+        """
         serializer = Mock()
         # Return a real ActionTable to avoid asdict() errors
         serializer.from_encoded_string = Mock(return_value=ActionTable(entries=[]))
@@ -270,10 +328,15 @@ class TestActionTableDownloadServiceProtocolIntegration:
     @pytest.fixture
     def service(
         self,
-        mock_conbus_protocol,
-        mock_serializer,
-    ):
-        """Create service instance for testing."""
+        mock_conbus_protocol: Mock,
+        mock_serializer: Mock,
+    ) -> ActionTableDownloadService:
+        """Create service instance for testing.
+
+        Returns:
+            Service instance for testing.
+
+        """
         return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
@@ -282,32 +345,38 @@ class TestActionTableDownloadServiceProtocolIntegration:
             msactiontable_serializer_xp33=Mock(),
         )
 
-    def test_connection_made_triggers_connect(self, service):
-        """Test _on_connection_made triggers do_connect transition."""
+    def test_connection_made_triggers_connect(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
+        """Test the connection-made handler triggers do_connect transition."""
         assert service.idle.is_active
-        service._on_connection_made()
+        connected_handler(mock_conbus_protocol.on_connection_made)()
         assert service.receiving.is_active
 
-    def test_timeout_in_receiving_triggers_reset(self, service):
-        """Test _on_timeout in receiving triggers reset flow."""
+    def test_timeout_in_receiving_triggers_reset(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
+        """Test the timeout handler in receiving triggers reset flow."""
         service.do_connect()
         assert service.receiving.is_active
 
-        service._on_timeout()
+        connected_handler(mock_conbus_protocol.on_timeout)()
         # Should transition through resetting to waiting_ok
         assert service.waiting_ok.is_active
 
-    def test_timeout_in_waiting_ok_triggers_retry(self, service):
-        """Test _on_timeout in waiting_ok retries via nak_received."""
+    def test_timeout_in_waiting_ok_triggers_retry(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
+        """Test the timeout handler in waiting_ok retries via nak_received."""
         service.do_connect()
         service.do_timeout()
         assert service.waiting_ok.is_active
 
-        service._on_timeout()
+        connected_handler(mock_conbus_protocol.on_timeout)()
         # Should go back to receiving for retry
         assert service.receiving.is_active
 
-    def test_signals_connected_on_init(self, mock_conbus_protocol):
+    def test_signals_connected_on_init(self, mock_conbus_protocol: Mock) -> None:
         """Test that protocol signals are connected on initialization."""
         mock_serializer = Mock()
 
@@ -329,8 +398,13 @@ class TestActionTableDownloadServiceContextManager:
     """Test context manager behavior."""
 
     @pytest.fixture
-    def mock_conbus_protocol(self):
-        """Create mock ConbusEventProtocol."""
+    def mock_conbus_protocol(self) -> Mock:
+        """Create mock ConbusEventProtocol.
+
+        Returns:
+            Mock ConbusEventProtocol.
+
+        """
         protocol = Mock()
         protocol.on_connection_made = Mock()
         protocol.on_connection_made.connect = Mock()
@@ -354,8 +428,13 @@ class TestActionTableDownloadServiceContextManager:
         return protocol
 
     @pytest.fixture
-    def mock_serializer(self):
-        """Create mock ActionTableSerializer."""
+    def mock_serializer(self) -> Mock:
+        """Create mock ActionTableSerializer.
+
+        Returns:
+            Mock ActionTableSerializer.
+
+        """
         serializer = Mock()
         # Return a real ActionTable to avoid asdict() errors
         serializer.from_encoded_string = Mock(return_value=ActionTable(entries=[]))
@@ -365,10 +444,15 @@ class TestActionTableDownloadServiceContextManager:
     @pytest.fixture
     def service(
         self,
-        mock_conbus_protocol,
-        mock_serializer,
-    ):
-        """Create service instance for testing."""
+        mock_conbus_protocol: Mock,
+        mock_serializer: Mock,
+    ) -> ActionTableDownloadService:
+        """Create service instance for testing.
+
+        Returns:
+            Service instance for testing.
+
+        """
         return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
@@ -377,7 +461,9 @@ class TestActionTableDownloadServiceContextManager:
             msactiontable_serializer_xp33=Mock(),
         )
 
-    def test_enter_resets_state_to_idle(self, service):
+    def test_enter_resets_state_to_idle(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test __enter__ resets state machine to idle."""
         # Progress through states
         service.do_connect()
@@ -392,21 +478,27 @@ class TestActionTableDownloadServiceContextManager:
         with service:
             assert service.idle.is_active
 
-    def test_enter_clears_actiontable_data(self, service):
+    def test_enter_clears_actiontable_data(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test __enter__ clears actiontable_data list."""
         service.actiontable_data = ["chunk1", "chunk2"]
 
         with service:
             assert service.actiontable_data == []
 
-    def test_enter_resets_phase_to_init(self, service):
+    def test_enter_resets_phase_to_init(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test __enter__ resets _phase to INIT."""
-        service._phase = Phase.CLEANUP
+        service.phase = Phase.CLEANUP
 
         with service:
-            assert service._phase == Phase.INIT
+            assert service.phase == Phase.INIT
 
-    def test_exit_disconnects_signals(self, service, mock_conbus_protocol):
+    def test_exit_disconnects_signals(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test __exit__ disconnects protocol signals."""
         with service:
             pass
@@ -416,7 +508,9 @@ class TestActionTableDownloadServiceContextManager:
         mock_conbus_protocol.on_timeout.disconnect.assert_called_once()
         mock_conbus_protocol.on_failed.disconnect.assert_called_once()
 
-    def test_exit_stops_reactor(self, service, mock_conbus_protocol):
+    def test_exit_stops_reactor(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test __exit__ stops reactor."""
         with service:
             pass
@@ -428,8 +522,13 @@ class TestActionTableDownloadServiceErrorHandling:
     """Test error handling and edge cases."""
 
     @pytest.fixture
-    def mock_conbus_protocol(self):
-        """Create mock ConbusEventProtocol."""
+    def mock_conbus_protocol(self) -> Mock:
+        """Create mock ConbusEventProtocol.
+
+        Returns:
+            Mock ConbusEventProtocol.
+
+        """
         protocol = Mock()
         protocol.on_connection_made = Mock()
         protocol.on_connection_made.connect = Mock()
@@ -454,8 +553,13 @@ class TestActionTableDownloadServiceErrorHandling:
         return protocol
 
     @pytest.fixture
-    def mock_serializer(self):
-        """Create mock ActionTableSerializer."""
+    def mock_serializer(self) -> Mock:
+        """Create mock ActionTableSerializer.
+
+        Returns:
+            Mock ActionTableSerializer.
+
+        """
         serializer = Mock()
         serializer.from_encoded_string = Mock(return_value=ActionTable(entries=[]))
         serializer.format_decoded_output = Mock(return_value=[])
@@ -464,10 +568,15 @@ class TestActionTableDownloadServiceErrorHandling:
     @pytest.fixture
     def service(
         self,
-        mock_conbus_protocol,
-        mock_serializer,
-    ):
-        """Create service instance for testing."""
+        mock_conbus_protocol: Mock,
+        mock_serializer: Mock,
+    ) -> ActionTableDownloadService:
+        """Create service instance for testing.
+
+        Returns:
+            Service instance for testing.
+
+        """
         return ActionTableDownloadService(
             conbus_protocol=mock_conbus_protocol,
             actiontable_serializer=mock_serializer,
@@ -476,17 +585,21 @@ class TestActionTableDownloadServiceErrorHandling:
             msactiontable_serializer_xp33=Mock(),
         )
 
-    def test_failed_handler_emits_error(self, service):
-        """Test _on_failed emits error signal."""
-        error_received: List[str] = []
+    def test_failed_handler_emits_error(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
+        """Test the failure handler emits error signal."""
+        error_received: list[str] = []
         service.on_error.connect(error_received.append)
 
-        service._on_failed("Connection refused")
+        connected_handler(mock_conbus_protocol.on_failed)("Connection refused")
 
         assert len(error_received) == 1
         assert error_received[0] == "Connection refused"
 
-    def test_timeout_in_waiting_data_emits_error(self, service):
+    def test_timeout_in_waiting_data_emits_error(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test timeout in waiting_data state emits error."""
         # Get to waiting_data
         service.do_connect()
@@ -494,41 +607,47 @@ class TestActionTableDownloadServiceErrorHandling:
         service.no_error_status_received()
         assert service.waiting_data.is_active
 
-        error_received: List[str] = []
+        error_received: list[str] = []
         service.on_error.connect(error_received.append)
 
-        service._on_timeout()
+        connected_handler(mock_conbus_protocol.on_timeout)()
 
         assert len(error_received) == 1
         assert "Timeout waiting for actiontable data" in error_received[0]
 
-    def test_timeout_in_other_state_emits_error(self, service):
+    def test_timeout_in_other_state_emits_error(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test timeout in non-recoverable state emits error."""
         # Stay in idle (non-recoverable for timeout)
         assert service.idle.is_active
 
-        error_received: List[str] = []
+        error_received: list[str] = []
         service.on_error.connect(error_received.append)
 
-        service._on_timeout()
+        connected_handler(mock_conbus_protocol.on_timeout)()
 
         assert len(error_received) == 1
         assert error_received[0] == "Timeout"
 
-    def test_can_retry_guard_limits_retries(self, service):
+    def test_can_retry_guard_limits_retries(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test can_retry guard blocks after MAX_ERROR_RETRIES."""
         # Test can_retry guard directly
         assert service.can_retry() is True
 
         # Set retry count to max
-        service._error_retry_count = MAX_ERROR_RETRIES
+        service.error_retry_count = MAX_ERROR_RETRIES
         assert service.can_retry() is False
 
         # Reset and verify
-        service._error_retry_count = MAX_ERROR_RETRIES - 1
+        service.error_retry_count = MAX_ERROR_RETRIES - 1
         assert service.can_retry() is True
 
-    def test_configure_sets_serial_number(self, service):
+    def test_configure_sets_serial_number(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test configure sets serial_number."""
         service.configure(
             serial_number="12345678",
@@ -536,16 +655,20 @@ class TestActionTableDownloadServiceErrorHandling:
         )
         assert service.serial_number == "12345678"
 
-    def test_configure_sets_timeout(self, service, mock_conbus_protocol):
+    def test_configure_sets_timeout(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test configure sets timeout."""
         service.configure(
             serial_number="12345678",
             actiontable_type=ActionTableType.ACTIONTABLE,
-            timeout_seconds=10.0,
+            timeout_seconds=CONFIGURED_TIMEOUT_SECONDS,
         )
-        assert mock_conbus_protocol.timeout_seconds == 10.0
+        assert mock_conbus_protocol.timeout_seconds == CONFIGURED_TIMEOUT_SECONDS
 
-    def test_configure_raises_when_not_idle(self, service):
+    def test_configure_raises_when_not_idle(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test configure raises when not in idle state."""
         service.do_connect()
         assert service.receiving.is_active
@@ -556,33 +679,43 @@ class TestActionTableDownloadServiceErrorHandling:
                 actiontable_type=ActionTableType.ACTIONTABLE,
             )
 
-    def test_set_timeout(self, service, mock_conbus_protocol):
+    def test_set_timeout(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test set_timeout updates protocol timeout."""
-        service.set_timeout(15.0)
-        assert mock_conbus_protocol.timeout_seconds == 15.0
+        service.set_timeout(UPDATED_TIMEOUT_SECONDS)
+        assert mock_conbus_protocol.timeout_seconds == UPDATED_TIMEOUT_SECONDS
 
-    def test_start_reactor_delegates(self, service, mock_conbus_protocol):
+    def test_start_reactor_delegates(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test start_reactor calls protocol."""
         service.start_reactor()
         mock_conbus_protocol.start_reactor.assert_called_once()
 
-    def test_stop_reactor_delegates(self, service, mock_conbus_protocol):
+    def test_stop_reactor_delegates(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test stop_reactor calls protocol."""
         service.stop_reactor()
         mock_conbus_protocol.stop_reactor.assert_called_once()
 
-    def test_connection_made_ignored_when_not_idle(self, service):
-        """Test _on_connection_made is ignored when not in idle state."""
+    def test_connection_made_ignored_when_not_idle(
+        self, service: ActionTableDownloadService, mock_conbus_protocol: Mock
+    ) -> None:
+        """Test the connection-made handler is ignored when not in idle state."""
         service.do_connect()
         assert service.receiving.is_active
 
         # Should not error or change state
-        service._on_connection_made()
+        connected_handler(mock_conbus_protocol.on_connection_made)()
         assert service.receiving.is_active
 
-    def test_enter_resets_error_retry_count(self, service):
+    def test_enter_resets_error_retry_count(
+        self, service: ActionTableDownloadService
+    ) -> None:
         """Test __enter__ resets error retry count."""
-        service._error_retry_count = 5
+        service.error_retry_count = 5
 
         with service:
-            assert service._error_retry_count == 0
+            assert service.error_retry_count == 0

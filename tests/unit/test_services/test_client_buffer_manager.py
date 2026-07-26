@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Tests for ClientBufferManager."""
 
 import queue
@@ -8,20 +9,25 @@ from unittest.mock import Mock
 
 from xp.services.server.client_buffer_manager import ClientBufferManager
 
+BROADCAST_COUNT = 3
+MESSAGE_COUNT = 10
+CLIENT_COUNT = 3
+
 
 class TestClientBufferManagerInit:
     """Test ClientBufferManager initialization."""
 
-    def test_init(self):
+    def test_init(self) -> None:
         """Test initialization creates empty buffer dictionary."""
         manager = ClientBufferManager()
-        assert manager._buffers == {}
+        # No public API exposes the buffer dict; checking initial state
+        assert manager._buffers == {}  # noqa: SLF001
 
 
 class TestClientBufferManagerRegistration:
     """Test client registration and unregistration."""
 
-    def test_register_client_creates_queue(self):
+    def test_register_client_creates_queue(self) -> None:
         """Test registering a client creates a new queue."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
@@ -29,19 +35,19 @@ class TestClientBufferManagerRegistration:
         client_queue = manager.register_client(mock_socket)
 
         assert isinstance(client_queue, queue.Queue)
-        assert mock_socket in manager._buffers
+        assert manager.get_queue(mock_socket) is not None
 
-    def test_register_client_returns_queue(self):
+    def test_register_client_returns_queue(self) -> None:
         """Test registering a client returns the created queue."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
 
         returned_queue = manager.register_client(mock_socket)
-        stored_queue = manager._buffers[mock_socket]
+        stored_queue = manager.get_queue(mock_socket)
 
         assert returned_queue is stored_queue
 
-    def test_register_multiple_clients(self):
+    def test_register_multiple_clients(self) -> None:
         """Test registering multiple clients creates separate queues."""
         manager = ClientBufferManager()
         mock_socket1 = Mock(spec=socket.socket)
@@ -51,9 +57,10 @@ class TestClientBufferManagerRegistration:
         queue2 = manager.register_client(mock_socket2)
 
         assert queue1 is not queue2
-        assert len(manager._buffers) == 2
+        assert manager.get_queue(mock_socket1) is queue1
+        assert manager.get_queue(mock_socket2) is queue2
 
-    def test_unregister_client_removes_queue(self):
+    def test_unregister_client_removes_queue(self) -> None:
         """Test unregistering a client removes its queue."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
@@ -61,16 +68,16 @@ class TestClientBufferManagerRegistration:
 
         manager.unregister_client(mock_socket)
 
-        assert mock_socket not in manager._buffers
+        assert manager.get_queue(mock_socket) is None
 
-    def test_unregister_nonexistent_client(self):
+    def test_unregister_nonexistent_client(self) -> None:
         """Test unregistering a non-existent client does not raise error."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
 
         manager.unregister_client(mock_socket)  # Should not raise
 
-    def test_unregister_client_twice(self):
+    def test_unregister_client_twice(self) -> None:
         """Test unregistering a client twice does not raise error."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
@@ -83,7 +90,7 @@ class TestClientBufferManagerRegistration:
 class TestClientBufferManagerBroadcast:
     """Test telegram broadcasting."""
 
-    def test_broadcast_to_single_client(self):
+    def test_broadcast_to_single_client(self) -> None:
         """Test broadcasting a telegram to a single client."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
@@ -94,7 +101,7 @@ class TestClientBufferManagerBroadcast:
         assert client_queue.qsize() == 1
         assert client_queue.get_nowait() == "test telegram"
 
-    def test_broadcast_to_multiple_clients(self):
+    def test_broadcast_to_multiple_clients(self) -> None:
         """Test broadcasting a telegram to multiple clients."""
         manager = ClientBufferManager()
         mock_socket1 = Mock(spec=socket.socket)
@@ -111,13 +118,13 @@ class TestClientBufferManagerBroadcast:
         assert queue2.get_nowait() == "broadcast telegram"
         assert queue3.get_nowait() == "broadcast telegram"
 
-    def test_broadcast_to_no_clients(self):
+    def test_broadcast_to_no_clients(self) -> None:
         """Test broadcasting when no clients are registered."""
         manager = ClientBufferManager()
 
         manager.broadcast("telegram")  # Should not raise
 
-    def test_broadcast_multiple_telegrams(self):
+    def test_broadcast_multiple_telegrams(self) -> None:
         """Test broadcasting multiple telegrams to clients."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
@@ -127,12 +134,12 @@ class TestClientBufferManagerBroadcast:
         manager.broadcast("telegram2")
         manager.broadcast("telegram3")
 
-        assert client_queue.qsize() == 3
+        assert client_queue.qsize() == BROADCAST_COUNT
         assert client_queue.get_nowait() == "telegram1"
         assert client_queue.get_nowait() == "telegram2"
         assert client_queue.get_nowait() == "telegram3"
 
-    def test_broadcast_after_client_unregistered(self):
+    def test_broadcast_after_client_unregistered(self) -> None:
         """Test broadcasting after a client is unregistered."""
         manager = ClientBufferManager()
         mock_socket1 = Mock(spec=socket.socket)
@@ -151,7 +158,7 @@ class TestClientBufferManagerBroadcast:
 class TestClientBufferManagerGetQueue:
     """Test queue retrieval."""
 
-    def test_get_queue_for_registered_client(self):
+    def test_get_queue_for_registered_client(self) -> None:
         """Test getting queue for a registered client."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
@@ -161,7 +168,7 @@ class TestClientBufferManagerGetQueue:
 
         assert retrieved_queue is registered_queue
 
-    def test_get_queue_for_unregistered_client(self):
+    def test_get_queue_for_unregistered_client(self) -> None:
         """Test getting queue for an unregistered client returns None."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
@@ -170,7 +177,7 @@ class TestClientBufferManagerGetQueue:
 
         assert retrieved_queue is None
 
-    def test_get_queue_after_unregister(self):
+    def test_get_queue_after_unregister(self) -> None:
         """Test getting queue after client is unregistered returns None."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
@@ -185,18 +192,18 @@ class TestClientBufferManagerGetQueue:
 class TestClientBufferManagerThreadSafety:
     """Test thread safety of ClientBufferManager."""
 
-    def test_concurrent_registration(self):
+    def test_concurrent_registration(self) -> None:
         """Test concurrent client registrations are thread-safe."""
         manager = ClientBufferManager()
-        sockets = [Mock(spec=socket.socket) for _ in range(10)]
+        sockets = [Mock(spec=socket.socket) for _ in range(MESSAGE_COUNT)]
         threads = []
 
-        def register_client(sock):
-            """
-            Register a client socket.
+        def register_client(sock: socket.socket) -> None:
+            """Register a client socket.
 
             Args:
                 sock: Socket to register.
+
             """
             manager.register_client(sock)
 
@@ -208,25 +215,25 @@ class TestClientBufferManagerThreadSafety:
         for thread in threads:
             thread.join()
 
-        assert len(manager._buffers) == 10
+        assert all(manager.get_queue(sock) is not None for sock in sockets)
 
-    def test_concurrent_broadcast(self):
+    def test_concurrent_broadcast(self) -> None:
         """Test concurrent broadcasts are thread-safe."""
         manager = ClientBufferManager()
         mock_socket = Mock(spec=socket.socket)
         client_queue = manager.register_client(mock_socket)
         threads = []
 
-        def broadcast_telegram(msg):
-            """
-            Broadcast a telegram message.
+        def broadcast_telegram(msg: str) -> None:
+            """Broadcast a telegram message.
 
             Args:
                 msg: Message to broadcast.
+
             """
             manager.broadcast(msg)
 
-        for i in range(10):
+        for i in range(MESSAGE_COUNT):
             thread = threading.Thread(target=broadcast_telegram, args=(f"msg{i}",))
             threads.append(thread)
             thread.start()
@@ -234,19 +241,19 @@ class TestClientBufferManagerThreadSafety:
         for thread in threads:
             thread.join()
 
-        assert client_queue.qsize() == 10
+        assert client_queue.qsize() == MESSAGE_COUNT
 
-    def test_concurrent_register_and_broadcast(self):
+    def test_concurrent_register_and_broadcast(self) -> None:
         """Test concurrent registration and broadcasting are thread-safe."""
         manager = ClientBufferManager()
         results = []
 
-        def register_and_receive(_sock_id):
-            """
-            Register client and receive messages.
+        def register_and_receive(_sock_id: int) -> None:
+            """Register client and receive messages.
 
             Args:
                 _sock_id: Socket identifier (unused).
+
             """
             sock = Mock(spec=socket.socket)
             client_queue = manager.register_client(sock)
@@ -259,7 +266,7 @@ class TestClientBufferManagerThreadSafety:
                     break
             results.append(len(received))
 
-        def broadcast_messages():
+        def broadcast_messages() -> None:
             """Broadcast multiple messages."""
             for i in range(5):
                 manager.broadcast(f"msg{i}")
@@ -271,7 +278,7 @@ class TestClientBufferManagerThreadSafety:
 
         # Start registration threads
         register_threads = []
-        for i in range(3):
+        for i in range(CLIENT_COUNT):
             thread = threading.Thread(target=register_and_receive, args=(i,))
             register_threads.append(thread)
             thread.start()
@@ -282,22 +289,22 @@ class TestClientBufferManagerThreadSafety:
 
         # Each client should receive some messages
         # The exact count depends on timing, but none should crash
-        assert len(results) == 3
+        assert len(results) == CLIENT_COUNT
 
-    def test_concurrent_unregister_and_broadcast(self):
+    def test_concurrent_unregister_and_broadcast(self) -> None:
         """Test concurrent unregistration and broadcasting are thread-safe."""
         manager = ClientBufferManager()
         sockets = [Mock(spec=socket.socket) for _ in range(5)]
         for sock in sockets:
             manager.register_client(sock)
 
-        def unregister_clients():
+        def unregister_clients() -> None:
             """Unregister all clients."""
             for sock in sockets:
                 manager.unregister_client(sock)
                 time.sleep(0.01)
 
-        def broadcast_messages():
+        def broadcast_messages() -> None:
             """Broadcast messages continuously."""
             for i in range(10):
                 manager.broadcast(f"msg{i}")
@@ -313,4 +320,4 @@ class TestClientBufferManagerThreadSafety:
         unregister_thread.join()
 
         # Should complete without exceptions
-        assert len(manager._buffers) == 0
+        assert all(manager.get_queue(sock) is None for sock in sockets)

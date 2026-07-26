@@ -1,6 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Tests for conbus discover model."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from xp.models.conbus.conbus_discover import ConbusDiscoverResponse
 
@@ -8,20 +9,20 @@ from xp.models.conbus.conbus_discover import ConbusDiscoverResponse
 class TestConbusDiscoverResponse:
     """Test ConbusDiscoverResponse model."""
 
-    def test_post_init_sets_timestamp(self):
+    def test_post_init_sets_timestamp(self) -> None:
         """Test __post_init__ sets timestamp if None."""
         response = ConbusDiscoverResponse(success=True)
         assert response.timestamp is not None
         assert isinstance(response.timestamp, datetime)
 
-    def test_post_init_sets_received_telegrams(self):
+    def test_post_init_sets_received_telegrams(self) -> None:
         """Test __post_init__ sets empty list for received_telegrams."""
         response = ConbusDiscoverResponse(success=True)
         assert response.received_telegrams == []
 
-    def test_to_dict(self):
+    def test_to_dict(self) -> None:
         """Test to_dict method."""
-        timestamp = datetime(2025, 1, 1, 12, 0, 0)
+        timestamp = datetime(2025, 1, 1, 12, 0, 0, tzinfo=UTC)
         result = ConbusDiscoverResponse(
             success=True,
             sent_telegram="<DISCOVER>",
@@ -63,10 +64,12 @@ class TestConbusDiscoverResponse:
         assert result["error"] is None
         assert "2025-01-01T12:00:00" in result["timestamp"]
 
-    def test_to_dict_with_error(self):
+    def test_to_dict_with_error(self) -> None:
         """Test to_dict with error."""
         result = ConbusDiscoverResponse(
-            success=False, error="Connection failed", timestamp=datetime(2025, 1, 1)
+            success=False,
+            error="Connection failed",
+            timestamp=datetime(2025, 1, 1, tzinfo=UTC),
         ).to_dict()
         assert result["success"] is False
         assert result["error"] == "Connection failed"

@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for ProtocolLogWidget."""
 
 from unittest.mock import Mock
@@ -12,8 +13,13 @@ class TestProtocolLogWidget:
     """Unit tests for ProtocolLogWidget functionality."""
 
     @pytest.fixture
-    def mock_service(self):
-        """Create a mock ProtocolMonitorService."""
+    def mock_service(self) -> Mock:
+        """Create a mock ProtocolMonitorService.
+
+        Returns:
+            A mock ProtocolMonitorService.
+
+        """
         service = Mock()
         service.on_telegram_display = Mock()
         service.on_telegram_display.connect = Mock()
@@ -24,15 +30,22 @@ class TestProtocolLogWidget:
         return service
 
     @pytest.fixture
-    def widget(self, mock_service):
-        """Create widget instance with mock service."""
+    def widget(self, mock_service: Mock) -> ProtocolLogWidget:
+        """Create widget instance with mock service.
+
+        Returns:
+            Widget instance with mock service.
+
+        """
         return ProtocolLogWidget(service=mock_service)
 
-    def test_widget_initialization(self, widget, mock_service):
+    def test_widget_initialization(
+        self, widget: ProtocolLogWidget, mock_service: Mock
+    ) -> None:
         """Test widget can be initialized with required dependencies."""
         assert widget.service == mock_service
 
-    def test_on_telegram_display_rx(self, widget):
+    def test_on_telegram_display_rx(self, widget: ProtocolLogWidget) -> None:
         """Test telegram display handler for RX telegrams."""
         widget.log_widget = Mock()
 
@@ -40,7 +53,7 @@ class TestProtocolLogWidget:
         event = TelegramDisplayEvent(direction="RX", telegram="<E02L01I00MAK>")
 
         # Call handler
-        widget._on_telegram_display(event)
+        widget._on_telegram_display(event)  # noqa: SLF001 -- invoke private signal handler directly
 
         # Verify log widget was called with formatted message
         widget.log_widget.write.assert_called_once()
@@ -48,7 +61,7 @@ class TestProtocolLogWidget:
         assert "[RX]" in call_args
         assert "<E02L01I00MAK>" in call_args
 
-    def test_on_telegram_display_tx(self, widget):
+    def test_on_telegram_display_tx(self, widget: ProtocolLogWidget) -> None:
         """Test telegram display handler for TX telegrams."""
         widget.log_widget = Mock()
 
@@ -56,7 +69,7 @@ class TestProtocolLogWidget:
         event = TelegramDisplayEvent(direction="TX", telegram="<S0000000000F01D00FA>")
 
         # Call handler
-        widget._on_telegram_display(event)
+        widget._on_telegram_display(event)  # noqa: SLF001 -- invoke private signal handler directly
 
         # Verify log widget was called with formatted message
         widget.log_widget.write.assert_called_once()
@@ -64,7 +77,7 @@ class TestProtocolLogWidget:
         assert "[TX]" in call_args
         assert "<S0000000000F01D00FA>" in call_args
 
-    def test_clear_log(self, widget):
+    def test_clear_log(self, widget: ProtocolLogWidget) -> None:
         """Test clear_log clears the log widget."""
         widget.log_widget = Mock()
 
@@ -72,7 +85,9 @@ class TestProtocolLogWidget:
 
         widget.log_widget.clear.assert_called_once()
 
-    def test_cleanup_on_unmount(self, widget, mock_service):
+    def test_cleanup_on_unmount(
+        self, widget: ProtocolLogWidget, mock_service: Mock
+    ) -> None:
         """Test on_unmount disconnects signals from service."""
         # Call on_unmount
         widget.on_unmount()

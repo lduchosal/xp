@@ -1,5 +1,5 @@
-"""
-Integration tests for checksum CLI commands.
+# Copyright (c) 2025 ldvchosal
+"""Integration tests for checksum CLI commands.
 
 Tests the complete flow from CLI input to output, ensuring proper integration between
 all layers.
@@ -13,16 +13,23 @@ from click.testing import CliRunner
 
 from xp.cli.main import cli
 
+USAGE_ERROR_EXIT_CODE = 2
+
 
 class TestChecksumIntegration:
     """Test class for checksum CLI integration."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test runner."""
         self.runner = CliRunner()
 
-    def _create_mock_container(self):
-        """Create a mock service container for IoC pattern."""
+    def _create_mock_container(self) -> Mock:
+        """Create a mock service container for IoC pattern.
+
+        Returns:
+            A mock service container for IoC pattern.
+
+        """
         mock_service = Mock()
         mock_container = Mock()
         mock_container.resolve.return_value = mock_service
@@ -30,7 +37,7 @@ class TestChecksumIntegration:
         mock_service_container.get_container.return_value = mock_container
         return mock_service_container
 
-    def test_checksum_calculate_json_output(self):
+    def test_checksum_calculate_json_output(self) -> None:
         """Test checksum calculate command with JSON output."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -50,7 +57,7 @@ class TestChecksumIntegration:
         assert "checksum" in output_data["data"]
         assert "timestamp" in output_data
 
-    def test_checksum_validate_valid_checksum(self):
+    def test_checksum_validate_valid_checksum(self) -> None:
         """Test checksum validate command with valid checksum."""
         mock_container = self._create_mock_container()
         # First calculate a checksum
@@ -79,7 +86,7 @@ class TestChecksumIntegration:
         assert output_data["success"] is True
         assert output_data["data"]["input"] == "test"
 
-    def test_checksum_validate_invalid_checksum(self):
+    def test_checksum_validate_invalid_checksum(self) -> None:
         """Test checksum validate command with invalid checksum."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -95,7 +102,7 @@ class TestChecksumIntegration:
         assert '"expected_checksum": "XX"' in output
         assert '"is_valid": false' in output
 
-    def test_checksum_validate_crc32_algorithm(self):
+    def test_checksum_validate_crc32_algorithm(self) -> None:
         """Test checksum validate command with CRC32 algorithm."""
         mock_container = self._create_mock_container()
         # First calculate a CRC32 checksum
@@ -129,7 +136,7 @@ class TestChecksumIntegration:
 
         assert '"is_valid": true' in output
 
-    def test_checksum_validate_json_output(self):
+    def test_checksum_validate_json_output(self) -> None:
         """Test checksum validate command with JSON output."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -148,7 +155,7 @@ class TestChecksumIntegration:
         assert output_data["data"]["expected_checksum"] == "XX"
         assert output_data["data"]["is_valid"] is False
 
-    def test_checksum_help_command(self):
+    def test_checksum_help_command(self) -> None:
         """Test checksum help command."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -162,7 +169,7 @@ class TestChecksumIntegration:
         assert "calculate" in output
         assert "validate" in output
 
-    def test_checksum_calculate_help(self):
+    def test_checksum_calculate_help(self) -> None:
         """Test checksum calculate help command."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -177,7 +184,7 @@ class TestChecksumIntegration:
         assert "Calculate checksum for given data string" in output
         assert "--algorithm" in output
 
-    def test_checksum_validate_help(self):
+    def test_checksum_validate_help(self) -> None:
         """Test checksum validate help command."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -192,7 +199,7 @@ class TestChecksumIntegration:
         assert "Validate data against expected checksum" in output
         assert "--algorithm" in output
 
-    def test_checksum_calculate_empty_string(self):
+    def test_checksum_calculate_empty_string(self) -> None:
         """Test checksum calculate with empty string."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -201,12 +208,12 @@ class TestChecksumIntegration:
             obj={"container": mock_container},
         )
 
-        assert result.exit_code == 2
+        assert result.exit_code == USAGE_ERROR_EXIT_CODE
         output = result.output
 
         assert "Usage: cli telegram checksum calculate [OPTIONS] DATA" in output
 
-    def test_checksum_validate_empty_string(self):
+    def test_checksum_validate_empty_string(self) -> None:
         """Test checksum validate with empty string."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -220,7 +227,7 @@ class TestChecksumIntegration:
 
         assert '"is_valid": true' in output
 
-    def test_algorithm_parameter_validation(self):
+    def test_algorithm_parameter_validation(self) -> None:
         """Test that algorithm parameter accepts only valid values."""
         mock_container = self._create_mock_container()
         # Test invalid algorithm
@@ -233,7 +240,7 @@ class TestChecksumIntegration:
         assert result.exit_code != 0
         assert "Invalid value for '--algorithm'" in result.output
 
-    def test_missing_arguments(self):
+    def test_missing_arguments(self) -> None:
         """Test commands with missing required arguments."""
         mock_container = self._create_mock_container()
         # Missing data argument for calculate
@@ -262,7 +269,7 @@ class TestChecksumIntegration:
             "123456789",
         ],
     )
-    def test_checksum_calculate_various_data(self, test_data):
+    def test_checksum_calculate_various_data(self, test_data: str) -> None:
         """Test checksum calculate with various data inputs."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -276,7 +283,7 @@ class TestChecksumIntegration:
         assert '"checksum":' in result.output
 
     @pytest.mark.parametrize("algorithm", ["simple", "crc32"])
-    def test_checksum_roundtrip(self, algorithm):
+    def test_checksum_roundtrip(self, algorithm: str) -> None:
         """Test calculate then validate roundtrip for both algorithms."""
         mock_container = self._create_mock_container()
         # Calculate checksum
@@ -316,7 +323,7 @@ class TestChecksumIntegration:
         validate_data = json.loads(validate_result.output)
         assert validate_data["data"]["is_valid"] is True
 
-    def test_integration_with_telegram_parse(self):
+    def test_integration_with_telegram_parse(self) -> None:
         """Test integration concept - checksum could be used with telegram parsing."""
         # This tests that the checksum commands are available alongside other commands
         mock_container = self._create_mock_container()
@@ -332,7 +339,7 @@ class TestChecksumIntegration:
         assert "telegram" in result.output
         assert "module" in result.output
 
-    def test_consistent_output_format(self):
+    def test_consistent_output_format(self) -> None:
         """Test that output format is consistent with other CLI commands."""
         mock_container = self._create_mock_container()
         result = self.runner.invoke(
@@ -349,7 +356,7 @@ class TestChecksumIntegration:
         assert "data" in output_data
         assert "timestamp" in output_data
 
-    def test_error_handling_json_format(self):
+    def test_error_handling_json_format(self) -> None:
         """Test that errors are properly formatted in JSON mode."""
         # This would require creating a scenario that causes an error
         # For now, we test that the JSON structure is maintained

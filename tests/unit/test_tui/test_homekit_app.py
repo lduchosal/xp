@@ -1,8 +1,10 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for HomekitApp."""
 
 from unittest.mock import AsyncMock, Mock
 
 import pytest
+from textual.binding import Binding
 
 from xp.term.homekit import HomekitApp
 
@@ -11,8 +13,13 @@ class TestHomekitApp:
     """Unit tests for HomekitApp functionality."""
 
     @pytest.fixture
-    def mock_service(self):
-        """Create a mock HomekitService."""
+    def mock_service(self) -> Mock:
+        """Create a mock HomekitService.
+
+        Returns:
+            A mock HomekitService.
+
+        """
         service = Mock()
         service.on_connection_state_changed = Mock()
         service.on_connection_state_changed.connect = Mock()
@@ -42,38 +49,47 @@ class TestHomekitApp:
         return service
 
     @pytest.fixture
-    def app(self, mock_service):
-        """Create app instance with mock service."""
+    def app(self, mock_service: Mock) -> HomekitApp:
+        """Create app instance with mock service.
+
+        Returns:
+            App instance with mock service.
+
+        """
         return HomekitApp(homekit_service=mock_service)
 
-    def test_app_initialization(self, app, mock_service):
+    def test_app_initialization(self, app: HomekitApp, mock_service: Mock) -> None:
         """Test app can be initialized with required dependencies."""
         assert app.homekit_service == mock_service
         assert app.room_list_widget is None
         assert app.footer_widget is None
 
-    def test_app_title(self, app):
+    def test_app_title(self, app: HomekitApp) -> None:
         """Test app has correct title."""
         assert app.TITLE == "HomeKit"
 
-    def test_app_bindings(self, app):
+    def test_app_bindings(self, app: HomekitApp) -> None:
         """Test app has correct key bindings."""
-        binding_keys = [b[0] for b in app.BINDINGS]
+        binding_keys = [b.key if isinstance(b, Binding) else b[0] for b in app.BINDINGS]
         assert "Q" in binding_keys
         assert "C" in binding_keys
         assert "R" in binding_keys
 
-    def test_action_toggle_connection(self, app, mock_service):
+    def test_action_toggle_connection(
+        self, app: HomekitApp, mock_service: Mock
+    ) -> None:
         """Test action_toggle_connection calls service method."""
         app.action_toggle_connection()
         mock_service.toggle_connection.assert_called_once()
 
-    def test_action_refresh_all(self, app, mock_service):
+    def test_action_refresh_all(self, app: HomekitApp, mock_service: Mock) -> None:
         """Test action_refresh_all calls service method."""
         app.action_refresh_all()
         mock_service.refresh_all.assert_called_once()
 
-    def test_on_key_selects_accessory(self, app, mock_service):
+    def test_on_key_selects_accessory(
+        self, app: HomekitApp, mock_service: Mock
+    ) -> None:
         """Test on_key selects accessory with a-z keys."""
         mock_event = Mock()
         mock_event.key = "a"
@@ -84,7 +100,7 @@ class TestHomekitApp:
         assert app.selected_accessory_id == "A01_1"
         mock_event.prevent_default.assert_called_once()
 
-    def test_on_key_select_not_found(self, app, mock_service):
+    def test_on_key_select_not_found(self, app: HomekitApp, mock_service: Mock) -> None:
         """Test on_key does not prevent default when key not found."""
         mock_service.select_accessory.return_value = None
         mock_event = Mock()
@@ -95,7 +111,9 @@ class TestHomekitApp:
         assert app.selected_accessory_id is None
         mock_event.prevent_default.assert_not_called()
 
-    def test_on_key_space_toggles_selected(self, app, mock_service):
+    def test_on_key_space_toggles_selected(
+        self, app: HomekitApp, mock_service: Mock
+    ) -> None:
         """Test space key toggles selected accessory."""
         app.selected_accessory_id = "A01_1"
         mock_event = Mock()
@@ -106,9 +124,10 @@ class TestHomekitApp:
         mock_service.toggle_selected.assert_called_once_with("A01_1")
         mock_event.prevent_default.assert_called_once()
 
-    def test_on_key_dot_turns_on_selected(self, app, mock_service):
-        """
-        Test .
+    def test_on_key_dot_turns_on_selected(
+        self, app: HomekitApp, mock_service: Mock
+    ) -> None:
+        """Test .
 
         key turns on selected accessory.
         """
@@ -121,7 +140,9 @@ class TestHomekitApp:
         mock_service.turn_on_selected.assert_called_once_with("A01_1")
         mock_event.prevent_default.assert_called_once()
 
-    def test_on_key_minus_turns_off_selected(self, app, mock_service):
+    def test_on_key_minus_turns_off_selected(
+        self, app: HomekitApp, mock_service: Mock
+    ) -> None:
         """Test - key turns off selected accessory."""
         app.selected_accessory_id = "A01_1"
         mock_event = Mock()
@@ -132,7 +153,9 @@ class TestHomekitApp:
         mock_service.turn_off_selected.assert_called_once_with("A01_1")
         mock_event.prevent_default.assert_called_once()
 
-    def test_on_key_action_requires_selection(self, app, mock_service):
+    def test_on_key_action_requires_selection(
+        self, app: HomekitApp, mock_service: Mock
+    ) -> None:
         """Test action keys require selection first."""
         app.selected_accessory_id = None
         mock_event = Mock()
@@ -142,7 +165,7 @@ class TestHomekitApp:
 
         mock_service.toggle_selected.assert_not_called()
 
-    def test_on_key_non_action_key(self, app, mock_service):
+    def test_on_key_non_action_key(self, app: HomekitApp, mock_service: Mock) -> None:
         """Test on_key ignores non-action keys (symbols, punctuation)."""
         mock_event = Mock()
         mock_event.key = "@"  # Not an action key (a-z0-9)
@@ -151,7 +174,7 @@ class TestHomekitApp:
 
         mock_service.select_accessory.assert_not_called()
 
-    def test_on_key_special_key(self, app, mock_service):
+    def test_on_key_special_key(self, app: HomekitApp, mock_service: Mock) -> None:
         """Test on_key ignores special keys."""
         mock_event = Mock()
         mock_event.key = "enter"
@@ -161,32 +184,34 @@ class TestHomekitApp:
         mock_service.select_accessory.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_on_unmount_cleanup(self, app, mock_service):
+    async def test_on_unmount_cleanup(
+        self, app: HomekitApp, mock_service: Mock
+    ) -> None:
         """Test on_unmount calls service stop."""
         mock_service.stop = AsyncMock()
         await app.on_unmount()
         mock_service.stop.assert_called_once()
 
-    def test_refresh_last_update_column_with_widget(self, app, mock_service):
+    def test_refresh_last_update_column_with_widget(self, app: HomekitApp) -> None:
         """Test _refresh_last_update_column calls widget method."""
         mock_widget = Mock()
         app.room_list_widget = mock_widget
 
-        app._refresh_last_update_column()
+        app._refresh_last_update_column()  # noqa: SLF001 -- invoke private timer callback directly
 
         mock_widget.refresh_last_update_times.assert_called_once()
 
-    def test_refresh_last_update_column_no_widget(self, app):
+    def test_refresh_last_update_column_no_widget(self, app: HomekitApp) -> None:
         """Test _refresh_last_update_column handles no widget gracefully."""
         app.room_list_widget = None
         # Should not raise exception
-        app._refresh_last_update_column()
+        app._refresh_last_update_column()  # noqa: SLF001 -- invoke private timer callback directly
 
-    def test_css_path_exists(self, app):
+    def test_css_path_exists(self, app: HomekitApp) -> None:
         """Test CSS path is set."""
         assert app.CSS_PATH is not None
         assert app.CSS_PATH.name == "homekit.tcss"
 
-    def test_command_palette_disabled(self, app):
+    def test_command_palette_disabled(self, app: HomekitApp) -> None:
         """Test command palette is disabled."""
         assert app.ENABLE_COMMAND_PALETTE is False

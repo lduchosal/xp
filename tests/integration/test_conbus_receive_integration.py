@@ -1,5 +1,5 @@
-"""
-Integration tests for conbus receive CLI commands.
+# Copyright (c) 2025 ldvchosal
+"""Integration tests for conbus receive CLI commands.
 
 Tests the complete flow from CLI input to output, ensuring proper integration between
 all layers.
@@ -16,11 +16,11 @@ from xp.models.conbus.conbus_receive import ConbusReceiveResponse
 class TestConbusReceiveIntegration:
     """Test class for conbus receive CLI integration."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test runner."""
         self.runner = CliRunner()
 
-    def test_conbus_receive_no_telegrams(self):
+    def test_conbus_receive_no_telegrams(self) -> None:
         """Test conbus receive command with no waiting telegrams."""
         # Mock the service
         mock_service = MagicMock()
@@ -41,9 +41,9 @@ class TestConbusReceiveIntegration:
 
         assert result.exit_code == 0
         # Should have no output when no telegrams received (silent success)
-        assert result.output.strip() == ""
+        assert not result.output.strip()
 
-    def test_conbus_receive_help_command(self):
+    def test_conbus_receive_help_command(self) -> None:
         """Test conbus receive help command."""
         result = self.runner.invoke(cli, ["conbus", "receive", "--help"])
 
@@ -53,7 +53,7 @@ class TestConbusReceiveIntegration:
         assert "Receive waiting event telegrams from Conbus server" in output
         assert "xp conbus receive" in output
 
-    def test_conbus_receive_command_registration(self):
+    def test_conbus_receive_command_registration(self) -> None:
         """Test that conbus receive command is properly registered."""
         result = self.runner.invoke(cli, ["conbus", "--help"])
 

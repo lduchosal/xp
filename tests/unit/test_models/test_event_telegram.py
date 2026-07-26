@@ -1,17 +1,19 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for event telegram models."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 
 from xp.models import EventType, InputType
 from xp.models.telegram.event_telegram import EventTelegram
+from xp.utils.time_utils import local_now
 
 
 class TestEventTelegram:
     """Test cases for EventTelegram model."""
 
-    def test_button_press_telegram(self):
+    def test_button_press_telegram(self) -> None:
         """Test parsing a button press telegram."""
         telegram = EventTelegram(
             module_type=14,
@@ -22,9 +24,11 @@ class TestEventTelegram:
             raw_telegram="<E14L00I02MAK>",
         )
 
-        assert telegram.module_type == 14
+        expected_module_type = 14
+        expected_input_number = 2
+        assert telegram.module_type == expected_module_type
         assert telegram.link_number == 0
-        assert telegram.input_number == 2
+        assert telegram.input_number == expected_input_number
         assert telegram.event_type == EventType.BUTTON_PRESS
         assert telegram.checksum == "AK"
         assert telegram.raw_telegram == "<E14L00I02MAK>"
@@ -32,7 +36,7 @@ class TestEventTelegram:
         assert telegram.is_button_release is False
         assert telegram.input_type == InputType.PUSH_BUTTON
 
-    def test_button_release_telegram(self):
+    def test_button_release_telegram(self) -> None:
         """Test parsing a button release telegram."""
         telegram = EventTelegram(
             module_type=14,
@@ -47,7 +51,7 @@ class TestEventTelegram:
         assert telegram.is_button_press is False
         assert telegram.is_button_release is True
 
-    def test_ir_remote_input_type(self):
+    def test_ir_remote_input_type(self) -> None:
         """Test IR remote input type classification."""
         telegram = EventTelegram(
             module_type=14,
@@ -60,7 +64,7 @@ class TestEventTelegram:
 
         assert telegram.input_type == InputType.IR_REMOTE
 
-    def test_proximity_sensor_input_type(self):
+    def test_proximity_sensor_input_type(self) -> None:
         """Test proximity sensor input type classification."""
         telegram = EventTelegram(
             module_type=14,
@@ -73,7 +77,7 @@ class TestEventTelegram:
 
         assert telegram.input_type == InputType.PROXIMITY_SENSOR
 
-    def test_invalid_output_number_raises_error(self):
+    def test_invalid_output_number_raises_error(self) -> None:
         """Test that invalid input numbers raise ValueError."""
         telegram = EventTelegram(
             module_type=14,
@@ -87,9 +91,9 @@ class TestEventTelegram:
         with pytest.raises(ValueError, match="Invalid input number: 95"):
             _ = telegram.input_type
 
-    def test_to_dict(self):
+    def test_to_dict(self) -> None:
         """Test dictionary serialization."""
-        timestamp = datetime(2023, 1, 1, 12, 0, 0)
+        timestamp = datetime(2023, 1, 1, 12, 0, 0, tzinfo=UTC)
         result = EventTelegram(
             module_type=14,
             link_number=0,
@@ -112,7 +116,7 @@ class TestEventTelegram:
             "checksum_validated": None,
             "raw_telegram": "<E14L00I02MAK>",
             "telegram_type": "E",
-            "timestamp": "2023-01-01T12:00:00",
+            "timestamp": "2023-01-01T12:00:00+00:00",
             "module_info": {
                 "name": "XP2606",
                 "description": "5 way push button panel with sesam, L-Team design",
@@ -121,7 +125,7 @@ class TestEventTelegram:
         }
         assert result == expected
 
-    def test_str_representation(self):
+    def test_str_representation(self) -> None:
         """Test human-readable string representation."""
         telegram = EventTelegram(
             module_type=14,
@@ -136,9 +140,9 @@ class TestEventTelegram:
         expected = "XP2606 (Type 14) Link 00 Input 02 (push_button) pressed"
         assert str(telegram) == expected
 
-    def test_timestamp_auto_generation(self):
+    def test_timestamp_auto_generation(self) -> None:
         """Test that timestamp is auto-generated if not provided."""
-        before = datetime.now()
+        before = local_now()
         telegram = EventTelegram(
             module_type=14,
             link_number=0,
@@ -147,7 +151,7 @@ class TestEventTelegram:
             checksum="AK",
             raw_telegram="<E14L00I02MAK>",
         )
-        after = datetime.now()
+        after = local_now()
 
         assert telegram.timestamp is not None
         assert before <= telegram.timestamp <= after

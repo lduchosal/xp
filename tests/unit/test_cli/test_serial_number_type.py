@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for serial number parameter type."""
 
 import click
@@ -10,58 +11,58 @@ from xp.cli.utils.serial_number_type import SERIAL, SerialNumberParamType
 class TestSerialNumberParamType:
     """Test cases for SerialNumberParamType parameter type."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.param_type = SerialNumberParamType()
         self.param = None
         self.ctx = None
 
-    def test_valid_10_digit_serial(self):
+    def test_valid_10_digit_serial(self) -> None:
         """Test valid 10-digit serial number."""
         result = self.param_type.convert("1234567890", self.param, self.ctx)
         assert result == "1234567890"
 
-    def test_short_serial_padded_with_zeros(self):
+    def test_short_serial_padded_with_zeros(self) -> None:
         """Test short serial number is padded with zeros."""
         result = self.param_type.convert("123", self.param, self.ctx)
         assert result == "0000000123"
 
-    def test_single_digit_serial(self):
+    def test_single_digit_serial(self) -> None:
         """Test single digit serial number."""
         result = self.param_type.convert("5", self.param, self.ctx)
         assert result == "0000000005"
 
-    def test_empty_string_padded(self):
+    def test_empty_string_padded(self) -> None:
         """Test empty string is padded with zeros."""
         result = self.param_type.convert("", self.param, self.ctx)
         assert result == "0000000000"
 
-    def test_integer_input_converted(self):
+    def test_integer_input_converted(self) -> None:
         """Test integer input is converted to string."""
         result = self.param_type.convert(123, self.param, self.ctx)
         assert result == "0000000123"
 
-    def test_none_value_returns_none(self):
+    def test_none_value_returns_none(self) -> None:
         """Test None value returns None."""
         result = self.param_type.convert(None, self.param, self.ctx)
         assert result is None
 
-    def test_serial_too_long_raises_error(self):
+    def test_serial_too_long_raises_error(self) -> None:
         """Test serial number too long raises error."""
         with pytest.raises(click.BadParameter, match="longer than 10 characters"):
             self.param_type.convert("12345678901", self.param, self.ctx)
 
-    def test_non_numeric_characters_raises_error(self):
+    def test_non_numeric_characters_raises_error(self) -> None:
         """Test non-numeric characters raise error."""
         with pytest.raises(click.BadParameter, match="contains non-numeric characters"):
             self.param_type.convert("123abc", self.param, self.ctx)
 
-    def test_serial_with_spaces_raises_error(self):
+    def test_serial_with_spaces_raises_error(self) -> None:
         """Test serial with spaces raises error."""
         with pytest.raises(click.BadParameter, match="contains non-numeric characters"):
             self.param_type.convert("123 456", self.param, self.ctx)
 
-    def test_serial_with_special_chars_raises_error(self):
+    def test_serial_with_special_chars_raises_error(self) -> None:
         """Test serial with special characters raises error."""
         with pytest.raises(click.BadParameter, match="contains non-numeric characters"):
             self.param_type.convert("123-456", self.param, self.ctx)
@@ -70,12 +71,12 @@ class TestSerialNumberParamType:
 class TestSerialNumberTypeInCommand:
     """Test cases for using SERIAL type in Click commands."""
 
-    def test_serial_type_in_click_command(self):
+    def test_serial_type_in_click_command(self) -> None:
         """Test SERIAL type integration with Click commands."""
 
         @click.command()
         @click.argument("serial_number", type=SERIAL)
-        def test_command(serial_number):
+        def test_command(serial_number: str) -> None:
             click.echo(f"Serial: {serial_number}")
 
         runner = CliRunner()

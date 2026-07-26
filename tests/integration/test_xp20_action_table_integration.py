@@ -1,20 +1,26 @@
+# Copyright (c) 2025 ldvchosal
 """Integration tests for XP20 Action Table functionality."""
+
+from unittest.mock import Mock
 
 import pytest
 
 from xp.models.actiontable.msactiontable_xp20 import Xp20MsActionTable
 from xp.services.actiontable.msactiontable_xp20_serializer import (
+    ENCODED_DATA_LENGTH,
     Xp20MsActionTableSerializer,
 )
 from xp.services.conbus.actiontable.actiontable_download_service import (
     ActionTableDownloadService,
 )
 
+AND_FUNCTIONS_COUNT = 8
+
 
 class TestXp20ActionTableIntegration:
     """Integration tests for XP20 Action Table."""
 
-    def test_serializer_service_integration(self):
+    def test_serializer_service_integration(self) -> None:
         """Test that serializer works with service."""
         # Create a sample action table
         action_table = Xp20MsActionTable()
@@ -44,12 +50,10 @@ class TestXp20ActionTableIntegration:
         assert result.input2.group_on_off == action_table.input2.group_on_off
         assert result.input2.and_functions == action_table.input2.and_functions
 
-    def test_service_xp20_support(self):
+    def test_service_xp20_support(self) -> None:
         """Test that MsActionTableService recognizes XP20 module type."""
         # This test verifies the service is configured to handle xp20
         # without actually making network calls
-        from unittest.mock import Mock
-
         mock_conbus_protocol = Mock()
         mock_conbus_protocol.on_connection_made = Mock()
         mock_conbus_protocol.on_connection_made.connect = Mock()
@@ -82,7 +86,7 @@ class TestXp20ActionTableIntegration:
         assert service is not None
         assert service.msactiontable_serializer_xp20 is not None
 
-    def test_complex_configuration_round_trip(self):
+    def test_complex_configuration_round_trip(self) -> None:
         """Test complex configuration through full serialization cycle."""
         # Create a complex action table
         action_table = Xp20MsActionTable()
@@ -109,23 +113,23 @@ class TestXp20ActionTableIntegration:
             result = getattr(deserialized, f"input{i}")
 
             assert original.invert == result.invert, f"input{i} invert mismatch"
-            assert (
-                original.short_long == result.short_long
-            ), f"input{i} short_long mismatch"
-            assert (
-                original.group_on_off == result.group_on_off
-            ), f"input{i} group_on_off mismatch"
-            assert (
-                original.sa_function == result.sa_function
-            ), f"input{i} sa_function mismatch"
-            assert (
-                original.ta_function == result.ta_function
-            ), f"input{i} ta_function mismatch"
-            assert (
-                original.and_functions == result.and_functions
-            ), f"input{i} and_functions mismatch"
+            assert original.short_long == result.short_long, (
+                f"input{i} short_long mismatch"
+            )
+            assert original.group_on_off == result.group_on_off, (
+                f"input{i} group_on_off mismatch"
+            )
+            assert original.sa_function == result.sa_function, (
+                f"input{i} sa_function mismatch"
+            )
+            assert original.ta_function == result.ta_function, (
+                f"input{i} ta_function mismatch"
+            )
+            assert original.and_functions == result.and_functions, (
+                f"input{i} and_functions mismatch"
+            )
 
-    def test_boundary_conditions(self):
+    def test_boundary_conditions(self) -> None:
         """Test boundary conditions and edge cases."""
         # Test all flags off
         action_table_off = Xp20MsActionTable()
@@ -166,7 +170,7 @@ class TestXp20ActionTableIntegration:
             assert channel.ta_function
             assert all(f for f in channel.and_functions)
 
-    def test_specification_compliance(self):
+    def test_specification_compliance(self) -> None:
         """Test compliance with the specification example."""
         spec_example = (
             "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -180,13 +184,13 @@ class TestXp20ActionTableIntegration:
 
         # Test that we can re-encode it
         re_encoded = Xp20MsActionTableSerializer.to_encoded_string(result)
-        assert len(re_encoded) == 64
+        assert len(re_encoded) == ENCODED_DATA_LENGTH
 
         # Round-trip should work
         final_result = Xp20MsActionTableSerializer.from_encoded_string(re_encoded)
         assert isinstance(final_result, Xp20MsActionTable)
 
-    def test_data_layout_compliance(self):
+    def test_data_layout_compliance(self) -> None:
         """Test that data layout matches specification."""
         action_table = Xp20MsActionTable()
 
@@ -250,20 +254,20 @@ class TestXp20ActionTableIntegration:
             True,
         ]
 
-    def test_error_handling_integration(self):
+    def test_error_handling_integration(self) -> None:
         """Test error handling across the integration."""
         # Test invalid data length
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="characters long"):
             Xp20MsActionTableSerializer.from_encoded_string("INVALID")
 
         # Test with wrong length telegram
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="characters long"):
             Xp20MsActionTableSerializer.from_encoded_string("A" * 63)  # Too short
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="String length must be even"):
             Xp20MsActionTableSerializer.from_encoded_string("A" * 65)  # Too long
 
-    def test_model_serializer_consistency(self):
+    def test_model_serializer_consistency(self) -> None:
         """Test that model defaults work correctly with serializer."""
         # Default model should serialize and deserialize consistently
         default_table = Xp20MsActionTable()
@@ -281,5 +285,5 @@ class TestXp20ActionTableIntegration:
             assert not channel.group_on_off
             assert not channel.sa_function
             assert not channel.ta_function
-            assert len(channel.and_functions) == 8
+            assert len(channel.and_functions) == AND_FUNCTIONS_COUNT
             assert all(not f for f in channel.and_functions)

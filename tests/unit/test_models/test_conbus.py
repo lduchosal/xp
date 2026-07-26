@@ -1,6 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Tests for conbus models."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from xp.models.conbus.conbus import ConbusRequest, ConbusResponse
 
@@ -8,9 +9,9 @@ from xp.models.conbus.conbus import ConbusRequest, ConbusResponse
 class TestConbusRequest:
     """Test ConbusRequest model."""
 
-    def test_to_dict(self):
+    def test_to_dict(self) -> None:
         """Test to_dict method."""
-        timestamp = datetime(2025, 1, 1, 12, 0, 0)
+        timestamp = datetime(2025, 1, 1, 12, 0, 0, tzinfo=UTC)
         result = ConbusRequest(
             serial_number="12345",
             function_code="F",
@@ -22,7 +23,7 @@ class TestConbusRequest:
         assert result["data"] == "test_data"
         assert "2025-01-01T12:00:00" in result["timestamp"]
 
-    def test_post_init_sets_timestamp(self):
+    def test_post_init_sets_timestamp(self) -> None:
         """Test __post_init__ sets timestamp if None."""
         request = ConbusRequest(
             serial_number="12345", function_code="F", data="test", timestamp=None
@@ -34,9 +35,9 @@ class TestConbusRequest:
 class TestConbusResponse:
     """Test ConbusResponse model."""
 
-    def test_post_init_sets_defaults(self):
+    def test_post_init_sets_defaults(self) -> None:
         """Test __post_init__ sets default values."""
-        timestamp = datetime(2025, 1, 1, 12, 0, 0)
+        timestamp = datetime(2025, 1, 1, 12, 0, 0, tzinfo=UTC)
         response = ConbusResponse(
             success=True,
             sent_telegrams=["<TEST>"],
@@ -45,11 +46,11 @@ class TestConbusResponse:
         )
         assert response.sent_telegrams == []
         assert response.received_telegrams == []
-        assert response.error == ""
+        assert not response.error
 
-    def test_to_dict(self):
+    def test_to_dict(self) -> None:
         """Test to_dict method."""
-        timestamp = datetime(2025, 1, 1, 12, 0, 0)
+        timestamp = datetime(2025, 1, 1, 12, 0, 0, tzinfo=UTC)
         result = ConbusResponse(
             success=True,
             sent_telegrams=["<TEST>"],

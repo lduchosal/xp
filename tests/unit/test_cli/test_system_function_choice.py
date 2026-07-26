@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Tests for system function choice parameter type."""
 
 import click
@@ -11,7 +12,7 @@ from xp.models.telegram.system_function import SystemFunction
 class TestSystemFunctionChoice:
     """Test SystemFunctionChoice class."""
 
-    def test_init(self):
+    def test_init(self) -> None:
         """Test initialization creates choices from enum."""
         choice = SystemFunctionChoice()
         assert choice.name == "system_function"
@@ -19,23 +20,23 @@ class TestSystemFunctionChoice:
         assert len(choice.choices) > 0
         assert all(isinstance(c, str) for c in choice.choices)
 
-    def test_convert_valid_value(self):
+    def test_convert_valid_value(self) -> None:
         """Test converting valid value returns enum member."""
         choice = SystemFunctionChoice()
         # Get a valid choice from the enum
-        valid_choice = list(SystemFunction.__members__.keys())[0].lower()
+        valid_choice = next(iter(SystemFunction.__members__.keys())).lower()
         result = choice.convert(valid_choice, None, None)
         assert isinstance(result, SystemFunction)
 
-    def test_convert_none_value(self):
+    def test_convert_none_value(self) -> None:
         """Test converting None returns None."""
         result = SystemFunctionChoice().convert(None, None, None)
         assert result is None
 
-    def test_convert_case_insensitive(self):
+    def test_convert_case_insensitive(self) -> None:
         """Test conversion is case insensitive."""
         choice = SystemFunctionChoice()
-        valid_choice = list(SystemFunction.__members__.keys())[0]
+        valid_choice = next(iter(SystemFunction.__members__.keys()))
 
         result_lower = choice.convert(valid_choice.lower(), None, None)
         result_upper = choice.convert(valid_choice.upper(), None, None)
@@ -43,28 +44,28 @@ class TestSystemFunctionChoice:
 
         assert result_lower == result_upper == result_mixed
 
-    def test_convert_invalid_value_fails(self):
+    def test_convert_invalid_value_fails(self) -> None:
         """Test converting invalid value raises error."""
         choice = SystemFunctionChoice()
 
         with pytest.raises(click.exceptions.BadParameter):
             choice.convert("invalid_function", None, None)
 
-    def test_module_level_constant(self):
+    def test_module_level_constant(self) -> None:
         """Test SYSTEM_FUNCTION constant is properly initialized."""
         assert isinstance(SYSTEM_FUNCTION, SystemFunctionChoice)
         assert SYSTEM_FUNCTION.name == "system_function"
 
-    def test_in_click_command(self):
+    def test_in_click_command(self) -> None:
         """Test SystemFunctionChoice works in Click command."""
 
         @click.command()
         @click.argument("func", type=SYSTEM_FUNCTION)
-        def test_cmd(func):
+        def test_cmd(func: SystemFunction) -> None:
             click.echo(f"Function: {func.name}")
 
         runner = CliRunner()
-        valid_choice = list(SystemFunction.__members__.keys())[0].lower()
+        valid_choice = next(iter(SystemFunction.__members__.keys())).lower()
         result = runner.invoke(test_cmd, [valid_choice])
         assert result.exit_code == 0
         assert "Function:" in result.output

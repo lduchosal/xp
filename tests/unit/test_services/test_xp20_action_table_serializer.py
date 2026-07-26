@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for XP20 Action Table Serializer."""
 
 import pytest
@@ -11,15 +12,24 @@ from xp.services.actiontable.msactiontable_xp20_serializer import (
     TA_FUNCTION_INDEX,
     Xp20MsActionTableSerializer,
 )
-from xp.utils.serialization import de_nibbles
+from xp.utils.serialization import byte_to_bits, de_nibbles
+
+ENCODED_LENGTH = 64
+AND_FUNCTION_COUNT = 8
+CHANNEL_COUNT = 8
 
 
 class TestXp20MsActionTableSerializer:
     """Test cases for Xp20MsActionTableSerializer."""
 
     @pytest.fixture
-    def sample_action_table(self):
-        """Create sample action table for testing."""
+    def sample_action_table(self) -> Xp20MsActionTable:
+        """Create sample action table for testing.
+
+        Returns:
+            Sample action table for testing.
+
+        """
         return Xp20MsActionTable(
             input1=InputChannel(
                 invert=True,
@@ -53,19 +63,26 @@ class TestXp20MsActionTableSerializer:
         )
 
     @pytest.fixture
-    def sample_telegram_data(self):
-        """Sample telegram data based on specification example (68 chars)."""
+    def sample_telegram_data(self) -> str:
+        """Sample telegram data based on specification example (68 chars).
+
+        Returns:
+            Telegram data string from the specification example (68 chars).
+
+        """
         return "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
-    def test_to_data_serialization(self, sample_action_table):
+    def test_to_data_serialization(
+        self, sample_action_table: Xp20MsActionTable
+    ) -> None:
         """Test serialization to telegram format."""
         result = Xp20MsActionTableSerializer.to_encoded_string(sample_action_table)
 
         # Should return 64-character hex string
-        assert len(result) == 64
+        assert len(result) == ENCODED_LENGTH
         assert all(c in "ABCDEFGHIJKLMNOP" for c in result)
 
-    def test_from_data_deserialization(self, sample_telegram_data):
+    def test_from_data_deserialization(self, sample_telegram_data: str) -> None:
         """Test deserialization from telegram data."""
         action_table = Xp20MsActionTableSerializer.from_encoded_string(
             sample_telegram_data
@@ -84,7 +101,9 @@ class TestXp20MsActionTableSerializer:
         assert action_table.input7 is not None
         assert action_table.input8 is not None
 
-    def test_round_trip_serialization(self, sample_action_table):
+    def test_round_trip_serialization(
+        self, sample_action_table: Xp20MsActionTable
+    ) -> None:
         """Test that serialization followed by deserialization preserves data."""
         # Serialize to data
         serialized = Xp20MsActionTableSerializer.to_encoded_string(sample_action_table)
@@ -117,15 +136,13 @@ class TestXp20MsActionTableSerializer:
         assert deserialized.input2.sa_function == sample_action_table.input2.sa_function
         assert deserialized.input2.ta_function == sample_action_table.input2.ta_function
 
-    def test_invalid_data_length(self):
+    def test_invalid_data_length(self) -> None:
         """Test that invalid data length raises ValueError."""
         with pytest.raises(ValueError, match="must be 64 characters long"):
             Xp20MsActionTableSerializer.from_encoded_string("INVALID")
 
-    def test_byte_to_bits_conversion(self):
+    def test_byte_to_bits_conversion(self) -> None:
         """Test byte to bits conversion helper."""
-        from xp.utils.serialization import byte_to_bits
-
         # Test known values
         assert byte_to_bits(0) == [False] * 8
         assert byte_to_bits(255) == [True] * 8
@@ -142,18 +159,18 @@ class TestXp20MsActionTableSerializer:
             False,
         ]
 
-    def test_default_input_channel(self):
+    def test_default_input_channel(self) -> None:
         """Test that default input channel has correct values."""
         channel = InputChannel()
         assert channel.invert is False
         assert channel.short_long is False
         assert channel.group_on_off is False
-        assert len(channel.and_functions) == 8
+        assert len(channel.and_functions) == AND_FUNCTION_COUNT
         assert all(not f for f in channel.and_functions)
         assert channel.sa_function is False
         assert channel.ta_function is False
 
-    def test_and_functions_encoding(self):
+    def test_and_functions_encoding(self) -> None:
         """Test AND functions encoding/decoding."""
         action_table = Xp20MsActionTable()
         action_table.input1.and_functions = [
@@ -181,7 +198,7 @@ class TestXp20MsActionTableSerializer:
             False,
         ]
 
-    def test_all_flags_true(self):
+    def test_all_flags_true(self) -> None:
         """Test encoding/decoding with all flags set to True."""
         action_table = Xp20MsActionTable()
         for i in range(1, 9):
@@ -206,7 +223,7 @@ class TestXp20MsActionTableSerializer:
             assert channel.sa_function is True
             assert channel.ta_function is True
 
-    def test_encoding_bit_positions(self):
+    def test_encoding_bit_positions(self) -> None:
         """Test that bit positions are correctly encoded."""
         action_table = Xp20MsActionTable()
 
@@ -229,7 +246,7 @@ class TestXp20MsActionTableSerializer:
         assert raw_bytes[GROUP_ON_OFF_INDEX] & 128 != 0  # input8 bit 7
         assert raw_bytes[TA_FUNCTION_INDEX] & 128 != 0  # input8 bit 7
 
-    def test_specification_example(self):
+    def test_specification_example(self) -> None:
         """Test with the example telegram from specification."""
         example_data = (
             "AAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -255,7 +272,7 @@ class TestXp20MsActionTableSerializer:
             assert original_channel.sa_function == decoded_channel.sa_function
             assert original_channel.ta_function == decoded_channel.ta_function
 
-    def test_from_telegrams_from_data(self):
+    def test_from_telegrams_from_data(self) -> None:
         """Test round-trip serialization with default/empty action table data."""
         # 64 characters - all A's represent a completely empty/default action table
         valid_msactiontable = (
@@ -286,14 +303,18 @@ class TestXp20MsActionTableSerializer:
         # Verify round-trip preserves the original data
         assert valid_msactiontable == msactiontable_data
 
-    def test_real_xp20_telegram(self):
+    def test_real_xp20_telegram(self) -> None:
         """Test deserialization of a real XP20 msactiontable telegram."""
         # Real telegram from XP20 device
-        telegram = "<R0020041824F17DAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFP>"
+        telegram = (
+            "<R0020041824F17DAAAAAAAAAAABACAEAIBACAEAI"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFP>"
+        )
 
-        # Extract data portion (skip header at 0-15, skip count at 16-19, take 64 chars at 20-83)
+        # Extract data portion (skip header at 0-15, skip count at 16-19,
+        # take 64 chars at 20-83)
         data = telegram[20:84]
-        assert len(data) == 64
+        assert len(data) == ENCODED_LENGTH
 
         # Deserialize the action table
         action_table = Xp20MsActionTableSerializer.from_encoded_string(data)
@@ -323,9 +344,12 @@ class TestXp20MsActionTableSerializer:
             assert original.sa_function == result.sa_function
             assert original.ta_function == result.ta_function
 
-    def test_serialize_back_and_forth(self):
+    def test_serialize_back_and_forth(self) -> None:
         """Test that default values work correctly."""
-        telegram = "<R0020037487F17DAAAAAAAAAAABACAEAIBACAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFL>"
+        telegram = (
+            "<R0020037487F17DAAAAAAAAAAABACAEAIBACAEAI"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFL>"
+        )
 
         # Test serialization with defaults
         serialized_table = telegram[20:84]
@@ -334,16 +358,16 @@ class TestXp20MsActionTableSerializer:
 
         assert serialized_table == serialized
 
-    def test_format_decoded_output_default(self):
+    def test_format_decoded_output_default(self) -> None:
         """Test format_decoded_output with default configuration."""
         table = Xp20MsActionTable()
         lines = Xp20MsActionTableSerializer.to_short_string(table)
 
-        assert len(lines) == 8
+        assert len(lines) == CHANNEL_COUNT
         for i, line in enumerate(lines, 1):
             assert line == f"CH{i} I:0 S:0 G:0 AND:00000000 SA:0 TA:0"
 
-    def test_format_decoded_output_mixed(self):
+    def test_format_decoded_output_mixed(self) -> None:
         """Test format_decoded_output with mixed configuration."""
         table = Xp20MsActionTable(
             input1=InputChannel(

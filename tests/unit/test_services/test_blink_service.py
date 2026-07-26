@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Tests for BlinkService."""
 
 from unittest.mock import Mock
@@ -9,16 +10,19 @@ from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
 from xp.services.telegram.telegram_blink_service import BlinkError, TelegramBlinkService
 
+# Full frame length: <S{serial:10}F0xD00{checksum:2}> = 21 chars.
+BLINK_TELEGRAM_LENGTH = 21
+
 
 class TestBlinkService:
     """Test cases for BlinkService."""
 
-    def test_init(self):
+    def test_init(self) -> None:
         """Test initialization."""
         service = TelegramBlinkService()
         assert isinstance(service, TelegramBlinkService)
 
-    def test_generate_blink_telegram_valid(self):
+    def test_generate_blink_telegram_valid(self) -> None:
         """Test generating valid blink telegram."""
         service = TelegramBlinkService()
 
@@ -34,9 +38,9 @@ class TestBlinkService:
         result = service.generate_blink_telegram("1234567890", "on")
         assert result.startswith("<S1234567890F05D00")
         assert result.endswith(">")
-        assert len(result) == 21  # <S{10}F05D00{2}> = 21 chars
+        assert len(result) == BLINK_TELEGRAM_LENGTH  # <S{10}F05D00{2}>
 
-    def test_generate_blink_telegram_invalid_serial(self):
+    def test_generate_blink_telegram_invalid_serial(self) -> None:
         """Test generating blink telegram with invalid serial number."""
         service = TelegramBlinkService()
 
@@ -56,7 +60,7 @@ class TestBlinkService:
         with pytest.raises(BlinkError, match="Serial number must contain only digits"):
             service.generate_blink_telegram("123456789A", "on")
 
-    def test_generate_unblink_telegram_valid(self):
+    def test_generate_unblink_telegram_valid(self) -> None:
         """Test generating valid unblink telegram."""
         service = TelegramBlinkService()
 
@@ -72,9 +76,9 @@ class TestBlinkService:
         result = service.generate_blink_telegram("1234567890", "off")
         assert result.startswith("<S1234567890F06D00")
         assert result.endswith(">")
-        assert len(result) == 21  # <S{10}F06D00{2}> = 21 chars
+        assert len(result) == BLINK_TELEGRAM_LENGTH  # <S{10}F06D00{2}>
 
-    def test_generate_unblink_telegram_invalid_serial(self):
+    def test_generate_unblink_telegram_invalid_serial(self) -> None:
         """Test generating unblink telegram with invalid serial number."""
         service = TelegramBlinkService()
 
@@ -94,7 +98,7 @@ class TestBlinkService:
         with pytest.raises(BlinkError, match="Serial number must contain only digits"):
             service.generate_blink_telegram("123456789A", "off")
 
-    def test_create_blink_telegram_object(self):
+    def test_create_blink_telegram_object(self) -> None:
         """Test creating SystemTelegram object for blink operation."""
         telegram = TelegramBlinkService().create_blink_telegram_object("0012345008")
 
@@ -105,7 +109,7 @@ class TestBlinkService:
         assert telegram.raw_telegram == "<S0012345008F05D00FN>"
         assert telegram.checksum == "FN"
 
-    def test_create_unblink_telegram_object(self):
+    def test_create_unblink_telegram_object(self) -> None:
         """Test creating SystemTelegram object for unblink operation."""
         telegram = TelegramBlinkService().create_unblink_telegram_object("0012345011")
 
@@ -116,7 +120,7 @@ class TestBlinkService:
         assert telegram.raw_telegram == "<S0012345011F06D00FG>"
         assert telegram.checksum == "FG"
 
-    def test_is_ack_response(self):
+    def test_is_ack_response(self) -> None:
         """Test identifying ACK responses."""
         service = TelegramBlinkService()
 
@@ -138,7 +142,7 @@ class TestBlinkService:
 
         assert service.is_ack_response(other_reply) is False
 
-    def test_is_nak_response(self):
+    def test_is_nak_response(self) -> None:
         """Test identifying NAK responses."""
         service = TelegramBlinkService()
 
@@ -160,7 +164,7 @@ class TestBlinkService:
 
         assert service.is_nak_response(other_reply) is False
 
-    def test_blink_unblink_telegram_format(self):
+    def test_blink_unblink_telegram_format(self) -> None:
         """Test that generated telegrams follow correct format."""
         service = TelegramBlinkService()
 
@@ -176,7 +180,7 @@ class TestBlinkService:
         assert "F06D00" in unblink_telegram
         assert unblink_telegram.endswith(">")
 
-    def test_different_serial_numbers(self):
+    def test_different_serial_numbers(self) -> None:
         """Test blink/unblink with various serial numbers."""
         service = TelegramBlinkService()
 

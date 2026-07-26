@@ -1,5 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for conbus actiontable CLI commands."""
 
+from collections.abc import Callable
 from unittest.mock import Mock
 
 import pytest
@@ -22,13 +24,23 @@ class TestConbusActionTableCommands:
     """Test cases for conbus actiontable CLI commands."""
 
     @pytest.fixture
-    def runner(self):
-        """Create CLI test runner."""
+    def runner(self) -> CliRunner:
+        """Create CLI test runner.
+
+        Returns:
+            CLI test runner.
+
+        """
         return CliRunner()
 
     @pytest.fixture
-    def sample_actiontable(self):
-        """Create sample ActionTable for testing."""
+    def sample_actiontable(self) -> ActionTable:
+        """Create sample ActionTable for testing.
+
+        Returns:
+            Sample ActionTable for testing.
+
+        """
         entries = [
             ActionTableEntry(
                 module_type=ModuleTypeCode.CP20,
@@ -42,9 +54,12 @@ class TestConbusActionTableCommands:
         ]
         return ActionTable(entries=entries)
 
-    def _create_mock_service(self, actiontable=None, error=None):
-        """
-        Create mock service with signal pattern.
+    def _create_mock_service(
+        self,
+        actiontable: ActionTable | None = None,
+        error: str | None = None,
+    ) -> Mock:
+        """Create mock service with signal pattern.
 
         Args:
             actiontable: Optional ActionTable to return on success.
@@ -52,6 +67,7 @@ class TestConbusActionTableCommands:
 
         Returns:
             Mock service object configured with signals.
+
         """
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -64,76 +80,41 @@ class TestConbusActionTableCommands:
         mock_service.on_error = Mock()
 
         # Track connected callbacks
-        progress_callbacks = []
-        finish_callbacks = []
-        actiontable_received_callbacks = []
-        error_callbacks = []
+        progress_callbacks: list[Callable[..., None]] = []
+        finish_callbacks: list[Callable[..., None]] = []
+        actiontable_received_callbacks: list[Callable[..., None]] = []
+        error_callbacks: list[Callable[..., None]] = []
 
-        def connect_progress(callback):
-            """
-            Mock connect for progress signal.
+        mock_service.on_progress.connect = progress_callbacks.append
+        mock_service.on_finish.connect = finish_callbacks.append
+        mock_service.on_actiontable_received.connect = (
+            actiontable_received_callbacks.append
+        )
+        mock_service.on_error.connect = error_callbacks.append
 
-            Args:
-                callback: Callback function to connect.
-            """
-            progress_callbacks.append(callback)
-
-        def connect_finish(callback):
-            """
-            Mock connect for finish signal.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            finish_callbacks.append(callback)
-
-        def connect_actiontable_received(callback):
-            """
-            Mock connect for actiontable_received signal.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            actiontable_received_callbacks.append(callback)
-
-        def connect_error(callback):
-            """
-            Mock connect for error signal.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            error_callbacks.append(callback)
-
-        mock_service.on_progress.connect = connect_progress
-        mock_service.on_finish.connect = connect_finish
-        mock_service.on_actiontable_received.connect = connect_actiontable_received
-        mock_service.on_error.connect = connect_error
-
-        def mock_start_reactor():
+        def mock_start_reactor() -> None:
             """Execute mock start_reactor operation."""
             if error:
                 for callback in error_callbacks:
                     callback(error)
-            else:
-                if actiontable:
-                    # Generate dict and short format like the service does
-                    actiontable_short = ActionTableSerializer.to_short_string(
-                        actiontable
-                    )
-                    # Emit on_actiontable_received with data
-                    for callback in actiontable_received_callbacks:
-                        callback(actiontable, actiontable_short)
-                    # Emit on_finish without arguments
-                    for callback in finish_callbacks:
-                        callback()
+            elif actiontable:
+                # Generate dict and short format like the service does
+                actiontable_short = ActionTableSerializer.to_short_string(actiontable)
+                # Emit on_actiontable_received with data
+                for callback in actiontable_received_callbacks:
+                    callback(actiontable, actiontable_short)
+                # Emit on_finish without arguments
+                for callback in finish_callbacks:
+                    callback()
 
         mock_service.start = Mock()
         mock_service.start_reactor.side_effect = mock_start_reactor
         mock_service.stop_reactor = Mock()
         return mock_service
 
-    def test_conbus_download_actiontable_success(self, runner, sample_actiontable):
+    def test_conbus_download_actiontable_success(
+        self, runner: CliRunner, sample_actiontable: ActionTable
+    ) -> None:
         """Test successful actiontable download command."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
@@ -160,8 +141,8 @@ class TestConbusActionTableCommands:
         assert "actiontable" in result.output
 
     def test_conbus_download_actiontable_output_format(
-        self, runner, sample_actiontable
-    ):
+        self, runner: CliRunner, sample_actiontable: ActionTable
+    ) -> None:
         """Test actiontable download command output format."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
@@ -187,7 +168,9 @@ class TestConbusActionTableCommands:
         assert "0000012345" in result.output
         assert "actiontable_short" in result.output
 
-    def test_conbus_download_actiontable_error_handling(self, runner):
+    def test_conbus_download_actiontable_error_handling(
+        self, runner: CliRunner
+    ) -> None:
         """Test actiontable download command error handling."""
         # Setup mock service to call error_callback
         mock_service = self._create_mock_service(error="Communication failed")
@@ -208,7 +191,9 @@ class TestConbusActionTableCommands:
         # Verify error handling
         assert "Communication failed" in result.output
 
-    def test_conbus_download_actiontable_invalid_serial(self, runner):
+    def test_conbus_download_actiontable_invalid_serial(
+        self, runner: CliRunner
+    ) -> None:
         """Test actiontable download command with invalid serial number."""
         # Execute command with invalid serial
         result = runner.invoke(conbus_download_actiontable, ["invalid"])
@@ -217,8 +202,8 @@ class TestConbusActionTableCommands:
         assert result.exit_code != 0
 
     def test_conbus_download_actiontable_context_manager(
-        self, runner, sample_actiontable
-    ):
+        self, runner: CliRunner, sample_actiontable: ActionTable
+    ) -> None:
         """Test that service is properly used as context manager."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
@@ -241,7 +226,7 @@ class TestConbusActionTableCommands:
         mock_service.__enter__.assert_called_once()
         mock_service.__exit__.assert_called_once()
 
-    def test_conbus_download_actiontable_help(self, runner):
+    def test_conbus_download_actiontable_help(self, runner: CliRunner) -> None:
         """Test actiontable download command help."""
         result = runner.invoke(conbus_download_actiontable, ["--help"])
 
@@ -249,7 +234,9 @@ class TestConbusActionTableCommands:
         assert "Download action table from XP module" in result.output
         assert "SERIAL_NUMBER" in result.output
 
-    def test_conbus_download_actiontable_json_serialization(self, runner):
+    def test_conbus_download_actiontable_json_serialization(
+        self, runner: CliRunner
+    ) -> None:
         """Test that complex objects are properly serialized to JSON."""
         # Create actiontable with enum values
         entry = ActionTableEntry(
@@ -288,8 +275,8 @@ class TestConbusActionTableCommands:
         assert "actiontable_short" in result.output
 
     def test_download_actiontable_includes_short_format(
-        self, runner, sample_actiontable
-    ):
+        self, runner: CliRunner, sample_actiontable: ActionTable
+    ) -> None:
         """Test that actiontable download includes actiontable_short field."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
@@ -314,8 +301,8 @@ class TestConbusActionTableCommands:
         assert "actiontable_short" in result.output
 
     def test_download_actiontable_short_format_correct(
-        self, runner, sample_actiontable
-    ):
+        self, runner: CliRunner, sample_actiontable: ActionTable
+    ) -> None:
         """Test that actiontable_short field contains correctly formatted entries."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
@@ -339,10 +326,10 @@ class TestConbusActionTableCommands:
         # Verify short format is present with semicolons
         assert "CP20 0 0 > 1 OFF;" in result.output
 
-    def test_download_actiontable_backward_compatible(self, runner, sample_actiontable):
-        """Test that JSON actiontable field is still present for backward
-        compatibility.
-        """
+    def test_download_actiontable_backward_compatible(
+        self, runner: CliRunner, sample_actiontable: ActionTable
+    ) -> None:
+        """Test that the JSON actiontable field remains for backward compatibility."""
         # Setup mock service
         mock_service = self._create_mock_service(actiontable=sample_actiontable)
 
@@ -365,7 +352,7 @@ class TestConbusActionTableCommands:
         # Verify both formats are present
         assert "actiontable_short" in result.output
 
-    def test_download_actiontable_short_with_parameter(self, runner):
+    def test_download_actiontable_short_with_parameter(self, runner: CliRunner) -> None:
         """Test actiontable_short displays parameter when non-zero."""
         # Create actiontable with parameter
         entry = ActionTableEntry(
@@ -401,7 +388,7 @@ class TestConbusActionTableCommands:
         # Verify parameter is included in output
         assert "CP20 0 2 > 1 ON 2;" in result.output
 
-    def test_download_actiontable_short_inverted(self, runner):
+    def test_download_actiontable_short_inverted(self, runner: CliRunner) -> None:
         """Test actiontable_short displays inverted commands with ~ prefix."""
         # Create actiontable with inverted command
         entry = ActionTableEntry(
@@ -438,7 +425,7 @@ class TestConbusActionTableCommands:
         assert "~ON" in result.output
         assert "CP20 0 1 > 1 ~ON;" in result.output
 
-    def test_conbus_list_actiontable_success(self, runner):
+    def test_conbus_list_actiontable_success(self, runner: CliRunner) -> None:
         """Test successful actiontable list command."""
         # Setup mock service
         mock_service = Mock()
@@ -449,31 +436,13 @@ class TestConbusActionTableCommands:
         mock_service.on_finish = Mock()
         mock_service.on_error = Mock()
 
-        finish_callbacks = []
-        error_callbacks = []
+        finish_callbacks: list[Callable[..., None]] = []
+        error_callbacks: list[Callable[..., None]] = []
 
-        def connect_finish(callback):
-            """
-            Mock connect for finish signal.
+        mock_service.on_finish.connect = finish_callbacks.append
+        mock_service.on_error.connect = error_callbacks.append
 
-            Args:
-                callback: Callback function to connect.
-            """
-            finish_callbacks.append(callback)
-
-        def connect_error(callback):
-            """
-            Mock connect for error signal.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            error_callbacks.append(callback)
-
-        mock_service.on_finish.connect = connect_finish
-        mock_service.on_error.connect = connect_error
-
-        def mock_start():
+        def mock_start() -> None:
             """Execute mock start operation."""
             module_list = {
                 "modules": [
@@ -507,7 +476,7 @@ class TestConbusActionTableCommands:
         assert "total" in result.output
         assert "2" in result.output
 
-    def test_conbus_list_actiontable_no_modules(self, runner):
+    def test_conbus_list_actiontable_no_modules(self, runner: CliRunner) -> None:
         """Test actiontable list command when no modules have action tables."""
         # Setup mock service
         mock_service = Mock()
@@ -518,31 +487,13 @@ class TestConbusActionTableCommands:
         mock_service.on_finish = Mock()
         mock_service.on_error = Mock()
 
-        finish_callbacks = []
-        error_callbacks = []
+        finish_callbacks: list[Callable[..., None]] = []
+        error_callbacks: list[Callable[..., None]] = []
 
-        def connect_finish(callback):
-            """
-            Mock connect for finish signal.
+        mock_service.on_finish.connect = finish_callbacks.append
+        mock_service.on_error.connect = error_callbacks.append
 
-            Args:
-                callback: Callback function to connect.
-            """
-            finish_callbacks.append(callback)
-
-        def connect_error(callback):
-            """
-            Mock connect for error signal.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            error_callbacks.append(callback)
-
-        mock_service.on_finish.connect = connect_finish
-        mock_service.on_error.connect = connect_error
-
-        def mock_start():
+        def mock_start() -> None:
             """Execute mock start operation."""
             module_list = {"modules": [], "total": 0}
             for callback in finish_callbacks:
@@ -568,7 +519,7 @@ class TestConbusActionTableCommands:
         assert "total" in result.output
         assert "0" in result.output
 
-    def test_conbus_list_actiontable_error(self, runner):
+    def test_conbus_list_actiontable_error(self, runner: CliRunner) -> None:
         """Test actiontable list command error handling."""
         # Setup mock service
         mock_service = Mock()
@@ -579,31 +530,13 @@ class TestConbusActionTableCommands:
         mock_service.on_finish = Mock()
         mock_service.on_error = Mock()
 
-        finish_callbacks = []
-        error_callbacks = []
+        finish_callbacks: list[Callable[..., None]] = []
+        error_callbacks: list[Callable[..., None]] = []
 
-        def connect_finish(callback):
-            """
-            Mock connect for finish signal.
+        mock_service.on_finish.connect = finish_callbacks.append
+        mock_service.on_error.connect = error_callbacks.append
 
-            Args:
-                callback: Callback function to connect.
-            """
-            finish_callbacks.append(callback)
-
-        def connect_error(callback):
-            """
-            Mock connect for error signal.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            error_callbacks.append(callback)
-
-        mock_service.on_finish.connect = connect_finish
-        mock_service.on_error.connect = connect_error
-
-        def mock_start():
+        def mock_start() -> None:
             """Execute mock start operation."""
             for callback in error_callbacks:
                 callback("Error: conson.yml not found in current directory")
@@ -626,24 +559,29 @@ class TestConbusActionTableCommands:
         # Verify error handling
         assert "Error: conson.yml not found" in result.output
 
-    def test_conbus_show_actiontable_success(self, runner):
+    def test_conbus_show_actiontable_success(self, runner: CliRunner) -> None:
         """Test successful actiontable show command."""
         # Setup mock service
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        def mock_start(serial_number, finish_callback, error_callback):
-            """
-            Execute mock start operation.
+        def mock_start(
+            serial_number: str,
+            finish_callback: Callable[[ConsonModuleConfig], None],
+            error_callback: Callable[[str], None],
+        ) -> None:
+            """Execute mock start operation.
 
             Args:
                 serial_number: Module serial number.
                 finish_callback: Callback for successful completion.
                 error_callback: Callback for error handling.
+
             """
+            del error_callback  # required by the service signature, unused here
             module = ConsonModuleConfig(
-                serial_number="0020044991",
+                serial_number=serial_number,
                 name="A4",
                 module_type="XP24",
                 module_type_code=7,
@@ -682,22 +620,27 @@ class TestConbusActionTableCommands:
         assert "action_table" in result.output
         assert "CP20 0 0 > 1 OFF" in result.output
 
-    def test_conbus_show_actiontable_module_not_found(self, runner):
+    def test_conbus_show_actiontable_module_not_found(self, runner: CliRunner) -> None:
         """Test actiontable show command when module not found."""
         # Setup mock service
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        def mock_start(serial_number, finish_callback, error_callback):
-            """
-            Execute mock start operation.
+        def mock_start(
+            serial_number: str,
+            finish_callback: Callable[[ConsonModuleConfig], None],
+            error_callback: Callable[[str], None],
+        ) -> None:
+            """Execute mock start operation.
 
             Args:
                 serial_number: Module serial number.
                 finish_callback: Callback for successful completion.
                 error_callback: Callback for error handling.
+
             """
+            del finish_callback  # required by the service signature, unused here
             error_callback(f"Error: Module {serial_number} not found in conson.yml")
 
         mock_service.start.side_effect = mock_start
@@ -718,22 +661,27 @@ class TestConbusActionTableCommands:
         # Verify error handling
         assert "Error: Module 0020099999 not found" in result.output
 
-    def test_conbus_show_actiontable_no_action_table(self, runner):
+    def test_conbus_show_actiontable_no_action_table(self, runner: CliRunner) -> None:
         """Test actiontable show command when module has no action table."""
         # Setup mock service
         mock_service = Mock()
         mock_service.__enter__ = Mock(return_value=mock_service)
         mock_service.__exit__ = Mock(return_value=None)
 
-        def mock_start(serial_number, finish_callback, error_callback):
-            """
-            Execute mock start operation.
+        def mock_start(
+            serial_number: str,
+            finish_callback: Callable[[ConsonModuleConfig], None],
+            error_callback: Callable[[str], None],
+        ) -> None:
+            """Execute mock start operation.
 
             Args:
                 serial_number: Module serial number.
                 finish_callback: Callback for successful completion.
                 error_callback: Callback for error handling.
+
             """
+            del finish_callback  # required by the service signature, unused here
             error_callback(
                 f"Error: No action_table configured for module {serial_number}"
             )
@@ -758,7 +706,7 @@ class TestConbusActionTableCommands:
             "Error: No action_table configured for module 0020044974" in result.output
         )
 
-    def test_conbus_show_actiontable_invalid_serial(self, runner):
+    def test_conbus_show_actiontable_invalid_serial(self, runner: CliRunner) -> None:
         """Test actiontable show command with invalid serial number."""
         # Execute command with invalid serial
         result = runner.invoke(conbus_show_actiontable, ["invalid"])

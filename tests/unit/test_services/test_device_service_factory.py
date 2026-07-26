@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Tests for DeviceServiceFactory."""
 
 import pytest
@@ -22,8 +23,13 @@ from xp.services.server.xp230_server_service import XP230ServerService
 
 
 @pytest.fixture
-def factory():
-    """Create a device service factory with mock serializers."""
+def factory() -> DeviceServiceFactory:
+    """Create a device service factory with mock serializers.
+
+    Returns:
+        A device service factory with mock serializers.
+
+    """
     xp20_serializer = Xp20MsActionTableSerializer()
     xp24_serializer = Xp24MsActionTableSerializer()
     xp33_serializer = Xp33MsActionTableSerializer()
@@ -40,7 +46,7 @@ def factory():
 class TestDeviceServiceFactoryInit:
     """Test DeviceServiceFactory initialization."""
 
-    def test_init(self, factory):
+    def test_init(self, factory: DeviceServiceFactory) -> None:
         """Test factory initialization with serializers."""
         assert factory.xp20ms_serializer is not None
         assert factory.xp24ms_serializer is not None
@@ -51,7 +57,7 @@ class TestDeviceServiceFactoryInit:
 class TestDeviceServiceFactoryCreateDevice:
     """Test DeviceServiceFactory.create_device()."""
 
-    def test_create_xp20(self, factory):
+    def test_create_xp20(self, factory: DeviceServiceFactory) -> None:
         """Test creating XP20 device."""
         device = factory.create_device("XP20", "12345")
 
@@ -59,7 +65,7 @@ class TestDeviceServiceFactoryCreateDevice:
         assert device.serial_number == "12345"
         assert device.device_type == "XP20"
 
-    def test_create_xp24(self, factory):
+    def test_create_xp24(self, factory: DeviceServiceFactory) -> None:
         """Test creating XP24 device."""
         device = factory.create_device("XP24", "23456")
 
@@ -67,7 +73,7 @@ class TestDeviceServiceFactoryCreateDevice:
         assert device.serial_number == "23456"
         assert device.device_type == "XP24"
 
-    def test_create_xp33(self, factory):
+    def test_create_xp33(self, factory: DeviceServiceFactory) -> None:
         """Test creating XP33 device."""
         device = factory.create_device("XP33", "33333")
 
@@ -75,7 +81,7 @@ class TestDeviceServiceFactoryCreateDevice:
         assert device.serial_number == "33333"
         assert device.variant == "XP33"
 
-    def test_create_xp33lr(self, factory):
+    def test_create_xp33lr(self, factory: DeviceServiceFactory) -> None:
         """Test creating XP33LR device."""
         device = factory.create_device("XP33LR", "33334")
 
@@ -83,7 +89,7 @@ class TestDeviceServiceFactoryCreateDevice:
         assert device.serial_number == "33334"
         assert device.variant == "XP33LR"
 
-    def test_create_xp33led(self, factory):
+    def test_create_xp33led(self, factory: DeviceServiceFactory) -> None:
         """Test creating XP33LED device."""
         device = factory.create_device("XP33LED", "33335")
 
@@ -91,7 +97,7 @@ class TestDeviceServiceFactoryCreateDevice:
         assert device.serial_number == "33335"
         assert device.variant == "XP33LED"
 
-    def test_create_cp20(self, factory):
+    def test_create_cp20(self, factory: DeviceServiceFactory) -> None:
         """Test creating CP20 device."""
         device = factory.create_device("CP20", "44444")
 
@@ -99,7 +105,7 @@ class TestDeviceServiceFactoryCreateDevice:
         assert device.serial_number == "44444"
         assert device.device_type == "CP20"
 
-    def test_create_xp130(self, factory):
+    def test_create_xp130(self, factory: DeviceServiceFactory) -> None:
         """Test creating XP130 device."""
         device = factory.create_device("XP130", "55555")
 
@@ -107,7 +113,7 @@ class TestDeviceServiceFactoryCreateDevice:
         assert device.serial_number == "55555"
         assert device.device_type == "XP130"
 
-    def test_create_xp230(self, factory):
+    def test_create_xp230(self, factory: DeviceServiceFactory) -> None:
         """Test creating XP230 device."""
         device = factory.create_device("XP230", "66666")
 
@@ -115,9 +121,11 @@ class TestDeviceServiceFactoryCreateDevice:
         assert device.serial_number == "66666"
         assert device.device_type == "XP230"
 
-    def test_create_unknown_device(self, factory):
+    def test_create_unknown_device(self, factory: DeviceServiceFactory) -> None:
         """Test creating unknown device type raises ValueError."""
-        with pytest.raises(ValueError) as exc_info:
+        with pytest.raises(
+            ValueError, match="Unknown device type 'UNKNOWN'"
+        ) as exc_info:
             factory.create_device("UNKNOWN", "99999")
 
         assert "Unknown device type 'UNKNOWN'" in str(exc_info.value)
@@ -127,23 +135,26 @@ class TestDeviceServiceFactoryCreateDevice:
 class TestDeviceServiceFactorySerializerInjection:
     """Test that serializers are properly injected."""
 
-    def test_xp20_has_serializer(self, factory):
+    def test_xp20_has_serializer(self, factory: DeviceServiceFactory) -> None:
         """Test XP20 device receives correct serializer."""
         device = factory.create_device("XP20", "12345")
 
+        assert isinstance(device, XP20ServerService)
         assert device.msactiontable_serializer is not None
         assert isinstance(device.msactiontable_serializer, Xp20MsActionTableSerializer)
 
-    def test_xp24_has_serializer(self, factory):
+    def test_xp24_has_serializer(self, factory: DeviceServiceFactory) -> None:
         """Test XP24 device receives correct serializer."""
         device = factory.create_device("XP24", "23456")
 
+        assert isinstance(device, XP24ServerService)
         assert device.msactiontable_serializer is not None
         assert isinstance(device.msactiontable_serializer, Xp24MsActionTableSerializer)
 
-    def test_xp33_has_serializer(self, factory):
+    def test_xp33_has_serializer(self, factory: DeviceServiceFactory) -> None:
         """Test XP33 device receives correct serializer."""
         device = factory.create_device("XP33", "33333")
 
+        assert isinstance(device, XP33ServerService)
         assert device.msactiontable_serializer is not None
         assert isinstance(device.msactiontable_serializer, Xp33MsActionTableSerializer)

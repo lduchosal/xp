@@ -1,5 +1,5 @@
-"""
-Unit tests for Latin-1 encoding edge cases in Conbus communication.
+# Copyright (c) 2025 ldvchosal
+"""Unit tests for Latin-1 encoding edge cases in Conbus communication.
 
 Tests the specific encoding fix for the issue described in doc/Fix-Encoding-Issue.md
 where UTF-8 decoding fails on Latin-1 characters like 0xa7 (§ symbol).
@@ -9,25 +9,26 @@ import socket
 import threading
 import time
 from contextlib import suppress
-from typing import Optional
+
+ASCII_MAX = 127
 
 
 class Latin1TestServer:
     """Test server that sends responses with Latin-1 extended characters."""
 
-    def __init__(self, port=10003):
-        """
-        Initialize the Latin1 test server.
+    def __init__(self, port: int = 10003) -> None:
+        """Initialize the Latin1 test server.
 
         Args:
             port: Port number to listen on (default: 10003).
+
         """
         self.port = port
-        self.server_socket: Optional[socket.socket] = None
+        self.server_socket: socket.socket | None = None
         self.is_running = False
-        self.received_messages = []
+        self.received_messages: list[str] = []
 
-    def start(self):
+    def start(self) -> None:
         """Start the test server."""
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -39,24 +40,24 @@ class Latin1TestServer:
         server_thread.start()
         time.sleep(0.1)  # Give server time to start
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the test server."""
         self.is_running = False
         if self.server_socket:
             self.server_socket.close()
 
-    def _accept_connections(self):
+    def _accept_connections(self) -> None:
         """Accept and handle client connections."""
         while self.is_running:
+            if not self.server_socket:
+                break
             try:
-                if not self.server_socket:
-                    raise socket.error
-                client_socket, addr = self.server_socket.accept()
+                client_socket, _addr = self.server_socket.accept()
                 self._handle_client(client_socket)
-            except (socket.error, OSError):
+            except OSError:
                 break
 
-    def _handle_client(self, client_socket):
+    def _handle_client(self, client_socket: socket.socket) -> None:
         """Handle individual client connection."""
         try:
             client_socket.settimeout(2.0)
@@ -74,7 +75,7 @@ class Latin1TestServer:
                 if response:
                     client_socket.send(response.encode("latin-1"))
 
-        except socket.timeout:
+        except TimeoutError:
             pass
         except (ValueError, KeyError, ConnectionError):
             pass
@@ -83,8 +84,14 @@ class Latin1TestServer:
                 client_socket.close()
 
     @staticmethod
-    def _generate_latin1_response(message):
-        """Generate responses containing Latin-1 extended characters."""
+    def _generate_latin1_response(message: str) -> str | None:
+        """Generate responses containing Latin-1 extended characters.
+
+        Returns:
+            The mapped response telegram with Latin-1 extended characters,
+            or None for unknown requests.
+
+        """
         # Map of requests to responses with extended characters
         return {
             # Temperature request with § symbol (0xa7)
@@ -105,7 +112,7 @@ class Latin1TestServer:
 class TestEncodingConsistency:
     """Test encoding consistency across the communication pipeline."""
 
-    def test_round_trip_encoding(self):
+    def test_round_trip_encoding(self) -> None:
         """Test that messages can be encoded and decoded consistently."""
         test_messages = [
             "<S0020012521F02D18FN>",  # Normal ASCII message
@@ -127,10 +134,10 @@ class TestEncodingConsistency:
 
             # Verify extended characters are preserved
             for char in message:
-                if ord(char) > 127:  # Extended character
+                if ord(char) > ASCII_MAX:  # Extended character
                     assert char in decoded
 
-    def test_latin1_character_range(self):
+    def test_latin1_character_range(self) -> None:
         """Test that all Latin-1 characters (0-255) can be handled."""
         # Test all possible byte values
         for byte_value in range(256):

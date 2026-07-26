@@ -1,5 +1,5 @@
-"""
-Unit tests for ChecksumService.
+# Copyright (c) 2025 ldvchosal
+"""Unit tests for ChecksumService.
 
 Tests the checksum service business logic layer, following the architecture pattern for
 service testing.
@@ -10,19 +10,25 @@ import pytest
 from xp.models.response import Response
 from xp.services.telegram.telegram_checksum_service import TelegramChecksumService
 
+# Simple XOR checksums are encoded on 2 chars, CRC32 checksums on 8 chars.
+SIMPLE_CHECKSUM_LENGTH = 2
+CRC32_CHECKSUM_LENGTH = 8
+# Length of the "test" input used across the CRC32 test cases.
+TEST_INPUT_LENGTH = 4
+
 
 class TestChecksumService:
     """Test class for ChecksumService."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test instance."""
         self.service = TelegramChecksumService()
 
-    def test_service_initialization(self):
+    def test_service_initialization(self) -> None:
         """Test that service initializes properly."""
         assert isinstance(self.service, TelegramChecksumService)
 
-    def test_calculate_simple_checksum_success(self):
+    def test_calculate_simple_checksum_success(self) -> None:
         """Test successful simple checksum calculation."""
         result = self.service.calculate_simple_checksum("test")
 
@@ -36,18 +42,18 @@ class TestChecksumService:
         assert result.data["input"] == "test"
         assert result.data["algorithm"] == "simple_xor"
         assert isinstance(result.data["checksum"], str)
-        assert len(result.data["checksum"]) == 2
+        assert len(result.data["checksum"]) == SIMPLE_CHECKSUM_LENGTH
 
-    def test_calculate_simple_checksum_empty_string(self):
+    def test_calculate_simple_checksum_empty_string(self) -> None:
         """Test simple checksum with empty string."""
         result = self.service.calculate_simple_checksum("")
 
         assert isinstance(result, Response)
         assert result.success is True
-        assert result.data["input"] == ""
+        assert not result.data["input"]
         assert result.data["checksum"] == "AA"  # XOR of nothing is 0
 
-    def test_calculate_crc32_checksum_string_input(self):
+    def test_calculate_crc32_checksum_string_input(self) -> None:
         """Test CRC32 checksum with string input."""
         result = self.service.calculate_crc32_checksum("test")
 
@@ -61,12 +67,12 @@ class TestChecksumService:
         assert "algorithm" in result.data
 
         assert result.data["input_type"] == "string"
-        assert result.data["input_length"] == 4
+        assert result.data["input_length"] == TEST_INPUT_LENGTH
         assert result.data["algorithm"] == "crc32"
         assert isinstance(result.data["checksum"], str)
-        assert len(result.data["checksum"]) == 8
+        assert len(result.data["checksum"]) == CRC32_CHECKSUM_LENGTH
 
-    def test_calculate_crc32_checksum_bytes_input(self):
+    def test_calculate_crc32_checksum_bytes_input(self) -> None:
         """Test CRC32 checksum with bytes input."""
         test_bytes = b"test"
         result = self.service.calculate_crc32_checksum(test_bytes)
@@ -75,10 +81,10 @@ class TestChecksumService:
         assert result.success is True
 
         assert result.data["input_type"] == "bytes"
-        assert result.data["input_length"] == 4
+        assert result.data["input_length"] == TEST_INPUT_LENGTH
         assert result.data["algorithm"] == "crc32"
 
-    def test_validate_checksum_valid(self):
+    def test_validate_checksum_valid(self) -> None:
         """Test checksum validation with valid checksum."""
         data = "test"
         # First calculate the checksum
@@ -102,7 +108,7 @@ class TestChecksumService:
         assert result.data["expected_checksum"] == expected_checksum
         assert result.data["is_valid"] is True
 
-    def test_validate_checksum_invalid(self):
+    def test_validate_checksum_invalid(self) -> None:
         """Test checksum validation with invalid checksum."""
         data = "test"
         wrong_checksum = "XX"
@@ -115,7 +121,7 @@ class TestChecksumService:
         assert result.data["expected_checksum"] == wrong_checksum
         assert result.data["calculated_checksum"] != wrong_checksum
 
-    def test_validate_crc32_checksum_valid_string(self):
+    def test_validate_crc32_checksum_valid_string(self) -> None:
         """Test CRC32 validation with valid checksum (string input)."""
         data = "test"
         # First calculate the checksum
@@ -130,7 +136,7 @@ class TestChecksumService:
         assert result.data["input_type"] == "string"
         assert result.data["is_valid"] is True
 
-    def test_validate_crc32_checksum_valid_bytes(self):
+    def test_validate_crc32_checksum_valid_bytes(self) -> None:
         """Test CRC32 validation with valid checksum (bytes input)."""
         data = b"test"
         # First calculate the checksum
@@ -145,7 +151,7 @@ class TestChecksumService:
         assert result.data["input_type"] == "bytes"
         assert result.data["is_valid"] is True
 
-    def test_validate_crc32_checksum_invalid(self):
+    def test_validate_crc32_checksum_invalid(self) -> None:
         """Test CRC32 validation with invalid checksum."""
         data = "test"
         wrong_checksum = "XXXXXXXX"
@@ -156,14 +162,14 @@ class TestChecksumService:
         assert result.success is True
         assert result.data["is_valid"] is False
 
-    def test_response_has_timestamp(self):
+    def test_response_has_timestamp(self) -> None:
         """Test that all responses include timestamp."""
         result = self.service.calculate_simple_checksum("test")
 
         assert hasattr(result, "timestamp")
         assert result.timestamp is not None
 
-    def test_response_to_dict(self):
+    def test_response_to_dict(self) -> None:
         """Test that response can be converted to dict."""
         result_dict = self.service.calculate_simple_checksum("test").to_dict()
         assert isinstance(result_dict, dict)
@@ -182,13 +188,13 @@ class TestChecksumService:
             "",
         ],
     )
-    def test_calculate_simple_checksum_various_inputs(self, test_input):
+    def test_calculate_simple_checksum_various_inputs(self, test_input: str) -> None:
         """Test simple checksum calculation with various inputs."""
         result = self.service.calculate_simple_checksum(test_input)
 
         assert result.success is True
         assert result.data["input"] == test_input
-        assert len(result.data["checksum"]) == 2
+        assert len(result.data["checksum"]) == SIMPLE_CHECKSUM_LENGTH
 
     @pytest.mark.parametrize(
         "test_input",
@@ -201,14 +207,16 @@ class TestChecksumService:
             b"E14L00I02M",
         ],
     )
-    def test_calculate_crc32_checksum_various_inputs(self, test_input):
+    def test_calculate_crc32_checksum_various_inputs(
+        self, test_input: str | bytes
+    ) -> None:
         """Test CRC32 checksum calculation with various inputs."""
         result = self.service.calculate_crc32_checksum(test_input)
 
         assert result.success is True
-        assert len(result.data["checksum"]) == 8
+        assert len(result.data["checksum"]) == CRC32_CHECKSUM_LENGTH
 
-    def test_consistency_across_calls(self):
+    def test_consistency_across_calls(self) -> None:
         """Test that service provides consistent results across multiple calls."""
         data = "E14L00I02M"
 
@@ -224,7 +232,7 @@ class TestChecksumService:
 
         assert crc_result1.data["checksum"] == crc_result2.data["checksum"]
 
-    def test_telegram_example_integration(self):
+    def test_telegram_example_integration(self) -> None:
         """Test with actual telegram format example."""
         telegram_data = "E14L00I02M"
 
@@ -248,7 +256,7 @@ class TestChecksumService:
         assert crc32_validation.success is True
         assert crc32_validation.data["is_valid"] is True
 
-    def test_telegram_crash1(self):
+    def test_telegram_crash1(self) -> None:
         """Test with actual telegram format example."""
         telegram_data = (
             "R0012345005F02D1700:00000[NA],01:00000[NA],02:00000[NA],03:00000[NA]"

@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for term commands file logging functionality."""
 
 # NOTE: These unit tests have been removed as setup_file_logging
@@ -7,4 +8,3 @@
 
 def test_placeholder() -> None:
     """Placeholder test to prevent empty test file errors."""
-    pass

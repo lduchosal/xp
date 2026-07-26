@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Integration tests for Conbus reverse proxy functionality."""
 
 import socket
@@ -5,7 +6,6 @@ import tempfile
 import threading
 import time
 from pathlib import Path
-from typing import Optional
 
 import pytest
 
@@ -16,20 +16,20 @@ from xp.services.reverse_proxy_service import ReverseProxyService
 class MockServer:
     """Mock Conbus server for testing reverse proxy integration."""
 
-    def __init__(self, port: int):
-        """
-        Initialize mock server.
+    def __init__(self, port: int) -> None:
+        """Initialize mock server.
 
         Args:
             port: Port number to listen on.
+
         """
         self.port = port
-        self.socket: Optional[socket.socket] = None
+        self.socket: socket.socket | None = None
         self.is_running = False
         self.received_messages: list[str] = []
         self.responses: list[str] = []
 
-    def start(self):
+    def start(self) -> None:
         """Start the mock server."""
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -41,33 +41,33 @@ class MockServer:
         thread = threading.Thread(target=self._accept_connections, daemon=True)
         thread.start()
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the mock server."""
         self.is_running = False
         if self.socket:
             self.socket.close()
 
     def add_response(self, response: str) -> None:
-        """
-        Add a response to send when receiving messages.
+        """Add a response to send when receiving messages.
 
         Args:
             response: Response string to add.
+
         """
         self.responses.append(response)
 
-    def _accept_connections(self):
+    def _accept_connections(self) -> None:
         """Accept and handle client connections."""
         while self.is_running:
+            if not self.socket:
+                break
             try:
-                if not self.socket:
-                    raise socket.error
-                client_socket, address = self.socket.accept()
+                client_socket, _address = self.socket.accept()
                 self._handle_client(client_socket)
-            except (OSError, socket.error):
+            except OSError:
                 break
 
-    def _handle_client(self, client_socket):
+    def _handle_client(self, client_socket: socket.socket) -> None:
         """Handle individual client connection."""
         try:
             while self.is_running:
@@ -92,7 +92,7 @@ class MockServer:
 class TestReverseProxyIntegration:
     """Integration tests for reverse proxy with mock server and client."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test environment."""
         # Use high port numbers to avoid conflicts
         self.proxy_port = 19001
@@ -102,24 +102,24 @@ class TestReverseProxyIntegration:
         self.mock_server = MockServer(self.server_port)
 
         # Create temporary config for proxy
-        self.temp_config = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yml", delete=False
-        )
-        self.temp_config.write(f"""
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".yml", delete=False, encoding="utf-8"
+        ) as temp_config:
+            temp_config.write(f"""
 conbus:
   ip: 127.0.0.1
   port: {self.server_port}
   timeout: 2
 """)
-        self.temp_config.close()
+        self.temp_config_name = temp_config.name
 
         # Create reverse proxy
-        cli_config = ConbusClientConfig.from_yaml(self.temp_config.name)
+        cli_config = ConbusClientConfig.from_yaml(self.temp_config_name)
         self.proxy = ReverseProxyService(
             cli_config=cli_config, listen_port=self.proxy_port
         )
 
-    def teardown_method(self):
+    def teardown_method(self) -> None:
         """Clean up test environment."""
         if self.proxy.is_running:
             self.proxy.stop_proxy()
@@ -127,11 +127,11 @@ conbus:
         if self.mock_server.is_running:
             self.mock_server.stop()
 
-        if Path(self.temp_config.name).exists():
-            Path(self.temp_config.name).unlink()
+        if Path(self.temp_config_name).exists():
+            Path(self.temp_config_name).unlink()
 
     @pytest.mark.reverseproxy
-    def test_end_to_end_telegram_relay(self):
+    def test_end_to_end_telegram_relay(self) -> None:
         """Test complete telegram relay from client through proxy to server."""
         # Start mock server
         self.mock_server.start()
@@ -168,7 +168,7 @@ conbus:
             self.mock_server.stop()
 
     @pytest.mark.reverseproxy
-    def test_proxy_connection_failure_handling(self):
+    def test_proxy_connection_failure_handling(self) -> None:
         """Test proxy behavior when target server is unavailable."""
         # Don't start mock server - simulate server unavailable
 
@@ -202,7 +202,7 @@ conbus:
             self.proxy.stop_proxy()
 
     @pytest.mark.reverseproxy
-    def test_bidirectional_data_relay(self):
+    def test_bidirectional_data_relay(self) -> None:
         """Test bidirectional data relay between client and server."""
         # Start mock server with multiple responses
         self.mock_server.start()
@@ -257,7 +257,7 @@ conbus:
             self.mock_server.stop()
 
     @pytest.mark.reverseproxy
-    def test_proxy_status_tracking(self):
+    def test_proxy_status_tracking(self) -> None:
         """Test proxy status tracking during connections."""
         # Start mock server
         self.mock_server.start()
@@ -296,12 +296,13 @@ class TestReverseProxyErrorHandling:
     """Test error handling scenarios for reverse proxy."""
 
     @pytest.mark.reverseproxy
-    def test_proxy_start_port_already_in_use(self):
+    def test_proxy_start_port_already_in_use(self) -> None:
         """Test proxy startup when port is already in use."""
         # Create a socket to occupy the port
         blocking_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         blocking_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        blocking_socket.bind(("0.0.0.0", 19003))
+        # Must bind all interfaces to conflict with the proxy's 0.0.0.0 bind
+        blocking_socket.bind(("0.0.0.0", 19003))  # noqa: S104
         blocking_socket.listen(1)
 
         try:
@@ -312,7 +313,8 @@ class TestReverseProxyErrorHandling:
 
             # Should fail due to port conflict
             assert not result.success
-            assert result.error is not None and (
+            assert result.error is not None
+            assert (
                 "Address already in use" in result.error
                 or "permission" in result.error.lower()
             )

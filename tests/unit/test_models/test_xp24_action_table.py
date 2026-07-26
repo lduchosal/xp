@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for XP24 Action Table models."""
 
 from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
@@ -8,21 +9,21 @@ from xp.models.telegram.timeparam_type import TimeParam
 class TestInputAction:
     """Test cases for InputAction model."""
 
-    def test_create_input_action_with_param(self):
+    def test_create_input_action_with_param(self) -> None:
         """Test creating InputAction with parameter."""
         action = InputAction(type=InputActionType.ON, param=TimeParam.T5SEC)
 
         assert action.type == InputActionType.ON
         assert action.param == TimeParam.T5SEC
 
-    def test_create_input_action_without_param(self):
+    def test_create_input_action_without_param(self) -> None:
         """Test creating InputAction without parameter."""
         action = InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE)
 
         assert action.type == InputActionType.TOGGLE
         assert action.param == TimeParam.NONE
 
-    def test_input_action_equality(self):
+    def test_input_action_equality(self) -> None:
         """Test InputAction equality comparison."""
         action1 = InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE)
         action2 = InputAction(type=InputActionType.TOGGLE, param=TimeParam.NONE)
@@ -35,7 +36,7 @@ class TestInputAction:
 class TestXp24ActionTable:
     """Test cases for Xp24ActionTable model."""
 
-    def test_create_xp24_action_table_with_defaults(self):
+    def test_create_xp24_action_table_with_defaults(self) -> None:
         """Test creating Xp24ActionTable with default values."""
         action_table = Xp24MsActionTable()
 
@@ -58,12 +59,14 @@ class TestXp24ActionTable:
         # Verify default MS timing
         assert action_table.mutual_deadtime == Xp24MsActionTable.MS300
 
-    def test_xp24_action_table_constants(self):
+    def test_xp24_action_table_constants(self) -> None:
         """Test XP24 action table timing constants."""
-        assert Xp24MsActionTable.MS300 == 12
-        assert Xp24MsActionTable.MS500 == 20
+        expected_ms300 = 12
+        expected_ms500 = 20
+        assert expected_ms300 == Xp24MsActionTable.MS300
+        assert expected_ms500 == Xp24MsActionTable.MS500
 
-    def test_xp24_action_table_equality(self):
+    def test_xp24_action_table_equality(self) -> None:
         """Test Xp24ActionTable equality comparison."""
         action_table1 = Xp24MsActionTable()
         action_table2 = Xp24MsActionTable()
@@ -75,7 +78,7 @@ class TestXp24ActionTable:
         assert action_table1 == action_table2
         assert action_table1 != action_table3
 
-    def test_xp24_action_table_dataclass_fields(self):
+    def test_xp24_action_table_dataclass_fields(self) -> None:
         """Test that all expected fields are present in dataclass."""
         action_table = Xp24MsActionTable()
 
@@ -90,7 +93,7 @@ class TestXp24ActionTable:
         assert hasattr(action_table, "curtain34")
         assert hasattr(action_table, "mutual_deadtime")
 
-    def test_input_action_type_enum_coverage(self):
+    def test_input_action_type_enum_coverage(self) -> None:
         """Test that all major InputActionType enum values work."""
         # Test a selection of action types
         test_actions = [
@@ -108,7 +111,7 @@ class TestXp24ActionTable:
             assert action.type == action_type
             assert isinstance(action_type.value, int)
 
-    def test_input_action_with_various_param_types(self):
+    def test_input_action_with_various_param_types(self) -> None:
         """Test InputAction with various parameter formats."""
         # Test with numeric string
         action1 = InputAction(type=InputActionType.LEVELSET, param=TimeParam.T60MIN)

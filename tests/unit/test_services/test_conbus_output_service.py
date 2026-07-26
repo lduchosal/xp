@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for ConbusOutputService."""
 
 from unittest.mock import MagicMock
@@ -13,32 +14,55 @@ from xp.services.conbus.conbus_output_service import ConbusOutputService
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 
+SEND_ACTION_OUTPUT_NUMBER = 10
+SEND_ACTION_TIMEOUT_SECONDS = 3.0
+UPDATED_TIMEOUT_SECONDS = 10.0
+SUCCEED_OUTPUT_NUMBER = 7
+
 
 @pytest.fixture
-def mock_conbus_protocol():
-    """Create a mock ConbusEventProtocol."""
+def mock_conbus_protocol() -> MagicMock:
+    """Create a mock ConbusEventProtocol.
+
+    Returns:
+        A mock ConbusEventProtocol.
+
+    """
     protocol = MagicMock(spec=ConbusEventProtocol)
     protocol.timeout_seconds = 5.0
     return protocol
 
 
 @pytest.fixture
-def mock_telegram_output_service():
-    """Create a mock TelegramOutputService."""
-    service = MagicMock(spec=TelegramOutputService)
-    return service
+def mock_telegram_output_service() -> MagicMock:
+    """Create a mock TelegramOutputService.
+
+    Returns:
+        A mock TelegramOutputService.
+
+    """
+    return MagicMock(spec=TelegramOutputService)
 
 
 @pytest.fixture
-def conbus_output_service(mock_conbus_protocol, mock_telegram_output_service):
-    """Create a ConbusOutputService instance for testing."""
+def conbus_output_service(
+    mock_conbus_protocol: MagicMock, mock_telegram_output_service: MagicMock
+) -> ConbusOutputService:
+    """Create a ConbusOutputService instance for testing.
+
+    Returns:
+        A ConbusOutputService instance for testing.
+
+    """
     return ConbusOutputService(
         conbus_protocol=mock_conbus_protocol,
         telegram_output_service=mock_telegram_output_service,
     )
 
 
-def test_init_connects_signals(mock_conbus_protocol, mock_telegram_output_service):
+def test_init_connects_signals(
+    mock_conbus_protocol: MagicMock, mock_telegram_output_service: MagicMock
+) -> None:
     """Test that __init__ connects all protocol signals."""
     _ = ConbusOutputService(
         conbus_protocol=mock_conbus_protocol,
@@ -53,7 +77,9 @@ def test_init_connects_signals(mock_conbus_protocol, mock_telegram_output_servic
     mock_conbus_protocol.on_failed.connect.assert_called_once()
 
 
-def test_connection_made_sends_telegram(conbus_output_service, mock_conbus_protocol):
+def test_connection_made_sends_telegram(
+    conbus_output_service: ConbusOutputService, mock_conbus_protocol: MagicMock
+) -> None:
     """Test that connection_made sends action telegram."""
     conbus_output_service.serial_number = "0012345678"
     conbus_output_service.output_number = 5
@@ -69,7 +95,9 @@ def test_connection_made_sends_telegram(conbus_output_service, mock_conbus_proto
     )
 
 
-def test_telegram_sent_updates_response(conbus_output_service):
+def test_telegram_sent_updates_response(
+    conbus_output_service: ConbusOutputService,
+) -> None:
     """Test that telegram_sent updates service response."""
     telegram = "test_telegram"
 
@@ -78,7 +106,9 @@ def test_telegram_sent_updates_response(conbus_output_service):
     assert conbus_output_service.service_response.sent_telegram == telegram
 
 
-def test_telegram_received_appends_to_list(conbus_output_service, mock_conbus_protocol):
+def test_telegram_received_appends_to_list(
+    conbus_output_service: ConbusOutputService, mock_conbus_protocol: MagicMock
+) -> None:
     """Test that telegram_received appends to received_telegrams list."""
     event = TelegramReceivedEvent(
         protocol=mock_conbus_protocol,
@@ -97,8 +127,10 @@ def test_telegram_received_appends_to_list(conbus_output_service, mock_conbus_pr
 
 
 def test_telegram_received_processes_ack(
-    conbus_output_service, mock_telegram_output_service, mock_conbus_protocol
-):
+    conbus_output_service: ConbusOutputService,
+    mock_telegram_output_service: MagicMock,
+    mock_conbus_protocol: MagicMock,
+) -> None:
     """Test that telegram_received processes ACK response."""
     conbus_output_service.serial_number = "0012345678"
     output_telegram = OutputTelegram(
@@ -131,7 +163,7 @@ def test_telegram_received_processes_ack(
     assert signal_emitted[0].success is True
 
 
-def test_timeout_calls_failed(conbus_output_service):
+def test_timeout_calls_failed(conbus_output_service: ConbusOutputService) -> None:
     """Test that timeout calls failed with timeout message."""
     # Track signal emission
     signal_emitted: list = []
@@ -145,7 +177,7 @@ def test_timeout_calls_failed(conbus_output_service):
     assert signal_emitted[0].error == "Timeout"
 
 
-def test_failed_emits_signal(conbus_output_service):
+def test_failed_emits_signal(conbus_output_service: ConbusOutputService) -> None:
     """Test that failed emits on_finish signal."""
     # Track signal emission
     signal_emitted: list = []
@@ -159,31 +191,35 @@ def test_failed_emits_signal(conbus_output_service):
     assert signal_emitted[0].error == "Test error"
 
 
-def test_send_action_sets_state(conbus_output_service, mock_conbus_protocol):
+def test_send_action_sets_state(
+    conbus_output_service: ConbusOutputService, mock_conbus_protocol: MagicMock
+) -> None:
     """Test that send_action sets service state."""
     conbus_output_service.send_action(
         serial_number="0012345678",
-        output_number=10,
+        output_number=SEND_ACTION_OUTPUT_NUMBER,
         action_type=ActionType.OFF_PRESS,
-        timeout_seconds=3.0,
+        timeout_seconds=SEND_ACTION_TIMEOUT_SECONDS,
     )
 
     assert conbus_output_service.serial_number == "0012345678"
-    assert conbus_output_service.output_number == 10
+    assert conbus_output_service.output_number == SEND_ACTION_OUTPUT_NUMBER
     assert conbus_output_service.action_type == ActionType.OFF_PRESS
-    assert mock_conbus_protocol.timeout_seconds == 3.0
+    assert mock_conbus_protocol.timeout_seconds == SEND_ACTION_TIMEOUT_SECONDS
 
 
-def test_set_timeout_delegates_to_protocol(conbus_output_service, mock_conbus_protocol):
+def test_set_timeout_delegates_to_protocol(
+    conbus_output_service: ConbusOutputService, mock_conbus_protocol: MagicMock
+) -> None:
     """Test that set_timeout delegates to protocol."""
-    conbus_output_service.set_timeout(10.0)
+    conbus_output_service.set_timeout(UPDATED_TIMEOUT_SECONDS)
 
-    assert mock_conbus_protocol.timeout_seconds == 10.0
+    assert mock_conbus_protocol.timeout_seconds == UPDATED_TIMEOUT_SECONDS
 
 
 def test_start_reactor_delegates_to_protocol(
-    conbus_output_service, mock_conbus_protocol
-):
+    conbus_output_service: ConbusOutputService, mock_conbus_protocol: MagicMock
+) -> None:
     """Test that start_reactor delegates to protocol."""
     conbus_output_service.start_reactor()
 
@@ -191,30 +227,32 @@ def test_start_reactor_delegates_to_protocol(
 
 
 def test_stop_reactor_delegates_to_protocol(
-    conbus_output_service, mock_conbus_protocol
-):
+    conbus_output_service: ConbusOutputService, mock_conbus_protocol: MagicMock
+) -> None:
     """Test that stop_reactor delegates to protocol."""
     conbus_output_service.stop_reactor()
 
     mock_conbus_protocol.stop_reactor.assert_called_once()
 
 
-def test_enter_resets_state(conbus_output_service):
+def test_enter_resets_state(conbus_output_service: ConbusOutputService) -> None:
     """Test that __enter__ resets state for singleton reuse."""
     # Set some state
     conbus_output_service.service_response.success = True
     conbus_output_service.output_state = "test"
 
     # Enter context
-    result = conbus_output_service.__enter__()
+    result = conbus_output_service.__enter__()  # noqa: PLC2801 -- __enter__ under test
 
     # Verify state reset
     assert result is conbus_output_service
     assert conbus_output_service.service_response.success is False
-    assert conbus_output_service.output_state == ""
+    assert not conbus_output_service.output_state
 
 
-def test_exit_disconnects_signals(conbus_output_service, mock_conbus_protocol):
+def test_exit_disconnects_signals(
+    conbus_output_service: ConbusOutputService, mock_conbus_protocol: MagicMock
+) -> None:
     """Test that __exit__ disconnects all signals and stops reactor."""
     conbus_output_service.__exit__(None, None, None)
 
@@ -229,10 +267,12 @@ def test_exit_disconnects_signals(conbus_output_service, mock_conbus_protocol):
     mock_conbus_protocol.stop_reactor.assert_called_once()
 
 
-def test_succeed_emits_signal_with_output_telegram(conbus_output_service):
+def test_succeed_emits_signal_with_output_telegram(
+    conbus_output_service: ConbusOutputService,
+) -> None:
     """Test that succeed emits signal with successful response."""
     conbus_output_service.serial_number = "0012345678"
-    conbus_output_service.output_number = 7
+    conbus_output_service.output_number = SUCCEED_OUTPUT_NUMBER
     conbus_output_service.action_type = ActionType.ON_RELEASE
 
     output_telegram = OutputTelegram(
@@ -252,6 +292,6 @@ def test_succeed_emits_signal_with_output_telegram(conbus_output_service):
     assert len(signal_emitted) == 1
     assert signal_emitted[0].success is True
     assert signal_emitted[0].serial_number == "0012345678"
-    assert signal_emitted[0].output_number == 7
+    assert signal_emitted[0].output_number == SUCCEED_OUTPUT_NUMBER
     assert signal_emitted[0].action_type == ActionType.ON_RELEASE
     assert signal_emitted[0].output_telegram == output_telegram

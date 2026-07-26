@@ -1,5 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Integration tests for Conbus blink functionality."""
 
+from collections.abc import Callable
 from unittest.mock import MagicMock
 
 from click.testing import CliRunner
@@ -12,11 +14,11 @@ from xp.models.telegram.system_function import SystemFunction
 class TestConbusBlinkIntegration:
     """Integration test cases for Conbus blink operations."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test runner."""
         self.runner = CliRunner()
 
-    def test_conbus_blink_on(self):
+    def test_conbus_blink_on(self) -> None:
         """Test blink on command."""
         # Mock the service
         mock_service = MagicMock()
@@ -34,12 +36,12 @@ class TestConbusBlinkIntegration:
         # Mock on_finish signal that emits immediately when connected
         mock_signal = MagicMock()
 
-        def mock_connect(callback):
-            """
-            Mock signal connect that immediately calls the callback.
+        def mock_connect(callback: Callable[..., None]) -> None:
+            """Mock signal connect that immediately calls the callback.
 
             Args:
                 callback: Callback function to invoke with mock response.
+
             """
             callback(mock_response)
 
@@ -61,7 +63,7 @@ class TestConbusBlinkIntegration:
         assert '"operation": "on"' in result.output
         mock_service.send_blink_telegram.assert_called_once()
 
-    def test_conbus_blink_off(self):
+    def test_conbus_blink_off(self) -> None:
         """Test blink off command."""
         # Mock the service
         mock_service = MagicMock()
@@ -79,12 +81,12 @@ class TestConbusBlinkIntegration:
         # Mock on_finish signal that emits immediately when connected
         mock_signal = MagicMock()
 
-        def mock_connect(callback):
-            """
-            Mock signal connect that immediately calls the callback.
+        def mock_connect(callback: Callable[..., None]) -> None:
+            """Mock signal connect that immediately calls the callback.
 
             Args:
                 callback: Callback function to invoke with mock response.
+
             """
             callback(mock_response)
 
@@ -106,7 +108,7 @@ class TestConbusBlinkIntegration:
         assert '"operation": "off"' in result.output
         mock_service.send_blink_telegram.assert_called_once()
 
-    def test_conbus_blink_connection_error(self):
+    def test_conbus_blink_connection_error(self) -> None:
         """Test blink command with connection error."""
         # Mock the service
         mock_service = MagicMock()
@@ -125,12 +127,12 @@ class TestConbusBlinkIntegration:
         # Mock on_finish signal that emits immediately when connected
         mock_signal = MagicMock()
 
-        def mock_connect(callback):
-            """
-            Mock signal connect that immediately calls the callback.
+        def mock_connect(callback: Callable[..., None]) -> None:
+            """Mock signal connect that immediately calls the callback.
 
             Args:
                 callback: Callback function to invoke with mock response.
+
             """
             callback(mock_response)
 
@@ -151,7 +153,7 @@ class TestConbusBlinkIntegration:
         assert '"success": false' in result.output
         assert '"error": "Connection failed"' in result.output
 
-    def test_conbus_blink_help_command(self):
+    def test_conbus_blink_help_command(self) -> None:
         """Test blink help command."""
         result = self.runner.invoke(cli, ["conbus", "blink", "on", "--help"])
 
@@ -161,14 +163,14 @@ class TestConbusBlinkIntegration:
         assert "Send blink command to start blinking module LED" in output
         assert "SERIAL_NUMBER" in output
 
-    def test_conbus_blink_missing_arguments(self):
+    def test_conbus_blink_missing_arguments(self) -> None:
         """Test blink command with missing arguments."""
         result = self.runner.invoke(cli, ["conbus", "blink", "on"])
 
         assert result.exit_code != 0
         assert "Usage: cli conbus blink on [OPTIONS] SERIAL_NUMBER" in result.output
 
-    def test_conbus_blink_service_exception(self):
+    def test_conbus_blink_service_exception(self) -> None:
         """Test blink command when service raises exception."""
         # Mock the service to raise an exception
         mock_service = MagicMock()
@@ -191,7 +193,7 @@ class TestConbusBlinkIntegration:
         # The CLI should handle the exception gracefully
         assert result.exit_code != 0
 
-    def test_conbus_blink_command_registration(self):
+    def test_conbus_blink_command_registration(self) -> None:
         """Test that conbus blink command is properly registered."""
         result = self.runner.invoke(cli, ["conbus", "--help"])
 

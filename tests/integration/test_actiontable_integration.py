@@ -1,5 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Integration tests for ActionTable functionality."""
 
+from collections.abc import Callable
 from unittest.mock import Mock
 
 import pytest
@@ -13,15 +15,23 @@ from xp.models.actiontable.actiontable import ActionTable, ActionTableEntry
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
-from xp.utils.serialization import de_nibbles
+from xp.utils.serialization import de_bcd, de_nibbles, lower3, to_bcd, upper5
+
+BCD_MAX_VALUE = 99
+PADDED_TABLE_SIZE = 480  # 96 entries x 5 bytes
 
 
 class TestActionTableIntegration:
     """Integration tests for ActionTable components."""
 
     @pytest.fixture
-    def sample_actiontable(self):
-        """Create sample ActionTable for testing."""
+    def sample_actiontable(self) -> ActionTable:
+        """Create sample ActionTable for testing.
+
+        Returns:
+            Sample ActionTable for testing.
+
+        """
         entries = [
             ActionTableEntry(
                 module_type=ModuleTypeCode.CP20,
@@ -44,7 +54,7 @@ class TestActionTableIntegration:
         ]
         return ActionTable(entries=entries)
 
-    def test_serializer_roundtrip(self, sample_actiontable):
+    def test_serializer_roundtrip(self, sample_actiontable: ActionTable) -> None:
         """Test ActionTableSerializer encode/decode roundtrip."""
         serializer = ActionTableSerializer()
 
@@ -68,7 +78,9 @@ class TestActionTableIntegration:
         assert restored_entry.module_input == original_entry.module_input
         assert restored_entry.module_output == original_entry.module_output
 
-    def test_serializer_encoded_string_roundtrip(self, sample_actiontable):
+    def test_serializer_encoded_string_roundtrip(
+        self, sample_actiontable: ActionTable
+    ) -> None:
         """Test ActionTableSerializer base64 string roundtrip."""
         serializer = ActionTableSerializer()
 
@@ -82,7 +94,7 @@ class TestActionTableIntegration:
         assert isinstance(restored_table, ActionTable)
         assert len(restored_table.entries) == len(sample_actiontable.entries)
 
-    def test_serializer_format_output(self, sample_actiontable):
+    def test_serializer_format_output(self, sample_actiontable: ActionTable) -> None:
         """Test ActionTableSerializer output formatting."""
         serializer = ActionTableSerializer()
 
@@ -96,7 +108,7 @@ class TestActionTableIntegration:
         assert isinstance(encoded, str)
         assert len(encoded) > 0
 
-    def test_end_to_end_cli_download(self, sample_actiontable):
+    def test_end_to_end_cli_download(self, sample_actiontable: ActionTable) -> None:
         """Test end-to-end CLI download functionality."""
         # Setup mock service
         mock_service = Mock()
@@ -104,36 +116,38 @@ class TestActionTableIntegration:
         mock_service.__exit__ = Mock(return_value=None)
 
         # Store the callbacks that are connected
-        callbacks = {
+        callbacks: dict[str, Callable[..., None] | None] = {
             "on_finish": None,
             "on_progress": None,
             "on_actiontable_received": None,
         }
 
-        def mock_on_finish_connect(callback):
-            """
-            Mock on_finish event connection.
+        def mock_on_finish_connect(callback: Callable[..., None]) -> None:
+            """Mock on_finish event connection.
 
             Args:
                 callback: Callback function to store.
+
             """
             callbacks["on_finish"] = callback
 
-        def mock_on_progress_connect(callback):
-            """
-            Mock on_progress event connection.
+        def mock_on_progress_connect(callback: Callable[..., None]) -> None:
+            """Mock on_progress event connection.
 
             Args:
                 callback: Callback function to store.
+
             """
             callbacks["on_progress"] = callback
 
-        def mock_on_actiontable_received_connect(callback):
-            """
-            Mock on_actiontable_received event connection.
+        def mock_on_actiontable_received_connect(
+            callback: Callable[..., None],
+        ) -> None:
+            """Mock on_actiontable_received event connection.
 
             Args:
                 callback: Callback function to store.
+
             """
             callbacks["on_actiontable_received"] = callback
 
@@ -144,32 +158,25 @@ class TestActionTableIntegration:
         )
 
         # Mock the configure method
-        def mock_configure(serial_number, actiontable_type):
-            """
-            Test helper function.
-
-            Args:
-                serial_number: Serial number of the module.
-                actiontable_type: Type of action table to download.
-            """
-            # Configure stores the serial number (nothing to do here for test)
-            pass
+        def mock_configure(serial_number: str, actiontable_type: object) -> None:
+            """Do nothing; configure stores the serial number in the service."""
+            del serial_number, actiontable_type  # Unused; accepted for kwargs call
 
         # Mock the start_reactor to trigger callbacks
-        def mock_start_reactor_impl():
+        def mock_start_reactor_impl() -> None:
             """Mock reactor start method that triggers callbacks."""
             # Generate dict and short format like the service does
             actiontable_short = ActionTableSerializer.to_short_string(
                 sample_actiontable
             )
             # Call the on_actiontable_received callback with data
-            if callbacks["on_actiontable_received"]:
-                callbacks["on_actiontable_received"](
-                    sample_actiontable, actiontable_short
-                )
+            on_actiontable_received = callbacks["on_actiontable_received"]
+            if on_actiontable_received:
+                on_actiontable_received(sample_actiontable, actiontable_short)
             # Call the on_finish callback without arguments
-            if callbacks["on_finish"]:
-                callbacks["on_finish"]()
+            on_finish = callbacks["on_finish"]
+            if on_finish:
+                on_finish()
 
         mock_service.configure.side_effect = mock_configure
         mock_service.start_reactor.side_effect = mock_start_reactor_impl
@@ -192,39 +199,37 @@ class TestActionTableIntegration:
         assert result.exit_code == 0
 
         # Verify output contains actiontable data
-        # The output contains progress dots and then the JSON, so we check for the serial number
+        # Output has progress dots then JSON, so check for the serial number
         assert "0000012345" in result.output
         assert "actiontable" in result.output
 
         # Verify service.start was called
         assert mock_service.configure.called
 
-    def test_bcd_encoding_decoding(self):
+    def test_bcd_encoding_decoding(self) -> None:
         """Test BCD encoding/decoding functionality."""
-        from xp.utils.serialization import de_bcd, to_bcd
-
         # Test BCD conversion
         test_values = [0, 5, 10, 15, 25, 99]
         for value in test_values:
-            if value <= 99:  # BCD valid range
+            if value <= BCD_MAX_VALUE:  # BCD valid range
                 bcd = to_bcd(value)
                 decoded = de_bcd(bcd)
                 assert decoded == value
 
-    def test_bit_manipulation(self):
+    def test_bit_manipulation(self) -> None:
         """Test bit manipulation functions."""
-        from xp.utils.serialization import lower3, upper5
-
         # Test lower 3 bits extraction
         test_byte = 0b11110111  # 247
+        expected_lower3 = 0b111  # 7
         lower3_result = lower3(test_byte)
-        assert lower3_result == 0b111  # 7
+        assert lower3_result == expected_lower3
 
         # Test upper 5 bits extraction
+        expected_upper5 = 0b11110  # 30
         upper5_result = upper5(test_byte)
-        assert upper5_result == 0b11110  # 30
+        assert upper5_result == expected_upper5
 
-    def test_actiontable_empty_entries(self):
+    def test_actiontable_empty_entries(self) -> None:
         """Test ActionTable with empty entries."""
         empty_table = ActionTable(entries=[])
         serializer = ActionTableSerializer()
@@ -234,14 +239,14 @@ class TestActionTableIntegration:
         data = de_nibbles(encoded_string)
 
         assert isinstance(data, (bytes, bytearray))
-        assert len(data) == 480  # 96 entries × 5 bytes
-        assert bytes(data) == b"\x00" * 480  # All padding (NOMOD entries)
+        assert len(data) == PADDED_TABLE_SIZE
+        assert bytes(data) == b"\x00" * PADDED_TABLE_SIZE  # All padding (NOMOD)
 
         # Restore table - padding (NOMOD entries) is stripped during deserialization
         restored = serializer.from_encoded_string(encoded_string)
         assert len(restored.entries) == 0  # Padding removed
 
-    def test_actiontable_edge_cases(self):
+    def test_actiontable_edge_cases(self) -> None:
         """Test ActionTable with edge case values."""
         edge_entry = ActionTableEntry(
             module_type=ModuleTypeCode.CP20,

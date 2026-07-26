@@ -1,7 +1,12 @@
+# Copyright (c) 2025 ldvchosal
 """Integration tests for XP24 Action Table functionality."""
 
 import json
+from typing import TYPE_CHECKING
 from unittest.mock import Mock
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from click.testing import CliRunner
 
@@ -19,15 +24,18 @@ from xp.utils.dependencies import ServiceContainer
 class TestXp24ActionTableIntegration:
     """Integration tests for XP24 action table CLI operations."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.runner = CliRunner()
         self.valid_serial = "0123450001"
         self.invalid_serial = "1234567890"  # Valid format but will cause service error
 
-    def _create_mock_service(self, action_table=None, error=None):
-        """
-        Create mock service with signal pattern.
+    def _create_mock_service(
+        self,
+        action_table: Xp24MsActionTable | None = None,
+        error: str | None = None,
+    ) -> Mock:
+        """Create mock service with signal pattern.
 
         Args:
             action_table: Optional action table to return on success.
@@ -35,6 +43,7 @@ class TestXp24ActionTableIntegration:
 
         Returns:
             Mock service object configured with signals.
+
         """
         mock_service = Mock(spec=ActionTableDownloadService)
         mock_service.__enter__ = Mock(return_value=mock_service)
@@ -47,53 +56,17 @@ class TestXp24ActionTableIntegration:
         mock_service.on_error = Mock()
 
         # Track connected callbacks
-        progress_callbacks = []
-        finish_callbacks = []
-        actiontable_received_callbacks = []
-        error_callbacks = []
+        finish_callbacks: list[Callable[..., None]] = []
+        actiontable_received_callbacks: list[Callable[..., None]] = []
+        error_callbacks: list[Callable[..., None]] = []
 
-        def connect_progress(callback):
-            """
-            Connect progress callback.
+        mock_service.on_finish.connect = finish_callbacks.append
+        mock_service.on_actiontable_received.connect = (
+            actiontable_received_callbacks.append
+        )
+        mock_service.on_error.connect = error_callbacks.append
 
-            Args:
-                callback: Callback function to connect.
-            """
-            progress_callbacks.append(callback)
-
-        def connect_finish(callback):
-            """
-            Connect finish callback.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            finish_callbacks.append(callback)
-
-        def connect_actiontable_received(callback):
-            """
-            Connect actiontable_received callback.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            actiontable_received_callbacks.append(callback)
-
-        def connect_error(callback):
-            """
-            Connect error callback.
-
-            Args:
-                callback: Callback function to connect.
-            """
-            error_callbacks.append(callback)
-
-        mock_service.on_progress.connect = connect_progress
-        mock_service.on_finish.connect = connect_finish
-        mock_service.on_actiontable_received.connect = connect_actiontable_received
-        mock_service.on_error.connect = connect_error
-
-        def mock_start_reactor():
+        def mock_start_reactor() -> None:
             """Mock start_reactor that triggers callbacks."""
             if error:
                 for callback in error_callbacks:
@@ -110,7 +83,7 @@ class TestXp24ActionTableIntegration:
         mock_service.stop_reactor = Mock()
         return mock_service
 
-    def test_xp24_download_action_table(self):
+    def test_xp24_download_action_table(self) -> None:
         """Test downloading action table from module."""
         # Create mock action table
         mock_action_table = Xp24MsActionTable(
@@ -174,7 +147,7 @@ class TestXp24ActionTableIntegration:
         assert action_table["mutex34"] is True
         assert action_table["curtain34"] is True
 
-    def test_xp24_download_action_table_invalid_serial(self):
+    def test_xp24_download_action_table_invalid_serial(self) -> None:
         """Test downloading with invalid serial number."""
         mock_service = self._create_mock_service(error="Invalid serial number")
 
@@ -194,7 +167,7 @@ class TestXp24ActionTableIntegration:
         # Verify error in output
         assert "Error: Invalid serial number" in result.output
 
-    def test_xp24_download_action_table_connection_error(self):
+    def test_xp24_download_action_table_connection_error(self) -> None:
         """Test downloading with network failure."""
         mock_service = self._create_mock_service(error="Conbus communication failed")
 

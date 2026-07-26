@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for ConbusReceiveService."""
 
 from unittest.mock import Mock
@@ -8,13 +9,20 @@ from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.services.conbus.conbus_receive_service import ConbusReceiveService
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 
+NEW_TIMEOUT_SECONDS = 10
+
 
 class TestConbusReceiveService:
     """Unit tests for ConbusReceiveService functionality."""
 
     @pytest.fixture
-    def mock_protocol(self):
-        """Create a mock ConbusEventProtocol."""
+    def mock_protocol(self) -> Mock:
+        """Create a mock ConbusEventProtocol.
+
+        Returns:
+            A mock ConbusEventProtocol.
+
+        """
         protocol = Mock(spec=ConbusEventProtocol)
         protocol.on_connection_made = Mock()
         protocol.on_telegram_sent = Mock()
@@ -37,11 +45,18 @@ class TestConbusReceiveService:
         return protocol
 
     @pytest.fixture
-    def service(self, mock_protocol):
-        """Create service instance with mock protocol."""
+    def service(self, mock_protocol: Mock) -> ConbusReceiveService:
+        """Create service instance with mock protocol.
+
+        Returns:
+            Service instance with mock protocol.
+
+        """
         return ConbusReceiveService(conbus_protocol=mock_protocol)
 
-    def test_service_initialization(self, service, mock_protocol):
+    def test_service_initialization(
+        self, service: ConbusReceiveService, mock_protocol: Mock
+    ) -> None:
         """Test service can be initialized with required dependencies."""
         assert service.receive_response.success is True
         assert service.receive_response.received_telegrams == []
@@ -53,19 +68,21 @@ class TestConbusReceiveService:
         mock_protocol.on_timeout.connect.assert_called_once()
         mock_protocol.on_failed.connect.assert_called_once()
 
-    def test_connection_made(self, service):
+    def test_connection_made(self, service: ConbusReceiveService) -> None:
         """Test connection_made logs correctly."""
         # Should not raise any errors
         service.connection_made()
 
-    def test_telegram_sent(self, service):
+    def test_telegram_sent(self, service: ConbusReceiveService) -> None:
         """Test telegram_sent callback (no-op for receive service)."""
         telegram = "<T123456789012D0AK>"
 
         # Should not raise any errors
         service.telegram_sent(telegram)
 
-    def test_telegram_received(self, service, mock_protocol):
+    def test_telegram_received(
+        self, service: ConbusReceiveService, mock_protocol: Mock
+    ) -> None:
         """Test telegram_received callback updates service response."""
         telegram_event = TelegramReceivedEvent(
             protocol=mock_protocol,
@@ -82,7 +99,9 @@ class TestConbusReceiveService:
 
         assert service.receive_response.received_telegrams == ["<T123456789012D0AK>"]
 
-    def test_telegram_received_multiple(self, service, mock_protocol):
+    def test_telegram_received_multiple(
+        self, service: ConbusReceiveService, mock_protocol: Mock
+    ) -> None:
         """Test telegram_received appends to received_telegrams list."""
         telegram_event_1 = TelegramReceivedEvent(
             protocol=mock_protocol,
@@ -114,7 +133,9 @@ class TestConbusReceiveService:
             "<T987654321098D1AK>",
         ]
 
-    def test_telegram_received_with_progress_callback(self, service, mock_protocol):
+    def test_telegram_received_with_progress_callback(
+        self, service: ConbusReceiveService, mock_protocol: Mock
+    ) -> None:
         """Test telegram_received emits progress signal."""
         progress_mock = Mock()
         service.on_progress.connect(progress_mock)
@@ -134,7 +155,9 @@ class TestConbusReceiveService:
 
         progress_mock.assert_called_once_with("<T123456789012D0AK>")
 
-    def test_telegram_received_without_progress_callback(self, service, mock_protocol):
+    def test_telegram_received_without_progress_callback(
+        self, service: ConbusReceiveService, mock_protocol: Mock
+    ) -> None:
         """Test telegram_received doesn't crash when no signal handlers connected."""
         telegram_event = TelegramReceivedEvent(
             protocol=mock_protocol,
@@ -150,7 +173,7 @@ class TestConbusReceiveService:
         # Should not raise any errors
         service.telegram_received(telegram_event)
 
-    def test_timeout(self, service, mock_protocol):
+    def test_timeout(self, service: ConbusReceiveService) -> None:
         """Test timeout callback marks operation as successful."""
         finish_mock = Mock()
         service.on_finish.connect(finish_mock)
@@ -160,12 +183,14 @@ class TestConbusReceiveService:
         assert service.receive_response.success is True
         finish_mock.assert_called_once_with(service.receive_response)
 
-    def test_timeout_without_finish_callback(self, service):
+    def test_timeout_without_finish_callback(
+        self, service: ConbusReceiveService
+    ) -> None:
         """Test timeout doesn't crash when no signal handlers connected."""
         # Should not raise any errors
         service.timeout()
 
-    def test_failed(self, service):
+    def test_failed(self, service: ConbusReceiveService) -> None:
         """Test failed callback updates service response."""
         finish_mock = Mock()
         service.on_finish.connect(finish_mock)
@@ -176,18 +201,22 @@ class TestConbusReceiveService:
         assert service.receive_response.error == "Connection timeout"
         finish_mock.assert_called_once_with(service.receive_response)
 
-    def test_failed_without_finish_callback(self, service):
+    def test_failed_without_finish_callback(
+        self, service: ConbusReceiveService
+    ) -> None:
         """Test failed doesn't crash when no signal handlers connected."""
         # Should not raise any errors
         service.failed("Connection timeout")
 
-    def test_set_timeout(self, service, mock_protocol):
+    def test_set_timeout(
+        self, service: ConbusReceiveService, mock_protocol: Mock
+    ) -> None:
         """Test set_timeout method sets timeout on protocol."""
-        service.set_timeout(timeout_seconds=10)
+        service.set_timeout(timeout_seconds=NEW_TIMEOUT_SECONDS)
 
-        assert mock_protocol.timeout_seconds == 10
+        assert mock_protocol.timeout_seconds == NEW_TIMEOUT_SECONDS
 
-    def test_signal_connections(self, service):
+    def test_signal_connections(self, service: ConbusReceiveService) -> None:
         """Test signals can be connected and emit correctly."""
         finish_mock = Mock()
         progress_mock = Mock()
@@ -204,13 +233,15 @@ class TestConbusReceiveService:
         progress_mock.assert_called_once_with("test_telegram")
         finish_mock.assert_called_once_with(service.receive_response)
 
-    def test_start_reactor(self, service, mock_protocol):
+    def test_start_reactor(
+        self, service: ConbusReceiveService, mock_protocol: Mock
+    ) -> None:
         """Test start_reactor delegates to protocol."""
         service.start_reactor()
 
         mock_protocol.start_reactor.assert_called_once()
 
-    def test_context_manager_enter(self, service):
+    def test_context_manager_enter(self, service: ConbusReceiveService) -> None:
         """Test __enter__ resets state and returns self."""
         # Modify state
         service.receive_response.success = False
@@ -218,15 +249,19 @@ class TestConbusReceiveService:
         service.receive_response.received_telegrams = ["<T123456789012D0AK>"]
 
         # Enter context
-        result = service.__enter__()
+        result = service.__enter__()  # noqa: PLC2801 -- __enter__ under test
 
-        # Verify state reset
+        # Verify state reset (variable locale : évite le narrowing mypy figé
+        # par les assignations ci-dessus)
         assert result is service
-        assert service.receive_response.success is True
-        assert service.receive_response.error is None
-        assert service.receive_response.received_telegrams == []
+        response = service.receive_response
+        assert response.success is True
+        assert response.error is None
+        assert response.received_telegrams == []
 
-    def test_context_manager_exit(self, service, mock_protocol):
+    def test_context_manager_exit(
+        self, service: ConbusReceiveService, mock_protocol: Mock
+    ) -> None:
         """Test __exit__ disconnects all signals."""
         service.__exit__(None, None, None)
 
@@ -237,7 +272,9 @@ class TestConbusReceiveService:
         mock_protocol.on_timeout.disconnect.assert_called_once()
         mock_protocol.on_failed.disconnect.assert_called_once()
 
-    def test_context_manager_full_lifecycle(self, service, mock_protocol):
+    def test_context_manager_full_lifecycle(
+        self, service: ConbusReceiveService, mock_protocol: Mock
+    ) -> None:
         """Test full context manager lifecycle with singleton reuse."""
         # First use
         with service:

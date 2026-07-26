@@ -1,19 +1,30 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for ConbusScanService."""
 
+from datetime import UTC, datetime
 from unittest.mock import Mock
 
 import pytest
 
 from xp.models import ConbusResponse
+from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.services.conbus.conbus_scan_service import ConbusScanService
+
+SCAN_TIMEOUT_SECONDS = 0.5
+UPDATED_TIMEOUT_SECONDS = 5.0
 
 
 class TestConbusScanService:
     """Unit tests for ConbusScanService functionality."""
 
     @pytest.fixture
-    def mock_conbus_protocol(self):
-        """Create a mock ConbusEventProtocol."""
+    def mock_conbus_protocol(self) -> Mock:
+        """Create a mock ConbusEventProtocol.
+
+        Returns:
+            A mock ConbusEventProtocol.
+
+        """
         mock_protocol = Mock()
         mock_protocol.on_connection_made = Mock()
         mock_protocol.on_telegram_sent = Mock()
@@ -30,23 +41,30 @@ class TestConbusScanService:
         mock_protocol.on_telegram_received.disconnect = Mock()
         mock_protocol.on_timeout.disconnect = Mock()
         mock_protocol.on_failed.disconnect = Mock()
-        mock_protocol.sendFrame = Mock()
+        mock_protocol.send_frame = Mock()
         mock_protocol.start_reactor = Mock()
         mock_protocol.stop_reactor = Mock()
         mock_protocol.timeout_seconds = 0.25
         return mock_protocol
 
     @pytest.fixture
-    def service(self, mock_conbus_protocol):
-        """Create service instance with test dependencies."""
+    def service(self, mock_conbus_protocol: Mock) -> ConbusScanService:
+        """Create service instance with test dependencies.
+
+        Returns:
+            Service instance with test dependencies.
+
+        """
         return ConbusScanService(
             conbus_protocol=mock_conbus_protocol,
         )
 
-    def test_service_initialization(self, service, mock_conbus_protocol):
+    def test_service_initialization(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test service can be initialized with required dependencies."""
-        assert service.serial_number == ""
-        assert service.function_code == ""
+        assert not service.serial_number
+        assert not service.function_code
         assert service.datapoint_value == -1
         assert service.service_response.success is False
         # Verify signal connections
@@ -56,7 +74,9 @@ class TestConbusScanService:
         mock_conbus_protocol.on_timeout.connect.assert_called_once()
         mock_conbus_protocol.on_failed.connect.assert_called_once()
 
-    def test_service_context_manager(self, service, mock_conbus_protocol):
+    def test_service_context_manager(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test service can be used as context manager."""
         # Set some state
         service.serial_number = "0012345678"
@@ -66,8 +86,8 @@ class TestConbusScanService:
         with service as s:
             assert s is service
             # State should be reset
-            assert s.serial_number == ""
-            assert s.function_code == ""
+            assert not s.serial_number
+            assert not s.function_code
             assert s.datapoint_value == -1
         # Signals should be disconnected after exit
         mock_conbus_protocol.on_connection_made.disconnect.assert_called_once()
@@ -77,7 +97,9 @@ class TestConbusScanService:
         mock_conbus_protocol.on_failed.disconnect.assert_called_once()
         mock_conbus_protocol.stop_reactor.assert_called_once()
 
-    def test_connection_made(self, service, mock_conbus_protocol):
+    def test_connection_made(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test connection_made starts scan."""
         service.serial_number = "0012345678"
         service.function_code = "02"
@@ -85,11 +107,13 @@ class TestConbusScanService:
         service.connection_made()
 
         # Should send first telegram (datapoint 00)
-        mock_conbus_protocol.sendFrame.assert_called_once()
-        call_args = mock_conbus_protocol.sendFrame.call_args[0][0]
+        mock_conbus_protocol.send_frame.assert_called_once()
+        call_args = mock_conbus_protocol.send_frame.call_args[0][0]
         assert call_args == b"S0012345678F02D00"
 
-    def test_scan_next_datacode_continues(self, service, mock_conbus_protocol):
+    def test_scan_next_datacode_continues(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test scan_next_datacode sends telegram and continues."""
         service.serial_number = "0012345678"
         service.function_code = "02"
@@ -98,11 +122,11 @@ class TestConbusScanService:
         result = service.scan_next_datacode()
 
         assert result is True
-        mock_conbus_protocol.sendFrame.assert_called_once()
-        call_args = mock_conbus_protocol.sendFrame.call_args[0][0]
+        mock_conbus_protocol.send_frame.assert_called_once()
+        call_args = mock_conbus_protocol.send_frame.call_args[0][0]
         assert call_args == b"S0012345678F02D06"
 
-    def test_scan_next_datacode_completes(self, service):
+    def test_scan_next_datacode_completes(self, service: ConbusScanService) -> None:
         """Test scan_next_datacode emits on_finish when complete."""
         finish_mock = Mock()
         service.on_finish.connect(finish_mock)
@@ -113,7 +137,7 @@ class TestConbusScanService:
         assert result is False
         finish_mock.assert_called_once_with(service.service_response)
 
-    def test_telegram_sent(self, service):
+    def test_telegram_sent(self, service: ConbusScanService) -> None:
         """Test telegram_sent callback updates service response."""
         telegram = "<S0012345678F02D05FN>"
 
@@ -122,10 +146,10 @@ class TestConbusScanService:
         assert service.service_response.success is True
         assert service.service_response.sent_telegrams == [telegram]
 
-    def test_telegram_received(self, service, mock_conbus_protocol):
+    def test_telegram_received(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test telegram_received callback updates response and emits signal."""
-        from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
-
         progress_mock = Mock()
         service.on_progress.connect(progress_mock)
 
@@ -145,7 +169,9 @@ class TestConbusScanService:
         assert service.service_response.received_telegrams == ["<R0012345678F02D05XX>"]
         progress_mock.assert_called_once_with("<R0012345678F02D05XX>")
 
-    def test_timeout(self, service, mock_conbus_protocol):
+    def test_timeout(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test timeout callback scans next datacode."""
         service.serial_number = "0012345678"
         service.function_code = "02"
@@ -154,9 +180,9 @@ class TestConbusScanService:
         service.timeout()
 
         # Should have sent next telegram
-        mock_conbus_protocol.sendFrame.assert_called_once()
+        mock_conbus_protocol.send_frame.assert_called_once()
 
-    def test_failed(self, service):
+    def test_failed(self, service: ConbusScanService) -> None:
         """Test failed callback emits on_finish signal with error."""
         finish_mock = Mock()
         service.on_finish.connect(finish_mock)
@@ -167,37 +193,45 @@ class TestConbusScanService:
         assert service.service_response.error == "Connection timeout"
         finish_mock.assert_called_once_with(service.service_response)
 
-    def test_scan_module(self, service, mock_conbus_protocol):
+    def test_scan_module(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test scan_module sets up scan parameters."""
         service.scan_module(
             serial_number="0012345678",
             function_code="02",
-            timeout_seconds=0.5,
+            timeout_seconds=SCAN_TIMEOUT_SECONDS,
         )
 
         assert service.serial_number == "0012345678"
         assert service.function_code == "02"
-        assert mock_conbus_protocol.timeout_seconds == 0.5
+        assert mock_conbus_protocol.timeout_seconds == SCAN_TIMEOUT_SECONDS
 
-    def test_set_timeout(self, service, mock_conbus_protocol):
+    def test_set_timeout(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test set_timeout delegates to protocol."""
-        service.set_timeout(5.0)
+        service.set_timeout(UPDATED_TIMEOUT_SECONDS)
 
-        assert mock_conbus_protocol.timeout_seconds == 5.0
+        assert mock_conbus_protocol.timeout_seconds == UPDATED_TIMEOUT_SECONDS
 
-    def test_start_reactor(self, service, mock_conbus_protocol):
+    def test_start_reactor(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test start_reactor delegates to protocol."""
         service.start_reactor()
 
         mock_conbus_protocol.start_reactor.assert_called_once()
 
-    def test_stop_reactor(self, service, mock_conbus_protocol):
+    def test_stop_reactor(
+        self, service: ConbusScanService, mock_conbus_protocol: Mock
+    ) -> None:
         """Test stop_reactor delegates to protocol."""
         service.stop_reactor()
 
         mock_conbus_protocol.stop_reactor.assert_called_once()
 
-    def test_on_progress_signal(self, service):
+    def test_on_progress_signal(self, service: ConbusScanService) -> None:
         """Test on_progress signal can be connected and emitted."""
         progress_mock = Mock()
         service.on_progress.connect(progress_mock)
@@ -206,10 +240,8 @@ class TestConbusScanService:
 
         progress_mock.assert_called_once_with("test progress")
 
-    def test_on_finish_signal(self, service):
+    def test_on_finish_signal(self, service: ConbusScanService) -> None:
         """Test on_finish signal can be connected and emitted."""
-        from datetime import datetime
-
         finish_mock = Mock()
         service.on_finish.connect(finish_mock)
 
@@ -218,7 +250,7 @@ class TestConbusScanService:
             serial_number="0012345678",
             sent_telegrams=[],
             received_telegrams=[],
-            timestamp=datetime.now(),
+            timestamp=datetime.now(UTC),
         )
         service.on_finish.emit(response)
 

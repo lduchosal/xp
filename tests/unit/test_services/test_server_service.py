@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Tests for ServerService."""
 
 from unittest.mock import Mock, patch
@@ -9,27 +10,48 @@ from xp.services.server.server_service import ServerError, ServerService
 from xp.services.telegram.telegram_discover_service import TelegramDiscoverService
 from xp.services.telegram.telegram_service import TelegramService
 
+DEFAULT_PORT = 10001
+CUSTOM_PORT = 8080
+BROADCAST_RESPONSE_COUNT = 2
+RELOADED_DEVICE_COUNT = 2
+
 
 @pytest.fixture
-def mock_device_factory():
-    """Create a mock device service factory."""
+def mock_device_factory() -> Mock:
+    """Create a mock device service factory.
+
+    Returns:
+        A mock device service factory.
+
+    """
     return Mock(spec=DeviceServiceFactory)
 
 
 class TestServerError:
     """Test ServerError exception."""
 
-    def test_server_error_is_exception(self, mock_device_factory):
+    def test_server_error_is_exception(self) -> None:
         """Test ServerError inherits from Exception."""
         assert issubclass(ServerError, Exception)
 
-    def test_server_error_can_be_raised(self, mock_device_factory):
-        """Test ServerError can be raised."""
-        with pytest.raises(ServerError):
-            raise ServerError("Server failed")
+    def test_server_error_can_be_raised(self) -> None:
+        """Test ServerError can be raised.
 
-    def test_server_error_with_message(self, mock_device_factory):
-        """Test ServerError with custom message."""
+        Raises:
+            ServerError: Always; captured by the pytest.raises context.
+
+        """
+        msg = "Server failed"
+        with pytest.raises(ServerError):
+            raise ServerError(msg)
+
+    def test_server_error_with_message(self) -> None:
+        """Test ServerError with custom message.
+
+        Raises:
+            ServerError: Always; captured by the pytest.raises context.
+
+        """
         msg = "Server initialization failed"
         with pytest.raises(ServerError) as exc_info:
             raise ServerError(msg)
@@ -40,7 +62,9 @@ class TestServerServiceInit:
     """Test ServerService initialization."""
 
     @patch("xp.services.server.server_service.Path")
-    def test_init_with_defaults(self, mock_path, mock_device_factory):
+    def test_init_with_defaults(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test initialization with default parameters."""
         mock_path.return_value.exists.return_value = False
 
@@ -49,14 +73,16 @@ class TestServerServiceInit:
         service = ServerService(telegram_service, discover_service, mock_device_factory)
 
         assert service.config_path == "server.yml"
-        assert service.port == 10001
+        assert service.port == DEFAULT_PORT
         assert service.is_running is False
         assert service.server_socket is None
         assert service.devices == []
         assert service.device_services == {}
 
     @patch("xp.services.server.server_service.Path")
-    def test_init_with_custom_params(self, mock_path, mock_device_factory):
+    def test_init_with_custom_params(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test initialization with custom parameters."""
         mock_path.return_value.exists.return_value = False
 
@@ -67,17 +93,17 @@ class TestServerServiceInit:
             discover_service,
             mock_device_factory,
             config_path="custom.yml",
-            port=8080,
+            port=CUSTOM_PORT,
         )
 
         assert service.config_path == "custom.yml"
-        assert service.port == 8080
+        assert service.port == CUSTOM_PORT
 
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_init_loads_config_when_exists(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test initialization loads config when file exists."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock()
@@ -98,7 +124,9 @@ class TestServerServiceConfig:
     """Test ServerService configuration methods."""
 
     @patch("xp.services.server.server_service.Path")
-    def test_load_device_config_file_not_found(self, mock_path, mock_device_factory):
+    def test_load_device_config_file_not_found(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test loading config when file doesn't exist."""
         mock_path.return_value.exists.return_value = False
 
@@ -112,8 +140,8 @@ class TestServerServiceConfig:
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_load_device_config_with_disabled_devices(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test loading config filters out disabled devices."""
         mock_path.return_value.exists.return_value = True
         mock_enabled = Mock(enabled=True, serial_number="11111", module_type="XP33")
@@ -130,8 +158,8 @@ class TestServerServiceConfig:
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_load_device_config_handles_exception(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test loading config handles exceptions gracefully."""
         mock_path.return_value.exists.return_value = True
         mock_config.from_yaml.side_effect = Exception("Parse error")
@@ -146,8 +174,8 @@ class TestServerServiceConfig:
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_create_device_services_xp33(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test creating XP33 device service."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
@@ -162,8 +190,8 @@ class TestServerServiceConfig:
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_create_device_services_cp20(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test creating CP20 device service."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="11111", module_type="CP20")
@@ -178,8 +206,8 @@ class TestServerServiceConfig:
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_create_device_services_xp20(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test creating XP20 device service."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="22222", module_type="XP20")
@@ -194,8 +222,8 @@ class TestServerServiceConfig:
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_create_device_services_unknown_type(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test creating device service with unknown type."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="99999", module_type="UNKNOWN")
@@ -217,7 +245,9 @@ class TestServerServiceLifecycle:
     """Test ServerService start/stop methods."""
 
     @patch("xp.services.server.server_service.Path")
-    def test_start_server_when_already_running(self, mock_path, mock_device_factory):
+    def test_start_server_when_already_running(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test starting server when already running raises error."""
         mock_path.return_value.exists.return_value = False
         telegram_service = TelegramService()
@@ -229,7 +259,9 @@ class TestServerServiceLifecycle:
             service.start_server()
 
     @patch("xp.services.server.server_service.Path")
-    def test_stop_server_when_not_running(self, mock_path, mock_device_factory):
+    def test_stop_server_when_not_running(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test stopping server when not running does nothing."""
         mock_path.return_value.exists.return_value = False
         telegram_service = TelegramService()
@@ -240,7 +272,9 @@ class TestServerServiceLifecycle:
         service.stop_server()  # Should not raise
 
     @patch("xp.services.server.server_service.Path")
-    def test_stop_server_closes_socket(self, mock_path, mock_device_factory):
+    def test_stop_server_closes_socket(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test stopping server closes socket."""
         mock_path.return_value.exists.return_value = False
         telegram_service = TelegramService()
@@ -255,7 +289,9 @@ class TestServerServiceLifecycle:
         assert service.is_running is False
 
     @patch("xp.services.server.server_service.Path")
-    def test_stop_server_handles_close_exception(self, mock_path, mock_device_factory):
+    def test_stop_server_handles_close_exception(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test stopping server handles socket close exceptions."""
         mock_path.return_value.exists.return_value = False
         telegram_service = TelegramService()
@@ -275,7 +311,9 @@ class TestServerServiceStatus:
 
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
-    def test_get_server_status(self, mock_config, mock_path, mock_device_factory):
+    def test_get_server_status(
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test getting server status."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
@@ -284,19 +322,21 @@ class TestServerServiceStatus:
         telegram_service = TelegramService()
         discover_service = TelegramDiscoverService()
         service = ServerService(
-            telegram_service, discover_service, mock_device_factory, port=8080
+            telegram_service, discover_service, mock_device_factory, port=CUSTOM_PORT
         )
         service.is_running = True
 
         status = service.get_server_status()
 
         assert status["running"] is True
-        assert status["port"] == 8080
+        assert status["port"] == CUSTOM_PORT
         assert status["devices_configured"] == 1
         assert "12345" in status["device_list"]
 
     @patch("xp.services.server.server_service.Path")
-    def test_get_server_status_not_running(self, mock_path, mock_device_factory):
+    def test_get_server_status_not_running(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test getting server status when not running."""
         mock_path.return_value.exists.return_value = False
         telegram_service = TelegramService()
@@ -314,7 +354,9 @@ class TestServerServiceRequestProcessing:
     """Test ServerService request processing."""
 
     @patch("xp.services.server.server_service.Path")
-    def test_process_request_invalid_telegram(self, mock_path, mock_device_factory):
+    def test_process_request_invalid_telegram(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test processing invalid telegram returns empty list."""
         mock_path.return_value.exists.return_value = False
         telegram_service = TelegramService()
@@ -323,15 +365,16 @@ class TestServerServiceRequestProcessing:
         service.telegram_service = Mock()
         service.telegram_service.parse_system_telegram.return_value = None
 
-        responses = service._process_request("<INVALID>")
+        # Private method: exercising it via the socket loop is impractical.
+        responses = service._process_request("<INVALID>")  # noqa: SLF001
 
         assert responses == []
 
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_process_request_discover(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test processing discover request."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
@@ -349,7 +392,8 @@ class TestServerServiceRequestProcessing:
             return_value="<DISCOVER_RESPONSE>"
         )
 
-        responses = service._process_request("<S0000000000F01D>")
+        # Private method: exercising it via the socket loop is impractical.
+        responses = service._process_request("<S0000000000F01D>")  # noqa: SLF001
 
         assert len(responses) == 1
         assert "<DISCOVER_RESPONSE>" in responses[0]
@@ -357,8 +401,8 @@ class TestServerServiceRequestProcessing:
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_process_request_specific_device(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test processing request for specific device."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
@@ -376,7 +420,8 @@ class TestServerServiceRequestProcessing:
             return_value="<RESPONSE>"
         )
 
-        responses = service._process_request("<S0000012345F02D>")
+        # Private method: exercising it via the socket loop is impractical.
+        responses = service._process_request("<S0000012345F02D>")  # noqa: SLF001
 
         assert len(responses) == 1
         assert "<RESPONSE>" in responses[0]
@@ -384,8 +429,8 @@ class TestServerServiceRequestProcessing:
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_process_request_broadcast(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test processing broadcast request."""
         mock_path.return_value.exists.return_value = True
         mock_module1 = Mock(enabled=True, serial_number="11111", module_type="XP33")
@@ -407,15 +452,16 @@ class TestServerServiceRequestProcessing:
             return_value="<RESPONSE2>"
         )
 
-        responses = service._process_request("<S0000000000F02D>")
+        # Private method: exercising it via the socket loop is impractical.
+        responses = service._process_request("<S0000000000F02D>")  # noqa: SLF001
 
-        assert len(responses) == 2
+        assert len(responses) == BROADCAST_RESPONSE_COUNT
 
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
     def test_process_request_broadcast_with_none_response(
-        self, mock_config, mock_path, mock_device_factory
-    ):
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test processing broadcast request where some devices return None."""
         mock_path.return_value.exists.return_value = True
         mock_module1 = Mock(enabled=True, serial_number="11111", module_type="XP33")
@@ -438,13 +484,16 @@ class TestServerServiceRequestProcessing:
         )
         service.discover_service.is_discover_request = Mock(return_value=False)
 
-        responses = service._process_request("<S0000000000F02D>")
+        # Private method: exercising it via the socket loop is impractical.
+        responses = service._process_request("<S0000000000F02D>")  # noqa: SLF001
 
         assert len(responses) == 1  # Only one response
         assert "<RESPONSE1>" in responses[0]
 
     @patch("xp.services.server.server_service.Path")
-    def test_process_request_device_not_found(self, mock_path, mock_device_factory):
+    def test_process_request_device_not_found(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test processing request for non-existent device."""
         mock_path.return_value.exists.return_value = False
         telegram_service = TelegramService()
@@ -456,12 +505,15 @@ class TestServerServiceRequestProcessing:
         )
         service.discover_service.is_discover_request = Mock(return_value=False)
 
-        responses = service._process_request("<S0000099999F02D>")
+        # Private method: exercising it via the socket loop is impractical.
+        responses = service._process_request("<S0000099999F02D>")  # noqa: SLF001
 
         assert responses == []
 
     @patch("xp.services.server.server_service.Path")
-    def test_process_request_handles_exception(self, mock_path, mock_device_factory):
+    def test_process_request_handles_exception(
+        self, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test processing request handles exceptions."""
         mock_path.return_value.exists.return_value = False
         telegram_service = TelegramService()
@@ -473,7 +525,8 @@ class TestServerServiceRequestProcessing:
         )
         service.telegram_service = mock_telegram_service
 
-        responses = service._process_request("<INVALID>")
+        # Private method: exercising it via the socket loop is impractical.
+        responses = service._process_request("<INVALID>")  # noqa: SLF001
 
         assert responses == []
 
@@ -483,7 +536,9 @@ class TestServerServiceReload:
 
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
-    def test_reload_config(self, mock_config, mock_path, mock_device_factory):
+    def test_reload_config(
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test reloading configuration."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="12345", module_type="XP33")
@@ -499,7 +554,7 @@ class TestServerServiceReload:
 
         service.reload_config()
 
-        assert len(service.devices) == 2
+        assert len(service.devices) == RELOADED_DEVICE_COUNT
 
 
 class TestServerServiceDeviceTypes:
@@ -507,7 +562,9 @@ class TestServerServiceDeviceTypes:
 
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
-    def test_create_xp24_service(self, mock_config, mock_path, mock_device_factory):
+    def test_create_xp24_service(
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test creating XP24 device service."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="24242", module_type="XP24")
@@ -521,7 +578,9 @@ class TestServerServiceDeviceTypes:
 
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
-    def test_create_xp33led_service(self, mock_config, mock_path, mock_device_factory):
+    def test_create_xp33led_service(
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test creating XP33LED device service."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="33333", module_type="XP33LED")
@@ -535,7 +594,9 @@ class TestServerServiceDeviceTypes:
 
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
-    def test_create_xp130_service(self, mock_config, mock_path, mock_device_factory):
+    def test_create_xp130_service(
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test creating XP130 device service."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="13013", module_type="XP130")
@@ -549,7 +610,9 @@ class TestServerServiceDeviceTypes:
 
     @patch("xp.services.server.server_service.Path")
     @patch("xp.services.server.server_service.ConsonModuleListConfig")
-    def test_create_xp230_service(self, mock_config, mock_path, mock_device_factory):
+    def test_create_xp230_service(
+        self, mock_config: Mock, mock_path: Mock, mock_device_factory: Mock
+    ) -> None:
         """Test creating XP230 device service."""
         mock_path.return_value.exists.return_value = True
         mock_module = Mock(enabled=True, serial_number="23023", module_type="XP230")

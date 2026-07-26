@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for XP33 Action Table Short Format."""
 
 import pytest
@@ -14,13 +15,23 @@ class TestXp33ShortFormat:
     """Test cases for XP33 short format conversion."""
 
     @pytest.fixture
-    def default_action_table(self):
-        """Create default action table for testing."""
+    def default_action_table(self) -> Xp33MsActionTable:
+        """Create default action table for testing.
+
+        Returns:
+            Default action table for testing.
+
+        """
         return Xp33MsActionTable()
 
     @pytest.fixture
-    def sample_action_table(self):
-        """Create sample action table with non-default values."""
+    def sample_action_table(self) -> Xp33MsActionTable:
+        """Create sample action table with non-default values.
+
+        Returns:
+            Sample action table with non-default values.
+
+        """
         return Xp33MsActionTable(
             output1=Xp33Output(
                 min_level=10,
@@ -69,7 +80,9 @@ class TestXp33ShortFormat:
             ),
         )
 
-    def test_to_short_format_default(self, default_action_table):
+    def test_to_short_format_default(
+        self, default_action_table: Xp33MsActionTable
+    ) -> None:
         """Test conversion to short format with default values."""
         short = default_action_table.to_short_format()
 
@@ -85,7 +98,9 @@ class TestXp33ShortFormat:
 
         assert short == expected
 
-    def test_to_short_format_sample(self, sample_action_table):
+    def test_to_short_format_sample(
+        self, sample_action_table: Xp33MsActionTable
+    ) -> None:
         """Test conversion to short format with sample values."""
         short = sample_action_table.to_short_format()
 
@@ -101,7 +116,7 @@ class TestXp33ShortFormat:
 
         assert short == expected
 
-    def test_from_short_format_default(self):
+    def test_from_short_format_default(self) -> None:
         """Test parsing short format with default values."""
         short_str = [
             "OUT1 MIN:0 MAX:100 SO:0 SF:0 LE:0",
@@ -116,8 +131,10 @@ class TestXp33ShortFormat:
         action_table = Xp33MsActionTable.from_short_format(short_str)
 
         # Validate outputs
-        assert action_table.output1.min_level == 0
-        assert action_table.output1.max_level == 100
+        assert (action_table.output1.min_level, action_table.output1.max_level) == (
+            0,
+            100,
+        )
         assert action_table.output1.scene_outputs is False
         assert action_table.output1.start_at_full is False
         assert action_table.output1.leading_edge is False
@@ -128,7 +145,7 @@ class TestXp33ShortFormat:
         assert action_table.scene1.output3_level == 0
         assert action_table.scene1.time == TimeParam.NONE
 
-    def test_from_short_format_sample(self):
+    def test_from_short_format_sample(self) -> None:
         """Test parsing short format with sample values."""
         short_str = [
             "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1",
@@ -143,39 +160,51 @@ class TestXp33ShortFormat:
         action_table = Xp33MsActionTable.from_short_format(short_str)
 
         # Validate output1
-        assert action_table.output1.min_level == 10
-        assert action_table.output1.max_level == 90
+        assert (action_table.output1.min_level, action_table.output1.max_level) == (
+            10,
+            90,
+        )
         assert action_table.output1.scene_outputs is True
         assert action_table.output1.start_at_full is False
         assert action_table.output1.leading_edge is True
 
         # Validate output2
-        assert action_table.output2.min_level == 20
-        assert action_table.output2.max_level == 80
+        assert (action_table.output2.min_level, action_table.output2.max_level) == (
+            20,
+            80,
+        )
         assert action_table.output2.scene_outputs is False
         assert action_table.output2.start_at_full is True
         assert action_table.output2.leading_edge is False
 
         # Validate output3
-        assert action_table.output3.min_level == 30
-        assert action_table.output3.max_level == 70
+        assert (action_table.output3.min_level, action_table.output3.max_level) == (
+            30,
+            70,
+        )
         assert action_table.output3.scene_outputs is True
         assert action_table.output3.start_at_full is True
         assert action_table.output3.leading_edge is True
 
         # Validate scene1
-        assert action_table.scene1.output1_level == 50
-        assert action_table.scene1.output2_level == 60
-        assert action_table.scene1.output3_level == 70
+        assert (
+            action_table.scene1.output1_level,
+            action_table.scene1.output2_level,
+            action_table.scene1.output3_level,
+        ) == (50, 60, 70)
         assert action_table.scene1.time == TimeParam.T5SEC
 
         # Validate scene4
-        assert action_table.scene4.output1_level == 0
-        assert action_table.scene4.output2_level == 100
-        assert action_table.scene4.output3_level == 50
+        assert (
+            action_table.scene4.output1_level,
+            action_table.scene4.output2_level,
+            action_table.scene4.output3_level,
+        ) == (0, 100, 50)
         assert action_table.scene4.time == TimeParam.NONE
 
-    def test_round_trip_conversion(self, sample_action_table):
+    def test_round_trip_conversion(
+        self, sample_action_table: Xp33MsActionTable
+    ) -> None:
         """Test that to_short_format and from_short_format are inverses."""
         # Convert to short format
         short = sample_action_table.to_short_format()
@@ -195,7 +224,7 @@ class TestXp33ShortFormat:
         assert parsed.scene1.output3_level == sample_action_table.scene1.output3_level
         assert parsed.scene1.time == sample_action_table.scene1.time
 
-    def test_boundary_values(self):
+    def test_boundary_values(self) -> None:
         """Test boundary value handling."""
         action_table = Xp33MsActionTable(
             output1=Xp33Output(min_level=0, max_level=100),
@@ -211,14 +240,11 @@ class TestXp33ShortFormat:
         parsed = Xp33MsActionTable.from_short_format(action_table.to_short_format())
 
         # Verify boundary values
-        assert parsed.output1.min_level == 0
-        assert parsed.output1.max_level == 100
-        assert parsed.scene1.output1_level == 0
-        assert parsed.scene1.output2_level == 100
-        assert parsed.scene2.output1_level == 100
-        assert parsed.scene2.output2_level == 0
+        assert (parsed.output1.min_level, parsed.output1.max_level) == (0, 100)
+        assert (parsed.scene1.output1_level, parsed.scene1.output2_level) == (0, 100)
+        assert (parsed.scene2.output1_level, parsed.scene2.output2_level) == (100, 0)
 
-    def test_all_time_params(self):
+    def test_all_time_params(self) -> None:
         """Test all TimeParam enum values."""
         for time_param in TimeParam:
             scene = Xp33Scene(
@@ -234,7 +260,7 @@ class TestXp33ShortFormat:
             # Verify time parameter is preserved
             assert parsed.scene1.time == time_param
 
-    def test_all_flag_combinations(self):
+    def test_all_flag_combinations(self) -> None:
         """Test all combinations of output flags."""
         flag_combinations = [
             (False, False, False),
@@ -261,7 +287,7 @@ class TestXp33ShortFormat:
             assert parsed.output1.start_at_full == sf
             assert parsed.output1.leading_edge == le
 
-    def test_invalid_format_missing_output(self):
+    def test_invalid_format_missing_output(self) -> None:
         """Test error handling for missing output."""
         short_str = [
             "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1",
@@ -276,7 +302,7 @@ class TestXp33ShortFormat:
         with pytest.raises(ValueError, match="Missing output2"):
             Xp33MsActionTable.from_short_format(short_str)
 
-    def test_invalid_format_missing_scene(self):
+    def test_invalid_format_missing_scene(self) -> None:
         """Test error handling for missing scene."""
         short_str = [
             "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1",
@@ -291,7 +317,7 @@ class TestXp33ShortFormat:
         with pytest.raises(ValueError, match="Missing scene3"):
             Xp33MsActionTable.from_short_format(short_str)
 
-    def test_invalid_output_number(self):
+    def test_invalid_output_number(self) -> None:
         """Test error handling for invalid output number."""
         short_str = [
             "OUT5 MIN:10 MAX:90 SO:1 SF:0 LE:1\n",  # Invalid OUT5
@@ -306,7 +332,7 @@ class TestXp33ShortFormat:
         with pytest.raises(ValueError, match="Invalid output number"):
             Xp33MsActionTable.from_short_format(short_str)
 
-    def test_invalid_scene_number(self):
+    def test_invalid_scene_number(self) -> None:
         """Test error handling for invalid scene number."""
         short_str = [
             "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1\n",
@@ -321,7 +347,7 @@ class TestXp33ShortFormat:
         with pytest.raises(ValueError, match="Invalid scene number"):
             Xp33MsActionTable.from_short_format(short_str)
 
-    def test_invalid_output_parameter_missing(self):
+    def test_invalid_output_parameter_missing(self) -> None:
         """Test error handling for missing output parameter."""
         short_str = [
             "OUT1 MIN:10 MAX:90 SO:1 LE:1\n",  # Missing SF
@@ -336,7 +362,7 @@ class TestXp33ShortFormat:
         with pytest.raises(ValueError, match="Missing required parameter"):
             Xp33MsActionTable.from_short_format(short_str)
 
-    def test_invalid_scene_parameter_missing(self):
+    def test_invalid_scene_parameter_missing(self) -> None:
         """Test error handling for missing scene parameter."""
         short_str = [
             "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1\n",
@@ -351,7 +377,7 @@ class TestXp33ShortFormat:
         with pytest.raises(ValueError, match="Missing required parameter"):
             Xp33MsActionTable.from_short_format(short_str)
 
-    def test_invalid_output_level_range(self):
+    def test_invalid_output_level_range(self) -> None:
         """Test error handling for out-of-range output levels."""
         short_str = [
             "OUT1 MIN:10 MAX:150 SO:1 SF:0 LE:1\n",  # MAX > 100
@@ -366,7 +392,7 @@ class TestXp33ShortFormat:
         with pytest.raises(ValueError, match="out of range"):
             Xp33MsActionTable.from_short_format(short_str)
 
-    def test_invalid_scene_level_range(self):
+    def test_invalid_scene_level_range(self) -> None:
         """Test error handling for out-of-range scene levels."""
         short_str = [
             "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1\n",
@@ -381,7 +407,7 @@ class TestXp33ShortFormat:
         with pytest.raises(ValueError, match="out of range"):
             Xp33MsActionTable.from_short_format(short_str)
 
-    def test_invalid_time_param(self):
+    def test_invalid_time_param(self) -> None:
         """Test error handling for invalid TimeParam."""
         short_str = [
             "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1\n",
@@ -396,7 +422,7 @@ class TestXp33ShortFormat:
         with pytest.raises(ValueError, match="Invalid TimeParam"):
             Xp33MsActionTable.from_short_format(short_str)
 
-    def test_numeric_time_param(self):
+    def test_numeric_time_param(self) -> None:
         """Test parsing numeric TimeParam values."""
         short_str = [
             "OUT1 MIN:10 MAX:90 SO:1 SF:0 LE:1\n",
@@ -416,7 +442,7 @@ class TestXp33ShortFormat:
         assert action_table.scene3.time == TimeParam.T1MIN
         assert action_table.scene4.time == TimeParam.NONE
 
-    def test_whitespace_handling(self):
+    def test_whitespace_handling(self) -> None:
         """Test that extra whitespace is handled correctly."""
         short_str = [
             "OUT1  MIN:10  MAX:90  SO:1  SF:0  LE:1\n",
@@ -431,6 +457,8 @@ class TestXp33ShortFormat:
         # Should parse successfully despite extra whitespace
         action_table = Xp33MsActionTable.from_short_format(short_str)
 
-        assert action_table.output1.min_level == 10
-        assert action_table.output2.min_level == 20
-        assert action_table.output3.min_level == 30
+        assert (
+            action_table.output1.min_level,
+            action_table.output2.min_level,
+            action_table.output3.min_level,
+        ) == (10, 20, 30)

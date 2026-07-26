@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Unit tests for ConbusEventListService."""
 
 import pytest
@@ -13,13 +14,23 @@ class TestConbusEventListService:
     """Unit tests for ConbusEventListService functionality."""
 
     @pytest.fixture
-    def empty_config(self):
-        """Create empty config with no modules."""
+    def empty_config(self) -> ConsonModuleListConfig:
+        """Create empty config with no modules.
+
+        Returns:
+            Empty config with no modules.
+
+        """
         return ConsonModuleListConfig(root=[])
 
     @pytest.fixture
-    def single_module_config(self):
-        """Create config with single module and one action."""
+    def single_module_config(self) -> ConsonModuleListConfig:
+        """Create config with single module and one action.
+
+        Returns:
+            Config with single module and one action.
+
+        """
         module = ConsonModuleConfig(
             name="A1",
             serial_number="0012345001",
@@ -31,8 +42,13 @@ class TestConbusEventListService:
         return ConsonModuleListConfig(root=[module])
 
     @pytest.fixture
-    def multiple_modules_same_event_config(self):
-        """Create config with multiple modules sharing same event."""
+    def multiple_modules_same_event_config(self) -> ConsonModuleListConfig:
+        """Create config with multiple modules sharing same event.
+
+        Returns:
+            Config with multiple modules sharing same event.
+
+        """
         module1 = ConsonModuleConfig(
             name="A1",
             serial_number="0012345001",
@@ -60,8 +76,13 @@ class TestConbusEventListService:
         return ConsonModuleListConfig(root=[module1, module2, module3])
 
     @pytest.fixture
-    def duplicate_actions_config(self):
-        """Create config with duplicate actions in same module."""
+    def duplicate_actions_config(self) -> ConsonModuleListConfig:
+        """Create config with duplicate actions in same module.
+
+        Returns:
+            Config with duplicate actions in same module.
+
+        """
         module = ConsonModuleConfig(
             name="A1",
             serial_number="0012345001",
@@ -77,8 +98,13 @@ class TestConbusEventListService:
         return ConsonModuleListConfig(root=[module])
 
     @pytest.fixture
-    def invalid_action_config(self):
-        """Create config with invalid action format."""
+    def invalid_action_config(self) -> ConsonModuleListConfig:
+        """Create config with invalid action format.
+
+        Returns:
+            Config with invalid action format.
+
+        """
         module = ConsonModuleConfig(
             name="A1",
             serial_number="0012345001",
@@ -94,8 +120,13 @@ class TestConbusEventListService:
         return ConsonModuleListConfig(root=[module])
 
     @pytest.fixture
-    def empty_action_table_config(self):
-        """Create config with module having empty action table."""
+    def empty_action_table_config(self) -> ConsonModuleListConfig:
+        """Create config with module having empty action table.
+
+        Returns:
+            Config with module having empty action table.
+
+        """
         module1 = ConsonModuleConfig(
             name="A1",
             serial_number="0012345001",
@@ -115,8 +146,13 @@ class TestConbusEventListService:
         return ConsonModuleListConfig(root=[module1, module2])
 
     @pytest.fixture
-    def sorting_config(self):
-        """Create config for testing sorting by module count."""
+    def sorting_config(self) -> ConsonModuleListConfig:
+        """Create config for testing sorting by module count.
+
+        Returns:
+            Config for testing sorting by module count.
+
+        """
         # Event XP20 10 00 has 3 modules
         module1 = ConsonModuleConfig(
             name="A1",
@@ -172,14 +208,14 @@ class TestConbusEventListService:
             root=[module1, module2, module3, module4, module5, module6]
         )
 
-    def test_empty_config(self, empty_config):
+    def test_empty_config(self, empty_config: ConsonModuleListConfig) -> None:
         """Test with empty configuration (no modules)."""
         response = ConbusEventListService(conson_config=empty_config).list_events()
 
         assert response.events == {}
         assert response.timestamp is not None
 
-    def test_single_module(self, single_module_config):
+    def test_single_module(self, single_module_config: ConsonModuleListConfig) -> None:
         """Test with single module and one action."""
         response = ConbusEventListService(
             conson_config=single_module_config
@@ -189,7 +225,9 @@ class TestConbusEventListService:
         assert "XP20 10 00" in response.events
         assert response.events["XP20 10 00"] == ["0012345001:0"]
 
-    def test_multiple_modules_same_event(self, multiple_modules_same_event_config):
+    def test_multiple_modules_same_event(
+        self, multiple_modules_same_event_config: ConsonModuleListConfig
+    ) -> None:
         """Test multiple modules sharing same event."""
         response = ConbusEventListService(
             conson_config=multiple_modules_same_event_config
@@ -203,7 +241,9 @@ class TestConbusEventListService:
             "0012345003:2",
         ]
 
-    def test_duplicate_actions_deduplication(self, duplicate_actions_config):
+    def test_duplicate_actions_deduplication(
+        self, duplicate_actions_config: ConsonModuleListConfig
+    ) -> None:
         """Test that duplicate actions in same module are deduplicated."""
         response = ConbusEventListService(
             conson_config=duplicate_actions_config
@@ -217,22 +257,26 @@ class TestConbusEventListService:
             "0012345001:2",
         ]  # Only once, not three times
 
-    def test_invalid_action_format(self, invalid_action_config, caplog):
+    def test_invalid_action_format(
+        self,
+        invalid_action_config: ConsonModuleListConfig,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
         """Test that invalid actions are skipped with warning."""
         response = ConbusEventListService(
             conson_config=invalid_action_config
         ).list_events()
 
         # Should have 2 valid events
-        assert len(response.events) == 2
-        assert "XP20 10 00" in response.events
-        assert "XP20 10 08" in response.events
+        assert sorted(response.events) == ["XP20 10 00", "XP20 10 08"]
 
         # Should have logged warning about invalid action
         assert "Invalid action" in caplog.text
         assert "INVALID ACTION FORMAT" in caplog.text
 
-    def test_empty_action_table(self, empty_action_table_config):
+    def test_empty_action_table(
+        self, empty_action_table_config: ConsonModuleListConfig
+    ) -> None:
         """Test that modules with empty action table are silently skipped."""
         response = ConbusEventListService(
             conson_config=empty_action_table_config
@@ -243,22 +287,22 @@ class TestConbusEventListService:
         assert "XP20 10 00" in response.events
         assert response.events["XP20 10 00"] == ["0012345002:0"]
 
-    def test_sorting_by_module_count(self, sorting_config):
+    def test_sorting_by_module_count(
+        self, sorting_config: ConsonModuleListConfig
+    ) -> None:
         """Test that events are sorted by module count (descending)."""
         response = ConbusEventListService(conson_config=sorting_config).list_events()
 
-        # Get events in order
-        event_keys = list(response.events.keys())
-
         # Should be sorted by count: XP20 10 00 (3), XP20 10 08 (2), CP20 00 00 (1)
-        assert event_keys[0] == "XP20 10 00"
-        assert len(response.events[event_keys[0]]) == 3
-        assert event_keys[1] == "XP20 10 08"
-        assert len(response.events[event_keys[1]]) == 2
-        assert event_keys[2] == "CP20 00 00"
-        assert len(response.events[event_keys[2]]) == 1
+        assert [(key, len(value)) for key, value in response.events.items()] == [
+            ("XP20 10 00", 3),
+            ("XP20 10 08", 2),
+            ("CP20 00 00", 1),
+        ]
 
-    def test_to_dict_serialization(self, single_module_config):
+    def test_to_dict_serialization(
+        self, single_module_config: ConsonModuleListConfig
+    ) -> None:
         """Test that response can be serialized to dict."""
         result_dict = (
             ConbusEventListService(conson_config=single_module_config)

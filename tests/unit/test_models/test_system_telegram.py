@@ -1,23 +1,24 @@
-"""
-Unit tests for SystemTelegram model.
+# Copyright (c) 2025 ldvchosal
+"""Unit tests for SystemTelegram model.
 
 Tests the system telegram model functionality including parsing, validation, and data
 structure integrity.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.system_telegram import SystemTelegram
+from xp.utils.time_utils import local_now
 
 
 class TestSystemFunction:
     """Test SystemFunction enum."""
 
-    def test_from_code_valid(self):
+    def test_from_code_valid(self) -> None:
         """Test from_code with valid codes."""
         assert SystemFunction.from_code("01") == SystemFunction.DISCOVERY
         assert SystemFunction.from_code("02") == SystemFunction.READ_DATAPOINT
@@ -26,13 +27,13 @@ class TestSystemFunction:
         assert SystemFunction.from_code("05") == SystemFunction.BLINK
         assert SystemFunction.from_code("06") == SystemFunction.UNBLINK
 
-    def test_from_code_invalid(self):
+    def test_from_code_invalid(self) -> None:
         """Test from_code with invalid codes."""
         assert SystemFunction.from_code("99") is None
         assert SystemFunction.from_code("XX") is None
         assert SystemFunction.from_code("") is None
 
-    def test_enum_values(self):
+    def test_enum_values(self) -> None:
         """Test enum values are correct."""
         assert SystemFunction.DISCOVERY.value == "01"
         assert SystemFunction.READ_DATAPOINT.value == "02"
@@ -45,7 +46,7 @@ class TestSystemFunction:
 class TestDataPointType:
     """Test DataPointType enum."""
 
-    def test_from_code_valid(self):
+    def test_from_code_valid(self) -> None:
         """Test from_code with valid codes."""
         assert DataPointType.from_code("18") == DataPointType.TEMPERATURE
         assert DataPointType.from_code("19") == DataPointType.SW_TOP_VERSION
@@ -61,13 +62,13 @@ class TestDataPointType:
         assert DataPointType.from_code("14") == DataPointType.MODULE_ACTION_TABLE_CRC
         assert DataPointType.from_code("15") == DataPointType.MODULE_LIGHT_LEVEL
 
-    def test_from_code_invalid(self):
+    def test_from_code_invalid(self) -> None:
         """Test from_code with invalid codes."""
         assert DataPointType.from_code("99") is None
         assert DataPointType.from_code("XX") is None
         assert DataPointType.from_code("") is None
 
-    def test_enum_values(self):
+    def test_enum_values(self) -> None:
         """Test enum values are correct."""
         assert DataPointType.TEMPERATURE.value == "18"
         assert DataPointType.SW_TOP_VERSION.value == "19"
@@ -88,7 +89,7 @@ class TestDataPointType:
 class TestSystemTelegram:
     """Test SystemTelegram model."""
 
-    def test_system_telegram_creation(self):
+    def test_system_telegram_creation(self) -> None:
         """Test basic system telegram creation."""
         telegram = SystemTelegram(
             serial_number="0020012521",
@@ -106,9 +107,9 @@ class TestSystemTelegram:
         assert telegram.timestamp is not None
         assert isinstance(telegram.timestamp, datetime)
 
-    def test_system_telegram_with_timestamp(self):
+    def test_system_telegram_with_timestamp(self) -> None:
         """Test system telegram creation with explicit timestamp."""
-        test_time = datetime(2023, 1, 1, 12, 0, 0)
+        test_time = datetime(2023, 1, 1, 12, 0, 0, tzinfo=UTC)
         telegram = SystemTelegram(
             serial_number="0020012521",
             system_function=SystemFunction.READ_DATAPOINT,
@@ -120,7 +121,7 @@ class TestSystemTelegram:
 
         assert telegram.timestamp == test_time
 
-    def test_function_description(self):
+    def test_function_description(self) -> None:
         """Test function description property."""
         telegram = SystemTelegram(
             serial_number="0020012521",
@@ -140,7 +141,7 @@ class TestSystemTelegram:
         telegram.system_function = SystemFunction.READ_CONFIG
         assert telegram.system_function.name == "READ_CONFIG"
 
-    def test_data_point_description(self):
+    def test_data_point_description(self) -> None:
         """Test data point description property."""
         telegram = SystemTelegram(
             serial_number="0020012521",
@@ -166,7 +167,7 @@ class TestSystemTelegram:
         telegram.datapoint_type = DataPointType.MODULE_TYPE
         assert telegram.datapoint_type.name == "MODULE_TYPE"
 
-    def test_to_dict(self):
+    def test_to_dict(self) -> None:
         """Test to_dict method."""
         result = SystemTelegram(
             serial_number="0020012521",
@@ -188,7 +189,7 @@ class TestSystemTelegram:
         assert "timestamp" in result
         assert result["timestamp"] is not None
 
-    def test_str_representation(self):
+    def test_str_representation(self) -> None:
         """Test string representation."""
         telegram = SystemTelegram(
             serial_number="0020012521",
@@ -206,7 +207,7 @@ class TestSystemTelegram:
         assert "from device 0020012521" in str_repr
 
     @pytest.mark.parametrize(
-        "function,description",
+        ("function", "description"),
         [
             (SystemFunction.DISCOVERY, "DISCOVERY"),
             (SystemFunction.READ_DATAPOINT, "READ_DATAPOINT"),
@@ -216,7 +217,9 @@ class TestSystemTelegram:
             (SystemFunction.UNBLINK, "UNBLINK"),
         ],
     )
-    def test_function_descriptions(self, function, description):
+    def test_function_descriptions(
+        self, function: SystemFunction, description: str
+    ) -> None:
         """Test all function descriptions."""
         telegram = SystemTelegram(
             serial_number="0020012521",
@@ -229,9 +232,9 @@ class TestSystemTelegram:
         assert telegram.system_function is not None
         assert telegram.system_function.name == description
 
-    def test_telegram_equality(self):
+    def test_telegram_equality(self) -> None:
         """Test telegram object equality."""
-        timestamp = datetime.now()
+        timestamp = datetime.now(UTC)
 
         telegram1 = SystemTelegram(
             serial_number="0020012521",
@@ -254,7 +257,7 @@ class TestSystemTelegram:
         # Dataclass should provide equality
         assert telegram1 == telegram2
 
-    def test_telegram_with_different_serial_numbers(self):
+    def test_telegram_with_different_serial_numbers(self) -> None:
         """Test telegrams with different serial numbers."""
         telegram1 = SystemTelegram(
             serial_number="0020012521",
@@ -276,9 +279,9 @@ class TestSystemTelegram:
         assert telegram1.checksum != telegram2.checksum
         assert telegram1.raw_telegram != telegram2.raw_telegram
 
-    def test_post_init_timestamp_generation(self):
+    def test_post_init_timestamp_generation(self) -> None:
         """Test that __post_init__ sets timestamp if not provided."""
-        before = datetime.now()
+        before = local_now()
 
         telegram = SystemTelegram(
             serial_number="0020012521",
@@ -288,7 +291,7 @@ class TestSystemTelegram:
             raw_telegram="<S0020012521F02D18FN>",
         )
 
-        after = datetime.now()
+        after = local_now()
 
         assert telegram.timestamp is not None
         assert before <= telegram.timestamp <= after

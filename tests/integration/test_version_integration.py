@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Integration tests for version parsing functionality."""
 
 import unittest
@@ -13,29 +14,29 @@ from xp.services.telegram.telegram_version_service import VersionService
 class TestVersionIntegration(unittest.TestCase):
     """Integration tests for version telegram parsing."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures."""
         self.telegram_service = TelegramService()
         self.version_service = VersionService()
 
-    def test_parse_version_system_telegram_from_spec(self):
+    def test_parse_version_system_telegram_from_spec(self) -> None:
         """Test parsing version system telegram from specification example."""
         raw_telegram = "<S0012345011F02D02FM>"
 
         parsed = self.telegram_service.parse_system_telegram(raw_telegram)
 
-        self.assertEqual(parsed.serial_number, "0012345011")
-        self.assertEqual(parsed.system_function, SystemFunction.READ_DATAPOINT)
-        self.assertEqual(parsed.datapoint_type, DataPointType.SW_VERSION)
-        self.assertEqual(parsed.checksum, "FM")
-        self.assertEqual(parsed.raw_telegram, raw_telegram)
+        assert parsed.serial_number == "0012345011"
+        assert parsed.system_function == SystemFunction.READ_DATAPOINT
+        assert parsed.datapoint_type == DataPointType.SW_VERSION
+        assert parsed.checksum == "FM"
+        assert parsed.raw_telegram == raw_telegram
 
         # Verify it's a version request using version service
         validation = self.version_service.validate_version_telegram(parsed)
-        self.assertTrue(validation.success)
-        self.assertTrue(validation.data["is_version_request"])
+        assert validation.success
+        assert validation.data["is_version_request"]
 
-    def test_parse_version_reply_telegrams_from_spec(self):
+    def test_parse_version_reply_telegrams_from_spec(self) -> None:
         """Test parsing version reply telegrams from specification examples."""
         test_cases = [
             ("<R0012345011F02D02XP230_V1.00.04FI>", "XP230", "1.00.04"),
@@ -56,31 +57,31 @@ class TestVersionIntegration(unittest.TestCase):
                 parsed = self.telegram_service.parse_reply_telegram(raw_telegram)
 
                 # Verify basic parsing
-                self.assertEqual(parsed.system_function, SystemFunction.READ_DATAPOINT)
-                self.assertEqual(parsed.datapoint_type, DataPointType.SW_VERSION)
-                self.assertEqual(parsed.raw_telegram, raw_telegram)
+                assert parsed.system_function == SystemFunction.READ_DATAPOINT
+                assert parsed.datapoint_type == DataPointType.SW_VERSION
+                assert parsed.raw_telegram == raw_telegram
 
                 # Verify version parsing using built-in reply telegram parser
                 version_data = parsed.parse_datapoint_value
-                self.assertTrue(version_data["parsed"])
-                self.assertEqual(version_data["product"], expected_product)
-                self.assertEqual(version_data["version"], expected_version)
-                self.assertEqual(
-                    version_data["full_version"],
-                    f"{expected_product}_V{expected_version}",
+                assert version_data["parsed"]
+                assert version_data["product"] == expected_product
+                assert version_data["version"] == expected_version
+                assert (
+                    version_data["full_version"]
+                    == f"{expected_product}_V{expected_version}"
                 )
 
                 # Verify using version service
                 version_result = self.version_service.parse_version_reply(parsed)
-                self.assertTrue(version_result.success)
-                self.assertEqual(
-                    version_result.data["version_info"]["product"], expected_product
+                assert version_result.success
+                assert (
+                    version_result.data["version_info"]["product"] == expected_product
                 )
-                self.assertEqual(
-                    version_result.data["version_info"]["version"], expected_version
+                assert (
+                    version_result.data["version_info"]["version"] == expected_version
                 )
 
-    def test_auto_detect_version_telegrams(self):
+    def test_auto_detect_version_telegrams(self) -> None:
         """Test auto-detecting version telegrams using the generic parse method."""
         test_cases = [
             ("<S0012345011F02D02FM>", "S"),
@@ -91,20 +92,20 @@ class TestVersionIntegration(unittest.TestCase):
             with self.subTest(raw_telegram=raw_telegram):
                 parsed = self.telegram_service.parse_telegram(raw_telegram)
 
-                self.assertEqual(parsed.to_dict()["telegram_type"], expected_type)
+                assert parsed.to_dict()["telegram_type"] == expected_type
 
                 if expected_type == "s":
                     assert isinstance(parsed, SystemTelegram)
                     validation = self.version_service.validate_version_telegram(parsed)
-                    self.assertTrue(validation.success)
-                    self.assertTrue(validation.data["is_version_request"])
+                    assert validation.success
+                    assert validation.data["is_version_request"]
                 elif expected_type == "r":
                     assert isinstance(parsed, ReplyTelegram)
                     version_result = self.version_service.parse_version_reply(parsed)
-                    self.assertTrue(version_result.success)
-                    self.assertTrue(version_result.data["version_info"]["parsed"])
+                    assert version_result.success
+                    assert version_result.data["version_info"]["parsed"]
 
-    def test_generate_and_parse_version_request(self):
+    def test_generate_and_parse_version_request(self) -> None:
         """Test generating version request and then parsing it back."""
         serial_number = "0012345011"
 
@@ -112,7 +113,7 @@ class TestVersionIntegration(unittest.TestCase):
         generation_result = self.version_service.generate_version_request_telegram(
             serial_number
         )
-        self.assertTrue(generation_result.success)
+        assert generation_result.success
 
         generated_telegram = generation_result.data["telegram"]
 
@@ -120,16 +121,16 @@ class TestVersionIntegration(unittest.TestCase):
         parsed = self.telegram_service.parse_system_telegram(generated_telegram)
 
         # Verify it parsed correctly
-        self.assertEqual(parsed.serial_number, serial_number)
-        self.assertEqual(parsed.system_function, SystemFunction.READ_DATAPOINT)
-        self.assertEqual(parsed.datapoint_type, DataPointType.SW_VERSION)
+        assert parsed.serial_number == serial_number
+        assert parsed.system_function == SystemFunction.READ_DATAPOINT
+        assert parsed.datapoint_type == DataPointType.SW_VERSION
 
         # Verify it's recognized as a version request
         validation = self.version_service.validate_version_telegram(parsed)
-        self.assertTrue(validation.success)
-        self.assertTrue(validation.data["is_version_request"])
+        assert validation.success
+        assert validation.data["is_version_request"]
 
-    def test_invalid_version_telegram_handling(self):
+    def test_invalid_version_telegram_handling(self) -> None:
         """Test handling of invalid version telegrams."""
         invalid_cases = [
             "<R0012345011F02D02INVALID_FORMATXX>",  # Invalid version format
@@ -150,29 +151,29 @@ class TestVersionIntegration(unittest.TestCase):
                                 parsed
                             )
                             if "INVALID_FORMAT" in raw_telegram:
-                                self.assertFalse(version_result.success)
+                                assert not version_result.success
                         else:
                             # Not a version telegram - should fail version parsing
                             assert isinstance(parsed, ReplyTelegram)
                             version_result = self.version_service.parse_version_reply(
                                 parsed
                             )
-                            self.assertFalse(version_result.success)
+                            assert not version_result.success
                     elif hasattr(parsed, "system_function"):  # System telegram
                         assert isinstance(parsed, SystemTelegram)
                         validation = self.version_service.validate_version_telegram(
                             parsed
                         )
-                        self.assertTrue(validation.success)
+                        assert validation.success
                         assert hasattr(parsed, "datapoint_type")
                         if parsed.datapoint_type != DataPointType.SW_VERSION:
-                            self.assertFalse(validation.data["is_version_request"])
+                            assert not validation.data["is_version_request"]
 
                 except TelegramParsingError:
                     # Expected for invalid telegram formats
-                    self.assertIn("INVALID", raw_telegram)
+                    assert "INVALID" in raw_telegram
 
-    def test_version_telegram_formatting(self):
+    def test_version_telegram_formatting(self) -> None:
         """Test formatting of version telegrams for display."""
         raw_telegram = "<R0012345011F02D02XP230_V1.00.04FI>"
 
@@ -181,18 +182,18 @@ class TestVersionIntegration(unittest.TestCase):
 
         # Parse version information
         version_result = self.version_service.parse_version_reply(parsed)
-        self.assertTrue(version_result.success)
+        assert version_result.success
 
         # Format for display
         summary = self.version_service.format_version_summary(version_result.data)
 
-        self.assertIn("Device Version Information:", summary)
-        self.assertIn("Serial Number: 0012345011", summary)
-        self.assertIn("Product: XP230", summary)
-        self.assertIn("Version: 1.00.04", summary)
-        self.assertIn("Full Version: XP230_V1.00.04", summary)
+        assert "Device Version Information:" in summary
+        assert "Serial Number: 0012345011" in summary
+        assert "Product: XP230" in summary
+        assert "Version: 1.00.04" in summary
+        assert "Full Version: XP230_V1.00.04" in summary
 
-    def test_version_parsing_edge_cases(self):
+    def test_version_parsing_edge_cases(self) -> None:
         """Test edge cases in version parsing."""
         edge_cases = [
             # Version with additional underscores in product name
@@ -209,29 +210,25 @@ class TestVersionIntegration(unittest.TestCase):
 
         for raw_telegram, expected_product, expected_version in edge_cases:
             with self.subTest(raw_telegram=raw_telegram):
-                try:
-                    parsed = self.telegram_service.parse_reply_telegram(raw_telegram)
-                    version_data = parsed.parse_datapoint_value
+                parsed = self.telegram_service.parse_reply_telegram(raw_telegram)
+                version_data = parsed.parse_datapoint_value
 
-                    self.assertTrue(version_data["parsed"])
-                    self.assertEqual(version_data["product"], expected_product)
-                    self.assertEqual(version_data["version"], expected_version)
+                assert version_data["parsed"]
+                assert version_data["product"] == expected_product
+                assert version_data["version"] == expected_version
 
-                except Exception as e:
-                    self.fail(f"Failed to parse {raw_telegram}: {e}")
-
-    def test_telegram_service_format_version_reply(self):
+    def test_telegram_service_format_version_reply(self) -> None:
         """Test that telegram service correctly formats version reply summaries."""
         raw_telegram = "<R0012345011F02D02XP230_V1.00.04FI>"
 
         parsed = self.telegram_service.parse_reply_telegram(raw_telegram)
         summary = self.telegram_service.format_reply_telegram_summary(parsed)
 
-        self.assertIn("Reply Telegram: READ_DATAPOINT", summary)
-        self.assertIn("for SW_VERSION = XP230 v1.00.04", summary)
-        self.assertIn("from device 0012345011", summary)
-        self.assertIn("Data: XP230 v1.00.04", summary)
-        self.assertIn(f"Raw: {raw_telegram}", summary)
+        assert "Reply Telegram: READ_DATAPOINT" in summary
+        assert "for SW_VERSION = XP230 v1.00.04" in summary
+        assert "from device 0012345011" in summary
+        assert "Data: XP230 v1.00.04" in summary
+        assert f"Raw: {raw_telegram}" in summary
 
 
 if __name__ == "__main__":

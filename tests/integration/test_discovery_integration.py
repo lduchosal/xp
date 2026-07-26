@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Integration tests for device discover functionality."""
 
 import pytest
@@ -13,7 +14,7 @@ from xp.services.telegram.telegram_service import TelegramParsingError, Telegram
 class TestDiscoverIntegration:
     """Integration test cases for discover operations."""
 
-    def test_complete_discover_workflow(self):
+    def test_complete_discover_workflow(self) -> None:
         """Test complete workflow: generate -> parse -> analyze."""
         discover_service = TelegramDiscoverService()
         telegram_service = TelegramService()
@@ -32,7 +33,7 @@ class TestDiscoverIntegration:
         assert parsed_system.checksum == "FA"
         assert parsed_system.checksum_validated is True
 
-    def test_discover_telegram_object_creation_and_parsing_consistency(self):
+    def test_discover_telegram_object_creation_and_parsing_consistency(self) -> None:
         """Test that created telegram objects match parsed ones."""
         discover_service = TelegramDiscoverService()
         telegram_service = TelegramService()
@@ -52,7 +53,7 @@ class TestDiscoverIntegration:
         assert created_telegram.checksum == parsed_telegram.checksum
         assert created_telegram.raw_telegram == parsed_telegram.raw_telegram
 
-    def test_checksum_validation_integration(self):
+    def test_checksum_validation_integration(self) -> None:
         """Test that checksum validation works for discover telegrams."""
         discover_service = TelegramDiscoverService()
         telegram_service = TelegramService()
@@ -86,7 +87,7 @@ class TestDiscoverIntegration:
             is_valid = telegram_service.validate_checksum(parsed_response)
             assert is_valid is True
 
-    def test_error_handling_integration(self):
+    def test_error_handling_integration(self) -> None:
         """Test error handling across services."""
         discover_service = TelegramDiscoverService()
         telegram_service = TelegramService()
@@ -100,7 +101,7 @@ class TestDiscoverIntegration:
         parsed = telegram_service.parse_system_telegram(valid_telegram)
         assert parsed is not None
 
-    def test_discover_response_format_validation_integration(self):
+    def test_discover_response_format_validation_integration(self) -> None:
         """Test discover response format validation with real telegrams."""
         telegram_service = TelegramService()
         discover_service = TelegramDiscoverService()
