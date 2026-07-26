@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/xp.iml" filepath="$PROJECT_DIR$/.idea/xp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/conson-xp.iml" filepath="$PROJECT_DIR$/.idea/conson-xp.iml" />
     </modules>
   </component>
 </project>
