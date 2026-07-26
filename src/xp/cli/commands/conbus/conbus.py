@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Shared conbus CLI group definition."""
 
 import click
@@ -9,7 +10,6 @@ from click_help_colors import HelpColorsGroup
 )
 def conbus() -> None:
     """Perform Conbus client operations for sending telegrams to remote servers."""
-    pass
 
 
 @click.group(
@@ -19,8 +19,7 @@ def conbus() -> None:
     help_options_color="green",
 )
 def conbus_blink() -> None:
-    """Sending blink telegrams to remote servers."""
-    pass
+    """Send blink telegrams to remote servers."""
 
 
 @click.group(
@@ -31,7 +30,6 @@ def conbus_blink() -> None:
 )
 def conbus_output() -> None:
     """Perform Conbus input operations to remote servers."""
-    pass
 
 
 @click.group(
@@ -42,7 +40,6 @@ def conbus_output() -> None:
 )
 def conbus_datapoint() -> None:
     """Perform Conbus datapoint operations for querying module datapoints."""
-    pass
 
 
 @click.group(
@@ -54,7 +51,6 @@ def conbus_datapoint() -> None:
 )
 def conbus_linknumber() -> None:
     """Set or get the link number for specific modules."""
-    pass
 
 
 @click.group(
@@ -66,7 +62,6 @@ def conbus_linknumber() -> None:
 )
 def conbus_modulenumber() -> None:
     """Set or get the module number for specific modules."""
-    pass
 
 
 @click.group(
@@ -78,7 +73,6 @@ def conbus_modulenumber() -> None:
 )
 def conbus_autoreport() -> None:
     """Get or set the auto report status for specific modules."""
-    pass
 
 
 @click.group(
@@ -90,7 +84,6 @@ def conbus_autoreport() -> None:
 )
 def conbus_lightlevel() -> None:
     """Control light level (dimming) of outputs on Conbus modules."""
-    pass
 
 
 @click.group(
@@ -102,7 +95,6 @@ def conbus_lightlevel() -> None:
 )
 def conbus_msactiontable() -> None:
     """Download msactiontable on Conbus modules."""
-    pass
 
 
 @click.group(
@@ -114,7 +106,6 @@ def conbus_msactiontable() -> None:
 )
 def conbus_actiontable() -> None:
     """Download ActionTable from Conbus modules."""
-    pass
 
 
 @click.group(
@@ -126,7 +117,6 @@ def conbus_actiontable() -> None:
 )
 def conbus_event() -> None:
     """Event telegrams to Conbus modules."""
-    pass
 
 
 @click.group(
@@ -138,7 +128,6 @@ def conbus_event() -> None:
 )
 def conbus_export() -> None:
     """Download ActionTable from Conbus modules."""
-    pass
 
 
 conbus.add_command(conbus_blink)

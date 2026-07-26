@@ -1,23 +1,23 @@
-"""
-Conbus Raw Service for sending raw telegram sequences.
+# Copyright (c) 2025 ldvchosal
+"""Conbus Raw Service for sending raw telegram sequences.
 
 This service handles sending raw telegram strings without prior validation.
 """
 
 import logging
-from datetime import datetime
-from typing import Any, Optional
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 
 from xp.models.conbus.conbus_raw import ConbusRawResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
+from xp.utils.time_utils import local_now
 
 
 class ConbusRawService:
-    """
-    Service for sending raw telegram sequences to Conbus modules.
+    """Service for sending raw telegram sequences to Conbus modules.
 
     Uses ConbusEventProtocol to provide raw telegram functionality
     for sending arbitrary telegram strings without validation.
@@ -26,6 +26,7 @@ class ConbusRawService:
         conbus_protocol: Protocol instance for Conbus communication.
         on_progress: Signal emitted when telegram is received (with frame).
         on_finish: Signal emitted when operation finishes (with result).
+
     """
 
     conbus_protocol: ConbusEventProtocol
@@ -36,11 +37,11 @@ class ConbusRawService:
         self,
         conbus_protocol: ConbusEventProtocol,
     ) -> None:
-        """
-        Initialize the Conbus raw service.
+        """Initialize the Conbus raw service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
+
         """
         self.conbus_protocol = conbus_protocol
 
@@ -61,31 +62,31 @@ class ConbusRawService:
     def connection_made(self) -> None:
         """Handle connection established event."""
         self.logger.debug(
-            f"Connection established, sending {len(self.telegrams)} telegrams"
+            "Connection established, sending %s telegrams", len(self.telegrams)
         )
         for telegram in self.telegrams:
             self.conbus_protocol.send_raw_telegram(telegram)
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """
-        Handle telegram sent event.
+        """Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
+
         """
         self.service_response.success = True
         self.service_response.sent_telegrams = telegram_sent
-        self.service_response.timestamp = datetime.now()
+        self.service_response.timestamp = local_now()
         self.service_response.received_telegrams = []
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
+
         """
-        self.logger.debug(f"Telegram received: {telegram_received}")
+        self.logger.debug("Telegram received: %s", telegram_received)
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
         self.service_response.received_telegrams.append(telegram_received.frame)
@@ -95,45 +96,47 @@ class ConbusRawService:
     def timeout(self) -> None:
         """Handle timeout event."""
         timeout_seconds = self.conbus_protocol.timeout_seconds
-        self.logger.debug(f"Timeout: {timeout_seconds}s")
+        self.logger.debug("Timeout: %ss", timeout_seconds)
         self.on_finish.emit(self.service_response)
 
     def failed(self, message: str) -> None:
-        """
-        Handle failed connection event.
+        """Handle failed connection event.
 
         Args:
             message: Failure message.
+
         """
-        self.logger.debug(f"Failed with message: {message}")
+        self.logger.debug("Failed with message: %s", message)
         self.service_response.success = False
-        self.service_response.timestamp = datetime.now()
+        self.service_response.timestamp = local_now()
         self.service_response.error = message
         self.on_finish.emit(self.service_response)
 
     def send_raw_telegrams(
         self,
         telegrams: list[str],
-        timeout_seconds: Optional[float] = None,
+        timeout_seconds: float | None = None,
     ) -> None:
-        """
-        Send raw telegrams to the Conbus server.
+        """Send raw telegrams to the Conbus server.
 
         Args:
             telegrams: List of raw telegram strings to send.
             timeout_seconds: Timeout in seconds.
+
         """
-        self.logger.info(f"Starting send_raw_telegrams with {len(telegrams)} telegrams")
+        self.logger.info(
+            "Starting send_raw_telegrams with %s telegrams", len(telegrams)
+        )
         if timeout_seconds:
             self.conbus_protocol.timeout_seconds = timeout_seconds
         self.telegrams = telegrams
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set operation timeout.
+        """Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -145,12 +148,12 @@ class ConbusRawService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "ConbusRawService":
-        """
-        Enter context manager.
+    def __enter__(self) -> Self:
+        """Enter context manager.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state for singleton reuse
         self.service_response = ConbusRawResponse(success=False)
@@ -158,7 +161,10 @@ class ConbusRawService:
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager and disconnect signals."""
         # Disconnect protocol signals

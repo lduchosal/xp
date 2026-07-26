@@ -1,13 +1,13 @@
+# Copyright (c) 2025 ldvchosal
 """Connection state management module."""
 
-from enum import Enum
+from enum import StrEnum
 
 from xp.utils.state_machine import StateMachine
 
 
-class ConnectionState(str, Enum):
-    """
-    Connection state enumeration.
+class ConnectionState(StrEnum):
+    """Connection state enumeration.
 
     Attributes:
         DISCONNECTING: Disconnecting to server.
@@ -15,6 +15,7 @@ class ConnectionState(str, Enum):
         CONNECTING: Connection in progress.
         CONNECTED: Successfully connected.
         FAILED: Connection failed.
+
     """
 
     DISCONNECTING = "DISCONNECTING"
@@ -25,11 +26,11 @@ class ConnectionState(str, Enum):
 
     @staticmethod
     def create_state_machine() -> StateMachine:
-        """
-        Create and configure state machine for connection management.
+        """Create and configure state machine for connection management.
 
         Returns:
             Configured StateMachine with connection state transitions.
+
         """
         sm = StateMachine(ConnectionState.DISCONNECTED)
 

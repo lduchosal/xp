@@ -1,12 +1,11 @@
+# Copyright (c) 2025 ldvchosal
 """Module type code enumeration for XP system modules."""
 
 from enum import Enum
-from typing import Dict
 
 
 class ModuleTypeCode(Enum):
-    """
-    Enum representing all XP system module type codes.
+    """Enum representing all XP system module type codes.
 
     Attributes:
         NOMOD: No module (code 0).
@@ -29,7 +28,7 @@ class ModuleTypeCode(Enum):
         XP26X1: Reserved (code 17).
         XP26X2: Reserved (code 18).
         XP2506: 5-way push button panel with sesam Conson design (code 19).
-        XP2506A: 5-way push button panel with sesam and 38kHz IR Conson design (code 20).
+        XP2506A: 5-way push button panel, sesam and 38kHz IR Conson design (code 20).
         XP2506B: 5-way push button panel with sesam and B&O IR Conson design (code 21).
         XPX1_8: 8-way push button panel interface (code 22).
         XP134: Junctionbox interlink (code 23).
@@ -46,6 +45,7 @@ class ModuleTypeCode(Enum):
         XP230: Ethernet/TCPIP interface module (code 34).
         XP33LED: XP 3-channel LED dimmer (code 35).
         XP31LED: XP 1-channel LED dimmer (code 36).
+
     """
 
     NOMOD = 0  # No module
@@ -75,10 +75,10 @@ class ModuleTypeCode(Enum):
     XPX1_8 = 22  # 8 way push button panel interface
     XP134 = 23  # Junctionbox interlink
     XP24P = 24  # XP24P module
-    XP28A = 25  #
-    XP28B = 26  #
-    CONTOOL = 27  #
-    XP28 = 28  #
+    XP28A = 25
+    XP28B = 26
+    CONTOOL = 27
+    XP28 = 28
     XP31LR = 29  # XP 1 channel lightdimmer
     XP33LR = 30  # XP 33 3 channel lightdimmer
     XP31CR = 31  # XP 31 1 channel dimmer
@@ -90,7 +90,7 @@ class ModuleTypeCode(Enum):
 
 
 # Registry mapping module codes to their information
-MODULE_TYPE_REGISTRY: Dict[int, Dict[str, str]] = {
+MODULE_TYPE_REGISTRY: dict[int, dict[str, str]] = {
     ModuleTypeCode.NOMOD.value: {"name": "NOMOD", "description": "No module"},
     ModuleTypeCode.ALLMOD.value: {
         "name": "ALLMOD",
@@ -141,11 +141,15 @@ MODULE_TYPE_REGISTRY: Dict[int, Dict[str, str]] = {
     },
     ModuleTypeCode.XP2606A.value: {
         "name": "XP2606A",
-        "description": "5 way push button panel with sesam, L-Team design and 38kHz IR receiver",
+        "description": (
+            "5 way push button panel with sesam, L-Team design and 38kHz IR receiver"
+        ),
     },
     ModuleTypeCode.XP2606B.value: {
         "name": "XP2606B",
-        "description": "5 way push button panel with sesam, L-Team design and B&O IR receiver",
+        "description": (
+            "5 way push button panel with sesam, L-Team design and B&O IR receiver"
+        ),
     },
     ModuleTypeCode.XP26X1.value: {"name": "XP26X1", "description": "Reserved"},
     ModuleTypeCode.XP26X2.value: {"name": "XP26X2", "description": "Reserved"},

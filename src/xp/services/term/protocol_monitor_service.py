@@ -1,7 +1,10 @@
+# Copyright (c) 2025 ldvchosal
 """Protocol Monitor Service for terminal interface."""
 
 import logging
-from typing import Any, ItemsView, Optional
+from collections.abc import ItemsView
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 from twisted.python.failure import Failure
@@ -14,8 +17,7 @@ from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 
 
 class ProtocolMonitorService:
-    """
-    Service for protocol monitoring in terminal interface.
+    """Service for protocol monitoring in terminal interface.
 
     Wraps ConbusEventProtocol and provides high-level operations
     for the TUI without exposing protocol implementation details.
@@ -28,6 +30,7 @@ class ProtocolMonitorService:
         on_connection_state_changed: Signal emitted when connection state changes.
         on_telegram_display: Signal emitted when telegram should be displayed.
         on_status_message: Signal emitted for status updates.
+
     """
 
     on_connection_state_changed: Signal = Signal(ConnectionState)
@@ -39,12 +42,12 @@ class ProtocolMonitorService:
         conbus_protocol: ConbusEventProtocol,
         protocol_keys: ProtocolKeysConfig,
     ) -> None:
-        """
-        Initialize the Protocol Monitor service.
+        """Initialize the Protocol Monitor service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
             protocol_keys: Protocol keys configuration.
+
         """
         self.logger = logging.getLogger(__name__)
         self._conbus_protocol = conbus_protocol
@@ -79,29 +82,32 @@ class ProtocolMonitorService:
 
     @property
     def connection_state(self) -> ConnectionState:
-        """
-        Get current connection state.
+        """Current connection state.
 
         Returns:
             Current connection state.
+
         """
         return self._connection_state
 
     @property
     def server_info(self) -> str:
-        """
-        Get server connection info (IP:port).
+        """Server connection info (IP:port).
 
         Returns:
             Server address in format "IP:port".
+
         """
-        return f"{self._conbus_protocol.cli_config.ip}:{self._conbus_protocol.cli_config.port}"
+        return (
+            f"{self._conbus_protocol.cli_config.ip}"
+            f":{self._conbus_protocol.cli_config.port}"
+        )
 
     def connect(self) -> None:
         """Initiate connection to server."""
         if not self._state_machine.can_transition("connect"):
             self.logger.warning(
-                f"Cannot connect: current state is {self._connection_state.value}"
+                "Cannot connect: current state is %s", self._connection_state.value
             )
             return
 
@@ -116,7 +122,7 @@ class ProtocolMonitorService:
         """Disconnect from server."""
         if not self._state_machine.can_transition("disconnect"):
             self.logger.warning(
-                f"Cannot disconnect: current state is {self._connection_state.value}"
+                "Cannot disconnect: current state is %s", self._connection_state.value
             )
             return
 
@@ -135,44 +141,43 @@ class ProtocolMonitorService:
             self.on_status_message.emit("Disconnected")
 
     def toggle_connection(self) -> None:
-        """
-        Toggle connection state between connected and disconnected.
+        """Toggle connection state between connected and disconnected.
 
         Disconnects if currently connected or connecting. Connects if currently
         disconnected or failed.
         """
-        if self._connection_state in (
+        if self._connection_state in {
             ConnectionState.CONNECTED,
             ConnectionState.CONNECTING,
-        ):
+        }:
             self.disconnect()
         else:
             self.connect()
 
     def _send_telegram(self, name: str, telegram: str) -> None:
-        """
-        Send a raw telegram.
+        """Send a raw telegram.
 
         Args:
             name: Display name for the telegram.
             telegram: Raw telegram string.
+
         """
         try:
             self._conbus_protocol.send_raw_telegram(telegram)
             self.on_status_message.emit(f"{name} sent.")
         except Exception as e:
-            self.logger.error(f"Failed to send telegram: {e}")
+            self.logger.exception("Failed to send telegram")
             self.on_status_message.emit(f"Failed: {e}")
 
     def handle_key_press(self, key: str) -> bool:
-        """
-        Handle protocol key press.
+        """Handle protocol key press.
 
         Args:
             key: Key that was pressed.
 
         Returns:
             True if key was handled, False otherwise.
+
         """
         if key in self._protocol_keys.protocol:
             key_config = self._protocol_keys.protocol[key]
@@ -191,11 +196,11 @@ class ProtocolMonitorService:
             self.on_status_message.emit(f"Connected to {self.server_info}")
 
     def _on_connection_failed(self, failure: Failure) -> None:
-        """
-        Handle connection failed.
+        """Handle connection failed.
 
         Args:
             failure: Twisted failure object with error details.
+
         """
         if self._state_machine.transition("disconnected", ConnectionState.DISCONNECTED):
             self._connection_state = ConnectionState.DISCONNECTED
@@ -203,21 +208,21 @@ class ProtocolMonitorService:
             self.on_status_message.emit(failure.getErrorMessage())
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received.
+        """Handle telegram received.
 
         Args:
             event: Telegram received event with frame data.
+
         """
         display_event = TelegramDisplayEvent(direction="RX", telegram=event.frame)
         self.on_telegram_display.emit(display_event)
 
     def _on_telegram_sent(self, telegram: str) -> None:
-        """
-        Handle telegram sent.
+        """Handle telegram sent.
 
         Args:
             telegram: Sent telegram string.
+
         """
         display_event = TelegramDisplayEvent(direction="TX", telegram=telegram)
         self.on_telegram_display.emit(display_event)
@@ -227,11 +232,11 @@ class ProtocolMonitorService:
         self.logger.debug("Timeout occurred (continuous monitoring)")
 
     def _on_failed(self, error: str) -> None:
-        """
-        Handle connection failed.
+        """Handle connection failed.
 
         Args:
             error: Error message describing the failure.
+
         """
         if self._state_machine.transition("failed", ConnectionState.FAILED):
             self._connection_state = ConnectionState.FAILED
@@ -245,35 +250,35 @@ class ProtocolMonitorService:
             self.disconnect()
 
     def get_keys(self) -> ItemsView[str, ProtocolKeyConfig]:
-        """
-        Get protocol key mappings.
+        """Get protocol key mappings.
 
         Returns:
             Dictionary items view of key to ProtocolKeyConfig mappings.
+
         """
         return self._protocol_keys.protocol.items()
 
-    def __enter__(self) -> "ProtocolMonitorService":
-        """
-        Enter context manager.
+    def __enter__(self) -> Self:
+        """Enter context manager.
 
         Returns:
             Self for context management.
+
         """
         return self
 
     def __exit__(
         self,
-        _exc_type: Optional[type],
-        _exc_val: Optional[BaseException],
-        _exc_tb: Optional[Any],
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
-        """
-        Exit context manager and clean up resources.
+        """Exit context manager and clean up resources.
 
         Args:
             _exc_type: Exception type if any.
             _exc_val: Exception value if any.
             _exc_tb: Exception traceback if any.
+
         """
         self.cleanup()

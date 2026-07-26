@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """XP20 Action Table models for input actions and settings."""
 
 from pydantic import BaseModel, Field
@@ -10,8 +11,7 @@ from xp.models.telegram.timeparam_type import TimeParam
 # CP20 0 0 > 1 OFF;
 # CP20 0 0 > 1 ~ON;
 class ActionTableEntry(BaseModel):
-    """
-    Entry in an action table mapping input events to output actions.
+    """Entry in an action table mapping input events to output actions.
 
     Attributes:
         module_type: Type code of the module.
@@ -21,6 +21,7 @@ class ActionTableEntry(BaseModel):
         command: Action type to perform.
         parameter: Time parameter for the action.
         inverted: Whether the action is inverted.
+
     """
 
     module_type: ModuleTypeCode = ModuleTypeCode.CP20
@@ -33,11 +34,11 @@ class ActionTableEntry(BaseModel):
 
 
 class ActionTable(BaseModel):
-    """
-    Action Table for managing action on events.
+    """Action Table for managing action on events.
 
     Attributes:
         entries: List of action table entries.
+
     """
 
     entries: list[ActionTableEntry] = Field(default_factory=list)

@@ -1,6 +1,5 @@
+# Copyright (c) 2025 ldvchosal
 """Status Footer Widget for displaying app footer with connection status."""
-
-from typing import Any, Optional, Union
 
 from textual.app import ComposeResult
 from textual.containers import Horizontal
@@ -13,45 +12,53 @@ from xp.services.term.state_monitor_service import StateMonitorService
 
 
 class StatusFooterWidget(Horizontal):
-    """
-    Footer widget with connection status indicator.
+    """Footer widget with connection status indicator.
 
     Combines the Textual Footer with a status indicator dot that shows
     the current connection state. Subscribes directly to service signals.
 
     Attributes:
-        service: ProtocolMonitorService, StateMonitorService, or HomekitService for connection state and status updates.
+        service: ProtocolMonitorService, StateMonitorService, or HomekitService
+            for connection state and status updates.
         status_widget: Static widget displaying colored status dot.
         status_text_widget: Static widget displaying status messages.
+
     """
 
     def __init__(
         self,
-        service: Optional[
-            Union[ProtocolMonitorService, StateMonitorService, HomekitService]
-        ] = None,
-        *args: Any,
-        **kwargs: Any,
+        service: ProtocolMonitorService
+        | StateMonitorService
+        | HomekitService
+        | None = None,
+        *,
+        name: str | None = None,
+        id: str | None = None,  # noqa: A002 - mirrors Textual's Widget API
+        classes: str | None = None,
+        disabled: bool = False,
     ) -> None:
-        """
-        Initialize the Status Footer widget.
+        """Initialize the Status Footer widget.
 
         Args:
-            service: Optional ProtocolMonitorService, StateMonitorService, or HomekitService for signal subscriptions.
-            args: Additional positional arguments for Horizontal.
-            kwargs: Additional keyword arguments for Horizontal.
+            service: Optional ProtocolMonitorService, StateMonitorService, or
+                HomekitService for signal subscriptions.
+            name: The name of the widget.
+            id: The ID of the widget in the DOM.
+            classes: The CSS classes for the widget.
+            disabled: Whether the widget is disabled.
+
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(name=name, id=id, classes=classes, disabled=disabled)
         self.service = service
         self.status_text_widget: Static = Static("", id="status-text")
         self.status_widget: Static = Static("○", id="status-line")
 
     def compose(self) -> ComposeResult:
-        """
-        Compose the footer layout.
+        """Compose the footer layout.
 
         Yields:
             Footer and status indicator widgets.
+
         """
         yield Footer()
         yield self.status_text_widget
@@ -70,11 +77,11 @@ class StatusFooterWidget(Horizontal):
             self.service.on_status_message.disconnect(self.update_message)
 
     def update_status(self, state: ConnectionState) -> None:
-        """
-        Update status indicator with connection state.
+        """Update status indicator with connection state.
 
         Args:
             state: Current connection state (ConnectionState enum).
+
         """
         # Map states to colored dots
         dot = {
@@ -87,10 +94,10 @@ class StatusFooterWidget(Horizontal):
         self.status_widget.update(dot)
 
     def update_message(self, message: str) -> None:
-        """
-        Update status text with message.
+        """Update status text with message.
 
         Args:
             message: Status message to display.
+
         """
         self.status_text_widget.update(message)

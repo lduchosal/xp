@@ -1,7 +1,10 @@
+# Copyright (c) 2025 ldvchosal
 """Service for uploading ActionTable via Conbus protocol."""
 
 import logging
-from typing import Any, Optional
+from dataclasses import dataclass
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 
@@ -11,6 +14,7 @@ from xp.models.config.conson_module_config import (
     ConsonModuleListConfig,
 )
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
+from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.actiontable.actiontable_serializer import ActionTableSerializer
@@ -27,10 +31,26 @@ from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
 
 
-class ActionTableUploadService:
+@dataclass(frozen=True)
+class MsActionTableSerializers:
+    """Serializers used to encode action and MS action tables per module type.
+
+    Attributes:
+        actiontable: Generic action table serializer.
+        xp20ms: XP20 MS action table serializer.
+        xp24ms: XP24 MS action table serializer.
+        xp33ms: XP33 MS action table serializer.
+
     """
-    TCP client service for uploading action tables and MS action tables to Conbus
-    modules.
+
+    actiontable: ActionTableSerializer
+    xp20ms: Xp20MsActionTableSerializer
+    xp24ms: Xp24MsActionTableSerializer
+    xp33ms: Xp33MsActionTableSerializer
+
+
+class ActionTableUploadService:
+    """TCP client service for uploading action and MS action tables to Conbus modules.
 
     Manages TCP socket connections, handles telegram generation and transmission,
     and processes server responses for action table uploads.
@@ -39,6 +59,7 @@ class ActionTableUploadService:
         on_progress: Signal emitted with telegram frame when progress is made.
         on_error: Signal emitted with error message string when an error occurs.
         on_finish: Signal emitted with bool (True on success) when upload completes.
+
     """
 
     on_progress: Signal = Signal(str)
@@ -48,30 +69,24 @@ class ActionTableUploadService:
     def __init__(
         self,
         conbus_protocol: ConbusEventProtocol,
-        actiontable_serializer: ActionTableSerializer,
-        xp20ms_serializer: Xp20MsActionTableSerializer,
-        xp24ms_serializer: Xp24MsActionTableSerializer,
-        xp33ms_serializer: Xp33MsActionTableSerializer,
+        serializers: MsActionTableSerializers,
         telegram_service: TelegramService,
         conson_config: ConsonModuleListConfig,
     ) -> None:
-        """
-        Initialize the action table upload service.
+        """Initialize the action table upload service.
 
         Args:
             conbus_protocol: ConbusEventProtocol for communication.
-            actiontable_serializer: Action table serializer.
-            xp20ms_serializer: XP20 MS action table serializer.
-            xp24ms_serializer: XP24 MS action table serializer.
-            xp33ms_serializer: XP33 MS action table serializer.
+            serializers: Action table serializers grouped per module type.
             telegram_service: Telegram service for parsing.
             conson_config: Conson module list configuration.
+
         """
         self.conbus_protocol = conbus_protocol
-        self.actiontable_serializer = actiontable_serializer
-        self.xp20ms_serializer = xp20ms_serializer
-        self.xp24ms_serializer = xp24ms_serializer
-        self.xp33ms_serializer = xp33ms_serializer
+        self.actiontable_serializer = serializers.actiontable
+        self.xp20ms_serializer = serializers.xp20ms
+        self.xp24ms_serializer = serializers.xp24ms
+        self.xp33ms_serializer = serializers.xp33ms
         self.telegram_service = telegram_service
         self.conson_config = conson_config
         self.serial_number: str = ""
@@ -111,22 +126,22 @@ class ActionTableUploadService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """
-        Handle telegram sent event.
+        """Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
+
         """
-        self.logger.debug(f"Telegram sent: {telegram_sent}")
+        self.logger.debug("Telegram sent: %s", telegram_sent)
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
+
         """
-        self.logger.debug(f"Telegram received: {telegram_received}")
+        self.logger.debug("Telegram received: %s", telegram_received)
         if (
             not telegram_received.checksum_valid
             or telegram_received.telegram_type != TelegramType.REPLY.value
@@ -141,23 +156,24 @@ class ActionTableUploadService:
 
         self._handle_upload_response(reply_telegram)
 
-    def _handle_upload_response(self, reply_telegram: Any) -> None:
-        """
-        Handle telegram responses during upload.
+    def _handle_upload_response(self, reply_telegram: ReplyTelegram) -> None:
+        """Handle telegram responses during upload.
 
         Args:
             reply_telegram: Parsed reply telegram.
+
         """
         if reply_telegram.system_function == SystemFunction.ACK:
             self.logger.debug("Received ACK for upload")
             # Send next chunk or EOF
             if self.current_chunk_index < len(self.upload_data_chunks):
                 chunk = self.upload_data_chunks[self.current_chunk_index]
-                self.logger.debug(f"Sending chunk {self.current_chunk_index + 1}")
+                self.logger.debug("Sending chunk %s", self.current_chunk_index + 1)
 
-                # Calculate prefix: AA, AB, AC, AD, AE, AF, AG, AH, AI, AJ, AK, AL, AM, AN, AO
+                # Calculate prefix: AA, AB, AC, ... AO
                 # First character: 'A' (fixed)
-                # Second character: 'A' + chunk_index (sequential counter A-O for 15 chunks)
+                # Second character: 'A' + chunk_index
+                # (sequential counter A-O for 15 chunks)
                 prefix_hex = f"AAA{ord('A') + self.current_chunk_index:c}"
 
                 system_function = (
@@ -188,13 +204,14 @@ class ActionTableUploadService:
                 self._eof_sent = True
             else:
                 self.logger.debug("Last ACK received, closing connection")
-                self.on_finish.emit(True)
+                upload_success = True
+                self.on_finish.emit(upload_success)
 
         elif reply_telegram.system_function == SystemFunction.NAK:
             self.logger.debug("Received NAK during upload")
             self.failed("Upload failed: NAK received")
         else:
-            self.logger.debug(f"Unexpected response during upload: {reply_telegram}")
+            self.logger.debug("Unexpected response during upload: %s", reply_telegram)
 
     def timeout(self) -> None:
         """Handle timeout event."""
@@ -202,23 +219,22 @@ class ActionTableUploadService:
         self.failed("Upload timeout")
 
     def failed(self, message: str) -> None:
-        """
-        Handle failed connection event.
+        """Handle failed connection event.
 
         Args:
             message: Failure message.
+
         """
-        self.logger.debug(f"Failed: {message}")
+        self.logger.debug("Failed: %s", message)
         self.on_error.emit(message)
 
     def start(
         self,
         serial_number: str,
         actiontable_type: ActionTableType2,
-        timeout_seconds: Optional[float] = None,
+        timeout_seconds: float | None = None,
     ) -> None:
-        """
-        Upload action table or MS action table to module.
+        """Upload action table or MS action table to module.
 
         Uploads the action table configuration to the specified module.
         Module type will decide which actiontable to use.
@@ -227,6 +243,7 @@ class ActionTableUploadService:
             serial_number: Module serial number.
             actiontable_type: True if actionTable false for MS action table.
             timeout_seconds: Optional timeout in seconds.
+
         """
         self.logger.info("Starting actiontable upload")
         self.serial_number = serial_number
@@ -253,28 +270,27 @@ class ActionTableUploadService:
             self.current_chunk_index = 0
 
         except ValueError as e:
-            self.logger.error(f"Invalid action table format: {e}")
+            self.logger.exception("Invalid action table format")
             self.failed(f"Invalid action table format: {e}")
             return
 
         self.logger.debug(
-            f"Upload data encoded: {len(encoded_data)} chars, "
-            f"{len(self.upload_data_chunks)} chunks"
+            "Upload data encoded: %s chars, %s chunks",
+            len(encoded_data),
+            len(self.upload_data_chunks),
         )
 
     def get_encoded_action_table(self, module: ConsonModuleConfig) -> str:
-        """
-        Get encoded action table string for upload.
+        """Get encoded action table string for upload.
 
         Args:
             module: Module configuration containing action table data.
 
         Returns:
             Hex-encoded action table string ready for transmission.
+
         """
-        msactiontable = (
-            True if self.actiontable_type == ActionTableType2.MSACTIONTABLE else False
-        )
+        msactiontable = self.actiontable_type == ActionTableType2.MSACTIONTABLE
         # Parse MS action table from short format (first element)
         if msactiontable and module.module_type.lower() == "xp20":
             xp20_short_table = module.xp20_msaction_table or []
@@ -303,11 +319,11 @@ class ActionTableUploadService:
         return encoded_string
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set operation timeout.
+        """Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -319,11 +335,12 @@ class ActionTableUploadService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "ActionTableUploadService":
+    def __enter__(self) -> Self:
         """Enter context manager - reset state for singleton reuse.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state
         self.upload_data_chunks = []
@@ -332,7 +349,12 @@ class ActionTableUploadService:
         self.xpmoduletype = ""
         return self
 
-    def __exit__(self, _exc_type: Any, _exc_val: Any, _exc_tb: Any) -> None:
+    def __exit__(
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
+    ) -> None:
         """Exit context manager - cleanup signals and reactor."""
         # Disconnect protocol signals
         self.conbus_protocol.on_connection_made.disconnect(self.connection_made)

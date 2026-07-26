@@ -1,5 +1,5 @@
-"""
-XP output telegram model for console bus communication.
+# Copyright (c) 2025 ldvchosal
+"""XP output telegram model for console bus communication.
 
 XP output telegrams are used for controlling relay inputs on XP modules. Each XP24
 module has 4 inputs (0-3) that can be pressed or released. Each XP33 module has 3 inputs
@@ -8,18 +8,16 @@ pressed or released.
 """
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Optional
 
 from xp.models.telegram.action_type import ActionType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram import Telegram
+from xp.utils.time_utils import local_now
 
 
 @dataclass
 class OutputTelegram(Telegram):
-    """
-    Represent a parsed XP output telegram from the console bus.
+    """Represent a parsed XP output telegram from the console bus.
 
     Format: <S{serial_number}F27D{input:02d}{action}{checksum}>
     Examples: <S0012345008F27D00AAFN>
@@ -31,27 +29,26 @@ class OutputTelegram(Telegram):
         system_function: System function code.
         action_description: Human-readable action description.
         input_description: Human-readable input description.
+
     """
 
     serial_number: str = ""
-    output_number: Optional[int] = (
-        None  # 0-3 for XP24 modules, 0-2 for XP33, 0 for XP31
-    )
-    action_type: Optional[ActionType] = None
+    output_number: int | None = None  # 0-3 for XP24 modules, 0-2 for XP33, 0 for XP31
+    action_type: ActionType | None = None
     system_function: SystemFunction = SystemFunction.ACTION
 
     def __post_init__(self) -> None:
         """Initialize timestamp if not provided."""
         if self.timestamp is None:
-            self.timestamp = datetime.now()
+            self.timestamp = local_now()
 
     @property
     def action_description(self) -> str:
-        """
-        Get human-readable action description.
+        """Human-readable action description.
 
         Returns:
             Human-readable description of the action.
+
         """
         descriptions = {
             ActionType.OFF_PRESS: "Press (Make)",
@@ -65,20 +62,20 @@ class OutputTelegram(Telegram):
 
     @property
     def input_description(self) -> str:
-        """
-        Get human-readable input description.
+        """Human-readable input description.
 
         Returns:
             Description of the input/output number.
+
         """
         return f"Input {self.output_number}"
 
     def to_dict(self) -> dict:
-        """
-        Convert to dictionary for JSON serialization.
+        """Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the output telegram.
+
         """
         return {
             "serial_number": self.serial_number,
@@ -96,11 +93,11 @@ class OutputTelegram(Telegram):
         }
 
     def __str__(self) -> str:
-        """
-        Return human-readable string representation.
+        """Return human-readable string representation.
 
         Returns:
             Formatted string representation.
+
         """
         return (
             f"XP Output: {self.action_description} "

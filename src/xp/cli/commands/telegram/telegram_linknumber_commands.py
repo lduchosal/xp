@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Link number operations CLI commands."""
 
 import json
@@ -20,8 +21,7 @@ from xp.services.telegram.telegram_link_number_service import (
 @click.argument("link_number", type=int)
 @handle_service_errors(LinkNumberError)
 def generate_set_link_number(serial_number: str, link_number: int) -> None:
-    r"""
-    Generate a telegram to set module link number.
+    r"""Generate a telegram to set module link number.
 
     Args:
         serial_number: 10-digit module serial number.
@@ -30,9 +30,10 @@ def generate_set_link_number(serial_number: str, link_number: int) -> None:
     Examples:
         \b
         xp telegram linknumber write 0012345005 25
+
     """
     service = LinkNumberService()
-    OutputFormatter(True)
+    OutputFormatter(json_output=True)
 
     try:
         telegram = service.generate_set_link_number_telegram(serial_number, link_number)
@@ -58,8 +59,7 @@ def generate_set_link_number(serial_number: str, link_number: int) -> None:
 @click.argument("serial_number", type=SERIAL)
 @handle_service_errors(LinkNumberError)
 def generate_read_link_number(serial_number: str) -> None:
-    r"""
-    Generate a telegram to read module link number.
+    r"""Generate a telegram to read module link number.
 
     Args:
         serial_number: 10-digit module serial number.
@@ -67,9 +67,10 @@ def generate_read_link_number(serial_number: str) -> None:
     Examples:
         \b
         xp telegram linknumber read 0012345005
+
     """
     service = LinkNumberService()
-    OutputFormatter(True)
+    OutputFormatter(json_output=True)
 
     try:
         telegram = service.generate_read_link_number_telegram(serial_number)

@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """State machine for ActionTable download workflow."""
 
 import logging
@@ -9,14 +10,11 @@ from statemachine.factory import StateMachineMetaclass
 
 
 class AbstractStateMachineMeta(StateMachineMetaclass, ABCMeta):
-    """
-    Combined metaclass for abstract state machines.
+    """Combined metaclass for abstract state machines.
 
     Combines StateMachineMetaclass (for state machine introspection) with ABCMeta (for
     abstract method enforcement).
     """
-
-    pass
 
 
 # Constants
@@ -24,8 +22,7 @@ MAX_ERROR_RETRIES = 3  # Max retries for error_status_received before giving up
 
 
 class Phase(Enum):
-    """
-    Download workflow phases.
+    """Download workflow phases.
 
     The download workflow consists of three sequential phases:
     - INIT: Drain pending telegrams, query error status → proceed to DOWNLOAD
@@ -36,6 +33,7 @@ class Phase(Enum):
         INIT: Initial phase - drain pending telegrams and query error status.
         DOWNLOAD: Download phase - request actiontable and receive chunks.
         CLEANUP: Cleanup phase - drain remaining telegrams and verify status.
+
     """
 
     INIT = "init"
@@ -44,8 +42,7 @@ class Phase(Enum):
 
 
 class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
-    """
-    State machine for ActionTable download workflow.
+    """State machine for ActionTable download workflow.
 
     Pure state machine with states, transitions, and guards. Subclasses can
     override on_enter_* methods to add protocol-specific behavior.
@@ -57,13 +54,15 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
     Phases - INIT and CLEANUP share the same states (receiving, resetting, waiting_ok):
 
     INIT phase (drain → reset → wait_ok):
-        idle -> receiving -> resetting -> waiting_ok --(guard: is_init_phase)--> requesting
+        idle -> receiving -> resetting
+             -> waiting_ok --(guard: is_init_phase)--> requesting
 
     DOWNLOAD phase (request → receive chunks → EOF):
         requesting -> waiting_data <-> receiving_chunk -> processing_eof
 
     CLEANUP phase (drain → reset → wait_ok):
-        processing_eof -> receiving -> resetting -> waiting_ok --(guard: is_cleanup_phase)--> completed
+        processing_eof -> receiving -> resetting
+             -> waiting_ok --(guard: is_cleanup_phase)--> completed
 
     The drain/reset/wait_ok cycle:
     1. Drain pending telegrams (receiving state discards telegrams)
@@ -96,6 +95,7 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
         send_ack: Transition from receiving_chunk to waiting_data.
         receive_eof: Transition from waiting_data to processing_eof.
         do_finish: Transition from processing_eof to receiving.
+
     """
 
     allow_event_without_transition = True
@@ -147,60 +147,60 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
 
     @property
     def phase(self) -> Phase:
-        """Get current phase."""
+        """Current phase."""
         return self._phase
 
     @phase.setter
     def phase(self, value: Phase) -> None:
-        """
-        Set current phase.
+        """Set current phase.
 
         Args:
             value: The phase value to set.
+
         """
         self._phase = value
 
     @property
     def error_retry_count(self) -> int:
-        """Get current error retry count."""
+        """Current error retry count."""
         return self._error_retry_count
 
     @error_retry_count.setter
     def error_retry_count(self, value: int) -> None:
-        """
-        Set error retry count.
+        """Set error retry count.
 
         Args:
             value: The error retry count value to set.
+
         """
         self._error_retry_count = value
 
     # Guard conditions for phase-dependent transitions
 
     def is_init_phase(self) -> bool:
-        """
-        Guard: check if currently in INIT phase.
+        """Guard: check if currently in INIT phase.
 
         Returns:
             True if in INIT phase, False otherwise.
+
         """
         return self._phase == Phase.INIT
 
     def is_cleanup_phase(self) -> bool:
-        """
-        Guard: check if currently in CLEANUP phase.
+        """Guard: check if currently in CLEANUP phase.
 
         Returns:
             True if in CLEANUP phase, False otherwise.
+
         """
         return self._phase == Phase.CLEANUP
 
     def can_retry(self) -> bool:
-        """
-        Guard: check if retry is allowed (under max limit).
+        """Guard: check if retry is allowed (under max limit).
 
         Returns:
             True if retry count is under MAX_ERROR_RETRIES, False otherwise.
+
         """
         return self._error_retry_count < MAX_ERROR_RETRIES
 
@@ -248,7 +248,7 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
 
     @abstractmethod
     def on_max_retries_exceeded(self) -> None:
-        """Called when max error retries exceeded."""
+        """Handle the case where max error retries are exceeded."""
         ...
 
     # Public methods for state machine control
@@ -266,7 +266,9 @@ class DownloadStateMachine(StateMachine, metaclass=AbstractStateMachineMeta):
         """Handle error status received - increment retry and attempt transition."""
         self._error_retry_count += 1
         self.logger.debug(
-            f"Error status received, retry {self._error_retry_count}/{MAX_ERROR_RETRIES}"
+            "Error status received, retry %s/%s",
+            self._error_retry_count,
+            MAX_ERROR_RETRIES,
         )
         # Guard can_retry blocks transition if max retries exceeded
         self.error_status_received()

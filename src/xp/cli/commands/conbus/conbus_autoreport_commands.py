@@ -1,6 +1,8 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus auto report CLI commands."""
 
 import json
+from typing import TYPE_CHECKING
 
 import click
 from click import Context
@@ -11,11 +13,13 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models import ConbusDatapointResponse
-from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.write_config_service import WriteConfigService
 from xp.services.telegram.telegram_datapoint_service import TelegramDatapointService
+
+if TYPE_CHECKING:
+    from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 
 
 @conbus_autoreport.command("get", short_help="Get auto report status for a module")
@@ -23,8 +27,7 @@ from xp.services.telegram.telegram_datapoint_service import TelegramDatapointSer
 @connection_command()
 @click.pass_context
 def get_autoreport_command(ctx: Context, serial_number: str) -> None:
-    r"""
-    Get the current auto report status for a specific module.
+    r"""Get the current auto report status for a specific module.
 
     Args:
         ctx: Click context object.
@@ -33,6 +36,7 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
     Examples:
         \b
         xp conbus autoreport get 0123450001
+
     """
     # Get service from container
     service: ConbusDatapointService = (
@@ -43,11 +47,11 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
     )
 
     def on_finish(service_response: ConbusDatapointResponse) -> None:
-        """
-        Handle successful completion of auto report status retrieval.
+        """Handle successful completion of auto report status retrieval.
 
         Args:
             service_response: Auto report response object.
+
         """
         auto_report_status = telegram_service.get_autoreport_status(
             service_response.data_value
@@ -72,8 +76,7 @@ def get_autoreport_command(ctx: Context, serial_number: str) -> None:
 @connection_command()
 @click.pass_context
 def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> None:
-    r"""
-    Set the auto report status for a specific module.
+    r"""Set the auto report status for a specific module.
 
     Args:
         ctx: Click context object.
@@ -84,6 +87,7 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
         \b
         xp conbus autoreport set 0123450001 on
         xp conbus autoreport set 0123450001 off
+
     """
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
@@ -93,17 +97,19 @@ def set_autoreport_command(ctx: Context, serial_number: str, status: str) -> Non
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """
-        Handle successful completion of light level on command.
+        """Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()
 
-    status_value = True if status == "on" else False
-    data_value = telegram_service.get_autoreport_status_data_value(status_value)
+    status_value = status == "on"
+    data_value = telegram_service.get_autoreport_status_data_value(
+        status_value=status_value
+    )
 
     with service:
         service.on_finish.connect(on_finish)

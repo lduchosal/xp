@@ -1,7 +1,8 @@
+# Copyright (c) 2025 ldvchosal
 """Module type operations CLI commands."""
 
 import json
-from typing import Any, Dict, Union
+from typing import Any
 
 import click
 from click import Context
@@ -18,7 +19,6 @@ from xp.services.module_type_service import ModuleTypeNotFoundError, ModuleTypeS
 )
 def module() -> None:
     """Perform module type operations."""
-    pass
 
 
 @module.command("info")
@@ -26,8 +26,7 @@ def module() -> None:
 @click.pass_context
 @list_command(ModuleTypeNotFoundError)
 def module_info(ctx: Context, identifier: str) -> None:
-    r"""
-    Get information about a module type by code or name.
+    r"""Get information about a module type by code or name.
 
     Args:
         ctx: Click context object.
@@ -37,15 +36,16 @@ def module_info(ctx: Context, identifier: str) -> None:
         \b
         xp module info 14
         xp module info XP2606
+
     """
     service: ModuleTypeService = (
         ctx.obj.get("container").get_container().resolve(ModuleTypeService)
     )
-    OutputFormatter(True)
+    OutputFormatter(json_output=True)
 
     try:
         # Try to parse as integer first, then as string
-        module_id: Union[int, str]
+        module_id: int | str
         try:
             module_id = int(identifier)
         except ValueError:
@@ -65,9 +65,8 @@ def module_info(ctx: Context, identifier: str) -> None:
 )
 @click.pass_context
 @list_command(Exception)
-def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
-    r"""
-    List module types, optionally filtered by category.
+def module_list(ctx: Context, category: str, *, group_by_category: bool) -> None:
+    r"""List module types, optionally filtered by category.
 
     Args:
         ctx: Click context object.
@@ -79,11 +78,12 @@ def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
         xp module list
         xp module list --category "Interface Panels"
         xp module list --group-by-category
+
     """
     service: ModuleTypeService = (
         ctx.obj.get("container").get_container().resolve(ModuleTypeService)
     )
-    ListFormatter(True)
+    ListFormatter(json_output=True)
 
     try:
         if category:
@@ -96,7 +96,7 @@ def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
 
         if group_by_category:
             categories = service.list_modules_by_category()
-            output: Dict[str, Any] = {
+            output: dict[str, Any] = {
                 "modules_by_category": {
                     cat: [mod.to_dict() for mod in mods]
                     for cat, mods in categories.items()
@@ -104,12 +104,12 @@ def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
             }
         else:
             output = {
-                "modules": [_module.to_dict() for _module in modules],
+                "modules": [mod.to_dict() for mod in modules],
                 "count": len(modules),
             }
         click.echo(json.dumps(output, indent=2))
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - CLI boundary: report any error to the user
         CLIErrorHandler.handle_service_error(e, "module listing")
 
 
@@ -124,8 +124,7 @@ def module_list(ctx: Context, category: str, group_by_category: bool) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_search(ctx: Context, query: str, field: tuple) -> None:
-    r"""
-    Search for module types by name or description.
+    r"""Search for module types by name or description.
 
     Args:
         ctx: Click context object.
@@ -136,11 +135,12 @@ def module_search(ctx: Context, query: str, field: tuple) -> None:
         \b
         xp module search "push button"
         xp module search --field name "XP"
+
     """
     service: ModuleTypeService = (
         ctx.obj.get("container").get_container().resolve(ModuleTypeService)
     )
-    ListFormatter(True)
+    ListFormatter(json_output=True)
 
     try:
         search_fields = list(field) if field else ["name", "description"]
@@ -149,12 +149,12 @@ def module_search(ctx: Context, query: str, field: tuple) -> None:
         output = {
             "query": query,
             "search_fields": search_fields,
-            "matches": [_module.to_dict() for _module in matching_modules],
+            "matches": [mod.to_dict() for mod in matching_modules],
             "count": len(matching_modules),
         }
         click.echo(json.dumps(output, indent=2))
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - CLI boundary: report any error to the user
         CLIErrorHandler.handle_service_error(e, "module search", {"query": query})
 
 
@@ -162,8 +162,7 @@ def module_search(ctx: Context, query: str, field: tuple) -> None:
 @click.pass_context
 @list_command(Exception)
 def module_categories(ctx: Context) -> None:
-    r"""
-    List all available module categories.
+    r"""List all available module categories.
 
     Args:
         ctx: Click context object.
@@ -171,11 +170,12 @@ def module_categories(ctx: Context) -> None:
     Examples:
         \b
         xp module categories
+
     """
     service: ModuleTypeService = (
         ctx.obj.get("container").get_container().resolve(ModuleTypeService)
     )
-    OutputFormatter(True)
+    OutputFormatter(json_output=True)
 
     try:
         categories = service.list_modules_by_category()
@@ -187,5 +187,5 @@ def module_categories(ctx: Context) -> None:
         }
         click.echo(json.dumps(output, indent=2))
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - CLI boundary: report any error to the user
         CLIErrorHandler.handle_service_error(e, "category listing")

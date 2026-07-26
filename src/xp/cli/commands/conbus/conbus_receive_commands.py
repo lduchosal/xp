@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus receive telegrams CLI commands."""
 
 import json
@@ -20,8 +21,7 @@ from xp.services.conbus.conbus_receive_service import (
 @connection_command()
 @click.pass_context
 def receive_telegrams(ctx: Context, timeout: float) -> None:
-    r"""
-    Receive waiting event telegrams from Conbus server.
+    r"""Receive waiting event telegrams from Conbus server.
 
     Connects to the Conbus server and receives any waiting event telegrams
     without sending any data first. Useful for collecting pending notifications
@@ -35,24 +35,25 @@ def receive_telegrams(ctx: Context, timeout: float) -> None:
         \b
         xp conbus receive
         xp conbus receive 5.0
+
     """
 
     def on_finish(response_received: ConbusReceiveResponse) -> None:
-        """
-        Handle successful completion of telegram receive operation.
+        """Handle successful completion of telegram receive operation.
 
         Args:
             response_received: Receive response object with telegrams.
+
         """
         click.echo(json.dumps(response_received.to_dict(), indent=2))
         service.stop_reactor()
 
     def on_progress(telegram_received: str) -> None:
-        """
-        Handle progress updates during telegram receive operation.
+        """Handle progress updates during telegram receive operation.
 
         Args:
             telegram_received: Received telegram string.
+
         """
         click.echo(telegram_received)
 

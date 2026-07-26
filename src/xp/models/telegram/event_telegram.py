@@ -1,20 +1,26 @@
+# Copyright (c) 2025 ldvchosal
 """Event telegram model for console bus communication."""
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from xp.models.telegram.event_type import EventType
 from xp.models.telegram.input_type import InputType
 from xp.models.telegram.module_type import ModuleType
 from xp.models.telegram.telegram import Telegram
 from xp.models.telegram.telegram_type import TelegramType
+from xp.utils.time_utils import local_now
+
+# Input number ranges per input type (protocol convention)
+PUSH_BUTTON_MAX_INPUT = 9
+IR_REMOTE_MIN_INPUT = 10
+IR_REMOTE_MAX_INPUT = 89
+PROXIMITY_SENSOR_INPUT = 90
 
 
 @dataclass
 class EventTelegram(Telegram):
-    r"""
-    Represent a parsed event telegram from the console bus.
+    r"""Represent a parsed event telegram from the console bus.
 
     Format: <[EO]{module_type}L{link_number}I{input_number}{event_type}{checksum}>
 
@@ -31,73 +37,77 @@ class EventTelegram(Telegram):
         input_type: Input type based on input number.
         is_button_press: True if this is a button press event.
         is_button_release: True if this is a button release event.
+
     """
 
     event_telegram_type: str = "E"  # E or O
     module_type: int = 0
     link_number: int = 0
     input_number: int = 0
-    event_type: Optional[EventType] = None
+    event_type: EventType | None = None
 
     def __post_init__(self) -> None:
         """Initialize timestamp and telegram type."""
         if self.timestamp is None:
-            self.timestamp = datetime.now()
+            self.timestamp = local_now()
         self.telegram_type = TelegramType.EVENT
 
     @property
-    def module_info(self) -> Optional[ModuleType]:
-        """
-        Get module type information for this telegram.
+    def module_info(self) -> ModuleType | None:
+        """Module type information for this telegram.
 
         Returns:
             ModuleType instance if found, None otherwise.
+
         """
         return ModuleType.from_code(self.module_type)
 
     @property
     def input_type(self) -> InputType:
-        """
-        Determines the input type based on input number.
+        """Determines the input type based on input number.
 
         Returns:
             InputType enum value.
+
+        Raises:
+            ValueError: If the input number is out of the known ranges.
+
         """
-        if 0 <= self.input_number <= 9:
+        if 0 <= self.input_number <= PUSH_BUTTON_MAX_INPUT:
             return InputType.PUSH_BUTTON
-        elif 10 <= self.input_number <= 89:
+        if IR_REMOTE_MIN_INPUT <= self.input_number <= IR_REMOTE_MAX_INPUT:
             return InputType.IR_REMOTE
-        elif self.input_number == 90:
+        if self.input_number == PROXIMITY_SENSOR_INPUT:
             return InputType.PROXIMITY_SENSOR
-        else:
-            raise ValueError(f"Invalid input number: {self.input_number}")
+        msg = f"Invalid input number: {self.input_number}"
+        raise ValueError(msg)
 
     @property
     def is_button_press(self) -> bool:
-        """
-        True if this is a button press event.
+        """True if this is a button press event.
 
         Returns:
             True if event is a button press, False otherwise.
+
         """
         return self.event_type == EventType.BUTTON_PRESS
 
     @property
     def is_button_release(self) -> bool:
-        """
-        True if this is a button release event.
+        """True if this is a button release event.
 
         Returns:
             True if event is a button release, False otherwise.
+
         """
         return self.event_type == EventType.BUTTON_RELEASE
 
     def to_dict(self) -> dict[str, Any]:
-        """
-        Convert to dictionary for JSON serialization.
+        """Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the event telegram.
+
         """
         result: dict[str, Any] = {
             "module_type": self.module_type,
@@ -128,11 +138,11 @@ class EventTelegram(Telegram):
         return result
 
     def __str__(self) -> str:
-        """
-        Human-readable string representation.
+        """Human-readable string representation.
 
         Returns:
             Formatted string representation.
+
         """
         event_desc = "pressed" if self.is_button_press else "released"
 

@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Term CLI group definition for TUI commands."""
 
 import click
@@ -9,4 +10,3 @@ from click_help_colors import HelpColorsGroup
 )
 def term() -> None:
     """Terminal UI commands for interactive monitoring and control."""
-    pass

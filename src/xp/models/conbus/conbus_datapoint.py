@@ -1,18 +1,19 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus datapoint response model."""
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
+from xp.utils.time_utils import local_now
 
 
 @dataclass
 class ConbusDatapointResponse:
-    """
-    Represents a response from Conbus send operation.
+    """Represents a response from Conbus send operation.
 
     Attributes:
         success: Whether the operation was successful.
@@ -26,37 +27,38 @@ class ConbusDatapointResponse:
         datapoints: List of datapoint values.
         error: Error message if operation failed.
         timestamp: Timestamp of the response.
+
     """
 
     success: bool
-    serial_number: Optional[str] = None
-    system_function: Optional[SystemFunction] = None
-    datapoint_type: Optional[DataPointType] = None
-    sent_telegram: Optional[str] = None
-    received_telegrams: Optional[list] = None
-    datapoint_telegram: Optional[ReplyTelegram] = None
+    serial_number: str | None = None
+    system_function: SystemFunction | None = None
+    datapoint_type: DataPointType | None = None
+    sent_telegram: str | None = None
+    received_telegrams: list | None = None
+    datapoint_telegram: ReplyTelegram | None = None
     data_value: str = ""
-    datapoints: Optional[List[Dict[str, str]]] = None
-    error: Optional[str] = None
-    timestamp: Optional[datetime] = None
+    datapoints: list[dict[str, str]] | None = None
+    error: str | None = None
+    timestamp: datetime | None = None
 
     def __post_init__(self) -> None:
         """Initialize timestamp, received_telegrams, and datapoints if not provided."""
         if self.timestamp is None:
-            self.timestamp = datetime.now()
+            self.timestamp = local_now()
         if self.received_telegrams is None:
             self.received_telegrams = []
         if self.datapoints is None:
             self.datapoints = []
 
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Convert to dictionary for JSON serialization.
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the response.
+
         """
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "success": self.success,
             "serial_number": self.serial_number,
             "data_value": self.data_value,

@@ -1,24 +1,27 @@
-"""
-Conbus Scan Service for TCP communication with Conbus servers.
+# Copyright (c) 2025 ldvchosal
+"""Conbus Scan Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that scans Conbus servers and sends telegrams to
 scan modules for all datapoints by function code.
 """
 
 import logging
-from datetime import datetime
-from typing import Any, Optional
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 
 from xp.models import ConbusResponse
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
+from xp.utils.time_utils import local_now
+
+# Protocol data codes are two decimal digits, spanning 00-99
+DATAPOINT_CODE_COUNT = 100
 
 
 class ConbusScanService:
-    """
-    Service for scanning modules for all datapoints by function code.
+    """Service for scanning modules for all datapoints by function code.
 
     Uses ConbusEventProtocol to provide scan functionality for discovering
     all available datapoints on a module.
@@ -27,6 +30,7 @@ class ConbusScanService:
         conbus_protocol: Protocol instance for Conbus communication.
         on_progress: Signal emitted when scan progress is made (with telegram frame).
         on_finish: Signal emitted when scan finishes (with result).
+
     """
 
     on_progress: Signal = Signal(str)
@@ -36,11 +40,11 @@ class ConbusScanService:
         self,
         conbus_protocol: ConbusEventProtocol,
     ) -> None:
-        """
-        Initialize the Conbus scan service.
+        """Initialize the Conbus scan service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
+
         """
         self.conbus_protocol = conbus_protocol
         self.conbus_protocol.on_connection_made.connect(self.connection_made)
@@ -57,7 +61,7 @@ class ConbusScanService:
             serial_number=self.serial_number,
             sent_telegrams=[],
             received_telegrams=[],
-            timestamp=datetime.now(),
+            timestamp=local_now(),
         )
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -68,41 +72,41 @@ class ConbusScanService:
         self.scan_next_datacode()
 
     def scan_next_datacode(self) -> bool:
-        """
-        Scan the next data code.
+        """Scan the next data code.
 
         Returns:
             True if scanning should continue, False if complete.
+
         """
         self.datapoint_value += 1
-        if self.datapoint_value >= 100:
+        if self.datapoint_value >= DATAPOINT_CODE_COUNT:
             self.on_finish.emit(self.service_response)
             return False
 
-        self.logger.debug(f"Scanning next datacode: {self.datapoint_value:02d}")
+        self.logger.debug("Scanning next datacode: %02d", self.datapoint_value)
         data = f"{self.datapoint_value:02d}"
         telegram_body = f"S{self.serial_number}F{self.function_code}D{data}"
-        self.conbus_protocol.sendFrame(telegram_body.encode())
+        self.conbus_protocol.send_frame(telegram_body.encode())
         return True
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """
-        Handle telegram sent event.
+        """Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
+
         """
         self.service_response.success = True
         self.service_response.sent_telegrams.append(telegram_sent)
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
+
         """
-        self.logger.debug(f"Telegram received: {telegram_received}")
+        self.logger.debug("Telegram received: %s", telegram_received)
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
         self.service_response.received_telegrams.append(telegram_received.frame)
@@ -112,19 +116,19 @@ class ConbusScanService:
     def timeout(self) -> None:
         """Handle timeout event by scanning next data code."""
         timeout_seconds = self.conbus_protocol.timeout_seconds
-        self.logger.debug(f"Timeout: {timeout_seconds}s")
+        self.logger.debug("Timeout: %ss", timeout_seconds)
         self.scan_next_datacode()
 
     def failed(self, message: str) -> None:
-        """
-        Handle failed connection event.
+        """Handle failed connection event.
 
         Args:
             message: Failure message.
+
         """
-        self.logger.debug(f"Failed with message: {message}")
+        self.logger.debug("Failed with message: %s", message)
         self.service_response.success = False
-        self.service_response.timestamp = datetime.now()
+        self.service_response.timestamp = local_now()
         self.service_response.error = message
         self.on_finish.emit(self.service_response)
 
@@ -134,13 +138,13 @@ class ConbusScanService:
         function_code: str,
         timeout_seconds: float = 0.25,
     ) -> None:
-        """
-        Scan a module for all datapoints by function code.
+        """Scan a module for all datapoints by function code.
 
         Args:
             serial_number: 10-digit module serial number.
             function_code: The function code to scan.
             timeout_seconds: Timeout in seconds.
+
         """
         self.logger.info("Starting scan_module")
         if timeout_seconds:
@@ -150,11 +154,11 @@ class ConbusScanService:
         self.function_code = function_code
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set operation timeout.
+        """Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -166,11 +170,12 @@ class ConbusScanService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "ConbusScanService":
+    def __enter__(self) -> Self:
         """Enter context manager - reset state for singleton reuse.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state for singleton reuse
         self.serial_number = ""
@@ -181,12 +186,15 @@ class ConbusScanService:
             serial_number="",
             sent_telegrams=[],
             received_telegrams=[],
-            timestamp=datetime.now(),
+            timestamp=local_now(),
         )
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager and disconnect signals."""
         # Disconnect protocol signals

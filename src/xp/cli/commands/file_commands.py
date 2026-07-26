@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """File operations CLI commands for console bus logs."""
 
 import json
@@ -12,6 +13,8 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.error_handlers import CLIErrorHandler
 from xp.cli.utils.formatters import OutputFormatter, StatisticsFormatter
+from xp.services.log_file_service import LogFileService
+from xp.utils.time_utils import TimeParsingError, parse_time_range
 
 
 @click.group(
@@ -19,7 +22,6 @@ from xp.cli.utils.formatters import OutputFormatter, StatisticsFormatter
 )
 def file() -> None:
     """Perform file operations for console bus logs."""
-    pass
 
 
 @file.command("decode")
@@ -28,16 +30,16 @@ def file() -> None:
 @click.pass_context
 @file_operation_command()
 @handle_service_errors(Exception)
-def decode_log_file(
+def decode_log_file(  # noqa: PLR0913 - parameters mirror the CLI options
     ctx: Context,
     log_file_path: str,
+    *,
     filter_type: str,
     filter_direction: str,
     time_range: str,
     summary: bool,
 ) -> None:
-    r"""
-    Decode and parse console bus log file.
+    r"""Decode and parse console bus log file.
 
     Args:
         ctx: Click context object.
@@ -53,14 +55,12 @@ def decode_log_file(
 
     Raises:
         SystemExit: If time range is invalid or log file cannot be parsed.
-    """
-    from xp.services.log_file_service import LogFileService
-    from xp.utils.time_utils import TimeParsingError, parse_time_range
 
+    """
     service: LogFileService = (
         ctx.obj.get("container").get_container().resolve(LogFileService)
     )
-    StatisticsFormatter(True)
+    StatisticsFormatter(json_output=True)
 
     try:
         # Parse the log file
@@ -75,11 +75,11 @@ def decode_log_file(
                 try:
                     start_time, end_time = parse_time_range(time_range)
                 except TimeParsingError as e:
-                    error_response = OutputFormatter(True).error_response(
+                    error_response = OutputFormatter(json_output=True).error_response(
                         f"Invalid time range: {e}"
                     )
                     click.echo(error_response)
-                    raise SystemExit(1)
+                    raise SystemExit(1) from e
 
             entries = service.filter_entries(
                 entries,
@@ -106,7 +106,7 @@ def decode_log_file(
             }
             click.echo(json.dumps(output, indent=2))
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - CLI boundary: report any error to the user
         CLIErrorHandler.handle_file_error(e, log_file_path, "log file parsing")
 
 
@@ -115,8 +115,7 @@ def decode_log_file(
 @click.pass_context
 @handle_service_errors(Exception)
 def analyze_log_file(ctx: Context, log_file_path: str) -> None:
-    r"""
-    Analyze console bus log file for patterns and statistics.
+    r"""Analyze console bus log file for patterns and statistics.
 
     Args:
         ctx: Click context object.
@@ -125,13 +124,12 @@ def analyze_log_file(ctx: Context, log_file_path: str) -> None:
     Examples:
         \b
         xp file analyze conbus.log
-    """
-    from xp.services.log_file_service import LogFileService
 
+    """
     service: LogFileService = (
         ctx.obj.get("container").get_container().resolve(LogFileService)
     )
-    StatisticsFormatter(True)
+    StatisticsFormatter(json_output=True)
 
     try:
         entries = service.parse_log_file(log_file_path)
@@ -141,7 +139,7 @@ def analyze_log_file(ctx: Context, log_file_path: str) -> None:
             json.dumps({"file_path": log_file_path, "analysis": stats}, indent=2)
         )
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - CLI boundary: report any error to the user
         CLIErrorHandler.handle_file_error(e, log_file_path, "log file analysis")
 
 
@@ -150,8 +148,7 @@ def analyze_log_file(ctx: Context, log_file_path: str) -> None:
 @click.pass_context
 @handle_service_errors(Exception)
 def validate_log_file(ctx: Context, log_file_path: str) -> None:
-    r"""
-    Validate console bus log file format and telegram checksums.
+    r"""Validate console bus log file format and telegram checksums.
 
     Args:
         ctx: Click context object.
@@ -160,13 +157,12 @@ def validate_log_file(ctx: Context, log_file_path: str) -> None:
     Examples:
         \b
         xp file validate conbus.log
-    """
-    from xp.services.log_file_service import LogFileService
 
+    """
     service: LogFileService = (
         ctx.obj.get("container").get_container().resolve(LogFileService)
     )
-    OutputFormatter(True)
+    OutputFormatter(json_output=True)
 
     try:
         entries = service.parse_log_file(log_file_path)
@@ -185,5 +181,5 @@ def validate_log_file(ctx: Context, log_file_path: str) -> None:
         }
         click.echo(json.dumps(result, indent=2))
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - CLI boundary: report any error to the user
         CLIErrorHandler.handle_file_error(e, log_file_path, "log file validation")

@@ -1,9 +1,11 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus export service for exporting device configurations."""
 
 import asyncio
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from types import TracebackType
+from typing import TYPE_CHECKING, ClassVar, Self
 
 import yaml
 from psygnal import Signal
@@ -15,16 +17,17 @@ from xp.models.config.conson_module_config import (
 )
 from xp.models.protocol.conbus_protocol import TelegramReceivedEvent
 from xp.models.telegram.datapoint_type import DataPointType
-from xp.models.telegram.reply_telegram import ReplyTelegram
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
-from xp.services.telegram.telegram_service import TelegramService
+from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
+
+if TYPE_CHECKING:
+    from xp.models.telegram.reply_telegram import ReplyTelegram
 
 
 class ConbusExportService:
-    """
-    Service for exporting Conbus device configurations.
+    """Service for exporting Conbus device configurations.
 
     Discovers all devices on the Conbus network and queries their configuration
     datapoints to generate a structured export file compatible with conson.yml format.
@@ -39,6 +42,7 @@ class ConbusExportService:
         on_device_exported: Signal emitted when device export completes.
         on_finish: Signal emitted when export finishes.
         DATAPOINT_SEQUENCE: Sequence of 7 datapoints to query for each device.
+
     """
 
     # Signals (class attributes)
@@ -47,7 +51,7 @@ class ConbusExportService:
     on_finish: Signal = Signal(ConbusExportResponse)
 
     # Datapoint sequence to query for each device
-    DATAPOINT_SEQUENCE = [
+    DATAPOINT_SEQUENCE: ClassVar[list[DataPointType]] = [
         DataPointType.MODULE_TYPE,
         DataPointType.MODULE_TYPE_CODE,
         DataPointType.LINK_NUMBER,
@@ -60,12 +64,12 @@ class ConbusExportService:
     def __init__(
         self, conbus_protocol: ConbusEventProtocol, telegram_service: TelegramService
     ) -> None:
-        """
-        Initialize the Conbus export service.
+        """Initialize the Conbus export service.
 
         Args:
             conbus_protocol: Protocol for Conbus communication.
             telegram_service: TelegramService for telegram parsing.
+
         """
         self.logger = logging.getLogger(__name__)
         self.conbus_protocol = conbus_protocol
@@ -98,20 +102,20 @@ class ConbusExportService:
         )
 
     def telegram_sent(self, telegram: str) -> None:
-        """
-        Handle telegram sent event.
+        """Handle telegram sent event.
 
         Args:
             telegram: Telegram that was sent.
+
         """
         self.export_result.sent_telegrams.append(telegram)
 
     def telegram_received(self, event: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             event: Telegram received event.
+
         """
         self.export_result.received_telegrams.append(event.telegram)
 
@@ -124,8 +128,8 @@ class ConbusExportService:
             parsed: ReplyTelegram = self.telegram_service.parse_reply_telegram(
                 event.frame
             )
-        except Exception as e:
-            self.logger.debug(f"Failed to parse telegram: {e}")
+        except TelegramParsingError as e:
+            self.logger.debug("Failed to parse telegram: %s", e)
             return
 
         # Check for discovery response (F01D)
@@ -133,24 +137,27 @@ class ConbusExportService:
             self._handle_discovery_response(parsed.serial_number)
 
         # Check for datapoint response (F02D)
-        elif parsed.system_function == SystemFunction.READ_DATAPOINT:
-            if parsed.datapoint_type and parsed.data_value:
-                self._handle_datapoint_response(
-                    parsed.serial_number, parsed.datapoint_type.value, parsed.data_value
-                )
+        elif (
+            parsed.system_function == SystemFunction.READ_DATAPOINT
+            and parsed.datapoint_type
+            and parsed.data_value
+        ):
+            self._handle_datapoint_response(
+                parsed.serial_number, parsed.datapoint_type.value, parsed.data_value
+            )
 
     def _handle_discovery_response(self, serial_number: str) -> None:
-        """
-        Handle discovery response and query all datapoints.
+        """Handle discovery response and query all datapoints.
 
         Args:
             serial_number: Serial number of discovered device.
+
         """
         if serial_number in self.discovered_devices:
-            self.logger.debug(f"Ignoring duplicate discovery: {serial_number}")
+            self.logger.debug("Ignoring duplicate discovery: %s", serial_number)
             return
 
-        self.logger.debug(f"Device discovered: {serial_number}")
+        self.logger.debug("Device discovered: %s", serial_number)
         self.discovered_devices.append(serial_number)
 
         # Create ConsonModuleConfig with placeholder values for required fields
@@ -170,7 +177,7 @@ class ConbusExportService:
 
         # Send all datapoint queries immediately (protocol handles throttling)
         self.logger.debug(
-            f"Sending {len(self.DATAPOINT_SEQUENCE)} queries for {serial_number}"
+            "Sending %s queries for %s", len(self.DATAPOINT_SEQUENCE), serial_number
         )
         for datapoint in self.DATAPOINT_SEQUENCE:
             self.conbus_protocol.send_telegram(
@@ -183,21 +190,23 @@ class ConbusExportService:
     def _handle_datapoint_response(
         self, serial_number: str, datapoint_code: str, value: str
     ) -> None:
-        """
-        Handle datapoint response and store value.
+        """Handle datapoint response and store value.
 
         Args:
             serial_number: Serial number of device.
             datapoint_code: Datapoint type code.
             value: Datapoint value.
+
         """
         if serial_number not in self.device_configs:
             self.logger.warning(
-                f"Received datapoint for unknown device: {serial_number}"
+                "Received datapoint for unknown device: %s", serial_number
             )
             return
 
-        self.logger.debug(f"Datapoint {datapoint_code}={value} for {serial_number}")
+        self.logger.debug(
+            "Datapoint %s=%s for %s", datapoint_code, value, serial_number
+        )
 
         # Store value in device config
         datapoint = DataPointType.from_code(datapoint_code)
@@ -205,18 +214,18 @@ class ConbusExportService:
             self._store_datapoint_value(serial_number, datapoint, value)
             self._check_device_complete(serial_number)
         else:
-            self.logger.warning(f"Unknown datapoint code: {datapoint_code}")
+            self.logger.warning("Unknown datapoint code: %s", datapoint_code)
 
     def _store_datapoint_value(
         self, serial_number: str, datapoint: DataPointType, value: str
     ) -> None:
-        """
-        Store datapoint value in device config.
+        """Store datapoint value in device config.
 
         Args:
             serial_number: Serial number of device.
             datapoint: Datapoint type.
             value: Datapoint value.
+
         """
         module = self.device_configs[serial_number]
 
@@ -238,22 +247,24 @@ class ConbusExportService:
             elif datapoint == DataPointType.AUTO_REPORT_STATUS:
                 module.auto_report_status = value
         except (ValueError, TypeError) as e:
-            self.logger.warning(f"Invalid value '{value}' for {datapoint.name}: {e}")
+            self.logger.warning(
+                "Invalid value '%s' for %s: %s", value, datapoint.name, e
+            )
 
     def _is_device_complete(self, serial_number: str) -> bool:
-        """
-        Check if a device has all required datapoints.
+        """Check if a device has all required datapoints.
 
         Args:
             serial_number: Serial number of device.
 
         Returns:
             True if device is complete, False otherwise.
+
         """
         module = self.device_configs[serial_number]
         return all(
             [
-                module.module_type not in ("UNKNOWN", None, ""),
+                module.module_type not in {"UNKNOWN", None, ""},
                 module.module_type_code is not None and module.module_type_code > 0,
                 module.link_number is not None and module.link_number > 0,
                 module.sw_version is not None,
@@ -264,14 +275,14 @@ class ConbusExportService:
         )
 
     def _check_device_complete(self, serial_number: str) -> None:
-        """
-        Check if device has all datapoints and emit completion signal.
+        """Check if device has all datapoints and emit completion signal.
 
         Args:
             serial_number: Serial number of device.
+
         """
         if self._is_device_complete(serial_number):
-            self.logger.debug(f"Device {serial_number} complete (7/7 datapoints)")
+            self.logger.debug("Device %s complete (7/7 datapoints)", serial_number)
             module = self.device_configs[serial_number]
             self.on_device_exported.emit(module)
 
@@ -317,7 +328,7 @@ class ConbusExportService:
             self.on_finish.emit(self.export_result)
 
         except Exception as e:
-            self.logger.error(f"Failed to create export: {e}")
+            self.logger.exception("Failed to create export")
             self.export_status = "FAILED_WRITE"
             self.export_result.success = False
             self.export_result.error = str(e)
@@ -325,14 +336,11 @@ class ConbusExportService:
             self.on_finish.emit(self.export_result)
 
     def _write_export_file(self, path: str) -> None:
-        """
-        Write export to YAML file.
+        """Write export to YAML file.
 
         Args:
             path: Output file path.
 
-        Raises:
-            Exception: If file write fails.
         """
         try:
             output_path = Path(path)
@@ -356,7 +364,7 @@ class ConbusExportService:
                 # Export as list at root level (not wrapped in 'root:' key)
                 modules_list = data.get("root", [])
 
-                with output_path.open("w") as f:
+                with output_path.open("w", encoding="utf-8") as f:
                     # Dump each module separately with blank lines between them
                     for i, module in enumerate(modules_list):
                         # Add blank line before each module except the first
@@ -373,18 +381,18 @@ class ConbusExportService:
                         # Remove the trailing newline and write
                         f.write(yaml_str.rstrip("\n") + "\n")
 
-            self.logger.info(f"Export written to {path}")
+            self.logger.info("Export written to %s", path)
             self.export_result.output_file = path
 
-        except Exception as e:
-            self.logger.error(f"Failed to write export file: {e}")
+        except Exception:
+            self.logger.exception("Failed to write export file")
             self.export_status = "FAILED_WRITE"
             raise
 
     def timeout(self) -> None:
         """Handle timeout event."""
         timeout = self.conbus_protocol.timeout_seconds
-        self.logger.info(f"Export timeout after {timeout}s")
+        self.logger.info("Export timeout after %ss", timeout)
 
         # Check if any devices incomplete
         incomplete = [
@@ -392,19 +400,21 @@ class ConbusExportService:
         ]
 
         if incomplete:
-            self.logger.warning(f"Partial export: {len(incomplete)} incomplete devices")
+            self.logger.warning(
+                "Partial export: %s incomplete devices", len(incomplete)
+            )
             self.export_status = "FAILED_TIMEOUT"
 
         self._finalize_export()
 
     def failed(self, message: str) -> None:
-        """
-        Handle connection failure event.
+        """Handle connection failure event.
 
         Args:
             message: Failure message.
+
         """
-        self.logger.error(f"Connection failed: {message}")
+        self.logger.error("Connection failed: %s", message)
         self.export_status = "FAILED_CONNECTION"
         self.export_result.success = False
         self.export_result.error = message
@@ -412,21 +422,21 @@ class ConbusExportService:
         self.on_finish.emit(self.export_result)
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set timeout for export operation.
+        """Set timeout for export operation.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
-        self.logger.debug(f"Set timeout: {timeout_seconds}s")
+        self.logger.debug("Set timeout: %ss", timeout_seconds)
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
     def set_event_loop(self, event_loop: asyncio.AbstractEventLoop) -> None:
-        """
-        Set event loop for async operations.
+        """Set event loop for async operations.
 
         Args:
             event_loop: Event loop to use.
+
         """
         self.logger.debug("Set event loop")
         self.conbus_protocol.set_event_loop(event_loop)
@@ -439,12 +449,12 @@ class ConbusExportService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "ConbusExportService":
-        """
-        Enter context manager.
+    def __enter__(self) -> Self:
+        """Enter context manager.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state for reuse
         self.discovered_devices = []
@@ -455,7 +465,10 @@ class ConbusExportService:
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager and disconnect signals."""
         self.conbus_protocol.on_connection_made.disconnect(self.connection_made)

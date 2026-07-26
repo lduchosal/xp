@@ -1,12 +1,15 @@
+# Copyright (c) 2025 ldvchosal
 """System function enumeration for system telegrams."""
 
 from enum import Enum
 from typing import Optional
 
 
-class SystemFunction(str, Enum):
-    """
-    System function codes for system telegrams.
+# NOTE: not converted to StrEnum (UP042): members are rendered via str()/f-strings
+# (e.g. ConbusDatapointResponse.to_dict CLI JSON output, service log messages);
+# the output would change from "SystemFunction.<NAME>" to the raw code.
+class SystemFunction(str, Enum):  # noqa: UP042
+    """System function codes for system telegrams.
 
     Attributes:
         NONE: Undefined function.
@@ -38,6 +41,7 @@ class SystemFunction(str, Enum):
         ROTATE_DISABLE: Disable rotate.
         UNKNOWN_26: Used after discover, unknown purpose.
         ACTION: Action function.
+
     """
 
     NONE = "00"  # F00D Undefined
@@ -61,8 +65,9 @@ class SystemFunction(str, Enum):
     TELEGRAM_READ_START = "15"  # F15D Start reading telegram
     EOF = "16"  # F16D End of msactiontable response
     TELEGRAM = "17"  # F17D module specific Telegram response
-    MSACTIONTABLE = "17"  # F17D module specific ms action table (Telegram) response
-    ACTIONTABLE = "17"  # F17D module specific action table (Telegram) response
+    # Aliases of TELEGRAM: same protocol code, kept for call-site readability
+    MSACTIONTABLE = TELEGRAM  # F17D module specific ms action table response
+    ACTIONTABLE = MSACTIONTABLE  # F17D module specific action table response
     ACK = "18"  # F18D Acknowledge / continue response
     NAK = "19"  # F19D Not acknowledge response
 
@@ -77,11 +82,11 @@ class SystemFunction(str, Enum):
     ACTION = "27"  # F27D Action function
 
     def get_description(self) -> str:
-        """
-        Get the description of the SystemFunction.
+        """Get the description of the SystemFunction.
 
         Returns:
             Human-readable description of the function.
+
         """
         return (
             {
@@ -104,14 +109,14 @@ class SystemFunction(str, Enum):
 
     @classmethod
     def from_code(cls, code: str) -> Optional["SystemFunction"]:
-        """
-        Get SystemFunction from code string.
+        """Get SystemFunction from code string.
 
         Args:
             code: Function code string.
 
         Returns:
             SystemFunction instance if found, None otherwise.
+
         """
         for func in cls:
             if func.value.lower() == code.lower():

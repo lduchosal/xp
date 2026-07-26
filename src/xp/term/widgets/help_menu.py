@@ -1,6 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Help Menu Widget for displaying keyboard shortcuts and protocol keys."""
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from textual.app import ComposeResult
 from textual.containers import Vertical
@@ -11,8 +12,7 @@ if TYPE_CHECKING:
 
 
 class HelpMenuWidget(Vertical):
-    """
-    Help menu widget displaying keyboard shortcuts and protocol keys.
+    """Help menu widget displaying keyboard shortcuts and protocol keys.
 
     Displays a table of available keyboard shortcuts mapped to their
     corresponding protocol commands.
@@ -20,23 +20,29 @@ class HelpMenuWidget(Vertical):
     Attributes:
         service: ProtocolMonitorService for accessing protocol keys.
         help_table: DataTable widget for displaying key mappings.
+
     """
 
     def __init__(
         self,
         service: "ProtocolMonitorService",
-        *args: Any,
-        **kwargs: Any,
+        *,
+        name: str | None = None,
+        id: str | None = None,  # noqa: A002 - mirrors Textual's Widget API
+        classes: str | None = None,
+        disabled: bool = False,
     ) -> None:
-        """
-        Initialize the Help Menu widget.
+        """Initialize the Help Menu widget.
 
         Args:
             service: ProtocolMonitorService instance.
-            args: Additional positional arguments for Vertical.
-            kwargs: Additional keyword arguments for Vertical.
+            name: The name of the widget.
+            id: The ID of the widget in the DOM.
+            classes: The CSS classes for the widget.
+            disabled: Whether the widget is disabled.
+
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(name=name, id=id, classes=classes, disabled=disabled)
         self.service: ProtocolMonitorService = service
         self.help_table: DataTable = DataTable(
             id="help-table", show_header=False, cursor_type="row"
@@ -44,11 +50,11 @@ class HelpMenuWidget(Vertical):
         self.border_title = "Help menu"
 
     def compose(self) -> ComposeResult:
-        """
-        Compose the help menu layout.
+        """Compose the help menu layout.
 
         Yields:
             DataTable widget with key mappings.
+
         """
         yield self.help_table
 

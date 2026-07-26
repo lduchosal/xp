@@ -1,10 +1,12 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus export service for exporting device configurations."""
 
 import asyncio
 import logging
 from pathlib import Path
 from queue import Empty, SimpleQueue
-from typing import Any, Optional, Tuple
+from types import TracebackType
+from typing import ClassVar, Self
 
 import yaml
 from psygnal import Signal
@@ -21,8 +23,7 @@ from xp.services.conbus.actiontable.actiontable_download_service import (
 
 
 class ConbusActiontableExportService:
-    """
-    Service for exporting Conbus device configurations.
+    """Service for exporting Conbus device configurations.
 
     Discovers all devices on the Conbus network and queries their configuration
     datapoints to generate a structured export file compatible with conson.yml format.
@@ -35,6 +36,7 @@ class ConbusActiontableExportService:
         on_device_actiontable_exported: Signal emitted when device export completes.
         on_finish: Signal emitted when export finishes.
         ACTIONTABLE_SEQUENCE: Sequence of actiontable to query for each device.
+
     """
 
     # Signals (class attributes)
@@ -44,7 +46,7 @@ class ConbusActiontableExportService:
     )
     on_finish: Signal = Signal(ConbusExportResponse)
 
-    ACTIONTABLE_SEQUENCE = [
+    ACTIONTABLE_SEQUENCE: ClassVar[list[ActionTableType2]] = [
         ActionTableType2.ACTIONTABLE,
         ActionTableType2.MSACTIONTABLE,
     ]
@@ -54,12 +56,12 @@ class ConbusActiontableExportService:
         download_service: ActionTableDownloadService,
         module_list: ConsonModuleListConfig,
     ) -> None:
-        """
-        Initialize the Conbus export service.
+        """Initialize the Conbus export service.
 
         Args:
             download_service: Protocol for downloading actiontables.
             module_list: module to export.
+
         """
         self.logger = logging.getLogger(__name__)
         self.download_service = download_service
@@ -68,7 +70,7 @@ class ConbusActiontableExportService:
             module.serial_number: module for module in module_list.root
         }
         # State management
-        self.device_queue: SimpleQueue[Tuple[str, ActionTableType]] = (
+        self.device_queue: SimpleQueue[tuple[str, ActionTableType]] = (
             SimpleQueue()
         )  # FIFO
         for module in self._module_list.root:
@@ -89,23 +91,23 @@ class ConbusActiontableExportService:
 
         self.logger.info("Export module %s", self.device_queue.qsize())
 
-        self.current_module: Optional[ConsonModuleConfig] = None
-        self.current_actiontable_type: Optional[ActionTableType] = None
+        self.current_module: ConsonModuleConfig | None = None
+        self.current_actiontable_type: ActionTableType | None = None
         self.export_result = ConbusExportResponse(success=False)
         self.export_status = "OK"
 
     def on_module_actiontable_received(
-        self, actiontable: Any, short_actiontable: list[str]
+        self, _actiontable: object, short_actiontable: list[str]
     ) -> None:
-        """
-        Handle actiontable received event.
+        """Handle actiontable received event.
 
         Args:
-            actiontable: Full actiontable data.
+            _actiontable: Full actiontable data (unused).
             short_actiontable: Short representation of the actiontable.
+
         """
         if not self.current_actiontable_type:
-            self._fail("Invalid state (curent_actiontable_type)")
+            self._fail("Invalid state (current_actiontable_type)")
             return
 
         if not self.current_module:
@@ -127,7 +129,8 @@ class ConbusActiontableExportService:
 
     def on_module_finish(self) -> None:
         """Handle module export completion."""
-        self._save_action_table()
+        if not self._save_action_table():
+            return
         has_next_module = self.configure()
         if not has_next_module:
             self._succeed()
@@ -146,21 +149,26 @@ class ConbusActiontableExportService:
         )
 
     def on_module_error(self, error_message: str) -> None:
-        """
-        Handle module error event.
+        """Handle module error event.
 
         Args:
             error_message: Error message from module.
+
         """
         self._fail(error_message)
 
-    def _save_action_table(self) -> None:
-        """Write export to YAML file."""
+    def _save_action_table(self) -> bool:
+        """Write export to YAML file.
+
+        Returns:
+            True if the export file was written, False if the export failed.
+
+        """
         self.logger.info("Saving action table")
 
-        if not self._module_list:
+        if not self._module_list.root:
             self._fail("FAILED_NO_DEVICES")
-            return
+            return False
 
         try:
             # Write to file
@@ -184,7 +192,7 @@ class ConbusActiontableExportService:
             # Export as list at root level (not wrapped in 'root:' key)
             modules_list = data.get("root", [])
 
-            with output_path.open("w") as f:
+            with output_path.open("w", encoding="utf-8") as f:
                 # Dump each module separately with blank lines between them
                 for i, module in enumerate(modules_list):
                     # Add blank line before each module except the first
@@ -201,18 +209,21 @@ class ConbusActiontableExportService:
                     # Remove the trailing newline and write
                     f.write(yaml_str.rstrip("\n") + "\n")
 
-            self.logger.info(f"Export written to {path}")
+            self.logger.info("Export written to %s", path)
             self.export_result.output_file = path
 
-        except Exception as e:
+        except (OSError, yaml.YAMLError) as e:
             self._fail(f"Failed to create export: {e}")
+            return False
+
+        return True
 
     def configure(self) -> bool:
-        """
-        Configure export service.
+        """Configure export service.
 
         Returns:
             True if there is a module to export, False otherwise.
+
         """
         self.download_service.reset()
         try:
@@ -223,12 +234,14 @@ class ConbusActiontableExportService:
             return False
 
         self.current_module = self._module_dic[current_serial_number]
-        if not (self.current_module or self.current_actiontable_type):
+        if not (self.current_module and self.current_actiontable_type):
             self.logger.error("No module to export")
             return False
 
         self.logger.info(
-            f"Downloading {self.current_module.serial_number} / {self.current_actiontable_type}"
+            "Downloading %s / %s",
+            self.current_module.serial_number,
+            self.current_actiontable_type,
         )
         self.download_service.configure(
             self.current_module.serial_number,
@@ -238,21 +251,21 @@ class ConbusActiontableExportService:
         return True
 
     def set_event_loop(self, event_loop: asyncio.AbstractEventLoop) -> None:
-        """
-        Set event loop for async operations.
+        """Set event loop for async operations.
 
         Args:
             event_loop: Event loop to use.
+
         """
         self.logger.debug("Set event loop")
         self.download_service.set_event_loop(event_loop)
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set timeout.
+        """Set timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.download_service.set_timeout(timeout_seconds)
 
@@ -264,12 +277,12 @@ class ConbusActiontableExportService:
         """Stop the reactor."""
         self.download_service.stop_reactor()
 
-    def __enter__(self) -> "ConbusActiontableExportService":
-        """
-        Enter context manager.
+    def __enter__(self) -> Self:
+        """Enter context manager.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state for reuse
         self.export_result = ConbusExportResponse(success=False)
@@ -278,7 +291,10 @@ class ConbusActiontableExportService:
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager and disconnect signals."""
         self._disconnect_signals()
@@ -307,11 +323,11 @@ class ConbusActiontableExportService:
         self.on_finish.disconnect()
 
     def _fail(self, error: str) -> None:
-        """
-        Handle export failure.
+        """Handle export failure.
 
         Args:
             error: Error message.
+
         """
         self.logger.error(error)
         self.export_result.success = False

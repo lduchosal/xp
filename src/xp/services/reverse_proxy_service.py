@@ -1,33 +1,29 @@
-"""
-Conbus Reverse Proxy Service for TCP relay with telegram monitoring.
+# Copyright (c) 2025 ldvchosal
+"""Conbus Reverse Proxy Service for TCP relay with telegram monitoring.
 
 This service implements a TCP reverse proxy that listens on port 10001 and forwards all
-telegrams to the configured Conbus server while printing bidirectional traffic.
+telegrams to the configured Conbus server while logging bidirectional traffic.
 """
 
 import logging
 import socket
 import threading
 import time
-from datetime import datetime
-from typing import Dict, Optional
 
 from xp.models import ConbusClientConfig
 from xp.models.response import Response
+from xp.utils.time_utils import local_now
 
 
 class ReverseProxyError(Exception):
     """Raised when Conbus reverse proxy operations fail."""
 
-    pass
-
 
 class ReverseProxyService:
-    """
-    TCP reverse proxy for Conbus communications.
+    """TCP reverse proxy for Conbus communications.
 
     Accepts client connections on port 10001 and forwards all telegrams
-    to the target server configured in cli.yml. Monitors and prints all
+    to the target server configured in cli.yml. Monitors and logs all
     bidirectional traffic with timestamps.
 
     Attributes:
@@ -40,27 +36,28 @@ class ReverseProxyService:
         cli_config: Conbus client configuration.
         target_ip: Target server IP address.
         target_port: Target server port number.
+
     """
 
     def __init__(
         self,
         cli_config: ConbusClientConfig,
         listen_port: int,
-    ):
-        """
-        Initialize the Conbus reverse proxy service.
+    ) -> None:
+        """Initialize the Conbus reverse proxy service.
 
         Args:
             cli_config: Conbus client configuration.
             listen_port: Port to listen on for client connections.
+
         """
         # Set up logging first
         self.logger = logging.getLogger(__name__)
 
         self.listen_port = listen_port
-        self.server_socket: Optional[socket.socket] = None
+        self.server_socket: socket.socket | None = None
         self.is_running = False
-        self.active_connections: Dict[str, dict] = {}
+        self.active_connections: dict[str, dict] = {}
         self.connection_counter = 0
 
         # Target server configuration
@@ -68,30 +65,30 @@ class ReverseProxyService:
 
     @property
     def target_ip(self) -> str:
-        """
-        Get target server IP.
+        """Target server IP.
 
         Returns:
             Target server IP address.
+
         """
         return self.cli_config.conbus.ip
 
     @property
     def target_port(self) -> int:
-        """
-        Get target server port.
+        """Target server port.
 
         Returns:
             Target server port number.
+
         """
         return self.cli_config.conbus.port
 
     def start_proxy(self) -> Response:
-        """
-        Start the reverse proxy server.
+        """Start the reverse proxy server.
 
         Returns:
             Response object with success status and proxy details.
+
         """
         if self.is_running:
             return Response(
@@ -103,22 +100,19 @@ class ReverseProxyService:
             self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-            # Bind to listen port on all interfaces
-            self.server_socket.bind(("0.0.0.0", self.listen_port))
+            # Bind to listen port on all interfaces: the proxy must accept
+            # connections from external Conbus clients by design.
+            self.server_socket.bind(("0.0.0.0", self.listen_port))  # noqa: S104
             self.server_socket.listen(5)  # Allow multiple connections in queue
 
             self.is_running = True
-            self.logger.info(f"Reverse proxy started on port {self.listen_port}")
+            self.logger.info("Reverse proxy started on port %s", self.listen_port)
             self.logger.info(
-                f"Forwarding to {self.cli_config.conbus.ip}:{self.cli_config.conbus.port}"
+                "Forwarding to %s:%s",
+                self.cli_config.conbus.ip,
+                self.cli_config.conbus.port,
             )
-
-            # Print startup message
-            print(f"Conbus Reverse Proxy started on port {self.listen_port}")
-            print(
-                f"Forwarding telegrams to {self.cli_config.conbus.ip}:{self.cli_config.conbus.port}"
-            )
-            print("Monitoring all traffic...\n")
+            self.logger.info("Monitoring all traffic...")
 
             # Start accepting connections in background thread
             accept_thread = threading.Thread(
@@ -138,17 +132,17 @@ class ReverseProxyService:
             )
 
         except Exception as e:
-            self.logger.error(f"Failed to start reverse proxy: {e}")
+            self.logger.exception("Failed to start reverse proxy")
             return Response(
                 success=False, data=None, error=f"Failed to start reverse proxy: {e}"
             )
 
     def stop_proxy(self) -> Response:
-        """
-        Stop the reverse proxy server.
+        """Stop the reverse proxy server.
 
         Returns:
             Response object with success status.
+
         """
         if not self.is_running:
             return Response(
@@ -158,7 +152,7 @@ class ReverseProxyService:
         self.is_running = False
 
         # Close all active connections
-        for conn_id, conn_info in list(self.active_connections.items()):
+        for conn_id, _conn_info in list(self.active_connections.items()):
             self._close_connection_pair(conn_id)
 
         # Close server socket
@@ -166,9 +160,8 @@ class ReverseProxyService:
             try:
                 self.server_socket.close()
                 self.logger.info("Reverse proxy stopped")
-                print("Reverse proxy stopped")
-            except Exception as e:
-                self.logger.error(f"Error closing server socket: {e}")
+            except Exception:
+                self.logger.exception("Error closing server socket")
 
         return Response(
             success=True,
@@ -177,11 +170,11 @@ class ReverseProxyService:
         )
 
     def get_status(self) -> Response:
-        """
-        Get current proxy status and active connections.
+        """Get current proxy status and active connections.
 
         Returns:
             Response object with proxy status and connection details.
+
         """
         return Response(
             success=True,
@@ -216,9 +209,8 @@ class ReverseProxyService:
                 self.connection_counter += 1
                 conn_id = f"conn_{self.connection_counter}"
 
-                self.logger.info(f"Client connected from {client_address} [{conn_id}]")
-                print(
-                    f"{self.timestamp()} [CONNECTION] Client {client_address} connected [{conn_id}]"
+                self.logger.info(
+                    "Client connected from %s [%s]", client_address, conn_id
                 )
 
                 # Handle client in separate thread
@@ -229,21 +221,21 @@ class ReverseProxyService:
                 )
                 client_thread.start()
 
-            except Exception as e:
+            except Exception:
                 if self.is_running:
-                    self.logger.error(f"Error accepting connection: {e}")
+                    self.logger.exception("Error accepting connection")
                 break
 
     def _handle_client(
         self, client_socket: socket.socket, client_address: tuple, conn_id: str
     ) -> None:
-        """
-        Handle individual client connection with server relay.
+        """Handle individual client connection with server relay.
 
         Args:
             client_socket: Client socket connection.
             client_address: Client address tuple (ip, port).
             conn_id: Connection identifier.
+
         """
         try:
             # Connect to target server
@@ -258,12 +250,15 @@ class ReverseProxyService:
                 "client_socket": client_socket,
                 "server_socket": server_socket,
                 "client_address": client_address,
-                "connected_at": datetime.now(),
+                "connected_at": local_now(),
                 "bytes_relayed": 0,
             }
 
             self.logger.info(
-                f"Connected to target server {self.cli_config.conbus.ip}:{self.cli_config.conbus.port} [{conn_id}]"
+                "Connected to target server %s:%s [%s]",
+                self.cli_config.conbus.ip,
+                self.cli_config.conbus.port,
+                conn_id,
             )
 
             # Set timeouts for idle connections
@@ -301,16 +296,12 @@ class ReverseProxyService:
             client_to_server_thread.join()
             server_to_client_thread.join()
 
-        except socket.timeout:
-            self.logger.info(f"Connection to target server timed out [{conn_id}]")
-            print(
-                f"{self.timestamp()} [ERROR] Connection to target server timed out [{conn_id}]"
+        except TimeoutError:
+            self.logger.info("Connection to target server timed out [%s]", conn_id)
+        except Exception:
+            self.logger.exception(
+                "Error handling client %s [%s]", client_address, conn_id
             )
-        except Exception as e:
-            self.logger.error(
-                f"Error handling client {client_address}: {e} [{conn_id}]"
-            )
-            print(f"{self.timestamp()} [ERROR] Connection error: {e} [{conn_id}]")
         finally:
             self._close_connection_pair(conn_id)
 
@@ -322,8 +313,7 @@ class ReverseProxyService:
         dest_label: str,
         conn_id: str,
     ) -> None:
-        """
-        Relay data between sockets with telegram monitoring.
+        """Relay data between sockets with telegram monitoring.
 
         Args:
             source_socket: Source socket to receive from.
@@ -331,6 +321,7 @@ class ReverseProxyService:
             source_label: Label for source in logs.
             dest_label: Label for destination in logs.
             conn_id: Connection identifier.
+
         """
         try:
             while self.is_running:
@@ -339,15 +330,15 @@ class ReverseProxyService:
                 if not data:
                     break
 
-                # Decode and print telegram
+                # Decode and log telegram
                 try:
                     message = data.decode("latin-1").strip()
                     if message:
-                        print(f"{self.timestamp()} [{source_label}] {message}")
+                        self.logger.info("[%s] %s", source_label, message)
 
                         # Forward to destination
                         dest_socket.send(data)
-                        print(f"{self.timestamp()} [{dest_label}] {message}")
+                        self.logger.info("[%s] %s", dest_label, message)
 
                         # Update bytes relayed counter
                         if conn_id in self.active_connections:
@@ -357,29 +348,29 @@ class ReverseProxyService:
 
                 except UnicodeDecodeError:
                     # Handle binary data
-                    print(
-                        f"{self.timestamp()} [{source_label}] <binary data: {len(data)} bytes>"
+                    self.logger.info(
+                        "[%s] <binary data: %s bytes>", source_label, len(data)
                     )
                     dest_socket.send(data)
-                    print(
-                        f"{self.timestamp()} [{dest_label}] <binary data: {len(data)} bytes>"
+                    self.logger.info(
+                        "[%s] <binary data: %s bytes>", dest_label, len(data)
                     )
 
                     if conn_id in self.active_connections:
                         self.active_connections[conn_id]["bytes_relayed"] += len(data)
 
-        except socket.timeout:
-            self.logger.debug(f"Socket timeout in relay [{conn_id}]")
-        except Exception as e:
+        except TimeoutError:
+            self.logger.debug("Socket timeout in relay [%s]", conn_id)
+        except Exception:
             if self.is_running:
-                self.logger.error(f"Error in data relay: {e} [{conn_id}]")
+                self.logger.exception("Error in data relay [%s]", conn_id)
 
     def _close_connection_pair(self, conn_id: str) -> None:
-        """
-        Close both client and server sockets for a connection.
+        """Close both client and server sockets for a connection.
 
         Args:
             conn_id: Connection identifier.
+
         """
         if conn_id not in self.active_connections:
             return
@@ -390,28 +381,25 @@ class ReverseProxyService:
         try:
             if "client_socket" in conn_info:
                 conn_info["client_socket"].close()
-        except Exception as e:
-            self.logger.error(f"Error closing client socket: {e} [{conn_id}]")
+        except Exception:
+            self.logger.exception("Error closing client socket [%s]", conn_id)
 
         # Close server socket
         try:
             if "server_socket" in conn_info:
                 conn_info["server_socket"].close()
-        except Exception as e:
-            self.logger.error(f"Error closing server socket: {e} [{conn_id}]")
+        except Exception:
+            self.logger.exception("Error closing server socket [%s]", conn_id)
 
         # Log disconnection
         client_address = conn_info.get("client_address", "unknown")
         bytes_relayed = conn_info.get("bytes_relayed", 0)
 
         self.logger.info(
-            f"Client {client_address} disconnected [{conn_id}] - {bytes_relayed} bytes relayed"
-        )
-        print(
-            f"{self.timestamp()} [DISCONNECTION] "
-            f"Client {client_address} "
-            f"disconnected [{conn_id}] - "
-            f"{bytes_relayed} bytes relayed"
+            "Client %s disconnected [%s] - %s bytes relayed",
+            client_address,
+            conn_id,
+            bytes_relayed,
         )
 
         # Remove from active connections
@@ -419,20 +407,20 @@ class ReverseProxyService:
 
     @staticmethod
     def timestamp() -> str:
-        """
-        Generate timestamp string for logging.
+        """Generate timestamp string for logging.
 
         Returns:
             Timestamp string in HH:MM:SS,mmm format.
+
         """
-        return datetime.now().strftime("%H:%M:%S,%f")[:-3]
+        return local_now().strftime("%H:%M:%S,%f")[:-3]
 
     def run_blocking(self) -> None:
-        """
-        Run the proxy in blocking mode (for CLI usage).
+        """Run the proxy in blocking mode (for CLI usage).
 
         Raises:
             ReverseProxyError: If proxy fails to start.
+
         """
         result = self.start_proxy()
         if not result.success:
@@ -443,5 +431,5 @@ class ReverseProxyService:
             while self.is_running:
                 time.sleep(1)
         except KeyboardInterrupt:
-            print(f"\n{self.timestamp()} [SHUTDOWN] Received interrupt signal")
+            self.logger.info("Received interrupt signal, shutting down")
             self.stop_proxy()

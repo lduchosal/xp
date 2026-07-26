@@ -1,12 +1,10 @@
-"""
-XP130 Server Service for device emulation.
+# Copyright (c) 2025 ldvchosal
+"""XP130 Server Service for device emulation.
 
 This service provides XP130-specific device emulation functionality, including response
 generation and device configuration handling. XP130 is an Ethernet/TCPIP interface
 module.
 """
-
-from typing import Dict, Optional
 
 from xp.models import ModuleTypeCode
 from xp.services.actiontable.msactiontable_serializer import MsActionTableSerializer
@@ -16,12 +14,9 @@ from xp.services.server.base_server_service import BaseServerService
 class XP130ServerError(Exception):
     """Raised when XP130 server operations fail."""
 
-    pass
-
 
 class XP130ServerService(BaseServerService):
-    """
-    XP130 device emulation service.
+    """XP130 device emulation service.
 
     Generates XP130-specific responses, handles XP130 device configuration, and
     implements XP130 telegram format for Ethernet/TCPIP interface module.
@@ -31,15 +26,15 @@ class XP130ServerService(BaseServerService):
         self,
         serial_number: str,
         _variant: str = "",
-        _msactiontable_serializer: Optional[MsActionTableSerializer] = None,
-    ):
-        """
-        Initialize XP130 server service.
+        _msactiontable_serializer: MsActionTableSerializer | None = None,
+    ) -> None:
+        """Initialize XP130 server service.
 
         Args:
             serial_number: The device serial number.
             _variant: Reserved parameter for consistency (unused).
             _msactiontable_serializer: Generic MsActionTable serializer (unused).
+
         """
         super().__init__(serial_number)
         self.device_type = "XP130"
@@ -51,12 +46,12 @@ class XP130ServerService(BaseServerService):
         self.subnet_mask = "255.255.255.0"
         self.gateway = "192.168.1.1"
 
-    def get_device_info(self) -> Dict:
-        """
-        Get XP130 device information.
+    def get_device_info(self) -> dict:
+        """Get XP130 device information.
 
         Returns:
             Dictionary containing device information.
+
         """
         return {
             "serial_number": self.serial_number,

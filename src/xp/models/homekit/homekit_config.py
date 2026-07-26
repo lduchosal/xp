@@ -1,60 +1,59 @@
+# Copyright (c) 2025 ldvchosal
 """HomeKit configuration models."""
 
 import logging
 from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path
-from typing import List, Optional, Union
 
 import yaml
 from pydantic import BaseModel, Field, IPvAnyAddress
 
 
 class NetworkConfig(BaseModel):
-    """
-    Network configuration settings.
+    """Network configuration settings.
 
     Attributes:
         ip: IP address for the network connection.
         port: Port number for the network connection.
         pincode: HomeKit pairing code (format: XXX-XX-XXX).
         accessory_state_file: Path to file for persisting accessory state.
+
     """
 
-    ip: Union[IPvAnyAddress, IPv4Address, IPv6Address, str] = "127.0.0.1"
+    ip: IPvAnyAddress | IPv4Address | IPv6Address | str = "127.0.0.1"
     port: int = 51826
     pincode: str = "031-45-154"
     accessory_state_file: str = "./accessory.state"
 
 
 class RoomConfig(BaseModel):
-    """
-    Room configuration settings.
+    """Room configuration settings.
 
     Attributes:
         name: Name of the room.
         accessories: List of accessory identifiers in the room.
+
     """
 
     name: str
-    accessories: List[str]
+    accessories: list[str]
 
 
 class BridgeConfig(BaseModel):
-    """
-    HomeKit bridge settings.
+    """HomeKit bridge settings.
 
     Attributes:
         name: Name of the HomeKit bridge.
         rooms: List of room configurations.
+
     """
 
     name: str = "Conson Bridge"
-    rooms: List[RoomConfig] = []
+    rooms: list[RoomConfig] = []
 
 
 class HomekitAccessoryConfig(BaseModel):
-    """
-    HomeKit accessory configuration.
+    """HomeKit accessory configuration.
 
     Attributes:
         name: Name of the accessory.
@@ -71,6 +70,7 @@ class HomekitAccessoryConfig(BaseModel):
         levelup_action: Optional level up action code for the dimmable accessory.
         leveldown_action: Optional level down action code for the dimmable accessory.
         hap_accessory: Optional HAP accessory identifier.
+
     """
 
     name: str
@@ -81,46 +81,46 @@ class HomekitAccessoryConfig(BaseModel):
     service: str
     on_action: str
     off_action: str
-    toggle_action: Optional[str] = None
-    dimup_action: Optional[str] = None
-    dimdown_action: Optional[str] = None
-    levelup_action: Optional[str] = None
-    leveldown_action: Optional[str] = None
-    hap_accessory: Optional[int] = None
+    toggle_action: str | None = None
+    dimup_action: str | None = None
+    dimdown_action: str | None = None
+    levelup_action: str | None = None
+    leveldown_action: str | None = None
+    hap_accessory: int | None = None
 
 
 class HomekitConfig(BaseModel):
-    """
-    HomeKit bridge configuration.
+    """HomeKit bridge configuration.
 
     Attributes:
         homekit: Network configuration for HomeKit.
         conson: Network configuration for Conson.
         bridge: Bridge configuration settings.
         accessories: List of accessory configurations.
+
     """
 
     homekit: NetworkConfig = Field(default_factory=NetworkConfig)
     conson: NetworkConfig = Field(default_factory=NetworkConfig)
     bridge: BridgeConfig = Field(default_factory=BridgeConfig)
-    accessories: List[HomekitAccessoryConfig] = []
+    accessories: list[HomekitAccessoryConfig] = []
 
     @classmethod
     def from_yaml(cls, file_path: str) -> "HomekitConfig":
-        """
-        Load configuration from YAML file.
+        """Load configuration from YAML file.
 
         Args:
             file_path: Path to the YAML configuration file.
 
         Returns:
             HomekitConfig instance loaded from file or default config.
+
         """
         if not Path(file_path).exists():
             logger = logging.getLogger(__name__)
-            logger.error(f"File {file_path} does not exist, loading default")
+            logger.error("File %s does not exist, loading default", file_path)
             return cls()
 
-        with Path(file_path).open("r") as file:
+        with Path(file_path).open("r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
         return cls(**data)

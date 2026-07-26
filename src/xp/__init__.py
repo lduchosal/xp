@@ -1,5 +1,5 @@
-"""
-XP CLI tool for remote console bus operations.
+# Copyright (c) 2025 ldvchosal
+"""XP CLI tool for remote console bus operations.
 
 conson-xp package.
 """

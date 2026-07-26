@@ -1,9 +1,13 @@
+# Copyright (c) 2025 ldvchosal
 """Serializer for XP20 Action Table telegram encoding/decoding."""
 
 from xp.models.actiontable.msactiontable_xp20 import InputChannel, Xp20MsActionTable
 from xp.models.telegram.system_function import SystemFunction
 from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.utils.serialization import byte_to_bits, de_nibbles, nibbles
+
+# Length of the A-P nibble-encoded action table payload (32 bytes -> 64 chars)
+ENCODED_DATA_LENGTH: int = 64
 
 # Index constants for clarity in implementation
 SHORT_LONG_INDEX: int = 0
@@ -14,23 +18,22 @@ SA_FUNCTION_INDEX: int = 11
 TA_FUNCTION_INDEX: int = 12
 
 
-class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
+class Xp20MsActionTableSerializer(ActionTableSerializerProtocol[Xp20MsActionTable]):
     """Handles serialization/deserialization of XP20 action tables to/from telegrams."""
 
     @staticmethod
     def download_type() -> SystemFunction:
-        """
-        Get the download system function type.
+        """Get the download system function type.
 
         Returns:
             The download system function: DOWNLOAD_MSACTIONTABLE
+
         """
         return SystemFunction.DOWNLOAD_MSACTIONTABLE
 
     @staticmethod
     def from_encoded_string(encoded_data: str) -> Xp20MsActionTable:
-        """
-        Deserialize telegram data to XP20 action table.
+        """Deserialize telegram data to XP20 action table.
 
         Args:
             encoded_data: 64-character hex string with A-P encoding
@@ -40,12 +43,15 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
 
         Raises:
             ValueError: If input length is not 64 characters
+
         """
         raw_length = len(encoded_data)
-        if raw_length < 64:  # Minimum: 4 char prefix + 64 chars data
-            raise ValueError(
-                f"XP20 action table data must be 64 characters long, got {len(encoded_data)}"
+        if raw_length < ENCODED_DATA_LENGTH:
+            msg = (
+                f"XP20 action table data must be {ENCODED_DATA_LENGTH} "
+                f"characters long, got {len(encoded_data)}"
             )
+            raise ValueError(msg)
 
         raw_bytes = de_nibbles(encoded_data)
 
@@ -71,14 +77,14 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_encoded_string(action_table: Xp20MsActionTable) -> str:
-        """
-        Serialize XP20 action table to telegram hex string format.
+        """Serialize XP20 action table to telegram hex string format.
 
         Args:
             action_table: XP20 action table to serialize
 
         Returns:
             64-character hex string (32 bytes) with A-P nibble encoding
+
         """
         # Initialize 32-byte raw data array
         raw_bytes = bytearray(32)
@@ -101,40 +107,38 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
                 input_channel, input_index, raw_bytes
             )
 
-        encoded_data = nibbles(raw_bytes)
+        return nibbles(raw_bytes)
         # Convert raw bytes to hex string with A-P encoding
-        return encoded_data
 
     @staticmethod
     def to_short_string(action_table: Xp20MsActionTable) -> list[str]:
-        """
-        Serialize XP20 action table to humane compact readable format.
+        """Serialize XP20 action table to humane compact readable format.
 
         Args:
             action_table: XP20 action table to serialize
 
         Returns:
             Human-readable string describing XP20 action table
+
         """
         return action_table.to_short_format()
 
     @staticmethod
     def from_short_string(action_strings: list[str]) -> Xp20MsActionTable:
-        """
-        Parse XP20 action table from short string format.
+        """Parse XP20 action table from short string format.
 
         Args:
             action_strings: List of short format strings to parse
 
         Returns:
             Parsed XP20 action table
+
         """
         return Xp20MsActionTable.from_short_format(action_strings)
 
     @staticmethod
     def _decode_input_channel(raw_bytes: bytes, input_index: int) -> InputChannel:
-        """
-        Extract input channel configuration from raw bytes.
+        """Extract input channel configuration from raw bytes.
 
         Args:
             raw_bytes: Raw byte array from telegram
@@ -142,6 +146,7 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
 
         Returns:
             Decoded input channel configuration
+
         """
         # Extract bit flags from appropriate offsets
         short_long_flags = byte_to_bits(raw_bytes[SHORT_LONG_INDEX])
@@ -168,13 +173,13 @@ class Xp20MsActionTableSerializer(ActionTableSerializerProtocol):
     def _encode_input_channel(
         input_channel: InputChannel, input_index: int, raw_bytes: bytearray
     ) -> None:
-        """
-        Encode input channel configuration into raw bytes.
+        """Encode input channel configuration into raw bytes.
 
         Args:
             input_channel: Input channel configuration to encode
             input_index: Input channel index (0-7)
             raw_bytes: Raw byte array to modify
+
         """
         # Set bit flags at appropriate positions
         if input_channel.short_long:

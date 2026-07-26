@@ -1,9 +1,13 @@
+# Copyright (c) 2025 ldvchosal
 """HomeKit TUI Application."""
 
+import asyncio
 from pathlib import Path
-from typing import Any, Optional
+from typing import ClassVar
 
+from textual import events
 from textual.app import App, ComposeResult
+from textual.binding import BindingType
 from textual.widgets import DataTable
 
 from xp.services.term.homekit_service import HomekitService
@@ -12,8 +16,7 @@ from xp.term.widgets.status_footer import StatusFooterWidget
 
 
 class HomekitApp(App[None]):
-    """
-    Textual app for HomeKit accessory monitoring.
+    """Textual app for HomeKit accessory monitoring.
 
     Displays rooms and accessories with real-time state updates.
     Select accessory with action key, then perform action on selection.
@@ -26,13 +29,14 @@ class HomekitApp(App[None]):
         BINDINGS: Keyboard bindings for app actions.
         TITLE: Application title displayed in header.
         ENABLE_COMMAND_PALETTE: Disable Textual's command palette feature.
+
     """
 
     CSS_PATH = Path(__file__).parent / "homekit.tcss"
     TITLE = "HomeKit"
     ENABLE_COMMAND_PALETTE = False
 
-    BINDINGS = [
+    BINDINGS: ClassVar[list[BindingType]] = [
         ("Q", "quit", "Quit"),
         ("C", "toggle_connection", "Connect"),
         ("R", "refresh_all", "Refresh"),
@@ -46,25 +50,25 @@ class HomekitApp(App[None]):
     ]
 
     def __init__(self, homekit_service: HomekitService) -> None:
-        """
-        Initialize the HomeKit app.
+        """Initialize the HomeKit app.
 
         Args:
             homekit_service: HomekitService for accessory state operations.
+
         """
         super().__init__()
         self.homekit_service: HomekitService = homekit_service
-        self.selected_accessory_id: Optional[str] = None
+        self.selected_accessory_id: str | None = None
         self._last_cursor_row: int = 0
-        self.room_list_widget: Optional[RoomListWidget] = None
-        self.footer_widget: Optional[StatusFooterWidget] = None
+        self.room_list_widget: RoomListWidget | None = None
+        self.footer_widget: StatusFooterWidget | None = None
 
     def compose(self) -> ComposeResult:
-        """
-        Compose the app layout with widgets.
+        """Compose the app layout with widgets.
 
         Yields:
             RoomListWidget and StatusFooterWidget.
+
         """
         self.room_list_widget = RoomListWidget(
             service=self.homekit_service, id="room-list"
@@ -77,14 +81,11 @@ class HomekitApp(App[None]):
         yield self.footer_widget
 
     async def on_mount(self) -> None:
-        """
-        Initialize app after UI is mounted.
+        """Initialize app after UI is mounted.
 
         Delays connection by 0.5s to let UI render first. Starts the AccessoryDriver and
         sets up automatic screen refresh every second to update elapsed times.
         """
-        import asyncio
-
         # Delay connection to let UI render
         await asyncio.sleep(0.5)
         await self.homekit_service.start()
@@ -97,9 +98,8 @@ class HomekitApp(App[None]):
         if self.room_list_widget:
             self.room_list_widget.refresh_last_update_times()
 
-    def on_key(self, event: Any) -> None:
-        """
-        Handle key press events for selection and action keys.
+    def on_key(self, event: events.Key) -> None:
+        """Handle key press events for selection and action keys.
 
         Selection keys (a-z0-9): Select accessory row.
         Action keys (on selected accessory):
@@ -113,6 +113,7 @@ class HomekitApp(App[None]):
 
         Args:
             event: Key press event.
+
         """
         key = event.key
 
@@ -132,47 +133,59 @@ class HomekitApp(App[None]):
         if not self.selected_accessory_id:
             return
 
+        self._handle_action_key(event, self.selected_accessory_id)
+
+    def _handle_action_key(self, event: events.Key, accessory_id: str) -> None:
+        """Perform the action mapped to an action key on the selected accessory.
+
+        Args:
+            event: Key press event.
+            accessory_id: Identifier of the selected accessory.
+
+        """
+        key = event.key
+
         if key == "space":
-            self.homekit_service.toggle_selected(self.selected_accessory_id)
+            self.homekit_service.toggle_selected(accessory_id)
             event.prevent_default()
-        elif key in ("full_stop", "."):
-            self.homekit_service.turn_on_selected(self.selected_accessory_id)
+        elif key in {"full_stop", "."}:
+            self.homekit_service.turn_on_selected(accessory_id)
             event.prevent_default()
-        elif key in ("minus", "-"):
-            self.homekit_service.turn_off_selected(self.selected_accessory_id)
+        elif key in {"minus", "-"}:
+            self.homekit_service.turn_off_selected(accessory_id)
             event.prevent_default()
-        elif key in ("plus", "+"):
-            self.homekit_service.increase_dimmer(self.selected_accessory_id)
+        elif key in {"plus", "+"}:
+            self.homekit_service.increase_dimmer(accessory_id)
             event.prevent_default()
-        elif key in ("quotation_mark", '"'):
-            self.homekit_service.decrease_dimmer(self.selected_accessory_id)
+        elif key in {"quotation_mark", '"'}:
+            self.homekit_service.decrease_dimmer(accessory_id)
             event.prevent_default()
-        elif key in ("asterisk", "star", "*"):
-            self.homekit_service.levelup_selected(self.selected_accessory_id)
+        elif key in {"asterisk", "star", "*"}:
+            self.homekit_service.levelup_selected(accessory_id)
             event.prevent_default()
-        elif key in ("cedille", "ç"):
-            self.homekit_service.leveldown_selected(self.selected_accessory_id)
+        elif key in {"cedille", "ç"}:
+            self.homekit_service.leveldown_selected(accessory_id)
             event.prevent_default()
 
     def _select_row(self, action_key: str) -> None:
-        """
-        Select row in RoomListWidget by action key.
+        """Select row in RoomListWidget by action key.
 
         Args:
             action_key: Action key to select.
+
         """
         if self.room_list_widget:
             self.room_list_widget.select_by_action_key(action_key)
 
     def on_data_table_row_highlighted(self, event: DataTable.RowHighlighted) -> None:
-        """
-        Handle row highlight changes from arrow key navigation.
+        """Handle row highlight changes from arrow key navigation.
 
         Updates selected_accessory_id when cursor moves via arrow keys.
         Skips non-accessory rows (layout rows) automatically.
 
         Args:
             event: Row highlighted event from DataTable.
+
         """
         if not self.room_list_widget or not event.row_key:
             return
@@ -186,11 +199,11 @@ class HomekitApp(App[None]):
             self._skip_to_accessory_row(event.cursor_row)
 
     def _skip_to_accessory_row(self, current_row: int) -> None:
-        """
-        Skip cursor to the nearest accessory row.
+        """Skip cursor to the nearest accessory row.
 
         Args:
             current_row: Current cursor row index.
+
         """
         if not self.room_list_widget or not self.room_list_widget.table:
             return
@@ -220,8 +233,7 @@ class HomekitApp(App[None]):
             next_row -= direction
 
     def action_toggle_connection(self) -> None:
-        """
-        Toggle connection on 'c' key press.
+        """Toggle connection on 'c' key press.
 
         Connects if disconnected/failed, disconnects if connected/connecting.
         """

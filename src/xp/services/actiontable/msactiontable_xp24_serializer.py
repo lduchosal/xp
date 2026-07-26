@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Serializer for XP24 Action Table telegram encoding/decoding."""
 
 from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
@@ -7,24 +8,26 @@ from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.utils.serialization import de_nibbles, nibbles
 
+# Length of the A-P nibble-encoded action table payload (32 bytes -> 64 chars)
+ENCODED_DATA_LENGTH: int = 64
 
-class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
+
+class Xp24MsActionTableSerializer(ActionTableSerializerProtocol[Xp24MsActionTable]):
     """Handles serialization/deserialization of XP24 action tables to/from telegrams."""
 
     @staticmethod
     def download_type() -> SystemFunction:
-        """
-        Get the download system function type.
+        """Get the download system function type.
 
         Returns:
             The download system function: DOWNLOAD_MSACTIONTABLE
+
         """
         return SystemFunction.DOWNLOAD_MSACTIONTABLE
 
     @staticmethod
     def from_encoded_string(encoded_data: str) -> Xp24MsActionTable:
-        """
-        Deserialize action table from raw data parts.
+        """Deserialize action table from raw data parts.
 
         Args:
             encoded_data: Raw action table data string.
@@ -34,12 +37,12 @@ class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
 
         Raises:
             ValueError: If data length is not 68 bytes.
+
         """
         raw_length = len(encoded_data)
-        if raw_length != 64:
-            raise ValueError(
-                f"Msactiontable is not 64 bytes long ({raw_length}): {encoded_data}"
-            )
+        if raw_length != ENCODED_DATA_LENGTH:
+            msg = f"Msactiontable is not 64 bytes long ({raw_length}): {encoded_data}"
+            raise ValueError(msg)
 
         # Convert hex string to bytes using deNibble (A-P encoding)
         data = de_nibbles(encoded_data)
@@ -50,7 +53,7 @@ class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
             input_action = Xp24MsActionTableSerializer._decode_input_action(data, pos)
             input_actions.append(input_action)
 
-        action_table = Xp24MsActionTable(
+        return Xp24MsActionTable(
             input1_action=input_actions[0],
             input2_action=input_actions[1],
             input3_action=input_actions[2],
@@ -61,18 +64,17 @@ class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
             curtain12=data[11] != 0,
             curtain34=data[12] != 0,
         )
-        return action_table
 
     @staticmethod
     def to_encoded_string(action_table: Xp24MsActionTable) -> str:
-        """
-        Serialize action table to telegram format.
+        """Serialize action table to telegram format.
 
         Args:
             action_table: XP24 MS action table to serialize.
 
         Returns:
             Serialized action table data string (64 characters).
+
         """
         # Build byte array for the action table (32 bytes total)
         raw_bytes = bytearray()
@@ -105,34 +107,33 @@ class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_short_string(action_table: Xp24MsActionTable) -> list[str]:
-        """
-        Serialize XP24 action table to humane compact readable format.
+        """Serialize XP24 action table to humane compact readable format.
 
         Args:
             action_table: XP24 action table to serialize
 
         Returns:
             Human-readable string describing XP24 action table
+
         """
         return action_table.to_short_format()
 
     @staticmethod
     def from_short_string(action_strings: list[str]) -> Xp24MsActionTable:
-        """
-        Serialize XP24 action table to humane compact readable format.
+        """Serialize XP24 action table to humane compact readable format.
 
         Args:
             action_strings: XP24 action table to serialize
 
         Returns:
             Human-readable string describing XP24 action table
+
         """
         return Xp24MsActionTable.from_short_format(action_strings)
 
     @staticmethod
     def _decode_input_action(raw_bytes: bytes, pos: int) -> InputAction:
-        """
-        Decode input action from raw bytes.
+        """Decode input action from raw bytes.
 
         Args:
             raw_bytes: Raw byte array containing action data.
@@ -140,6 +141,7 @@ class Xp24MsActionTableSerializer(ActionTableSerializerProtocol):
 
         Returns:
             Decoded input action.
+
         """
         function_id = raw_bytes[2 * pos]
         param_id = raw_bytes[2 * pos + 1]

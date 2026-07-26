@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus client operations CLI commands."""
 
 import json
@@ -23,8 +24,7 @@ from xp.services.conbus.conbus_custom_service import ConbusCustomService
 def send_custom_telegram(
     ctx: Context, serial_number: str, function_code: str, datapoint_code: str
 ) -> None:
-    r"""
-    Send custom telegram with specified function and data point codes.
+    r"""Send custom telegram with specified function and data point codes.
 
     Args:
         ctx: Click context object.
@@ -36,17 +36,18 @@ def send_custom_telegram(
         \b
         xp conbus custom 0012345011 02 E2
         xp conbus custom 0012345011 17 AA
+
     """
     service: ConbusCustomService = (
         ctx.obj.get("container").get_container().resolve(ConbusCustomService)
     )
 
     def on_finish(response: ConbusCustomResponse) -> None:
-        """
-        Handle successful completion of custom telegram.
+        """Handle successful completion of custom telegram.
 
         Args:
             response: Custom response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()

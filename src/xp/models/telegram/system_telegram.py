@@ -1,24 +1,23 @@
-"""
-System telegram model for console bus communication.
+# Copyright (c) 2025 ldvchosal
+"""System telegram model for console bus communication.
 
 System telegrams are used for system-related information like updating firmware and
 reading temperature from modules.
 """
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram import Telegram
 from xp.models.telegram.telegram_type import TelegramType
+from xp.utils.time_utils import local_now
 
 
 @dataclass
 class SystemTelegram(Telegram):
-    """
-    Represents a parsed system telegram from the console bus.
+    """Represents a parsed system telegram from the console bus.
 
     Format: <S{serial_number}F{function_code}D{datapoint_type}{checksum}>
     Examples: <S0020012521F02D18FN>
@@ -28,25 +27,26 @@ class SystemTelegram(Telegram):
         system_function: System function code (02).
         data: Data payload (18)
         datapoint_type: Type of datapoint (18).
+
     """
 
     serial_number: str = ""
-    system_function: Optional[SystemFunction] = None
+    system_function: SystemFunction | None = None
     data: str = ""
-    datapoint_type: Optional[DataPointType] = None
+    datapoint_type: DataPointType | None = None
 
     def __post_init__(self) -> None:
         """Initialize timestamp and telegram type."""
         if self.timestamp is None:
-            self.timestamp = datetime.now()
+            self.timestamp = local_now()
         self.telegram_type = TelegramType.SYSTEM
 
     def to_dict(self) -> dict[str, Any]:
-        """
-        Convert to dictionary for JSON serialization.
+        """Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the system telegram.
+
         """
         return {
             "serial_number": self.serial_number,
@@ -80,11 +80,11 @@ class SystemTelegram(Telegram):
         }
 
     def __str__(self) -> str:
-        """
-        Human-readable string representation.
+        """Human-readable string representation.
 
         Returns:
             Formatted string representation.
+
         """
         system_func_name = (
             self.system_function.name if self.system_function else "Unknown"

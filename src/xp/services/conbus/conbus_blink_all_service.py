@@ -1,13 +1,13 @@
-"""
-Conbus Blink All Service for TCP communication with Conbus servers.
+# Copyright (c) 2025 ldvchosal
+"""Conbus Blink All Service for TCP communication with Conbus servers.
 
 This service implements a TCP client that connects to Conbus servers and sends
 blink/unblink telegrams to all discovered modules on the network.
 """
 
 import logging
-from datetime import datetime
-from typing import Any, Optional
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 
@@ -17,11 +17,11 @@ from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
+from xp.utils.time_utils import local_now
 
 
 class ConbusBlinkAllService:
-    """
-    Service for blinking all modules on Conbus servers.
+    """Service for blinking all modules on Conbus servers.
 
     Uses ConbusEventProtocol to provide blink/unblink functionality
     for all discovered modules on the network.
@@ -29,6 +29,7 @@ class ConbusBlinkAllService:
     Attributes:
         on_progress: Signal emitted during blink operation progress (with message).
         on_finish: Signal emitted when blink operation completes (with response).
+
     """
 
     on_progress: Signal = Signal(str)
@@ -39,12 +40,12 @@ class ConbusBlinkAllService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """
-        Initialize the Conbus blink all service.
+        """Initialize the Conbus blink all service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance for communication.
             telegram_service: Service for parsing telegrams.
+
         """
         self.conbus_protocol = conbus_protocol
         self.telegram_service = telegram_service
@@ -79,11 +80,11 @@ class ConbusBlinkAllService:
         self.on_progress.emit(".")
 
     def send_blink(self, serial_number: str) -> None:
-        """
-        Send blink or unblink telegram to a discovered module.
+        """Send blink or unblink telegram to a discovered module.
 
         Args:
             serial_number: 10-digit module serial number.
+
         """
         self.logger.debug("Device discovered, send blink.")
 
@@ -104,23 +105,23 @@ class ConbusBlinkAllService:
         self.on_progress.emit(".")
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """
-        Handle telegram sent event.
+        """Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
+
         """
         system_telegram = self.telegram_service.parse_system_telegram(telegram_sent)
         self.service_response.sent_telegram = system_telegram
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
+
         """
-        self.logger.debug(f"Telegram received: {telegram_received}")
+        self.logger.debug("Telegram received: %s", telegram_received)
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
         self.service_response.received_telegrams.append(telegram_received.frame)
@@ -144,10 +145,10 @@ class ConbusBlinkAllService:
             self.on_progress.emit(".")
             return
 
-        if reply_telegram and reply_telegram.system_function in (
+        if reply_telegram and reply_telegram.system_function in {
             SystemFunction.BLINK,
             SystemFunction.UNBLINK,
-        ):
+        }:
             self.logger.debug("Received blink response")
             self.on_progress.emit(".")
             return
@@ -162,29 +163,29 @@ class ConbusBlinkAllService:
         self.on_finish.emit(self.service_response)
 
     def failed(self, message: str) -> None:
-        """
-        Handle failed connection event.
+        """Handle failed connection event.
 
         Args:
             message: Failure message.
+
         """
-        self.logger.debug(f"Failed with message: {message}")
+        self.logger.debug("Failed with message: %s", message)
         self.service_response.success = False
-        self.service_response.timestamp = datetime.now()
+        self.service_response.timestamp = local_now()
         self.service_response.error = message
         self.on_finish.emit(self.service_response)
 
     def send_blink_all_telegram(
         self,
         on_or_off: str,
-        timeout_seconds: Optional[float] = None,
+        timeout_seconds: float | None = None,
     ) -> None:
-        """
-        Send blink command to all discovered modules.
+        """Send blink command to all discovered modules.
 
         Args:
             on_or_off: "on" to blink or "off" to unblink all devices.
             timeout_seconds: Timeout in seconds.
+
         """
         self.logger.info("Starting send_blink_all_telegram")
         if timeout_seconds:
@@ -193,11 +194,11 @@ class ConbusBlinkAllService:
         # Caller invokes start_reactor()
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set operation timeout.
+        """Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -209,11 +210,12 @@ class ConbusBlinkAllService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "ConbusBlinkAllService":
+    def __enter__(self) -> Self:
         """Enter context manager - reset state for singleton reuse.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state for singleton reuse
         self.service_response = ConbusBlinkResponse(
@@ -227,7 +229,10 @@ class ConbusBlinkAllService:
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager - cleanup signals and reactor."""
         # Disconnect protocol signals

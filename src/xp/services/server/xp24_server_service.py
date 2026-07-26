@@ -1,11 +1,9 @@
-"""
-XP24 Server Service for device emulation.
+# Copyright (c) 2025 ldvchosal
+"""XP24 Server Service for device emulation.
 
 This service provides XP24-specific device emulation functionality, including response
 generation and device configuration handling.
 """
-
-from typing import Dict, Optional
 
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.msactiontable_xp24 import InputAction, Xp24MsActionTable
@@ -23,23 +21,20 @@ from xp.services.server.base_server_service import BaseServerService
 class XP24ServerError(Exception):
     """Raised when XP24 server operations fail."""
 
-    pass
-
 
 class XP24Output:
-    """
-    Represents an XP24 output state.
+    """Represents an XP24 output state.
 
     Attributes:
         state: Current state of the output (True=on, False=off).
+
     """
 
     state: bool = False
 
 
 class XP24ServerService(BaseServerService):
-    """
-    XP24 device emulation service.
+    """XP24 device emulation service.
 
     Generates XP24-specific responses, handles XP24 device configuration, and implements
     XP24 telegram format.
@@ -49,15 +44,15 @@ class XP24ServerService(BaseServerService):
         self,
         serial_number: str,
         _variant: str = "",
-        msactiontable_serializer: Optional[Xp24MsActionTableSerializer] = None,
-    ):
-        """
-        Initialize XP24 server service.
+        msactiontable_serializer: Xp24MsActionTableSerializer | None = None,
+    ) -> None:
+        """Initialize XP24 server service.
 
         Args:
             serial_number: The device serial number.
             _variant: Reserved parameter for consistency (unused).
             msactiontable_serializer: MsActionTable serializer (injected via DI).
+
         """
         super().__init__(serial_number)
         self.device_type = "XP24"
@@ -77,60 +72,69 @@ class XP24ServerService(BaseServerService):
 
     def _handle_device_specific_action_request(
         self, request: SystemTelegram
-    ) -> Optional[str]:
-        """Handle XP24-specific data requests."""
+    ) -> str | None:
+        """Handle XP24-specific data requests.
+
+        Returns:
+            Response telegrams for the action request.
+
+        """
         telegrams = self._handle_action_module_output_state(request.data)
         self.logger.debug(
-            f"Generated {self.device_type} module type responses: {telegrams}"
+            "Generated %s module type responses: %s", self.device_type, telegrams
         )
         return telegrams
 
     def _handle_action_module_output_state(self, data_value: str) -> str:
-        """Handle XP24-specific module output state."""
+        """Handle XP24-specific module output state.
+
+        Returns:
+            ACK/NAK response telegrams, plus an event telegram on state change.
+
+        """
         output_number = int(data_value[:2])
         output_state = data_value[2:]
-        if output_number not in range(0, 4):
-            return self._build_ack_nak_response_telegram(False)
+        if output_number not in range(4):
+            return self._build_ack_nak_response_telegram(ack_or_nak=False)
 
-        if output_state not in ("AA", "AB"):
-            return self._build_ack_nak_response_telegram(False)
+        if output_state not in {"AA", "AB"}:
+            return self._build_ack_nak_response_telegram(ack_or_nak=False)
 
         output = (self.output_0, self.output_1, self.output_2, self.output_3)[
             output_number
         ]
         previous_state = output.state
-        output.state = True if output_state == "AB" else False
+        output.state = output_state == "AB"
         state_changed = previous_state != output.state
 
-        telegrams = self._build_ack_nak_response_telegram(True)
+        telegrams = self._build_ack_nak_response_telegram(ack_or_nak=True)
         if state_changed and self.autoreport_status:
             telegrams += self._build_make_break_response_telegram(
-                output.state, output_number
+                make_or_break=output.state, output_number=output_number
             )
 
         return telegrams
 
-    def _build_ack_nak_response_telegram(self, ack_or_nak: bool) -> str:
-        """
-        Build a complete ACK or NAK response telegram with checksum.
+    def _build_ack_nak_response_telegram(self, *, ack_or_nak: bool) -> str:
+        """Build a complete ACK or NAK response telegram with checksum.
 
         Args:
             ack_or_nak: true: ACK telegram response, false: NAK telegram response.
 
         Returns:
             The complete telegram with checksum enclosed in angle brackets.
+
         """
         data_value = (
             SystemFunction.ACK.value if ack_or_nak else SystemFunction.NAK.value
         )
-        data_part = f"R{self.serial_number}" f"F{data_value:02}D"
+        data_part = f"R{self.serial_number}F{data_value:02}D"
         return self._build_response_telegram(data_part)
 
     def _build_make_break_response_telegram(
-        self, make_or_break: bool, output_number: int
+        self, *, make_or_break: bool, output_number: int
     ) -> str:
-        """
-        Build a complete ACK or NAK response telegram with checksum.
+        """Build a complete ACK or NAK response telegram with checksum.
 
         Args:
             make_or_break: true: MAKE event response, false: BREAK event response.
@@ -138,6 +142,7 @@ class XP24ServerService(BaseServerService):
 
         Returns:
             The complete event telegram with checksum enclosed in angle brackets.
+
         """
         data_value = "M" if make_or_break else "B"
         data_part = (
@@ -150,8 +155,13 @@ class XP24ServerService(BaseServerService):
 
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
-    ) -> Optional[str]:
-        """Handle XP24-specific data requests."""
+    ) -> str | None:
+        """Handle XP24-specific data requests.
+
+        Returns:
+            Response telegram string, or None if the request is not handled.
+
+        """
         if not request.datapoint_type:
             return None
 
@@ -159,35 +169,50 @@ class XP24ServerService(BaseServerService):
         handler = {
             DataPointType.MODULE_OUTPUT_STATE: self._handle_read_module_output_state,
             DataPointType.MODULE_STATE: self._handle_read_module_state,
-            DataPointType.MODULE_OPERATING_HOURS: self._handle_read_module_operating_hours,
+            DataPointType.MODULE_OPERATING_HOURS: (
+                self._handle_read_module_operating_hours
+            ),
         }.get(datapoint_type)
         if not handler:
             return None
 
         data_value = handler()
-        data_part = (
-            f"R{self.serial_number}" f"F02D{datapoint_type.value}" f"{data_value}"
-        )
+        data_part = f"R{self.serial_number}F02D{datapoint_type.value}{data_value}"
         telegram = self._build_response_telegram(data_part)
 
         self.logger.debug(
-            f"Generated {self.device_type} module type response: {telegram}"
+            "Generated %s module type response: %s", self.device_type, telegram
         )
         return telegram
 
     def _handle_read_module_operating_hours(self) -> str:
-        """Handle XP24-specific module operating hours."""
+        """Handle XP24-specific module operating hours.
+
+        Returns:
+            Operating hours data string for all four outputs.
+
+        """
         return "00:000[H],01:000[H],02:000[H],03:000[H]"
 
     def _handle_read_module_state(self) -> str:
-        """Handle XP24-specific module state."""
+        """Handle XP24-specific module state.
+
+        Returns:
+            "ON" if any output is on, "OFF" otherwise.
+
+        """
         for output in (self.output_0, self.output_1, self.output_2, self.output_3):
             if output.state:
                 return "ON"
         return "OFF"
 
     def _handle_read_module_output_state(self) -> str:
-        """Handle XP24-specific module output state."""
+        """Handle XP24-specific module output state.
+
+        Returns:
+            Output state bitmask string for the four outputs.
+
+        """
         return (
             f"xxxx"
             f"{1 if self.output_0.state else 0}"
@@ -196,30 +221,30 @@ class XP24ServerService(BaseServerService):
             f"{1 if self.output_3.state else 0}"
         )
 
-    def _get_msactiontable_serializer(self) -> Optional[Xp24MsActionTableSerializer]:
-        """
-        Get the MsActionTable serializer for XP24.
+    def _get_msactiontable_serializer(self) -> Xp24MsActionTableSerializer | None:
+        """Get the MsActionTable serializer for XP24.
 
         Returns:
             The XP24 MsActionTable serializer instance.
+
         """
         return self.msactiontable_serializer
 
-    def _get_msactiontable(self) -> Optional[Xp24MsActionTable]:
-        """
-        Get the MsActionTable for XP24.
+    def _get_msactiontable(self) -> Xp24MsActionTable | None:
+        """Get the MsActionTable for XP24.
 
         Returns:
             The XP24 MsActionTable instance.
+
         """
         return self.msactiontable
 
     def _get_default_msactiontable(self) -> Xp24MsActionTable:
-        """
-        Generate default MsActionTable configuration.
+        """Generate default MsActionTable configuration.
 
         Returns:
             Default XP24 MsActionTable with all inputs set to VOID.
+
         """
         return Xp24MsActionTable(
             input1_action=InputAction(type=InputActionType.VOID, param=TimeParam.NONE),
@@ -233,12 +258,12 @@ class XP24ServerService(BaseServerService):
             mutual_deadtime=12,  # MS300
         )
 
-    def get_device_info(self) -> Dict:
-        """
-        Get XP24 device information.
+    def get_device_info(self) -> dict:
+        """Get XP24 device information.
 
         Returns:
             Dictionary containing device information.
+
         """
         return {
             "serial_number": self.serial_number,

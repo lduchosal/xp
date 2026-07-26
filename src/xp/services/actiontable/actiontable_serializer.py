@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Serializer for ActionTable telegram encoding/decoding."""
 
 import re
@@ -21,36 +22,36 @@ from xp.utils.serialization import (
 )
 
 
-class ActionTableSerializer(ActionTableSerializerProtocol):
-    """
-    Handles serialization/deserialization of ActionTable to/from telegrams.
+class ActionTableSerializer(ActionTableSerializerProtocol[ActionTable]):
+    """Handles serialization/deserialization of ActionTable to/from telegrams.
 
     Attributes:
         MAX_ENTRIES: Maximum number of entries in an ActionTable (96).
+
     """
 
     MAX_ENTRIES = 96  # ActionTable must always contain exactly 96 entries
 
     @staticmethod
     def download_type() -> SystemFunction:
-        """
-        Get the download system function type.
+        """Get the download system function type.
 
         Returns:
             The download system function: DOWNLOAD_ACTIONTABLE
+
         """
         return SystemFunction.DOWNLOAD_ACTIONTABLE
 
     @staticmethod
     def from_encoded_string(encoded_data: str) -> ActionTable:
-        """
-        Deserialize telegram data to ActionTable.
+        """Deserialize telegram data to ActionTable.
 
         Args:
             encoded_data: Raw byte data from telegram
 
         Returns:
             Decoded ActionTable
+
         """
         data = de_nibbles(encoded_data)
         entries = []
@@ -65,7 +66,7 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
             link_number = de_bcd(data[i + 1])
             module_input = de_bcd(data[i + 2])
 
-            # Extract output (0-indexed in wire format, convert to 1-indexed) and command
+            # Extract output (0-indexed in wire format, 1-indexed here) and command
             module_output = lower3(data[i + 3]) + 1
             command_raw = upper5(data[i + 3])
 
@@ -108,14 +109,14 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_encoded_string(action_table: ActionTable) -> str:
-        """
-        Convert ActionTable to base64-encoded string format.
+        """Convert ActionTable to base64-encoded string format.
 
         Args:
             action_table: ActionTable to encode
 
         Returns:
             Base64-encoded string representation
+
         """
         data = bytearray()
 
@@ -148,14 +149,14 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_short_string(action_table: ActionTable) -> list[str]:
-        """
-        Format ActionTable as human-readable decoded output.
+        """Format ActionTable as human-readable decoded output.
 
         Args:
             action_table: ActionTable to format
 
         Returns:
             List of human-readable string representations
+
         """
         lines = []
         for entry in action_table.entries:
@@ -186,8 +187,7 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def _parse_action_string(action_str: str) -> ActionTableEntry:
-        """
-        Parse action table entry from string format.
+        """Parse action table entry from string format.
 
         Args:
             action_str: String in format "CP20 0 0 > 1 OFF" or "CP20 0 1 > 1 ~ON"
@@ -197,6 +197,7 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
         Raises:
             ValueError: If string format is invalid
+
         """
         # Remove trailing semicolon if present
         action_str = action_str.strip().rstrip(";")
@@ -206,7 +207,8 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
         match = re.match(pattern, action_str)
 
         if not match:
-            raise ValueError(f"Invalid action table format: {action_str}")
+            msg = f"Invalid action table format: {action_str}"
+            raise ValueError(msg)
 
         (
             module_type_str,
@@ -221,22 +223,25 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
         # Parse module type
         try:
             module_type = ModuleTypeCode[module_type_str]
-        except KeyError:
-            raise ValueError(f"Invalid module type: {module_type_str}")
+        except KeyError as err:
+            msg = f"Invalid module type: {module_type_str}"
+            raise ValueError(msg) from err
 
         # Parse command
         try:
             command = InputActionType[command_str]
-        except KeyError:
-            raise ValueError(f"Invalid command: {command_str}")
+        except KeyError as err:
+            msg = f"Invalid command: {command_str}"
+            raise ValueError(msg) from err
 
         # Parse parameter (default to NONE)
         parameter = TimeParam.NONE
         if parameter_str:
             try:
                 parameter = TimeParam(int(parameter_str))
-            except ValueError:
-                raise ValueError(f"Invalid parameter: {parameter_str}")
+            except ValueError as err:
+                msg = f"Invalid parameter: {parameter_str}"
+                raise ValueError(msg) from err
 
         return ActionTableEntry(
             module_type=module_type,
@@ -250,14 +255,14 @@ class ActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def from_short_string(action_strings: list[str]) -> ActionTable:
-        """
-        Parse action table from short string representation.
+        """Parse action table from short string representation.
 
         Args:
             action_strings: List of action strings from conson.yml
 
         Returns:
             Parsed ActionTable
+
         """
         entries = [
             ActionTableSerializer._parse_action_string(action_str)

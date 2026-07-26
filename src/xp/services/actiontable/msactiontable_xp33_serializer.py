@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Serializer for XP33 Action Table telegram encoding/decoding."""
 
 from xp.models.actiontable.msactiontable_xp33 import (
@@ -10,64 +11,95 @@ from xp.models.telegram.timeparam_type import TimeParam
 from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.utils.serialization import bits_to_byte, byte_to_bits, de_nibbles, nibbles
 
+# Length of the A-P nibble-encoded action table payload (32 bytes -> 64 chars)
+ENCODED_DATA_LENGTH: int = 64
 
-class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
+# Number of dimmer outputs on an XP33 module
+XP33_OUTPUT_COUNT: int = 3
+
+# Byte offsets of the bit-flag section in the raw action table
+SCENE_OUTPUTS_INDEX: int = 22
+START_AT_FULL_INDEX: int = 23
+LEADING_EDGE_INDEX: int = 24
+
+
+class Xp33MsActionTableSerializer(ActionTableSerializerProtocol[Xp33MsActionTable]):
     """Handles serialization/deserialization of XP33 action tables to/from telegrams."""
 
     @staticmethod
     def download_type() -> SystemFunction:
-        """
-        Get the download system function type.
+        """Get the download system function type.
 
         Returns:
             The download system function: DOWNLOAD_MSACTIONTABLE
+
         """
         return SystemFunction.DOWNLOAD_MSACTIONTABLE
 
     @staticmethod
     def to_short_string(action_table: Xp33MsActionTable) -> list[str]:
-        """
-        Serialize XP33 action table to humane compact readable format.
+        """Serialize XP33 action table to humane compact readable format.
 
         Args:
             action_table: XP33 action table to serialize
 
         Returns:
             Human-readable string describing XP33 action table
+
         """
         return action_table.to_short_format()
 
     @staticmethod
     def from_short_string(action_strings: list[str]) -> Xp33MsActionTable:
-        """
-        Serialize XP33 action table to humane compact readable format.
+        """Serialize XP33 action table to humane compact readable format.
 
         Args:
             action_strings: XP33 action table to serialize
 
         Returns:
             Human-readable string describing XP33 action table
+
         """
         return Xp33MsActionTable.from_short_format(action_strings)
 
     @staticmethod
     def _percentage_to_byte(percentage: int) -> int:
-        """Convert percentage (0-100) to byte value for telegram encoding."""
+        """Convert percentage (0-100) to byte value for telegram encoding.
+
+        Returns:
+            Byte value clamped to the 0-100 range.
+
+        """
         return min(max(percentage, 0), 100)
 
     @staticmethod
     def _byte_to_percentage(byte_val: int) -> int:
-        """Convert byte value from telegram to percentage (0-100)."""
+        """Convert byte value from telegram to percentage (0-100).
+
+        Returns:
+            Percentage clamped to the 0-100 range.
+
+        """
         return min(max(byte_val, 0), 100)
 
     @staticmethod
     def _time_param_to_byte(time_param: TimeParam) -> int:
-        """Convert TimeParam enum to byte value for telegram encoding."""
+        """Convert TimeParam enum to byte value for telegram encoding.
+
+        Returns:
+            Byte value of the time parameter.
+
+        """
         return time_param.value
 
     @staticmethod
     def _byte_to_time_param(byte_val: int) -> TimeParam:
-        """Convert byte value from telegram to TimeParam enum."""
+        """Convert byte value from telegram to TimeParam enum.
+
+        Returns:
+            Matching TimeParam value, or TimeParam.NONE if the byte is invalid.
+
+        """
         try:
             return TimeParam(byte_val)
         except ValueError:
@@ -75,14 +107,14 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def to_encoded_string(action_table: Xp33MsActionTable) -> str:
-        """
-        Serialize action table to telegram format.
+        """Serialize action table to telegram format.
 
         Args:
             action_table: XP33 MS action table to serialize.
 
         Returns:
             Serialized action table data string.
+
         """
         # Create 32-byte array
         raw_bytes = bytearray(32)
@@ -125,26 +157,24 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
         leading_edge_bits = [False] * 8
 
         for i, output in enumerate(outputs):
-            if i < 3:  # Only 3 outputs
+            if i < XP33_OUTPUT_COUNT:
                 scene_outputs_bits[i] = output.scene_outputs
                 start_at_full_bits[i] = output.start_at_full
                 leading_edge_bits[i] = output.leading_edge
 
-        raw_bytes[22] = bits_to_byte(scene_outputs_bits)
-        raw_bytes[23] = bits_to_byte(start_at_full_bits)
-        raw_bytes[24] = bits_to_byte(leading_edge_bits)
+        raw_bytes[SCENE_OUTPUTS_INDEX] = bits_to_byte(scene_outputs_bits)
+        raw_bytes[START_AT_FULL_INDEX] = bits_to_byte(start_at_full_bits)
+        raw_bytes[LEADING_EDGE_INDEX] = bits_to_byte(leading_edge_bits)
 
         # Bytes 25-31 are padding (already 0)
         # Convert to hex string using nibble encoding
-        encoded_data = nibbles(raw_bytes)
+        return nibbles(raw_bytes)
 
         # Convert raw bytes to hex string with A-P encoding
-        return encoded_data
 
     @staticmethod
     def from_encoded_string(msactiontable_rawdata: str) -> Xp33MsActionTable:
-        """
-        Deserialize action table from raw data parts.
+        """Deserialize action table from raw data parts.
 
         Args:
             msactiontable_rawdata: Raw action table data string.
@@ -154,12 +184,15 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
         Raises:
             ValueError: If data length is less than 64 characters.
+
         """
         raw_length = len(msactiontable_rawdata)
-        if raw_length < 64:  # Minimum: 4 char prefix + 64 chars data
-            raise ValueError(
-                f"Msactiontable is too short ({raw_length}), minimum 64 characters required"
+        if raw_length < ENCODED_DATA_LENGTH:
+            msg = (
+                f"Msactiontable is too short ({raw_length}), "
+                f"minimum {ENCODED_DATA_LENGTH} characters required"
             )
+            raise ValueError(msg)
 
         # Convert hex string to bytes using deNibble (A-P encoding)
         raw_bytes = de_nibbles(msactiontable_rawdata)
@@ -187,8 +220,7 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def _decode_output(raw_bytes: bytearray, output_index: int) -> Xp33Output:
-        """
-        Extract output configuration from raw bytes.
+        """Extract output configuration from raw bytes.
 
         Args:
             raw_bytes: Raw byte array containing output data.
@@ -196,6 +228,7 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
         Returns:
             Decoded XP33 output configuration.
+
         """
         # Read min/max levels from appropriate offsets
         min_level = Xp33MsActionTableSerializer._byte_to_percentage(
@@ -206,12 +239,12 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
         )
 
         # Extract bit flags from bytes 22-24
-        scene_outputs_bits = byte_to_bits(raw_bytes[22])
-        start_at_full_bits = byte_to_bits(raw_bytes[23])
+        scene_outputs_bits = byte_to_bits(raw_bytes[SCENE_OUTPUTS_INDEX])
+        start_at_full_bits = byte_to_bits(raw_bytes[START_AT_FULL_INDEX])
 
         # Handle dimFunction with exception handling as per specification
-        if len(raw_bytes) > 24:
-            leading_edge_bits = byte_to_bits(raw_bytes[24])
+        if len(raw_bytes) > LEADING_EDGE_INDEX:
+            leading_edge_bits = byte_to_bits(raw_bytes[LEADING_EDGE_INDEX])
         else:
             leading_edge_bits = [False] * 8
 
@@ -242,8 +275,7 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
     @staticmethod
     def _decode_scene(raw_bytes: bytearray, scene_index: int) -> Xp33Scene:
-        """
-        Extract scene configuration from raw bytes.
+        """Extract scene configuration from raw bytes.
 
         Args:
             raw_bytes: Raw byte array containing scene data.
@@ -251,6 +283,7 @@ class Xp33MsActionTableSerializer(ActionTableSerializerProtocol):
 
         Returns:
             Decoded XP33 scene configuration.
+
         """
         # Calculate scene offset: 6 + (4 * scene_index)
         offset = 6 + (4 * scene_index)

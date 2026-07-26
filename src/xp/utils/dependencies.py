@@ -1,4 +1,8 @@
+# Copyright (c) 2025 ldvchosal
 """Dependency injection container for XP services."""
+
+from dataclasses import dataclass
+from pathlib import Path
 
 import punq
 from twisted.internet import asyncioreactor
@@ -31,6 +35,7 @@ from xp.services.conbus.actiontable.actiontable_show_service import (
 )
 from xp.services.conbus.actiontable.actiontable_upload_service import (
     ActionTableUploadService,
+    MsActionTableSerializers,
 )
 from xp.services.conbus.conbus_blink_all_service import ConbusBlinkAllService
 from xp.services.conbus.conbus_blink_service import ConbusBlinkService
@@ -75,55 +80,67 @@ from xp.term.state import StateMonitorApp
 from xp.utils.logging import LoggerService
 
 asyncioreactor.install()
+
+# The reactor must be imported after asyncioreactor.install(): importing
+# twisted.internet.reactor installs the default reactor as a side effect.
 from twisted.internet import reactor  # noqa: E402
 
 
+@dataclass(frozen=True)
+class ContainerConfig:
+    """Configuration paths and ports used to wire the service container."""
+
+    client_config_path: str = "cli.yml"
+    logger_config_path: str = "logger.yml"
+    homekit_config_path: str = "homekit.yml"
+    conson_config_path: str = "conson.yml"
+    export_config_path: str = "export.yml"
+    server_port: int = 10001
+    protocol_keys_config_path: str = "protocol.yml"
+    reverse_proxy_port: int = 10001
+
+
 class ServiceContainer:
-    """
-    Service container that manages dependency injection for all XP services.
+    """Service container that manages dependency injection for all XP services.
 
     Uses the service dependency graph from Dependencies.dot to properly wire up all
     services with their dependencies.
     """
 
-    def __init__(
-        self,
-        client_config_path: str = "cli.yml",
-        logger_config_path: str = "logger.yml",
-        homekit_config_path: str = "homekit.yml",
-        conson_config_path: str = "conson.yml",
-        export_config_path: str = "export.yml",
-        server_port: int = 10001,
-        protocol_keys_config_path: str = "protocol.yml",
-        reverse_proxy_port: int = 10001,
-    ):
-        """
-        Initialize the service container.
+    def __init__(self, config: ContainerConfig | None = None) -> None:
+        """Initialize the service container.
 
         Args:
-            client_config_path: Path to the Conbus CLI configuration file
-            logger_config_path: Path to the Conbus Loggerr configuration file
-            homekit_config_path: Path to the HomeKit configuration file
-            conson_config_path: Path to the Conson configuration file
-            export_config_path: Path to the Conson export file
-            protocol_keys_config_path: Path to the protocol keys configuration file
-            server_port: Port for the server service
-            reverse_proxy_port: Port for the reverse proxy service
+            config: Configuration paths and ports for the container services.
+                Defaults to the standard configuration file names.
+
         """
+        if config is None:
+            config = ContainerConfig()
         self.container = punq.Container()
-        self._client_config_path = client_config_path
-        self._logger_config_path = logger_config_path
-        self._homekit_config_path = homekit_config_path
-        self._conson_config_path = conson_config_path
-        self._export_config_path = export_config_path
-        self._protocol_keys_config_path = protocol_keys_config_path
-        self._server_port = server_port
-        self._reverse_proxy_port = reverse_proxy_port
+        self._client_config_path = config.client_config_path
+        self._logger_config_path = config.logger_config_path
+        self._homekit_config_path = config.homekit_config_path
+        self._conson_config_path = config.conson_config_path
+        self._export_config_path = config.export_config_path
+        self._protocol_keys_config_path = config.protocol_keys_config_path
+        self._server_port = config.server_port
+        self._reverse_proxy_port = config.reverse_proxy_port
 
         self._register_services()
 
     def _register_services(self) -> None:
         """Register all services in the container based on dependency graph."""
+        self._register_configs()
+        self._register_telegram_services()
+        self._register_conbus_core_services()
+        self._register_term_services()
+        self._register_conbus_event_services()
+        self._register_actiontable_services()
+        self._register_remaining_services()
+
+    def _register_configs(self) -> None:
+        """Register configuration objects loaded from YAML files."""
         # ConbusClientConfig
         self.container.register(
             ConbusClientConfig,
@@ -143,7 +160,8 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
-        # Telegram services layer
+    def _register_telegram_services(self) -> None:
+        """Register the telegram services layer."""
         self.container.register(TelegramService, scope=punq.Scope.singleton)
         self.container.register(
             TelegramOutputService,
@@ -157,6 +175,8 @@ class ServiceContainer:
         self.container.register(TelegramDatapointService, scope=punq.Scope.singleton)
         self.container.register(LinkNumberService, scope=punq.Scope.singleton)
 
+    def _register_conbus_core_services(self) -> None:
+        """Register the reactor, the event protocol and core Conbus services."""
         # Reactor
         self.container.register(
             PosixReactorBase,
@@ -227,7 +247,8 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
-        # Terminal UI
+    def _register_term_services(self) -> None:
+        """Register terminal UI and HomeKit services."""
         self.container.register(
             ProtocolMonitorService,
             factory=lambda: ProtocolMonitorService(
@@ -298,6 +319,8 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
+    def _register_conbus_event_services(self) -> None:
+        """Register Conbus event, blink, output and write-config services."""
         self.container.register(
             ConbusEventRawService,
             factory=lambda: ConbusEventRawService(
@@ -350,6 +373,8 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
+    def _register_actiontable_services(self) -> None:
+        """Register action table serializers and services."""
         self.container.register(
             ActionTableSerializer,
             factory=lambda: ActionTableSerializer,
@@ -378,10 +403,12 @@ class ServiceContainer:
             ActionTableUploadService,
             factory=lambda: ActionTableUploadService(
                 conbus_protocol=self.container.resolve(ConbusEventProtocol),
-                actiontable_serializer=self.container.resolve(ActionTableSerializer),
-                xp20ms_serializer=self.container.resolve(Xp20MsActionTableSerializer),
-                xp24ms_serializer=self.container.resolve(Xp24MsActionTableSerializer),
-                xp33ms_serializer=self.container.resolve(Xp33MsActionTableSerializer),
+                serializers=MsActionTableSerializers(
+                    actiontable=self.container.resolve(ActionTableSerializer),
+                    xp20ms=self.container.resolve(Xp20MsActionTableSerializer),
+                    xp24ms=self.container.resolve(Xp24MsActionTableSerializer),
+                    xp33ms=self.container.resolve(Xp33MsActionTableSerializer),
+                ),
                 telegram_service=self.container.resolve(TelegramService),
                 conson_config=self.container.resolve(ConsonModuleListConfig),
             ),
@@ -418,6 +445,8 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
+    def _register_remaining_services(self) -> None:
+        """Register the remaining Conbus, logging, server and proxy services."""
         self.container.register(
             ConbusCustomService,
             factory=lambda: ConbusCustomService(
@@ -505,25 +534,21 @@ class ServiceContainer:
             scope=punq.Scope.singleton,
         )
 
-    def _load_protocol_keys(self) -> "ProtocolKeysConfig":
-        """
-        Load protocol keys from YAML config file.
+    def _load_protocol_keys(self) -> ProtocolKeysConfig:
+        """Load protocol keys from YAML config file.
 
         Returns:
             ProtocolKeysConfig instance loaded from configuration path.
+
         """
-        from pathlib import Path
-
-        from xp.models.term.protocol_keys_config import ProtocolKeysConfig
-
         config_path = Path(self._protocol_keys_config_path).resolve()
         return ProtocolKeysConfig.from_yaml(config_path)
 
     def get_container(self) -> punq.Container:
-        """
-        Get the configured container with all services registered.
+        """Get the configured container with all services registered.
 
         Returns:
             punq.Container: The configured dependency injection container
+
         """
         return self.container

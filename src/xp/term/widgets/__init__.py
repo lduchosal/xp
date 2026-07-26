@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """TUI widgets package."""
 
 from xp.term.widgets.help_menu import HelpMenuWidget

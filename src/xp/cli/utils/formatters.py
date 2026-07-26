@@ -1,40 +1,49 @@
+# Copyright (c) 2025 ldvchosal
 """Output formatting utilities for CLI commands."""
 
 import json
-from typing import Any, Dict, Optional
+from collections.abc import Callable
+from typing import Any, Protocol
+
+
+class SupportsToDict(Protocol):
+    """Object exposing a ``to_dict`` serialization method."""
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return the object as a dictionary."""
+        ...
 
 
 class OutputFormatter:
     """Handles standardized output formatting for CLI commands."""
 
-    def __init__(self, json_output: bool = False):
-        """
-        Initialize the output formatter.
+    def __init__(self, *, json_output: bool = False) -> None:
+        """Initialize the output formatter.
 
         Args:
             json_output: Whether to format output as JSON (default: False).
+
         """
         self.json_output = json_output
 
-    def success_response(self, data: Dict[str, Any]) -> str:
-        """
-        Format a successful response.
+    def success_response(self, data: dict[str, Any]) -> str:
+        """Format a successful response.
 
         Args:
             data: Response data to format.
 
         Returns:
             Formatted success response as string.
+
         """
         if self.json_output:
             return json.dumps(data, indent=2)
         return self._format_text_response(data)
 
     def error_response(
-        self, error: str, extra_data: Optional[Dict[str, Any]] = None
+        self, error: str, extra_data: dict[str, Any] | None = None
     ) -> str:
-        """
-        Format an error response.
+        """Format an error response.
 
         Args:
             error: Error message.
@@ -42,6 +51,7 @@ class OutputFormatter:
 
         Returns:
             Formatted error response as string.
+
         """
         error_data = {"success": False, "error": error}
         if extra_data:
@@ -51,9 +61,8 @@ class OutputFormatter:
             return json.dumps(error_data, indent=2)
         return f"Error: {error}"
 
-    def validation_response(self, is_valid: bool, data: Dict[str, Any]) -> str:
-        """
-        Format a validation response.
+    def validation_response(self, *, is_valid: bool, data: dict[str, Any]) -> str:
+        """Format a validation response.
 
         Args:
             is_valid: Whether validation passed.
@@ -61,6 +70,7 @@ class OutputFormatter:
 
         Returns:
             Formatted validation response as string.
+
         """
         if self.json_output:
             response_data = {"valid": is_valid} | data
@@ -69,15 +79,15 @@ class OutputFormatter:
         status = "✓ Valid" if is_valid else "✗ Invalid"
         return f"Status: {status}"
 
-    def checksum_status(self, is_valid: bool) -> str:
-        """
-        Format checksum validation status.
+    def checksum_status(self, *, is_valid: bool) -> str:
+        """Format checksum validation status.
 
         Args:
             is_valid: Whether checksum is valid.
 
         Returns:
             Formatted checksum status as string.
+
         """
         if self.json_output:
             return json.dumps({"checksum_valid": is_valid}, indent=2)
@@ -85,15 +95,15 @@ class OutputFormatter:
         return "✓ Valid" if is_valid else "✗ Invalid"
 
     @staticmethod
-    def _format_text_response(data: Dict[str, Any]) -> str:
-        """
-        Format data for human-readable text output.
+    def _format_text_response(data: dict[str, Any]) -> str:
+        """Format data for human-readable text output.
 
         Args:
             data: Data dictionary to format.
 
         Returns:
             Formatted text output as string.
+
         """
         lines = []
 
@@ -112,9 +122,13 @@ class OutputFormatter:
 
         # Add any remaining fields
         for key, value in data.items():
-            if key not in ("telegram", "serial_number", "operation", "count"):
-                if isinstance(value, (str, int, float)):
-                    lines.append(f"{key.replace('_', ' ').title()}: {value}")
+            if key not in {
+                "telegram",
+                "serial_number",
+                "operation",
+                "count",
+            } and isinstance(value, (str, int, float)):
+                lines.append(f"{key.replace('_', ' ').title()}: {value}")
 
         return "\n".join(lines)
 
@@ -123,10 +137,11 @@ class TelegramFormatter(OutputFormatter):
     """Specialized formatter for telegram-related output."""
 
     def format_telegram_summary(
-        self, telegram_data: Dict[str, Any], service_formatter_method: Any = None
+        self,
+        telegram_data: dict[str, Any],
+        service_formatter_method: object | None = None,
     ) -> str:
-        """
-        Format telegram summary using service method when available.
+        """Format telegram summary using service method when available.
 
         Args:
             telegram_data: Telegram data to format.
@@ -134,6 +149,7 @@ class TelegramFormatter(OutputFormatter):
 
         Returns:
             Formatted telegram summary as string.
+
         """
         if self.json_output:
             return json.dumps(telegram_data, indent=2)
@@ -153,10 +169,13 @@ class TelegramFormatter(OutputFormatter):
         return "\n".join(lines)
 
     def format_validation_result(
-        self, parsed_telegram: Any, checksum_valid: Optional[bool], service_summary: str
+        self,
+        parsed_telegram: SupportsToDict,
+        *,
+        checksum_valid: bool | None,
+        service_summary: str,
     ) -> str:
-        """
-        Format telegram validation results.
+        """Format telegram validation results.
 
         Args:
             parsed_telegram: Parsed telegram object.
@@ -165,6 +184,7 @@ class TelegramFormatter(OutputFormatter):
 
         Returns:
             Formatted validation result as string.
+
         """
         if self.json_output:
             output = parsed_telegram.to_dict()
@@ -183,10 +203,12 @@ class ListFormatter(OutputFormatter):
     """Specialized formatter for list-based output."""
 
     def format_list_response(
-        self, items: list, title: str, item_formatter: Any = None
+        self,
+        items: list,
+        title: str,
+        item_formatter: Callable[[Any], object] | None = None,
     ) -> str:
-        """
-        Format a list of items with optional custom formatter.
+        """Format a list of items with optional custom formatter.
 
         Args:
             items: List of items to format.
@@ -195,6 +217,7 @@ class ListFormatter(OutputFormatter):
 
         Returns:
             Formatted list as string.
+
         """
         if self.json_output:
             return json.dumps(
@@ -221,8 +244,7 @@ class ListFormatter(OutputFormatter):
         return "\n".join(lines)
 
     def format_search_results(self, matches: list, query: str) -> str:
-        """
-        Format search results.
+        """Format search results.
 
         Args:
             matches: List of matching items.
@@ -230,6 +252,7 @@ class ListFormatter(OutputFormatter):
 
         Returns:
             Formatted search results as string.
+
         """
         if self.json_output:
             return json.dumps(
@@ -265,10 +288,9 @@ class StatisticsFormatter(OutputFormatter):
     """Specialized formatter for statistics and analysis output."""
 
     def format_file_statistics(
-        self, file_path: str, stats: Dict[str, Any], entry_count: int
+        self, file_path: str, stats: dict[str, Any], entry_count: int
     ) -> str:
-        """
-        Format file analysis statistics.
+        """Format file analysis statistics.
 
         Args:
             file_path: Path to the analyzed file.
@@ -277,6 +299,7 @@ class StatisticsFormatter(OutputFormatter):
 
         Returns:
             Formatted statistics as string.
+
         """
         if self.json_output:
             return json.dumps(

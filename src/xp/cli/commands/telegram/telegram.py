@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Shared conbus CLI group definition."""
 
 import click
@@ -9,7 +10,6 @@ from click_help_colors import HelpColorsGroup
 )
 def telegram() -> None:
     """Perform event telegram operations."""
-    pass
 
 
 @click.group(
@@ -17,7 +17,6 @@ def telegram() -> None:
 )
 def linknumber() -> None:
     """Perform link number operations for module configuration."""
-    pass
 
 
 @click.group(
@@ -25,7 +24,6 @@ def linknumber() -> None:
 )
 def blink() -> None:
     """Perform blink operations for module LED control."""
-    pass
 
 
 @click.group(
@@ -33,7 +31,6 @@ def blink() -> None:
 )
 def checksum() -> None:
     """Perform checksum calculation and validation operations."""
-    pass
 
 
 telegram.add_command(linknumber)

@@ -1,11 +1,11 @@
+# Copyright (c) 2025 ldvchosal
 """Time parameter enumeration for telegram actions."""
 
 from enum import IntEnum
 
 
 class TimeParam(IntEnum):
-    """
-    Time parameter values for action timing.
+    """Time parameter values for action timing.
 
     Attributes:
         NONE: No time parameter.
@@ -28,6 +28,7 @@ class TimeParam(IntEnum):
         T45MIN: 45 minute delay.
         T60MIN: 60 minute delay.
         T120MIN: 120 minute delay.
+
     """
 
     NONE = 0

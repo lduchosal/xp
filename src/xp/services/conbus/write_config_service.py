@@ -1,12 +1,12 @@
-"""
-Conbus Link Number Service for setting module link numbers.
+# Copyright (c) 2025 ldvchosal
+"""Conbus Link Number Service for setting module link numbers.
 
 This service handles setting link numbers for modules through Conbus telegrams.
 """
 
 import logging
-from datetime import datetime
-from typing import Any, Optional
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 
@@ -17,11 +17,17 @@ from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
+from xp.utils.time_utils import local_now
+
+# Module serial numbers are exactly 10 decimal digits
+SERIAL_NUMBER_LENGTH = 10
+
+# A write payload needs at least a two-character data value
+MIN_DATA_VALUE_LENGTH = 2
 
 
 class WriteConfigService:
-    """
-    Service for writing module settings via Conbus telegrams.
+    """Service for writing module settings via Conbus telegrams.
 
     Handles setting assignment by sending F04DXX telegrams and processing
     ACK/NAK responses from modules.
@@ -30,6 +36,7 @@ class WriteConfigService:
         conbus_protocol: Protocol for Conbus communication.
         telegram_service: Service for parsing telegrams.
         on_finish: Signal emitted when write operation completes (with response).
+
     """
 
     on_finish: Signal = Signal(ConbusWriteConfigResponse)
@@ -39,16 +46,16 @@ class WriteConfigService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """
-        Initialize the Conbus link number set service.
+        """Initialize the Conbus link number set service.
 
         Args:
             conbus_protocol: Protocol for Conbus communication.
             telegram_service: Service for parsing telegrams.
+
         """
         self.conbus_protocol = conbus_protocol
         self.telegram_service = telegram_service
-        self.datapoint_type: Optional[DataPointType] = None
+        self.datapoint_type: DataPointType | None = None
         self.serial_number: str = ""
         self.data_value: str = ""
         self.write_config_response: ConbusWriteConfigResponse = (
@@ -70,14 +77,14 @@ class WriteConfigService:
 
     def connection_made(self) -> None:
         """Handle connection made event."""
-        self.logger.debug(f"Connection established, writing config {self.data_value}.")
+        self.logger.debug("Connection established, writing config %s.", self.data_value)
 
         # Validate parameters before sending
-        if not self.serial_number or len(self.serial_number) != 10:
+        if not self.serial_number or len(self.serial_number) != SERIAL_NUMBER_LENGTH:
             self.failed(f"Serial number must be 10 digits, got: {self.serial_number}")
             return
 
-        if len(self.data_value) < 2:
+        if len(self.data_value) < MIN_DATA_VALUE_LENGTH:
             self.failed(f"data_value must be at least 2 bytes, got: {self.data_value}")
             return
 
@@ -85,10 +92,8 @@ class WriteConfigService:
             self.failed(f"datapoint_type must be defined, got: {self.datapoint_type}")
             return
 
-        # Send WRITE_CONFIG telegram
-        # Function F04 = WRITE_CONFIG,
-        # Datapoint = D datapoint_type
-        # Data = XX
+        # Send WRITE_CONFIG telegram (function F04) with the datapoint type
+        # followed by the data value
         self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
@@ -97,22 +102,22 @@ class WriteConfigService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """
-        Handle telegram sent event.
+        """Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
+
         """
         self.write_config_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
+
         """
-        self.logger.debug(f"Telegram received: {telegram_received}")
+        self.logger.debug("Telegram received: %s", telegram_received)
 
         if not self.write_config_response.received_telegrams:
             self.write_config_response.received_telegrams = []
@@ -131,16 +136,14 @@ class WriteConfigService:
             telegram_received.frame
         )
 
-        if not reply_telegram or reply_telegram.system_function not in (
+        if not reply_telegram or reply_telegram.system_function not in {
             SystemFunction.ACK,
             SystemFunction.NAK,
-        ):
+        }:
             self.logger.debug("Not a write config reply")
             return
 
-        succeed = (
-            True if reply_telegram.system_function == SystemFunction.ACK else False
-        )
+        succeed = reply_telegram.system_function == SystemFunction.ACK
         self.finished(
             succeed_or_failed=succeed, system_function=reply_telegram.system_function
         )
@@ -151,33 +154,34 @@ class WriteConfigService:
         self.finished(succeed_or_failed=False, message="Timeout")
 
     def failed(self, message: str) -> None:
-        """
-        Handle telegram failed event.
+        """Handle telegram failed event.
 
         Args:
             message: The error message.
+
         """
         self.logger.debug("Failed to send telegram")
         self.finished(succeed_or_failed=False, message=message)
 
     def finished(
         self,
+        *,
         succeed_or_failed: bool,
-        message: Optional[str] = None,
-        system_function: Optional[SystemFunction] = None,
+        message: str | None = None,
+        system_function: SystemFunction | None = None,
     ) -> None:
-        """
-        Handle successful link number set operation.
+        """Handle successful link number set operation.
 
         Args:
             succeed_or_failed: succeed true, failed false.
             message: error message if any.
             system_function: The system function from the reply telegram.
+
         """
         self.logger.debug("finished writing config")
         self.write_config_response.success = succeed_or_failed
         self.write_config_response.error = message
-        self.write_config_response.timestamp = datetime.now()
+        self.write_config_response.timestamp = local_now()
         self.write_config_response.serial_number = self.serial_number
         self.write_config_response.system_function = system_function
         self.write_config_response.datapoint_type = self.datapoint_type
@@ -191,16 +195,16 @@ class WriteConfigService:
         serial_number: str,
         datapoint_type: DataPointType,
         data_value: str,
-        timeout_seconds: Optional[float] = None,
+        timeout_seconds: float | None = None,
     ) -> None:
-        """
-        Write config to a specific module.
+        """Write config to a specific module.
 
         Args:
             serial_number: 10-digit module serial number.
             datapoint_type: the datapoint type to write to.
             data_value: the data to write.
             timeout_seconds: Optional timeout in seconds.
+
         """
         self.logger.info("Starting write_config")
         if timeout_seconds:
@@ -210,11 +214,11 @@ class WriteConfigService:
         self.data_value = data_value
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set operation timeout.
+        """Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -226,11 +230,12 @@ class WriteConfigService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "WriteConfigService":
+    def __enter__(self) -> Self:
         """Enter context manager - reset state for singleton reuse.
 
         Returns:
             Self for context manager protocol.
+
         """
         self.write_config_response = ConbusWriteConfigResponse(
             success=False, serial_number=""
@@ -241,7 +246,10 @@ class WriteConfigService:
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager and disconnect signals."""
         self.conbus_protocol.on_connection_made.disconnect(self.connection_made)

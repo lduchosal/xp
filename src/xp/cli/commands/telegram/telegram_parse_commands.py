@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Telegram-related CLI commands."""
 
 import json
@@ -17,8 +18,7 @@ from xp.services.telegram.telegram_service import TelegramParsingError, Telegram
 @click.argument("telegram_string")
 @handle_service_errors(TelegramParsingError)
 def parse_any_telegram(telegram_string: str) -> None:
-    r"""
-    Auto-detect and parse any type of telegram (event, system, reply, or discover).
+    r"""Auto-detect and parse any type of telegram (event, system, reply, or discover).
 
     Args:
         telegram_string: Telegram string to parse.
@@ -31,9 +31,10 @@ def parse_any_telegram(telegram_string: str) -> None:
         xp telegram parse "<S0000000000F01D00FA>"
         xp telegram parse "<R0012345011F01DFM>"
         xp telegram parse "<R0012345003F18DFF>"
+
     """
     service = TelegramService()
-    TelegramFormatter(True)
+    TelegramFormatter(json_output=True)
 
     try:
         parsed = service.parse_telegram(telegram_string)
@@ -48,8 +49,7 @@ def parse_any_telegram(telegram_string: str) -> None:
 @click.argument("telegram_string")
 @handle_service_errors(TelegramParsingError)
 def validate_telegram(telegram_string: str) -> None:
-    r"""
-    Validate the format of an event telegram.
+    r"""Validate the format of an event telegram.
 
     Args:
         telegram_string: Telegram string to validate.
@@ -57,9 +57,10 @@ def validate_telegram(telegram_string: str) -> None:
     Examples:
         \b
         xp telegram validate "<E14L00I02MAK>"
+
     """
     service = TelegramService()
-    TelegramFormatter(True)
+    TelegramFormatter(json_output=True)
 
     try:
         parsed = service.parse_event_telegram(telegram_string)

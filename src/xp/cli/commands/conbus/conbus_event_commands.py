@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus event operations CLI commands."""
 
 import json
@@ -9,14 +10,16 @@ from xp.cli.utils.decorators import connection_command
 from xp.cli.utils.module_type_choice import MODULE_TYPE
 from xp.models import ConbusEventRawResponse
 from xp.services.conbus.conbus_event_list_service import ConbusEventListService
-from xp.services.conbus.conbus_event_raw_service import ConbusEventRawService
+from xp.services.conbus.conbus_event_raw_service import (
+    ConbusEventRawService,
+    EventRawParams,
+)
 
 
 @conbus_event.command("list")
 @click.pass_context
 def list_events(ctx: click.Context) -> None:
-    r"""
-    List configured event telegrams from module action tables.
+    r"""List configured event telegrams from module action tables.
 
     Reads conson.yml configuration, parses action tables, and groups
     modules by their event keys to show which modules are assigned to
@@ -30,6 +33,7 @@ def list_events(ctx: click.Context) -> None:
     Examples:
         \b
         xp conbus event list
+
     """
     service: ConbusEventListService = (
         ctx.obj.get("container").get_container().resolve(ConbusEventListService)
@@ -51,8 +55,7 @@ def send_event_raw(
     input_number: int,
     time_ms: int,
 ) -> None:
-    r"""
-    Send raw event telegrams to simulate button presses.
+    r"""Send raw event telegrams to simulate button presses.
 
     Args:
         ctx: Click context object.
@@ -65,23 +68,24 @@ def send_event_raw(
         \b
         xp conbus event raw CP20 00 00
         xp conbus event raw XP33 00 00 500
+
     """
 
     def on_finish(response: ConbusEventRawResponse) -> None:
-        """
-        Handle successful completion of event raw operation.
+        """Handle successful completion of event raw operation.
 
         Args:
             response: Event raw response with sent and received telegrams.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
 
     def on_progress(telegram: str) -> None:
-        """
-        Handle progress updates during event operation.
+        """Handle progress updates during event operation.
 
         Args:
             telegram: Received telegram.
+
         """
         click.echo(json.dumps({"telegram": telegram}))
 
@@ -89,10 +93,12 @@ def send_event_raw(
         ctx.obj.get("container").get_container().resolve(ConbusEventRawService)
     )
     service.run(
-        module_type_code=module_type,
-        link_number=link_number,
-        input_number=input_number,
-        time_ms=time_ms,
+        EventRawParams(
+            module_type_code=module_type,
+            link_number=link_number,
+            input_number=input_number,
+            time_ms=time_ms,
+        ),
         progress_callback=on_progress,
         finish_callback=on_finish,
         timeout_seconds=5,

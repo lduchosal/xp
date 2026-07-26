@@ -1,53 +1,65 @@
+# Copyright (c) 2025 ldvchosal
 """Modules List Widget for displaying module state table."""
 
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import TYPE_CHECKING
 
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.widgets import DataTable, Static
+
+from xp.utils.time_utils import local_now
+
+if TYPE_CHECKING:
+    from textual.widgets.data_table import RowKey
 
 from xp.models.term.module_state import ModuleState
 from xp.services.term.state_monitor_service import StateMonitorService
 
 
 class ModulesListWidget(Static):
-    """
-    Widget displaying module states in a data table.
+    """Widget displaying module states in a data table.
 
     Shows module information with real-time updates from StateMonitorService.
-    Table displays: name, serial_number, module_type, link_number, outputs, report, status, last_update.
+    Table displays: name, serial_number, module_type, link_number, outputs,
+    report, status, last_update.
 
     Attributes:
         service: StateMonitorService for module state updates.
         table: DataTable widget displaying module information.
+
     """
 
     def __init__(
         self,
-        service: Optional[StateMonitorService] = None,
-        *args: Any,
-        **kwargs: Any,
+        service: StateMonitorService | None = None,
+        *,
+        name: str | None = None,
+        id: str | None = None,  # noqa: A002 - mirrors Textual's Widget API
+        classes: str | None = None,
+        disabled: bool = False,
     ) -> None:
-        """
-        Initialize the Modules List widget.
+        """Initialize the Modules List widget.
 
         Args:
             service: Optional StateMonitorService for signal subscriptions.
-            args: Additional positional arguments for Static.
-            kwargs: Additional keyword arguments for Static.
+            name: The name of the widget.
+            id: The ID of the widget in the DOM.
+            classes: The CSS classes for the widget.
+            disabled: Whether the widget is disabled.
+
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(name=name, id=id, classes=classes, disabled=disabled)
         self.service = service
-        self.table: Optional[DataTable] = None
-        self._row_keys: dict[str, Any] = {}  # Map serial_number to row key
+        self.table: DataTable | None = None
+        self._row_keys: dict[str, RowKey] = {}  # Map serial_number to row key
 
     def compose(self) -> ComposeResult:
-        """
-        Compose the widget layout.
+        """Compose the widget layout.
 
         Yields:
             DataTable widget.
+
         """
         self.table = DataTable(id="modules-table", cursor_type="row")
         yield self.table
@@ -78,14 +90,14 @@ class ModulesListWidget(Static):
             self.service.on_module_list_updated.disconnect(self.update_module_list)
             self.service.on_module_state_changed.disconnect(self.update_module_state)
 
-    def update_module_list(self, module_states: List[ModuleState]) -> None:
-        """
-        Update entire module list from service.
+    def update_module_list(self, module_states: list[ModuleState]) -> None:
+        """Update entire module list from service.
 
         Clears existing table and repopulates with all modules.
 
         Args:
             module_states: List of all module states.
+
         """
         if not self.table:
             return
@@ -99,13 +111,13 @@ class ModulesListWidget(Static):
             self._add_module_row(module_state)
 
     def update_module_state(self, module_state: ModuleState) -> None:
-        """
-        Update individual module state in table.
+        """Update individual module state in table.
 
         Updates existing row if module exists, otherwise adds new row.
 
         Args:
             module_state: Updated module state.
+
         """
         if not self.table:
             return
@@ -123,7 +135,10 @@ class ModulesListWidget(Static):
             self.table.update_cell(
                 row_key,
                 "report",
-                Text(self._format_report(module_state.auto_report), justify="center"),
+                Text(
+                    self._format_report(auto_report=module_state.auto_report),
+                    justify="center",
+                ),
             )
             self.table.update_cell(row_key, "status", module_state.error_status)
             self.table.update_cell(
@@ -138,11 +153,11 @@ class ModulesListWidget(Static):
             self._add_module_row(module_state)
 
     def _add_module_row(self, module_state: ModuleState) -> None:
-        """
-        Add a module row to the table.
+        """Add a module row to the table.
 
         Args:
             module_state: Module state to add.
+
         """
         if not self.table:
             return
@@ -153,39 +168,41 @@ class ModulesListWidget(Static):
             module_state.serial_number,
             module_state.module_type,
             Text(self._format_outputs(module_state.outputs), justify="right"),
-            Text(self._format_report(module_state.auto_report), justify="center"),
+            Text(
+                self._format_report(auto_report=module_state.auto_report),
+                justify="center",
+            ),
             module_state.error_status,
             Text(self._format_last_update(module_state.last_update), justify="center"),
         )
         self._row_keys[module_state.serial_number] = row_key
 
     def _format_outputs(self, outputs: str) -> str:
-        """
-        Format outputs for display.
+        """Format outputs for display.
 
         Args:
             outputs: Raw output string.
 
         Returns:
             Formatted output string (empty string for modules without outputs).
+
         """
         return outputs
 
-    def _format_report(self, auto_report: bool) -> str:
-        """
-        Format auto-report status for display.
+    def _format_report(self, *, auto_report: bool) -> str:
+        """Format auto-report status for display.
 
         Args:
             auto_report: Auto-report boolean value.
 
         Returns:
             "Y" if True, "N" if False.
+
         """
         return "Y" if auto_report else "N"
 
-    def _format_last_update(self, last_update: Optional[datetime]) -> str:
-        """
-        Format last update timestamp for display.
+    def _format_last_update(self, last_update: datetime | None) -> str:
+        """Format last update timestamp for display.
 
         Shows elapsed time in HH:MM:SS format or "--:--:--" if never updated.
 
@@ -194,12 +211,13 @@ class ModulesListWidget(Static):
 
         Returns:
             Formatted time string.
+
         """
         if last_update is None:
             return "--:--:--"
 
         # Calculate elapsed time
-        elapsed = datetime.now() - last_update
+        elapsed = local_now() - last_update
         total_seconds = int(elapsed.total_seconds())
 
         hours = total_seconds // 3600
@@ -209,8 +227,7 @@ class ModulesListWidget(Static):
         return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
     def refresh_last_update_times(self) -> None:
-        """
-        Refresh only the last_update column for all modules.
+        """Refresh only the last_update column for all modules.
 
         Updates the elapsed time display without querying the service.
         """

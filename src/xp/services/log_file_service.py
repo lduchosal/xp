@@ -1,15 +1,17 @@
+# Copyright (c) 2025 ldvchosal
 """Log file parsing service for console bus communication logs."""
 
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from xp.models.log_entry import LogEntry
 from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 from xp.utils.time_utils import (
     TimeParsingError,
     calculate_duration_ms,
+    local_now,
     parse_log_timestamp,
 )
 
@@ -17,12 +19,9 @@ from xp.utils.time_utils import (
 class LogFileParsingError(Exception):
     """Raised when log file parsing fails."""
 
-    pass
-
 
 class LogFileService:
-    """
-    Service for parsing console bus log files.
+    """Service for parsing console bus log files.
 
     Handles parsing of log files containing timestamped telegram transmissions
     and receptions with automatic telegram parsing and validation.
@@ -30,6 +29,7 @@ class LogFileService:
     Attributes:
         telegram_service: Telegram service for parsing telegrams.
         LOG_LINE_PATTERN: Regex pattern for log line format.
+
     """
 
     # Regex pattern for log line format: HH:MM:SS,mmm [TX/RX] <telegram>
@@ -37,20 +37,19 @@ class LogFileService:
         r"^(\d{2}:\d{2}:\d{2},\d{3})\s+\[([TR]X)\]\s+(<[^>]+>)\s*$"
     )
 
-    def __init__(self, telegram_service: TelegramService):
-        """
-        Initialize the log file service.
+    def __init__(self, telegram_service: TelegramService) -> None:
+        """Initialize the log file service.
 
         Args:
             telegram_service: Telegram service for parsing telegrams.
+
         """
         self.telegram_service = telegram_service
 
     def parse_log_file(
-        self, file_path: str, base_date: Optional[datetime] = None
-    ) -> List[LogEntry]:
-        """
-        Parse a console bus log file into LogEntry objects.
+        self, file_path: str, base_date: datetime | None = None
+    ) -> list[LogEntry]:
+        """Parse a console bus log file into LogEntry objects.
 
         Args:
             file_path: Path to the log file.
@@ -61,28 +60,31 @@ class LogFileService:
 
         Raises:
             LogFileParsingError: If file cannot be read or parsed.
+
         """
         try:
             path = Path(file_path)
             if not path.exists():
-                raise LogFileParsingError(f"Log file not found: {file_path}")
+                msg = f"Log file not found: {file_path}"
+                raise LogFileParsingError(msg)
 
             if not path.is_file():
-                raise LogFileParsingError(f"Path is not a file: {file_path}")
+                msg = f"Path is not a file: {file_path}"
+                raise LogFileParsingError(msg)
 
             with Path(path).open("r", encoding="utf-8", errors="replace") as f:
                 lines = f.readlines()
 
             return self.parse_log_lines(lines, base_date)
 
-        except IOError as e:
-            raise LogFileParsingError(f"Error reading log file {file_path}: {e}")
+        except OSError as e:
+            msg = f"Error reading log file {file_path}: {e}"
+            raise LogFileParsingError(msg) from e
 
     def parse_log_lines(
-        self, lines: List[str], base_date: Optional[datetime] = None
-    ) -> List[LogEntry]:
-        """
-        Parse log lines into LogEntry objects.
+        self, lines: list[str], base_date: datetime | None = None
+    ) -> list[LogEntry]:
+        """Parse log lines into LogEntry objects.
 
         Args:
             lines: List of log lines to parse.
@@ -90,11 +92,12 @@ class LogFileService:
 
         Returns:
             List of parsed LogEntry objects.
+
         """
         entries = []
 
-        for line_number, line in enumerate(lines, 1):
-            line = line.strip()
+        for line_number, raw_line in enumerate(lines, 1):
+            line = raw_line.strip()
             if not line:  # Skip empty lines
                 continue
 
@@ -102,10 +105,10 @@ class LogFileService:
                 entry = self._parse_log_line(line, line_number, base_date)
                 if entry:
                     entries.append(entry)
-            except Exception as e:
+            except LogFileParsingError as e:
                 # Create entry with parse error for malformed lines
                 entry = LogEntry(
-                    timestamp=base_date or datetime.now(),
+                    timestamp=base_date or local_now(),
                     direction="UNKNOWN",
                     raw_telegram=line,
                     parse_error=f"Line parsing failed: {e}",
@@ -116,10 +119,9 @@ class LogFileService:
         return entries
 
     def _parse_log_line(
-        self, line: str, line_number: int, base_date: Optional[datetime] = None
-    ) -> Optional[LogEntry]:
-        """
-        Parse a single log line into a LogEntry.
+        self, line: str, line_number: int, base_date: datetime | None = None
+    ) -> LogEntry | None:
+        """Parse a single log line into a LogEntry.
 
         Args:
             line: Log line to parse.
@@ -128,10 +130,15 @@ class LogFileService:
 
         Returns:
             LogEntry object or None if line format is invalid.
+
+        Raises:
+            LogFileParsingError: If the line format or timestamp is invalid.
+
         """
         match = self.LOG_LINE_PATTERN.match(line)
         if not match:
-            raise LogFileParsingError(f"Invalid log line format: {line}")
+            msg = f"Invalid log line format: {line}"
+            raise LogFileParsingError(msg)
 
         timestamp_str = match.group(1)
         direction = match.group(2)
@@ -141,7 +148,8 @@ class LogFileService:
         try:
             timestamp = parse_log_timestamp(timestamp_str, base_date)
         except TimeParsingError as e:
-            raise LogFileParsingError(f"Invalid timestamp in line {line_number}: {e}")
+            msg = f"Invalid timestamp in line {line_number}: {e}"
+            raise LogFileParsingError(msg) from e
 
         # Create initial log entry
         entry = LogEntry(
@@ -161,14 +169,14 @@ class LogFileService:
         return entry
 
     def validate_log_format(self, file_path: str) -> bool:
-        """
-        Validate that a file follows the expected log format.
+        """Validate that a file follows the expected log format.
 
         Args:
             file_path: Path to the log file.
 
         Returns:
             True if format is valid, False otherwise.
+
         """
         try:
             entries = self.parse_log_file(file_path)
@@ -178,29 +186,29 @@ class LogFileService:
         except LogFileParsingError:
             return False
 
-    def extract_telegrams(self, file_path: str) -> List[str]:
-        """
-        Extract all telegram strings from a log file.
+    def extract_telegrams(self, file_path: str) -> list[str]:
+        """Extract all telegram strings from a log file.
 
         Args:
             file_path: Path to the log file.
 
         Returns:
             List of telegram strings.
+
         """
         entries = self.parse_log_file(file_path)
         return [entry.raw_telegram for entry in entries]
 
     @staticmethod
-    def get_file_statistics(entries: List[LogEntry]) -> Dict[str, Any]:
-        """
-        Generate statistics for a list of log entries.
+    def get_file_statistics(entries: list[LogEntry]) -> dict[str, Any]:
+        """Generate statistics for a list of log entries.
 
         Args:
             entries: List of LogEntry objects.
 
         Returns:
             Dictionary containing statistics.
+
         """
         if not entries:
             return {"total_entries": 0}
@@ -276,19 +284,18 @@ class LogFileService:
                 "duration_ms": duration_ms,
                 "duration_seconds": duration_ms / 1000 if duration_ms > 0 else 0,
             },
-            "devices": sorted(list(devices)),
+            "devices": sorted(devices),
         }
 
     @staticmethod
     def filter_entries(
-        entries: List[LogEntry],
-        telegram_type: Optional[str] = None,
-        direction: Optional[str] = None,
-        start_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
-    ) -> List[LogEntry]:
-        """
-        Filter log entries based on criteria.
+        entries: list[LogEntry],
+        telegram_type: str | None = None,
+        direction: str | None = None,
+        start_time: datetime | None = None,
+        end_time: datetime | None = None,
+    ) -> list[LogEntry]:
+        """Filter log entries based on criteria.
 
         Args:
             entries: List of LogEntry objects to filter.
@@ -299,6 +306,7 @@ class LogFileService:
 
         Returns:
             Filtered list of LogEntry objects.
+
         """
         filtered = entries.copy()
 

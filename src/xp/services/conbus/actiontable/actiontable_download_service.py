@@ -1,8 +1,10 @@
+# Copyright (c) 2025 ldvchosal
 """Service for downloading ActionTable via Conbus protocol."""
 
 import asyncio
 import logging
-from typing import Any, Optional
+from types import TracebackType
+from typing import TYPE_CHECKING, Any, Self
 
 from psygnal import Signal
 
@@ -24,16 +26,19 @@ from xp.services.actiontable.msactiontable_xp24_serializer import (
 from xp.services.actiontable.msactiontable_xp33_serializer import (
     Xp33MsActionTableSerializer,
 )
-from xp.services.actiontable.serializer_protocol import ActionTableSerializerProtocol
 from xp.services.protocol.conbus_event_protocol import (
     NO_ERROR_CODE,
     ConbusEventProtocol,
 )
 
+if TYPE_CHECKING:
+    from xp.services.actiontable.serializer_protocol import (
+        ActionTableSerializerProtocol,
+    )
+
 
 class ActionTableDownloadService(DownloadStateMachine):
-    """
-    Service for downloading action tables from Conbus modules via TCP.
+    """Service for downloading action tables from Conbus modules via TCP.
 
     Inherits from ActionTableDownloadStateMachine and overrides on_enter_*
     methods to add protocol-specific behavior.
@@ -60,6 +65,7 @@ class ActionTableDownloadService(DownloadStateMachine):
         ...     service.configure(serial_number="12345678")
         ...     service.on_actiontable_received.connect(handle_result)
         ...     service.start_reactor()
+
     """
 
     # Service signals
@@ -76,8 +82,7 @@ class ActionTableDownloadService(DownloadStateMachine):
         msactiontable_serializer_xp24: Xp24MsActionTableSerializer,
         msactiontable_serializer_xp33: Xp33MsActionTableSerializer,
     ) -> None:
-        """
-        Initialize the action table download service.
+        """Initialize the action table download service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
@@ -85,6 +90,7 @@ class ActionTableDownloadService(DownloadStateMachine):
             msactiontable_serializer_xp20: XP20 master station action table serializer.
             msactiontable_serializer_xp24: XP24 master station action table serializer.
             msactiontable_serializer_xp33: XP33 master station action table serializer.
+
         """
         self.conbus_protocol = conbus_protocol
         self.actiontable_serializer = actiontable_serializer
@@ -110,18 +116,18 @@ class ActionTableDownloadService(DownloadStateMachine):
 
     def on_enter_receiving(self) -> None:
         """Enter receiving state - wait for telegrams to drain."""
-        self.logger.debug(f"Entering RECEIVING state (phase={self.phase.value})")
+        self.logger.debug("Entering RECEIVING state (phase=%s)", self.phase.value)
         self.conbus_protocol.wait()
 
     def on_enter_resetting(self) -> None:
         """Enter resetting state - send error status query."""
-        self.logger.debug(f"Entering RESETTING state (phase={self.phase.value})")
+        self.logger.debug("Entering RESETTING state (phase=%s)", self.phase.value)
         self.conbus_protocol.send_error_status_query(serial_number=self.serial_number)
         self.send_error_status()
 
     def on_enter_waiting_ok(self) -> None:
         """Enter waiting_ok state - wait for error status response."""
-        self.logger.debug(f"Entering WAITING_OK state (phase={self.phase.value})")
+        self.logger.debug("Entering WAITING_OK state (phase=%s)", self.phase.value)
         self.conbus_protocol.wait()
 
     def on_enter_requesting(self) -> None:
@@ -161,7 +167,7 @@ class ActionTableDownloadService(DownloadStateMachine):
 
     def on_max_retries_exceeded(self) -> None:
         """Handle max retries exceeded - emit error signal."""
-        self.logger.error(f"Max error retries ({MAX_ERROR_RETRIES}) exceeded")
+        self.logger.error("Max error retries (%s) exceeded", MAX_ERROR_RETRIES)
         self.on_error.emit(f"Module error persists after {MAX_ERROR_RETRIES} retries")
 
     # Protocol event handlers
@@ -173,13 +179,13 @@ class ActionTableDownloadService(DownloadStateMachine):
             self.do_connect()
 
     def _on_read_datapoint_received(self, reply_telegram: ReplyTelegram) -> None:
-        """
-        Handle READ_DATAPOINT response for error status check.
+        """Handle READ_DATAPOINT response for error status check.
 
         Args:
             reply_telegram: The parsed reply telegram.
+
         """
-        self.logger.debug(f"Received READ_DATAPOINT in {self.configuration}")
+        self.logger.debug("Received READ_DATAPOINT in %s", self.configuration)
         if reply_telegram.serial_number != self.serial_number:
             return
 
@@ -198,14 +204,14 @@ class ActionTableDownloadService(DownloadStateMachine):
     def _on_actiontable_chunk_received(
         self, reply_telegram: ReplyTelegram, actiontable_chunk: str
     ) -> None:
-        """
-        Handle actiontable chunk telegram received.
+        """Handle actiontable chunk telegram received.
 
         Args:
             reply_telegram: The parsed reply telegram containing chunk data.
             actiontable_chunk: The chunk data.
+
         """
-        self.logger.debug(f"Received actiontable chunk in {self.configuration}")
+        self.logger.debug("Received actiontable chunk in %s", self.configuration)
         if reply_telegram.serial_number != self.serial_number:
             return
 
@@ -215,13 +221,13 @@ class ActionTableDownloadService(DownloadStateMachine):
             self.receive_chunk()
 
     def _on_eof_received(self, reply_telegram: ReplyTelegram) -> None:
-        """
-        Handle EOF telegram received.
+        """Handle EOF telegram received.
 
         Args:
             reply_telegram: The parsed reply telegram (unused).
+
         """
-        self.logger.debug(f"Received EOF in {self.configuration}")
+        self.logger.debug("Received EOF in %s", self.configuration)
         if reply_telegram.serial_number != self.serial_number:
             return
 
@@ -229,13 +235,13 @@ class ActionTableDownloadService(DownloadStateMachine):
             self.receive_eof()
 
     def _on_telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
+
         """
-        self.logger.debug(f"Received {telegram_received} in {self.configuration}")
+        self.logger.debug("Received %s in %s", telegram_received, self.configuration)
 
         # In receiving state, drain pending telegrams from pipe (discard to /dev/null).
         # This ensures clean state before processing by clearing any stale messages.
@@ -245,7 +251,7 @@ class ActionTableDownloadService(DownloadStateMachine):
 
     def _on_timeout(self) -> None:
         """Handle timeout event."""
-        self.logger.debug(f"Timeout occurred (phase={self.phase.value})")
+        self.logger.debug("Timeout occurred (phase=%s)", self.phase.value)
         if self.receiving.is_active:
             self.do_timeout()  # receiving -> resetting
         elif self.waiting_ok.is_active:
@@ -258,13 +264,13 @@ class ActionTableDownloadService(DownloadStateMachine):
             self.on_error.emit("Timeout")
 
     def _on_failed(self, message: str) -> None:
-        """
-        Handle failed connection event.
+        """Handle failed connection event.
 
         Args:
             message: Failure message.
+
         """
-        self.logger.debug(f"Failed: {message}")
+        self.logger.debug("Failed: %s", message)
         self.on_error.emit(message)
 
     # Public API
@@ -273,10 +279,9 @@ class ActionTableDownloadService(DownloadStateMachine):
         self,
         serial_number: str,
         actiontable_type: ActionTableType,
-        timeout_seconds: Optional[float] = 2.0,
+        timeout_seconds: float | None = 2.0,
     ) -> None:
-        """
-        Configure download parameters before starting.
+        """Configure download parameters before starting.
 
         Sets the target module serial number and timeout. Call this before
         start_reactor() to configure the download target.
@@ -288,9 +293,11 @@ class ActionTableDownloadService(DownloadStateMachine):
 
         Raises:
             RuntimeError: If called while download is in progress.
+
         """
         if not self.idle.is_active:
-            raise RuntimeError("Cannot configure while download in progress")
+            msg = "Cannot configure while download in progress"
+            raise RuntimeError(msg)
         self.logger.info("Configuring actiontable download")
         self.serial_number = serial_number
         self.actiontable_data = []
@@ -307,20 +314,20 @@ class ActionTableDownloadService(DownloadStateMachine):
             self.conbus_protocol.timeout_seconds = timeout_seconds
 
     def set_event_loop(self, event_loop: asyncio.AbstractEventLoop) -> None:
-        """
-        Set event loop for async operations.
+        """Set event loop for async operations.
 
         Args:
             event_loop: Event loop to use.
+
         """
         self.conbus_protocol.set_event_loop(event_loop)
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set operation timeout.
+        """Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -366,11 +373,12 @@ class ActionTableDownloadService(DownloadStateMachine):
         self.conbus_protocol.on_failed.disconnect(self._on_failed)
         self._signals_connected = False
 
-    def __enter__(self) -> "ActionTableDownloadService":
+    def __enter__(self) -> Self:
         """Enter context manager - reset state and reconnect signals.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state for singleton reuse
         self.actiontable_data = []
@@ -381,7 +389,10 @@ class ActionTableDownloadService(DownloadStateMachine):
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager and disconnect signals."""
         self._disconnect_signals()

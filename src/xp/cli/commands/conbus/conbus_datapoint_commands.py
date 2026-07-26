@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus client operations CLI commands."""
 
 import json
@@ -30,8 +31,7 @@ from xp.services.conbus.conbus_datapoint_service import (
 @click.pass_context
 @connection_command()
 def query_datapoint(ctx: Context, serial_number: str, datapoint: DataPointType) -> None:
-    r"""
-    Query a specific datapoint from Conbus server.
+    r"""Query a specific datapoint from Conbus server.
 
     Args:
         ctx: Click context object.
@@ -45,17 +45,18 @@ def query_datapoint(ctx: Context, serial_number: str, datapoint: DataPointType) 
         xp conbus datapoint query temperature 0012345011
         xp conbus datapoint query current 0012345011
         xp conbus datapoint query humidity 0012345011
+
     """
     service: ConbusDatapointService = (
         ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
     )
 
     def on_finish(service_response: ConbusDatapointResponse) -> None:
-        """
-        Handle successful completion of datapoint query.
+        """Handle successful completion of datapoint query.
 
         Args:
             service_response: Datapoint response object.
+
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
         service.stop_reactor()
@@ -79,8 +80,7 @@ conbus_datapoint.add_command(query_datapoint)
 @click.pass_context
 @connection_command()
 def query_all_datapoints(ctx: Context, serial_number: str) -> None:
-    r"""
-    Query all datapoints from a specific module.
+    r"""Query all datapoints from a specific module.
 
     Args:
         ctx: Click context object.
@@ -89,27 +89,28 @@ def query_all_datapoints(ctx: Context, serial_number: str) -> None:
     Examples:
         \b
         xp conbus datapoint all 0123450001
+
     """
     service: ConbusDatapointQueryAllService = (
         ctx.obj.get("container").get_container().resolve(ConbusDatapointQueryAllService)
     )
 
     def on_finish(service_response: ConbusDatapointResponse) -> None:
-        """
-        Handle successful completion of all datapoints query.
+        """Handle successful completion of all datapoints query.
 
         Args:
             service_response: Datapoint response object with all datapoints.
+
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
         service.stop_reactor()
 
     def on_progress(reply_telegram: ReplyTelegram) -> None:
-        """
-        Handle progress updates during all datapoints query.
+        """Handle progress updates during all datapoints query.
 
         Args:
             reply_telegram: Reply telegram object with progress data.
+
         """
         click.echo(json.dumps(reply_telegram.to_dict(), indent=2))
 

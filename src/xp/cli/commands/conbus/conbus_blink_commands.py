@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus client operations CLI commands."""
 
 import json
@@ -23,8 +24,7 @@ from xp.services.telegram.telegram_blink_service import BlinkError
 @connection_command()
 @handle_service_errors(BlinkError)
 def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
-    r"""
-    Send blink command to start blinking module LED.
+    r"""Send blink command to start blinking module LED.
 
     Args:
         ctx: Click context object.
@@ -33,14 +33,15 @@ def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
     Examples:
         \b
         xp conbus blink on 0012345008
+
     """
 
     def on_finish(service_response: ConbusBlinkResponse) -> None:
-        """
-        Handle successful completion of blink on command.
+        """Handle successful completion of blink on command.
 
         Args:
             service_response: Blink response object.
+
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
         service.stop_reactor()
@@ -60,8 +61,7 @@ def send_blink_on_telegram(ctx: Context, serial_number: str) -> None:
 @connection_command()
 @handle_service_errors(BlinkError)
 def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
-    r"""
-    Send blink command to stop blinking module LED.
+    r"""Send blink command to stop blinking module LED.
 
     Args:
         ctx: Click context object.
@@ -70,14 +70,15 @@ def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
     Examples:
         \b
         xp conbus blink off 0012345008
+
     """
 
     def on_finish(service_response: ConbusBlinkResponse) -> None:
-        """
-        Handle successful completion of blink off command.
+        """Handle successful completion of blink off command.
 
         Args:
             service_response: Blink response object.
+
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
         service.stop_reactor()
@@ -94,7 +95,6 @@ def send_blink_off_telegram(ctx: Context, serial_number: str) -> None:
 @conbus_blink.group("all", short_help="Control blink state for all devices")
 def conbus_blink_all() -> None:
     """Control blink state for all discovered devices."""
-    pass
 
 
 @conbus_blink_all.command("off", short_help="Turn off blinking for all devices")
@@ -102,8 +102,7 @@ def conbus_blink_all() -> None:
 @connection_command()
 @handle_service_errors(BlinkError)
 def blink_all_off(ctx: Context) -> None:
-    r"""
-    Turn off blinking for all discovered devices.
+    r"""Turn off blinking for all discovered devices.
 
     Args:
         ctx: Click context object.
@@ -111,24 +110,25 @@ def blink_all_off(ctx: Context) -> None:
     Examples:
         \b
         xp conbus blink all off
+
     """
 
     def on_finish(discovered_devices: ConbusBlinkResponse) -> None:
-        """
-        Handle successful completion of blink all off command.
+        """Handle successful completion of blink all off command.
 
         Args:
             discovered_devices: Blink response with all devices.
+
         """
         click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
         service.stop_reactor()
 
     def progress(message: str) -> None:
-        """
-        Handle progress updates during blink all off operation.
+        """Handle progress updates during blink all off operation.
 
         Args:
             message: Progress message string.
+
         """
         click.echo(message, nl=False)
 
@@ -147,8 +147,7 @@ def blink_all_off(ctx: Context) -> None:
 @connection_command()
 @handle_service_errors(BlinkError)
 def blink_all_on(ctx: Context) -> None:
-    r"""
-    Turn on blinking for all discovered devices.
+    r"""Turn on blinking for all discovered devices.
 
     Args:
         ctx: Click context object.
@@ -156,24 +155,25 @@ def blink_all_on(ctx: Context) -> None:
     Examples:
         \b
         xp conbus blink all on
+
     """
 
     def on_finish(discovered_devices: ConbusBlinkResponse) -> None:
-        """
-        Handle successful completion of blink all on command.
+        """Handle successful completion of blink all on command.
 
         Args:
             discovered_devices: Blink response with all devices.
+
         """
         click.echo(json.dumps(discovered_devices.to_dict(), indent=2))
         service.stop_reactor()
 
     def progress(message: str) -> None:
-        """
-        Handle progress updates during blink all on operation.
+        """Handle progress updates during blink all on operation.
 
         Args:
             message: Progress message string.
+
         """
         click.echo(message, nl=False)
 

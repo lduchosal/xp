@@ -1,6 +1,8 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus lightlevel operations CLI commands."""
 
 import json
+from typing import TYPE_CHECKING
 
 import click
 
@@ -9,12 +11,14 @@ from xp.cli.utils.decorators import (
     connection_command,
 )
 from xp.cli.utils.serial_number_type import SERIAL
-from xp.models import ConbusDatapointResponse
-from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.write_config_service import WriteConfigService
 from xp.services.telegram.telegram_datapoint_service import TelegramDatapointService
+
+if TYPE_CHECKING:
+    from xp.models import ConbusDatapointResponse
+    from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 
 
 @conbus_lightlevel.command("set")
@@ -26,8 +30,7 @@ from xp.services.telegram.telegram_datapoint_service import TelegramDatapointSer
 def xp_lightlevel_set(
     ctx: click.Context, serial_number: str, output_number: int, level: int
 ) -> None:
-    r"""
-    Set light level for output_number on XP module serial_number.
+    r"""Set light level for output_number on XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -39,17 +42,18 @@ def xp_lightlevel_set(
         \b
         xp conbus lightlevel set 0123450001 2 50   # Set output 2 to 50%
         xp conbus lightlevel set 0011223344 0 100  # Set output 0 to 100%
+
     """
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """
-        Handle successful completion of light level on command.
+        """Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()
@@ -75,8 +79,7 @@ def xp_lightlevel_set(
 def xp_lightlevel_off(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    r"""
-    Turn off light for output_number on XP module serial_number (set level to 0).
+    r"""Turn off light for output_number on XP module serial_number (set level to 0).
 
     Args:
         ctx: Click context object.
@@ -87,17 +90,18 @@ def xp_lightlevel_off(
         \b
         xp conbus lightlevel off 0123450001 2   # Turn off output 2
         xp conbus lightlevel off 0011223344 0   # Turn off output 0
+
     """
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """
-        Handle successful completion of light level on command.
+        """Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()
@@ -124,8 +128,7 @@ def xp_lightlevel_off(
 def xp_lightlevel_on(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    r"""
-    Turn on light for output_number on XP module serial_number (set level to 80%).
+    r"""Turn on light for output_number on XP module serial_number (set level to 80%).
 
     Args:
         ctx: Click context object.
@@ -136,17 +139,18 @@ def xp_lightlevel_on(
         \b
         xp conbus lightlevel on 0123450001 2   # Turn on output 2 (80%)
         xp conbus lightlevel on 0011223344 0   # Turn on output 0 (80%)
+
     """
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """
-        Handle successful completion of light level on command.
+        """Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()
@@ -173,8 +177,7 @@ def xp_lightlevel_on(
 def xp_lightlevel_get(
     ctx: click.Context, serial_number: str, output_number: int
 ) -> None:
-    r"""
-    Get current light level for output_number on XP module serial_number.
+    r"""Get current light level for output_number on XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -185,6 +188,7 @@ def xp_lightlevel_get(
         \b
         xp conbus lightlevel get 0123450001 2   # Get light level for output 2
         xp conbus lightlevel get 0011223344 0   # Get light level for output 0
+
     """
     # Get service from container
     service: ConbusDatapointService = (
@@ -195,11 +199,11 @@ def xp_lightlevel_get(
     )
 
     def on_finish(service_response: "ConbusDatapointResponse") -> None:
-        """
-        Handle successful completion of light level get command.
+        """Handle successful completion of light level get command.
 
         Args:
             service_response: Light level response object.
+
         """
         lightlevel_level = telegram_service.get_lightlevel(
             service_response.data_value, output_number

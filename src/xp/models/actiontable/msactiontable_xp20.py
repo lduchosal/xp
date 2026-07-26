@@ -1,11 +1,16 @@
+# Copyright (c) 2025 ldvchosal
 """XP20 Action Table models for input actions and settings."""
+
+import re
 
 from pydantic import BaseModel, Field
 
+# Number of input channels on an XP20 module
+XP20_CHANNEL_COUNT = 8
+
 
 class InputChannel(BaseModel):
-    """
-    Configuration for a single input channel in XP20 action table.
+    """Configuration for a single input channel in XP20 action table.
 
     Attributes:
         invert: Input inversion flag
@@ -14,6 +19,7 @@ class InputChannel(BaseModel):
         and_functions: 8-bit AND function configuration array
         sa_function: SA function flag
         ta_function: TA function flag
+
     """
 
     invert: bool = False
@@ -25,8 +31,7 @@ class InputChannel(BaseModel):
 
 
 class Xp20MsActionTable(BaseModel):
-    """
-    XP20 Action Table for managing 8 input channels.
+    """XP20 Action Table for managing 8 input channels.
 
     Contains configuration for 8 input channels (input1 through input8),
     each with flags for inversion, short/long press detection, group functions,
@@ -41,6 +46,7 @@ class Xp20MsActionTable(BaseModel):
         input6: Configuration for input channel 6.
         input7: Configuration for input channel 7.
         input8: Configuration for input channel 8.
+
     """
 
     input1: InputChannel = Field(default_factory=InputChannel)
@@ -53,15 +59,16 @@ class Xp20MsActionTable(BaseModel):
     input8: InputChannel = Field(default_factory=InputChannel)
 
     def to_short_format(self) -> list[str]:
-        """
-        Convert action table to short format string.
+        """Convert action table to short format string.
 
         Returns:
             Short format string with each channel on a separate line.
-            Example:
+
+        Example:
                 CH1 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
                 CH2 I:0 S:0 G:0 AND:00000000 SA:0 TA:0
                 ...
+
         """
         lines = []
         for i in range(1, 9):
@@ -82,8 +89,7 @@ class Xp20MsActionTable(BaseModel):
 
     @classmethod
     def from_short_format(cls, short_str: list[str]) -> "Xp20MsActionTable":
-        """
-        Parse short format string into action table.
+        """Parse short format string into action table.
 
         Args:
             short_str: Short format string with 8 channel lines.
@@ -93,22 +99,23 @@ class Xp20MsActionTable(BaseModel):
 
         Raises:
             ValueError: If format is invalid.
-        """
-        import re
 
-        if len(short_str) != 8:
-            raise ValueError(f"Expected 8 channel lines, got {len(short_str)}")
+        """
+        if len(short_str) != XP20_CHANNEL_COUNT:
+            msg = f"Expected 8 channel lines, got {len(short_str)}"
+            raise ValueError(msg)
 
         pattern = re.compile(
             r"^CH([1-8]) I:([01]) S:([01]) G:([01]) AND:([01]{8}) SA:([01]) TA:([01])$"
         )
 
         channels = {}
-        for line in short_str:
-            line = line.strip()
+        for raw_line in short_str:
+            line = raw_line.strip()
             match = pattern.match(line)
             if not match:
-                raise ValueError(f"Invalid channel format: {line}")
+                msg = f"Invalid channel format: {line}"
+                raise ValueError(msg)
 
             ch_num = int(match.group(1))
             invert = match.group(2) == "1"
@@ -133,7 +140,8 @@ class Xp20MsActionTable(BaseModel):
         # Verify all channels are present
         for i in range(1, 9):
             if i not in channels:
-                raise ValueError(f"Missing channel {i}")
+                msg = f"Missing channel {i}"
+                raise ValueError(msg)
 
         return cls(
             input1=channels[1],

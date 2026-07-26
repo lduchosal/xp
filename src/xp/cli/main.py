@@ -1,11 +1,14 @@
+# Copyright (c) 2025 ldvchosal
 """XP CLI tool entry point with modular command structure."""
 
 import click
 from click_help_colors import HelpColorsGroup
 
 # Import all conbus command modules to register their commands
-from xp.cli.commands.conbus import conbus_discover_commands  # noqa: F401
-from xp.cli.commands.conbus import conbus_export_commands  # noqa: F401
+from xp.cli.commands.conbus import (
+    conbus_discover_commands,  # noqa: F401
+    conbus_export_commands,  # noqa: F401
+)
 from xp.cli.commands.conbus.conbus import conbus
 from xp.cli.commands.file_commands import file
 from xp.cli.commands.module_commands import module
@@ -16,7 +19,7 @@ from xp.cli.commands.server.server_commands import server
 from xp.cli.commands.telegram.telegram_parse_commands import telegram
 from xp.cli.commands.term.term import term
 from xp.cli.utils.click_tree import add_tree_command
-from xp.utils.dependencies import ServiceContainer
+from xp.utils.dependencies import ContainerConfig, ServiceContainer
 from xp.utils.logging import LoggerService
 
 
@@ -47,18 +50,20 @@ from xp.utils.logging import LoggerService
 )
 @click.pass_context
 def cli(ctx: click.Context, cli_config: str, log_config: str, pid_file: str) -> None:
-    """
-    XP CLI tool for remote console bus operations.
+    """XP CLI tool for remote console bus operations.
 
     Args:
         ctx: Click context object for passing state between commands.
         cli_config: Path to the CLI configuration file.
         log_config: Path to the logger configuration file.
         pid_file: Path to PID file (written on start, removed on exit).
+
     """
     container = ServiceContainer(
-        client_config_path=cli_config,
-        logger_config_path=log_config,
+        ContainerConfig(
+            client_config_path=cli_config,
+            logger_config_path=log_config,
+        )
     )
     logger_service = container.get_container().resolve(LoggerService)
     logger_service.setup()

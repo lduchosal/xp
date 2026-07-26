@@ -1,13 +1,12 @@
-"""
-XP33 Server Service for device emulation.
+# Copyright (c) 2025 ldvchosal
+"""XP33 Server Service for device emulation.
 
 This service provides XP33-specific device emulation functionality, including response
 generation and device configuration handling for 3-channel light dimmer modules.
 """
 
-import socket
 import threading
-from typing import Dict, Optional
+from typing import TYPE_CHECKING
 
 from xp.models import ModuleTypeCode
 from xp.models.actiontable.msactiontable_xp33 import Xp33MsActionTable
@@ -19,16 +18,25 @@ from xp.services.actiontable.msactiontable_xp33_serializer import (
 )
 from xp.services.server.base_server_service import BaseServerService
 
+if TYPE_CHECKING:
+    import socket
+
+# Minimum length of a channel dimming action payload ("NN:LLL")
+MIN_DIMMING_ACTION_LENGTH = 6
+
+# Number of dimmer channels on an XP33 module
+XP33_CHANNEL_COUNT = 3
+
+# Maximum dimming level in percent
+MAX_DIMMING_LEVEL = 100
+
 
 class XP33ServerError(Exception):
     """Raised when XP33 server operations fail."""
 
-    pass
-
 
 class XP33ServerService(BaseServerService):
-    """
-    XP33 device emulation service.
+    """XP33 device emulation service.
 
     Generates XP33-specific responses, handles XP33 device configuration, and implements
     XP33 telegram format for 3-channel dimmer modules.
@@ -38,15 +46,15 @@ class XP33ServerService(BaseServerService):
         self,
         serial_number: str,
         variant: str = "XP33LR",
-        msactiontable_serializer: Optional[Xp33MsActionTableSerializer] = None,
-    ):
-        """
-        Initialize XP33 server service.
+        msactiontable_serializer: Xp33MsActionTableSerializer | None = None,
+    ) -> None:
+        """Initialize XP33 server service.
 
         Args:
             serial_number: The device serial number.
             variant: Device variant (XP33, XP33LR, or XP33LED).
             msactiontable_serializer: MsActionTable serializer (injected via DI).
+
         """
         super().__init__(serial_number)
         self.variant = variant  # XP33 or XP33LR or XP33LED
@@ -87,10 +95,8 @@ class XP33ServerService(BaseServerService):
 
         # Storm mode state (XP33 Storm Simulator)
         self.storm_mode = False  # Track if device is in storm mode
-        self.last_response: Optional[str] = None  # Cache last response for storm replay
-        self.storm_thread: Optional[threading.Thread] = (
-            None  # Background thread for storm
-        )
+        self.last_response: str | None = None  # Cache last response for storm replay
+        self.storm_thread: threading.Thread | None = None  # Background thread for storm
         self.storm_stop_event = threading.Event()  # Event to stop storm thread
         self.client_sockets: set[socket.socket] = set()  # All active client sockets
         self.client_sockets_lock = threading.Lock()  # Lock for socket set
@@ -104,15 +110,21 @@ class XP33ServerService(BaseServerService):
 
     def _handle_device_specific_action_request(
         self, request: SystemTelegram
-    ) -> Optional[str]:
-        """Handle XP33-specific action requests."""
+    ) -> str | None:
+        """Handle XP33-specific action requests.
+
+        Returns:
+            Response telegrams for the action request.
+
+        """
         telegrams = self._handle_action_channel_dimming(request.data)
-        self.logger.debug(f"Generated {self.device_type} action responses: {telegrams}")
+        self.logger.debug(
+            "Generated %s action responses: %s", self.device_type, telegrams
+        )
         return telegrams
 
     def _handle_action_channel_dimming(self, data_value: str) -> str:
-        """
-        Handle XP33-specific channel dimming action.
+        """Handle XP33-specific channel dimming action.
 
         Args:
             data_value: Action data in format channel_number:dimming_level.
@@ -120,22 +132,23 @@ class XP33ServerService(BaseServerService):
 
         Returns:
             Response telegram(s) - ACK/NAK, optionally with event telegram.
+
         """
-        if ":" not in data_value or len(data_value) < 6:
-            return self._build_ack_nak_response_telegram(False)
+        if ":" not in data_value or len(data_value) < MIN_DIMMING_ACTION_LENGTH:
+            return self._build_ack_nak_response_telegram(ack_or_nak=False)
 
         try:
             parts = data_value.split(":")
             channel_number = int(parts[0])
             dimming_level = int(parts[1])
         except (ValueError, IndexError):
-            return self._build_ack_nak_response_telegram(False)
+            return self._build_ack_nak_response_telegram(ack_or_nak=False)
 
         if channel_number not in range(len(self.channel_states)):
-            return self._build_ack_nak_response_telegram(False)
+            return self._build_ack_nak_response_telegram(ack_or_nak=False)
 
-        if dimming_level not in range(0, 101):
-            return self._build_ack_nak_response_telegram(False)
+        if dimming_level not in range(MAX_DIMMING_LEVEL + 1):
+            return self._build_ack_nak_response_telegram(ack_or_nak=False)
 
         previous_level = self.channel_states[channel_number]
         self.channel_states[channel_number] = dimming_level
@@ -143,7 +156,7 @@ class XP33ServerService(BaseServerService):
             previous_level > 0 and dimming_level == 0
         )
 
-        telegrams = self._build_ack_nak_response_telegram(True)
+        telegrams = self._build_ack_nak_response_telegram(ack_or_nak=True)
         if state_changed and self.autoreport_status:
             # Report dimming change event
             telegrams += self._build_dimming_event_telegram(
@@ -152,27 +165,26 @@ class XP33ServerService(BaseServerService):
 
         return telegrams
 
-    def _build_ack_nak_response_telegram(self, ack_or_nak: bool) -> str:
-        """
-        Build a complete ACK or NAK response telegram with checksum.
+    def _build_ack_nak_response_telegram(self, *, ack_or_nak: bool) -> str:
+        """Build a complete ACK or NAK response telegram with checksum.
 
         Args:
             ack_or_nak: true: ACK telegram response, false: NAK telegram response.
 
         Returns:
             The complete telegram with checksum enclosed in angle brackets.
+
         """
         data_value = (
             SystemFunction.ACK.value if ack_or_nak else SystemFunction.NAK.value
         )
-        data_part = f"R{self.serial_number}" f"F{data_value:02}D"
+        data_part = f"R{self.serial_number}F{data_value:02}D"
         return self._build_response_telegram(data_part)
 
     def _build_dimming_event_telegram(
         self, dimming_level: int, channel_number: int
     ) -> str:
-        """
-        Build a complete dimming event telegram with checksum.
+        """Build a complete dimming event telegram with checksum.
 
         Args:
             dimming_level: Dimming level 0-100%.
@@ -180,6 +192,7 @@ class XP33ServerService(BaseServerService):
 
         Returns:
             The complete event telegram with checksum enclosed in angle brackets.
+
         """
         data_value = "M" if dimming_level > 0 else "B"
         data_part = (
@@ -190,15 +203,32 @@ class XP33ServerService(BaseServerService):
         )
         return self._build_response_telegram(data_part)
 
+    def _handle_untyped_data_request(self, request: SystemTelegram) -> str | None:
+        """Handle data requests without a known datapoint type.
+
+        Args:
+            request: The system telegram request.
+
+        Returns:
+            Storm trigger response if D99 query, None otherwise.
+
+        """
+        # Check for D99 storm trigger (not in DataPointType enum)
+        if request.data and request.data.startswith("99"):
+            return self._trigger_storm_mode()
+        return None
+
     def _handle_device_specific_data_request(
         self, request: SystemTelegram
-    ) -> Optional[str]:
-        """Handle XP33-specific data requests with storm mode support."""
+    ) -> str | None:
+        """Handle XP33-specific data requests with storm mode support.
+
+        Returns:
+            Response telegram string, or None if the request is not handled.
+
+        """
         if not request.datapoint_type:
-            # Check for D99 storm trigger (not in DataPointType enum)
-            if request.data and request.data.startswith("99"):
-                return self._trigger_storm_mode()
-            return None
+            return self._handle_untyped_data_request(request)
 
         datapoint_type = request.datapoint_type
 
@@ -207,14 +237,13 @@ class XP33ServerService(BaseServerService):
             if self.storm_mode:
                 # MODULE_ERROR_CODE query stops storm
                 return self._exit_storm_mode()
-            else:
-                # Normal operation - return error code 00
-                return self._build_error_code_response("00")
+            # Normal operation - return error code 00
+            return self._build_error_code_response("00")
 
-        # If in storm mode and not MODULE_ERROR_CODE query, ignore (background thread is sending)
+        # In storm mode, ignore any other query (background thread is sending)
         if self.storm_mode:
             self.logger.debug(
-                f"Ignoring query during storm mode for device {self.serial_number}"
+                "Ignoring query during storm mode for device %s", self.serial_number
             )
             return None  # Background thread is sending storm telegrams
 
@@ -222,32 +251,32 @@ class XP33ServerService(BaseServerService):
         handler = {
             DataPointType.MODULE_OUTPUT_STATE: self._handle_read_module_output_state,
             DataPointType.MODULE_STATE: self._handle_read_module_state,
-            DataPointType.MODULE_OPERATING_HOURS: self._handle_read_module_operating_hours,
+            DataPointType.MODULE_OPERATING_HOURS: (
+                self._handle_read_module_operating_hours
+            ),
             DataPointType.MODULE_LIGHT_LEVEL: self._handle_read_light_level,
         }.get(datapoint_type)
         if not handler:
             return None
 
         data_value = handler()
-        data_part = (
-            f"R{self.serial_number}" f"F02D{datapoint_type.value}" f"{data_value}"
-        )
+        data_part = f"R{self.serial_number}F02D{datapoint_type.value}{data_value}"
         telegram = self._build_response_telegram(data_part)
 
         # Cache response for potential storm replay
         self.last_response = telegram
 
         self.logger.debug(
-            f"Generated {self.device_type} module type response: {telegram}"
+            "Generated %s module type response: %s", self.device_type, telegram
         )
         return telegram
 
     def _handle_read_module_output_state(self) -> str:
-        """
-        Handle XP33-specific module output state.
+        """Handle XP33-specific module output state.
 
         Returns:
             String representation of the output state for 3 channels.
+
         """
         return (
             f"xxxxx"
@@ -257,59 +286,60 @@ class XP33ServerService(BaseServerService):
         )
 
     def _handle_read_module_state(self) -> str:
-        """
-        Handle XP33-specific module state.
+        """Handle XP33-specific module state.
 
         Returns:
             'ON' if any channel is active, 'OFF' otherwise.
+
         """
         if any(level > 0 for level in self.channel_states):
             return "ON"
         return "OFF"
 
     def _handle_read_module_operating_hours(self) -> str:
-        """
-        Handle XP33-specific module operating hours.
+        """Handle XP33-specific module operating hours.
 
         Returns:
             Operating hours for all 3 channels.
+
         """
         return "00:000[H],01:000[H],02:000[H]"
 
     def _handle_read_light_level(self) -> str:
-        """
-        Handle XP33-specific light level reading.
+        """Handle XP33-specific light level reading.
 
         Returns:
             Light levels for all channels in format "00:000[%],01:000[%],02:000[%]".
+
         """
         levels = [
             f"{i:02d}:{level:03d}[%]" for i, level in enumerate(self.channel_states)
         ]
         return ",".join(levels)
 
-    def _trigger_storm_mode(self) -> Optional[str]:
-        """
-        Trigger storm mode via D99 query.
+    def _trigger_storm_mode(self) -> str | None:
+        """Trigger storm mode via D99 query.
 
         Starts a background thread that sends 2 packets per second.
         If storm is already active, this is a no-op.
 
         Returns:
             None (no response - storm mode activated).
+
         """
         # If storm already active, just log and continue
         if self.storm_mode and self.storm_thread and self.storm_thread.is_alive():
             self.logger.debug(
-                f"Storm already active for device {self.serial_number}, "
-                f"sent {self.storm_packets_sent}/200 packets"
+                "Storm already active for device %s, sent %s/200 packets",
+                self.serial_number,
+                self.storm_packets_sent,
             )
             return None
 
         if not self.last_response:
             self.logger.warning(
-                f"Cannot trigger storm for device {self.serial_number}: "
-                f"no cached response"
+                "Cannot trigger storm for device %s: no cached response",
+                self.serial_number,
             )
             return None
 
@@ -326,21 +356,22 @@ class XP33ServerService(BaseServerService):
         self.storm_thread.start()
 
         self.logger.info(
-            f"Storm triggered via D99 query for device {self.serial_number}"
+            "Storm triggered via D99 query for device %s", self.serial_number
         )
         return None  # No response when entering storm mode
 
     def _exit_storm_mode(self) -> str:
-        """
-        Exit storm mode and return error code FE.
+        """Exit storm mode and return error code FE.
 
         Stops the background storm thread and returns error code.
 
         Returns:
             MODULE_ERROR_CODE response with error code FE (buffer overflow).
+
         """
         self.logger.info(
-            f"MODULE_ERROR_CODE query received, stopping storm for device {self.serial_number}"
+            "MODULE_ERROR_CODE query received, stopping storm for device %s",
+            self.serial_number,
         )
 
         # Signal the storm thread to stop
@@ -352,16 +383,18 @@ class XP33ServerService(BaseServerService):
             self.storm_thread.join(timeout=1.0)
 
         self.logger.info(
-            f"Storm stopped after {self.storm_packets_sent} packets for device {self.serial_number}"
+            "Storm stopped after %s packets for device %s",
+            self.storm_packets_sent,
+            self.serial_number,
         )
         self.logger.info(
-            f"Storm stopped, returning to normal operation for device {self.serial_number}"
+            "Storm stopped, returning to normal operation for device %s",
+            self.serial_number,
         )
         return self._build_error_code_response("FE")
 
     def _storm_sender_thread(self) -> None:
-        """
-        Background thread that sends storm telegrams continuously.
+        """Background thread that sends storm telegrams continuously.
 
         Sends 2 packets per second (500ms delay) until:
         - 200 packets have been sent, or
@@ -372,13 +405,16 @@ class XP33ServerService(BaseServerService):
         """
         if not self.last_response:
             self.logger.error(
-                f"Storm thread started but missing cached response for {self.serial_number}"
+                "Storm thread started but missing cached response for %s",
+                self.serial_number,
             )
             self.storm_mode = False
             return
 
         self.logger.info(
-            f"Storm thread started, sending 200 duplicate telegrams at 2 packets/sec for device {self.serial_number}"
+            "Storm thread started, sending 200 duplicate telegrams "
+            "at 2 packets/sec for device %s",
+            self.serial_number,
         )
 
         # Type narrowing for mypy
@@ -396,7 +432,10 @@ class XP33ServerService(BaseServerService):
                 self.add_telegram_buffer(cached_response)
                 self.storm_packets_sent += 1
                 self.logger.debug(
-                    f"Storm packet {self.storm_packets_sent}/{max_packets} sent for {self.serial_number}"
+                    "Storm packet %s/%s sent for %s",
+                    self.storm_packets_sent,
+                    max_packets,
+                    self.serial_number,
                 )
 
                 # Wait before sending next packet (0.5 seconds for 2 packets/sec)
@@ -406,31 +445,35 @@ class XP33ServerService(BaseServerService):
                 # Log completion status
             if self.storm_packets_sent >= max_packets:
                 self.logger.info(
-                    f"Storm completed: sent all {self.storm_packets_sent} packets for {self.serial_number}"
+                    "Storm completed: sent all %s packets for %s",
+                    self.storm_packets_sent,
+                    self.serial_number,
                 )
             elif self.storm_stop_event.is_set():
                 self.logger.info(
-                    f"Storm stopped by error code query: sent {self.storm_packets_sent} packets for {self.serial_number}"
+                    "Storm stopped by error code query: sent %s packets for %s",
+                    self.storm_packets_sent,
+                    self.serial_number,
                 )
 
             # Clean up storm mode
             self.storm_mode = False
 
-        except Exception as e:
-            self.logger.error(
-                f"Unexpected error in storm thread for {self.serial_number}: {e}"
+        except Exception:
+            self.logger.exception(
+                "Unexpected error in storm thread for %s", self.serial_number
             )
             self.storm_mode = False
 
     def _build_error_code_response(self, error_code: str) -> str:
-        """
-        Build MODULE_ERROR_CODE response telegram.
+        """Build MODULE_ERROR_CODE response telegram.
 
         Args:
             error_code: Error code (00 = normal, FE = buffer overflow).
 
         Returns:
             The complete MODULE_ERROR_CODE response telegram.
+
         """
         data_part = (
             f"R{self.serial_number}"
@@ -439,13 +482,12 @@ class XP33ServerService(BaseServerService):
         )
         telegram = self._build_response_telegram(data_part)
         self.logger.debug(
-            f"Generated {self.device_type} error code response: {telegram}"
+            "Generated %s error code response: %s", self.device_type, telegram
         )
         return telegram
 
     def set_channel_dimming(self, channel: int, level: int) -> bool:
-        """
-        Set individual channel dimming level.
+        """Set individual channel dimming level.
 
         Args:
             channel: Channel number (1-3).
@@ -453,63 +495,65 @@ class XP33ServerService(BaseServerService):
 
         Returns:
             True if channel was set successfully, False otherwise.
+
         """
-        if 1 <= channel <= 3 and 0 <= level <= 100:
+        if 1 <= channel <= XP33_CHANNEL_COUNT and 0 <= level <= MAX_DIMMING_LEVEL:
             self.channel_states[channel - 1] = level
-            self.logger.info(f"XP33 channel {channel} set to {level}%")
+            self.logger.info("XP33 channel %s set to %s%%", channel, level)
             return True
         return False
 
     def activate_scene(self, scene: int) -> bool:
-        """
-        Activate a pre-programmed scene.
+        """Activate a pre-programmed scene.
 
         Args:
             scene: Scene number (1-4).
 
         Returns:
             True if scene was activated successfully, False otherwise.
+
         """
         if scene in self.scenes:
             self.channel_states = self.scenes[scene].copy()
-            self.logger.info(f"XP33 scene {scene} activated: {self.channel_states}")
+            self.logger.info("XP33 scene %s activated: %s", scene, self.channel_states)
             return True
         return False
 
-    def _get_msactiontable_serializer(self) -> Optional[Xp33MsActionTableSerializer]:
-        """
-        Get the MsActionTable serializer for XP33.
+    def _get_msactiontable_serializer(self) -> Xp33MsActionTableSerializer | None:
+        """Get the MsActionTable serializer for XP33.
 
         Returns:
             The XP33 MsActionTable serializer instance.
+
         """
         return self.msactiontable_serializer
 
-    def _get_msactiontable(self) -> Optional[Xp33MsActionTable]:
-        """
-        Get the MsActionTable for XP33.
+    def _get_msactiontable(self) -> Xp33MsActionTable | None:
+        """Get the MsActionTable for XP33.
 
         Returns:
             The XP33 MsActionTable instance.
+
         """
         return self.msactiontable
 
     def _get_default_msactiontable(self) -> Xp33MsActionTable:
-        """
-        Generate default MsActionTable configuration.
+        """Generate default MsActionTable configuration.
 
         Returns:
-            Default XP33 MsActionTable with all outputs at 0-100% range, no scenes configured.
+            Default XP33 MsActionTable with all outputs at 0-100% range,
+            no scenes configured.
+
         """
         # All outputs at 0-100% range, no scenes configured
         return Xp33MsActionTable()
 
-    def get_device_info(self) -> Dict:
-        """
-        Get XP33 device information.
+    def get_device_info(self) -> dict:
+        """Get XP33 device information.
 
         Returns:
             Dictionary containing device information.
+
         """
         return {
             "serial_number": self.serial_number,
@@ -525,12 +569,12 @@ class XP33ServerService(BaseServerService):
             "available_scenes": list(self.scenes.keys()),
         }
 
-    def get_technical_specs(self) -> Dict:
-        """
-        Get technical specifications.
+    def get_technical_specs(self) -> dict:
+        """Get technical specifications.
 
         Returns:
             Dictionary containing technical specifications.
+
         """
         if self.variant == "XP33LED":
             return {

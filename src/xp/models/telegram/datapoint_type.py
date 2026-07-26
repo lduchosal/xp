@@ -1,12 +1,15 @@
+# Copyright (c) 2025 ldvchosal
 """Datapoint type enumeration for system telegrams."""
 
 from enum import Enum
 from typing import Optional
 
 
-class DataPointType(str, Enum):
-    """
-    Data point types for system telegrams.
+# NOTE: not converted to StrEnum (UP042): members are rendered via str()/f-strings
+# (e.g. ConbusDatapointResponse.to_dict CLI JSON output, service log messages);
+# the output would change from "DataPointType.<NAME>" to the raw code.
+class DataPointType(str, Enum):  # noqa: UP042
+    """Data point types for system telegrams.
 
     Attributes:
         MODULE_TYPE: Module type (XP24, XP33, etc).
@@ -61,6 +64,7 @@ class DataPointType(str, Enum):
        <R0020044966F02D24AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFP>
        <R0020044966F02D25AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFO>
        <R0020044966F02D26??FN>
+
     """
 
     MODULE_TYPE = "00"  # Module type (XP24, XP33, ..)
@@ -99,14 +103,14 @@ class DataPointType(str, Enum):
 
     @classmethod
     def from_code(cls, code: str) -> Optional["DataPointType"]:
-        """
-        Get DataPointType from code string.
+        """Get DataPointType from code string.
 
         Args:
             code: Datapoint type code string.
 
         Returns:
             DataPointType instance if found, None otherwise.
+
         """
         for dp_type in cls:
             if dp_type.value == code:

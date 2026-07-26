@@ -1,6 +1,8 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus link number CLI commands."""
 
 import json
+from typing import TYPE_CHECKING
 
 import click
 
@@ -10,11 +12,13 @@ from xp.cli.utils.decorators import (
 )
 from xp.cli.utils.serial_number_type import SERIAL
 from xp.models import ConbusDatapointResponse
-from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.services.conbus.conbus_datapoint_service import ConbusDatapointService
 from xp.services.conbus.write_config_service import WriteConfigService
 from xp.services.telegram.telegram_datapoint_service import TelegramDatapointService
+
+if TYPE_CHECKING:
+    from xp.models.conbus.conbus_writeconfig import ConbusWriteConfigResponse
 
 
 @conbus_linknumber.command("set", short_help="Set link number for a module")
@@ -25,8 +29,7 @@ from xp.services.telegram.telegram_datapoint_service import TelegramDatapointSer
 def set_linknumber_command(
     ctx: click.Context, serial_number: str, link_number: int
 ) -> None:
-    r"""
-    Set the link number for a specific module.
+    r"""Set the link number for a specific module.
 
     Args:
         ctx: Click context object.
@@ -36,17 +39,18 @@ def set_linknumber_command(
     Examples:
         \b
         xp conbus linknumber set 0123450001 25
+
     """
     service: WriteConfigService = (
         ctx.obj.get("container").get_container().resolve(WriteConfigService)
     )
 
     def on_finish(response: "ConbusWriteConfigResponse") -> None:
-        """
-        Handle successful completion of light level on command.
+        """Handle successful completion of light level on command.
 
         Args:
             response: Light level response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()
@@ -68,8 +72,7 @@ def set_linknumber_command(
 @click.pass_context
 @connection_command()
 def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
-    r"""
-    Get the current link number for a specific module.
+    r"""Get the current link number for a specific module.
 
     Args:
         ctx: Click context object.
@@ -78,6 +81,7 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
     Examples:
         \b
         xp conbus linknumber get 0123450001
+
     """
     service: ConbusDatapointService = (
         ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
@@ -87,11 +91,11 @@ def get_linknumber_command(ctx: click.Context, serial_number: str) -> None:
     )
 
     def on_finish(service_response: ConbusDatapointResponse) -> None:
-        """
-        Handle successful completion of link number get command.
+        """Handle successful completion of link number get command.
 
         Args:
             service_response: Link number response object.
+
         """
         linknumber_value = telegram_service.get_linknumber(service_response.data_value)
         result = service_response.to_dict()

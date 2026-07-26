@@ -1,10 +1,11 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus reverse proxy operations CLI commands."""
 
 import json
 import signal
 import sys
 from types import FrameType
-from typing import Any, Dict, Optional
+from typing import Any
 
 import click
 from click import Context
@@ -18,8 +19,11 @@ from xp.services.reverse_proxy_service import (
     ReverseProxyService,
 )
 
-# Global proxy instance
-global_proxy_instance: Optional[ReverseProxyService] = None
+
+class ProxyState:
+    """Holds the process-wide reverse proxy instance used by the CLI commands."""
+
+    instance: ReverseProxyService | None = None
 
 
 @click.group(
@@ -30,7 +34,6 @@ global_proxy_instance: Optional[ReverseProxyService] = None
 )
 def reverse_proxy() -> None:
     """Perform Conbus reverse proxy operations."""
-    pass
 
 
 @reverse_proxy.command("start")
@@ -41,8 +44,7 @@ def reverse_proxy() -> None:
 @handle_service_errors(ReverseProxyError)
 @click.pass_context
 def start_proxy(ctx: Context, port: int, config: str) -> None:
-    r"""
-    Start the Conbus reverse proxy server.
+    r"""Start the Conbus reverse proxy server.
 
     The proxy listens on the specified port and forwards all telegrams
     to the target server configured in cli.yml. All traffic is monitored
@@ -60,12 +62,11 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
 
     Raises:
         SystemExit: If proxy is already running.
-    """
-    global global_proxy_instance
 
+    """
     try:
         # Check if proxy is already running
-        if global_proxy_instance and global_proxy_instance.is_running:
+        if ProxyState.instance and ProxyState.instance.is_running:
             error_response = {
                 "success": False,
                 "error": "Reverse proxy is already running",
@@ -77,31 +78,33 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
         service: ReverseProxyService = (
             ctx.obj.get("container").get_container().resolve(ReverseProxyService)
         )
-        global_proxy_instance = service
+        ProxyState.instance = service
 
         # Handle graceful shutdown on SIGINT
-        def signal_handler(signum: int, frame: Optional[FrameType]) -> None:
-            """
-            Handle shutdown signals for graceful proxy termination.
+        def signal_handler(signum: int, frame: FrameType | None) -> None:
+            """Handle shutdown signals for graceful proxy termination.
 
             Args:
                 signum: Signal number received.
                 frame: Current stack frame (may be None).
+
             """
-            if global_proxy_instance and global_proxy_instance.is_running:
-                timestamp = global_proxy_instance.timestamp()
-                print(f"\n{timestamp} [SHUTDOWN] Received interrupt signal ({signum})")
-                print(f"\n{timestamp} [SHUTDOWN] Frame is ({frame})")
-                global_proxy_instance.stop_proxy()
+            if ProxyState.instance and ProxyState.instance.is_running:
+                timestamp = ProxyState.instance.timestamp()
+                click.echo(
+                    f"\n{timestamp} [SHUTDOWN] Received interrupt signal ({signum})"
+                )
+                click.echo(f"\n{timestamp} [SHUTDOWN] Frame is ({frame})")
+                ProxyState.instance.stop_proxy()
             sys.exit(0)
 
         signal.signal(signal.SIGINT, signal_handler)
 
         # Start proxy (this will block)
-        result = global_proxy_instance.start_proxy()
+        result = service.start_proxy()
         click.echo(json.dumps(result.to_dict(), indent=2))
         if result.success:
-            global_proxy_instance.run_blocking()
+            service.run_blocking()
 
     except ReverseProxyError as e:
         CLIErrorHandler.handle_service_error(
@@ -118,8 +121,7 @@ def start_proxy(ctx: Context, port: int, config: str) -> None:
 @reverse_proxy.command("stop")
 @handle_service_errors(ReverseProxyError)
 def stop_proxy() -> None:
-    r"""
-    Stop the running Conbus reverse proxy server.
+    r"""Stop the running Conbus reverse proxy server.
 
     Examples:
         \b
@@ -127,9 +129,10 @@ def stop_proxy() -> None:
 
     Raises:
         SystemExit: If proxy is not running.
+
     """
     try:
-        if global_proxy_instance is None or not global_proxy_instance.is_running:
+        if ProxyState.instance is None or not ProxyState.instance.is_running:
             error_response = {
                 "success": False,
                 "error": "Reverse proxy is not running",
@@ -138,7 +141,7 @@ def stop_proxy() -> None:
             raise SystemExit(1)
 
         # Stop the proxy
-        result = global_proxy_instance.stop_proxy()
+        result = ProxyState.instance.stop_proxy()
 
         click.echo(json.dumps(result.to_dict(), indent=2))
 
@@ -149,8 +152,7 @@ def stop_proxy() -> None:
 @reverse_proxy.command("status")
 @handle_service_errors(Exception)
 def proxy_status() -> None:
-    r"""
-    Get status of the Conbus reverse proxy server.
+    r"""Get status of the Conbus reverse proxy server.
 
     Shows current running state, listen port, target server,
     and active connection details.
@@ -158,12 +160,13 @@ def proxy_status() -> None:
     Examples:
         \b
         xp rp status
+
     """
-    OutputFormatter(True)
+    OutputFormatter(json_output=True)
 
     try:
-        status_data: Dict[str, Any]
-        if global_proxy_instance is None:
+        status_data: dict[str, Any]
+        if ProxyState.instance is None:
             status_data = {
                 "running": False,
                 "listen_port": None,
@@ -173,10 +176,10 @@ def proxy_status() -> None:
                 "connections": {},
             }
         else:
-            result = global_proxy_instance.get_status()
+            result = ProxyState.instance.get_status()
             status_data = result.data if result.success else {}
 
         click.echo(json.dumps(status_data, indent=2))
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - CLI boundary: report any error to the user
         CLIErrorHandler.handle_service_error(e, "reverse proxy status check")

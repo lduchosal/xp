@@ -1,12 +1,12 @@
-"""
-Conbus DataPoint Query All Service.
+# Copyright (c) 2025 ldvchosal
+"""Conbus DataPoint Query All Service.
 
 This module provides service for querying all datapoint types from a module.
 """
 
 import logging
-from datetime import datetime
-from typing import Any, Optional
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 
@@ -18,11 +18,11 @@ from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services import TelegramService
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
+from xp.utils.time_utils import local_now
 
 
 class ConbusDatapointQueryAllService:
-    """
-    Utility service for querying all datapoints from a module.
+    """Utility service for querying all datapoints from a module.
 
     This service orchestrates multiple ConbusDatapointService calls to query
     all available datapoint types sequentially.
@@ -32,6 +32,7 @@ class ConbusDatapointQueryAllService:
         telegram_service: TelegramService for dependency injection.
         on_progress: Signal emitted for each datapoint response received.
         on_finish: Signal emitted when all datapoints queried (with response).
+
     """
 
     on_progress: Signal = Signal(ReplyTelegram)
@@ -42,12 +43,12 @@ class ConbusDatapointQueryAllService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """
-        Initialize the query all service.
+        """Initialize the query all service.
 
         Args:
             conbus_protocol: ConbusEventProtocol for protocol communication.
             telegram_service: TelegramService for dependency injection.
+
         """
         self.conbus_protocol = conbus_protocol
         self.telegram_service = telegram_service
@@ -76,11 +77,11 @@ class ConbusDatapointQueryAllService:
         self.next_datapoint()
 
     def next_datapoint(self) -> bool:
-        """
-        Query the next datapoint type.
+        """Query the next datapoint type.
 
         Returns:
             True if there are more datapoints to query, False otherwise.
+
         """
         self.logger.debug("Querying next datapoint")
 
@@ -90,7 +91,7 @@ class ConbusDatapointQueryAllService:
         datapoint_type_code = self.datapoint_types[self.current_index]
         datapoint_type = DataPointType(datapoint_type_code)
 
-        self.logger.debug(f"Datapoint: {datapoint_type}")
+        self.logger.debug("Datapoint: %s", datapoint_type)
         self.conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
             serial_number=self.serial_number,
@@ -107,7 +108,7 @@ class ConbusDatapointQueryAllService:
         if not query_next_datapoint:
             self.logger.debug("Received all datapoints telegram")
             self.service_response.success = True
-            self.service_response.timestamp = datetime.now()
+            self.service_response.timestamp = local_now()
             self.service_response.serial_number = self.serial_number
             self.service_response.system_function = SystemFunction.READ_DATAPOINT
 
@@ -115,22 +116,22 @@ class ConbusDatapointQueryAllService:
             self.on_finish.emit(self.service_response)
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """
-        Handle telegram sent event.
+        """Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
+
         """
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
+
         """
-        self.logger.debug(f"Telegram received: {telegram_received}")
+        self.logger.debug("Telegram received: %s", telegram_received)
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
         self.service_response.received_telegrams.append(telegram_received.frame)
@@ -158,15 +159,15 @@ class ConbusDatapointQueryAllService:
         self.on_progress.emit(datapoint_telegram)
 
     def failed(self, message: str) -> None:
-        """
-        Handle failed connection event.
+        """Handle failed connection event.
 
         Args:
             message: Failure message.
+
         """
-        self.logger.debug(f"Failed with message: {message}")
+        self.logger.debug("Failed with message: %s", message)
         self.service_response.success = False
-        self.service_response.timestamp = datetime.now()
+        self.service_response.timestamp = local_now()
         self.service_response.error = message
 
         # Emit finish signal
@@ -175,14 +176,14 @@ class ConbusDatapointQueryAllService:
     def query_all_datapoints(
         self,
         serial_number: str,
-        timeout_seconds: Optional[float] = None,
+        timeout_seconds: float | None = None,
     ) -> None:
-        """
-        Query all datapoints from a module.
+        """Query all datapoints from a module.
 
         Args:
             serial_number: 10-digit module serial number.
             timeout_seconds: Timeout in seconds.
+
         """
         self.logger.info("Starting query_all_datapoints")
         if timeout_seconds:
@@ -190,11 +191,11 @@ class ConbusDatapointQueryAllService:
         self.serial_number = serial_number
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set operation timeout.
+        """Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -206,11 +207,12 @@ class ConbusDatapointQueryAllService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "ConbusDatapointQueryAllService":
+    def __enter__(self) -> Self:
         """Enter context manager - reset state for singleton reuse.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state for singleton reuse
         self.service_response = ConbusDatapointResponse(
@@ -223,7 +225,10 @@ class ConbusDatapointQueryAllService:
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager - cleanup signals and reactor."""
         # Disconnect protocol signals
@@ -234,5 +239,6 @@ class ConbusDatapointQueryAllService:
         self.conbus_protocol.on_failed.disconnect(self.failed)
         # Disconnect service signals
         self.on_progress.disconnect()
+        self.on_finish.disconnect()
         # Stop reactor
         self.stop_reactor()

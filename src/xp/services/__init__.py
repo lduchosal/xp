@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Service layer for XP CLI tool."""
 
 from xp.services.log_file_service import LogFileParsingError, LogFileService
@@ -13,14 +14,14 @@ from xp.services.telegram.telegram_link_number_service import (
 from xp.services.telegram.telegram_service import TelegramParsingError, TelegramService
 
 __all__ = [
-    "TelegramService",
-    "TelegramParsingError",
-    "ModuleTypeService",
-    "ModuleTypeNotFoundError",
-    "LogFileService",
-    "LogFileParsingError",
-    "LinkNumberService",
-    "LinkNumberError",
-    "TelegramDiscoverService",
     "DiscoverError",
+    "LinkNumberError",
+    "LinkNumberService",
+    "LogFileParsingError",
+    "LogFileService",
+    "ModuleTypeNotFoundError",
+    "ModuleTypeService",
+    "TelegramDiscoverService",
+    "TelegramParsingError",
+    "TelegramService",
 ]

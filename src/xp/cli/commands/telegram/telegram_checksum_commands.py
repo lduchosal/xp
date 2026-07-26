@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Checksum calculation and validation CLI commands."""
 
 import json
@@ -22,8 +23,7 @@ from xp.services.telegram.telegram_checksum_service import TelegramChecksumServi
 )
 @handle_service_errors(Exception)
 def calculate_checksum(data: str, algorithm: str) -> None:
-    r"""
-    Calculate checksum for given data string.
+    r"""Calculate checksum for given data string.
 
     Args:
         data: Data string to calculate checksum for.
@@ -36,16 +36,19 @@ def calculate_checksum(data: str, algorithm: str) -> None:
 
     Raises:
         SystemExit: If checksum calculation fails.
+
     """
     service = TelegramChecksumService()
-    formatter = OutputFormatter(True)
+    formatter = OutputFormatter(json_output=True)
 
     try:
         if algorithm == "simple":
             result = service.calculate_simple_checksum(data)
         else:  # crc32
             result = service.calculate_crc32_checksum(data)
-
+    except Exception as e:  # noqa: BLE001 - CLI boundary: report any error to the user
+        CLIErrorHandler.handle_service_error(e, "checksum calculation", {"input": data})
+    else:
         if not result.success:
             error_response = formatter.error_response(
                 result.error or "Unknown error", {"input": data}
@@ -54,9 +57,6 @@ def calculate_checksum(data: str, algorithm: str) -> None:
             raise SystemExit(1)
 
         click.echo(json.dumps(result.to_dict(), indent=2))
-
-    except Exception as e:
-        CLIErrorHandler.handle_service_error(e, "checksum calculation", {"input": data})
 
 
 @checksum.command("validate")
@@ -71,8 +71,7 @@ def calculate_checksum(data: str, algorithm: str) -> None:
 )
 @handle_service_errors(Exception)
 def validate_checksum(data: str, expected_checksum: str, algorithm: str) -> None:
-    r"""
-    Validate data against expected checksum.
+    r"""Validate data against expected checksum.
 
     Args:
         data: Data string to validate.
@@ -86,16 +85,23 @@ def validate_checksum(data: str, expected_checksum: str, algorithm: str) -> None
 
     Raises:
         SystemExit: If checksum validation fails.
+
     """
     service = TelegramChecksumService()
-    formatter = OutputFormatter(True)
+    formatter = OutputFormatter(json_output=True)
 
     try:
         if algorithm == "simple":
             result = service.validate_checksum(data, expected_checksum)
         else:  # crc32
             result = service.validate_crc32_checksum(data, expected_checksum)
-
+    except Exception as e:  # noqa: BLE001 - CLI boundary: report any error to the user
+        CLIErrorHandler.handle_service_error(
+            e,
+            "checksum validation",
+            {"input": data, "expected_checksum": expected_checksum},
+        )
+    else:
         if not result.success:
             error_response = formatter.error_response(
                 result.error or "Unknown error",
@@ -105,10 +111,3 @@ def validate_checksum(data: str, expected_checksum: str, algorithm: str) -> None
             raise SystemExit(1)
 
         click.echo(json.dumps(result.to_dict(), indent=2))
-
-    except Exception as e:
-        CLIErrorHandler.handle_service_error(
-            e,
-            "checksum validation",
-            {"input": data, "expected_checksum": expected_checksum},
-        )

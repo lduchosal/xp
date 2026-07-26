@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Logging service for XP application."""
 
 import logging
@@ -10,18 +11,18 @@ from xp.models.conbus.conbus_logger_config import ConbusLoggerConfig
 class LoggerService:
     """Service for managing logging configuration and setup."""
 
-    def __init__(self, logger_config: ConbusLoggerConfig):
-        """
-        Initialize LoggerService with configuration.
+    def __init__(self, logger_config: ConbusLoggerConfig) -> None:
+        """Initialize LoggerService with configuration.
 
         Args:
             logger_config: Logger configuration object.
+
         """
         self.logging_config = logger_config.log
         self.logger = logging.getLogger(__name__)
 
     def setup(self) -> None:
-        """Setup file logging only with configured levels."""
+        """Set up file logging only with configured levels."""
         # Setup file logging for term app (console logging disabled)
         root_logger = logging.getLogger()
 
@@ -41,16 +42,16 @@ class LoggerService:
             self.logging_config.log_format, self.logging_config.date_format
         )
 
-        for module in self.logging_config.levels.keys():
+        for module in self.logging_config.levels:
             logging.getLogger(module).setLevel(self.logging_config.levels[module])
 
     def setup_console_logging(self, log_format: str, date_format: str) -> None:
-        """
-        Setup console logging with specified format.
+        """Set up console logging with specified format.
 
         Args:
             log_format: Log message format string.
             date_format: Date format string for log timestamps.
+
         """
         # Force format on root logger and all handlers
         formatter = logging.Formatter(log_format, datefmt=date_format)
@@ -70,12 +71,12 @@ class LoggerService:
             root_logger.addHandler(handler)
 
     def setup_file_logging(self, log_format: str, date_format: str) -> None:
-        """
-        Setup file logging with rotation for term application.
+        """Set up file logging with rotation for term application.
 
         Args:
             log_format: Log message format string.
             date_format: Date format string for log timestamps.
+
         """
         log_path = Path(self.logging_config.path)
         log_level = self.logging_config.default_level
@@ -101,5 +102,5 @@ class LoggerService:
             root_logger.addHandler(file_handler)
 
         except (OSError, PermissionError) as e:
-            self.logger.warning(f"Failed to setup file logging at {log_path}: {e}")
+            self.logger.warning("Failed to setup file logging at %s: %s", log_path, e)
             self.logger.warning("Continuing without file logging")

@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Terminal UI models."""
 
 from xp.models.term.accessory_state import AccessoryState

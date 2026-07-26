@@ -1,11 +1,9 @@
-"""
-Checksum service for telegram protocol validation and generation.
+# Copyright (c) 2025 ldvchosal
+"""Checksum service for telegram protocol validation and generation.
 
 This service provides business logic for checksum operations, following the layered
 architecture pattern.
 """
-
-from typing import Union
 
 from xp.models.response import Response
 from xp.utils.checksum import calculate_checksum, calculate_checksum32
@@ -16,18 +14,17 @@ class TelegramChecksumService:
 
     def __init__(self) -> None:
         """Initialize the checksum service."""
-        pass
 
     @staticmethod
     def calculate_simple_checksum(data: str) -> Response:
-        """
-        Calculate simple XOR checksum for string data.
+        """Calculate simple XOR checksum for string data.
 
         Args:
             data: String data to calculate checksum for.
 
         Returns:
             Response object with checksum result.
+
         """
         try:
             checksum = calculate_checksum(data)
@@ -37,28 +34,25 @@ class TelegramChecksumService:
                 data={"input": data, "checksum": checksum, "algorithm": "simple_xor"},
                 error=None,
             )
-        except Exception as e:
+        except (TypeError, ValueError) as e:
             return Response(
                 success=False, data=None, error=f"Checksum calculation failed: {e}"
             )
 
     @staticmethod
-    def calculate_crc32_checksum(data: Union[str, bytes]) -> Response:
-        """
-        Calculate CRC32 checksum for data.
+    def calculate_crc32_checksum(data: str | bytes) -> Response:
+        """Calculate CRC32 checksum for data.
 
         Args:
             data: String or bytes data to calculate checksum for.
 
         Returns:
             Response object with checksum result.
+
         """
         try:
             # Convert string to bytes if needed
-            if isinstance(data, str):
-                byte_data = data.encode("utf-8")
-            else:  # isinstance(data, bytes)
-                byte_data = data
+            byte_data = data.encode("utf-8") if isinstance(data, str) else data
 
             checksum = calculate_checksum32(byte_data)
 
@@ -73,7 +67,7 @@ class TelegramChecksumService:
                 },
                 error=None,
             )
-        except Exception as e:
+        except (TypeError, ValueError) as e:
             return Response(
                 success=False,
                 data=None,
@@ -82,8 +76,7 @@ class TelegramChecksumService:
 
     @staticmethod
     def validate_checksum(data: str, expected_checksum: str) -> Response:
-        """
-        Validate data against expected simple checksum.
+        """Validate data against expected simple checksum.
 
         Args:
             data: Original data.
@@ -91,6 +84,7 @@ class TelegramChecksumService:
 
         Returns:
             Response object with validation result.
+
         """
         try:
             calculated_checksum = calculate_checksum(data)
@@ -106,17 +100,14 @@ class TelegramChecksumService:
                 },
                 error=None,
             )
-        except Exception as e:
+        except (TypeError, ValueError) as e:
             return Response(
                 success=False, data=None, error=f"Checksum validation failed: {e}"
             )
 
     @staticmethod
-    def validate_crc32_checksum(
-        data: Union[str, bytes], expected_checksum: str
-    ) -> Response:
-        """
-        Validate data against expected CRC32 checksum.
+    def validate_crc32_checksum(data: str | bytes, expected_checksum: str) -> Response:
+        """Validate data against expected CRC32 checksum.
 
         Args:
             data: Original data (string or bytes).
@@ -124,13 +115,11 @@ class TelegramChecksumService:
 
         Returns:
             Response object with validation result.
+
         """
         try:
             # Convert string to bytes if needed
-            if isinstance(data, str):
-                byte_data = data.encode("utf-8")
-            else:  # isinstance(data, bytes)
-                byte_data = data
+            byte_data = data.encode("utf-8") if isinstance(data, str) else data
 
             calculated_checksum = calculate_checksum32(byte_data)
             is_valid = calculated_checksum == expected_checksum
@@ -146,7 +135,7 @@ class TelegramChecksumService:
                 },
                 error=None,
             )
-        except Exception as e:
+        except (TypeError, ValueError) as e:
             return Response(
                 success=False,
                 data=None,

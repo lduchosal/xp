@@ -1,6 +1,7 @@
+# Copyright (c) 2025 ldvchosal
 """Error handling utilities for CLI commands."""
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 import click
 
@@ -14,10 +15,9 @@ class CLIErrorHandler:
     def handle_parsing_error(
         error: Exception,
         raw_input: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> None:
-        """
-        Handle telegram parsing errors with JSON formatting.
+        """Handle telegram parsing errors with JSON formatting.
 
         Args:
             error: The parsing error that occurred.
@@ -26,8 +26,9 @@ class CLIErrorHandler:
 
         Raises:
             SystemExit: Always exits with code 1 after displaying error.
+
         """
-        formatter = OutputFormatter(True)
+        formatter = OutputFormatter(json_output=True)
         error_data = {"raw_input": raw_input}
 
         if context:
@@ -39,10 +40,9 @@ class CLIErrorHandler:
 
     @staticmethod
     def handle_connection_error(
-        error: Exception, config: Optional[Dict[str, Any]] = None
+        error: Exception, config: dict[str, Any] | None = None
     ) -> None:
-        """
-        Handle connection/network errors with JSON formatting.
+        """Handle connection/network errors with JSON formatting.
 
         Args:
             error: The connection error that occurred.
@@ -50,12 +50,14 @@ class CLIErrorHandler:
 
         Raises:
             SystemExit: Always exits with code 1 after displaying error.
+
         """
-        formatter = OutputFormatter(True)
+        formatter = OutputFormatter(json_output=True)
 
         if "Connection timeout" in str(error):
             if config:
-                error_msg = f"Connection timeout after {config.get('timeout', 'unknown')} seconds"
+                timeout = config.get("timeout", "unknown")
+                error_msg = f"Connection timeout after {timeout} seconds"
                 error_data = {
                     "host": config.get("ip", "unknown"),
                     "port": config.get("port", "unknown"),
@@ -68,18 +70,16 @@ class CLIErrorHandler:
             error_response = formatter.error_response(error_msg, error_data)
             click.echo(error_response)
             raise SystemExit(1)
-        else:
-            # Generic connection error
-            error_response = formatter.error_response(str(error))
-            click.echo(error_response)
-            raise SystemExit(1)
+        # Generic connection error
+        error_response = formatter.error_response(str(error))
+        click.echo(error_response)
+        raise SystemExit(1)
 
     @staticmethod
     def handle_service_error(
-        error: Exception, operation: str, context: Optional[Dict[str, Any]] = None
+        error: Exception, operation: str, context: dict[str, Any] | None = None
     ) -> None:
-        """
-        Handle general service errors with JSON formatting.
+        """Handle general service errors with JSON formatting.
 
         Args:
             error: The service error that occurred.
@@ -88,8 +88,9 @@ class CLIErrorHandler:
 
         Raises:
             SystemExit: Always exits with code 1 after displaying error.
+
         """
-        formatter = OutputFormatter(True)
+        formatter = OutputFormatter(json_output=True)
         error_data = {"operation": operation}
 
         if context:
@@ -101,8 +102,7 @@ class CLIErrorHandler:
 
     @staticmethod
     def handle_validation_error(error: Exception, input_data: str) -> None:
-        """
-        Handle validation errors with JSON formatting.
+        """Handle validation errors with JSON formatting.
 
         Args:
             error: The validation error that occurred.
@@ -110,8 +110,9 @@ class CLIErrorHandler:
 
         Raises:
             SystemExit: Always exits with code 1 after displaying error.
+
         """
-        formatter = OutputFormatter(True)
+        formatter = OutputFormatter(json_output=True)
         error_data = {"valid_format": False, "raw_input": input_data}
 
         error_response = formatter.error_response(str(error), error_data)
@@ -124,8 +125,7 @@ class CLIErrorHandler:
         file_path: str,
         operation: str = "processing",
     ) -> None:
-        """
-        Handle file operation errors with JSON formatting.
+        """Handle file operation errors with JSON formatting.
 
         Args:
             error: The file error that occurred.
@@ -134,8 +134,9 @@ class CLIErrorHandler:
 
         Raises:
             SystemExit: Always exits with code 1 after displaying error.
+
         """
-        formatter = OutputFormatter(True)
+        formatter = OutputFormatter(json_output=True)
         error_data = {"file_path": file_path, "operation": operation}
 
         error_response = formatter.error_response(str(error), error_data)
@@ -146,8 +147,7 @@ class CLIErrorHandler:
     def handle_not_found_error(
         error: Exception, item_type: str, identifier: str
     ) -> None:
-        """
-        Handle 'not found' errors with JSON formatting.
+        """Handle 'not found' errors with JSON formatting.
 
         Args:
             error: The not found error that occurred.
@@ -156,8 +156,9 @@ class CLIErrorHandler:
 
         Raises:
             SystemExit: Always exits with code 1 after displaying error.
+
         """
-        formatter = OutputFormatter(True)
+        formatter = OutputFormatter(json_output=True)
         error_data = {"item_type": item_type, "identifier": identifier}
 
         error_response = formatter.error_response(str(error), error_data)
@@ -172,8 +173,7 @@ class ServerErrorHandler(CLIErrorHandler):
     def handle_server_startup_error(
         error: Exception, port: int, config_path: str
     ) -> None:
-        """
-        Handle server startup errors with JSON formatting.
+        """Handle server startup errors with JSON formatting.
 
         Args:
             error: The server startup error that occurred.
@@ -182,8 +182,9 @@ class ServerErrorHandler(CLIErrorHandler):
 
         Raises:
             SystemExit: Always exits with code 1 after displaying error.
+
         """
-        formatter = OutputFormatter(True)
+        formatter = OutputFormatter(json_output=True)
         error_data = {
             "port": port,
             "config": config_path,
@@ -196,13 +197,13 @@ class ServerErrorHandler(CLIErrorHandler):
 
     @staticmethod
     def handle_server_not_running_error() -> None:
-        """
-        Handle errors when server is not running with JSON formatting.
+        """Handle errors when server is not running with JSON formatting.
 
         Raises:
             SystemExit: Always exits with code 1 after displaying error.
+
         """
-        error_response = OutputFormatter(True).error_response(
+        error_response = OutputFormatter(json_output=True).error_response(
             "No server is currently running"
         )
         click.echo(error_response)

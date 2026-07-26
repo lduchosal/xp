@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus client operations CLI commands."""
 
 import json
@@ -21,8 +22,7 @@ from xp.services.conbus.conbus_output_service import ConbusOutputService
 @click.pass_context
 @connection_command()
 def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> None:
-    r"""
-    Send ON command for output_number XP module serial_number.
+    r"""Send ON command for output_number XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -32,17 +32,18 @@ def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> 
     Examples:
         \b
         xp conbus output on 0011223344 0  # Turn on output 0
+
     """
     service: ConbusOutputService = (
         ctx.obj.get("container").get_container().resolve(ConbusOutputService)
     )
 
     def on_finish(response: ConbusOutputResponse) -> None:
-        """
-        Handle successful completion of output on command.
+        """Handle successful completion of output on command.
 
         Args:
             response: Output response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()
@@ -63,8 +64,7 @@ def xp_output_on(ctx: click.Context, serial_number: str, output_number: int) -> 
 @click.pass_context
 @connection_command()
 def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) -> None:
-    r"""
-    Send OFF command for output_number XP module serial_number.
+    r"""Send OFF command for output_number XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -74,17 +74,18 @@ def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) ->
     Examples:
         \b
         xp conbus output off 0011223344 1    # Turn off output 1
+
     """
     service: ConbusOutputService = (
         ctx.obj.get("container").get_container().resolve(ConbusOutputService)
     )
 
     def on_finish(response: ConbusOutputResponse) -> None:
-        """
-        Handle successful completion of output off command.
+        """Handle successful completion of output off command.
 
         Args:
             response: Output response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()
@@ -104,8 +105,7 @@ def xp_output_off(ctx: click.Context, serial_number: str, output_number: int) ->
 @click.pass_context
 @connection_command()
 def xp_output_status(ctx: click.Context, serial_number: str) -> None:
-    r"""
-    Query output state command to XP module serial_number.
+    r"""Query output state command to XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -114,17 +114,18 @@ def xp_output_status(ctx: click.Context, serial_number: str) -> None:
     Examples:
         \b
         xp conbus output status 0011223344    # Query output status
+
     """
     service: ConbusDatapointService = (
         ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
     )
 
     def on_finish(response: ConbusDatapointResponse) -> None:
-        """
-        Handle successful completion of output status query.
+        """Handle successful completion of output status query.
 
         Args:
             response: Datapoint response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()
@@ -143,8 +144,7 @@ def xp_output_status(ctx: click.Context, serial_number: str) -> None:
 @click.pass_context
 @connection_command()
 def xp_module_state(ctx: click.Context, serial_number: str) -> None:
-    r"""
-    Query module state of the XP module serial_number.
+    r"""Query module state of the XP module serial_number.
 
     Args:
         ctx: Click context object.
@@ -153,17 +153,18 @@ def xp_module_state(ctx: click.Context, serial_number: str) -> None:
     Examples:
         \b
         xp conbus output state 0011223344    # Query module state
+
     """
     service: ConbusDatapointService = (
         ctx.obj.get("container").get_container().resolve(ConbusDatapointService)
     )
 
     def on_finish(response: ConbusDatapointResponse) -> None:
-        """
-        Handle successful completion of module state query.
+        """Handle successful completion of module state query.
 
         Args:
             response: Datapoint response object.
+
         """
         click.echo(json.dumps(response.to_dict(), indent=2))
         service.stop_reactor()

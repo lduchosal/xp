@@ -1,17 +1,18 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus link number response model."""
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from xp.models.telegram.datapoint_type import DataPointType
 from xp.models.telegram.system_function import SystemFunction
+from xp.utils.time_utils import local_now
 
 
 @dataclass
 class ConbusWriteConfigResponse:
-    """
-    Represents a response from Conbus write config operations (set/get).
+    """Represents a response from Conbus write config operations (set/get).
 
     Attributes:
         success: Whether the operation was successful.
@@ -23,31 +24,32 @@ class ConbusWriteConfigResponse:
         data_value: written value.
         error: Error message if operation failed.
         timestamp: Timestamp of the response.
+
     """
 
     success: bool
     serial_number: str
-    datapoint_type: Optional[DataPointType] = None
-    system_function: Optional[SystemFunction] = None
-    sent_telegram: Optional[str] = None
-    received_telegrams: Optional[list] = None
-    data_value: Optional[str] = None
-    error: Optional[str] = None
-    timestamp: Optional[datetime] = None
+    datapoint_type: DataPointType | None = None
+    system_function: SystemFunction | None = None
+    sent_telegram: str | None = None
+    received_telegrams: list | None = None
+    data_value: str | None = None
+    error: str | None = None
+    timestamp: datetime | None = None
 
     def __post_init__(self) -> None:
         """Initialize timestamp and received_telegrams if not provided."""
         if self.timestamp is None:
-            self.timestamp = datetime.now()
+            self.timestamp = local_now()
         if self.received_telegrams is None:
             self.received_telegrams = []
 
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Convert to dictionary for JSON serialization.
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the response.
+
         """
         return {
             "success": self.success,

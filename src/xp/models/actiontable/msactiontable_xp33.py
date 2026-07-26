@@ -1,15 +1,19 @@
+# Copyright (c) 2025 ldvchosal
 """XP33 Action Table models for output and scene configuration."""
-
-from typing import Union
 
 from pydantic import BaseModel, Field, field_validator
 
 from xp.models.telegram.timeparam_type import TimeParam
 
+# Maximum output/scene level in percent
+MAX_LEVEL = 100
+
+# Prefixed lines split into exactly two parts: "<prefix><num>" and parameters
+LINE_PART_COUNT = 2
+
 
 class Xp33Output(BaseModel):
-    """
-    Represents an XP33 output configuration.
+    """Represents an XP33 output configuration.
 
     Attributes:
         min_level: Minimum output level (0-100).
@@ -17,6 +21,7 @@ class Xp33Output(BaseModel):
         scene_outputs: Enable scene outputs.
         start_at_full: Start at full brightness.
         leading_edge: Use leading edge dimming.
+
     """
 
     min_level: int = 0
@@ -27,14 +32,14 @@ class Xp33Output(BaseModel):
 
 
 class Xp33Scene(BaseModel):
-    """
-    Represents a scene configuration.
+    """Represents a scene configuration.
 
     Attributes:
         output1_level: Output level for output 1 (0-100).
         output2_level: Output level for output 2 (0-100).
         output3_level: Output level for output 3 (0-100).
         time: Time parameter for scene transition.
+
     """
 
     output1_level: int = 0
@@ -44,9 +49,8 @@ class Xp33Scene(BaseModel):
 
     @field_validator("time", mode="before")
     @classmethod
-    def validate_time_param(cls, v: Union[str, int, TimeParam]) -> TimeParam:
-        """
-        Convert string or int to TimeParam enum.
+    def validate_time_param(cls, v: object) -> TimeParam:
+        """Convert string or int to TimeParam enum.
 
         Args:
             v: Input value (can be string name, int value, or enum).
@@ -56,25 +60,28 @@ class Xp33Scene(BaseModel):
 
         Raises:
             ValueError: If the value cannot be converted to TimeParam.
+
         """
         if isinstance(v, TimeParam):
             return v
         if isinstance(v, str):
             try:
                 return TimeParam[v]
-            except KeyError:
-                raise ValueError(f"Invalid TimeParam: {v}")
+            except KeyError as e:
+                msg = f"Invalid TimeParam: {v}"
+                raise ValueError(msg) from e
         if isinstance(v, int):
             try:
                 return TimeParam(v)
-            except ValueError:
-                raise ValueError(f"Invalid TimeParam value: {v}")
-        raise ValueError(f"Invalid type for TimeParam: {type(v)}")
+            except ValueError as e:
+                msg = f"Invalid TimeParam value: {v}"
+                raise ValueError(msg) from e
+        msg = f"Invalid type for TimeParam: {type(v)}"
+        raise ValueError(msg)
 
 
 class Xp33MsActionTable(BaseModel):
-    """
-    XP33 Action Table for managing outputs and scenes.
+    """XP33 Action Table for managing outputs and scenes.
 
     Attributes:
         output1: Configuration for output 1.
@@ -84,6 +91,7 @@ class Xp33MsActionTable(BaseModel):
         scene2: Configuration for scene 2.
         scene3: Configuration for scene 3.
         scene4: Configuration for scene 4.
+
     """
 
     output1: Xp33Output = Field(default_factory=Xp33Output)
@@ -96,11 +104,11 @@ class Xp33MsActionTable(BaseModel):
     scene4: Xp33Scene = Field(default_factory=Xp33Scene)
 
     def to_short_format(self) -> list[str]:
-        """
-        Convert action table to short format string.
+        """Convert action table to short format string.
 
         Returns:
             Short format string (multi-line format with OUT and SCENE lines).
+
         """
         lines = []
 
@@ -127,8 +135,7 @@ class Xp33MsActionTable(BaseModel):
 
     @classmethod
     def from_short_format(cls, short_str: list[str]) -> "Xp33MsActionTable":
-        """
-        Parse short format string into action table.
+        """Parse short format string into action table.
 
         Args:
             short_str: Short format string (list of lines).
@@ -138,66 +145,34 @@ class Xp33MsActionTable(BaseModel):
 
         Raises:
             ValueError: If format is invalid.
+
         """
         # Parse outputs and scenes from lines
-        outputs = {}
-        scenes = {}
+        outputs: dict[int, Xp33Output] = {}
+        scenes: dict[int, Xp33Scene] = {}
 
-        for line in short_str:
-            line = line.strip()
+        for raw_line in short_str:
+            line = raw_line.strip()
             if not line:
                 continue
 
             if line.startswith("OUT"):
-                # Parse output line: OUT1 MIN:0 MAX:100 SO:0 SF:0 LE:0
-                parts = line.split(None, 1)
-                if len(parts) != 2:
-                    raise ValueError(f"Invalid output line format: '{line}'")
-
-                out_key = parts[0]  # OUT1, OUT2, OUT3
-                if not out_key.startswith("OUT"):
-                    raise ValueError(f"Expected OUT prefix, got: '{out_key}'")
-
-                try:
-                    out_num = int(out_key[3:])
-                    if out_num not in (1, 2, 3):
-                        raise ValueError(
-                            f"Invalid output number: {out_num}, expected 1-3"
-                        )
-                except ValueError:
-                    raise ValueError(f"Invalid output number in: '{out_key}'")
-
-                outputs[out_num] = cls._parse_output(parts[1])
-
+                out_num, output = cls._parse_output_line(line)
+                outputs[out_num] = output
             elif line.startswith("SCENE"):
-                # Parse scene line: SCENE1 OUT1:0 OUT2:0 OUT3:0 T:NONE
-                parts = line.split(None, 1)
-                if len(parts) != 2:
-                    raise ValueError(f"Invalid scene line format: '{line}'")
-
-                scene_key = parts[0]  # SCENE1, SCENE2, etc.
-                if not scene_key.startswith("SCENE"):
-                    raise ValueError(f"Expected SCENE prefix, got: '{scene_key}'")
-
-                try:
-                    scene_num = int(scene_key[5:])
-                    if scene_num not in (1, 2, 3, 4):
-                        raise ValueError(
-                            f"Invalid scene number: {scene_num}, expected 1-4"
-                        )
-                except ValueError:
-                    raise ValueError(f"Invalid scene number in: '{scene_key}'")
-
-                scenes[scene_num] = cls._parse_scene(parts[1])
+                scene_num, scene = cls._parse_scene_line(line)
+                scenes[scene_num] = scene
 
         # Validate we have all required outputs and scenes
         for i in (1, 2, 3):
             if i not in outputs:
-                raise ValueError(f"Missing output{i} configuration")
+                msg = f"Missing output{i} configuration"
+                raise ValueError(msg)
 
         for i in (1, 2, 3, 4):
             if i not in scenes:
-                raise ValueError(f"Missing scene{i} configuration")
+                msg = f"Missing scene{i} configuration"
+                raise ValueError(msg)
 
         return cls(
             output1=outputs[1],
@@ -209,16 +184,78 @@ class Xp33MsActionTable(BaseModel):
             scene4=scenes[4],
         )
 
+    @classmethod
+    def _parse_output_line(cls, line: str) -> tuple[int, Xp33Output]:
+        """Parse an output line like "OUT1 MIN:0 MAX:100 SO:0 SF:0 LE:0".
+
+        Args:
+            line: Stripped output line starting with "OUT".
+
+        Returns:
+            Tuple of (output number, parsed Xp33Output).
+
+        Raises:
+            ValueError: If the line format is invalid.
+
+        """
+        parts = line.split(None, 1)
+        if len(parts) != LINE_PART_COUNT:
+            msg = f"Invalid output line format: '{line}'"
+            raise ValueError(msg)
+
+        out_key = parts[0]  # OUT1, OUT2, OUT3
+        try:
+            out_num = int(out_key[3:])
+        except ValueError as e:
+            msg = f"Invalid output number in: '{out_key}'"
+            raise ValueError(msg) from e
+        if out_num not in {1, 2, 3}:
+            msg = f"Invalid output number in: '{out_key}'"
+            raise ValueError(msg)
+
+        return out_num, cls._parse_output(parts[1])
+
+    @classmethod
+    def _parse_scene_line(cls, line: str) -> tuple[int, Xp33Scene]:
+        """Parse a scene line like "SCENE1 OUT1:0 OUT2:0 OUT3:0 T:NONE".
+
+        Args:
+            line: Stripped scene line starting with "SCENE".
+
+        Returns:
+            Tuple of (scene number, parsed Xp33Scene).
+
+        Raises:
+            ValueError: If the line format is invalid.
+
+        """
+        parts = line.split(None, 1)
+        if len(parts) != LINE_PART_COUNT:
+            msg = f"Invalid scene line format: '{line}'"
+            raise ValueError(msg)
+
+        scene_key = parts[0]  # SCENE1, SCENE2, etc.
+        try:
+            scene_num = int(scene_key[5:])
+        except ValueError as e:
+            msg = f"Invalid scene number in: '{scene_key}'"
+            raise ValueError(msg) from e
+        if scene_num not in {1, 2, 3, 4}:
+            msg = f"Invalid scene number in: '{scene_key}'"
+            raise ValueError(msg)
+
+        return scene_num, cls._parse_scene(parts[1])
+
     @staticmethod
     def _format_output(output: Xp33Output) -> str:
-        """
-        Format output configuration to short string.
+        """Format output configuration to short string.
 
         Args:
             output: Xp33Output instance.
 
         Returns:
             Short string like "MIN:10 MAX:90 SO:1 SF:0 LE:1".
+
         """
         return (
             f"MIN:{output.min_level} "
@@ -230,8 +267,7 @@ class Xp33MsActionTable(BaseModel):
 
     @staticmethod
     def _parse_output(output_str: str) -> Xp33Output:
-        """
-        Parse output configuration from short string.
+        """Parse output configuration from short string.
 
         Args:
             output_str: Short string like "MIN:10 MAX:90 SO:1 SF:0 LE:1".
@@ -241,6 +277,7 @@ class Xp33MsActionTable(BaseModel):
 
         Raises:
             ValueError: If format is invalid.
+
         """
         # Parse key:value pairs
         parts = output_str.split()
@@ -248,7 +285,8 @@ class Xp33MsActionTable(BaseModel):
 
         for part in parts:
             if ":" not in part:
-                raise ValueError(f"Invalid output parameter format: '{part}'")
+                msg = f"Invalid output parameter format: '{part}'"
+                raise ValueError(msg)
 
             key, value = part.split(":", 1)
             params[key] = value
@@ -257,7 +295,8 @@ class Xp33MsActionTable(BaseModel):
         required_keys = ["MIN", "MAX", "SO", "SF", "LE"]
         for key in required_keys:
             if key not in params:
-                raise ValueError(f"Missing required parameter: {key}")
+                msg = f"Missing required parameter: {key}"
+                raise ValueError(msg)
 
         # Parse and validate values
         try:
@@ -268,10 +307,8 @@ class Xp33MsActionTable(BaseModel):
             leading_edge = params["LE"] == "1"
 
             # Validate ranges
-            if not (0 <= min_level <= 100):
-                raise ValueError(f"MIN level out of range (0-100): {min_level}")
-            if not (0 <= max_level <= 100):
-                raise ValueError(f"MAX level out of range (0-100): {max_level}")
+            Xp33MsActionTable._validate_level(min_level, "MIN")
+            Xp33MsActionTable._validate_level(max_level, "MAX")
 
             return Xp33Output(
                 min_level=min_level,
@@ -281,18 +318,35 @@ class Xp33MsActionTable(BaseModel):
                 leading_edge=leading_edge,
             )
         except ValueError as e:
-            raise ValueError(f"Invalid output parameter value: {e}")
+            msg = f"Invalid output parameter value: {e}"
+            raise ValueError(msg) from e
+
+    @staticmethod
+    def _validate_level(level: int, label: str) -> None:
+        """Validate that a level value is within the 0-100 range.
+
+        Args:
+            level: Level value to validate.
+            label: Parameter label used in the error message.
+
+        Raises:
+            ValueError: If the level is out of range.
+
+        """
+        if not (0 <= level <= MAX_LEVEL):
+            msg = f"{label} level out of range (0-100): {level}"
+            raise ValueError(msg)
 
     @staticmethod
     def _format_scene(scene: Xp33Scene) -> str:
-        """
-        Format scene configuration to short string.
+        """Format scene configuration to short string.
 
         Args:
             scene: Xp33Scene instance.
 
         Returns:
             Short string like "OUT1:50 OUT2:60 OUT3:70 T:T5SEC".
+
         """
         time_str = scene.time.name
         return (
@@ -304,8 +358,7 @@ class Xp33MsActionTable(BaseModel):
 
     @staticmethod
     def _parse_scene(scene_str: str) -> Xp33Scene:
-        """
-        Parse scene configuration from short string.
+        """Parse scene configuration from short string.
 
         Args:
             scene_str: Short string like "OUT1:50 OUT2:60 OUT3:70 T:T5SEC".
@@ -315,6 +368,7 @@ class Xp33MsActionTable(BaseModel):
 
         Raises:
             ValueError: If format is invalid.
+
         """
         # Parse key:value pairs
         parts = scene_str.split()
@@ -322,7 +376,8 @@ class Xp33MsActionTable(BaseModel):
 
         for part in parts:
             if ":" not in part:
-                raise ValueError(f"Invalid scene parameter format: '{part}'")
+                msg = f"Invalid scene parameter format: '{part}'"
+                raise ValueError(msg)
 
             key, value = part.split(":", 1)
             params[key] = value
@@ -331,7 +386,8 @@ class Xp33MsActionTable(BaseModel):
         required_keys = ["OUT1", "OUT2", "OUT3", "T"]
         for key in required_keys:
             if key not in params:
-                raise ValueError(f"Missing required parameter: {key}")
+                msg = f"Missing required parameter: {key}"
+                raise ValueError(msg)
 
         # Parse and validate values
         try:
@@ -340,25 +396,12 @@ class Xp33MsActionTable(BaseModel):
             output3_level = int(params["OUT3"])
 
             # Validate ranges
-            if not (0 <= output1_level <= 100):
-                raise ValueError(f"OUT1 level out of range (0-100): {output1_level}")
-            if not (0 <= output2_level <= 100):
-                raise ValueError(f"OUT2 level out of range (0-100): {output2_level}")
-            if not (0 <= output3_level <= 100):
-                raise ValueError(f"OUT3 level out of range (0-100): {output3_level}")
+            Xp33MsActionTable._validate_level(output1_level, "OUT1")
+            Xp33MsActionTable._validate_level(output2_level, "OUT2")
+            Xp33MsActionTable._validate_level(output3_level, "OUT3")
 
             # Parse time parameter - support both name and numeric value
-            time_str = params["T"]
-            try:
-                # Try parsing as enum name first
-                time_param = TimeParam[time_str]
-            except KeyError:
-                # Try parsing as numeric value
-                try:
-                    time_value = int(time_str)
-                    time_param = TimeParam(time_value)
-                except (ValueError, KeyError):
-                    raise ValueError(f"Invalid TimeParam: '{time_str}'")
+            time_param = Xp33MsActionTable._parse_time_param(params["T"])
 
             return Xp33Scene(
                 output1_level=output1_level,
@@ -367,4 +410,32 @@ class Xp33MsActionTable(BaseModel):
                 time=time_param,
             )
         except ValueError as e:
-            raise ValueError(f"Invalid scene parameter value: {e}")
+            msg = f"Invalid scene parameter value: {e}"
+            raise ValueError(msg) from e
+
+    @staticmethod
+    def _parse_time_param(time_str: str) -> TimeParam:
+        """Parse a time parameter given as enum name or numeric value.
+
+        Args:
+            time_str: Time parameter string (e.g., "T5SEC" or "12").
+
+        Returns:
+            TimeParam enum value.
+
+        Raises:
+            ValueError: If the value cannot be converted to TimeParam.
+
+        """
+        try:
+            # Try parsing as enum name first
+            time_param = TimeParam[time_str]
+        except KeyError:
+            # Try parsing as numeric value
+            try:
+                time_value = int(time_str)
+                time_param = TimeParam(time_value)
+            except (ValueError, KeyError) as e:
+                msg = f"Invalid TimeParam: '{time_str}'"
+                raise ValueError(msg) from e
+        return time_param

@@ -1,8 +1,9 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus emulator server operations CLI commands."""
 
 import json
 import signal
-from typing import Any, Dict, Optional
+from typing import Any
 
 import click
 from click import Context
@@ -14,8 +15,11 @@ from xp.cli.utils.formatters import OutputFormatter
 from xp.cli.utils.pid_file import remove_pid_file, write_pid_file
 from xp.services.server.server_service import ServerError, ServerService
 
-# Global server instance
-_server_instance: Optional[ServerService] = None
+
+class ServerState:
+    """Holds the process-wide server instance used by the CLI commands."""
+
+    instance: ServerService | None = None
 
 
 @click.group(
@@ -23,7 +27,6 @@ _server_instance: Optional[ServerService] = None
 )
 def server() -> None:
     """Perform Conbus emulator server operations."""
-    pass
 
 
 @server.command("start")
@@ -34,8 +37,7 @@ def server() -> None:
 @click.pass_context
 @handle_service_errors(ServerError)
 def start_server(ctx: Context, port: int, config: str) -> None:
-    r"""
-    Start the Conbus emulator server.
+    r"""Start the Conbus emulator server.
 
     Args:
         ctx: Click context object.
@@ -49,20 +51,20 @@ def start_server(ctx: Context, port: int, config: str) -> None:
 
     Raises:
         SystemExit: If server is already running.
+
     """
-    global _server_instance
     pid_file: str = ctx.obj.get("pid_file") or "server.pid"
 
-    def signal_handler(signum: int, frame: object) -> None:
-        """
-        Handle SIGINT/SIGTERM signals by stopping the server.
+    def signal_handler(_signum: int, _frame: object) -> None:
+        """Handle SIGINT/SIGTERM signals by stopping the server.
 
         Args:
-            signum: Signal number received.
-            frame: Current stack frame.
+            _signum: Signal number received.
+            _frame: Current stack frame.
+
         """
-        if _server_instance and _server_instance.is_running:
-            _server_instance.stop_server()
+        if ServerState.instance and ServerState.instance.is_running:
+            ServerState.instance.stop_server()
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
@@ -71,7 +73,7 @@ def start_server(ctx: Context, port: int, config: str) -> None:
 
     try:
         # Check if server is already running
-        if _server_instance and _server_instance.is_running:
+        if ServerState.instance and ServerState.instance.is_running:
             error_response = {
                 "success": False,
                 "error": "Server is already running",
@@ -80,15 +82,16 @@ def start_server(ctx: Context, port: int, config: str) -> None:
             raise SystemExit(1)
 
         # Get dependencies from container
-        _server_instance = (
+        service: ServerService = (
             ctx.obj.get("container").get_container().resolve(ServerService)
         )
+        ServerState.instance = service
 
-        status = _server_instance.get_server_status()
+        status = service.get_server_status()
         click.echo(json.dumps(status, indent=2))
 
         # This will block until server is stopped
-        _server_instance.start_server()
+        service.start_server()
 
         shutdown_response = {"success": True, "message": "Server shutdown"}
         click.echo(json.dumps(shutdown_response, indent=2))
@@ -102,20 +105,20 @@ def start_server(ctx: Context, port: int, config: str) -> None:
 @server.command("stop")
 @handle_service_errors(ServerError)
 def stop_server() -> None:
-    r"""
-    Stop the running Conbus emulator server.
+    r"""Stop the running Conbus emulator server.
 
     Examples:
         \b
         xp server stop
+
     """
     try:
-        if _server_instance is None or not _server_instance.is_running:
+        if ServerState.instance is None or not ServerState.instance.is_running:
             ServerErrorHandler.handle_server_not_running_error()
 
         # Stop the server
-        if _server_instance is not None:
-            _server_instance.stop_server()
+        if ServerState.instance is not None:
+            ServerState.instance.stop_server()
 
         response = {"success": True, "message": "Server stopped successfully"}
         click.echo(json.dumps(response, indent=2))
@@ -127,8 +130,7 @@ def stop_server() -> None:
 @server.command("status")
 @handle_service_errors(Exception)
 def server_status() -> None:
-    r"""
-    Get status of the Conbus emulator server.
+    r"""Get status of the Conbus emulator server.
 
     Examples:
         \b
@@ -136,12 +138,13 @@ def server_status() -> None:
 
     Raises:
         SystemExit: If status cannot be retrieved.
+
     """
-    formatter = OutputFormatter(True)
+    formatter = OutputFormatter(json_output=True)
 
     try:
-        status: Dict[str, Any]
-        if _server_instance is None:
+        status: dict[str, Any]
+        if ServerState.instance is None:
             status = {
                 "running": False,
                 "port": None,
@@ -149,11 +152,11 @@ def server_status() -> None:
                 "device_list": [],
             }
         else:
-            status = _server_instance.get_server_status()
+            status = ServerState.instance.get_server_status()
 
         click.echo(json.dumps(status, indent=2))
 
     except Exception as e:
         error_response = formatter.error_response(str(e))
         click.echo(error_response)
-        raise SystemExit(1)
+        raise SystemExit(1) from e

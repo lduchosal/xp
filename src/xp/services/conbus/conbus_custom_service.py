@@ -1,12 +1,12 @@
-"""
-Conbus Custom Service for sending custom telegrams to modules.
+# Copyright (c) 2025 ldvchosal
+"""Conbus Custom Service for sending custom telegrams to modules.
 
 This service handles custom telegram operations for modules through Conbus telegrams.
 """
 
 import logging
-from datetime import datetime
-from typing import Any, Optional
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 
@@ -17,11 +17,11 @@ from xp.models.telegram.system_function import SystemFunction
 from xp.models.telegram.telegram_type import TelegramType
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_service import TelegramService
+from xp.utils.time_utils import local_now
 
 
 class ConbusCustomService:
-    """
-    Service for sending custom telegrams to Conbus modules.
+    """Service for sending custom telegrams to Conbus modules.
 
     Uses ConbusEventProtocol to provide custom telegram functionality
     for sending arbitrary function codes and data to modules.
@@ -30,6 +30,7 @@ class ConbusCustomService:
         conbus_protocol: Protocol instance for Conbus communication.
         telegram_service: Service for parsing telegrams.
         on_finish: Signal emitted when custom operation completes (with response).
+
     """
 
     on_finish: Signal = Signal(ConbusCustomResponse)
@@ -39,12 +40,12 @@ class ConbusCustomService:
         conbus_protocol: ConbusEventProtocol,
         telegram_service: TelegramService,
     ) -> None:
-        """
-        Initialize the Conbus custom service.
+        """Initialize the Conbus custom service.
 
         Args:
             conbus_protocol: Protocol instance for Conbus communication.
             telegram_service: Service for parsing telegrams.
+
         """
         self.conbus_protocol = conbus_protocol
         self.telegram_service = telegram_service
@@ -69,11 +70,13 @@ class ConbusCustomService:
     def connection_made(self) -> None:
         """Handle connection established event."""
         self.logger.debug(
-            f"Connection established, sending custom telegram F{self.function_code}D{self.data}."
+            "Connection established, sending custom telegram F%sD%s.",
+            self.function_code,
+            self.data,
         )
         system_function = SystemFunction.from_code(self.function_code)
         if not system_function:
-            self.logger.debug(f"Invalid function code F{self.function_code}")
+            self.logger.debug("Invalid function code F%s", self.function_code)
             self.failed(f"Invalid function code {self.function_code}")
             return
 
@@ -85,22 +88,22 @@ class ConbusCustomService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """
-        Handle telegram sent event.
+        """Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
+
         """
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
+
         """
-        self.logger.debug(f"Telegram received: {telegram_received}")
+        self.logger.debug("Telegram received: %s", telegram_received)
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
         self.service_response.received_telegrams.append(telegram_received.frame)
@@ -121,7 +124,7 @@ class ConbusCustomService:
 
         self.logger.debug("Received reply telegram")
         self.service_response.success = True
-        self.service_response.timestamp = datetime.now()
+        self.service_response.timestamp = local_now()
         self.service_response.serial_number = self.serial_number
         self.service_response.function_code = self.function_code
         self.service_response.data = self.data
@@ -136,15 +139,15 @@ class ConbusCustomService:
         self.failed("Timeout")
 
     def failed(self, message: str) -> None:
-        """
-        Handle failed connection event.
+        """Handle failed connection event.
 
         Args:
             message: Failure message.
+
         """
-        self.logger.debug(f"Failed with message: {message}")
+        self.logger.debug("Failed with message: %s", message)
         self.service_response.success = False
-        self.service_response.timestamp = datetime.now()
+        self.service_response.timestamp = local_now()
         self.service_response.error = message
 
         # Emit finish signal
@@ -155,16 +158,16 @@ class ConbusCustomService:
         serial_number: str,
         function_code: str,
         data: str,
-        timeout_seconds: Optional[float] = None,
+        timeout_seconds: float | None = None,
     ) -> None:
-        """
-        Send a custom telegram to a module.
+        """Send a custom telegram to a module.
 
         Args:
             serial_number: 10-digit module serial number.
             function_code: Function code (e.g., "02", "17").
             data: Data code (e.g., "E2", "AA").
             timeout_seconds: Timeout in seconds.
+
         """
         self.logger.info("Starting send_custom_telegram")
         self.serial_number = serial_number
@@ -174,11 +177,11 @@ class ConbusCustomService:
             self.set_timeout(timeout_seconds)
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set operation timeout.
+        """Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -190,11 +193,12 @@ class ConbusCustomService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "ConbusCustomService":
+    def __enter__(self) -> Self:
         """Enter context manager - reset state for singleton reuse.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state for singleton reuse
         self.service_response = ConbusCustomResponse(success=False)
@@ -204,7 +208,10 @@ class ConbusCustomService:
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager and disconnect signals."""
         # Disconnect protocol signals

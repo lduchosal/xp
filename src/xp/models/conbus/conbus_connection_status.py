@@ -1,14 +1,14 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus connection status model."""
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 @dataclass
 class ConbusConnectionStatus:
-    """
-    Represents the current connection status.
+    """Represents the current connection status.
 
     Attributes:
         connected: Whether currently connected.
@@ -16,20 +16,21 @@ class ConbusConnectionStatus:
         port: Port number of the connection.
         last_activity: Timestamp of last activity.
         error: Error message if connection failed.
+
     """
 
     connected: bool
     ip: str
     port: int
-    last_activity: Optional[datetime] = None
-    error: Optional[str] = None
+    last_activity: datetime | None = None
+    error: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Convert to dictionary for JSON serialization.
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary for JSON serialization.
 
         Returns:
             Dictionary representation of the connection status.
+
         """
         return {
             "connected": self.connected,

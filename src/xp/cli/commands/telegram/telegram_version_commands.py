@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Version information operations CLI commands."""
 
 import json
@@ -19,8 +20,7 @@ from xp.services.telegram.telegram_version_service import (
 @click.argument("serial_number", type=SERIAL)
 @handle_service_errors(VersionParsingError)
 def generate_version_request(serial_number: str) -> None:
-    r"""
-    Generate a telegram to request version information from a device.
+    r"""Generate a telegram to request version information from a device.
 
     Args:
         serial_number: 10-digit module serial number.
@@ -31,9 +31,10 @@ def generate_version_request(serial_number: str) -> None:
 
     Raises:
         SystemExit: If request cannot be generated.
+
     """
     service = VersionService()
-    formatter = OutputFormatter(True)
+    formatter = OutputFormatter(json_output=True)
 
     try:
         result = service.generate_version_request_telegram(serial_number)

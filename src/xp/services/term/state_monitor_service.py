@@ -1,8 +1,8 @@
+# Copyright (c) 2025 ldvchosal
 """State Monitor Service for terminal interface."""
 
 import logging
-from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Self
 
 from psygnal import Signal
 
@@ -17,11 +17,20 @@ from xp.models.term.module_state import ModuleState
 from xp.services.protocol.conbus_event_protocol import ConbusEventProtocol
 from xp.services.telegram.telegram_output_service import TelegramOutputService
 from xp.services.telegram.telegram_service import TelegramService
+from xp.utils.time_utils import local_now
+
+# Output status events are reported on input numbers 80+ (input 80 = output 0)
+OUTPUT_EVENT_INPUT_BASE = 80
+
+# Last output status input number for XP24 (4 outputs: 80-83)
+XP24_OUTPUT_EVENT_INPUT_MAX = 83
+
+# Last output status input number for XP33 (3 outputs: 80-82)
+XP33_OUTPUT_EVENT_INPUT_MAX = 82
 
 
 class StateMonitorService:
-    """
-    Service for module state monitoring in terminal interface.
+    """Service for module state monitoring in terminal interface.
 
     Wraps ConbusEventProtocol and ConsonModuleListConfig to provide
     high-level module state tracking for the TUI.
@@ -35,6 +44,7 @@ class StateMonitorService:
         connection_state: Property returning current connection state.
         server_info: Property returning server connection info (IP:port).
         module_states: Property returning list of all module states.
+
     """
 
     on_connection_state_changed: Signal = Signal(ConnectionState)
@@ -49,13 +59,13 @@ class StateMonitorService:
         conson_config: ConsonModuleListConfig,
         telegram_service: TelegramService,
     ) -> None:
-        """
-        Initialize the State Monitor service.
+        """Initialize the State Monitor service.
 
         Args:
             conbus_protocol: ConbusEventProtocol instance.
             conson_config: ConsonModuleListConfig for module configuration.
             telegram_service: TelegramService for parsing telegrams.
+
         """
         self.logger = logging.getLogger(__name__)
         self._conbus_protocol = conbus_protocol
@@ -63,7 +73,7 @@ class StateMonitorService:
         self._telegram_service = telegram_service
         self._connection_state = ConnectionState.DISCONNECTED
         self._state_machine = ConnectionState.create_state_machine()
-        self._module_states: Dict[str, ModuleState] = {}
+        self._module_states: dict[str, ModuleState] = {}
 
         # Connect to protocol signals
         self._connect_signals()
@@ -111,31 +121,34 @@ class StateMonitorService:
 
     @property
     def connection_state(self) -> ConnectionState:
-        """
-        Get current connection state.
+        """Current connection state.
 
         Returns:
             Current connection state.
+
         """
         return self._connection_state
 
     @property
     def server_info(self) -> str:
-        """
-        Get server connection info (IP:port).
+        """Server connection info (IP:port).
 
         Returns:
             Server address in format "IP:port".
+
         """
-        return f"{self._conbus_protocol.cli_config.ip}:{self._conbus_protocol.cli_config.port}"
+        return (
+            f"{self._conbus_protocol.cli_config.ip}"
+            f":{self._conbus_protocol.cli_config.port}"
+        )
 
     @property
-    def module_states(self) -> List[ModuleState]:
-        """
-        Get all module states.
+    def module_states(self) -> list[ModuleState]:
+        """All module states.
 
         Returns:
             List of all module states.
+
         """
         return list(self._module_states.values())
 
@@ -143,7 +156,7 @@ class StateMonitorService:
         """Initiate connection to server."""
         if not self._state_machine.can_transition("connect"):
             self.logger.warning(
-                f"Cannot connect: current state is {self._connection_state.value}"
+                "Cannot connect: current state is %s", self._connection_state.value
             )
             return
 
@@ -158,7 +171,7 @@ class StateMonitorService:
         """Disconnect from server."""
         if not self._state_machine.can_transition("disconnect"):
             self.logger.warning(
-                f"Cannot disconnect: current state is {self._connection_state.value}"
+                "Cannot disconnect: current state is %s", self._connection_state.value
             )
             return
 
@@ -177,23 +190,21 @@ class StateMonitorService:
             self.on_status_message.emit("Disconnected")
 
     def toggle_connection(self) -> None:
-        """
-        Toggle connection state between connected and disconnected.
+        """Toggle connection state between connected and disconnected.
 
         Disconnects if currently connected or connecting. Connects if currently
         disconnected or failed.
         """
-        if self._connection_state in (
+        if self._connection_state in {
             ConnectionState.CONNECTED,
             ConnectionState.CONNECTING,
-        ):
+        }:
             self.disconnect()
         else:
             self.connect()
 
     def refresh_all(self) -> None:
-        """
-        Refresh all module states.
+        """Refresh all module states.
 
         Queries module_output_state datapoint for eligible modules (XP24, XP33LR,
         XP33LED). Updates outputs column and last_update timestamp for each queried
@@ -209,15 +220,17 @@ class StateMonitorService:
             if module_state.module_type in eligible_types:
                 self._query_module_output_state(module_state.serial_number)
                 self.logger.debug(
-                    f"Querying output state for {module_state.name} ({module_state.module_type})"
+                    "Querying output state for %s (%s)",
+                    module_state.name,
+                    module_state.module_type,
                 )
 
     def _query_module_output_state(self, serial_number: str) -> None:
-        """
-        Query module output state datapoint.
+        """Query module output state datapoint.
 
         Args:
             serial_number: Module serial number to query.
+
         """
         self._conbus_protocol.send_telegram(
             telegram_type=TelegramType.SYSTEM,
@@ -237,11 +250,11 @@ class StateMonitorService:
             self.on_module_list_updated.emit(self.module_states)
 
     def _on_connection_failed(self, failure: Exception) -> None:
-        """
-        Handle connection failed event.
+        """Handle connection failed event.
 
         Args:
             failure: Exception that caused the failure.
+
         """
         if self._state_machine.transition("failed", ConnectionState.FAILED):
             self._connection_state = ConnectionState.FAILED
@@ -249,14 +262,15 @@ class StateMonitorService:
             self.on_status_message.emit(f"Connection failed: {failure}")
 
     def _on_telegram_received(self, event: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Routes telegrams to appropriate handlers based on type.
-        Processes reply telegrams for datapoint queries and event telegrams for state changes.
+        Processes reply telegrams for datapoint queries and event telegrams
+        for state changes.
 
         Args:
             event: Telegram received event.
+
         """
         # Route based on telegram type
         if event.telegram_type == TelegramType.REPLY:
@@ -265,11 +279,11 @@ class StateMonitorService:
             self._handle_event_telegram(event)
 
     def _handle_reply_telegram(self, event: TelegramReceivedEvent) -> None:
-        """
-        Handle reply telegram for datapoint queries.
+        """Handle reply telegram for datapoint queries.
 
         Args:
             event: Telegram received event.
+
         """
         serial_number = event.serial_number
         if not serial_number or serial_number not in self._module_states:
@@ -292,36 +306,36 @@ class StateMonitorService:
                 reply_telegram.data_value
             )
             module_state.outputs = outputs
-            module_state.last_update = datetime.now()
+            module_state.last_update = local_now()
 
             self.on_module_state_changed.emit(module_state)
-            self.logger.debug(f"Updated outputs for {module_state.name}: {outputs}")
+            self.logger.debug("Updated outputs for %s: %s", module_state.name, outputs)
 
     def _on_timeout(self) -> None:
         """Handle timeout event."""
         self.on_status_message.emit("Waiting for action")
 
     def _on_failed(self, failure: Exception) -> None:
-        """
-        Handle protocol failure event.
+        """Handle protocol failure event.
 
         Args:
             failure: Exception that caused the failure.
+
         """
         if self._state_machine.transition("failed", ConnectionState.FAILED):
             self._connection_state = ConnectionState.FAILED
             self.on_connection_state_changed.emit(self._connection_state)
             self.on_status_message.emit(f"Protocol error: {failure}")
 
-    def _find_module_by_link(self, link_number: int) -> Optional[ModuleState]:
-        """
-        Find module state by link number.
+    def _find_module_by_link(self, link_number: int) -> ModuleState | None:
+        """Find module state by link number.
 
         Args:
             link_number: Link number to search for.
 
         Returns:
             ModuleState if found, None otherwise.
+
         """
         for module_state in self._module_states.values():
             if module_state.link_number == link_number:
@@ -329,15 +343,15 @@ class StateMonitorService:
         return None
 
     def _update_output_bit(
-        self, module_state: ModuleState, output_number: int, output_state: bool
+        self, module_state: ModuleState, output_number: int, *, output_state: bool
     ) -> None:
-        """
-        Update a single output bit in module state.
+        """Update a single output bit in module state.
 
         Args:
             module_state: Module state to update.
             output_number: Output number (0-3 for XP24, 0-2 for XP33 modules).
             output_state: True for ON, False for OFF.
+
         """
         # Parse existing outputs string "0 1 0 0" → [0, 1, 0, 0]
         outputs = module_state.outputs.split() if module_state.outputs else []
@@ -353,15 +367,16 @@ class StateMonitorService:
         module_state.outputs = " ".join(outputs)
 
     def _handle_event_telegram(self, event: TelegramReceivedEvent) -> None:
-        """
-        Handle event telegram for output state changes.
+        """Handle event telegram for output state changes.
 
-        Processes XP24 and XP33 output event telegrams to update module state in real-time.
+        Processes XP24 and XP33 output event telegrams to update module
+        state in real-time.
         - XP24 output events use input_number 80-83 to represent outputs 0-3.
         - XP33 output events use input_number 0-2 to represent channels 0-2.
 
         Args:
             event: Telegram received event containing event telegram.
+
         """
         # Parse the event telegram
         event_telegram = self._telegram_service.parse_event_telegram(event.frame)
@@ -374,32 +389,40 @@ class StateMonitorService:
 
         if event_telegram.module_type == ModuleTypeCode.XP24.value:
             # XP24 uses input_number 80-83 for outputs 0-3
-            if 80 <= event_telegram.input_number <= 83:
-                output_number = event_telegram.input_number - 80
+            if (
+                OUTPUT_EVENT_INPUT_BASE
+                <= event_telegram.input_number
+                <= XP24_OUTPUT_EVENT_INPUT_MAX
+            ):
+                output_number = event_telegram.input_number - OUTPUT_EVENT_INPUT_BASE
             else:
                 self.logger.debug(
-                    f"Ignoring XP24 input event I{event_telegram.input_number:02d}"
+                    "Ignoring XP24 input event I%02d", event_telegram.input_number
                 )
                 return
 
-        elif event_telegram.module_type in (
+        elif event_telegram.module_type in {
             ModuleTypeCode.XP33.value,
             ModuleTypeCode.XP33LR.value,
             ModuleTypeCode.XP33LED.value,
-        ):
-            # XP33 modules use input_number 0-2 for channels 0-2
-            if 80 <= event_telegram.input_number <= 82:
-                output_number = event_telegram.input_number - 80
+        }:
+            # XP33 modules use input_number 80-82 for channels 0-2
+            if (
+                OUTPUT_EVENT_INPUT_BASE
+                <= event_telegram.input_number
+                <= XP33_OUTPUT_EVENT_INPUT_MAX
+            ):
+                output_number = event_telegram.input_number - OUTPUT_EVENT_INPUT_BASE
             else:
                 self.logger.debug(
-                    f"Ignoring XP33 input event I{event_telegram.input_number:02d}"
+                    "Ignoring XP33 input event I%02d", event_telegram.input_number
                 )
                 return
 
         else:
             # Ignore events from other module types
             self.logger.debug(
-                f"Ignoring event from module type {event_telegram.module_type}"
+                "Ignoring event from module type %s", event_telegram.module_type
             )
             return
 
@@ -407,7 +430,7 @@ class StateMonitorService:
         module_state = self._find_module_by_link(event_telegram.link_number)
         if not module_state:
             self.logger.debug(
-                f"Module not found for link number {event_telegram.link_number}"
+                "Module not found for link number %s", event_telegram.link_number
             )
             return
 
@@ -415,14 +438,16 @@ class StateMonitorService:
         output_state = event_telegram.is_button_press
 
         # Update output state
-        self._update_output_bit(module_state, output_number, output_state)
-        module_state.last_update = datetime.now()
+        self._update_output_bit(module_state, output_number, output_state=output_state)
+        module_state.last_update = local_now()
 
         # Emit signal for UI update
         self.on_module_state_changed.emit(module_state)
         self.logger.debug(
-            f"Updated {module_state.name} output {output_number} to "
-            f"{'ON' if output_state else 'OFF'}"
+            "Updated %s output %s to %s",
+            module_state.name,
+            output_number,
+            "ON" if output_state else "OFF",
         )
 
     def cleanup(self) -> None:
@@ -430,22 +455,22 @@ class StateMonitorService:
         self._disconnect_signals()
         self.logger.debug("StateMonitorService cleaned up")
 
-    def __enter__(self) -> "StateMonitorService":
-        """
-        Context manager entry.
+    def __enter__(self) -> Self:
+        """Context manager entry.
 
         Returns:
             Self for context manager.
+
         """
         return self
 
     def __exit__(self, _exc_type: object, _exc_val: object, _exc_tb: object) -> None:
-        """
-        Context manager exit.
+        """Context manager exit.
 
         Args:
             _exc_type: Exception type.
             _exc_val: Exception value.
             _exc_tb: Exception traceback.
+
         """
         self.cleanup()

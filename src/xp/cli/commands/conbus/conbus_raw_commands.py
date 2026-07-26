@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Conbus raw telegram CLI commands."""
 
 import json
@@ -18,10 +19,10 @@ from xp.services.conbus.conbus_raw_service import ConbusRawService
 @click.pass_context
 @connection_command()
 def send_raw_telegrams(ctx: Context, telegrams: tuple[str, ...]) -> None:
-    r"""
-    Send raw telegram sequence to Conbus server.
+    r"""Send raw telegram sequence to Conbus server.
 
-    Accepts one or more telegrams in format S2113010000F02D (without <> nor CHECKSUM) as separate arguments.
+    Accepts one or more telegrams in format S2113010000F02D
+    (without <> nor CHECKSUM) as separate arguments.
 
     Args:
         ctx: Click context object.
@@ -32,26 +33,27 @@ def send_raw_telegrams(ctx: Context, telegrams: tuple[str, ...]) -> None:
         xp conbus raw 'S2113010000F02D'
         xp conbus raw 'S2113010000F02D' 'S2113010001F02D'
         xp conbus raw 'S0012345003F02D12F' 'S0012345009F02D12'
+
     """
     service: ConbusRawService = (
         ctx.obj.get("container").get_container().resolve(ConbusRawService)
     )
 
     def on_progress(message: str) -> None:
-        """
-        Handle progress updates during raw telegram sending.
+        """Handle progress updates during raw telegram sending.
 
         Args:
             message: Progress message string.
+
         """
         click.echo(message)
 
     def on_finish(service_response: ConbusRawResponse) -> None:
-        """
-        Handle successful completion of raw telegram sending.
+        """Handle successful completion of raw telegram sending.
 
         Args:
             service_response: Raw response object.
+
         """
         click.echo(json.dumps(service_response.to_dict(), indent=2))
         service.stop_reactor()

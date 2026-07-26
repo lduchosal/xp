@@ -1,15 +1,18 @@
+# Copyright (c) 2025 ldvchosal
 """Service for listing modules with action table configurations from conson.yml."""
 
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 
+from xp.models.config.conson_module_config import ConsonModuleListConfig
+
 
 class ActionTableListService:
-    """
-    Service for listing modules with action table configurations.
+    """Service for listing modules with action table configurations.
 
     Reads conson.yml and returns a list of all modules that have action table
     configurations defined.
@@ -17,6 +20,7 @@ class ActionTableListService:
     Attributes:
         on_finish: Signal emitted with dict[str, Any] when listing completes.
         on_error: Signal emitted with error message string when an error occurs.
+
     """
 
     on_finish: Signal = Signal(object)  # dict[str, Any]
@@ -26,16 +30,21 @@ class ActionTableListService:
         """Initialize the action table list service."""
         self.logger = logging.getLogger(__name__)
 
-    def __enter__(self) -> "ActionTableListService":
-        """
-        Context manager entry.
+    def __enter__(self) -> Self:
+        """Context manager entry.
 
         Returns:
             Self for context manager use.
+
         """
         return self
 
-    def __exit__(self, _exc_type: Any, _exc_val: Any, _exc_tb: Any) -> None:
+    def __exit__(
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
+    ) -> None:
         """Context manager exit."""
         # Disconnect service signals
         self.on_finish.disconnect()
@@ -43,13 +52,13 @@ class ActionTableListService:
 
     def start(
         self,
-        config_path: Optional[Path] = None,
+        config_path: Path | None = None,
     ) -> None:
-        """
-        List all modules with action table configurations.
+        """List all modules with action table configurations.
 
         Args:
             config_path: Optional path to conson.yml. Defaults to current directory.
+
         """
         # Default to current directory if not specified
         if config_path is None:
@@ -62,11 +71,9 @@ class ActionTableListService:
 
         # Load configuration
         try:
-            from xp.models.config.conson_module_config import ConsonModuleListConfig
-
             config = ConsonModuleListConfig.from_yaml(str(config_path))
         except Exception as e:
-            self.logger.error(f"Failed to load conson.yml: {e}")
+            self.logger.exception("Failed to load conson.yml")
             self._handle_error(f"Error: Failed to load conson.yml: {e}")
             return
 
@@ -96,10 +103,10 @@ class ActionTableListService:
         self.on_finish.emit(result)
 
     def _handle_error(self, message: str) -> None:
-        """
-        Handle error and emit error signal.
+        """Handle error and emit error signal.
 
         Args:
             message: Error message.
+
         """
         self.on_error.emit(message)

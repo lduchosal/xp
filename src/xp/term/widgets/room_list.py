@@ -1,57 +1,65 @@
+# Copyright (c) 2025 ldvchosal
 """Room List Widget for displaying HomeKit accessories table."""
 
 from datetime import datetime
-from typing import Any, List, Optional
 
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.widgets import DataTable, Static
+from textual.widgets.data_table import RowKey
 
 from xp.models.term.accessory_state import AccessoryState
 from xp.services.term.homekit_service import HomekitService
+from xp.utils.time_utils import local_now
 
 
 class RoomListWidget(Static):
-    """
-    Widget displaying HomeKit accessories in a data table.
+    """Widget displaying HomeKit accessories in a data table.
 
     Shows room/accessory hierarchy with real-time state updates from HomekitService.
-    Table displays: room/accessory, action, state, dim, module, serial, type, status, output, updated.
+    Table displays: room/accessory, action, state, dim, module, serial, type,
+    status, output, updated.
 
     Attributes:
         service: HomekitService for accessory state updates.
         table: DataTable widget displaying accessory information.
+
     """
 
     def __init__(
         self,
-        service: Optional[HomekitService] = None,
-        *args: Any,
-        **kwargs: Any,
+        service: HomekitService | None = None,
+        *,
+        name: str | None = None,
+        id: str | None = None,  # noqa: A002 - mirrors Textual's Widget API
+        classes: str | None = None,
+        disabled: bool = False,
     ) -> None:
-        """
-        Initialize the Room List widget.
+        """Initialize the Room List widget.
 
         Args:
             service: Optional HomekitService for signal subscriptions.
-            args: Additional positional arguments for Static.
-            kwargs: Additional keyword arguments for Static.
+            name: The name of the widget.
+            id: The ID of the widget in the DOM.
+            classes: The CSS classes for the widget.
+            disabled: Whether the widget is disabled.
+
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(name=name, id=id, classes=classes, disabled=disabled)
         self.service = service
-        self.table: Optional[DataTable] = None
-        self._row_keys: dict[str, Any] = {}  # Map accessory_id to row key
-        self._row_to_accessory: dict[Any, str] = {}  # Map row key to accessory_id
-        self._row_index_to_key: list[Any] = []  # Map row index to row key
-        self._action_to_row: dict[str, Any] = {}  # Map action key to row key
+        self.table: DataTable | None = None
+        self._row_keys: dict[str, RowKey] = {}  # Map accessory_id to row key
+        self._row_to_accessory: dict[RowKey, str] = {}  # Map row key to accessory_id
+        self._row_index_to_key: list[RowKey] = []  # Map row index to row key
+        self._action_to_row: dict[str, RowKey] = {}  # Map action key to row key
         self._current_room: str = ""
 
     def compose(self) -> ComposeResult:
-        """
-        Compose the widget layout.
+        """Compose the widget layout.
 
         Yields:
             DataTable widget.
+
         """
         self.table = DataTable(id="rooms-table", cursor_type="row")
         yield self.table
@@ -82,14 +90,14 @@ class RoomListWidget(Static):
             self.service.on_room_list_updated.disconnect(self.update_accessory_list)
             self.service.on_module_state_changed.disconnect(self.update_accessory_state)
 
-    def update_accessory_list(self, accessory_states: List[AccessoryState]) -> None:
-        """
-        Update entire accessory list from service.
+    def update_accessory_list(self, accessory_states: list[AccessoryState]) -> None:
+        """Update entire accessory list from service.
 
         Clears existing table and repopulates with all accessories grouped by room.
 
         Args:
             accessory_states: List of all accessory states.
+
         """
         if not self.table:
             return
@@ -117,13 +125,13 @@ class RoomListWidget(Static):
             self._add_accessory_row(state)
 
     def update_accessory_state(self, state: AccessoryState) -> None:
-        """
-        Update individual accessory state in table.
+        """Update individual accessory state in table.
 
         Updates existing row if accessory exists, otherwise adds new row.
 
         Args:
             state: Updated accessory state.
+
         """
         if not self.table:
             return
@@ -148,11 +156,11 @@ class RoomListWidget(Static):
             self._add_accessory_row(state)
 
     def _add_accessory_row(self, state: AccessoryState) -> None:
-        """
-        Add an accessory row to the table.
+        """Add an accessory row to the table.
 
         Args:
             state: Accessory state to add.
+
         """
         if not self.table:
             return
@@ -177,8 +185,7 @@ class RoomListWidget(Static):
             self._action_to_row[state.action] = row_key
 
     def _format_dim(self, state: AccessoryState) -> str:
-        """
-        Format dimming state for display.
+        """Format dimming state for display.
 
         Shows percentage if dimmable and ON, "-" if dimmable and OFF, empty otherwise.
 
@@ -187,6 +194,7 @@ class RoomListWidget(Static):
 
         Returns:
             Formatted dimming string.
+
         """
         if not state.is_dimmable():
             return ""
@@ -194,9 +202,8 @@ class RoomListWidget(Static):
             return "-"
         return state.dimming_state or ""
 
-    def _format_last_update(self, last_update: Optional[datetime]) -> str:
-        """
-        Format last update timestamp for display.
+    def _format_last_update(self, last_update: datetime | None) -> str:
+        """Format last update timestamp for display.
 
         Shows elapsed time in HH:MM:SS format or "--:--:--" if never updated.
 
@@ -205,11 +212,12 @@ class RoomListWidget(Static):
 
         Returns:
             Formatted time string.
+
         """
         if last_update is None:
             return "--:--:--"
 
-        elapsed = datetime.now() - last_update
+        elapsed = local_now() - last_update
         total_seconds = int(elapsed.total_seconds())
 
         hours = total_seconds // 3600
@@ -219,8 +227,7 @@ class RoomListWidget(Static):
         return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
     def refresh_last_update_times(self) -> None:
-        """
-        Refresh only the last_update column for all accessories.
+        """Refresh only the last_update column for all accessories.
 
         Updates the elapsed time display without querying the service.
         """
@@ -247,13 +254,13 @@ class RoomListWidget(Static):
                 )
 
     def select_by_action_key(self, action_key: str) -> None:
-        """
-        Select and highlight row by action key.
+        """Select and highlight row by action key.
 
         Moves the table cursor to the row corresponding to the action key.
 
         Args:
             action_key: Action key (a-z0-9) to select.
+
         """
         if not self.table:
             return
@@ -263,27 +270,27 @@ class RoomListWidget(Static):
             row_index = self.table.get_row_index(row_key)
             self.table.move_cursor(row=row_index)
 
-    def get_accessory_id_for_row(self, row_key: Any) -> Optional[str]:
-        """
-        Get accessory ID for a row key.
+    def get_accessory_id_for_row(self, row_key: RowKey) -> str | None:
+        """Get accessory ID for a row key.
 
         Args:
             row_key: DataTable row key.
 
         Returns:
             Accessory ID if found, None otherwise.
+
         """
         return self._row_to_accessory.get(row_key)
 
-    def get_row_key_at_index(self, index: int) -> Optional[Any]:
-        """
-        Get row key at a given index.
+    def get_row_key_at_index(self, index: int) -> RowKey | None:
+        """Get row key at a given index.
 
         Args:
             index: Row index.
 
         Returns:
             Row key if valid index, None otherwise.
+
         """
         if 0 <= index < len(self._row_index_to_key):
             return self._row_index_to_key[index]

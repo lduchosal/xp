@@ -1,13 +1,13 @@
-"""
-Conbus Output Service for sending action telegrams to Conbus modules.
+# Copyright (c) 2025 ldvchosal
+"""Conbus Output Service for sending action telegrams to Conbus modules.
 
 This service handles sending action telegrams (ON/OFF) to module outputs and processing
 ACK/NAK responses.
 """
 
 import logging
-from datetime import datetime
-from typing import Any, Optional
+from types import TracebackType
+from typing import Self
 
 from psygnal import Signal
 
@@ -22,17 +22,15 @@ from xp.services.telegram.telegram_output_service import (
     TelegramOutputService,
     XPOutputError,
 )
+from xp.utils.time_utils import local_now
 
 
 class ConbusOutputError(Exception):
     """Raised when Conbus output operations fail."""
 
-    pass
-
 
 class ConbusOutputService:
-    """
-    Service for sending action telegrams to Conbus module outputs.
+    """Service for sending action telegrams to Conbus module outputs.
 
     Manages action telegram transmission (ON/OFF) and processes
     ACK/NAK responses from modules.
@@ -40,6 +38,7 @@ class ConbusOutputService:
     Attributes:
         conbus_protocol: Protocol instance for Conbus communication.
         on_finish: Signal emitted when operation finishes (with result).
+
     """
 
     conbus_protocol: ConbusEventProtocol
@@ -49,13 +48,14 @@ class ConbusOutputService:
         self,
         conbus_protocol: ConbusEventProtocol,
         telegram_output_service: TelegramOutputService,
-    ):
-        """
-        Initialize the Conbus output service.
+    ) -> None:
+        """Initialize the Conbus output service.
 
         Args:
             conbus_protocol: ConbusEventProtocol for communication.
-            telegram_output_service: TelegramOutputService for telegram generation/parsing.
+            telegram_output_service: TelegramOutputService for telegram
+                generation/parsing.
+
         """
         self.conbus_protocol = conbus_protocol
         self.telegram_output_service = telegram_output_service
@@ -77,7 +77,7 @@ class ConbusOutputService:
             serial_number=self.serial_number,
             output_number=self.output_number,
             action_type=self.action_type,
-            timestamp=datetime.now(),
+            timestamp=local_now(),
         )
 
         # Set up logging
@@ -86,7 +86,9 @@ class ConbusOutputService:
     def connection_made(self) -> None:
         """Handle connection established event."""
         self.logger.debug(
-            f"Connection established, sending action {self.action_type} to output {self.output_number}."
+            "Connection established, sending action %s to output %s.",
+            self.action_type,
+            self.output_number,
         )
 
         # Validate parameters before sending
@@ -107,22 +109,22 @@ class ConbusOutputService:
         )
 
     def telegram_sent(self, telegram_sent: str) -> None:
-        """
-        Handle telegram sent event.
+        """Handle telegram sent event.
 
         Args:
             telegram_sent: The telegram that was sent.
+
         """
         self.service_response.sent_telegram = telegram_sent
 
     def telegram_received(self, telegram_received: TelegramReceivedEvent) -> None:
-        """
-        Handle telegram received event.
+        """Handle telegram received event.
 
         Args:
             telegram_received: The telegram received event.
+
         """
-        self.logger.debug(f"Telegram received: {telegram_received}")
+        self.logger.debug("Telegram received: %s", telegram_received)
 
         if not self.service_response.received_telegrams:
             self.service_response.received_telegrams = []
@@ -141,27 +143,27 @@ class ConbusOutputService:
             telegram_received.frame
         )
 
-        if output_telegram and output_telegram.system_function in (
+        if output_telegram and output_telegram.system_function in {
             SystemFunction.ACK,
             SystemFunction.NAK,
-        ):
-            self.logger.debug(f"Received {output_telegram.system_function} response")
+        }:
+            self.logger.debug("Received %s response", output_telegram.system_function)
             self.succeed(output_telegram)
         else:
             self.logger.debug(
-                f"Unexpected system function: {output_telegram.system_function}"
+                "Unexpected system function: %s", output_telegram.system_function
             )
 
     def succeed(self, output_telegram: OutputTelegram) -> None:
-        """
-        Handle successful output action.
+        """Handle successful output action.
 
         Args:
             output_telegram: The output telegram received as response.
+
         """
         self.logger.debug("Successfully sent action to output")
         self.service_response.success = True
-        self.service_response.timestamp = datetime.now()
+        self.service_response.timestamp = local_now()
         self.service_response.serial_number = self.serial_number
         self.service_response.output_number = self.output_number
         self.service_response.action_type = self.action_type
@@ -174,15 +176,15 @@ class ConbusOutputService:
         self.failed("Timeout")
 
     def failed(self, message: str) -> None:
-        """
-        Handle failed connection event.
+        """Handle failed connection event.
 
         Args:
             message: Failure message.
+
         """
-        self.logger.debug(f"Failed with message: {message}")
+        self.logger.debug("Failed with message: %s", message)
         self.service_response.success = False
-        self.service_response.timestamp = datetime.now()
+        self.service_response.timestamp = local_now()
         self.service_response.serial_number = self.serial_number
         self.service_response.output_number = self.output_number
         self.service_response.action_type = self.action_type
@@ -194,16 +196,16 @@ class ConbusOutputService:
         serial_number: str,
         output_number: int,
         action_type: ActionType,
-        timeout_seconds: Optional[float] = None,
+        timeout_seconds: float | None = None,
     ) -> None:
-        """
-        Send an action telegram to a module output.
+        """Send an action telegram to a module output.
 
         Args:
             serial_number: 10-digit module serial number.
             output_number: Output number (0-99).
             action_type: Action to perform (ON_RELEASE, OFF_PRESS, etc.).
             timeout_seconds: Optional timeout in seconds.
+
         """
         self.logger.info("Starting send_action")
         if timeout_seconds:
@@ -213,11 +215,11 @@ class ConbusOutputService:
         self.action_type = action_type
 
     def set_timeout(self, timeout_seconds: float) -> None:
-        """
-        Set operation timeout.
+        """Set operation timeout.
 
         Args:
             timeout_seconds: Timeout in seconds.
+
         """
         self.conbus_protocol.timeout_seconds = timeout_seconds
 
@@ -229,11 +231,12 @@ class ConbusOutputService:
         """Stop the reactor."""
         self.conbus_protocol.stop_reactor()
 
-    def __enter__(self) -> "ConbusOutputService":
+    def __enter__(self) -> Self:
         """Enter context manager - reset state for singleton reuse.
 
         Returns:
             Self for context manager protocol.
+
         """
         # Reset state for singleton reuse
         self.service_response = ConbusOutputResponse(
@@ -241,13 +244,16 @@ class ConbusOutputService:
             serial_number="",
             output_number=0,
             action_type=ActionType.ON_RELEASE,
-            timestamp=datetime.now(),
+            timestamp=local_now(),
         )
         self.output_state = ""
         return self
 
     def __exit__(
-        self, _exc_type: Optional[type], _exc_val: Optional[Exception], _exc_tb: Any
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> None:
         """Exit context manager and disconnect signals."""
         # Disconnect protocol signals

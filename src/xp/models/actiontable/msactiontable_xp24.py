@@ -1,21 +1,25 @@
+# Copyright (c) 2025 ldvchosal
 """XP24 Action Table models for input actions and settings."""
 
-from typing import Any, ClassVar, Union
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from xp.models.telegram.input_action_type import InputActionType
 from xp.models.telegram.timeparam_type import TimeParam
 
+# Number of inputs on an XP24 module
+XP24_INPUT_COUNT = 4
+
 
 class InputAction(BaseModel):
-    """
-    Represents an input action with type and parameter.
+    """Represents an input action with type and parameter.
 
     Attributes:
         model_config: Pydantic configuration to preserve enum objects.
         type: The input action type.
         param: Time parameter for the action.
+
     """
 
     model_config = ConfigDict(use_enum_values=False)
@@ -25,11 +29,8 @@ class InputAction(BaseModel):
 
     @field_validator("type", mode="before")
     @classmethod
-    def validate_action_type(
-        cls, v: Union[str, int, InputActionType]
-    ) -> InputActionType:
-        """
-        Convert string or int to InputActionType enum.
+    def validate_action_type(cls, v: object) -> InputActionType:
+        """Convert string or int to InputActionType enum.
 
         Args:
             v: Input value (can be string name, int value, or enum).
@@ -39,26 +40,29 @@ class InputAction(BaseModel):
 
         Raises:
             ValueError: If the value cannot be converted to InputActionType.
+
         """
         if isinstance(v, InputActionType):
             return v
         if isinstance(v, str):
             try:
                 return InputActionType[v]
-            except KeyError:
-                raise ValueError(f"Invalid InputActionType: {v}")
+            except KeyError as e:
+                msg = f"Invalid InputActionType: {v}"
+                raise ValueError(msg) from e
         if isinstance(v, int):
             try:
                 return InputActionType(v)
-            except ValueError:
-                raise ValueError(f"Invalid InputActionType value: {v}")
-        raise ValueError(f"Invalid type for InputActionType: {type(v)}")
+            except ValueError as e:
+                msg = f"Invalid InputActionType value: {v}"
+                raise ValueError(msg) from e
+        msg = f"Invalid type for InputActionType: {type(v)}"
+        raise ValueError(msg)
 
     @field_validator("param", mode="before")
     @classmethod
-    def validate_time_param(cls, v: Union[str, int, TimeParam]) -> TimeParam:
-        """
-        Convert string or int to TimeParam enum.
+    def validate_time_param(cls, v: object) -> TimeParam:
+        """Convert string or int to TimeParam enum.
 
         Args:
             v: Input value (can be string name, int value, or enum).
@@ -68,25 +72,28 @@ class InputAction(BaseModel):
 
         Raises:
             ValueError: If the value cannot be converted to TimeParam.
+
         """
         if isinstance(v, TimeParam):
             return v
         if isinstance(v, str):
             try:
                 return TimeParam[v]
-            except KeyError:
-                raise ValueError(f"Invalid TimeParam: {v}")
+            except KeyError as e:
+                msg = f"Invalid TimeParam: {v}"
+                raise ValueError(msg) from e
         if isinstance(v, int):
             try:
                 return TimeParam(v)
-            except ValueError:
-                raise ValueError(f"Invalid TimeParam value: {v}")
-        raise ValueError(f"Invalid type for TimeParam: {type(v)}")
+            except ValueError as e:
+                msg = f"Invalid TimeParam value: {v}"
+                raise ValueError(msg) from e
+        msg = f"Invalid type for TimeParam: {type(v)}"
+        raise ValueError(msg)
 
 
 class Xp24MsActionTable(BaseModel):
-    """
-    XP24 Action Table for managing input actions and settings.
+    """XP24 Action Table for managing input actions and settings.
 
     Each input has an action type (TOGGLE, ON, LEVELSET, etc.)
     with an optional parameter string.
@@ -105,6 +112,7 @@ class Xp24MsActionTable(BaseModel):
         curtain12: Curtain setting for inputs 1-2.
         curtain34: Curtain setting for inputs 3-4.
         mutual_deadtime: Master timing (MS300=12 or MS500=20).
+
     """
 
     # MS timing constants
@@ -163,11 +171,12 @@ class Xp24MsActionTable(BaseModel):
     mutual_deadtime: int = MS300  # Master timing (MS300=12 or MS500=20)
 
     def to_short_format(self) -> list[str]:
-        """
-        Convert action table to short format string.
+        """Convert action table to short format string.
 
         Returns:
-            Short format string with settings (e.g., "XP24 T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12").
+            Short format string with settings, e.g.
+            "XP24 T:1 T:2 T:0 T:0 | M12:0 M34:0 C12:0 C34:0 DT:12".
+
         """
         # Format input actions
         actions = [
@@ -199,8 +208,7 @@ class Xp24MsActionTable(BaseModel):
 
     @classmethod
     def from_short_format(cls, short_str: list[str]) -> "Xp24MsActionTable":
-        """
-        Parse short format string into action table.
+        """Parse short format string into action table.
 
         Args:
             short_str: Short format string.
@@ -210,6 +218,7 @@ class Xp24MsActionTable(BaseModel):
 
         Raises:
             ValueError: If format is invalid.
+
         """
         # Split by pipe to separate actions from settings
         parts = short_str[0].split("|")
@@ -218,43 +227,79 @@ class Xp24MsActionTable(BaseModel):
 
         # Parse action part
         tokens = action_part.split()
-        if len(tokens) != 4:
-            raise ValueError(
-                f"Invalid short format: expected '<a1> <a2> <a3> <a4>', got '{action_part}'"
+        if len(tokens) != XP24_INPUT_COUNT:
+            msg = (
+                "Invalid short format: expected '<a1> <a2> <a3> <a4>', "
+                f"got '{action_part}'"
             )
+            raise ValueError(msg)
 
         # Parse input actions
-        input_actions = []
-        for i, token in enumerate(tokens[0:4], 1):
-            if ":" not in token:
-                raise ValueError(f"Invalid action format at position {i}: '{token}'")
+        input_actions = [
+            cls._parse_input_action(token, i)
+            for i, token in enumerate(tokens[0:XP24_INPUT_COUNT], 1)
+        ]
 
-            code, param_str = token.split(":", 1)
-
-            # Look up action type
-            if code not in cls.SHORT_CODE_TO_ACTION:
-                raise ValueError(f"Unknown action code: '{code}'")
-
-            action_type = cls.SHORT_CODE_TO_ACTION[code]
-
-            # Parse param
-            try:
-                param_value = int(param_str)
-                param_type = TimeParam(param_value)
-            except (ValueError, KeyError):
-                raise ValueError(f"Invalid time param: '{param_str}'")
-
-            input_actions.append(InputAction(type=action_type, param=param_type))
-
-        # Parse settings if present
         kwargs: dict[str, Any] = {
             "input1_action": input_actions[0],
             "input2_action": input_actions[1],
             "input3_action": input_actions[2],
             "input4_action": input_actions[3],
         }
+        kwargs.update(cls._parse_settings(settings_part))
 
-        # Parse settings: M12:0 M34:1 C12:0 C34:1 DT:12
+        return cls(**kwargs)
+
+    @classmethod
+    def _parse_input_action(cls, token: str, position: int) -> InputAction:
+        """Parse a single input action token like "T:0".
+
+        Args:
+            token: Action token in "<code>:<param>" format.
+            position: 1-based input position (used in error messages).
+
+        Returns:
+            InputAction instance.
+
+        Raises:
+            ValueError: If the token format is invalid.
+
+        """
+        if ":" not in token:
+            msg = f"Invalid action format at position {position}: '{token}'"
+            raise ValueError(msg)
+
+        code, param_str = token.split(":", 1)
+
+        # Look up action type
+        if code not in cls.SHORT_CODE_TO_ACTION:
+            msg = f"Unknown action code: '{code}'"
+            raise ValueError(msg)
+
+        action_type = cls.SHORT_CODE_TO_ACTION[code]
+
+        # Parse param
+        try:
+            param_value = int(param_str)
+            param_type = TimeParam(param_value)
+        except (ValueError, KeyError) as e:
+            msg = f"Invalid time param: '{param_str}'"
+            raise ValueError(msg) from e
+
+        return InputAction(type=action_type, param=param_type)
+
+    @staticmethod
+    def _parse_settings(settings_part: str) -> dict[str, Any]:
+        """Parse the settings section like "M12:0 M34:1 C12:0 C34:1 DT:12".
+
+        Args:
+            settings_part: Settings section of the short format string.
+
+        Returns:
+            Keyword arguments for the corresponding model fields.
+
+        """
+        kwargs: dict[str, Any] = {}
         for setting in settings_part.split():
             if ":" not in setting:
                 continue
@@ -271,5 +316,4 @@ class Xp24MsActionTable(BaseModel):
                 kwargs["curtain34"] = value == "1"
             elif key == "DT":
                 kwargs["mutual_deadtime"] = int(value)
-
-        return cls(**kwargs)
+        return kwargs

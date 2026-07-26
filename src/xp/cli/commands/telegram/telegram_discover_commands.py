@@ -1,3 +1,4 @@
+# Copyright (c) 2025 ldvchosal
 """Device discover operations CLI commands."""
 
 import json
@@ -17,15 +18,15 @@ from xp.services.telegram.telegram_discover_service import (
 @telegram.command("discover")
 @handle_service_errors(DiscoverError)
 def generate_discover() -> None:
-    r"""
-    Generate a discover telegram for device enumeration.
+    r"""Generate a discover telegram for device enumeration.
 
     Examples:
         \b
         xp telegram discover
+
     """
     service = TelegramDiscoverService()
-    OutputFormatter(True)
+    OutputFormatter(json_output=True)
 
     try:
         discover = service.generate_discover_telegram()
