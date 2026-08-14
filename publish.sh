@@ -56,9 +56,9 @@ done
 
 # Set total steps based on mode
 if [ "$QUALITY_ONLY" = true ]; then
-    STEPS=17
+    STEPS=11
 else
-    STEPS=24
+    STEPS=19
 fi
 STEP=0
 
@@ -109,6 +109,32 @@ if [ "$QUALITY_ONLY" = true ]; then
     echo "${BOLD}Starting XP Package Quality Checks...${NC}"
 else
     echo "${BOLD}Starting XP Package Publishing Process...${NC}"
+fi
+
+print_step "Verifying Branch Is Up To Date (git fetch)"
+if [ "$CI_MODE" = true ]; then
+    echo "${YELLOW}→ Skipped: CI runs from a fresh checkout${NC}"
+    print_success "Branch check skipped"
+else
+    run_command "git fetch --tags origin" "Fetching origin"
+    UPSTREAM=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
+    if [ -z "$UPSTREAM" ]; then
+        print_error "No upstream branch configured; cannot verify this checkout is current"
+    fi
+    LOCAL=$(git rev-parse HEAD)
+    REMOTE=$(git rev-parse "$UPSTREAM")
+    BASE=$(git merge-base HEAD "$UPSTREAM")
+    if [ "$LOCAL" = "$REMOTE" ]; then
+        print_success "In sync with ${UPSTREAM}"
+    elif [ "$LOCAL" = "$BASE" ]; then
+        echo "${RED}Local branch is behind ${UPSTREAM}. Publishing from a stale"
+        echo "checkout bumps a version that has already been released.${NC}"
+        print_error "Run 'git pull --ff-only' first"
+    elif [ "$REMOTE" = "$BASE" ]; then
+        print_success "Ahead of ${UPSTREAM}; local commits will be pushed"
+    else
+        print_error "Branch has diverged from ${UPSTREAM}; reconcile before publishing"
+    fi
 fi
 
 print_step "Cleaning Previous Build (pdm run clean)"
