@@ -4,7 +4,7 @@
 conson-xp package.
 """
 
-__version__ = "2.1.11"
+__version__ = "2.1.12"
 __manufacturer__ = "salchichon"
 __model__ = "xp.cli"
 __serial__ = "2025.09.23.000"
